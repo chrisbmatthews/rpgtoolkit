@@ -1,0 +1,563 @@
+VERSION 5.00
+Begin VB.Form light 
+   BorderStyle     =   1  'Fixed Single
+   Caption         =   "Define Light Source"
+   ClientHeight    =   5115
+   ClientLeft      =   1830
+   ClientTop       =   1650
+   ClientWidth     =   6495
+   BeginProperty Font 
+      Name            =   "MS Sans Serif"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   700
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   ForeColor       =   &H80000008&
+   Icon            =   "LIGHT.frx":0000
+   LinkTopic       =   "Form2"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   PaletteMode     =   1  'UseZOrder
+   ScaleHeight     =   5115
+   ScaleWidth      =   6495
+   StartUpPosition =   1  'CenterOwner
+   Tag             =   "1784"
+   Begin VB.CommandButton cmdOK 
+      Caption         =   "OK"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Left            =   5040
+      TabIndex        =   7
+      Top             =   2400
+      Width           =   1215
+   End
+   Begin VB.CheckBox chkPreview 
+      Caption         =   "Preview"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   5040
+      TabIndex        =   6
+      Top             =   1920
+      Width           =   1095
+   End
+   Begin VB.CommandButton cmdCancel 
+      Caption         =   "Cancel"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Left            =   5040
+      TabIndex        =   5
+      Top             =   2880
+      Width           =   1215
+   End
+   Begin VB.PictureBox ldir 
+      AutoRedraw      =   -1  'True
+      Height          =   1140
+      Left            =   5040
+      ScaleHeight     =   101.408
+      ScaleMode       =   0  'User
+      ScaleWidth      =   97.468
+      TabIndex        =   1
+      Top             =   360
+      Width           =   1215
+   End
+   Begin VB.PictureBox tileform 
+      AutoRedraw      =   -1  'True
+      Height          =   4880
+      Left            =   120
+      MousePointer    =   2  'Cross
+      ScaleHeight     =   321
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   309
+      TabIndex        =   0
+      Top             =   120
+      Width           =   4695
+   End
+   Begin VB.Label Label2 
+      Alignment       =   2  'Center
+      Caption         =   "Click on the picture to define where obstructions to light are, then click on Apply Light"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   1935
+      Left            =   2760
+      TabIndex        =   4
+      Tag             =   "1786"
+      Top             =   2520
+      Width           =   1215
+   End
+   Begin VB.Label Label1 
+      Caption         =   "Light Direction:"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   5040
+      TabIndex        =   3
+      Tag             =   "1787"
+      Top             =   120
+      Width           =   1335
+   End
+   Begin VB.Label angtext 
+      Caption         =   "0-- 25"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   5040
+      TabIndex        =   2
+      Tag             =   "1788"
+      Top             =   1560
+      Width           =   1215
+   End
+End
+Attribute VB_Name = "light"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+'========================================================================
+'All contents copyright 2003, Christopher Matthews
+'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+'Read LICENSE.txt for licensing info
+'========================================================================
+'!NEW! Declared variables
+Option Explicit
+Dim x, y, t, xx, yy As Integer
+
+'========================================================================
+' The OK button, this was first Command3.
+'========================================================================
+Private Sub cmdOK_Click()
+On Error Resume Next
+    'Since I added the Preview sub, why not use it here too?
+    Call Preview
+    
+    '!NEW! The user wants to save the changes
+    SaveChanges = True
+    
+    Unload Me
+End Sub
+
+'========================================================================
+' !NEW! The cancel button
+'========================================================================
+'Since cancel was clicked, the user doesn't wants to edit the tile...
+'Because of this, we don't set the SaveChanges variable to true.
+Private Sub cmdCancel_Click()
+    Unload Me
+End Sub
+
+'========================================================================
+' !NEW! The preview checkbox
+'========================================================================
+Private Sub chkPreview_Click()
+    'If they uncheck it, we should turn the tile back to how it was at the start
+    If chkPreview.value = 0 Then
+        For x = 1 To 32
+            For y = 1 To 32
+                If tilemem(x, y) <> -1 Then
+                    tilemem(x, y) = tilepreview(x, y)
+                End If
+            Next y
+        Next x
+    activeTile.tileRedraw
+    'If they check it, preview the tile!
+    Else
+        Call Preview
+    End If
+End Sub
+
+'========================================================================
+' Drawbox
+'========================================================================
+Private Sub drawbox(x, y)
+    On Error GoTo ErrorHandler
+    If detail = 1 Or detail = 3 Or detail = 4 Then
+        For t = 1 To 8 Step 2
+            Call vbPicLine(tileform, x + t, y, x + t, y + 8, vbQBColor(9))
+        Next t
+    Else
+        For t = 1 To 16 Step 2
+            Call vbPicLine(tileform, x + t, y, x + t, y + 16, vbQBColor(9))
+        Next t
+    End If
+
+    Exit Sub
+'Begin error handling code:
+ErrorHandler:
+    Call HandleError
+    Resume Next
+End Sub
+
+'========================================================================
+' Drawright
+'========================================================================
+Private Sub drawright(x, y, sx, sy)
+    On Error GoTo ErrorHandler
+    
+    '!NEW! Declared variable
+    Dim col As Long
+    
+    col = tilepreview(x, y)
+    
+    If col = -1 Then col = vbQBColor(1)
+    If detail = 1 Or detail = 3 Or detail = 4 Then
+        Call vbPicFillRect(tileform, sx, sy, sx + 8, sy + 8, col)
+    Else
+        Call vbPicFillRect(tileform, sx, sy, sx + 16, sy + 16, col)
+    End If
+
+    Exit Sub
+'Begin error handling code:
+ErrorHandler:
+    Call HandleError
+    Resume Next
+End Sub
+'========================================================================
+' Form_Load()
+'========================================================================
+Private Sub Form_Load()
+    On Error GoTo ErrorHandler
+    Call LocalizeForm(Me)
+    
+    '!NEW! Set the variable to False at the start...
+    SaveChanges = False
+    If detail = 1 Or detail = 3 Or detail = 5 Then Call highredrawLIGHT
+    If detail = 2 Or detail = 3 Or detail = 5 Then Call lowredrawLIGHT
+    
+    For x = 1 To 32
+        For y = 1 To 32
+            buftile(x, y) = 0
+        Next y
+    Next x
+    
+    For t = 1 To 10
+        Call vbPicCircle(ldir, 50, 50, 35 + t, RGB(0, 0, 100 + t * 10))
+    Next t
+    
+    Call vbPicCircle(ldir, 50, 50, 3, 0)
+    publicTile.angle = 0
+    publicTile.lightLength = 25
+    Call vbPicLine(ldir, 50, 50, 75, 50, 0)
+    
+    '!NEW! Used to store the current tile for when the "preview" function is used
+    For x = 1 To 32
+        For y = 1 To 32
+            'If tilemem(x, y) <> -1 Then
+                tilepreview(x, y) = tilemem(x, y)
+            'End If
+        Next y
+    Next x
+    
+    '!NEW! Set the variable to False at the start...
+    SaveChanges = False
+    
+    Exit Sub
+'Begin error handling code:
+ErrorHandler:
+    Call HandleError
+    Resume Next
+End Sub
+
+'========================================================================
+' Form_Unload
+'========================================================================
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    'If the user has pressed the X in the form, he doesn't wants to add the changes
+    If Not SaveChanges Then
+    'Use new undo
+    Call activeTile.SetUndo
+    For x = 1 To 32
+        For y = 1 To 32
+            'If tilemem(x, y) <> -1 Then
+                tilemem(x, y) = tilepreview(x, y)
+            'End If
+        Next y
+    Next x
+    'Redraw
+    activeTile.tileRedraw
+    End If
+End Sub
+
+'========================================================================
+' ldir_MouseDown
+'========================================================================
+Private Sub ldir_MouseDown(button As Integer, shift As Integer, x As Single, y As Single)
+    'now find publictile.angle
+    'Hypotenuse length
+    '!NEW! Declared variables
+    Dim length, adj, inv, ang, a As Integer
+    
+    On Error GoTo ErrorHandler
+    If x = 50 Or y = 50 Then Exit Sub
+    length = Sqr((x - 50) ^ 2 + (y - 50) ^ 2)
+    publicTile.lightLength = Int(length)
+    adj = x - 50
+    inv = adj / length
+    'This mess is the arccos:
+    ang = Atn(-inv / Sqr(-inv * inv + 1)) + 1.5708
+    'convert to degrees
+    publicTile.angle = Int((ang * 180) / 3.14)
+    If y > 50 Then
+        a = 180 - publicTile.angle
+        publicTile.angle = 180 + a
+    End If
+    angtext.caption = str$(publicTile.angle) + "--" + str$(publicTile.lightLength)
+    Call vbPicFillRect(ldir, 0, 0, 1000, 1000, vbQBColor(15))
+    For t = 1 To 10
+        Call vbPicCircle(ldir, 50, 50, 35 + t, RGB(0, 0, 100 + t * 10))
+    Next t
+    Call vbPicCircle(ldir, 50, 50, 3, 0)
+    Call vbPicLine(ldir, 50, 50, x, y, 0)
+    
+    '!NEW! If preview is checked, preview the tile
+    If chkPreview.value = 1 Then Call Preview
+    
+    Exit Sub
+'Begin error handling code:
+ErrorHandler:
+    Call HandleError
+    Resume Next
+End Sub
+
+'========================================================================
+' tileform_MouseDown
+'========================================================================
+Private Sub tileform_MouseDown(button As Integer, shift As Integer, x As Single, y As Single)
+    On Error GoTo ErrorHandler
+    '!NEW! Declared variables
+    Dim newX, newY As Integer
+    
+    xx = Int(x / 10)
+    yy = Int(y / 10)
+    If xx > (xRange - 1) Or yy > 31 Then Exit Sub
+    newX = (xx * 10) + 1
+    newY = (yy * 10) + 1
+
+    xx = xx + 1: yy = yy + 1
+    If buftile(xx, yy) = 0 Then
+        buftile(xx, yy) = 1
+        Call drawbox(newX, newY)
+    Else
+        buftile(xx, yy) = 0
+        Call drawright(xx, yy, newX, newY)
+    End If
+    
+    Exit Sub
+'Begin error handling code:
+ErrorHandler:
+    Call HandleError
+    Resume Next
+End Sub
+
+'========================================================================
+' tileform_MouseMove
+'========================================================================
+Private Sub tileform_MouseMove(button As Integer, shift As Integer, x As Single, y As Single)
+    On Error GoTo ErrorHandler
+    If button = 1 Then
+        Call tileform_MouseDown(button, shift, x, y)
+    End If
+
+    Exit Sub
+'Begin error handling code:
+ErrorHandler:
+    Call HandleError
+    Resume Next
+End Sub
+
+'========================================================================
+' !NEW! tileform_MouseUp
+'========================================================================
+Private Sub tileform_MouseUp(button As Integer, shift As Integer, x As Single, y As Single)
+    'If preview is checked, preview the tile
+    If chkPreview.value = 1 Then Call Preview
+End Sub
+
+'========================================================================
+' This sub was first in the "Routines" module.
+'========================================================================
+Sub lowredrawLIGHT()
+    On Error GoTo ErrorHandler
+    'light.tileform.Line (0, 0)-(1000, 1000), vbqbcolor(1), BF
+    Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
+    For x = 1 To 16
+        For y = 1 To 16
+            xx = (x * 20) - 19
+            yy = (y * 20) - 19
+            If tilemem(x, y) <> -1 Then
+                If detail = 2 Then
+                    'light.tileform.Line (xx, yy)-(xx + 18, yy + 18), tilemem(x, y), BF
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, tilemem(x, y))
+                End If
+                If detail = 4 Or detail = 6 Then
+                    'light.tileform.Line (xx, yy)-(xx + 18, yy + 18), gfxgetdoscolor(tilemem(x, y)), BF
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 18, yy + 18, GFXGetDOSColor(tilemem(x, y)))
+                End If
+                Else
+                Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, vbQBColor(1))
+            End If
+        Next y
+    Next x
+    publicTile.grid = 0
+    'If publictile.grid = 1 Then publictile.grid = 0: activetile.gridonoff_click Else publictile.grid = 1: activetile.gridonoff_click
+
+    Exit Sub
+'Begin error handling code:
+ErrorHandler:
+    Call HandleError
+    Resume Next
+End Sub
+
+'========================================================================
+' This sub was first in the "Routines" module.
+'========================================================================
+Sub highredrawLIGHT()
+    On Error GoTo ErrorHandler
+    'light.tileform.Line (0, 0)-(1000, 1000), vbqbcolor(1), BF
+    Call vbPicFillRect(light.tileform, 0, 0, 1000, 1000, vbQBColor(1))
+    For x = 1 To 32
+        For y = 1 To 32
+            xx = (x * 10) - 9
+            yy = (y * 10) - 9
+            If tilemem(x, y) <> -1 Then
+                If detail = 1 Then
+                    'light.tileform.Line (xx, yy)-((xx + 8), (yy + 8)), tilemem(x, y), BF
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, tilemem(x, y))
+                End If
+                If detail = 3 Or detail = 5 Then
+                    'light.tileform.Line (xx, yy)-((xx + 8), (yy + 8)), gfxgetdoscolor(tilemem(x, y)), BF
+                    Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, GFXGetDOSColor(tilemem(x, y)))
+                End If
+            Else
+                Call vbPicFillRect(light.tileform, xx, yy, xx + 8, yy + 8, vbQBColor(1))
+            End If
+            
+        Next y
+    Next x
+    publicTile.grid = 0
+    'If publictile.grid = 1 Then publictile.grid = 0: activetile.gridonoff_click Else publictile.grid = 1: activetile.gridonoff_click
+
+    Exit Sub
+'Begin error handling code:
+ErrorHandler:
+    Call HandleError
+    Resume Next
+End Sub
+
+'========================================================================
+' !NEW! Previews the tile
+'========================================================================
+Sub Preview()
+    '!NEW! Declared variables
+    Dim max, st, rad, a, r, g, b, darken As Long
+    
+    'These 2 variables are giving me problems... whatever variable I change
+    'them too, they always give me an error.
+    Dim newX, newY As Variant
+    
+    'First we need to to set the tile back to how it was at the start
+    For x = 1 To 32
+        For y = 1 To 32
+            'If tilemem(x, y) <> -1 Then
+                tilemem(x, y) = tilepreview(x, y)
+            'End If
+        Next y
+    Next x
+
+    'The code which adds the light effects to the tile
+    For x = 1 To 32
+        For y = 1 To 32
+            If buftile(x, y) = 1 Then
+                max = 0.32 * publicTile.lightLength
+                st = max
+                For t = 1 To max
+                    rad = (publicTile.angle * 3.14) / 180
+                    xx = Cos(rad) * t
+                    yy = Sin(rad) * t
+                    newX = x + xx
+                    newY = y + yy
+                    If newX > xRange Then
+                        newX = newX - xRange
+                    End If
+                    If newY > xRange Then
+                        newY = newY - xRange
+                    End If
+                    'Debug.Print "newX: " & newX & ". newY: " & newY
+                    a = tilemem(newX, newY)
+                    
+                    '!EDIT! Edited these lines here, check the documentation for my reason
+                    If a <> -1 Then
+                        r = red(a)
+                        a = tilemem(newX, newY)
+                    End If
+                    
+                    If a <> -1 Then
+                        g = green(a)
+                        a = tilemem(newX, newY)
+                    End If
+                    
+                    If a <> -1 Then
+                        b = blue(a)
+                        darken = st * 10
+                        st = st - 1
+                        r = inbounds(r - darken, 0, 255)
+                        g = inbounds(g - darken, 0, 255)
+                        b = inbounds(b - darken, 0, 255)
+                    
+                        tilemem(newX, newY) = RGB(r, g, b)
+                    End If
+                    'Edit until here
+                    
+                Next t
+            End If
+        Next y
+    Next x
+    'Redraw
+    activeTile.tileRedraw
+End Sub

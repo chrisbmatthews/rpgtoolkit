@@ -1,0 +1,96 @@
+RPG Toolkit Development System, Version 2.0 Beta .01
+                  License Agreement
+===============================================
+
+    This document is a legal contract between You (the
+user of this software) and Christopher B. Matthews.  By
+clicking on the "I Agree" button, you show that you have
+read and agree to the terms of this contract.
+
+Definitions
+===========
+    Software-                 This software product,
+                              referring to the RPG Toolkit
+                              Development System, 2.0
+
+    Software Product-         refers to the definition of
+                              Software.
+
+    You-                      The person who installs this
+                              Software.
+
+    User-                     Includes You as well as
+                              anyone who uses this Software.
+
+    Distributor-              The person who distributes
+                              this software.
+
+    Author-                   The author and copyright owner
+                              of this Software, Christopher
+                              B. Matthews
+
+    RPGCode Software Library- An RPGCode program file which
+                              contains Methods and other RPGCode
+                              commands for the extension of the
+                              RPGCode language.
+
+Copyright
+=========
+    This software is Copyright 1999 by Christopher B. Matthews.
+It is legally registered in Canada, and this copyright is legally
+binding in all nations that are party to the Berne Copyright
+Convention or the Universal Copyright Convention, or is a member
+of the World Trade Organization.  These conventions include
+most countries of the world.
+    Christopher B. Matthews owns the exclusive rights to this
+software product, excluding run-time DLL files and VBX files.
+It is a copyright infringement to resell this product in any form
+without prior permission and license from Christopher B. Matthews.
+
+Disclaimer
+==========
+    You will use this Software at your own risk.  By downloading
+and installing this Software, you show that you agree to this.
+    Christopher B. Matthews and Awesome Software shall not be held
+responsible or liable in ANY WAY for damage incurred to Your
+computer from the use or misuse of this software.
+    Christopher B. Matthews and Awesome Software shall not be
+held responsible or liable for funds lost, time or otherwise by
+the use or misuse of this Software.
+    THE USER ASSUMES FULL RESPONISBILITY FOR THE USE OF THIS SOFTWARE.
+
+Distribution
+============
+    The RPG Toolkit Development System, 2.0 may be freely
+distributed for NON COMMERCIAL purposes.  You may not sell,
+rent, or otherwise receive payment for the distribution of
+this Software in any form.  When re-distributing this
+Software Product, you must enclose this file (EULA.TXT).
+This file must not be changed or edited in ANY WAY.
+    Christopher B. Matthews and Awesome Software will not
+be held responsible or liable for improper distribution of
+this software.  The Distributor must not be held responsible
+for damages incurred to another person's computer, or
+otherwise as defined in the DISCLAIMER.
+
+Reverse Compilation
+===================
+    This Software Product must not be reverse enginerred,
+reverse compiled or otherwise modified at ANY TIME without
+the express written permission of the Author.
+
+RPGCode
+=======
+    The RPGCode interpretive language and language
+specification are the exclusive property of Christopher B.
+Matthews, and must not be changed in any way.
+    The User does have the right, however, to create RPGCode
+Software Libraries for extending the RPGCode language.
+
+Conclusion
+==========
+    This document is a legal contract between You and the Author.
+By Clicking the "I Agree" button, you show that you have
+read and agree to the terms of this contract.  By installing
+this software in any way you show that you have read and agree
+to the terms of this contract.

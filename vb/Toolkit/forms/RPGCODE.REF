@@ -1,0 +1,258 @@
+RPGCode Language Specification
+Version 2.0
+Copyright 1999 By Christopher B. Matthews
+
+:COMMAND
+@
+:DESCR
+@ or #@- Places a blank line in the message window.
+
+:COMMAND
+* Comment
+:DESCR
+* Comment- Anything following this is ignored by the computer.
+
+:COMMAND
+// Comment
+:DESCR
+// Comment- Anything following this is ignored by the computer.
+
+:COMMAND
+#AddPlayer( filename$ )
+:DESCR
+#AddPlayer("ralar.tem")- Add a player to the party as defined by filename$.
+
+:COMMAND
+#Branch( :label name )
+:DESCR
+#Branch(:this label)- Branches program to new location defined by :label name.
+
+:COMMAND
+#Change( program$ )
+:DESCR
+#Change("another.prg")- Change the filename of the currently running program to program$.
+
+:COMMAND
+#Clear()
+:DESCR
+#Clear()- Clears the screen.
+
+:COMMAND
+#Color( color_code! )
+:DESCR
+#Color(12)- Changes the text color to a color defined by color_code!, a DOS palette number.
+
+:COMMAND
+#Dirsav()
+:DESCR
+#Dirsav()- Show a directory of saved games.
+
+:COMMAND
+#Done()
+:DESCR
+#Done()- Ends program without refreshing screen.
+
+:COMMAND
+#Dos()
+:DESCR
+#Dos()- Exits to operating system (Dos or Windows)
+
+:COMMAND
+#Earthquake( intensity! )
+:DESCR
+#Earthquake(7)- Causes the board to shake with intensity intensity!, on a scale of 1 to 10 corresponding to the Richter Scale.
+
+:COMMAND
+#Empty()
+:DESCR
+#Empty()- Clears all variables.
+
+:COMMAND
+#End()
+:DESCR
+#End()- End program or function block.
+
+:COMMAND
+#Fade( type! )
+:DESCR
+#Fade(1)- "Fades" the screen using a fadetype number.  If not included, type! is assumed to be 1.
+
+:COMMAND
+#Fbranch( :label name )
+:DESCR
+#Fbranch(:function)- Function branch to a specified label.
+
+:COMMAND
+#Fight( skill!, background$ )
+:DESCR
+#Fight(12,"back.bkg")- Fight an enemy of skill! on a background graphic defined by background$
+
+:COMMAND
+#Fight( enemy$ )
+:DESCR
+#Fight("badguy.ene")- Fight the enemy saved in the enemy$ filename, using the board's background.
+
+:COMMAND
+#Get( target$ )
+:DESCR
+#Get(target$)- Get key from the keyboardbuffer and put it in target$
+
+:COMMAND
+#Gone()
+:DESCR
+#Gone()- Remove this program from the board.
+
+:COMMAND
+#HP( playerhandle, HpToAdd! )
+:DESCR
+#HP(Player1,10)- Adds health to player defined by playerhandle.
+
+:COMMAND
+#If (condition) [Then] < #command(s) >
+:DESCR
+#If- Evaluates the condition.  If it is true, the statements between the < and > are executed.
+
+:COMMAND
+#Item( itemfilename$ )
+:DESCR
+#Item("sword.itm")- Gives the player the item in itemfilename$.
+
+:COMMAND
+#Kill( varname!$& )
+:DESCR
+#Kill(thisVariable!)- Destroys a variable defined by varname$!&.
+
+:COMMAND
+#Load( filename$ )
+:DESCR
+#Load("savedgame.sav")- Load a saved game.
+
+:COMMAND
+#Mem( x!, y!, mem_location![, layer!])
+:DESCR
+#Mem(1,1,5,1)- Places the tile saved in mem_location! at x!, y!, layer! on the board.  If not included, layer! is assumed to be 1.
+
+:COMMAND
+#Move( x!, y![, layer!] )
+:DESCR
+#Move(5,8,7)- Move the program to a new location defined by x!, y!.  If not included, layer! is assumed to be 1.
+
+:COMMAND
+#Newplyr( filename$ )
+:DESCR
+#Newplyr("player.tem")- Changes the player graphic to filename$.  Valid filetypes: GPH, CHA, TEM.
+
+:COMMAND
+#Over()
+:DESCR
+#Over()- Displays a game over message.
+
+:COMMAND
+#PlaceMover( x!, y!, "handle"[, layer] )
+:DESCR
+#PlaceMover(1,1,"NPC1",1)- Moves the mover specified by "handle" to x!,y!,layer!.  If not included, layer! is assumed to be 1.
+
+:COMMAND
+#Prg( prgnum!, x!, y![, layer!] )
+:DESCR
+#Prg(0,1,1,2)- Move program number prgnum! to x!, y!, layer!.  If not included, layer! is assumed to be 1.
+
+:COMMAND
+#PrgGraphic( filename$ )
+:DESCR
+#PrgGraphic("new.gph")- Gives the program a new tile graphic as defined by filename$.
+
+:COMMAND
+#Prompt( question$, target$! )
+:DESCR
+#Prompt("What is your name? ",name$)- Prompt the player with question question$, and puts the response in target$!.
+
+:COMMAND
+#PushMover( "handle", N/S/E/W[, obey&] )
+:DESCR
+#PushMover("NPC1",N,true)- Moves the mover defined by "handle" north, south, east or west.  If the boolean obey& is true, the mover will obey tile types.  If not included, obey& is assumed to be true.
+
+:COMMAND
+#Put( x!, y!, graphic$[, layer!] )
+:DESCR
+#Put(1,6,"tile.gph",1)- Puts tile (in graphic$) at x!, y!, layer!.  If not included, layer! is assumed to be 1.
+
+:COMMAND
+#RemovePlayer( filename$ )
+:DESCR
+#RemovePlayer("ralar.tem")- Remove a player from the party as defined by filename$.
+
+:COMMAND
+#Reset()
+:DESCR
+#Reset()- Resets the game.
+
+:COMMAND
+#Return()
+:DESCR
+#Return()- Refreshes the screen.
+
+:COMMAND
+#RGB( red!, green!, blue! )
+:DESCR
+#RGB(12,255,12)- Sets the text color to a color defined by a mixture of red, green and blue colors.
+
+:COMMAND
+#Run( program$ )
+:DESCR
+#Run("another.prg")- Runs a program in the file program$.
+
+:COMMAND
+#Save( filename$ )
+:DESCR
+#Save("savedgame.sav")- Save the game in filename$.
+
+:COMMAND
+#SetMover( x!, y!, graphicname$, "handle"[, layer!] )
+:DESCR
+#SetMover(1,1,"mover.cha","NPC1",1)- Creates a "Mover" at x!,y!,layer! with a graphic defined by graphicname$, and with the handle defined by "handle".  If no layer is specified, it is assumed to be 1.
+
+:COMMAND
+#Scan( x!, y!, mem_location![, layer!] )
+:DESCR
+#Scan(1,4,8,1)- Puts a tile at x!,y!,layer! in mem_location!.  If not included, layer! is assumed to be 1.
+
+:COMMAND
+#Send ( boardname$, x!, y! [,layer!] )
+:DESCR
+#Send("another.brd",5,5,1)- Sends player to board defined by boardname$ at x!, y! and layer! (if not included, layer is assumed to be 1).
+
+:COMMAND
+#Show( variable!$& )
+:DESCR
+#Show(name$)- Shows a variable of any type in the message window.
+
+:COMMAND
+#Sound( freq!, duration! )
+:DESCR
+#Sound(380,10)- Play a sound through the speaker of frequency freq! and duration duration!.
+
+:COMMAND
+#Start( filename$ )
+:DESCR
+#Start("music.mp3")- Starts a filename using the Windows shell.
+
+:COMMAND
+#TakeItem( itemfilename$ )
+:DESCR
+#Takeitem("sword.itm")- Take an item away from the player, as defined by the item filename.
+
+:COMMAND
+#Text( x!, y!, text$ )
+:DESCR
+#Text(1,1,"Hello" + name$)- Display text$ at x!, y! on the screen.
+
+:COMMAND
+#Viewbrd( filename$ )
+:DESCR
+#Viewbrd("another.brd")- Display the board saved in filename$.
+
+:COMMAND
+#Win()
+:DESCR
+#Win()- Causes the player to win the game.

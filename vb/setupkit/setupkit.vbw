@@ -1,0 +1,9 @@
+main = 176, 232, 859, 756, , 154, 203, 837, 727, C
+MODULE11 = 198, 261, 881, 785, Z
+tkzip = 44, 58, 727, 582, C
+CommonMainFile = 154, 203, 837, 727, 
+CommonBinaryIO = 110, 145, 793, 669, C
+CommonPaths = 176, 232, 859, 756, C
+CommonDialogs = 132, 174, 815, 698, C
+CommonVB6Compat = 0, 0, 683, 524, C
+statusbar = 88, 116, 771, 640, C, 154, 203, 837, 727, C

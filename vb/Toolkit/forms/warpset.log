@@ -1,0 +1,10 @@
+Line 20: Class Toolkit.TKButton of control Command1 was not a loaded control class.
+Line 31: Class Toolkit.TKTopBar of control TopBar was not a loaded control class.
+Line 26: The property name _ExtentX in Command1 is invalid.
+Line 27: The property name _ExtentY in Command1 is invalid.
+Line 28: The property name Object.Width in Command1 is invalid.
+Line 29: The property name Caption in Command1 is invalid.
+Line 37: The property name _ExtentX in TopBar is invalid.
+Line 38: The property name _ExtentY in TopBar is invalid.
+Line 39: The property name Object.Width in TopBar is invalid.
+Line 40: The property name Caption in TopBar is invalid.
