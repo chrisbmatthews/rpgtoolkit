@@ -768,8 +768,8 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
                 Case "&=": dRes = dRes And destNum
                 Case "`=": dRes = dRes Xor destNum
                 Case "%=": dRes = dRes Mod destNum
-                ' Case "<<=":
-                ' Case ">>=":
+                Case "<<=": dRes = dRes * (2 ^ destNum)
+                Case ">>=": dRes = dRes / (2 ^ destNum)
             End Select
 
             If ((hClass <> 0) And (Not (noVar))) Then

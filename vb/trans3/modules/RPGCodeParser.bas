@@ -56,8 +56,10 @@ Public Sub buildSignArrays()
     m_mathSigns(20) = "&"
     m_mathSigns(21) = "`"
     m_mathSigns(22) = "%"
-    m_mathSigns(23) = "<<"
-    m_mathSigns(24) = ">>"
+    m_mathSigns(23) = "<<="
+    m_mathSigns(24) = ">>="
+    m_mathSigns(25) = "<<"
+    m_mathSigns(26) = ">>"
 
     ' Build m_compSigns
     m_compSigns(0) = vbNullChar ' Prefixed NULL
@@ -1276,7 +1278,7 @@ Public Function inStrOutsideQuotes(ByVal start As Long, ByRef text As String, By
                 Exit Function
             Else
                 a = a + 1
-                char = Mid$(text, a + 1, 1)
+                char = Mid$(text, a + 1, lf)
             End If
         Else
             char = Mid$(text, a + 1, lf)
