@@ -37,7 +37,7 @@ Private m_len As Long       ' Length of queue
 '=========================================================================
 ' Constructor
 '=========================================================================
-Private Sub Class_Initialize()
+Private Sub Class_Initialize(): On Error Resume Next
 
     ' Make a huge array
     ReDim m_queue(64)
@@ -47,7 +47,7 @@ End Sub
 '=========================================================================
 ' Clear the queue
 '=========================================================================
-Public Sub clear()
+Public Sub clear(): On Error Resume Next
     ' Just redim again
     ReDim m_queue(64)
     m_len = 0
@@ -56,7 +56,7 @@ End Sub
 '=========================================================================
 ' Queue a value
 '=========================================================================
-Public Sub queue(ByVal lngQueue As Long)
+Public Sub queue(ByVal lngQueue As Long): On Error Resume Next
     On Error GoTo error
     m_queue(m_len) = lngQueue
     m_len = m_len + 1
@@ -69,7 +69,7 @@ End Sub
 '=========================================================================
 ' Dequeue a value
 '=========================================================================
-Public Function dequeue() As Long
+Public Function dequeue() As Long: On Error Resume Next
     If (m_len) Then
         m_len = m_len - 1
         dequeue = m_queue(m_len)
@@ -83,6 +83,6 @@ End Function
 '=========================================================================
 ' Obtain the top value
 '=========================================================================
-Public Function Top() As Long
+Public Function Top() As Long: On Error Resume Next
     Top = m_queue(m_len - 1)
 End Function
