@@ -63,6 +63,7 @@ Option Explicit
     Public configfile As CConfig
 
     Public TRANSP_COLOR As Long 'not used
+    Public TRANSP_COLOR_ALT As Long 'not used
     Public topX As Long
     Public topY As Long
     Public fontName As String
