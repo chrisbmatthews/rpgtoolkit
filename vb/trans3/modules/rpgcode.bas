@@ -9592,13 +9592,13 @@ Sub WinColorRPG(Text$, ByRef theProgram As RPGCodeProgram)
     End If
     useIt$ = GetElement(dataUse$, 1)
     a = getValue(useIt$, lit$, num, theProgram)
-    If a = 1 Then
-        Call debugger("Error: WinColor data type must be numerical!-- " + Text$)
-    Else
+    'If a = 1 Then
+    '    Call debugger("Error: WinColor data type must be numerical!-- " + Text$)
+    'Else
         MWinPic$ = ""
         num = inBounds(num, 0, 255)
         MWinBkg = GFXGetDOSColor(num)
-    End If
+    'End If
 
     Exit Sub
 'Begin error handling code:

@@ -649,5 +649,8 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .cursorSelectSound = ""
         .cursorCancelSound = ""
         .useJoystick = 1
+        .mouseCursor = 0
+        .pixelMovement = 0
+        .gameSpeed = 2
     End With
 End Sub
