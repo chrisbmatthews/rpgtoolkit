@@ -185,6 +185,7 @@ Begin VB.Form tileedit
       End
       Begin VB.Menu layer 
          Caption         =   "Layer Tile"
+         Shortcut        =   ^L
          Tag             =   "1591"
       End
       Begin VB.Menu gtilemnu 
@@ -248,10 +249,11 @@ Begin VB.Form tileedit
       Tag             =   "1475"
       Begin VB.Menu mnuBlur 
          Caption         =   "Blur"
+         Shortcut        =   ^B
       End
       Begin VB.Menu mnuMotionBlur 
          Caption         =   "Motion Blur"
-         Shortcut        =   ^B
+         Shortcut        =   ^M
          Tag             =   "1683"
       End
       Begin VB.Menu lsrc 
@@ -273,7 +275,6 @@ Begin VB.Form tileedit
       End
       Begin VB.Menu mnuselectlanguage 
          Caption         =   "Select Language"
-         Shortcut        =   ^L
       End
       Begin VB.Menu sub4 
          Caption         =   "-"
@@ -2597,7 +2598,7 @@ Private Sub mnuBlur_Click(): On Error Resume Next
     Call setUndo
 
     Dim x As Long, y As Long, r As Long, g As Long, b As Long, col(3) As Long
-    Dim blurTile(33, 65) As Long
+    Dim blurTile(65, 33) As Long
     
     'Pad the tile out at the edges, to prevent black edges.
     For x = 1 To xRange
