@@ -1083,7 +1083,7 @@ End Sub
 '========================================================================
 ' Form_Activate
 '========================================================================
-Private Sub Form_Activate(): On Error GoTo ErrorHandler
+Private Sub Form_Activate(): On Error Resume Next
     'Set some variables for the form
 
     Set activeTile = Me
@@ -1120,27 +1120,6 @@ Private Sub Form_Activate(): On Error GoTo ErrorHandler
     tkMainForm.tileExtras.Visible = True
     tkMainForm.tileTools.Visible = True
     tkMainForm.tileTools.Top = tkMainForm.toolTop
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-'========================================================================
-' Form_Deactivate (EDIT for 3.0.4 by Delano)
-'========================================================================
-Private Sub Form_Deactivate(): On Error Resume Next
-
-    Dim x As Integer, y As Integer
-    
-    'Refresh data
-    For x = 0 To xRange
-        For y = 0 To 32
-            openTileEditorDocs(indice).tileMem(x, y) = tileMem(x, y)
-        Next y
-    Next x
 
 End Sub
 
