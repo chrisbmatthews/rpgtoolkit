@@ -115,7 +115,7 @@ Public Sub stopMidi()
 End Sub
 
 '=========================================================================
-' Determine is DirectMusic is playing a MIDI
+' Determine if DirectMusic is playing a MIDI
 '=========================================================================
 Public Function isPlaying() As Boolean
 
