@@ -76,13 +76,20 @@ Sub DrawTileBitmap(ByVal hdc As Long, ByVal maskhdc As Long, ByVal x As Long, By
 End Sub
 
 
-Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long, ByVal y As Long, ByRef theTileBmp As TKTileBitmap)
-    On Error Resume Next
-    'draw a tile bitmap
+Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long, ByVal y As Long, ByRef theTileBmp As TKTileBitmap): On Error Resume Next
+'==================================
+'Draw a tile bitmap, including tst.
+'Called when rendering sprite frames.
+'Edited by Delano.
+'==================================
     
     Dim oldX As Long, oldY As Long, xx As Long, yy As Long
     oldX = x
     oldY = y
+    
+    'Edit: Add the ambient levels.
+    Dim ambientR As Long, ambientB As Long, ambientG As Long
+    Call getAmbientLevel(ambientR, ambientB, ambientG)
     
     xx = x / 32 + 1
     yy = y / 32 + 1
@@ -90,10 +97,33 @@ Sub DrawTileBitmapCNV(ByVal cnv As Long, ByVal cnvMask As Long, ByVal x As Long,
         For y = 0 To theTileBmp.sizey - 1
             If theTileBmp.tiles(x, y) <> "" Then
                 If cnv <> -1 Then
-                    Call drawTileCNV(cnv, tilePath & theTileBmp.tiles(x, y), x + xx, y + yy, theTileBmp.redS(x, y), theTileBmp.greenS(x, y), theTileBmp.blueS(x, y), False, True, False, False)
+                
+                    Call drawTileCNV(cnv, _
+                                    tilePath$ & theTileBmp.tiles(x, y), _
+                                    x + xx, _
+                                    y + yy, _
+                                    theTileBmp.redS(x, y) + ambientR, _
+                                    theTileBmp.greenS(x, y) + ambientG, _
+                                    theTileBmp.blueS(x, y) + ambientB, _
+                                    False, _
+                                    True, _
+                                    False, _
+                                    False)
+                                    
                 End If
+                
                 If cnvMask <> -1 Then
-                    Call drawTileCNV(cnvMask, tilePath & theTileBmp.tiles(x, y), x + xx, y + yy, theTileBmp.redS(x, y), theTileBmp.greenS(x, y), theTileBmp.blueS(x, y), True, True)
+                
+                    Call drawTileCNV(cnvMask, _
+                        tilePath$ & theTileBmp.tiles(x, y), _
+                        x + xx, _
+                        y + yy, _
+                        theTileBmp.redS(x, y), _
+                        theTileBmp.greenS(x, y), _
+                        theTileBmp.blueS(x, y), _
+                        True, _
+                        True)
+                        
                 End If
             Else
                 If cnv <> -1 And cnvMask <> -1 Then
@@ -265,4 +295,40 @@ Sub TileBitmapResize(ByRef theTileBmp As TKTileBitmap, ByVal sizex As Integer, B
     theTileBmp.sizey = sizey
 End Sub
 
+Private Sub getAmbientLevel(ByRef shadeR As Long, ByRef shadeB As Long, ByRef shadeG As Long): On Error Resume Next
+'==========================
+'Added by Delano.
+'==========================
 
+    Dim ambientR As Double, ambientB As Double, ambientG As Double
+    Dim l As String, a As Long
+    Dim lightLevel As Long
+    
+    'First check the independent variables.
+    a = getIndependentVariable("AmbientRed!", l$, ambientR)
+    a = getIndependentVariable("AmbientBlue!", l$, ambientB)
+    a = getIndependentVariable("AmbientGreen!", l$, ambientG)
+    
+    'Check the ambient effects.
+    Select Case boardList(activeBoardIndex).theData.ambienteffect
+        Case 1  'Fog/mist (lighten)
+            shadeR = 75: shadeB = 75: shadeG = 75
+        Case 2  'Darken
+            shadeR = -75: shadeB = -75: shadeG = -75
+        Case 3  'Watery
+            shadeR = 0: shadeB = 75: shadeG = 0
+    End Select
+    
+    'Check day/night levels
+    If mainMem.mainUseDayNight = 1 And boardList(activeBoardIndex).theData.BoardDayNight = 1 Then
+        lightLevel = DetermineLightLevel()
+    Else
+        lightLevel = 0
+    End If
+    
+    'Check the board ambient levels and calculate.
+    shadeR = shadeR + ambientR + lightLevel + boardList(activeBoardIndex).ambientR
+    shadeB = shadeB + ambientB + lightLevel + boardList(activeBoardIndex).ambientB
+    shadeG = shadeG + ambientG + lightLevel + boardList(activeBoardIndex).ambientG
+
+End Sub

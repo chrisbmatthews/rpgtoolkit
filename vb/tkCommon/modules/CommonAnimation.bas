@@ -723,3 +723,29 @@ Public Sub saveAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
     End With
 
 End Sub
+
+
+Public Sub clearAnmCache(): On Error Resume Next
+'===============================================
+'Added by Delano.
+'To ensure sprites are redrawn with ambient
+'effects when entering boards.
+'Called from TestLink, Send(RPG)
+'===============================================
+
+    Dim i As Long
+    
+    For i = 0 To UBound(anmCache)
+    
+        Call DestroyCanvas(anmCache(i).cnv)
+        anmCache(i).cnv = 0
+        anmCache(i).file = ""
+        anmCache(i).frame = 0
+
+    Next i
+    
+    'Clear the player's last frame render, to force a redraw directly on entering.
+    '(Prevents players starting new boards with old frame).
+    lastPlayerRender(selectedPlayer).canvas = -1
+
+End Sub

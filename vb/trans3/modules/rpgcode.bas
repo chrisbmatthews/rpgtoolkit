@@ -6316,6 +6316,8 @@ Sub Send(Text$, ByRef theProgram As RPGCodeProgram)
     'Clear non-persistent threads...
     Call ClearNonPersistentThreads
     
+    Call clearAnmCache  'Delano. 3.0.4.
+    
     lastRender.canvas = -1
     scTopX = -1000
     scTopY = -1000

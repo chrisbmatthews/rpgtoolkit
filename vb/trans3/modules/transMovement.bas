@@ -620,6 +620,9 @@ Function TestLink(ByVal playerNum As Long, ByVal thelink As Long) As Boolean
     Call ClearNonPersistentThreads
     
     Call openBoard(projectPath$ & brdPath$ & targetBoard$, boardList(activeBoardIndex).theData)
+    
+    Call clearAnmCache  'Delano. 3.0.4.
+    
     lastRender.canvas = -1
     scTopX = -1000
     scTopY = -1000
