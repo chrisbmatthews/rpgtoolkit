@@ -98,6 +98,7 @@ Public Sub closeSystems()
     Call DestroyWindow(host.hwnd)
     Call UnregisterClass(host.className, App.hInstance)
     Call Unload(debugwin)
+    Call closeActiveX
 End Sub
 
 '=======================================================================
@@ -440,6 +441,21 @@ Private Sub initActiveX()
 End Sub
 
 '=======================================================================
+' Unregister ActiveX components
+'=======================================================================
+Private Sub closeActiveX()
+    On Error Resume Next
+    Dim a As Long
+    For a = 0 To UBound(mainMem.plugins)
+        If mainMem.plugins(a) <> "" Then
+            Dim fullPath As String
+            fullPath = projectPath & plugPath & mainMem.plugins(a)
+            Call ExecCmd("regsvr32 /s /u " & Chr(34) & fullPath & Chr(34))
+        End If
+    Next a
+End Sub
+
+'=======================================================================
 ' Set some things based on the main file
 '=======================================================================
 Public Sub setupMain(Optional ByVal testingPRG As Boolean)
@@ -522,7 +538,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
             .stance = "WALK_S"
             .frame = 0
         End With
-    
+
         'Set to use player 0 as walking graphics
         selectedPlayer = 0
 
