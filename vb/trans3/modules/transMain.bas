@@ -418,7 +418,7 @@ Private Sub initActiveX()
     On Error Resume Next
     Dim a As Long
     For a = 0 To UBound(mainMem.plugins)
-        If mainMem.plugins(a) <> "" Then
+        If (mainMem.plugins(a) <> "") Then
             Dim fullPath As String
             fullPath = projectPath & plugPath & mainMem.plugins(a)
             Call ExecCmd("regsvr32 /s " & Chr(34) & fullPath & Chr(34))
@@ -437,7 +437,7 @@ Private Sub closeActiveX()
     On Error Resume Next
     Dim a As Long
     For a = 0 To UBound(mainMem.plugins)
-        If mainMem.plugins(a) <> "" Then
+        If (mainMem.plugins(a) <> "") Then
             Dim fullPath As String
             fullPath = projectPath & plugPath & mainMem.plugins(a)
             Call ExecCmd("regsvr32 /s /u " & Chr(34) & fullPath & Chr(34))
@@ -464,7 +464,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     shopColors(0) = -1
 
     'If we're running as an exe, don't show the debug window!
-    If Not runningAsEXE Then
+    If (Not runningAsEXE) Then
         debugYN = 1
     Else
         debugYN = 0
@@ -540,7 +540,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         'Hide all players except the walking graphic one
         Dim pNum As Long
         For pNum = 0 To UBound(showPlayer)
-            If pNum <> selectedPlayer Then
+            If (pNum <> selectedPlayer) Then
                 showPlayer(pNum) = False
             Else
                 showPlayer(pNum) = True
