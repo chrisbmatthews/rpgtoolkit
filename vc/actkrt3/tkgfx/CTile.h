@@ -48,53 +48,53 @@ class CTile
 	// Public visibility
 	public:
 
-		// CONSTruct with little information
-		CTile(INT nCompatibleDC, BOOL bIsometric = FALSE);
+		// Construct with little information
+		CTile(CONST INT nCompatibleDC, CONST BOOL bIsometric = FALSE);
 
-		// CONSTruct with full set of information
-		CTile(INT nCompatibleDC, std::string strFilename, RGBSHADE rgb, INT nShadeType, BOOL bIsometric = FALSE);
+		// Construct with full set of information
+		CTile(CONST INT nCompatibleDC, CONST std::string strFilename, CONST RGBSHADE rgb, CONST INT nShadeType, CONST BOOL bIsometric = FALSE);
 
-		// DeCONSTruct
-		~CTile();
+		// Deconstruct
+		~CTile(VOID);
 
-		// Copy CONSTructor
+		// Copy constructor
 		CTile(CONST CTile &rhs);
 
 		// Assignment operator
-		CTile& operator = (CONST CTile &rhs);
+		CTile &operator = (CONST CTile &rhs);
 
 		// Open a tile
-		VOID open(std::string strFilename, RGBSHADE rgb, INT nShadeType);
+		VOID open(CONST std::string strFilename, CONST RGBSHADE rgb, CONST INT nShadeType);
 
 		// Draw the tile
-		VOID gdiDraw(INT hdc, INT x, INT y);
+		VOID gdiDraw(CONST INT hdc, CONST INT x, CONST INT y);
 
 		// Draw the tile in the foreground
-		VOID gdiDrawFG(INT hdc, INT x, INT y);
+		VOID gdiDrawFG(CONST INT hdc, CONST INT x, CONST INT y);
 
 		// Draw the tile to a canvas
-		VOID cnvDraw(CGDICanvas *pCanvas, INT x, INT y);
+		VOID cnvDraw(CGDICanvas *pCanvas, CONST INT x, CONST INT y);
 
 		// Draw the tile's alpha portion
-		VOID gdiDrawAlpha(INT hdc, INT x, INT y);
+		VOID gdiDrawAlpha(CONST INT hdc, CONST INT x, CONST INT y);
 
 		// Render the tile's alpha's portion
-		VOID gdiRenderAlpha(INT hdc, INT x, INT y);
+		VOID gdiRenderAlpha(CONST INT hdc, CONST INT x, CONST INT y);
 
 		// Draw the tile's alpha portion to a canvas
-		VOID cnvDrawAlpha(CGDICanvas *pCanvas, INT x, INT y);
+		VOID cnvDrawAlpha(CGDICanvas *pCanvas, CONST INT x, CONST INT y);
 
 		// Render the tile's alpha portion to a canvas
-		VOID cnvRenderAlpha(CGDICanvas *pCanvas, INT x, INT y);
+		VOID cnvRenderAlpha(CGDICanvas *pCanvas, CONST INT x, CONST INT y);
 
 		// Prepare the tile's alpha portion
 		VOID prepAlpha(VOID);
 
 		// Create a shading mask for this tile
-		VOID createShading(INT hdc, RGBSHADE rgb, INT nShadeType, INT nSetType);
+		VOID createShading(CONST INT hdc, CONST RGBSHADE rgb, CONST INT nShadeType, CONST INT nSetType);
 
 		// Check if this tile is shaded in a certain manor
-		BOOL isShadedAs(RGBSHADE rgb, INT nShadeType);
+		BOOL isShadedAs(CONST RGBSHADE rgb, CONST INT nShadeType);
 
 		// Does this tile has transparency?
 		BOOL hasTransparency(VOID) {return m_bIsTransparent;}
@@ -106,7 +106,7 @@ class CTile
 		BOOL isIsometric(VOID) {return m_bIsometric;}
 
 		// Get a color from the dos palette of doom
-		static UINT getDOSColor(UCHAR cColor);
+		static UINT getDOSColor(CONST UCHAR cColor);
 
 		// Kill all canvases used
 		static VOID KillPools(VOID);
@@ -118,16 +118,16 @@ class CTile
 		VOID createIsometricMask(VOID);
 
 		// Open a tile
-		INT openTile(std::string strFilename);
+		INT openTile(CONST std::string strFilename);
 
 		// Open a tile from a set
-		INT openFromTileSet(std::string strFilename, INT number);
+		INT openFromTileSet(CONST std::string strFilename, CONST INT number);
 
 		// Get the tileset's header
-		tilesetHeader getTilesetInfo(std::string strFilename);
+		tilesetHeader getTilesetInfo(CONST std::string strFilename);
 
 		// Calculate the insertation position
-		long calcInsertionPoINT(INT idx, INT number);
+		long calcInsertionPoint(CONST INT idx, CONST INT number);
 
 		// Increase this tile's detail
 		VOID increaseDetail(VOID);
@@ -168,9 +168,9 @@ class CTile
 		static LONG isoMaskCTile[64][32];
 
 		// DOS palette
-		static UINT g_pnDosPalette[];
+		static CONST UINT g_pnDosPalette[];
 
-		// Indices INTo canvas pools
+		// Indices into canvas pools
 		INT m_nFgIdx, m_nAlphaIdx, m_nMaskIdx;
 		INT m_nFgIdxIso, m_nAlphaIdxIso, m_nMaskIdxIso;
 

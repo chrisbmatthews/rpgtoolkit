@@ -36,7 +36,7 @@ LONG CTile::isoMaskCTile[64][32] = {NULL};
 //-------------------------------------------------------------------
 // Big DOS palette of doom
 //-------------------------------------------------------------------
-UINT CTile::g_pnDosPalette[] = 
+CONST UINT CTile::g_pnDosPalette[] = 
 {
  0, 
  11010048 ,
@@ -309,7 +309,7 @@ UINT CTile::g_pnDosPalette[] =
 //
 // Returns: NA
 //-------------------------------------------------------------------
-CTile::CTile(INT nCompatibleDC, std::string strFilename, RGBSHADE rgb, INT nShadeType, BOOL bIsometric):
+CTile::CTile(CONST INT nCompatibleDC, CONST std::string strFilename, CONST RGBSHADE rgb, CONST INT nShadeType, CONST BOOL bIsometric):
 
 // Colin: Has nobody ever heard of member initialization lists? :P
  m_strFilename(strFilename),
@@ -367,7 +367,7 @@ CTile::CTile(INT nCompatibleDC, std::string strFilename, RGBSHADE rgb, INT nShad
 //-------------------------------------------------------------------
 // Construct from DC and iso flag
 //-------------------------------------------------------------------
-CTile::CTile(INT nCompatibleDC, BOOL bIsometric):
+CTile::CTile(CONST INT nCompatibleDC, CONST BOOL bIsometric):
 
 // Colin: Added real member initialization list
  m_strFilename(""),
@@ -427,7 +427,7 @@ CTile::CTile(INT nCompatibleDC, BOOL bIsometric):
 //-------------------------------------------------------------------
 // DeConstructor
 //-------------------------------------------------------------------
-CTile::~CTile()
+CTile::~CTile(VOID)
 {
 	// Blow away all members
 	if (m_pCnvForeground && m_nFgIdx != -1)
@@ -539,7 +539,7 @@ CTile &CTile::operator = (CONST CTile &rhs)
 //==============================================
 ////////////////////////////////////////////////
 
-VOID CTile::open(std::string strFilename, RGBSHADE rgb, INT nShadeType)
+VOID CTile::open(CONST std::string strFilename, CONST RGBSHADE rgb, CONST INT nShadeType)
 {
 
 	m_strFilename = strFilename;
@@ -596,7 +596,7 @@ VOID CTile::open(std::string strFilename, RGBSHADE rgb, INT nShadeType)
 //=====================================================
 ///////////////////////////////////////////////////////
 
-VOID CTile::createShading(INT hdc, RGBSHADE rgb, INT nShadeType, INT nSetType)
+VOID CTile::createShading(CONST INT hdc, CONST RGBSHADE rgb, CONST INT nShadeType, CONST INT nSetType)
 {
 
 	//now shade...
@@ -993,7 +993,7 @@ VOID CTile::prepAlpha(VOID) /* Use VOID for paramless functions */
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID CTile::gdiDraw(INT hdc, INT x, INT y)
+VOID CTile::gdiDraw(CONST INT hdc, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
@@ -1022,7 +1022,7 @@ VOID CTile::gdiDraw(INT hdc, INT x, INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID CTile::cnvDraw(CGDICanvas *pCanvas, INT x, INT y)
+VOID CTile::cnvDraw(CGDICanvas *pCanvas, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
@@ -1045,7 +1045,7 @@ VOID CTile::cnvDraw(CGDICanvas *pCanvas, INT x, INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID CTile::gdiDrawFG(INT hdc, INT x, INT y)
+VOID CTile::gdiDrawFG(CONST INT hdc, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
@@ -1068,7 +1068,7 @@ VOID CTile::gdiDrawFG(INT hdc, INT x, INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID CTile::gdiDrawAlpha(INT hdc, INT x, INT y)
+VOID CTile::gdiDrawAlpha(CONST INT hdc, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
@@ -1091,7 +1091,7 @@ VOID CTile::gdiDrawAlpha(INT hdc, INT x, INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID CTile::cnvDrawAlpha(CGDICanvas* pCanvas, INT x, INT y)
+VOID CTile::cnvDrawAlpha(CGDICanvas* pCanvas, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
@@ -1115,7 +1115,7 @@ VOID CTile::cnvDrawAlpha(CGDICanvas* pCanvas, INT x, INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID CTile::gdiRenderAlpha(INT hdc, INT x, INT y)
+VOID CTile::gdiRenderAlpha(INT hdc, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
@@ -1142,7 +1142,7 @@ VOID CTile::gdiRenderAlpha(INT hdc, INT x, INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID CTile::cnvRenderAlpha(CGDICanvas* pCanvas, INT x, INT y)
+VOID CTile::cnvRenderAlpha(CGDICanvas* pCanvas, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
@@ -1159,7 +1159,7 @@ VOID CTile::cnvRenderAlpha(CGDICanvas* pCanvas, INT x, INT y)
 ///////////////////////////////////////////////////////
 // CTile::openTile (private)
 //
-// Action: load a tile INTo the tile arrays.  Scale to 32x32
+// Action: load a tile into the tile arrays.  Scale to 32x32
 //
 // Params: strFilename - filename to load.  You can include a number at the end of a tst to indicate the exact tile.
 //
@@ -1179,7 +1179,7 @@ VOID CTile::cnvRenderAlpha(CGDICanvas* pCanvas, INT x, INT y)
 //=====================================================
 ///////////////////////////////////////////////////////
 
-INT CTile::openTile(std::string strFilename)
+INT CTile::openTile(CONST std::string strFilename)
 {
 	INT x,y;
 	INT comp;
@@ -1401,7 +1401,7 @@ INT CTile::openTile(std::string strFilename)
 //=====================================================
 ///////////////////////////////////////////////////////
 
-INT CTile::openFromTileSet ( std::string strFilename, INT number ) 
+INT CTile::openFromTileSet(CONST std::string strFilename, CONST INT number) 
 {
 	//opens tile #number from a tileset
 	//going by the name of fname
@@ -1437,7 +1437,7 @@ INT CTile::openFromTileSet ( std::string strFilename, INT number )
 		{
 			return -1;
 		}
-		LONG np = calcInsertionPoINT(tileset.detail,number);
+		LONG np = calcInsertionPoint(tileset.detail,number);
 		fseek(infile,np,0);
 
 		detail=tileset.detail;
@@ -1563,7 +1563,7 @@ INT CTile::openFromTileSet ( std::string strFilename, INT number )
 // Called by: CTile::openFromTileset only.
 //
 ///////////////////////////////////////////////////////
-tilesetHeader CTile::getTilesetInfo(std::string strFilename) 
+tilesetHeader CTile::getTilesetInfo(CONST std::string strFilename) 
 {
 	//gets tileset header for filename.
 	//returns 0-success, 1 failure.
@@ -1601,7 +1601,7 @@ tilesetHeader CTile::getTilesetInfo(std::string strFilename)
 //=====================================================
 ///////////////////////////////////////////////////////
 
-LONG CTile::calcInsertionPoINT ( INT d, INT number ) 
+LONG CTile::calcInsertionPoint(CONST INT d, CONST INT number)
 {
 	LONG num = LONG(number);
 	switch (d) 
@@ -1695,7 +1695,7 @@ VOID CTile::increaseDetail(VOID) /* Use VOID for paramless functions */
 //-------------------------------------------------------------------
 // Check if we're shaded in a certain way
 //-------------------------------------------------------------------
-BOOL CTile::isShadedAs(RGBSHADE rgb, INT nShadeType)
+BOOL CTile::isShadedAs(CONST RGBSHADE rgb, CONST INT nShadeType)
 {
 
 	if (nShadeType != m_nShadeType)
@@ -1710,7 +1710,7 @@ BOOL CTile::isShadedAs(RGBSHADE rgb, INT nShadeType)
 //-------------------------------------------------------------------
 // Get a DOS palette color
 //-------------------------------------------------------------------
-UINT CTile::getDOSColor(UCHAR cColor)
+UINT CTile::getDOSColor(CONST UCHAR cColor)
 {
 	return g_pnDosPalette[cColor];
 }
