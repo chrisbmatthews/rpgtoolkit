@@ -176,7 +176,7 @@ Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional B
     Dim a As Long           'For loop control variable
     Dim S As Long           'For loop control variable
 
-    ReDim signs(12)
+    ReDim signs(18)
     signs(0) = "+="
     signs(1) = "-="
     signs(2) = "++"
@@ -190,11 +190,19 @@ Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional B
     signs(10) = "*"
     signs(11) = "^"
     signs(12) = "\"
+    signs(13) = "|="  '[Faero] Binary or
+    signs(14) = "&="  '[Faero] Binary and
+    signs(15) = "`="  '[Faero] Binary exclusive or
+    signs(16) = "%="  '[Faero] Modulus
+    signs(17) = "|="  '[Faero] Binary or
+    signs(18) = "&="  '[Faero] Binary and
+    signs(19) = "`="  '[Faero] Binary exclusive or
+    signs(20) = "%="  '[Faero] Modulus
     If (comparison) Then
-        ReDim Preserve signs(13)
-        signs(13) = "<"
-        signs(14) = ">"
-        signs(15) = "~"
+        ReDim Preserve signs(21)
+        signs(21) = "<"
+        signs(22) = ">"
+        signs(23) = "~"
     End If
 
     'Dimension p to have room for all the signs
@@ -412,7 +420,8 @@ Public Function GetVarList(ByVal Text As String, ByVal number As Long) As String
             End If
             returnVal = returnVal & part
 
-        ElseIf part = "=" Or part = "+" Or part = "-" Or part = "/" Or part = "*" Or part = "\" Or part = "^" Then
+        ElseIf part = "=" Or part = "+" Or part = "-" Or part = "/" Or part = "*" Or part = "\" Or part = "^" _
+        Or part = "%" Or part = "`" Or part = "|" Or part = "&" Then
             If ignoreNext = 0 Then
                 element = element + 1
                 If element = number Then
@@ -506,7 +515,8 @@ Public Function ValueNumber(ByVal Text As String) As Long
             Else
                 ignoreNext = 1
             End If
-        ElseIf part = "=" Or part = "+" Or part = "-" Or part = "/" Or part = "*" Or part = "\" Or part = "^" Then
+        ElseIf part = "=" Or part = "+" Or part = "-" Or part = "/" Or part = "*" Or part = "\" Or part = "^" _
+        Or part = "%" Or part = "`" Or part = "|" Or part = "&" Then
             If ignoreNext = 0 Then ele = ele + 1
         End If
     Next p
@@ -993,7 +1003,8 @@ Public Function ParseRPGCodeCommand( _
                                 Case ")": If Not ignore Then depth = depth + 1
 
                                 'Divider
-                                Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^"
+                                Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", _
+                                "%", "`", "|", "&"
 
                                     If ((depth = 0) And (Not ignore) And (b >= startAt)) Then
                                         'We've found a space. This means that the name of the

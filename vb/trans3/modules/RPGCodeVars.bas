@@ -57,6 +57,7 @@ Private Function isOperator(ByVal test As String) As Boolean
     isOperator = True
     Select Case test
         Case "-", "+", "*", "/", "^"
+        Case "%", "&", "|", "`" '[Faero]
         Case Else: isOperator = False
     End Select
 End Function
@@ -80,11 +81,21 @@ Private Function evaluate(ByVal Text As String) As Double
 
     On Error Resume Next
 
-    Const NEG_SIGN = 0              '- sign
-    Const PLUS_SIGN = 1             '+ sign
-    Const MULTIPLY_SIGN = 2         '* sign
-    Const DIV_SIGN = 3              '/ sign
-    Const RAISE_SIGN = 4            '^ sign
+    Const BOR_SIGN = 0              '[Faero] Binary or
+    Const BAND_SIGN = 1             '[Faero] Binary and
+    Const BXOR_SIGN = 2             '[Faero] Binary xor
+    
+    Const BSL_SIGN = 3              '[Faero] Bitshift left
+    Const BSR_SIGN = 4              '[Faero] Bitshift right
+
+    Const NEG_SIGN = 5              '- sign
+    Const PLUS_SIGN = 6             '+ sign
+    
+    Const MOD_SIGN = 7              '[Faero] Modulus
+    
+    Const MULTIPLY_SIGN = 8         '* sign
+    Const DIV_SIGN = 9              '/ sign
+    Const RAISE_SIGN = 10            '^ sign
 
     Dim idx As Long                 'Current character
     Dim char As String              'A character
@@ -99,6 +110,8 @@ Private Function evaluate(ByVal Text As String) As Double
     ReDim tokens(0) As Double       'Tokens in the string
     ReDim operators(0) As Long      'Operators in the string
     ReDim brackets(0) As Long       'Bracket counts at operators
+    
+    Dim twoChars As String
 
     'Set indexes to -1
     tokenIdx = -1
@@ -112,6 +125,9 @@ Private Function evaluate(ByVal Text As String) As Double
 
         'Grab a character
         char = Mid(Text, idx, 1)
+        
+        'Grab two
+        twoChars = Mid(Text, idx, 2)
 
         'Set valid flag to false
         isValid = False
@@ -174,6 +190,11 @@ Private Function evaluate(ByVal Text As String) As Double
                     Case "/": operators(operatorIdx) = DIV_SIGN
                     Case "*": operators(operatorIdx) = MULTIPLY_SIGN
                     Case "^": operators(operatorIdx) = RAISE_SIGN
+                    
+                    Case "|": operators(operatorIdx) = BOR_SIGN  '[Faero] Binary or
+                    Case "&": operators(operatorIdx) = BAND_SIGN '[Faero] Binary and
+                    Case "`": operators(operatorIdx) = BXOR_SIGN '[Faero] Binary exclusive or
+                    Case "%": operators(operatorIdx) = MOD_SIGN  '[Faero] Modulus
                 End Select
                 'Record the bracket depth
                 ReDim Preserve brackets(operatorIdx)
@@ -208,6 +229,14 @@ Private Function evaluate(ByVal Text As String) As Double
             Case MULTIPLY_SIGN: tokens(toSolve) = tokens(toSolve) * tokens(toSolve + 1)
             Case DIV_SIGN: tokens(toSolve) = tokens(toSolve) / tokens(toSolve + 1)
             Case RAISE_SIGN: tokens(toSolve) = tokens(toSolve) ^ tokens(toSolve + 1)
+            
+            '[Faero] 3.0.5
+            Case BSL_SIGN: tokens(toSolve) = tokens(toSolve) * (2 ^ tokens(toSolve + 1))
+            Case BSR_SIGN: tokens(toSolve) = tokens(toSolve) / (2 ^ tokens(toSolve + 1))
+            Case BOR_SIGN: tokens(toSolve) = tokens(toSolve) Or tokens(toSolve + 1)
+            Case BAND_SIGN: tokens(toSolve) = tokens(toSolve) And tokens(toSolve + 1)
+            Case BXOR_SIGN: tokens(toSolve) = tokens(toSolve) Xor tokens(toSolve + 1)
+            Case MOD_SIGN: tokens(toSolve) = tokens(toSolve) Mod tokens(toSolve + 1)
         End Select
         'Knock the arrays back a notch
         For idx = toSolve To UBound(tokens)
@@ -400,7 +429,7 @@ Public Function isEquation( _
     On Error Resume Next
 
     Dim parts() As String       'Parts of the equation
-    Dim tSigns(5) As String     'Math signs array
+    Dim tSigns(9) As String     'Math signs array
     Dim uD() As String          'Delimiters that were used (dummy)
     Dim dt As Long              'Data type
     Dim a As Long               'Loop control variables
@@ -418,6 +447,11 @@ Public Function isEquation( _
     tSigns(3) = "*"
     tSigns(4) = "^"
     tSigns(5) = "\"
+    tSigns(6) = "|"
+    tSigns(7) = "&"
+    tSigns(8) = "`"
+    tSigns(9) = "%"
+    
 
     'Retrieve the text sans math signs...
     parts() = multiSplit(lineText, tSigns, uD, True)
@@ -569,6 +603,9 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Case "+=", "-=", "*=", "/=", "="    'OTHER VALID OPERATOR
                                                     '--------------------
 
+                Case "|=", "&=", "`=", "%=" '[Faero] Other valid ops :)
+
+
                 Case Else                           'INVALID OPERATOR
                                                     '----------------
                     Call debugger("Error: Invalid conjunction-- " & equal)
@@ -608,6 +645,34 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                 Case "="        'NORMAL EQUAL OPERATOR
                                 '---------------------
                     Call SetVariable(Destination, CStr(numberUse(number)), theProgram)
+
+
+                'Taken out because I don't feel like making trans3 read 2 char operators
+                'Case "<<="      '[Faero] Bitshift left
+                                '---------------------
+                '    Call SetVariable(Destination, CStr(CBGetNumerical(Destination) * (2 ^ numberUse(number))), theProgram)
+
+                'Case ">>="      '[Faero] Bitshift right
+                                '---------------------
+                '    Call debugger("bitshift right")
+                '    Call SetVariable(Destination, CStr(CBGetNumerical(Destination) / (2 ^ numberUse(number))), theProgram)
+
+                Case "|="      '[Faero] Or
+                                '---------------------
+                    Call debugger("binary or")
+                    Call SetVariable(Destination, CStr(numberUse(number) Or CBGetNumerical(Destination)), theProgram)
+
+                Case "&="      '[Faero] And
+                                '---------------------
+                    Call SetVariable(Destination, CStr(numberUse(number) And CBGetNumerical(Destination)), theProgram)
+
+                Case "`="      '[Faero] XOr
+                                '---------------------
+                    Call SetVariable(Destination, CStr(numberUse(number) Xor CBGetNumerical(Destination)), theProgram)
+
+                Case "%="      '[Faero] Modulus
+                                '---------------------
+                    Call SetVariable(Destination, CStr(numberUse(number) Mod CBGetNumerical(Destination)), theProgram)
 
             End Select
 
