@@ -252,7 +252,7 @@ Public Sub DXRefresh()
     hdc = CNVOpenHDC(cnvMousePointer)
 
     ' Blt the mouse onto the window
-    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpColor)
+    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
 
     ' Close the canvas' HDC
     Call CNVCloseHDC(cnvMousePointer, hdc)
@@ -1529,7 +1529,7 @@ Public Sub renderRPGCodeScreen()
     hdc = CNVOpenHDC(cnvMousePointer)
 
     ' Blt the mouse onto the window
-    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpColor)
+    Call TransparentBlt(xdc, x, y, 32, 32, hdc, 0, 0, 32, 32, mainMem.transpcolor)
 
     ' Close the canvas' HDC
     Call CNVCloseHDC(cnvMousePointer, hdc)
@@ -1651,7 +1651,7 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
     ' Get fullscreen setting from main file (unless we're testing
     ' a PRG, then it's always windowed)
     Dim fullScreen As Long
-    If (Not testingPRG) Then
+    If Not (testingPRG) Then
         ' Check main file
         fullScreen = mainMem.extendToFullScreen
         ' Show the end form
@@ -1681,7 +1681,7 @@ Private Sub showScreen(ByVal width As Long, ByVal height As Long, Optional ByVal
         .height = height * Screen.TwipsPerPixelY
         .Top = (Screen.height - .height) \ 2
         .Left = (Screen.width - .width) \ 2
-        If (Not inFullScreenMode) Then
+        If Not (inFullScreenMode) Then
             ' If not in full screen mode, increase to account for window border
             .width = .width + 6 * Screen.TwipsPerPixelX
             .height = .height + 24 * Screen.TwipsPerPixelY
@@ -1769,7 +1769,7 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     resX = screenWidth \ Screen.TwipsPerPixelX
     resY = screenHeight \ Screen.TwipsPerPixelY
 
-    'Get res from main file
+    ' Get res from main file
     If (mainMem.mainResolution = 0) Then
         screenWidth = 640
         screenHeight = 480
@@ -1779,6 +1779,10 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     ElseIf (mainMem.mainResolution = 2) Then
         screenWidth = 1024
         screenHeight = 768
+    Else
+        ' Custom resolution
+        screenHeight = mainMem.resY
+        screenWidth = mainMem.resX
     End If
 
     ' Show the screen

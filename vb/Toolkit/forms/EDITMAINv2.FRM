@@ -37,7 +37,7 @@ Begin VB.Form editmainfile
       EndProperty
       Height          =   285
       Left            =   4080
-      TabIndex        =   84
+      TabIndex        =   80
       Top             =   5280
       Visible         =   0   'False
       Width           =   3135
@@ -53,6 +53,7 @@ Begin VB.Form editmainfile
       _Version        =   393216
       Style           =   1
       Tabs            =   7
+      Tab             =   4
       TabsPerRow      =   7
       TabHeight       =   520
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -66,11 +67,9 @@ Begin VB.Form editmainfile
       EndProperty
       TabCaption(0)   =   "Project Settings"
       TabPicture(0)   =   "EDITMAINv2.frx":0CCA
-      Tab(0).ControlEnabled=   -1  'True
-      Tab(0).Control(0)=   "envframe"
-      Tab(0).Control(0).Enabled=   0   'False
-      Tab(0).Control(1)=   "prjframe"
-      Tab(0).Control(1).Enabled=   0   'False
+      Tab(0).ControlEnabled=   0   'False
+      Tab(0).Control(0)=   "prjframe"
+      Tab(0).Control(1)=   "envframe"
       Tab(0).ControlCount=   2
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
@@ -91,8 +90,9 @@ Begin VB.Form editmainfile
       Tab(3).ControlCount=   1
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
-      Tab(4).ControlEnabled=   0   'False
+      Tab(4).ControlEnabled=   -1  'True
       Tab(4).Control(0)=   "screenframe"
+      Tab(4).Control(0).Enabled=   0   'False
       Tab(4).ControlCount=   1
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
@@ -119,7 +119,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1695
          Left            =   -74760
-         TabIndex        =   85
+         TabIndex        =   81
          Top             =   2520
          Width           =   6615
          Begin VB.CommandButton cmdMouseCursor 
@@ -135,7 +135,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   91
+            TabIndex        =   87
             Top             =   1150
             Width           =   1455
          End
@@ -152,7 +152,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   3000
-            TabIndex        =   90
+            TabIndex        =   86
             Top             =   720
             Width           =   1815
          End
@@ -169,14 +169,14 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1680
-            TabIndex        =   89
+            TabIndex        =   85
             Top             =   720
             Width           =   1215
          End
          Begin MSComctlLib.Slider sliGameSpeed 
             Height          =   255
             Left            =   3000
-            TabIndex        =   87
+            TabIndex        =   83
             Top             =   360
             Width           =   3375
             _ExtentX        =   5953
@@ -199,7 +199,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   88
+            TabIndex        =   84
             Top             =   720
             Width           =   1335
          End
@@ -216,7 +216,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   86
+            TabIndex        =   82
             Top             =   360
             Width           =   2655
          End
@@ -234,7 +234,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1335
          Left            =   -74760
-         TabIndex        =   78
+         TabIndex        =   74
          Tag             =   "1186"
          Top             =   600
          Width           =   6615
@@ -252,7 +252,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   120
-            TabIndex        =   81
+            TabIndex        =   77
             Tag             =   "1187"
             Top             =   600
             Width           =   1095
@@ -270,7 +270,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1680
-            TabIndex        =   80
+            TabIndex        =   76
             Tag             =   "1099"
             Top             =   600
             Width           =   735
@@ -288,7 +288,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1680
-            TabIndex        =   79
+            TabIndex        =   75
             Tag             =   "1100"
             Top             =   360
             Value           =   -1  'True
@@ -307,7 +307,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   83
+            TabIndex        =   79
             Tag             =   "1189"
             Top             =   360
             Width           =   1575
@@ -328,7 +328,7 @@ Begin VB.Form editmainfile
             Left            =   2520
             MouseIcon       =   "EDITMAINv2.frx":0D8E
             MousePointer    =   99  'Custom
-            TabIndex        =   82
+            TabIndex        =   78
             Tag             =   "1188"
             Top             =   960
             Visible         =   0   'False
@@ -348,7 +348,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   3855
          Left            =   -74760
-         TabIndex        =   68
+         TabIndex        =   64
          Tag             =   "1167"
          Top             =   600
          Width           =   6615
@@ -364,7 +364,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   2010
             Left            =   240
-            TabIndex        =   75
+            TabIndex        =   71
             Top             =   480
             Width           =   4815
          End
@@ -382,7 +382,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   74
+            TabIndex        =   70
             Top             =   2160
             Width           =   1095
          End
@@ -400,7 +400,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   73
+            TabIndex        =   69
             Top             =   1680
             Width           =   1095
          End
@@ -417,7 +417,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   72
+            TabIndex        =   68
             Tag             =   "1021"
             Top             =   2880
             Width           =   1095
@@ -434,7 +434,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2400
-            TabIndex        =   71
+            TabIndex        =   67
             Text            =   "None"
             Top             =   2880
             Width           =   2655
@@ -451,7 +451,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2400
-            TabIndex        =   70
+            TabIndex        =   66
             Text            =   "None"
             Top             =   3360
             Width           =   2655
@@ -469,7 +469,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   69
+            TabIndex        =   65
             Tag             =   "1021"
             Top             =   3360
             Width           =   1095
@@ -487,7 +487,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   77
+            TabIndex        =   73
             Top             =   2880
             Width           =   2055
          End
@@ -504,7 +504,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   76
+            TabIndex        =   72
             Top             =   3360
             Width           =   2055
          End
@@ -522,7 +522,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1695
          Left            =   -74760
-         TabIndex        =   59
+         TabIndex        =   55
          Tag             =   "1156"
          Top             =   600
          Width           =   6615
@@ -538,7 +538,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2040
-            TabIndex        =   63
+            TabIndex        =   59
             Text            =   "None"
             Top             =   720
             Width           =   3135
@@ -555,7 +555,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2040
-            TabIndex        =   62
+            TabIndex        =   58
             Text            =   "None"
             Top             =   360
             Width           =   3135
@@ -573,7 +573,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5400
-            TabIndex        =   61
+            TabIndex        =   57
             Tag             =   "1021"
             Top             =   360
             Width           =   1095
@@ -591,7 +591,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5400
-            TabIndex        =   60
+            TabIndex        =   56
             Tag             =   "1021"
             Top             =   720
             Width           =   1095
@@ -609,7 +609,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   67
+            TabIndex        =   63
             Tag             =   "1160"
             Top             =   720
             Width           =   1695
@@ -627,7 +627,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   66
+            TabIndex        =   62
             Tag             =   "1159"
             Top             =   360
             Width           =   2055
@@ -648,7 +648,7 @@ Begin VB.Form editmainfile
             Left            =   240
             MouseIcon       =   "EDITMAINv2.frx":1098
             MousePointer    =   99  'Custom
-            TabIndex        =   65
+            TabIndex        =   61
             Tag             =   "1158"
             Top             =   1080
             Visible         =   0   'False
@@ -670,7 +670,7 @@ Begin VB.Form editmainfile
             Left            =   3000
             MouseIcon       =   "EDITMAINv2.frx":13A2
             MousePointer    =   99  'Custom
-            TabIndex        =   64
+            TabIndex        =   60
             Tag             =   "1157"
             Top             =   1080
             Visible         =   0   'False
@@ -690,7 +690,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1335
          Left            =   -74760
-         TabIndex        =   51
+         TabIndex        =   47
          Tag             =   "1151"
          Top             =   2880
          Width           =   6615
@@ -706,7 +706,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   3840
-            TabIndex        =   55
+            TabIndex        =   51
             Text            =   "None"
             Top             =   840
             Width           =   615
@@ -723,7 +723,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   3840
-            TabIndex        =   54
+            TabIndex        =   50
             Text            =   "None"
             Top             =   600
             Width           =   615
@@ -740,7 +740,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   3840
-            TabIndex        =   53
+            TabIndex        =   49
             Text            =   "None"
             Top             =   360
             Width           =   615
@@ -758,7 +758,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   52
+            TabIndex        =   48
             Tag             =   "1152"
             Top             =   360
             Width           =   1095
@@ -776,7 +776,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   58
+            TabIndex        =   54
             Tag             =   "1155"
             Top             =   840
             Width           =   3495
@@ -794,7 +794,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   57
+            TabIndex        =   53
             Tag             =   "1154"
             Top             =   600
             Width           =   3495
@@ -812,7 +812,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   240
-            TabIndex        =   56
+            TabIndex        =   52
             Tag             =   "1153"
             Top             =   360
             Width           =   3495
@@ -831,7 +831,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   2055
          Left            =   -74760
-         TabIndex        =   39
+         TabIndex        =   35
          Tag             =   "1144"
          Top             =   600
          Width           =   6615
@@ -848,7 +848,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   480
-            TabIndex        =   46
+            TabIndex        =   42
             Tag             =   "1145"
             Top             =   1200
             Visible         =   0   'False
@@ -866,7 +866,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   45
+            TabIndex        =   41
             Text            =   "None"
             Top             =   960
             Width           =   2655
@@ -883,7 +883,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   44
+            TabIndex        =   40
             Text            =   "None"
             Top             =   240
             Width           =   2655
@@ -900,7 +900,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2520
-            TabIndex        =   43
+            TabIndex        =   39
             Text            =   "None"
             Top             =   600
             Width           =   2655
@@ -918,7 +918,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   42
+            TabIndex        =   38
             Tag             =   "1021"
             Top             =   240
             Width           =   1095
@@ -936,7 +936,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   41
+            TabIndex        =   37
             Tag             =   "1021"
             Top             =   600
             Width           =   1095
@@ -954,7 +954,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5280
-            TabIndex        =   40
+            TabIndex        =   36
             Tag             =   "1021"
             Top             =   960
             Width           =   1095
@@ -972,7 +972,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   50
+            TabIndex        =   46
             Tag             =   "1149"
             Top             =   960
             Width           =   2295
@@ -990,7 +990,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   49
+            TabIndex        =   45
             Tag             =   "1148"
             Top             =   600
             Width           =   2295
@@ -1008,7 +1008,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   240
-            TabIndex        =   48
+            TabIndex        =   44
             Tag             =   "1146"
             Top             =   240
             Width           =   2175
@@ -1029,7 +1029,7 @@ Begin VB.Form editmainfile
             Left            =   2280
             MouseIcon       =   "EDITMAINv2.frx":16AC
             MousePointer    =   99  'Custom
-            TabIndex        =   47
+            TabIndex        =   43
             Tag             =   "1150"
             Top             =   1680
             Visible         =   0   'False
@@ -1049,7 +1049,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   1575
          Left            =   -74760
-         TabIndex        =   33
+         TabIndex        =   29
          Tag             =   "1162"
          Top             =   1080
          Width           =   6255
@@ -1066,7 +1066,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   120
-            TabIndex        =   36
+            TabIndex        =   32
             Tag             =   "1164"
             Top             =   360
             Value           =   -1  'True
@@ -1085,7 +1085,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   120
-            TabIndex        =   35
+            TabIndex        =   31
             Tag             =   "1163"
             Top             =   720
             Width           =   4575
@@ -1102,7 +1102,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   600
-            TabIndex        =   34
+            TabIndex        =   30
             Text            =   "10"
             Top             =   1080
             Width           =   735
@@ -1120,7 +1120,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   255
             Left            =   1560
-            TabIndex        =   37
+            TabIndex        =   33
             Tag             =   "1165"
             Top             =   1080
             Width           =   1095
@@ -1139,7 +1139,7 @@ Begin VB.Form editmainfile
          EndProperty
          Height          =   255
          Left            =   -74760
-         TabIndex        =   32
+         TabIndex        =   28
          Tag             =   "1166"
          Top             =   600
          Width           =   4455
@@ -1155,14 +1155,14 @@ Begin VB.Form editmainfile
             Italic          =   -1  'True
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   2055
-         Left            =   -74760
+         Height          =   3615
+         Left            =   240
          TabIndex        =   19
          Tag             =   "1136"
          Top             =   600
-         Width           =   6615
-         Begin VB.OptionButton windowed 
-            Caption         =   "Classic Resolution (Slower)"
+         Width           =   6735
+         Begin VB.Frame Frame5 
+            Caption         =   "Custom Resolution"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -1172,16 +1172,79 @@ Begin VB.Form editmainfile
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Height          =   255
-            Left            =   2760
-            TabIndex        =   31
-            Tag             =   "1143"
-            Top             =   240
-            Visible         =   0   'False
-            Width           =   3015
+            Height          =   1335
+            Left            =   360
+            TabIndex        =   92
+            Top             =   2040
+            Width           =   5655
+            Begin VB.TextBox txtResY 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2040
+               TabIndex        =   97
+               Top             =   720
+               Width           =   1215
+            End
+            Begin VB.TextBox txtResX 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   360
+               TabIndex        =   95
+               Top             =   720
+               Width           =   1215
+            End
+            Begin VB.Label Label28 
+               Caption         =   "y:"
+               Height          =   255
+               Left            =   1800
+               TabIndex        =   96
+               Top             =   720
+               Width           =   255
+            End
+            Begin VB.Label Label27 
+               Caption         =   "x:"
+               Height          =   255
+               Left            =   120
+               TabIndex        =   94
+               Top             =   720
+               Width           =   255
+            End
+            Begin VB.Label Label26 
+               Caption         =   "Please note that not all video cards support all possible resolutions."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   120
+               TabIndex        =   93
+               Top             =   360
+               Width           =   4815
+            End
          End
-         Begin VB.CheckBox stretchbox 
-            Caption         =   "Run Full-Screen"
+         Begin VB.Frame Frame2 
+            Caption         =   "Screen Style"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -1191,30 +1254,47 @@ Begin VB.Form editmainfile
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Height          =   195
-            Left            =   120
-            TabIndex        =   30
-            Tag             =   "1142"
+            Height          =   1575
+            Left            =   2280
+            TabIndex        =   89
             Top             =   360
-            Width           =   2775
-         End
-         Begin VB.OptionButton fullscreen 
-            Caption         =   "DirectX"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   2760
-            TabIndex        =   29
-            Top             =   480
-            Visible         =   0   'False
-            Width           =   2415
+            Width           =   1815
+            Begin VB.OptionButton chkScreenStyle 
+               Caption         =   "Full Screen"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   1
+               Left            =   120
+               TabIndex        =   91
+               Top             =   600
+               Width           =   1335
+            End
+            Begin VB.OptionButton chkScreenStyle 
+               Caption         =   "Windowed"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   0
+               Left            =   120
+               TabIndex        =   90
+               Top             =   360
+               Width           =   1335
+            End
          End
          Begin VB.Frame optres 
             Caption         =   "Resolution"
@@ -1227,11 +1307,28 @@ Begin VB.Form editmainfile
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Height          =   1095
+            Height          =   1575
             Left            =   4320
-            TabIndex        =   25
-            Top             =   720
-            Width           =   2175
+            TabIndex        =   24
+            Top             =   360
+            Width           =   1695
+            Begin VB.OptionButton optResCustom 
+               Caption         =   "Custom"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   120
+               TabIndex        =   88
+               Top             =   1080
+               Width           =   1215
+            End
             Begin VB.OptionButton sixfourty 
                Caption         =   "640x480"
                BeginProperty Font 
@@ -1245,9 +1342,9 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   195
                Left            =   120
-               TabIndex        =   28
+               TabIndex        =   27
                Tag             =   "1140"
-               Top             =   240
+               Top             =   360
                Width           =   1335
             End
             Begin VB.OptionButton eighthundred 
@@ -1263,9 +1360,9 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   195
                Left            =   120
-               TabIndex        =   27
+               TabIndex        =   26
                Tag             =   "1139"
-               Top             =   480
+               Top             =   600
                Width           =   1335
             End
             Begin VB.OptionButton tentwentyfour 
@@ -1281,32 +1378,14 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   195
                Left            =   120
-               TabIndex        =   26
+               TabIndex        =   25
                Tag             =   "1138"
-               Top             =   720
+               Top             =   840
                Width           =   1335
             End
          End
-         Begin VB.OptionButton smallwindowed 
-            Caption         =   "Windows GDI"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   195
-            Left            =   2760
-            TabIndex        =   24
-            Top             =   720
-            Visible         =   0   'False
-            Width           =   2655
-         End
          Begin VB.Frame Frame4 
-            Caption         =   "Target Color Depth"
+            Caption         =   "Color Depth"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -1316,11 +1395,11 @@ Begin VB.Form editmainfile
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Height          =   1095
-            Left            =   120
+            Height          =   1575
+            Left            =   360
             TabIndex        =   20
-            Top             =   720
-            Width           =   2175
+            Top             =   360
+            Width           =   1815
             Begin VB.OptionButton color16bit 
                Caption         =   "16-bit"
                BeginProperty Font 
@@ -1333,10 +1412,10 @@ Begin VB.Form editmainfile
                   Strikethrough   =   0   'False
                EndProperty
                Height          =   255
-               Left            =   240
+               Left            =   120
                TabIndex        =   23
-               Top             =   240
-               Width           =   1575
+               Top             =   360
+               Width           =   855
             End
             Begin VB.OptionButton color24bit 
                Caption         =   "24-bit"
@@ -1350,10 +1429,10 @@ Begin VB.Form editmainfile
                   Strikethrough   =   0   'False
                EndProperty
                Height          =   255
-               Left            =   240
+               Left            =   120
                TabIndex        =   22
-               Top             =   480
-               Width           =   1575
+               Top             =   600
+               Width           =   855
             End
             Begin VB.OptionButton color32bit 
                Caption         =   "32-bit"
@@ -1367,10 +1446,10 @@ Begin VB.Form editmainfile
                   Strikethrough   =   0   'False
                EndProperty
                Height          =   255
-               Left            =   240
+               Left            =   120
                TabIndex        =   21
-               Top             =   720
-               Width           =   1575
+               Top             =   840
+               Width           =   855
             End
          End
       End
@@ -1386,7 +1465,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1695
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   12
          Tag             =   "1182"
          Top             =   600
@@ -1507,7 +1586,7 @@ Begin VB.Form editmainfile
             Strikethrough   =   0   'False
          EndProperty
          Height          =   1815
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   2
          Top             =   2520
          Width           =   6495
@@ -1681,7 +1760,7 @@ Begin VB.Form editmainfile
          Left            =   -74760
          MouseIcon       =   "EDITMAINv2.frx":19B6
          MousePointer    =   99  'Custom
-         TabIndex        =   38
+         TabIndex        =   34
          Tag             =   "1158"
          Top             =   2880
          Visible         =   0   'False
@@ -1953,6 +2032,13 @@ Private Sub closemnu_Click()
     On Error Resume Next
     Call Unload(mainfight)
     Call Unload(editmainfile)
+End Sub
+
+'=========================================================================
+' Change screen style
+'=========================================================================
+Private Sub chkScreenStyle_Click(ByRef Index As Integer)
+    mainMem.extendToFullScreen = Index
 End Sub
 
 '=========================================================================
@@ -2326,11 +2412,7 @@ End Sub
 Private Sub daynightcheckbox_Click()
     On Error Resume Next
     mainMem.mainUseDayNight = daynightcheckbox.value
-    If mainMem.mainUseDayNight = 1 Then
-        Frame3.Visible = True
-    Else
-        Frame3.Visible = False
-    End If
+    Frame3.Visible = (mainMem.mainUseDayNight = 1)
 End Sub
 Private Sub daynightreal_Click()
     mainMem.mainDayNightType = 0
@@ -2379,9 +2461,9 @@ End Sub
 Private Sub Form_Load()
     On Error Resume Next
     Call LocalizeForm(Me)
-    editmainfile.height = 6270
-    editmainfile.width = 7600
-    filename(2) = ""
+    Me.height = 6270
+    Me.width = 7600
+    filename(2) = vbNullString
     sliGameSpeed.max = MAX_GAMESPEED
     Call infofill
 End Sub
@@ -2391,8 +2473,8 @@ End Sub
 '=========================================================================
 Private Sub Form_Resize(): On Error Resume Next
     'Centre the tabs.
-    tabMain.Top = (editmainfile.height - tabMain.height) / 2 - 200
-    tabMain.Left = (editmainfile.width - tabMain.width) / 2
+    tabMain.Top = (Me.height - tabMain.height) / 2 - 200
+    tabMain.Left = (Me.width - tabMain.width) / 2
 End Sub
 
 '=========================================================================
@@ -2475,37 +2557,27 @@ Private Sub infofill()
     End If
 
     Option4.value = mainMem.fightgameYN             'fighting in game? 0-yes, 1-no
-
-    If mainMem.mainScreenType = 0 Then fullscreen.value = True
-    If mainMem.mainScreenType = 1 Then fullscreen.value = True
-    If mainMem.mainScreenType = 2 Then smallwindowed.value = True
-    
+   
     gametitlebox.Text = mainMem.gameTitle$
     gametitlebox2.Text = mainMem.gameTitle$
     editmainfile.Caption = LoadStringLoc(800, "Main Project Editor") + "  (" + mainFile$ + ")"
     
     pathbox.Caption = projectPath
     
-    stretchbox.value = mainMem.extendToFullScreen
-    
-    If mainMem.mainResolution = 0 Then
-        sixfourty.value = True
-    End If
-    If mainMem.mainResolution = 1 Then
-        eighthundred.value = True
-    End If
-    If mainMem.mainResolution = 2 Then
-        tentwentyfour.value = True
-    End If
+    chkScreenStyle(mainMem.extendToFullScreen).value = True
+
+    txtResX.Text = CStr(mainMem.resX)
+    txtResY.Text = CStr(mainMem.resY)
+
+    sixfourty.value = (mainMem.mainResolution = 0)
+    eighthundred.value = (mainMem.mainResolution = 1)
+    tentwentyfour.value = (mainMem.mainResolution = 2)
+    optResCustom.value = (mainMem.mainResolution = 4)
     
     Call pluginInfoFill
 
     daynightcheckbox.value = mainMem.mainUseDayNight
-    If mainMem.mainUseDayNight = 1 Then
-        Frame3.Visible = True
-    Else
-        Frame3.Visible = False
-    End If
+    Frame3.Visible = (mainMem.mainUseDayNight = 1)
     If mainMem.mainDayNightType = 0 Then
         daynightreal.value = True
         daylengthbox.Enabled = False
@@ -2513,7 +2585,7 @@ Private Sub infofill()
         daynightvirtual.value = True
         daylengthbox.Enabled = True
     End If
-    daylengthbox.Text = str$(mainMem.mainDayLength)
+    daylengthbox.Text = CStr(mainMem.mainDayLength)
 
     If mainMem.mainDisableProtectReg = 0 Then
         regprotect.value = 1
@@ -2624,6 +2696,7 @@ End Sub
 Private Sub Label24_Click()
     Call activeBoard.Show
 End Sub
+
 Private Sub Label9_Click()
     Call activeBoard.Show
 End Sub
@@ -2745,6 +2818,13 @@ Private Sub optPixelBased_Click()
 End Sub
 
 '=========================================================================
+' Change to custom resolution
+'=========================================================================
+Private Sub optResCustom_Click()
+    mainMem.mainResolution = 4
+End Sub
+
+'=========================================================================
 ' Change to tile movement
 '=========================================================================
 Private Sub optTileBased_Click()
@@ -2818,14 +2898,6 @@ End Sub
 Private Sub startupbox_Change()
     On Error Resume Next
     mainMem.startupPrg$ = startupbox.Text
-End Sub
-
-'=========================================================================
-' Extend game to full screen
-'=========================================================================
-Private Sub stretchbox_Click()
-    On Error Resume Next
-    mainMem.extendToFullScreen = stretchbox.value
 End Sub
 
 '=========================================================================
@@ -2999,4 +3071,44 @@ End Sub
 Private Sub mnuNewFightBackground_Click()
     On Error Resume Next
     Call tkMainForm.mnuNewFightBackground_Click
+End Sub
+
+'=========================================================================
+' Custom resolution stuff
+'=========================================================================
+Private Sub txtResX_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
+    optResCustom.value = True
+    mainMem.mainResolution = 4
+End Sub
+Private Sub txtResX_KeyPress(ByRef KeyAscii As Integer)
+    On Error GoTo letter
+    Dim ret As Double
+    ret = CDbl(txtResX.Text & chr$(KeyAscii))
+    Exit Sub
+letter:
+    If (KeyAscii <> 8) Then
+        'Bad key
+        KeyAscii = 0
+    End If
+End Sub
+Private Sub txtResX_Change()
+    mainMem.resX = val(txtResX.Text) ' val *must* be used - CDbl is no good here
+End Sub
+Private Sub txtResY_KeyPress(ByRef KeyAscii As Integer)
+    On Error GoTo letter
+    Dim ret As Double
+    ret = CDbl(txtResY.Text & chr$(KeyAscii))
+    Exit Sub
+letter:
+    If (KeyAscii <> 8) Then
+        'Bad key
+        KeyAscii = 0
+    End If
+End Sub
+Private Sub txtResY_Change()
+    mainMem.resY = val(txtResY.Text) ' val *must* be used - CDbl is no good here
+End Sub
+Private Sub txtResY_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
+    optResCustom.value = True
+    mainMem.mainResolution = 4
 End Sub
