@@ -43,7 +43,7 @@ INT APIENTRY CNVCreateCanvasHost(
 		NULL,
 		"canvasHost",
 		NULL
-			};
+	};
 
     // Register the class so windows knows of its existence
     RegisterClassEx(&wnd);
@@ -58,7 +58,7 @@ INT APIENTRY CNVCreateCanvasHost(
 		NULL, NULL,
 		HINSTANCE(hInstance),
 		NULL
-			);
+	);
 
 	// Return its hdc
 	return INT(GetDC(m_hHostWnd));
@@ -344,7 +344,7 @@ BOOL APIENTRY CNVBltCanvas(
 		x,
 		y,
 		lRasterOp
-			);
+	);
 
 }
 
