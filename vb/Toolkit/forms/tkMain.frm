@@ -6,7 +6,7 @@ Begin VB.MDIForm tkMainForm
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
    ClientHeight    =   8190
    ClientLeft      =   165
-   ClientTop       =   -1665
+   ClientTop       =   855
    ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
@@ -576,8 +576,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10AA6
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame5"
-         Tab(1).Control(1)=   "Frame4"
+         Tab(1).Control(0)=   "Frame4"
+         Tab(1).Control(1)=   "Frame5"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2541,13 +2541,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "15/11/2004"
+            TextSave        =   "23/11/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "23:23"
+            TextSave        =   "18:21"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2903,7 +2903,7 @@ Public Sub fillTree(ByVal parentNode As String, ByVal folder As String): On Erro
         
         Do Until a = ""
         
-            .item(parentNode).Sorted = True
+            .Item(parentNode).Sorted = True
             
             If GetAttr(folder & a) = vbDirectory Then
             'This is a folder.
@@ -3747,7 +3747,7 @@ Public Sub configForm()
         For a = 0 To 4
             If configfile.quickTarget(a) <> "" Then
                 Call .Add(, , "Quick Launch " & a, , LoadPicture(configfile.quickIcon(a)))
-                .item(a).Enabled = integerToBoolean(configfile.quickEnabled(a))
+                .Item(a).Enabled = integerToBoolean(configfile.quickEnabled(a))
             End If
         Next a
     End With
@@ -3798,6 +3798,7 @@ Public Sub mnuOpenProject_Click(): On Error Resume Next
     
     If filename(1) = vbNullString Then Exit Sub
     
+    ChDir (currentDir)
     FileCopy filename(1), gamPath & antiPath
     
     'Close all open editors. Got to do it in reverse order!
