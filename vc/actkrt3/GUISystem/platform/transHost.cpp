@@ -171,7 +171,7 @@ VOID APIENTRY mainEventLoop(CONST INT gameLogicAddress)
 		// Add only if this is a short loop.
 		if (dblTimeNow < 200)
 		{
-			(*m_renderTime) += double(dblTimeNow) / 1000.0;
+			(*m_renderTime) += double(dblTimeNow) / 1000.0; // (Should kill this division!)
 			(*m_renderCount)++;
 		}
 

@@ -359,7 +359,7 @@ Private Sub openSystems()
     Call initEventProcessor
     Call initSprites
     Call initGraphics(m_testingPRG) ' Creates host window
-    Call initCounter(m_renderTime, m_renderCount)  'Pass the variables to actkrt3
+    Call initCounter(m_renderTime, m_renderCount)  ' Pass the variables to actkrt3
     Call setupCOM(True)
     Call correctPaths
     Call InitPlugins
