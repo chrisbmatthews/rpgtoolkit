@@ -81,10 +81,13 @@ Public Threads() As RPGCODE_THREAD                 'All running threads
 Private m_multiTasking As Boolean                  'Multitasking now?
 
 '=========================================================================
-' Read-only pointer to m_multiTasking
+' Access to m_multiTasking
 '=========================================================================
 Public Property Get isMultiTasking() As Boolean
     isMultiTasking = m_multiTasking
+End Property
+Public Property Let isMultiTasking(ByVal newVal As Boolean)
+    m_multiTasking = newVal
 End Property
 
 '=========================================================================

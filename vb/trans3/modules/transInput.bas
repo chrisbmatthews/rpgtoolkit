@@ -563,117 +563,108 @@ Public Sub keyDownEvent(ByVal keyCode As Integer, ByVal Shift As Integer)
 
     On Error Resume Next
     
-    'Save old keycodes.
+    ' Save old keycodes.
     keyWaitState = keyCode
     keyShiftState = Shift
     
-    'When a dialog window is called, either ShowFileDialog or ShowPromptDialog.
-    'Control is returned when the dialog is closed.
+    ' When a dialog window is called, either ShowFileDialog or ShowPromptDialog
+    ' Control is returned when the dialog is closed
     If (ignoreKeyDown) Then Exit Sub
 
-    'Inform plugins...
+    ' Inform plugins
     Dim strKey As String
     Dim Index As Integer
     
-    'Check some common codes.
+    ' Check some common codes.
     Select Case keyCode
-        Case 13:
-            strKey = "ENTER"
-        Case 27:
-            strKey = "ESC"
-        Case 32:
-            strKey = "SPACE"
-        Case 37:
-            strKey = "LEFT"
-        Case 38:
-            strKey = "UP"
-        Case 39:
-            strKey = "RIGHT"
-        Case 40:
-            strKey = "DOWN"
-        Case Else:
-            strKey = Chr$(keyCode)
+        Case 13: strKey = "ENTER"
+        Case 27: strKey = "ESC"
+        Case 32: strKey = "SPACE"
+        Case 37: strKey = "LEFT"
+        Case 38: strKey = "UP"
+        Case 39: strKey = "RIGHT"
+        Case 40: strKey = "DOWN"
+        Case Else: strKey = Chr$(keyCode)
     End Select
 
-    'Check custom plugins to see if they request an input.
+    ' Check custom plugins to see if they request an input.
     Dim plugName As String
     For Index = 0 To UBound(mainMem.plugins)
         If (LenB(mainMem.plugins(Index)) <> 0) Then
             'If there is a plugin in this slot, get the name.
             plugName = PakLocate(projectPath & plugPath & mainMem.plugins(Index))
-            
             If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
                 'If an input is requested, return that input to the plugin.
                 Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
             End If
         End If
     Next Index
-    
-    'Check the menu plugin.
+
+    ' Check the menu plugin.
     If (LenB(mainMem.menuPlugin) <> 0) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.menuPlugin)
-        
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
             Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
         End If
     End If
-    
-    'Check the fight plugin.
+
+    'C heck the fight plugin.
     If (LenB(mainMem.fightPlugin) <> 0) Then
         plugName = PakLocate(projectPath & plugPath & mainMem.fightPlugin)
-        
         If PLUGInputRequested(plugName, INPUT_KB) = 1 Then
             Call PLUGEventInform(plugName, keyCode, -1, -1, -1, Shift, strKey, INPUT_KB)
         End If
     End If
 
-
     If (Not runningProgram) And (Not bInMenu) And (Not fightInProgress) Then
-        'Scan for special keys.
-        
+        ' Scan for special keys.
+
         If keyCode = 88 And Shift = 4 Then
             'user pressed ALT-X: Force exit.
             gGameState = GS_QUIT
             Exit Sub
         End If
-        
-        'If keyCode = 68 And Shift = 4 Then
-            'User pressed ALT-D (toggle debugging).
-        '    debugging = Not (debugging)
-        'End If
-        
+
+        Dim mutliStatus As Boolean
+        mutliStatus = isMultiTasking()
+
+        If (mutliStatus) Then
+            ' If we're multitasking then flag we're not so thread loops
+            ' don't mess up when running these programs that aren't threads!
+            isMultiTasking() = False
+        End If
+
         If UCase$(CStr(mainMem.Key)) = UCase$(CStr(keyCode)) Then
-            'User pressed the activation key.
-            'Check to see if there is a program to be activated at this location.
+            ' User pressed the activation key.
+            ' Check to see if there is a program to be activated at this location.
             Call programTest(pPos(selectedPlayer))
         End If
-        
-        'Check primary runtime key: run its associated program if so.
+
+        ' Check primary runtime key: run its associated program if so.
         If UCase$(CStr(keyCode)) = UCase$(CStr(mainMem.runKey)) Then
-            Call runProgram(projectPath & prgPath & mainMem.runTime$)
-            Exit Sub
+            Call runProgram(projectPath & prgPath & mainMem.runTime)
         End If
-        
-        'Check extended runtime keys...
+
+        ' Check extended runtime keys...
         For Index = 0 To 50
             If UCase$(Chr$(keyCode)) = UCase$(Chr$(mainMem.runTimeKeys(Index))) Then
-                If (LenB(mainMem.runTimePrg$(Index)) <> 0) Then
-                
-                    Call runProgram(projectPath & prgPath & mainMem.runTimePrg$(Index))
-                    Exit Sub
-                
+                If (LenB(mainMem.runTimePrg(Index)) <> 0) Then
+                    Call runProgram(projectPath & prgPath & mainMem.runTimePrg(Index))
                 End If
             End If
         Next Index
-        
-        'Check the menu key.
+
+        ' Check the menu key.
         If UCase$(CStr(keyCode)) = UCase$(CStr(mainMem.menuKey)) Then
             Call showMenu
-            Exit Sub
         End If
-        
-    End If 'End if not (programRunning)
-    
+
+        ' Restore old multitasking status so threads that may have been
+        ' running don't mess up
+        isMultiTasking() = mutliStatus
+
+    End If ' if not (programRunning)
+
 End Sub
 
 '=========================================================================

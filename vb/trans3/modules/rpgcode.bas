@@ -8009,7 +8009,7 @@ Function WhileRPG(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As L
     Dim curLine As Long
     u = use
     
-    theProgram.programPos = increment(theProgram)
+    ' theProgram.programPos = increment(theProgram)
     res = evaluate(dataUseWhile$, theProgram)
     
     Dim isUntil As Boolean

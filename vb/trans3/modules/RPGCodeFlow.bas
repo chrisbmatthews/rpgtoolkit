@@ -908,8 +908,6 @@ End Function
 Public Function DoIndependentCommand(ByRef rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN) As Long
     On Error Resume Next
     '// Passing string(s) ByRef for preformance related reasons
-    rpgcodeCommand = ParseRPGCodeCommand(rpgcodeCommand, errorKeep)
-    rpgcodeCommand = ParseRPGCodeCommand(rpgcodeCommand, theProgram)
     Dim oPP As Long
     oPP = errorKeep.programPos
     DoSingleCommand rpgcodeCommand, errorKeep, retval
@@ -927,6 +925,12 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
     On Error Resume Next
 
     '// Passing string(s) ByRef for preformance related reasons
+
+    If (LenB(rpgcodeCommand) = 0) Then
+        ' No text!
+        DoSingleCommand = increment(theProgram)
+        Exit Function
+    End If
 
     Dim checkIt As String
     checkIt = replace(replace(replace _
@@ -2387,7 +2391,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
             Exit Function
 
         Case "NEW"
-            Call NewRPG(splice, theProgram, retval)
+            Call newRPG(splice, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
 
