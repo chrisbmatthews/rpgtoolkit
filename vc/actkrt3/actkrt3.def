@@ -182,3 +182,6 @@ EXPORTS
 	killHostWindow		@231
 	changeHostWindowCaption	@232
 	endProgram			@233
+
+	;rpgcode parser
+	RPGCGetMethodName	@234

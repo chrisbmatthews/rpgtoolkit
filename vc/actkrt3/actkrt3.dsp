@@ -347,20 +347,40 @@ SOURCE=.\tkPlug\plugDLL.h
 # Begin Group "tkRPGCode"
 
 # PROP Default_Filter ""
-# Begin Group "tkRPGCode - source"
+# Begin Group "strings"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\inlineString\inlineString.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\inlineString\inlineString.h
+# End Source File
+# End Group
+# Begin Group "vars"
 
 # PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\tkrpgcode\tkrpgcode.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\tkrpgcode\tkrpgcode.h
+# End Source File
 # End Group
-# Begin Group "tkRPGCode - headers"
+# Begin Group "parser"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\tkrpgcode\tkrpgcode.h
+SOURCE=.\tkrpgcode\parser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\tkrpgcode\parser.h
 # End Source File
 # End Group
 # End Group
