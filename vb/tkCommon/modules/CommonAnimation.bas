@@ -698,7 +698,6 @@ Public Sub saveAnimation(ByVal file As String, ByRef theAnim As TKAnimation)
     On Error Resume Next
 
     'Get ready to write the file
-    If Not fileExists(file) Then Exit Sub
     Call Kill(file)
     #If isToolkit = 1 Then
         animationList(activeAnimationIndex).animNeedUpdate = False
