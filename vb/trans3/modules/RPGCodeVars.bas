@@ -247,11 +247,7 @@ End Function
 ' Get the value of a variable - unattached to a program
 '=========================================================================
 Public Function getIndependentVariable(ByVal varname As String, ByRef lit As String, ByRef num As Double) As RPGC_DT
-    Dim aProgram As RPGCodeProgram
-    aProgram.boardNum = -1
-    Call InitRPGCodeProcess(aProgram)
-    getIndependentVariable = getVariable(varname$, lit$, num, aProgram)
-    Call ClearRPGCodeProcess(aProgram)
+    getIndependentVariable = getVariable(varname, lit, num, errorKeep)
 End Function
 
 '=========================================================================
@@ -323,7 +319,7 @@ Public Function dataType(ByVal Text As String, ByRef prg As RPGCodeProgram, Opti
     ' Try to change the text to a double
     ret = CDbl(Text)
 
-    If (Not errors) Then
+    If Not (errors) Then
         ' If we lived through that then it's a number, hands down!
         dataType = DT_NUMBER
         Exit Function
@@ -1131,17 +1127,13 @@ End Function
 '=========================================================================
 Public Sub setIndependentVariable(ByVal varname As String, ByVal value As String)
     On Error Resume Next
-    Dim aProgram As RPGCodeProgram
-    aProgram.boardNum = -1
-    Call InitRPGCodeProcess(aProgram)
-    Call SetVariable(varname$, value$, aProgram)
-    Call ClearRPGCodeProcess(aProgram)
+    Call SetVariable(varname, value, errorKeep)
 End Sub
 
 '=========================================================================
 ' Set a variable optionally forced to the global heap
 '=========================================================================
-Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef theProgram As RPGCodeProgram, Optional ByVal bForceGlobal As Boolean = False)
+Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef theProgram As RPGCodeProgram, Optional ByVal bForceGlobal As Boolean)
 
     On Error Resume Next
 
@@ -1152,7 +1144,10 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
     'Check if it belongs to a class
     If (theProgram.classes.insideClass) Then
         If (isVarMember(varname, topNestle(theProgram), theProgram)) Then
+            ' Get the new name
             theVar = getObjectVarName(theVar, topNestle(theProgram))
+            ' All class members are global
+            bForceGlobal = True
         End If
     End If
 
@@ -1160,50 +1155,58 @@ Public Sub SetVariable(ByVal varname As String, ByVal value As String, ByRef the
     Dim varType As RPGC_DT
     varType = variType(theVar, globalHeap)
 
-    'Create an rpgcode return value
-    Dim rV As RPGCODE_RETURN
+    ' Declare some vars
+    Dim rV As RPGCODE_RETURN, exists As Boolean
 
-    If varType = DT_NUM Then        'NUMERICAL VARIABLE
-                                    '------------------
+    If (varType = DT_NUM) Then        'NUMERICAL VARIABLE
+                                      '------------------
 
-        If (theProgram.autoLocal) Then
-            If (Not numVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame))) Then
-                Call LocalRPG("Local(" & theVar & ")", theProgram, rV)
+        ' Check if the variable exists
+        exists = numVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame))
+
+        If (theProgram.autoLocal) And (Not (bForceGlobal)) Then
+            If Not (exists) Then
+                Call SetNumVar(theVar, 0, theProgram.heapStack(theProgram.currentHeapFrame))
+                exists = True
             End If
         End If
 
-        If (theProgram.currentHeapFrame >= 0) And (Not bForceGlobal) Then
-            If numVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame)) Then
-                'Local
+        If (theProgram.currentHeapFrame >= 0) And (Not (bForceGlobal)) Then
+            If (exists) Then
+                ' Local
                 Call SetNumVar(theVar, CDbl(value), theProgram.heapStack(theProgram.currentHeapFrame))
             Else
-                'Global
+                ' Global
                 Call SetNumVar(theVar, CDbl(value), globalHeap)
             End If
         Else
-            'Global
+            ' Global
             Call SetNumVar(theVar, CDbl(value), globalHeap)
         End If
 
-    ElseIf varType = DT_LIT Then    'LITERAL VARIABLE
-                                    '----------------
+    ElseIf (varType = DT_LIT) Then    'LITERAL VARIABLE
+                                      '----------------
 
-        If (theProgram.autoLocal) Then
-            If (Not litVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame))) Then
-                Call LocalRPG("Local(" & theVar & ")", theProgram, rV)
+        ' Check if the variable exists
+        exists = litVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame))
+
+        If (theProgram.autoLocal) And (Not (bForceGlobal)) Then
+            If Not (exists) Then
+                Call SetLitVar(theVar, vbNullString, theProgram.heapStack(theProgram.currentHeapFrame))
+                exists = True
             End If
         End If
 
-        If (theProgram.currentHeapFrame >= 0) And (Not bForceGlobal) Then
-            If litVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame)) Then
-                'Local
+        If (theProgram.currentHeapFrame >= 0) And (Not (bForceGlobal)) Then
+            If (exists) Then
+                ' Local
                 Call SetLitVar(theVar, value, theProgram.heapStack(theProgram.currentHeapFrame))
             Else
-                'Global
+                ' Global
                 Call SetLitVar(theVar, value, globalHeap)
             End If
         Else
-            'Global
+            ' Global
             Call SetLitVar(theVar, value, globalHeap)
         End If
 
@@ -1260,43 +1263,47 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
 
     Dim tdc As String
     tdc = RightB$(theVar, 2)
-    If ((tdc <> "!") And (tdc <> "$") And ((Not numVarExists(theVar, globalHeap) And (Not numVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame)))))) Then
-        ' Get value of the destination
-        Dim litA As String, numA As Double
-        theVar = theVar & "!"
-        Call getValue(theVar, litA, numA, theProgram)
-        ' If it's not NULL
-        If (numA <> 0) Then
-            ' Check if it's already an object
-            If (isObject(numA, theProgram)) Then
-                ' It is; we may need to handle an overloaded ! or $
-                Dim hClass As Long
-                hClass = CLng(numA)
-                ' Check if it exists
-                If (isMethodMember("operator!", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
-                    ' Call it
-                    Call callObjectMethod(hClass, "operator!()", theProgram, rV, "operator!")
-                    ' Return and leave
-                    If (rV.dataType = DT_REFERENCE) Then
-                        ' Recurse
-                        getVariable = getVariable(rV.ref, lit, num, theProgram)
-                        Exit Function
+    If ((tdc <> "!") And (tdc <> "$")) Then
+        If Not (numVarExists(theVar, globalHeap)) Then
+            If Not (numVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame))) Then
+                ' Get value of the destination
+                Dim litA As String, numA As Double
+                theVar = theVar & "!"
+                Call getValue(theVar, litA, numA, theProgram)
+                ' If it's not NULL
+                If (numA <> 0) Then
+                    ' Check if it's already an object
+                    If (isObject(numA, theProgram)) Then
+                        ' It is; we may need to handle an overloaded ! or $
+                        Dim hClass As Long
+                        hClass = CLng(numA)
+                        ' Check if it exists
+                        If (isMethodMember("operator!", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                            ' Call it
+                            Call callObjectMethod(hClass, "operator!()", theProgram, rV, "operator!")
+                            ' Return and leave
+                            If (rV.dataType = DT_REFERENCE) Then
+                                ' Recurse
+                                getVariable = getVariable(rV.ref, lit, num, theProgram)
+                                Exit Function
+                            End If
+                            getVariable = DT_NUM
+                            num = rV.num
+                            Exit Function
+                        ElseIf (isMethodMember("operator$", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
+                            ' Call it
+                            Call callObjectMethod(hClass, "operator$()", theProgram, rV, "operator$")
+                            ' Return and leave
+                            If (rV.dataType = DT_REFERENCE) Then
+                                ' Recurse
+                                getVariable = getVariable(rV.ref, lit, num, theProgram)
+                                Exit Function
+                            End If
+                            getVariable = DT_LIT
+                            lit = rV.lit
+                            Exit Function
+                        End If
                     End If
-                    getVariable = DT_NUM
-                    num = rV.num
-                    Exit Function
-                ElseIf (isMethodMember("operator$", hClass, theProgram, topNestle(theProgram) <> hClass)) Then
-                    ' Call it
-                    Call callObjectMethod(hClass, "operator$()", theProgram, rV, "operator$")
-                    ' Return and leave
-                    If (rV.dataType = DT_REFERENCE) Then
-                        ' Recurse
-                        getVariable = getVariable(rV.ref, lit, num, theProgram)
-                        Exit Function
-                    End If
-                    getVariable = DT_LIT
-                    lit = rV.lit
-                    Exit Function
                 End If
             End If
         End If
@@ -1310,22 +1317,10 @@ Public Function getVariable(ByVal varname As String, ByRef lit As String, ByRef 
     If (varType = DT_NUM) Then      'NUMERICAL VARIABLE
                                     '------------------
 
-        If (theProgram.autoLocal) Then
-            If (Not numVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame))) Then
-                Call LocalRPG("Local(" & theVar & ")", theProgram, rV)
-            End If
-        End If
-
         num = SearchNumVar(theVar, theProgram)
 
     ElseIf (varType = DT_LIT) Then  'LITERAL VARIABLE
                                     '----------------
-
-        If (theProgram.autoLocal) Then
-            If (Not litVarExists(theVar, theProgram.heapStack(theProgram.currentHeapFrame))) Then
-                Call LocalRPG("Local(" & theVar & ")", theProgram, rV)
-            End If
-        End If
 
         lit = SearchLitVar(theVar, theProgram)
 

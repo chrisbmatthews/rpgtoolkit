@@ -439,44 +439,29 @@ Public Function QueryPlugins(ByVal mName As String, ByVal Text As String, ByRef 
 
 End Function
 
-Sub CBRpgCode(ByVal rpgcodeCommand As String)
+Public Sub CBRpgCode(ByVal rpgcodeCommand As String)
+
     'callback to run rpgcode command
     'rpgcodeCommand is the command to run
     'this is callback 0
-    On Error GoTo errorhandler
-    Dim retval As RPGCODE_RETURN
-    Dim vv As Long
-    
-    Call CanvasGetScreen(cnvRPGCodeScreen)
-    vv = DoIndependentCommand(rpgcodeCommand, retval)
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    Dim retval As RPGCODE_RETURN
+    Call DoIndependentCommand(rpgcodeCommand, retval)
+
 End Sub
 
-Function CBGetString(ByVal varname As String) As String
+Public Function CBGetString(ByVal varname As String) As String
     'callback to obtain the contents of a string var
     'varName is the string variable (ie var$)
     'this is callback 1
-    On Error GoTo errorhandler
+    On Error Resume Next
     Dim lit As String
     Dim num As Double
-    Dim a As Long
-    a = getIndependentVariable(varname, lit$, num)
+    Call getIndependentVariable(varname, lit$, num)
     CBGetString = lit$
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
-Function CBGetNumerical(ByVal varname As String) As Double
+Public Function CBGetNumerical(ByVal varname As String) As Double
     'callback to obtain the contents of a numerical var
     'varName is the string variable (ie var!)
     'this is callback 2
@@ -495,50 +480,30 @@ errorhandler:
     Resume Next
 End Function
 
-Sub CBSetString(ByVal varname As String, ByVal newValue As String)
+Public Sub CBSetString(ByVal varname As String, ByVal newValue As String)
     'callback to set the contents of a string var
     'varName is the string variable (ie var$)
     'newValue is the new string value
     'this is callback 3
-    On Error GoTo errorhandler
+    On Error Resume Next
     Call setIndependentVariable(varname, newValue)
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
-Sub CBSetNumerical(ByVal varname As String, ByVal newValue As Double)
+Public Sub CBSetNumerical(ByVal varname As String, ByVal newValue As Double)
     'callback to set the contents of a numerical var
     'varName is the variable (ie var!)
     'newValue is the new value
     'this is callback 4
-    On Error GoTo errorhandler
+    On Error Resume Next
     Call setIndependentVariable(varname, CStr(newValue))
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
-Function CBGetScreenDC() As Long
+Public Function CBGetScreenDC() As Long
     'callback to return hdc of mainForm.boardform
     'call back 5
-    On Error GoTo errorhandler
-
+    On Error Resume Next
     CBGetScreenDC = host.hdc
     obtainedDC = CBGetScreenDC
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 Function CBGetScratch1DC() As Long
