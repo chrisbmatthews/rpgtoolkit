@@ -6515,8 +6515,7 @@ Sub SetPixelRPG(Text$, ByRef theProgram As RPGCodeProgram)
         If (cnv <> 0) Then
             Call CanvasSetPixel(cnv, x, y, fontColor)
         Else
-            Call SetPixelV(DXLockScreen(), x, y, fontColor)
-            Call DXUnlockScreen
+            Call DXDrawPixel(x, y, fontColor)
             Call renderRPGCodeScreen
         End If
     End If
