@@ -75,11 +75,11 @@ Public Sub ClearNonPersistentThreads()
     On Error Resume Next
     
     Dim c As Long                   'for loop control variable
-    Dim retval As RPGCODE_RETURN    'unused rpgcode return value
+    Dim retVal As RPGCODE_RETURN    'unused rpgcode return value
     
     For c = 0 To UBound(threads)
         If (threads(c).bPersistent = False) Then
-            Call TellThread(c, "Unload()", retval, True)
+            Call TellThread(c, "Unload()", retVal, True)
             threads(c).filename = ""
             threads(c).thread.programPos = -1
             threads(c).thread.threadID = -1
@@ -111,10 +111,10 @@ Public Sub ClearAllThreads()
     On Error Resume Next
 
     Dim c As Long                   'for loop control variable
-    Dim retval As RPGCODE_RETURN    'unused rpgcode return value
+    Dim retVal As RPGCODE_RETURN    'unused rpgcode return value
 
     For c = 0 To UBound(threads)
-        Call TellThread(c, "Unload()", retval, True)
+        Call TellThread(c, "Unload()", retVal, True)
         threads(c).filename = ""
         threads(c).thread.programPos = -1
         threads(c).thread.threadID = -1
@@ -203,8 +203,8 @@ Public Function ExecuteThread(ByRef theProgram As RPGCodeProgram) As Boolean
     If theProgram.programPos = -1 Or theProgram.programPos = -2 Then
         ExecuteThread = False
     Else
-        Dim retval As RPGCODE_RETURN
-        theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retval)
+        Dim retVal As RPGCODE_RETURN
+        theProgram.programPos = DoSingleCommand(theProgram.program(theProgram.programPos), theProgram, retVal)
         If theProgram.programPos = -1 Or theProgram.programPos = -2 Then
             'clear the program
             Call ClearRPGCodeProcess(theProgram)
@@ -241,6 +241,8 @@ End Sub
 '=========================================================================
 Public Sub KillThread(ByVal threadID As Long)
     On Error Resume Next
+    Dim retVal As RPGCODE_RETURN
+    Call TellThread(threadID, "Unload()", retVal, True)
     threads(threadID).filename = ""
     threads(threadID).thread.programPos = -1
     threads(threadID).thread.threadID = -1
@@ -251,11 +253,11 @@ End Sub
 '=========================================================================
 ' Call a method from a thread
 '=========================================================================
-Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retval As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
+Public Sub TellThread(ByVal threadID As Long, ByVal rpgcodeCommand As String, ByRef retVal As RPGCODE_RETURN, Optional ByVal noMethodNotFound As Boolean)
     On Error Resume Next
     Dim shortName As String
     shortName = UCase(GetCommandName(rpgcodeCommand, threads(threadID).thread))
-    Call MethodCallRPG(rpgcodeCommand, shortName, threads(threadID).thread, retval, noMethodNotFound)
+    Call MethodCallRPG(rpgcodeCommand, shortName, threads(threadID).thread, retVal, noMethodNotFound)
 End Sub
 
 '=========================================================================
@@ -300,10 +302,10 @@ Public Sub launchBoardThreads(ByRef board As TKBoard)
     Next a
 skip:
     On Error GoTo skipAgain
-    Dim retval As RPGCODE_RETURN
+    Dim retVal As RPGCODE_RETURN
     For a = 0 To UBound(threads)
         If threads(a).bPersistent Then
-            Call TellThread(a, "EnterNewBoard()", retval, True)
+            Call TellThread(a, "EnterNewBoard()", retVal, True)
         End If
     Next a
 skipAgain:
