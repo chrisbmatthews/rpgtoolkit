@@ -97,7 +97,7 @@ End Sub
 Private Sub chkPreview_Click()
     'If they uncheck it, we should turn the tile back to how it was at the start
     If chkPreview.value = 0 Then
-        For x = 1 To xrange
+        For x = 1 To xRange
             For y = 1 To 32
                 'If tilemem(x, y) <> -1 Then
                     tilemem(x, y) = tilepreview(x, y)
@@ -154,7 +154,7 @@ Private Sub Form_Activate()
     Call LocalizeForm(Me)
     
     'Used to store the current tile for when the "preview" function is used
-    For x = 1 To xrange
+    For x = 1 To xRange
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
                 tilepreview(x, y) = tilemem(x, y)
@@ -182,7 +182,7 @@ Private Sub Form_Unload(Cancel As Integer)
     If Not SaveChanges Then
     'Use new undo
     Call activeTile.SetUndo
-    For x = 1 To xrange
+    For x = 1 To xRange
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
                 tilemem(x, y) = tilepreview(x, y)
@@ -206,7 +206,7 @@ Sub Preview(level As Integer)
     End If
     
     'First we need to to set the tile back to how it was at the start
-    For x = 1 To xrange
+    For x = 1 To xRange
         For y = 1 To 32
             'If tilemem(x, y) <> -1 Then
                 tilemem(x, y) = tilepreview(x, y)
@@ -217,12 +217,12 @@ Sub Preview(level As Integer)
     'Ok that's done, let's preview!
     level = level * 2
     If level = 2 Then
-        For x = 1 To xrange Step level
+        For x = 1 To xRange Step level
             For y = 1 To 32 Step level
                 If tilemem(x, y) <> -1 Then
                     tilemem(x, y) = -1
                     If x = 1 Then
-                        tilemem(xrange, y + level / 2) = -1
+                        tilemem(xRange, y + level / 2) = -1
                     Else
                         tilemem(x - level / 2, y + level / 2) = -1
                     End If
@@ -231,7 +231,7 @@ Sub Preview(level As Integer)
         Next x
     Else
         level = level / 2
-        For x = 1 To xrange Step level
+        For x = 1 To xRange Step level
             For y = 1 To 32 Step level
                 If tilemem(x, y) <> -1 Then
                     tilemem(x, y) = -1
@@ -240,6 +240,7 @@ Sub Preview(level As Integer)
         Next x
     End If
     'Redraw
+    tkMainForm.isoMirror.cls
     Call activeTile.tileRedraw
 End Sub
 

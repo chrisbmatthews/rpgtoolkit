@@ -314,6 +314,7 @@ Private Sub Preview()
         Next x
     End If
     'Redraw
+    tkMainForm.isoMirror.cls
     activeTile.tileRedraw
 End Sub
 

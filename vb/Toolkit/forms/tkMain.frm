@@ -635,8 +635,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":A712
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -836,8 +836,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   98
             Top             =   0
             Width           =   1815
-            _extentx        =   3201
-            _extenty        =   8070
+            _ExtentX        =   3201
+            _ExtentY        =   8070
          End
       End
       Begin Toolkit.TKTopBar_Tools NewBarTop 
@@ -846,10 +846,10 @@ Begin VB.MDIForm tkMainForm
          TabIndex        =   96
          Top             =   0
          Width           =   1815
-         _extentx        =   3201
-         _extenty        =   370
-         Object.width           =   1815
-         caption         =   "New"
+         _ExtentX        =   3201
+         _ExtentY        =   370
+         Object.Width           =   1815
+         Caption         =   "New"
       End
    End
    Begin VB.PictureBox leftBarContainer 
@@ -1453,10 +1453,10 @@ Begin VB.MDIForm tkMainForm
          TabIndex        =   94
          Top             =   0
          Width           =   975
-         _extentx        =   1720
-         _extenty        =   370
-         Object.width           =   975
-         caption         =   "Tools"
+         _ExtentX        =   1720
+         _ExtentY        =   370
+         Object.Width           =   975
+         Caption         =   "Tools"
       End
    End
    Begin VB.Timer theBardTimer 
@@ -2379,7 +2379,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   10954
-            TextSave        =   "17:44"
+            TextSave        =   "18:02"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3125,10 +3125,6 @@ End Sub
 
 Private Sub arrowtype_Click()
     Call toggle_Click
-End Sub
-
-Private Sub bBar_Click()
-
 End Sub
 
 Private Sub Command1_Click(): On Error Resume Next

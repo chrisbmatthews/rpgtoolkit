@@ -153,6 +153,7 @@ Class=CUnDock; classes\CUnDock.cls
 Form=forms\frmCommonImages.frm
 Form=forms\tiletranslucentize.frm
 Form=forms\texturize.frm
+Form=forms\skew.frm
 IconForm="Form1"
 Startup="Form1"
 HelpFile=""

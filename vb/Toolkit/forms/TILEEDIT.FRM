@@ -1700,7 +1700,7 @@ Public Sub tileRedraw()
     On Error GoTo ErrorHandler
     Call activeTile.highredraw
     Call drawGrid
-    tkMainForm.isoMirror.cls
+    'tkMainForm.isoMirror.cls
     
     If isIsoTile Then
         'Draw the tile isometrically. Send a different value to the function.
