@@ -1,114 +1,360 @@
-//////////////////////////////////////////////////////////////////////////
-//All contents copyright 2003, 2004, Christopher Matthews or Contributors
-//All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-//Read LICENSE.txt for licensing info
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
+// All contents copyright 2003, 2004, Christopher Matthews or Contributors
+// All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
+// Read LICENSE.txt for licensing info
+//--------------------------------------------------------------------------
 
-//////////////////////////////////////////////////////////////////////////
-// GDICanvas.h: interface for the CGDICanvas class.
-// Portions based on Isometric Game Programming With DirtectX 7.0 (Pazera)
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
+// A canvas
+//--------------------------------------------------------------------------
 
-#if !defined(AFX_GDICANVAS_H__F5EB4F68_2CBC_11D4_A1EE_8F7A3049432E__INCLUDED_)
-#define AFX_GDICANVAS_H__F5EB4F68_2CBC_11D4_A1EE_8F7A3049432E__INCLUDED_
-
-#if _MSC_VER > 1000
+//--------------------------------------------------------------------------
+// Protect the header
+//--------------------------------------------------------------------------
+#ifndef _CGDICANVAS_H_
+#define _CGDICANVAS_H_
 #pragma once
-#endif // _MSC_VER > 1000
 
-#include <windows.h>
+//--------------------------------------------------------------------------
+// Inclusions
+//--------------------------------------------------------------------------
+#define WIN32_LEAN_AND_MEAN			// Flag lean version of Windows
+#include <windows.h>				// The Windows API
+#include "..\tkDirectX\platform.h"	// DirectX interface
 
-///for DirectX...
-#include "..\tkDirectX\platform.h"
-
-typedef struct _tagColor24
+//--------------------------------------------------------------------------
+// A 24-bit color
+//--------------------------------------------------------------------------
+struct COLOR24
 {
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
-} COLOR24;
-
-//GDICanvas--wrapper for a dc and a bitmap
-class CGDICanvas  
-{
-	public:
-		CGDICanvas();
-		CGDICanvas(const CGDICanvas& rhs);
-		~CGDICanvas();
-		CGDICanvas& operator=(const CGDICanvas& rhs);
-
-		//methods...
-		//void Load(HDC hdcCompatible,LPCTSTR lpszFilename);	//loads bitmap from a file
-		void CreateBlank(HDC hdcCompatible, int width, int height, bool bDX = false);	//creates a blank bitmap
-		void Destroy();  //destroys bitmap and dc
-		void SetPixel(int x, int y, int crColor);
-		int GetPixel(int x, int y);
-		int GetWidth();
-		int GetHeight();
-		HDC OpenDC();
-		void CloseDC(HDC hdc);
-		void Lock();
-		void Unlock();
-		void SetPixels( long* p_crPixelArray, int x, int y, int width, int height );
-
-		void Resize(HDC hdcCompatible, int width, int height);
-
-		bool usingDX() { return m_bUseDX; }
-
-		int Blt(HDC hdcTarget, int x, int y, long lRasterOp = SRCCOPY);
-		int Blt(CGDICanvas* pCanvas, int x, int y, long lRasterOp = SRCCOPY);
-		int Blt(LPDIRECTDRAWSURFACE7 lpddsSurface, int x, int y, long lRasterOp = SRCCOPY);
-
-		int BltPart(HDC hdcTarget, int x, int y, int xSrc, int ySrc, int width, int height, long lRasterOp = SRCCOPY);
-		int BltPart(CGDICanvas* pCanvas, int x, int y, int xSrc, int ySrc, int width, int height, long lRasterOp = SRCCOPY);
-		int BltPart(LPDIRECTDRAWSURFACE7 lpddsSurface, int x, int y, int xSrc, int ySrc, int width, int height, long lRasterOp = SRCCOPY);
-
-		int BltTransparent(HDC hdcTarget, int x, int y, long crTransparentColor);
-		int BltTransparent(CGDICanvas* pCanvas, int x, int y, long crTransparentColor);
-		int BltTransparent(LPDIRECTDRAWSURFACE7 lpddsSurface, int x, int y, long crTransparentColor);
-
-		int BltTransparentPart(HDC hdcTarget, int x, int y, int xSrc, int ySrc, int width, int height, long crTransparentColor);
-		int BltTransparentPart(CGDICanvas* pCanvas, int x, int y, int xSrc, int ySrc, int width, int height, long crTransparentColor);
-		int BltTransparentPart(LPDIRECTDRAWSURFACE7 lpddsSurface, int x, int y, int xSrc, int ySrc, int width, int height, long crTransparentColor);
-
-		int BltTranslucent(HDC hdcTarget, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor);
-		int BltTranslucent(CGDICanvas* pCanvas, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor);
-		int BltTranslucent(LPDIRECTDRAWSURFACE7 lpddsSurface, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor);
-
-		int ShiftLeft(int nPixels);
-		int ShiftRight(int nPixels);
-		int ShiftUp(int nPixels);
-		int ShiftDown(int nPixels);
-
-		LPDIRECTDRAWSURFACE7 GetDXSurface() { return m_lpddsSurface; }
-
-		long GetRGBColor(long crColor);
-		long GetSurfaceColor(long dxColor);
-
-	private:
-		COLORREF ConvertDDColor(DWORD dwColor, DDPIXELFORMAT* pddpf);
-		DWORD ConvertColorRef(COLORREF crColor, DDPIXELFORMAT* pddpf);
-		WORD GetNumberOfBits( DWORD dwMask );
-		WORD GetMaskPos( DWORD dwMask );
-		void SetRGBPixel(DDSURFACEDESC2* destSurface, DDPIXELFORMAT* pddpf, int x, int y, long rgb);
-		long GetRGBPixel(DDSURFACEDESC2* destSurface, DDPIXELFORMAT* pddpf, int x, int y);
-
-		void SetPixelsDX( long* p_crPixelArray, int x, int y, int width, int height );
-		void SetPixelsGDI( long* p_crPixelArray, int x, int y, int width, int height );
-
-	private:
-		HDC m_hdcMem;		//memory dc
-		HBITMAP m_hbmNew;		//new bitmap
-		HBITMAP m_hbmOld;		//old bitmap
-		//width and height
-		int m_nWidth;
-		int m_nHeight;
-
-		HDC m_hdcLocked;	//locked hdc (if null, then surface is not locked)
-
-		//For DirectX surfaces only:
-		bool		m_bUseDX;		//using directx?
-		LPDIRECTDRAWSURFACE7 m_lpddsSurface;		//direct draw back buffer
+	BYTE r;	// Red portion
+	BYTE g;	// Green portion
+	BYTE b;	// Blue portion
 };
 
-#endif // !defined(AFX_GDICANVAS_H__F5EB4F68_2CBC_11D4_A1EE_8F7A3049432E__INCLUDED_)
+//--------------------------------------------------------------------------
+// Definitions
+//--------------------------------------------------------------------------
+#define INLINE inline
+#define FAST_CALL __fastcall
+#define DOUBLE double
+#define STATIC static
+
+//--------------------------------------------------------------------------
+// Definition of the CGDICanvas class
+//--------------------------------------------------------------------------
+class CGDICanvas
+{
+
+//
+// Public visibility
+//
+public:
+
+	CGDICanvas(
+		VOID
+	);
+
+	CGDICanvas(
+		CONST CGDICanvas &rhs
+	);
+
+	~CGDICanvas(
+		VOID
+	);
+
+	CGDICanvas &operator=(
+		CONST CGDICanvas &rhs
+	);
+
+	VOID FAST_CALL CreateBlank(
+		CONST HDC hdcCompatible,
+		CONST INT width,
+		CONST INT height,
+		CONST BOOL bDX = FALSE
+	);
+
+	VOID Destroy(
+		VOID
+	);
+
+	VOID SetPixel(
+		CONST INT x,
+		CONST INT y,
+		CONST INT crColor
+	);
+
+	INT FAST_CALL GetPixel(
+		CONST INT x,
+		CONST INT y
+	) CONST;
+
+	INT GetWidth(
+		VOID
+	) CONST;
+
+	INT GetHeight(
+		VOID
+	) CONST;
+
+	HDC OpenDC(
+		VOID
+	) CONST;
+
+	VOID CloseDC(
+		HDC hdc
+	) CONST;
+
+	VOID Lock(
+		VOID
+	);
+
+	VOID Unlock(
+		VOID
+	);
+
+	VOID FAST_CALL SetPixels(
+		CONST LPLONG p_crPixelArray,
+		CONST INT x,
+		CONST INT y,
+		CONST INT width,
+		CONST INT height
+	);
+
+	VOID FAST_CALL Resize(
+		CONST HDC hdcCompatible,
+		CONST INT width,
+		CONST INT height
+	);
+
+	BOOL usingDX(
+		VOID
+	) CONST;
+
+	INT FAST_CALL Blt(
+		CONST HDC hdcTarget,
+		CONST INT x,
+		CONST INT y,
+		CONST LONG lRasterOp = SRCCOPY
+	) CONST;
+
+	INT FAST_CALL Blt(
+		CONST CGDICanvas *pCanvas,
+		CONST INT x,
+		CONST INT y,
+		CONST LONG lRasterOp = SRCCOPY
+	) CONST;
+
+	INT FAST_CALL Blt(
+		CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+		CONST INT x,
+		CONST INT y,
+		CONST LONG lRasterOp = SRCCOPY
+	) CONST;
+
+	INT FAST_CALL BltPart(
+		CONST HDC hdcTarget,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST LONG lRasterOp = SRCCOPY
+	) CONST;
+
+	INT FAST_CALL BltPart(
+		CONST CGDICanvas *pCanvas,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST LONG lRasterOp = SRCCOPY
+	) CONST;
+
+	INT FAST_CALL BltPart(
+		CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST LONG lRasterOp = SRCCOPY
+	) CONST;
+
+	INT FAST_CALL BltTransparent(
+		CONST HDC hdcTarget,
+		CONST INT x,
+		CONST INT y,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTransparent(
+		CONST CGDICanvas *pCanvas,
+		CONST INT x,
+		CONST INT y,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTransparent(
+		CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+		CONST INT x,
+		CONST INT y,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTransparentPart(
+		CONST HDC hdcTarget,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTransparentPart(
+		CONST CGDICanvas *pCanvas,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTransparentPart(
+		CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTranslucent(
+		CONST HDC hdcTarget,
+		CONST INT x,
+		CONST INT y,
+		CONST DOUBLE dIntensity,
+		CONST LONG crUnaffectedColor,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTranslucent(
+		CONST CGDICanvas *pCanvas,
+		CONST INT x,
+		CONST INT y,
+		CONST DOUBLE dIntensity,
+		CONST LONG crUnaffectedColor,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL BltTranslucent(
+		CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+		CONST INT x,
+		CONST INT y,
+		CONST DOUBLE dIntensity,
+		CONST LONG crUnaffectedColor,
+		CONST LONG crTransparentColor
+	) CONST;
+
+	INT FAST_CALL ShiftLeft(
+		CONST INT nPixels
+	);
+
+	INT FAST_CALL ShiftRight(
+		CONST INT nPixels
+	);
+
+	INT FAST_CALL ShiftUp(
+		CONST INT nPixels
+	);
+
+	INT FAST_CALL ShiftDown(
+		CONST INT nPixels
+	);
+
+	LPDIRECTDRAWSURFACE7 GetDXSurface(
+		VOID
+	) CONST;
+
+	LONG GetRGBColor(
+		CONST LONG crColor
+	) CONST;
+
+	LONG GetSurfaceColor(
+		CONST LONG dxColor
+	) CONST;
+
+//
+// Private visibility
+//
+private:
+
+	STATIC COLORREF ConvertDDColor(
+		CONST DWORD dwColor,
+		CONST LPDDPIXELFORMAT pddpf
+	);
+
+	STATIC DWORD ConvertColorRef(
+		CONST COLORREF crColor,
+		CONST LPDDPIXELFORMAT pddpf
+	);
+
+	STATIC WORD GetNumberOfBits(
+		CONST DWORD dwMask
+	);
+
+	STATIC WORD GetMaskPos(
+		CONST DWORD dwMask
+	);
+
+	STATIC VOID SetRGBPixel(
+		CONST LPDDSURFACEDESC2 destSurface,
+		CONST LPDDPIXELFORMAT pddpf,
+		CONST INT x,
+		CONST INT y,
+		CONST LONG rgb
+	);
+
+	STATIC LONG GetRGBPixel(
+		CONST LPDDSURFACEDESC2 destSurface,
+		CONST LPDDPIXELFORMAT pddpf,
+		CONST INT x,
+		CONST INT y
+	);
+
+	VOID FAST_CALL SetPixelsDX(
+		CONST LPLONG p_crPixelArray,
+		CONST INT x,
+		CONST INT y,
+		CONST INT width,
+		CONST INT height
+	);
+
+	VOID SetPixelsGDI(
+		CONST LPLONG p_crPixelArray,
+		CONST INT x,
+		CONST INT y,
+		CONST INT width,
+		CONST INT height
+	);
+
+	HDC m_hdcMem;							// Memory DC
+	INT m_nWidth;							// Width
+	INT m_nHeight;							// Height
+	HDC m_hdcLocked;						// Locked hdc
+	BOOL m_bUseDX;							// Using DirectX?
+	LPDIRECTDRAWSURFACE7 m_lpddsSurface;	// DirectDraw surface
+
+};
+
+#endif

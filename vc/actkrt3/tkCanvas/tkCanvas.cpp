@@ -142,7 +142,7 @@ CNV_HANDLE APIENTRY CNVCreate(
 	CGDICanvas *cnv = new CGDICanvas();
 
 	// Create the canvas
-	cnv->CreateBlank(HDC(hdcCompatable), nWidth, nHeight, bool(nUseDX));
+	cnv->CreateBlank(HDC(hdcCompatable), nWidth, nHeight, nUseDX);
 
 	// Push the canvas onto the list
 	m_canvases.push_back(cnv);
