@@ -113,7 +113,7 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 	// Create DirectDraw
 	if (FAILED(DirectDrawCreateEx(
 		NULL,
-		reinterpret_cast<void **>(&m_lpdd),
+		reinterpret_cast<LPVOID *>(&m_lpdd),
 		IID_IDirectDraw7, NULL))) return;
 
 	// Initiate the primary surface
@@ -210,14 +210,14 @@ BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 		}
 
 		// Kill primary surface
-		if(m_lpddsPrime)
+		if (m_lpddsPrime)
 		{
 			if (FAILED(m_lpddsPrime->Release())) return FALSE;
 			m_lpddsPrime = NULL;
 		}
 
 		// Kill direct draw
-		if(m_lpdd)
+		if (m_lpdd)
 		{
 			if (FAILED(m_lpdd->Release())) return FALSE;
 			m_lpdd = NULL;
@@ -409,7 +409,7 @@ BOOL FAST_CALL CDirectDraw::Refresh(
 			if (cnv)
 			{
 				// Blt to a canvas
-				cnv->GetDXSurface()->BltFast(0, 0, m_lpddsSecond, &m_surfaceRect, NULL);
+				cnv->GetDXSurface()->BltFast(0, 0, m_lpddsSecond, &m_surfaceRect, 0);
 			}
 			else
 			{
@@ -683,7 +683,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasPartial(
 		{
 			// Use GDI
 			CONST HDC hdc = OpenDC();
-			CONST bToRet = pCanvas->BltPart(hdc, destX, destY, srcX, srcY, width, height, lRasterOp);
+			CONST BOOL bToRet = pCanvas->BltPart(hdc, destX, destY, srcX, srcY, width, height, lRasterOp);
 			CloseDC(hdc);
 			return bToRet;
 		}
@@ -723,7 +723,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTransparentPartial(
 		{
 			// Use GDI
 			CONST HDC hdc = OpenDC();
-			CONST bToRet = pCanvas->BltTransparentPart(hdc, destX, destY, srcX, srcY, width, height, crTransparentColor);
+			CONST BOOL bToRet = pCanvas->BltTransparentPart(hdc, destX, destY, srcX, srcY, width, height, crTransparentColor);
 			CloseDC(hdc);
 			return bToRet;
 		}
@@ -739,7 +739,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTransparentPartial(
 //------------------------------------------------------------------------
 // Draw part of a canvas, using translucency
 //------------------------------------------------------------------------
-BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(CONST CONST CGDICanvas *pCanvas, CONST INT x, CONST INT y, CONST INT xSrc, CONST INT ySrc, CONST INT width, CONST INT height, CONST DOUBLE dIntensity, CONST LONG crUnaffectedColor, CONST LONG crTransparentColor)
+BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(CONST CGDICanvas *pCanvas, CONST INT x, CONST INT y, CONST INT xSrc, CONST INT ySrc, CONST INT width, CONST INT height, CONST DOUBLE dIntensity, CONST LONG crUnaffectedColor, CONST LONG crTransparentColor)
 {
 	if (pCanvas)
 	{
