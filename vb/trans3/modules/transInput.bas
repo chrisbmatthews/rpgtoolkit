@@ -203,6 +203,15 @@ Public Function getKey() As String
         
     End If
 
+    Dim jButtonNum As Long
+    For jButtonNum = 1 To UBound(jButton)
+        'Check the other buttons
+        If (jButton(jButtonNum)) Then
+            getKey = "BUTTON" & CStr(jButtonNum + 1)
+            Exit Function
+        End If
+    Next jButtonNum
+
     Dim keyWaitState As Long
     keyWaitState = m_keyQueue.dequeue()
 
@@ -313,7 +322,7 @@ Public Function WaitForKey() As String
         
     End If
     
-    Dim jButtonNum As Integer
+    Dim jButtonNum As Long
     For jButtonNum = 1 To UBound(jButton)
         'Check the other buttons
         If jButton(jButtonNum) Then
