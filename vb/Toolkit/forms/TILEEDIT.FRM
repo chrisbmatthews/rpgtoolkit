@@ -411,7 +411,27 @@ Public ignoreDeactivate As Boolean
 '!NEW! For the changecolor function
 Private bchangecolor As Integer
 
+<<<<<<< TILEEDIT.FRM
+Dim fromActivate As Boolean
+
+'========================================================================
+' Enum declaration [KSNiloc]
+'========================================================================
+
+Private Enum FLIP_TYPE
+    Horizontal = 1
+    Vertical = 2
+End Enum
+
+Private Enum ROTATE_TYPE
+    Left = 1
+    Right = 2
+    OneHunderdEighty = 3
+End Enum
+
+=======
 Private fromActivate As Boolean
+>>>>>>> 1.6
 '========================================================================
 ' Identify type of form
 '========================================================================
@@ -614,29 +634,28 @@ End Sub
 ' Rotates the tile, I've edited this sub for the new rotate's, and
 ' renamed the sub (EDIT for 3.0.4 by Woozy)
 '========================================================================
-Private Sub Rotate(how As Integer)
-    'How: 1 - Left
-    '     2 - Right
-    '     3 - 180
-    
+'KSNiloc: Enum please
+Private Sub Rotate(ByVal how As ROTATE_TYPE)
+   
     'Use new undo
     Call SetUndo
-    
+
+    'KSNiloc: No evil variants, please
     Dim x As Integer, y As Integer, xx As Integer, yy As Integer
-    
+   
     'Buff it
     For x = 1 To 32
         For y = 1 To 32
             buftile(x, y) = tilemem(x, y)
         Next y
     Next x
-    
+   
     'Reset variables
     yy = 1: xx = 1
-    
+   
     'Start changing the tiles
     Select Case how
-        Case 1 'Rotate Left
+        Case Left 'KSNiloc
             For x = 1 To 32
                 For y = 32 To 1 Step -1
                     tilemem(x, y) = buftile(xx, yy)
@@ -645,7 +664,7 @@ Private Sub Rotate(how As Integer)
                 xx = 1
                 yy = yy + 1
             Next x
-        Case 2 'Rotate right
+        Case Right 'KSNiloc
             For x = 32 To 1 Step -1
                 For y = 1 To 32
                     tilemem(x, y) = buftile(xx, yy)
@@ -654,7 +673,7 @@ Private Sub Rotate(how As Integer)
                 xx = 1
                 yy = yy + 1
             Next x
-        Case 3 'Rotate 180
+        Case OneHundredEighty 'KSNiloc
             For y = 32 To 1 Step -1
                 For x = 32 To 1 Step -1
                     tilemem(x, y) = buftile(xx, yy)
@@ -671,32 +690,32 @@ End Sub
 ' Flips the tile, I've edited this sub for the new flip, and renamed
 ' the sub (EDIT for 3.0.4 by Woozy)
 '========================================================================
-Private Sub Flip(how As Integer)
-    'How: 1 - Horizontal
-    '     2 - Vertical
-    
+'KSNiloc: Enum please
+Private Sub Flip(ByVal how As FLIP_TYPE)
+   
     'Use new undo
     Call SetUndo
-    
+   
+    'KSNiloc: No evil variants, please
     Dim x As Integer, y As Integer
-    
+   
     For x = 1 To 32
         For y = 1 To 32
             'Edited for the new flip
-            If how = 1 Then 'Horizontal
+            If how = Horizontal Then '[KSNiloc]
                 buftile(x, y) = tilemem(32 - x + 1, y)
             Else 'Vertical
                 buftile(x, y) = tilemem(x, 32 - y + 1)
             End If
         Next y
     Next x
-    
+   
     For x = 1 To 32
         For y = 1 To 32
             tilemem(x, y) = buftile(x, y)
         Next y
     Next x
-    
+   
     'Redraw
     Call tileRedraw
 End Sub
@@ -2213,23 +2232,23 @@ Private Sub cmdClear_Click()
 End Sub
 'Rotate Left (NEW for 3.0.4 by Woozy)
 Private Sub mnuRotate90CCW_Click()
-    Rotate (1)
+    Rotate Left 'KSNiloc
 End Sub
 'Rotate Right (NEW for 3.0.4 by Woozy)
 Private Sub mnuRotate90CW_Click()
-    Rotate (2)
+    Rotate Right 'KSNiloc
 End Sub
 'Rotate 180 (NEW for 3.0.4 by Woozy)
 Private Sub mnuRotate180_Click()
-    Rotate (3)
+    Rotate OneHunderdEighty 'KSNiloc
 End Sub
 'Flip Horizontal (NEW for 3.0.4 by Woozy)
 Private Sub mnuFlipHor_Click()
-    Flip (1)
+    Flip Horizontal 'KSNiloc
 End Sub
 'Flip Vertical (NEW for 3.0.4 by Woozy)
 Private Sub mnuFlipVer_Click()
-    Flip (2)
+    Flip Vertical  'KSNiloc
 End Sub
 '========================================================================
 ' Image Menu
@@ -2309,15 +2328,16 @@ End Sub
 'Grayscale (EDIT for 3.0.4 by Woozy)
 Public Sub gryscle_Click()
     On Error Resume Next
-    
+   
     'Use new undo
-    Call SetUndo                                        '<-- Edit
-    
-    Dim x As Integer, y As Integer                      '<-- New
-    Dim rr As Long, gg As Long, bb As Long
-    Dim newavg As Long                                  '<-- New
+    Call SetUndo                                                   '<-- Edit
+   
+    'KSNiloc: NO MORE VARIANTS, darnit =)
+    Dim x As Integer, y As Integer                                 '<-- New
+    Dim rr As Long, gg As Long, bb As Long, newavg As Long         '<-- New
+
     'Start converting
-    For x = 1 To xRange
+    For x = 1 To xrange
         For y = 1 To 32
             If tilemem(x, y) <> -1 Then
                 rr = red(tilemem(x, y))
