@@ -29,8 +29,8 @@ Public Sub isoCoordTransform(ByVal oldX As Double, ByVal oldY As Double, _
                                   ByRef newX As Double, ByRef newY As Double)
 
     If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-        newX = oldX + (oldY - 1) \ 2
-        newY = oldY \ 2 + 1 - Int(oldX) + (oldY - Int(oldY))
+        newX = oldX + Int((oldY - 1) / 2)
+        newY = Int(oldY / 2) + 1 - Int(oldX) + (oldY - Int(oldY))
         
         newY = newY + boardList(activeBoardIndex).theData.bSizeX
     Else
@@ -51,10 +51,10 @@ Public Sub invIsoCoordTransform(ByVal newX As Double, ByVal newY As Double, _
         newY = newY - boardList(activeBoardIndex).theData.bSizeX
     
         If Int(newX) Mod 2 = 0 Then
-            oldX = newX \ 2 - ((newY - 1) \ 2) + (newX - Int(newX))
+            oldX = Int(newX / 2) - Int((newY - 1) / 2) + (newX - Int(newX))
             oldY = Int(newX) + newY
         Else
-            oldX = ((newX + 1) \ 2) - (newY \ 2) + (newX - Int(newX))
+            oldX = Int((newX + 1) / 2) - Int(newY / 2) + (newX - Int(newX))
             oldY = Int(newX) + newY
         End If
         
