@@ -158,10 +158,10 @@ Public cnvRPGCodeAccess As Long
 Public cnvRPGCode() As Long
 
 ' Transparent color
-Public Const TRANSP_COLOR = 0
+Public Const TRANSP_COLOR = 16777215
 
 ' Alternate transparent color
-Public Const TRANSP_COLOR_ALT = 16777215
+Public Const TRANSP_COLOR_ALT = 0
 
 ' In DirectX mode? (yes, always :P)
 Private Const inDXMode As Boolean = True
@@ -1493,15 +1493,15 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
         If (renderRenderNowCanvas) Then
             If (cnvTarget = -1) Then
                 ' To the screen
-                If (Not renderRenderNowCanvasTranslucent) Then
-                    Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, TRANSP_COLOR)
+                If Not (renderRenderNowCanvasTranslucent) Then
+                    Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, TRANSP_COLOR_ALT)
                 Else
                     Call DXDrawCanvasTranslucent(cnvRenderNow, 0, 0)
                 End If
             Else
                 ' To a canvas
-                If (Not renderRenderNowCanvasTranslucent) Then
-                    Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, TRANSP_COLOR)
+                If Not (renderRenderNowCanvasTranslucent) Then
+                    Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, TRANSP_COLOR_ALT)
                 Else
                     Call Canvas2CanvasBltTranslucent(cnvRenderNow, cnvTarget, 0, 0)
                 End If
