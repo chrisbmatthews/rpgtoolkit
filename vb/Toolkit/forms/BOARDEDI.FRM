@@ -770,6 +770,7 @@ End Sub
 ' Fill board with selected tile
 ' Depreciated 3.0.6: crashes on large boards (>~ 100 x 100) - use gdi instead!
 '==============================================================================
+#If (CODE_OBSOLETE) Then
 Private Sub fillBoard(ByVal x As Long, ByVal y As Long, ByVal l As Long, ByVal tileFile As String, Optional ByVal lastX As Long = -1, Optional ByVal lastY As Long = -1): On Error Resume Next
     
     ' get old tile
@@ -850,6 +851,7 @@ Private Sub fillBoard(ByVal x As Long, ByVal y As Long, ByVal l As Long, ByVal t
     End If
     
 End Sub
+#End If
 
 '========================================================================
 ' change board state {2d/isometric}
