@@ -1596,7 +1596,17 @@ Public Function copyObject(ByVal hObject As Long, ByRef prg As RPGCodeProgram, O
                     Dim lit As String, num As Double
                     If (getVariable(getObjectVarName(scope.strVars(j), hObject), lit, num, prg) = DT_NUM) Then
 
-                        ' It's numerical
+                        ' If it's an object
+                        Dim hObjectNum As Long
+                        hObjectNum = CLng(num)
+                        If (isObject(hObjectNum)) Then
+
+                            ' Colin, 3.06: Copy the *object*, not the handle
+                            num = CDbl(copyObject(hObjectNum, prg))
+
+                        End If
+
+                        ' Set the destination
                         Call SetVariable(getObjectVarName(scope.strVars(j), copyObject), CStr(num), prg, True)
 
                     Else
