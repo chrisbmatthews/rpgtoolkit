@@ -16,7 +16,7 @@ Option Explicit
 '=========================================================================
 Public inWith() As String
 
-Sub CompilerPopRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CompilerPopRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#dest$ = #com_pop_piler()
     'pop a var off the compiler stack (undocumented command-- only used by internal compiler)
     
@@ -24,8 +24,8 @@ Sub CompilerPopRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByR
     
     Dim use As String, dataUse As String, number As Long
 
-    retval.dataType = DT_VOID
-    retval.num = -1
+    retVal.dataType = DT_VOID
+    retVal.num = -1
     
     use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -38,12 +38,12 @@ Sub CompilerPopRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByR
     Dim value As String
     value = PopCompileStack(theProgram)
     
-    retval.dataType = DT_LIT
-    retval.lit = value
+    retVal.dataType = DT_LIT
+    retVal.lit = value
 End Sub
 
 
-Sub CompilerEnterLocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CompilerEnterLocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#com_enterlocal_piler()
     'enter a new local scope -- undocumented -- only called by internal compiler
     
@@ -52,7 +52,7 @@ Sub CompilerEnterLocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgr
     Call AddHeapToStack(theProgram)
 End Sub
 
-Sub AutoCommandRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub AutoCommandRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#AutoCommand()
     'tuns autocommand on for this program (means you dont' have to use #'s)
     
@@ -62,7 +62,7 @@ Sub AutoCommandRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByR
 End Sub
 
 
-Sub CompilerExitLocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CompilerExitLocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#com_exitlocal_piler()
     'exit a new local scope -- undocumented -- only called by internal compiler
     
@@ -73,7 +73,7 @@ End Sub
 
 
 
-Sub CompilerPushRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CompilerPushRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#com_push_piler(a$!)
     'push a var onto the compiler stack (undocumented command-- only used by internal compiler)
     
@@ -81,8 +81,8 @@ Sub CompilerPushRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, By
     
     Dim use As String, dataUse As String, number As Long
     
-    retval.dataType = DT_VOID
-    retval.num = -1
+    retVal.dataType = DT_VOID
+    retVal.num = -1
     
     use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -187,7 +187,7 @@ Private Function formatDirectionString(directions As String) As String
     formatDirectionString = toRet
 End Function
 
-Sub GetThreadIDRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetThreadIDRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#threadID! = #GetThreadID([dest!])
     'return the threadID of the currently running prtogram.
     'if -1, then it is not a thread.
@@ -196,8 +196,8 @@ Sub GetThreadIDRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByR
     On Error Resume Next
     
     'return -1 if error
-    retval.dataType = DT_NUM
-    retval.num = -1
+    retVal.dataType = DT_NUM
+    retVal.num = -1
     
     Dim use As String, dataUse As String, number As Long
     Dim useIt1 As String
@@ -225,8 +225,8 @@ Sub GetThreadIDRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByR
         Call SetVariable(useIt1, CStr(theID), theProgram)
     End If
         
-    retval.dataType = DT_NUM
-    retval.num = theID
+    retVal.dataType = DT_NUM
+    retVal.num = theID
 End Sub
 
 
@@ -265,7 +265,7 @@ End Sub
 
 
 
-Sub ThreadSleepRemainingRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub ThreadSleepRemainingRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#dest! = #ThreadSleepRemaining(threadID! [, dest!])
     'how much time is left in the thread sleep?
     
@@ -277,8 +277,8 @@ Sub ThreadSleepRemainingRPG(ByVal text As String, ByRef theProgram As RPGCodePro
     Dim lit1 As String, lit2 As String
     Dim num1 As Double, num2 As Double
     
-    retval.dataType = DT_VOID
-    retval.num = -1
+    retVal.dataType = DT_VOID
+    retVal.num = -1
     
     use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -299,15 +299,15 @@ Sub ThreadSleepRemainingRPG(ByVal text As String, ByRef theProgram As RPGCodePro
         Exit Sub
     Else
         Dim dRemain As Double
-        retval.dataType = DT_NUM
-        retval.num = ThreadSleepRemaining(num1)
+        retVal.dataType = DT_NUM
+        retVal.num = ThreadSleepRemaining(num1)
         If number = 2 Then
-            Call SetVariable(useIt2, CStr(retval.num), theProgram)
+            Call SetVariable(useIt2, CStr(retVal.num), theProgram)
         End If
     End If
 End Sub
 
-Sub LocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub LocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#dest!$ = #Local(varname!$ [, dest!$])
     'declare a variable as local
     'also returns cuirrent value of variable
@@ -320,8 +320,8 @@ Sub LocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
     Dim lit1 As String, lit2 As String
     Dim num1 As Double, num2 As Double
     
-    retval.dataType = DT_VOID
-    retval.num = -1
+    retVal.dataType = DT_VOID
+    retVal.num = -1
     
     use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -349,11 +349,11 @@ Sub LocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
         End If
         'get value...
         a = getValue(useIt1, lit1, num1, theProgram)
-        retval.dataType = DT_NUM
-        retval.num = num1
+        retVal.dataType = DT_NUM
+        retVal.num = num1
     
         If number = 2 Then
-            Call SetVariable(useIt2, CStr(retval.num), theProgram)
+            Call SetVariable(useIt2, CStr(retVal.num), theProgram)
         End If
     Else
         'literal variable...
@@ -364,16 +364,16 @@ Sub LocalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef ret
         End If
         'get value...
         a = getValue(useIt1, lit1, num1, theProgram)
-        retval.dataType = DT_LIT
-        retval.lit = lit1
+        retVal.dataType = DT_LIT
+        retVal.lit = lit1
     
         If number = 2 Then
-            Call SetVariable(useIt2, CStr(retval.lit), theProgram)
+            Call SetVariable(useIt2, CStr(retVal.lit), theProgram)
         End If
     End If
 End Sub
 
-Sub GlobalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GlobalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#dest!$ = #Global(varname!$ [, dest!$])
     'declare a variable as global
     'also returns cuirrent value of variable
@@ -386,8 +386,8 @@ Sub GlobalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef re
     Dim lit1 As String, lit2 As String
     Dim num1 As Double, num2 As Double
     
-    retval.dataType = DT_VOID
-    retval.num = -1
+    retVal.dataType = DT_VOID
+    retVal.num = -1
     
     use$ = text$
     dataUse$ = GetBrackets(use$)    'Get text inside brackets
@@ -419,11 +419,11 @@ Sub GlobalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         a = getValue(useIt1, lit1, num1, theProgram)
         theProgram.currentHeapFrame = oldHeap
         
-        retval.dataType = DT_NUM
-        retval.num = num1
+        retVal.dataType = DT_NUM
+        retVal.num = num1
     
         If number = 2 Then
-            Call SetVariable(useIt2, CStr(retval.num), theProgram)
+            Call SetVariable(useIt2, CStr(retVal.num), theProgram)
         End If
     Else
         'literal variable...
@@ -439,17 +439,17 @@ Sub GlobalRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef re
         a = getValue(useIt1, lit1, num1, theProgram)
         theProgram.currentHeapFrame = oldHeap
         
-        retval.dataType = DT_LIT
-        retval.lit = lit1
+        retVal.dataType = DT_LIT
+        retVal.lit = lit1
     
         If number = 2 Then
-            Call SetVariable(useIt2, CStr(retval.lit), theProgram)
+            Call SetVariable(useIt2, CStr(retVal.lit), theProgram)
         End If
     End If
 End Sub
 
 
-Sub TellThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub TellThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '[#ret!$ =] #TellThread(threadID!, command$ [, dest$!])
     'call command defined by command$ in a running thread
     'optionally returns a value to dest!$
@@ -457,8 +457,8 @@ Sub TellThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRe
     On Error Resume Next
     
     'return -1 if error
-    retval.dataType = DT_NUM
-    retval.num = -1
+    retVal.dataType = DT_NUM
+    retVal.num = -1
     
     Dim use As String, dataUse As String, number As Long
     Dim useIt1 As String, useIt2 As String, useIt3 As String
@@ -484,14 +484,14 @@ Sub TellThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRe
     a = getValue(useIt1$, lit1$, num1, theProgram)
     b = getValue(useIt2$, lit2$, num2, theProgram)
         
-    Call TellThread(num1, lit2$, retval)
+    Call TellThread(num1, lit2$, retVal)
         
     If number = 3 Then
         'save value in destination var...
-        If retval.dataType = DT_LIT Then
-            Call SetVariable(useIt3, CStr(retval.lit), theProgram)
+        If retVal.dataType = DT_LIT Then
+            Call SetVariable(useIt3, CStr(retVal.lit), theProgram)
         Else
-            Call SetVariable(useIt3, CStr(retval.num), theProgram)
+            Call SetVariable(useIt3, CStr(retVal.num), theProgram)
         End If
     End If
 End Sub
@@ -974,7 +974,7 @@ End Sub
 Public Sub AnimationRPG( _
                            ByVal text As String, _
                            ByRef theProgram As RPGCodeProgram, _
-                           ByRef retval As RPGCODE_RETURN _
+                           ByRef retVal As RPGCODE_RETURN _
                                                             )
 
     'animationID! = Animation("file.anm", x!, y! [,persistent!])
@@ -995,7 +995,7 @@ Public Sub AnimationRPG( _
         Exit Sub
     End If
 
-    If (retval.usingReturnData) And (Not isMultiTasking()) Then
+    If (retVal.usingReturnData) And (Not isMultiTasking()) Then
         Call debugger("Warning: Animation() only returns a value in a thread-- " & text)
     End If
 
@@ -1026,8 +1026,8 @@ Public Sub AnimationRPG( _
         End If
 
         'Initiate the animation
-        retval.dataType = DT_NUM
-        retval.num = startMultitaskAnimation(paras(1).num, paras(2).num, theProgram)
+        retVal.dataType = DT_NUM
+        retVal.num = startMultitaskAnimation(paras(1).num, paras(2).num, theProgram)
 
     Else
 
@@ -1214,7 +1214,7 @@ errorhandler:
 End Sub
 
 
-Sub checkButtonRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub checkButtonRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #CheckButton(x!,y![,button_num!])
     'checks if a click at x!,y! is in a button
     'if it is, the button number is returned.
@@ -1250,8 +1250,8 @@ Sub checkButtonRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     If number = 3 Then
         Call SetVariable(var3$, CStr(theOne), theProgram)
     End If
-    retval.dataType = DT_NUM
-    retval.num = theOne
+    retVal.dataType = DT_NUM
+    retVal.num = theOne
 
     Exit Sub
 'Begin error handling code:
@@ -1293,7 +1293,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub CosRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub CosRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
 
     On Error Resume Next
     
@@ -1310,8 +1310,8 @@ Public Sub CosRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRe
     Select Case CountData(text)
     
         Case 1
-            retval.dataType = DT_NUM
-            retval.num = Round(Cos(radians(paras(0).num)), 7)
+            retVal.dataType = DT_NUM
+            retVal.num = Round(Cos(radians(paras(0).num)), 7)
         
         Case 2
             Call SetVariable(paras(1).dat, Round(Cos(radians(paras(0).num)), 7), theProgram)
@@ -1894,10 +1894,10 @@ Public Function ForRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
     Dim oldPos As Long
     oldPos = theProgram.programPos
     
-    Dim retval As RPGCODE_RETURN
+    Dim retVal As RPGCODE_RETURN
 
     ' ! MODIFIED BY KSNiloc...
-    DoSingleCommand useIt1, theProgram, retval
+    DoSingleCommand useIt1, theProgram, retVal
     'a = DoIndependentCommand(useIt1$, retval)
     theProgram.programPos = oldPos
     
@@ -1923,7 +1923,7 @@ Public Function ForRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
         
                 oldLine = theProgram.programPos
                 newPos = runBlock(res, theProgram)
-                a = DoSingleCommand(u3, theProgram, retval)
+                a = DoSingleCommand(u3, theProgram, retVal)
                 curLine = oldLine
                 theProgram.programPos = oldLine
             Loop
@@ -1959,7 +1959,7 @@ errorhandler:
     Resume Next
 End Function
 
-Sub GetBoardTileRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetBoardTileRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a$ = #boardgettile(x!, y!, layer![, dest$])
     'get the filename of the tile
     'at a specific board position
@@ -1993,8 +1993,8 @@ Sub GetBoardTileRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
         If number = 4 Then
             Call SetVariable(useIt4$, f$, theProgram)
         End If
-        retval.dataType = DT_LIT
-        retval.lit = f$
+        retVal.dataType = DT_LIT
+        retVal.lit = f$
     End If
 
     Exit Sub
@@ -2004,7 +2004,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetBoardTileTypeRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetBoardTileTypeRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a$ = #GetBoardTileType(x!, y!, layer![, type$])
     'get the tiletype of the tile
     'at a specific board position
@@ -2063,8 +2063,8 @@ Sub GetBoardTileTypeRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval 
         If number = 4 Then
             Call SetVariable(useIt4$, t$, theProgram)
         End If
-        retval.dataType = DT_LIT
-        retval.lit = t$
+        retVal.dataType = DT_LIT
+        retVal.lit = t$
     End If
 
     Exit Sub
@@ -2129,7 +2129,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub getDPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub getDPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #GetDP(handle$[,dest!])
     'get dp of player
     On Error GoTo errorhandler
@@ -2160,8 +2160,8 @@ Sub getDPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If targetType = 2 Then
@@ -2170,8 +2170,8 @@ Sub getDPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneDP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneDP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneDP
                 Exit Sub
             End If
         End If
@@ -2183,8 +2183,8 @@ Sub getDPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If sourceType = 2 Then
@@ -2193,8 +2193,8 @@ Sub getDPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneDP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneDP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneDP
                 Exit Sub
             End If
         End If
@@ -2205,8 +2205,8 @@ Sub getDPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = curhp
+        retVal.dataType = DT_NUM
+        retVal.num = curhp
     End If
 
     Exit Sub
@@ -2216,7 +2216,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetFontSizeRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetFontSizeRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #GetFontSize([dest!])
     'get the current size of the font
     On Error GoTo errorhandler
@@ -2232,8 +2232,8 @@ Sub GetFontSizeRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     If number = 1 Then
         Call SetVariable(useIt1$, CStr(fontSize), theProgram)
     End If
-    retval.dataType = DT_NUM
-    retval.num = fontSize
+    retVal.dataType = DT_NUM
+    retVal.num = fontSize
 
     Exit Sub
 'Begin error handling code:
@@ -2242,7 +2242,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub getFPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub getFPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #GetFP(handle$[,dest!])
     'get fp of player
     On Error GoTo errorhandler
@@ -2273,8 +2273,8 @@ Sub getFPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If targetType = 2 Then
@@ -2283,8 +2283,8 @@ Sub getFPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneFP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneFP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneFP
                 Exit Sub
             End If
         ElseIf UCase$(lit1$) = "SOURCE" Then
@@ -2295,8 +2295,8 @@ Sub getFPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If sourceType = 2 Then
@@ -2305,8 +2305,8 @@ Sub getFPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneFP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneFP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneFP
                 Exit Sub
             End If
         End If
@@ -2317,8 +2317,8 @@ Sub getFPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = curhp
+        retVal.dataType = DT_NUM
+        retVal.num = curhp
     End If
 
     Exit Sub
@@ -2328,7 +2328,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetGPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetGPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #GetGP([dest!])
     'Get current GP
     On Error GoTo errorhandler
@@ -2343,8 +2343,8 @@ Sub GetGPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
     If number = 1 Then
         Call SetVariable(dataUse$, CStr(GPCount), theProgram)
     End If
-    retval.dataType = DT_NUM
-    retval.num = GPCount
+    retVal.dataType = DT_NUM
+    retVal.num = GPCount
 
     Exit Sub
 'Begin error handling code:
@@ -2353,7 +2353,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #GetHP("handle"[,dest!])
     'Get current Player HP
     On Error GoTo errorhandler
@@ -2383,11 +2383,11 @@ Sub GetHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 aa = getVariable(playerMem(theOne).healthVar$, lit$, curhp, theProgram)
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
-                    retval.dataType = DT_NUM
-                    retval.num = curhp
+                    retVal.dataType = DT_NUM
+                    retVal.num = curhp
                 Else
-                    retval.dataType = DT_NUM
-                    retval.num = curhp
+                    retVal.dataType = DT_NUM
+                    retVal.num = curhp
                 End If
                 Exit Sub
             End If
@@ -2397,8 +2397,8 @@ Sub GetHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneHP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneHP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneHP
                 Exit Sub
             End If
         End If
@@ -2410,8 +2410,8 @@ Sub GetHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If sourceType = 2 Then
@@ -2420,8 +2420,8 @@ Sub GetHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneHP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneHP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneHP
                 Exit Sub
             End If
         End If
@@ -2432,8 +2432,8 @@ Sub GetHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = curhp
+        retVal.dataType = DT_NUM
+        retVal.num = curhp
     End If
 
     Exit Sub
@@ -2443,7 +2443,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub getLevelRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub getLevelRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #GetLevel("handle"[,dest!])
     'get player's level
     On Error GoTo errorhandler
@@ -2473,8 +2473,8 @@ Sub getLevelRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If targetType = 2 Then
@@ -2483,8 +2483,8 @@ Sub getLevelRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(0), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = 0
+                retVal.dataType = DT_NUM
+                retVal.num = 0
                 Exit Sub
             End If
         End If
@@ -2495,8 +2495,8 @@ Sub getLevelRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If sourceType = 2 Then
@@ -2505,8 +2505,8 @@ Sub getLevelRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(0), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = 0
+                retVal.dataType = DT_NUM
+                retVal.num = 0
                 Exit Sub
             End If
         End If
@@ -2517,8 +2517,8 @@ Sub getLevelRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = curhp
+        retVal.dataType = DT_NUM
+        retVal.num = curhp
     End If
 
     Exit Sub
@@ -2528,7 +2528,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub GetMaxHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetMaxHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #GetMaxHP("handle"[,dest!])
     'Get character's MAX HP level
     On Error GoTo errorhandler
@@ -2558,8 +2558,8 @@ Sub GetMaxHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If targetType = 2 Then
@@ -2568,8 +2568,8 @@ Sub GetMaxHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneMaxHP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneMaxHP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneMaxHP
                 Exit Sub
             End If
         End If
@@ -2580,8 +2580,8 @@ Sub GetMaxHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If sourceType = 2 Then
@@ -2590,8 +2590,8 @@ Sub GetMaxHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneMaxHP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneMaxHP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneMaxHP
                 Exit Sub
             End If
         End If
@@ -2602,8 +2602,8 @@ Sub GetMaxHPRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCO
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = curhp
+        retVal.dataType = DT_NUM
+        retVal.num = curhp
     End If
 
     Exit Sub
@@ -2615,7 +2615,7 @@ End Sub
 
 
 
-Sub GetMaxSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetMaxSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #GetMaxSMP("handle"[,dest!])
     'Get max SMP
     On Error GoTo errorhandler
@@ -2645,8 +2645,8 @@ Sub GetMaxSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             End If
             If targetType = 2 Then
@@ -2655,8 +2655,8 @@ Sub GetMaxSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneMaxSMP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneMaxSMP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneMaxSMP
                 Exit Sub
             End If
         ElseIf UCase$(lit1$) = "SOURCE" Then
@@ -2666,8 +2666,8 @@ Sub GetMaxSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             ElseIf sourceType = TYPE_ENEMY Then
                 'enemy was targeted.
@@ -2675,8 +2675,8 @@ Sub GetMaxSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneMaxSMP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneMaxSMP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneMaxSMP
                 Exit Sub
             End If
         End If
@@ -2687,8 +2687,8 @@ Sub GetMaxSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = curhp
+        retVal.dataType = DT_NUM
+        retVal.num = curhp
     End If
 
     Exit Sub
@@ -2781,7 +2781,7 @@ End Sub
 Public Sub GetRPG( _
                      ByVal text As String, _
                      ByRef theProgram As RPGCodeProgram, _
-                     ByRef retval As RPGCODE_RETURN _
+                     ByRef retVal As RPGCODE_RETURN _
                                                       )
     
     On Error Resume Next
@@ -2802,19 +2802,19 @@ Public Sub GetRPG( _
     Dim paras() As parameters
     paras() = GetParameters(text, theProgram)
 
-    retval.dataType = DT_LIT
+    retVal.dataType = DT_LIT
     
     Select Case number
 
         Case 0
             'Just get a key and return it...
-            retval.lit = getKey()
+            retVal.lit = getKey()
 
         Case 1
             'Could be returning with milliSecond specification or
             'it could be an olden style Get(a$).
 
-            If retval.usingReturnData Then
+            If retVal.usingReturnData Then
                 
                 'We're using the return data. That means that it's
                 'specifying the number of milliSeconds to call processevent for.
@@ -2824,7 +2824,7 @@ Public Sub GetRPG( _
                     Exit Sub
                 End If
 
-                retval.lit = getKey(paras(0).num)
+                retVal.lit = getKey(paras(0).num)
                 
             Else
                 
@@ -2849,7 +2849,7 @@ Public Sub GetRPG( _
     
 End Sub
 
-Sub GetSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub GetSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #GetSMP("handle"[,dest!])
     'get player's SMP level
     On Error GoTo errorhandler
@@ -2879,8 +2879,8 @@ Sub GetSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             ElseIf targetType = TYPE_ENEMY Then
                 'enemy was targeted.
@@ -2888,8 +2888,8 @@ Sub GetSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneSMP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneSMP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneSMP
                 Exit Sub
             End If
         ElseIf UCase$(lit1$) = "SOURCE" Then
@@ -2899,8 +2899,8 @@ Sub GetSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(curhp), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = curhp
+                retVal.dataType = DT_NUM
+                retVal.num = curhp
                 Exit Sub
             ElseIf sourceType = TYPE_ENEMY Then
                 'enemy was targeted.
@@ -2908,8 +2908,8 @@ Sub GetSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
                 If number = 2 Then
                     Call SetVariable(useIt2$, CStr(enemyMem(theOne).eneSMP), theProgram)
                 End If
-                retval.dataType = DT_NUM
-                retval.num = enemyMem(theOne).eneSMP
+                retVal.dataType = DT_NUM
+                retVal.num = enemyMem(theOne).eneSMP
                 Exit Sub
             End If
         End If
@@ -2920,8 +2920,8 @@ Sub GetSmpRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(curhp), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = curhp
+        retVal.dataType = DT_NUM
+        retVal.num = curhp
     End If
 
     Exit Sub
@@ -3490,6 +3490,8 @@ Sub IncludeRPG(text$, ByRef theProgram As RPGCodeProgram)
 
         End With
 
+        Call spliceUpClasses(theProgram)
+
         '====================================================================
         'End bug fix by KSNiloc
         '====================================================================
@@ -3610,7 +3612,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub itemCountRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub itemCountRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #ItemCount("handle or filename"[,number!])
     'count # of items carried by player
     'returns to number!
@@ -3651,8 +3653,8 @@ Sub itemCountRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(retNum), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = retNum
+        retVal.dataType = DT_NUM
+        retVal.num = retNum
     End If
 
     Exit Sub
@@ -4504,7 +4506,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub PathFindRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub PathFindRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a$ = #PathFind (x1!, y1!, x2!, y2!, dest$ [, layer!])
     'find the shortest walkable path between two points on the board, and return it
     'as a string in dest$
@@ -4548,8 +4550,8 @@ Sub PathFindRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef 
     Dim p As String
     p$ = PathFind(num1, num2, num3, num4, num6, False, True)
     Call SetVariable(useIt5$, p$, theProgram)
-    retval.dataType = DT_LIT
-    retval.lit = p$
+    retVal.dataType = DT_LIT
+    retVal.lit = p$
 
     Exit Sub
 'Begin error handling code:
@@ -4773,7 +4775,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub Prompt(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub Prompt(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a$ = #Prompt("Question>"[,var!$])
     'Prompts user
     On Error GoTo errorhandler
@@ -4793,15 +4795,15 @@ Sub Prompt(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RE
         'ans$ = InputBox$(lit$, LoadStringLoc(871, "Please Enter an Answer"))
         ans$ = ShowPromptDialog(LoadStringLoc(871, "Please Enter an Answer"), lit$)
         Call SetVariable(useIt2$, ans$, theProgram)
-        retval.dataType = DT_LIT
-        retval.lit = ans$
+        retVal.dataType = DT_LIT
+        retVal.lit = ans$
     Else
         useIt2$ = GetElement(dataUse$, 2)
         aa = getValue(useIt1$, lit$, num1, theProgram)
         'ans$ = InputBox$(lit$, LoadStringLoc(871, "Please Enter an Answer"))
         ans$ = ShowPromptDialog(LoadStringLoc(871, "Please Enter an Answer"), lit$)
-        retval.dataType = DT_LIT
-        retval.lit = ans$
+        retVal.dataType = DT_LIT
+        retVal.lit = ans$
     End If
 
     Exit Sub
@@ -5302,7 +5304,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub RandomRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub RandomRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #Random(1200[,dest!])
     'Put a random number in dest!
     On Error GoTo errorhandler
@@ -5329,8 +5331,8 @@ Sub RandomRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(aa), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = aa
+        retVal.dataType = DT_NUM
+        retVal.num = aa
     End If
 
     Exit Sub
@@ -5799,7 +5801,7 @@ errorhandler:
 End Sub
 
 Public Sub RPGCodeRPG(ByVal text As String, _
-    ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+    ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
 
     'RPGCode(command$)
     'Runs an RPGCode command
@@ -5837,7 +5839,7 @@ Public Sub RPGCodeRPG(ByVal text As String, _
                                                 
         Dim oPP As Long
         oPP = theProgram.programPos
-        DoSingleCommand line, theProgram, retval
+        DoSingleCommand line, theProgram, retVal
         theProgram.programPos = oPP
         Exit Sub
              
@@ -5907,7 +5909,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub ThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#threadID! = #Thread("prgram.prg", persistent! [, dest!])
     'launch a thread
     'return an id we can use to refer to the thread again
@@ -5918,8 +5920,8 @@ Sub ThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef re
     On Error Resume Next
     
     'return -1 if error
-    retval.dataType = DT_NUM
-    retval.num = -1
+    retVal.dataType = DT_NUM
+    retVal.num = -1
     
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
     use$ = text$
@@ -5956,8 +5958,8 @@ Sub ThreadRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef re
             Call SetVariable(useIt3$, CStr(tID), theProgram)
         End If
         
-        retval.dataType = DT_NUM
-        retval.num = tID
+        retVal.dataType = DT_NUM
+        retVal.num = tID
         Exit Sub
     End If
 End Sub
@@ -6762,7 +6764,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Public Sub SinRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub SinRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
 
     On Error Resume Next
     
@@ -6778,8 +6780,8 @@ Public Sub SinRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram, ByRe
                 debugger "Sin() requires a numerical data element-- " & text
                 Exit Sub
             End If
-            retval.dataType = DT_NUM
-            retval.num = Round(Sin(radians(paras(0).num)), 7)
+            retVal.dataType = DT_NUM
+            retVal.num = Round(Sin(radians(paras(0).num)), 7)
         
         Case 2
             If Not paras(0).dataType = DT_NUM Then
@@ -6798,7 +6800,7 @@ End Sub
 Public Sub SizedAnimationRPG( _
                                 ByVal text As String, _
                                 ByRef theProgram As RPGCodeProgram, _
-                                ByRef retval As RPGCODE_RETURN _
+                                ByRef retVal As RPGCODE_RETURN _
                                                                  )
 
     'animationID! = SizedAnimation("file.anm", x!, y!, width!, height! [,persistent!])
@@ -6819,7 +6821,7 @@ Public Sub SizedAnimationRPG( _
         Exit Sub
     End If
 
-    If (retval.usingReturnData) And (Not isMultiTasking()) Then
+    If (retVal.usingReturnData) And (Not isMultiTasking()) Then
         Call debugger("Warning: SizedAnimation() only returns a value in a thread-- " & text)
     End If
 
@@ -6856,8 +6858,8 @@ Public Sub SizedAnimationRPG( _
         End If
 
         'Initiate the animation
-        retval.dataType = DT_NUM
-        retval.num = startMultitaskAnimation(paras(1).num, paras(2).num, theProgram)
+        retVal.dataType = DT_NUM
+        retVal.num = startMultitaskAnimation(paras(1).num, paras(2).num, theProgram)
 
     Else
 
@@ -6967,7 +6969,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub SourceHandleRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub SourceHandleRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a$ = #SourceHandle([dest$])
     'get source handle
     On Error GoTo errorhandler
@@ -6995,8 +6997,8 @@ Sub SourceHandleRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     If number = 1 Then
         Call SetVariable(var1$, tar$, theProgram)
     End If
-    retval.dataType = DT_LIT
-    retval.lit = tar$
+    retVal.dataType = DT_LIT
+    retVal.lit = tar$
 
     Exit Sub
 'Begin error handling code:
@@ -7044,7 +7046,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub SqrtRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub SqrtRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #Sqrt(9[, dest!])
     'calc squareroot
     On Error GoTo errorhandler
@@ -7069,8 +7071,8 @@ Sub SqrtRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_R
     If number = 2 Then
         Call SetVariable(useIt2$, CStr(calcu), theProgram)
     End If
-    retval.dataType = DT_NUM
-    retval.num = calcu
+    retVal.dataType = DT_NUM
+    retVal.num = calcu
 
     Exit Sub
 'Begin error handling code:
@@ -7310,7 +7312,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub TanRPG(ByVal text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub TanRPG(ByVal text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
 
     On Error Resume Next
     
@@ -7326,8 +7328,8 @@ Sub TanRPG(ByVal text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
                 debugger "Tan() requires a numerical data element-- " & text
                 Exit Sub
             End If
-            retval.dataType = DT_NUM
-            retval.num = Tan(radians(paras(0).num))
+            retVal.dataType = DT_NUM
+            retVal.num = Tan(radians(paras(0).num))
         
         Case 2
             If Not paras(0).dataType = DT_NUM Then
@@ -7343,7 +7345,7 @@ Sub TanRPG(ByVal text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGC
 
 End Sub
 
-Sub TargetHandleRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub TargetHandleRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a$ = #TargetHandle([dest$])
     'get handle of the TARGET handle.
     On Error GoTo errorhandler
@@ -7371,8 +7373,8 @@ Sub TargetHandleRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
     If number = 1 Then
         Call SetVariable(var1$, tar$, theProgram)
     End If
-    retval.dataType = DT_LIT
-    retval.lit = tar$
+    retVal.dataType = DT_LIT
+    retVal.lit = tar$
 
     Exit Sub
 'Begin error handling code:
@@ -7705,7 +7707,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub WaitRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub WaitRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#Wait (var$)
     'Puts key press in var$
     On Error GoTo errorhandler
@@ -7726,8 +7728,8 @@ Sub WaitRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_R
         keyP$ = WaitForKey()
     End If
     
-    retval.dataType = DT_LIT
-    retval.lit = keyP$
+    retVal.dataType = DT_LIT
+    retVal.lit = keyP$
 
     Exit Sub
 'Begin error handling code:
@@ -7736,7 +7738,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CreateCursorMapRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CreateCursorMapRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     'dest! = #CreateCursorMap([dest!])
     'create a new cursor map, and return it's index
     On Error Resume Next
@@ -7759,12 +7761,12 @@ Sub CreateCursorMapRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval A
         idx = CreateCursorMapTable()
     End If
     
-    retval.dataType = DT_NUM
-    retval.num = idx
+    retVal.dataType = DT_NUM
+    retVal.num = idx
 End Sub
 
 
-Sub KillCursorMapRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub KillCursorMapRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#KillCursorMap(idx!)
     'destroy the cursor map at index idx
     On Error Resume Next
@@ -7791,7 +7793,7 @@ Sub KillCursorMapRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As 
     End If
 End Sub
 
-Sub CursorMapAddRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CursorMapAddRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#CursorMapAdd(x!, y!, mapidx!)
     'add a hotspot to the cursor map mapidx! at coord x!, y! (pixels)
     On Error Resume Next
@@ -7831,7 +7833,7 @@ Sub CursorMapAddRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
 End Sub
 
 
-Sub CreateCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CreateCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#cnvId! = CreateCanvas(sizex!, sizey!, [cnvId!])
     'create an offscreen canvas
     On Error Resume Next
@@ -7867,8 +7869,8 @@ Sub CreateCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
             cnv = CreateCanvas(num1, num2)
             Call CanvasFill(cnv, 0)
             
-            retval.num = cnv
-            retval.dataType = DT_NUM
+            retVal.num = cnv
+            retVal.dataType = DT_NUM
             
             If number = 3 Then
                 Call SetVariable(useIt3, CStr(cnv), theProgram)
@@ -7878,7 +7880,7 @@ Sub CreateCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
 End Sub
 
 
-Sub DrawCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub DrawCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#DrawCanvas(cnvId!, x!, y!, [sizex!, sizey!, [destcnvId!]])
     'draw a canvas to the screen
     'optionally resize it
@@ -7948,7 +7950,7 @@ End Sub
 
 
 
-Sub KillCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub KillCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#KillCanvas(cnvId!)
     'kill an offscreen canvas
     On Error Resume Next
@@ -7979,7 +7981,7 @@ Sub KillCanvasRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPG
         Else
             Call DestroyCanvas(num1)
 
-            retval.dataType = DT_VOID
+            retVal.dataType = DT_VOID
         End If
     End If
 End Sub
@@ -7987,7 +7989,7 @@ End Sub
 
 
 
-Sub CursorMapRunRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CursorMapRunRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#selected! = #CursorMapRun(mapidx!, [selected!])
     'run the cursor map at mapidx!
     'return the index of the selection
@@ -8013,8 +8015,8 @@ Sub CursorMapRunRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As R
         Else
             Dim res As Long
             res = CursorMapRun(cursorMapTables(num1))
-            retval.dataType = DT_NUM
-            retval.num = res
+            retVal.dataType = DT_NUM
+            retVal.num = res
             If number = 2 Then
                 Call SetVariable(useIt2$, CStr(res), theProgram)
             End If
@@ -8547,7 +8549,7 @@ Public Sub CallShopRPG(ByVal text As String, ByRef theProgram As RPGCodeProgram)
 
 End Sub
 
-Sub CastIntRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CastIntRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #CastInt(source![,dest!])
     'Changes floating point to int.
     On Error GoTo errorhandler
@@ -8571,8 +8573,8 @@ Sub CastIntRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
         If number = 2 Then
             Call SetVariable(useIt2$, CStr(value), theProgram)
         End If
-        retval.dataType = DT_NUM
-        retval.num = value
+        retVal.dataType = DT_NUM
+        retVal.num = value
     End If
 
     Exit Sub
@@ -8582,7 +8584,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CastLitRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CastLitRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a$ = #CastLit(source![,dest$])
     'Casts a num to a string
     On Error GoTo errorhandler
@@ -8606,8 +8608,8 @@ Sub CastLitRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
         If number = 2 Then
             Call SetVariable(useIt2$, value, theProgram)
         End If
-        retval.dataType = DT_LIT
-        retval.lit = value
+        retVal.dataType = DT_LIT
+        retVal.lit = value
     End If
 
     Exit Sub
@@ -8617,7 +8619,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CastNumRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CastNumRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a! = #CastNum(source$![,dest!])
     'Casts a string to a num
     On Error GoTo errorhandler
@@ -8641,8 +8643,8 @@ Sub CastNumRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
     If number = 2 Then
         Call SetVariable(useIt2$, CStr(value), theProgram)
     End If
-    retval.dataType = DT_NUM
-    retval.num = value
+    retVal.dataType = DT_NUM
+    retVal.num = value
 
     Exit Sub
 'Begin error handling code:
@@ -8684,7 +8686,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub CharAtRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub CharAtRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a$ = #CharAt("text",loc![,dest$])
     'gets character at location loc!
     On Error GoTo errorhandler
@@ -8712,8 +8714,8 @@ Sub CharAtRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
         If number = 3 Then
             Call SetVariable(useIt3$, cH$, theProgram)
         End If
-        retval.dataType = DT_LIT
-        retval.lit = cH$
+        retVal.dataType = DT_LIT
+        retVal.lit = cH$
     End If
 
     Exit Sub
@@ -8939,7 +8941,7 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub DirSavRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub DirSavRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     '#a$ = #DirSav([dest$])
     'get dir of saved games, put
     'selected file in dest$
@@ -8962,8 +8964,8 @@ Sub DirSavRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE
     If number = 1 Then
         Call SetVariable(useIt$, file$, theProgram)
     End If
-    retval.dataType = DT_LIT
-    retval.lit = file$
+    retVal.dataType = DT_LIT
+    retVal.lit = file$
 End Sub
 
 Sub done(text$, ByRef theProgram As RPGCodeProgram)
@@ -10353,7 +10355,7 @@ End Sub
 Public Sub FileInputRPG( _
                            ByVal text As String, _
                            ByRef theProgram As RPGCodeProgram, _
-                           ByRef retval As RPGCODE_RETURN _
+                           ByRef retVal As RPGCODE_RETURN _
                                                             )
  
     'FileInput(filename$)
@@ -10392,8 +10394,8 @@ Public Sub FileInputRPG( _
         Exit Sub
     End If
 
-    retval.dataType = DT_LIT
-    retval.lit = CStr(fread(fileNum))
+    retVal.dataType = DT_LIT
+    retVal.lit = CStr(fread(fileNum))
 
     Exit Sub
 
@@ -10453,7 +10455,7 @@ End Sub
 Public Sub FileGetRPG( _
                          ByVal text As String, _
                          ByRef theProgram As RPGCodeProgram, _
-                         ByRef retval As RPGCODE_RETURN _
+                         ByRef retVal As RPGCODE_RETURN _
                                                           )
  
     'FileGet(filename$)
@@ -10492,10 +10494,10 @@ Public Sub FileGetRPG( _
         Exit Sub
     End If
 
-    retval.dataType = DT_LIT
+    retVal.dataType = DT_LIT
     Dim binData As String * 1
     Get #fileNum, , binData
-    retval.lit = CStr(binData)
+    retVal.lit = CStr(binData)
 
     Exit Sub
     
@@ -10554,7 +10556,7 @@ error:
     debugger "Unexpected error with FilePut()-- " & error
 End Sub
 
-Sub FileEOFRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Sub FileEOFRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
  
  '#a! = #FileEOF(filename$)
  'Has the end of the file been reached?
@@ -10586,7 +10588,7 @@ Sub FileEOFRPG(text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RPGCOD
   If a = UBound(openFile) Then debugger "File is not open-- " & file: Exit Sub
  Next a
 
- With retval
+ With retVal
   .dataType = DT_NUM
   If EOF(a) = False Then .num = 0 Else .num = 1
  End With
@@ -10596,7 +10598,7 @@ error:
  debugger "Unexpected error with FileEOF-- " & error
 End Sub
 
-Sub StringLenRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub StringLenRPG(text As String, theProgram As RPGCodeProgram, retVal As RPGCODE_RETURN)
 'a! = Length (string$)
 'Get's the length of a string.
 'ADDED May 15, 2004 (Euix)
@@ -10622,11 +10624,11 @@ If BracketType = DT_NUM Then
     Call debugger("Error: Length element must be literal!-- " & text): Exit Sub
 End If
 
-retval.dataType = DT_NUM
-retval.num = Len(StringData)
+retVal.dataType = DT_NUM
+retVal.num = Len(StringData)
 End Sub
 
-Sub GetItemNameRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub GetItemNameRPG(text As String, theProgram As RPGCodeProgram, retVal As RPGCODE_RETURN)
 '#a$ = #GetItemName (filename$)
 'Gets the handle of an item.
 'ADDED May 18, 2004 (Euix)
@@ -10649,12 +10651,12 @@ BracketType = getValue(BracketElement, itemFile, Temp, theProgram)
         Call debugger("Error: GetItemName element must be literal!-- " & text): Exit Sub
     End If
     
-        retval.dataType = DT_LIT
-        retval.lit = getItemName(App.path & "\" & projectPath$ & itmPath$ & itemFile)
+        retVal.dataType = DT_LIT
+        retVal.lit = getItemName(App.path & "\" & projectPath$ & itmPath$ & itemFile)
         Exit Sub
 End Sub
 
-Sub GetItemDescRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub GetItemDescRPG(text As String, theProgram As RPGCodeProgram, retVal As RPGCODE_RETURN)
 On Error GoTo errorhandler
 '#a$ = #GetItemDesc (filename$)
 'Gets the one-line description of an item.
@@ -10681,15 +10683,15 @@ BracketType = getValue(BracketElement, itemFile, Temp, theProgram)
 ItemData = openItem(App.path & "\" & projectPath$ & itmPath$ & itemFile)
 
 'Return data
-retval.dataType = DT_LIT
-retval.lit = ItemData.itmDescription
+retVal.dataType = DT_LIT
+retVal.lit = ItemData.itmDescription
 Exit Sub
 
 errorhandler:
     Call debugger("Error: GetItemDesc-- Item couldn't be opened, or an other error has occured!-- " & text): Exit Sub
 End Sub
 
-Sub InStrRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub InStrRPG(text As String, theProgram As RPGCodeProgram, retVal As RPGCODE_RETURN)
 '#a! = #Instr (string$,string2$)
 'Returns 1 if string2$ exists within string$
 'Returns 0 if string2$ doesn't exist within string$
@@ -10727,19 +10729,19 @@ BracketType = getValue(BracketElement(1), BracketValue(1), Temp, theProgram)
     
 'Set return value
 ret = InStr(1, BracketValue(0), BracketValue(1))
-retval.dataType = DT_NUM
+retVal.dataType = DT_NUM
 
 If ret > 0 Then
-    retval.num = ret
+    retVal.num = ret
     Exit Sub
 ElseIf ret <= 0 Then
-    retval.num = 0
+    retVal.num = 0
     Exit Sub
 End If
 
 End Sub
 
-Sub GetItemCostRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub GetItemCostRPG(text As String, theProgram As RPGCodeProgram, retVal As RPGCODE_RETURN)
 On Error GoTo errorhandler:
 
 '#a! = #GetItemCost (filename$)
@@ -10768,15 +10770,15 @@ BracketType = getValue(BracketElement, itemFile, Temp, theProgram)
 ItemData = openItem(App.path & "\" & projectPath$ & itmPath$ & itemFile)
 
 'Return data
-retval.dataType = DT_NUM
-retval.num = ItemData.buyPrice
+retVal.dataType = DT_NUM
+retVal.num = ItemData.buyPrice
 Exit Sub
 
 errorhandler:
     Call debugger("Error: GetItemCost-- Item couldn't be opened, or an other error has occured!-- " & text): Exit Sub
 End Sub
 
-Sub GetItemSellRPG(text As String, theProgram As RPGCodeProgram, retval As RPGCODE_RETURN)
+Sub GetItemSellRPG(text As String, theProgram As RPGCodeProgram, retVal As RPGCODE_RETURN)
 On Error GoTo errorhandler
 '#a! = #GetItemSellPrice (filename$)
 'Get's the selling price of an item.
@@ -10804,8 +10806,8 @@ BracketType = getValue(BracketElement, itemFile, Temp, theProgram)
 ItemData = openItem(App.path & "\" & projectPath$ & itmPath$ & itemFile)
 
 'Return data
-retval.dataType = DT_NUM
-retval.num = ItemData.sellPrice
+retVal.dataType = DT_NUM
+retVal.num = ItemData.sellPrice
 Exit Sub
 
 errorhandler:
@@ -11052,7 +11054,7 @@ End Function
 Public Sub spliceVariables( _
                               ByVal text As String, _
                               ByRef prg As RPGCodeProgram, _
-                              ByRef retval As RPGCODE_RETURN _
+                              ByRef retVal As RPGCODE_RETURN _
                                                                )
     
     '=========================================================================
@@ -11073,15 +11075,15 @@ Public Sub spliceVariables( _
         Exit Sub
     End If
     
-    retval.dataType = DT_LIT
-    retval.lit = MWinPrepare(paras(0).lit, prg)
+    retVal.dataType = DT_LIT
+    retVal.lit = MWinPrepare(paras(0).lit, prg)
     
 End Sub
 
 Public Sub SplitRPG( _
                        ByVal text As String, _
                        ByRef prg As RPGCodeProgram, _
-                       ByRef retval As RPGCODE_RETURN _
+                       ByRef retVal As RPGCODE_RETURN _
                                                         )
 
     '=========================================================================
@@ -11120,15 +11122,15 @@ Public Sub SplitRPG( _
         CBSetString paras(2).lit & "[" & CStr(a) & "]" & postFix, splitIt(a)
     Next a
     
-    retval.dataType = DT_NUM
-    retval.num = UBound(splitIt)
+    retVal.dataType = DT_NUM
+    retVal.num = UBound(splitIt)
 
 End Sub
 
 Public Sub asciiToChr( _
                          ByVal text As String, _
                          ByRef prg As RPGCodeProgram, _
-                         ByRef retval As RPGCODE_RETURN _
+                         ByRef retVal As RPGCODE_RETURN _
                                                           )
                                                               
     '=========================================================================
@@ -11152,15 +11154,15 @@ Public Sub asciiToChr( _
                 debugger "Asc() requires a literal data element-- " & text
                 Exit Sub
             End If
-            retval.dataType = DT_NUM
-            retval.num = Asc(paras(0).lit)
+            retVal.dataType = DT_NUM
+            retVal.num = Asc(paras(0).lit)
         Case "chr"
             If Not paras(0).dataType = DT_NUM Then
                 debugger "Chr() requires a numerical data element-- " & text
                 Exit Sub
             End If
-            retval.dataType = DT_LIT
-            retval.lit = Chr(paras(0).num)
+            retVal.dataType = DT_LIT
+            retVal.lit = Chr(paras(0).num)
     End Select
 
 End Sub
@@ -11168,7 +11170,7 @@ End Sub
 Public Sub trimRPG( _
                       ByVal text As String, _
                       ByRef prg As RPGCodeProgram, _
-                      ByRef retval As RPGCODE_RETURN _
+                      ByRef retVal As RPGCODE_RETURN _
                                                        )
 
     '=========================================================================
@@ -11189,15 +11191,15 @@ Public Sub trimRPG( _
         Exit Sub
     End If
 
-    retval.dataType = DT_LIT
-    retval.lit = replace(Trim(paras(0).lit), vbTab, "")
+    retVal.dataType = DT_LIT
+    retVal.lit = replace(Trim(paras(0).lit), vbTab, "")
 
 End Sub
 
 Public Sub rightLeft( _
                         ByVal text As String, _
                         ByRef prg As RPGCodeProgram, _
-                        ByRef retval As RPGCODE_RETURN _
+                        ByRef retVal As RPGCODE_RETURN _
                                                          )
                                                          
     '=========================================================================
@@ -11223,12 +11225,12 @@ Public Sub rightLeft( _
         Exit Sub
     End If
     
-    retval.dataType = DT_LIT
+    retVal.dataType = DT_LIT
     Select Case LCase(GetCommandName(text))
         Case "right"
-            retval.lit = Right(paras(0).lit, paras(1).num)
+            retVal.lit = Right(paras(0).lit, paras(1).num)
         Case "left"
-            retval.lit = Left(paras(0).lit, paras(1).num)
+            retVal.lit = Left(paras(0).lit, paras(1).num)
     End Select
 
 End Sub
@@ -11446,7 +11448,7 @@ End Sub
 Public Sub MBoxRPG( _
                       ByVal text As String, _
                       ByRef prg As RPGCodeProgram, _
-                      ByRef retval As RPGCODE_RETURN _
+                      ByRef retVal As RPGCODE_RETURN _
                                                        )
 
     '=========================================================================
@@ -11483,7 +11485,7 @@ Public Sub MBoxRPG( _
 
     If cd >= 4 Then If paras(3).num = 0 Then paras(3).num = 16777215
 
-    retval.dataType = DT_NUM
+    retVal.dataType = DT_NUM
     Dim num As Double
     Select Case cd
         Case 1: num = MBox(MWinPrepare(paras(0).lit, prg))
@@ -11497,7 +11499,7 @@ Public Sub MBoxRPG( _
             paras(3).num, paras(4).num, fface)
     End Select
 
-    retval.num = num
+    retVal.num = num
 
     Exit Sub
 error:
@@ -11563,7 +11565,7 @@ End Sub
 Public Sub logRPG( _
                      ByVal text As String, _
                      ByRef prg As RPGCodeProgram, _
-                     ByRef retval As RPGCODE_RETURN _
+                     ByRef retVal As RPGCODE_RETURN _
                                                       )
 
     '======================================================================================
@@ -11586,15 +11588,15 @@ Public Sub logRPG( _
         Exit Sub
     End If
 
-    retval.dataType = DT_NUM
-    retval.num = Log(paras(0).num)
+    retVal.dataType = DT_NUM
+    retVal.num = Log(paras(0).num)
 
 End Sub
 
 Public Sub onBoardRPG( _
                          ByVal text As String, _
                          ByRef prg As RPGCodeProgram, _
-                         ByRef retval As RPGCODE_RETURN _
+                         ByRef retVal As RPGCODE_RETURN _
                                                           )
                                                           
     '======================================================================================
@@ -11617,11 +11619,11 @@ Public Sub onBoardRPG( _
         Exit Sub
     End If
     
-    retval.dataType = DT_NUM
+    retVal.dataType = DT_NUM
     If showPlayer(paras(0).num) Then
-        retval.num = 1
+        retVal.num = 1
     Else
-        retval.num = 0
+        retVal.num = 0
     End If
 
 End Sub
@@ -11646,7 +11648,7 @@ End Sub
 Public Sub getBoardNameRPG( _
                               ByVal text As String, _
                               ByRef prg As RPGCodeProgram, _
-                              ByRef retval As RPGCODE_RETURN _
+                              ByRef retVal As RPGCODE_RETURN _
                                                                )
 
     '=========================================================================
@@ -11659,15 +11661,15 @@ Public Sub getBoardNameRPG( _
         Exit Sub
     End If
 
-    retval.dataType = DT_LIT
-    retval.lit = boardList(activeBoardIndex).boardName
+    retVal.dataType = DT_LIT
+    retVal.lit = boardList(activeBoardIndex).boardName
 
 End Sub
 
 Public Sub LCaseRPG( _
                        ByVal text As String, _
                        ByRef prg As RPGCodeProgram, _
-                       ByRef retval As RPGCODE_RETURN _
+                       ByRef retVal As RPGCODE_RETURN _
                                                         )
 
     '=========================================================================
@@ -11694,9 +11696,9 @@ Public Sub LCaseRPG( _
     Dim toRet As String
     toRet = LCase(paras(0).lit)
    
-    If retval.usingReturnData Then
-        retval.dataType = DT_LIT
-        retval.lit = toRet
+    If retVal.usingReturnData Then
+        retVal.dataType = DT_LIT
+        retVal.lit = toRet
     ElseIf cd = 2 Then
         SetVariable paras(1).dat, toRet, prg
     End If
@@ -11706,7 +11708,7 @@ End Sub
 Public Sub UCaseRPG( _
                        ByVal text As String, _
                        ByRef prg As RPGCodeProgram, _
-                       ByRef retval As RPGCODE_RETURN _
+                       ByRef retVal As RPGCODE_RETURN _
                                                         )
 
     '=========================================================================
@@ -11733,9 +11735,9 @@ Public Sub UCaseRPG( _
     Dim toRet As String
     toRet = UCase(paras(0).lit)
    
-    If retval.usingReturnData Then
-        retval.dataType = DT_LIT
-        retval.lit = toRet
+    If retVal.usingReturnData Then
+        retVal.dataType = DT_LIT
+        retVal.lit = toRet
     ElseIf cd = 2 Then
         SetVariable paras(1).dat, toRet, prg
     End If
@@ -11745,7 +11747,7 @@ End Sub
 Public Sub appPathRPG( _
                          ByVal text As String, _
                          ByRef prg As RPGCodeProgram, _
-                         ByRef retval As RPGCODE_RETURN _
+                         ByRef retVal As RPGCODE_RETURN _
                                                           )
 
     '=========================================================================
@@ -11764,9 +11766,9 @@ Public Sub appPathRPG( _
     Dim thePath As String
     thePath = App.path
    
-    If retval.usingReturnData Then
-        retval.dataType = DT_LIT
-        retval.lit = thePath
+    If retVal.usingReturnData Then
+        retVal.dataType = DT_LIT
+        retVal.lit = thePath
     ElseIf cd = 1 Then
         Dim paras() As parameters
         paras() = GetParameters(text, prg)
@@ -11778,7 +11780,7 @@ End Sub
 Public Sub midRPG( _
                      ByVal text As String, _
                      ByRef prg As RPGCodeProgram, _
-                     ByRef retval As RPGCODE_RETURN _
+                     ByRef retVal As RPGCODE_RETURN _
                                                       )
 
     '=========================================================================
@@ -11811,9 +11813,9 @@ Public Sub midRPG( _
     Dim toRet As String
     toRet = Mid(paras(0).lit, paras(1).num, paras(2).num)
 
-    If retval.usingReturnData Then
-        retval.dataType = DT_LIT
-        retval.lit = toRet
+    If retVal.usingReturnData Then
+        retVal.dataType = DT_LIT
+        retVal.lit = toRet
     ElseIf cd = 4 Then
         Call SetVariable(paras(3).dat, toRet, prg)
     End If
@@ -11823,7 +11825,7 @@ End Sub
 Public Sub replaceRPG( _
                          ByVal text As String, _
                          ByRef prg As RPGCodeProgram, _
-                         ByRef retval As RPGCODE_RETURN _
+                         ByRef retVal As RPGCODE_RETURN _
                                                           )
 
     '=========================================================================
@@ -11855,16 +11857,16 @@ Public Sub replaceRPG( _
     Dim theResult As String
     theResult = replace(paras(0).lit, paras(1).lit, paras(2).lit)
    
-    If retval.usingReturnData Then
-        retval.dataType = DT_LIT
-        retval.lit = theResult
+    If retVal.usingReturnData Then
+        retVal.dataType = DT_LIT
+        retVal.lit = theResult
     ElseIf cd = 4 Then
         SetVariable paras(3).dat, theResult, prg
     End If
 
 End Sub
 
-Public Sub pixelMovementRPG(ByVal text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub pixelMovementRPG(ByVal text As String, ByRef prg As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
     'PixelMovement(ON/OFF)
 
     Dim elements As Long
@@ -11876,9 +11878,9 @@ Public Sub pixelMovementRPG(ByVal text As String, ByRef prg As RPGCodeProgram, B
     End If
 
     If (elements = 0) Then
-        retval.dataType = DT_NUM
+        retVal.dataType = DT_NUM
         If (usingPixelMovement()) Then
-            retval.num = 1
+            retVal.num = 1
         End If
         Exit Sub
     End If
@@ -12078,4 +12080,28 @@ Public Sub MouseCursorRPG(ByVal text As String, ByRef prg As RPGCodeProgram)
 End Sub
 
 '=========================================================================
+' object = New(class [,constructParams])
 '=========================================================================
+Public Sub NewRPG(ByVal text As String, ByRef prg As RPGCodeProgram, ByRef retVal As RPGCODE_RETURN)
+    On Error Resume Next
+    If (CountData(text) < 1) Then
+        Call debugger("New() requires at least one data element-- " & text)
+        Exit Sub
+    End If
+    Dim paras() As parameters, a As Long, construct() As String
+    paras() = GetParameters(text, prg)
+    ReDim construct(0)
+    For a = 1 To UBound(paras)
+        ReDim Preserve construct(a - 1)
+        If (paras(a).dataType = DT_LIT) Then
+            construct(a - 1) = Chr(34) & paras(a).lit & Chr(34)
+        Else
+            construct(a - 1) = CStr(paras(a).num)
+        End If
+    Next a
+    retVal.dataType = DT_NUM
+    retVal.num = createRPGCodeObject(paras(0).lit, prg, construct(), (UBound(paras) = 0))
+    If (retVal.num = -1) Then
+        Call debugger("Error creating object-- " & text)
+    End If
+End Sub

@@ -15,6 +15,7 @@ Option Explicit
 ' Integral variables
 '=========================================================================
 Public errorBranch As String         'label to branch to on error
+Public errorKeep As RPGCodeProgram   'program kept as a backup for error handling
 
 '=========================================================================
 ' Get the line a method begins on

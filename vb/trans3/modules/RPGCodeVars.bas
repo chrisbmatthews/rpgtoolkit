@@ -331,6 +331,9 @@ Public Sub variableManip(ByVal text As String, ByRef theProgram As RPGCodeProgra
 
     'Get the destination variable and remove unwanted characters
     Destination = replace(replace(replace(GetVarList(text, 1), "#", ""), " ", ""), vbTab, "")
+    If (Right(Destination, 1) <> "!" And Right(Destination, 1) <> "$") Then
+        Destination = Destination & "!"
+    End If
 
     'Get the type of the destination
     dType = dataType(Destination)
@@ -768,6 +771,13 @@ Public Sub SetVariable(ByVal varName As String, ByVal value As String, ByRef the
     Dim theVar As String
     theVar = parseArray(replace(varName, " ", ""), theProgram)
 
+    'Check if it belongs to a class
+    If (theProgram.classes.insideClass) Then
+        If (isVarMember(varName, topNestle(theProgram), theProgram)) Then
+            theVar = getObjectVarName(theVar, topNestle(theProgram))
+        End If
+    End If
+
     'Get its type
     Dim varType As RPGC_DT
     varType = variType(theVar, globalHeap)
@@ -851,6 +861,13 @@ Public Function getVariable(ByVal varName As String, ByRef lit As String, ByRef 
     'Get the variable
     Dim theVar As String
     theVar = parseArray(replace(varName, " ", ""), theProgram)
+
+    'Check if it belongs to a class
+    If (theProgram.classes.insideClass) Then
+        If (isVarMember(varName, topNestle(theProgram), theProgram)) Then
+            theVar = getObjectVarName(theVar, topNestle(theProgram))
+        End If
+    End If
 
     'Create an rpgcode return value
     Dim rV As RPGCODE_RETURN

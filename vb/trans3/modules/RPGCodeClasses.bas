@@ -48,7 +48,7 @@ End Type
 '=========================================================================
 ' A class
 '=========================================================================
-Private Type RPGCODE_CLASS
+Public Type RPGCODE_CLASS
     strName As String                       'Name of this class
     scopePrivate As RPGCODE_CLASS_SCOPE     'Private scope
     scopePublic As RPGCODE_CLASS_SCOPE      'Public scope
@@ -60,6 +60,7 @@ End Type
 Private Type RPGCODE_CLASS_MAIN_DATA
     classes() As RPGCODE_CLASS              'Classes this program can instance
     nestle() As Long                        'Nestle of classes
+    insideClass As Boolean                  'Inside a class?
 End Type
 
 '=========================================================================
@@ -99,6 +100,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
     'Init the classes array
     ReDim prg.classes.classes(0)
+    ReDim prg.classes.nestle(0)
 
     'Make classIdx void
     classIdx = -1
@@ -316,9 +318,9 @@ End Function
 ' Initiate the class system
 '=========================================================================
 Public Sub initRPGCodeClasses()
-    'Dimension two arrays
     ReDim m_handleUsed(0)
     ReDim classes(0)
+    Call newHandle
 End Sub
 
 '=========================================================================
@@ -398,7 +400,42 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
 
     On Error Resume Next
 
-    
+    Dim idx As Long, scopeIdx As Long   'Loop var
+    Dim theClass As RPGCODE_CLASS       'The class
+    Dim scope As RPGCODE_CLASS_SCOPE    'A scope
+
+    'Get the class
+    theClass = getClass(hClass, prg)
+
+    If (theClass.strName = "INVALID") Then
+        'Class doesn't exist!
+        Exit Function
+    End If
+
+    'Make the var all caps
+    var = UCase(var)
+
+    'For each scope
+    For scopeIdx = 0 To 1
+        'Get the scope
+        If (scopeIdx = 0) Then
+            'Private scope
+            scope = theClass.scopePrivate
+        Else
+            'Public scope
+            scope = theClass.scopePublic
+        End If
+        'For each var within that scope
+        For idx = 0 To UBound(scope.strVars)
+            If (scope.strVars(idx) = var) Then
+                'Found it
+                isVarMember = True
+                Exit Function
+            End If
+        Next idx
+    Next scopeIdx
+
+    'It we get here, then this variable is not a member of the class
 
 End Function
 
@@ -406,6 +443,45 @@ End Function
 ' Determine if a method is a member of a class
 '=========================================================================
 Public Function isMethodMember(ByVal methodName As String, ByVal hClass As Long, ByRef prg As RPGCodeProgram) As Boolean
+
+    On Error Resume Next
+
+    Dim idx As Long, scopeIdx As Long   'Loop var
+    Dim theClass As RPGCODE_CLASS       'The class
+    Dim scope As RPGCODE_CLASS_SCOPE    'A scope
+
+    'Get the class
+    theClass = getClass(hClass, prg)
+
+    If (theClass.strName = "INVALID") Then
+        'Class doesn't exist!
+        Exit Function
+    End If
+
+    'Make the method name all caps
+    methodName = UCase(methodName)
+
+    'For each scope
+    For scopeIdx = 0 To 1
+        'Get the scope
+        If (scopeIdx = 0) Then
+            'Private scope
+            scope = theClass.scopePrivate
+        Else
+            'Public scope
+            scope = theClass.scopePublic
+        End If
+        'For each method within that scope
+        For idx = 0 To UBound(scope.methods)
+            If (scope.methods(idx).name = methodName) Then
+                'Found it
+                isMethodMember = True
+                Exit Function
+            End If
+        Next idx
+    Next scopeIdx
+
+    'It we get here, then this method is not a member of the class
 
 End Function
 
@@ -422,18 +498,56 @@ Public Function getObjectVarName(ByVal theVar As String, ByVal hClass As Long) A
 End Function
 
 '=========================================================================
-' Call a method in a class
+' Decrease the nestle
 '=========================================================================
-Public Sub callObjectMethod(ByVal hClass As Long, ByRef prg As RPGCodeProgram)
+Public Sub decreaseNestle(ByRef prg As RPGCodeProgram)
 
     On Error Resume Next
+
+    'Shrink the nestle array
+    ReDim Preserve prg.classes.nestle(UBound(prg.classes.nestle) - 1)
+
+    If (UBound(prg.classes.nestle) = 0) Then
+        'Flag we're out of all classes
+        prg.classes.insideClass = False
+    End If
+
+End Sub
+
+'=========================================================================
+' Get value on top of nestle stack
+'=========================================================================
+Public Function topNestle(ByRef prg As RPGCodeProgram) As Long
+
+    On Error Resume Next
+
+    'Return the value
+    topNestle = prg.classes.nestle(UBound(prg.classes.nestle))
+
+End Function
+
+'=========================================================================
+' Increase nestle
+'=========================================================================
+Public Sub increaseNestle(ByVal push As Long, ByRef prg As RPGCodeProgram)
+
+    On Error Resume Next
+
+    'Enlarge the nestle array
+    ReDim Preserve prg.classes.nestle(UBound(prg.classes.nestle) + 1)
+
+    'Push on the value
+    prg.classes.nestle(UBound(prg.classes.nestle)) = push
+
+    'Flag we're inside a class
+    prg.classes.insideClass = True
 
 End Sub
 
 '=========================================================================
 ' Get a class from an instance of it
 '=========================================================================
-Private Function getClass(ByVal hClass As Long, ByRef prg As RPGCodeProgram) As RPGCODE_CLASS
+Public Function getClass(ByVal hClass As Long, ByRef prg As RPGCodeProgram) As RPGCODE_CLASS
 
     On Error Resume Next
 
@@ -464,12 +578,26 @@ Private Sub clearObject(ByRef object As RPGCODE_CLASS_INSTANCE, ByRef prg As RPG
 
     On Error Resume Next
 
-    Dim idx As Long, scopeIdx As Long   'Loop var
-    Dim theClass As RPGCODE_CLASS       'The class
-    Dim scope As RPGCODE_CLASS_SCOPE    'A scope
+    Dim idx As Long, scopeIdx As Long           'Loop var
+    Dim theClass As RPGCODE_CLASS               'The class
+    Dim scope As RPGCODE_CLASS_SCOPE            'A scope
+    Dim oldDebug As Long, oldError As String    'Old stuff
 
     'Get the class
     theClass = getClass(object.hClass, prg)
+
+    If (theClass.strName = "INVALID") Then
+        'Class doesn't exist!
+        Exit Sub
+    End If
+
+    'Get old values
+    oldDebug = debugYN
+    oldError = errorBranch
+
+    'Clear values
+    debugYN = 0
+    oldError = ""
 
     'For each scope
     For scopeIdx = 0 To 1
@@ -488,16 +616,21 @@ Private Sub clearObject(ByRef object As RPGCODE_CLASS_INSTANCE, ByRef prg As RPG
         Next idx
     Next scopeIdx
 
+    'Restore values
+    debugYN = oldDebug
+    errorBranch = oldError
+
 End Sub
 
 '=========================================================================
 ' Create a new instance of a class
 '=========================================================================
-Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCodeProgram, ByRef params() As String) As Long
+Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCodeProgram, ByRef constructParams() As String, ByVal noParams As Boolean) As Long
 
     On Error Resume Next
 
-    Dim hClass As Long      'Handle to use
+    Dim hClass As Long              'Handle to use
+    Dim retVal As RPGCODE_RETURN    'Return value
 
     'Return -1 on error
     hClass = -1
@@ -514,9 +647,171 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         'Write in the data
         classes(hClass).strInstancedFrom = UCase(theClass)
         classes(hClass).hClass = hClass
+        Call clearObject(classes(hClass), prg)
+        Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retVal)
     End If
 
     'Return a handle to the class
     createRPGCodeObject = hClass
+
+End Function
+
+'=========================================================================
+' Create a string for params from an array
+'=========================================================================
+Private Function createParams(ByRef params() As String, ByVal noParams As Boolean) As String
+
+    On Error Resume Next
+
+    Dim idx As Long     'Loop var
+
+    'Begin the return string
+    createParams = "("
+
+    If (Not noParams) Then
+        'Loop over each param
+        For idx = 0 To UBound(params)
+            createParams = createParams & params(idx) & ","
+        Next idx
+        createParams = Left(createParams, Len(createParams) - 1)
+    End If
+
+    'Finish the return string
+    createParams = createParams & ")"
+
+End Function
+
+'=========================================================================
+' Splice up a line for object things
+'=========================================================================
+Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgram) As String
+
+    On Error Resume Next
+
+    Dim value As String             'Value of function
+    Dim retVal As RPGCODE_RETURN    'Return value
+    Dim begin As Long               'Char to begin at
+    Dim char As String              'Character(s)
+    Dim spacesOK As Boolean         'Spaces are okay?
+    Dim cLine As String             'Command line
+    Dim object As String            'Object name
+    Dim depth As Long               'Depth
+    Dim ignore As Boolean           'In quotes?
+    Dim lngEnd As Long              'End of text
+    Dim start As Long               'Start of object manipulation
+    Dim hClassDbl As Double         'Handle to a class (double)
+    Dim hClass As Long              'Handle to a class
+    Dim a As Long                   'Loop var
+
+    'Get location of first ->
+    begin = inStrOutsideQuotes(1, text, "->")
+
+    If (begin = 0) Then
+        'Contains no object manipulation
+        spliceForObjects = text
+        Exit Function
+    End If
+
+    'Loop over each charater, forwards
+    For a = (begin + 2) To Len(text)
+        'Get a character
+        char = Mid(text, a, 1)
+        Select Case char
+
+            Case "("
+                If (Not ignore) Then
+                    'Increase depth
+                    depth = depth + 1
+                End If
+
+            Case ")"
+                If (Not ignore) Then
+                    'Decrease depth
+                    depth = depth - 1
+                    If (depth = 0) Then
+                        lngEnd = a
+                        Exit For
+                    End If
+                End If
+
+            Case Chr(34)
+                'Found a quote
+                ignore = (Not ignore)
+
+        End Select
+    Next a
+
+    'Record the method's command line
+    cLine = ParseRPGCodeCommand(Trim(Mid(text, begin + 2, lngEnd - begin - 1)), prg)
+
+    'Flag we're not in quotes
+    ignore = False
+
+    'Flag that spaces are okay
+    spacesOK = True
+
+    'Make sure start has a value
+    start = 1
+
+    'Loop over each charater, backwards
+    For a = (begin - 1) To 1 Step -1
+        'Get a character
+        char = Mid(text, a, 1)
+        If ((spacesOK) And (char = " ")) Then
+            'Alter char
+            char = ""
+            'Flag spaces are no longer okay
+            spacesOK = False
+        End If
+        Select Case char
+
+            Case " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "(", ")"
+                'It's a divider
+                If (Not ignore) Then
+                    start = a + 1
+                    Exit For
+                End If
+
+            Case Chr(34)
+                'Found a quote
+                ignore = (Not ignore)
+
+        End Select
+    Next a
+
+    'Record the object
+    object = Trim(Mid(text, start, begin - start))
+
+    'Get its handle
+    If (Right(object, 1) <> "!") Then object = object & "!"
+    Call getVariable(object, object, hClassDbl, prg)
+    hClass = CLng(hClassDbl)
+
+    'Check if we're to release
+    If (Trim(UCase((replace(replace(cLine, ")", ""), "(", "")))) = "RELEASE") Then
+        Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retVal)
+        Call clearObject(classes(hClass), prg)
+    Else
+
+        'Execute the method
+        Call callObjectMethod(hClass, cLine, prg, retVal)
+
+        'Replace text with value the method returned
+        If (retVal.dataType = DT_NUM) Then
+            value = " " & CStr(retVal.num)
+        ElseIf (retVal.dataType = DT_LIT) Then
+            value = " " & Chr(34) & retVal.lit & Chr(34)
+        End If
+
+    End If
+
+    'Complete the return string
+    spliceForObjects = Mid(text, 1, start - 1) & value & Mid(text, lngEnd + 1)
+    If (Trim(spliceForObjects) = "0") Then
+        spliceForObjects = ""
+    Else
+        'Recurse, passing in the running text
+        spliceForObjects = spliceForObjects(spliceForObjects, prg)
+    End If
 
 End Function

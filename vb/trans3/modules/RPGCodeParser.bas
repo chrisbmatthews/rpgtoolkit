@@ -313,11 +313,15 @@ Public Function Evaluate(ByVal text As String, ByRef theProgram As RPGCodeProgra
          part$ = Mid$(use$, p, 1)
         If part$ <> " " Then val2$ = val2 & part$
     Next p
-        
+    
+    If (Right(val1, 1) <> "!" And Right(val1, 1) <> "$") Then
+        val1 = val1 & "!"
+    End If
+    
     If equ = "" Then
         'If only one value was passed, check if it equals 1
-        equ = "=="
-        val2 = "1"
+        equ = ">="
+        val2 = "0"
     End If
 
     Dim lit1 As String, lit2 As String, num1 As Double, num2 As Double
@@ -1082,7 +1086,7 @@ End Function
 '=========================================================================
 ' InStr outside quotes
 '=========================================================================
-Private Function inStrOutsideQuotes(ByVal start As Long, ByVal text As String, ByVal find As String) As Long
+Public Function inStrOutsideQuotes(ByVal start As Long, ByVal text As String, ByVal find As String) As Long
     On Error Resume Next
     Dim a As Long, ignore As Boolean, char As String
     For a = start To Len(text)
