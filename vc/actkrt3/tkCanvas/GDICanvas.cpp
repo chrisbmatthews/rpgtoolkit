@@ -26,6 +26,8 @@ CGDICanvas::CGDICanvas(VOID)
 	m_lpddsSurface = NULL;
 	m_bUseDX = FALSE;
 	m_hdcLocked = NULL;
+	m_hBitmap = NULL;
+	m_hOldBitmap = NULL;
 }
 
 //--------------------------------------------------------------------------
@@ -154,18 +156,32 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 			m_lpddsSurface = g_pDirectDraw->createSurface(width, height);
 
 		}
+		else
+		{
+
+			// Destroy existing canvas
+			if (m_hdcMem) Destroy();
+
+			// Create a new canvas using GDI
+			m_hdcMem = CreateCompatibleDC(hdcCompatible);
+
+		}
 
 	}
-
-	// If DirectDraw is not avaliable
-	if (!m_bUseDX)
+	else
 	{
 
 		// Destroy existing canvas
 		if (m_hdcMem) Destroy();
 
-		// Create a new canvas using GDI
+		// Create a new device context
 		m_hdcMem = CreateCompatibleDC(hdcCompatible);
+
+		// Create a new bitmap
+		m_hBitmap = CreateCompatibleBitmap(hdcCompatible, width, height);
+
+		// Select the bitmap into the device context
+		m_hOldBitmap = HBITMAP(SelectObject(m_hdcMem, m_hBitmap));
 
 	}
 
@@ -198,8 +214,16 @@ INLINE VOID CGDICanvas::Destroy(VOID)
 	// If using GDI
 	if (!(usingDX()))
 	{
+
+		// Select out current bitmap
+		SelectObject(m_hdcMem, m_hOldBitmap);
+
+		// Delete the canvas
+		DeleteObject(m_hBitmap);
+
 		// Delete the DC
 		DeleteDC(m_hdcMem);
+
 	}
 	else if (m_lpddsSurface)
 	{
@@ -209,6 +233,8 @@ INLINE VOID CGDICanvas::Destroy(VOID)
 
 	// Clear members
 	m_hdcMem = NULL;
+	m_hBitmap = NULL;
+	m_hOldBitmap = NULL;
 	m_lpddsSurface = NULL;
 	m_nWidth = 0;
 	m_nHeight = 0;
@@ -221,7 +247,7 @@ INLINE VOID CGDICanvas::Destroy(VOID)
 INLINE VOID CGDICanvas::SetPixel(
 	CONST INT x,
 	CONST INT y,
-	CONST INT crColor
+	CONST LONG crColor
 		)
 {
 	CONST HDC hdc = OpenDC();
@@ -1278,7 +1304,7 @@ INLINE HDC CGDICanvas::OpenDC(VOID) CONST
 		// Surface is locked
 		return m_hdcLocked;
 	}
-	if (m_bUseDX && m_lpddsSurface)
+	else if (m_bUseDX && m_lpddsSurface)
 	{
 		// Using DirectX
 		HDC toRet = NULL;

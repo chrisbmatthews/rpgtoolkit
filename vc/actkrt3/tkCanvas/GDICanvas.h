@@ -84,7 +84,7 @@ public:
 	VOID SetPixel(
 		CONST INT x,
 		CONST INT y,
-		CONST INT crColor
+		CONST LONG crColor
 	);
 
 	INT FAST_CALL GetPixel(
@@ -396,6 +396,8 @@ private:
 	HDC m_hdcLocked;						// Locked hdc
 	BOOL m_bUseDX;							// Using DirectX?
 	LPDIRECTDRAWSURFACE7 m_lpddsSurface;	// DirectDraw surface
+	HBITMAP m_hBitmap;						// Bitmap for GDI canvases
+	HBITMAP m_hOldBitmap;					// Old bitmap for GDI canvases
 
 };
 
