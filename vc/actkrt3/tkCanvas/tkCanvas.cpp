@@ -366,7 +366,7 @@ BOOL APIENTRY CNVBltCanvasTransparent(
 		x,
 		y,
 		crColor
-			);
+	);
 
 }
 
@@ -545,7 +545,7 @@ BOOL APIENTRY CNVBltPartCanvas(
 		nWidth,
 		nHeight,
 		lRasterOp
-			);
+	);
 
 }
 
@@ -575,6 +575,6 @@ BOOL APIENTRY CNVBltTransparentPartCanvas(
 		nWidth,
 		nHeight,
 		crTransparentColor
-			);
+	);
 
 }
