@@ -256,7 +256,7 @@ End Sub
 '=======================================================================
 Public Sub gameLogic()
 
-    On Error Resume Next
+    On Local Error Resume Next
 
     'This procedure contains all of the engine's logic. It is constantly
     'called until gGameState == GS_QUIT, the user closes the window, or
@@ -296,6 +296,13 @@ Public Sub gameLogic()
             'Make sure this is run four times
             If movementCounter < FRAMESPERMOVE Then
                 gGameState = GS_MOVEMENT
+                Dim timeNow As Double
+                timeNow = Timer()
+                Do
+                    If (Timer() - timeNow) >= (walkDelay / 1000) Then
+                        Exit Do
+                    End If
+                Loop
             Else
                 'We're done movement
                 gGameState = GS_DONEMOVE
