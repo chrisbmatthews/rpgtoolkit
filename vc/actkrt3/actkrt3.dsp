@@ -279,6 +279,33 @@ SOURCE=.\tkCanvas\GDICanvas.cpp
 # Begin Group "tkDirectX"
 
 # PROP Default_Filter ""
+# Begin Group "dmutil"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\dmutil\src\dmutil.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dmutil\include\dmutil.h
+# End Source File
+# End Group
+# Begin Group "dxutil"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\dmutil\src\dxutil.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dmutil\include\dxutil.h
+# End Source File
+# End Group
+# Begin Group "platform"
+
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\tkDirectX\platform.cpp
@@ -287,6 +314,7 @@ SOURCE=.\tkDirectX\platform.cpp
 
 SOURCE=.\tkDirectX\platform.h
 # End Source File
+# End Group
 # End Group
 # Begin Group "md5"
 

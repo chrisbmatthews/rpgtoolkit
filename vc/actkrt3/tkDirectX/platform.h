@@ -1,35 +1,35 @@
-//////////////////////////////////////////////////////////////////////////
-//All contents copyright 2003, 2004, Christopher Matthews or Contributors
-//All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-//Read LICENSE.txt for licensing info
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
+// All contents copyright 2003, 2004, Christopher Matthews or Contributors
+// All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+// Read LICENSE.txt for licensing info
+//------------------------------------------------------------------------
 
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 // Include file for DirectX interface
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 // Protect the file
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 // Inclusions
-//////////////////////////////////////////////////////////////////////////
-#include <windows.h>					//for windows
-#include <string>						//for strings
-#include "ddraw.h"						//for DirectX
-#include "..\tkCanvas\GDICanvas.h"		//for gdi canvas objects
+//------------------------------------------------------------------------
+#include <windows.h>					// For windows
+#include <string>						// For strings
+#include <ddraw.h>						// For DirectDraw
+#include "..\tkCanvas\GDICanvas.h"		// For gdi canvas objects
 
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 // Definitions
-//////////////////////////////////////////////////////////////////////////
-#define CNV_HANDLE long					//Handle to a canvas
+//------------------------------------------------------------------------
+#define CNV_HANDLE long					// Handle to a canvas
 
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 // DirectX info structure
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 typedef struct dxInfoTag
 {
 	bool bFullScreen;					// Running in fullscreen mode?
@@ -48,14 +48,14 @@ typedef struct dxInfoTag
 	} windowedMode;
 } DXINFO;
 
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 // Canvas class
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 class CGDICanvas;
 
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 // Prototypes
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 inline bool InitGraphicsMode(HWND hostHwnd, int nWidth, int nHeight, bool bUseDirectX, long nColorDepth, bool bFullScreen);
 inline bool KillGraphicsMode();
 inline bool DrawPixel(int x, int y, long clr);
@@ -78,9 +78,9 @@ inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, 
 inline HDC OpenDC();
 inline CGDICanvas* CreateCanvas(int nWidth, int nHeight, bool bUseDX = false);
 
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 // Exports
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen);
 int APIENTRY DXKillGfxMode();
 int APIENTRY DXDrawPixel(int x, int y, long clr);
@@ -95,8 +95,13 @@ int APIENTRY DXDrawText(int x, int y, char* strText, char* strTypeFace, int size
 int APIENTRY DXDrawCanvasPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long lRasterOp = SRCCOPY);
 int APIENTRY DXDrawCanvasTransparentPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long crTrasparentColor);
 int APIENTRY DXCopyScreenToCanvas(CNV_HANDLE cnv);
+int APIENTRY DXInitMusic(HWND hWnd);
+void APIENTRY DXKillMusic(void);
+void APIENTRY DXPlayMidi(TCHAR* strFileName, VARIANT_BOOL bLoop = VARIANT_FALSE);
+void APIENTRY DXStopMidi(void);
+BOOL APIENTRY DXIsMidiPlaying(void);
 
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 // End of the header file
-//////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------
 #endif

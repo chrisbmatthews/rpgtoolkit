@@ -190,17 +190,11 @@ EXPORTS
 	changeHostWindowCaption	@232
 	endProgram			@233
 
-	;rpgcode parser
-	;RPGCGetMethodName	@234
-	;RPGCParseAfter		@235
-	;RPGCParseBefore		@236
-	;RPGCGetVarList		@238
-	;RPGCParseWithin	    @239
-	;RPGCValueNumber		@240
-	;RPGCGetElement		@241
-	;RPGCInStrOutsideQuotes	@242
-	;RPGCReplaceOutsideQuotes	@243
-	;RPGCGetBrackets		@244
-	;RPGCGetCommandName	@245
-
 	RPGCGetLitVarByteLen @ 246
+
+	; DirectMusic
+	DXInitMusic			@247
+	DXKillMusic			@248
+	DXPlayMidi			@249
+	DXStopMidi			@250
+	DXIsMidiPlaying		@251
