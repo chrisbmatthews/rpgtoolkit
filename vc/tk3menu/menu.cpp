@@ -121,8 +121,12 @@ void RenderMainMenuOptions(CNVID cnv)
 	CBCanvasDrawText(cnvButton, strReturn, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 53, 434);
 
+	// Save game - disable (grey) if progressive saving disabled.
 	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strSaveGame, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	if (CBGetBoardNum(BRD_SAVING_DISABLED, 0, 0, 0) == 1)
+		CBCanvasDrawText(cnvButton, strSaveGame, "Times New Roman", 20, 3.3, 1.25, rgb(128, 128, 128), 1, 0, 0, true);
+	else
+		CBCanvasDrawText(cnvButton, strSaveGame, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 200, 434);
 
 	CBCanvasFill(cnvButton, 0);
@@ -203,11 +207,17 @@ int MainMenuScanKeys(void)
 
 				case 4:
 					//Save
-					strFile = CBFileDialog(CBGetPathString(PATH_SAVE), "*.sav");
-					if (strFile.compare("") != 0)
+					if (CBGetBoardNum(BRD_SAVING_DISABLED, 0, 0, 0) == 0)
 					{
-						CBRpgCode("#Save("+strFile+")");
-						CBMessageWindow(CBLoadString(834, "Save Complete!"), rgb(255, 255, 255), rgb(0,0,0), "", MW_OK);
+						// If saving is enabled on this board.
+						strFile = CBFileDialog(CBGetPathString(PATH_SAVE), "*.sav");
+
+						if (strFile.compare("") != 0)
+						{
+							// If a file was chosen.
+							CBRpgCode("#Save("+strFile+")");
+							CBMessageWindow(CBLoadString(834, "Save Complete!"), rgb(255, 255, 255), rgb(0,0,0), "", MW_OK);
+						}
 					}
 
 					RenderMainMenu();
