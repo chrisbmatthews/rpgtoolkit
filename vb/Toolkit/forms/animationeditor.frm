@@ -120,9 +120,11 @@ Begin VB.Form animationeditor
       End
       Begin VB.Menu sub3 
          Caption         =   "-"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuInstallUpgrade 
          Caption         =   "Install Upgrade"
+         Visible         =   0   'False
       End
    End
    Begin VB.Menu mnuBuild 
@@ -171,6 +173,7 @@ Begin VB.Form animationeditor
       End
       Begin VB.Menu mnuRegistrationInfo 
          Caption         =   "Registration Info"
+         Visible         =   0   'False
       End
       Begin VB.Menu mnuAbout 
          Caption         =   "About"
@@ -183,7 +186,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
+'All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '========================================================================
@@ -575,7 +578,9 @@ Private Sub DrawFrame(ByVal framenum As Long): On Error Resume Next
         tkMainForm.lblAnimFrameCount.Caption = "Frame " & CStr(.animCurrentFrame + 1) & " / " & CStr(maxFrame + 1)
         tkMainForm.txtAnimSound.Text = .animSound(.animCurrentFrame)
         tkMainForm.transpcolor.BackColor = .animTransp(.animCurrentFrame)
-    
+        tkMainForm.lblAnimRGB.Caption = "RGB (" & red(.animTransp(.animCurrentFrame)) & _
+                                        ", " & green(.animTransp(.animCurrentFrame)) & _
+                                        ", " & blue(.animTransp(.animCurrentFrame)) & ")"
     End With
     
 End Sub
@@ -620,6 +625,22 @@ Private Sub Form_Activate(): On Error Resume Next
     'Set the info
     Call fillInfo
     
+    
+End Sub
+
+'========================================================================
+' Update selected color if dropper selected (will have changed in
+' arena_MouseMove)
+'========================================================================
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    With animationList(activeAnimationIndex).theData
+        If .animGetTransp Then
+            tkMainForm.transpcolor.BackColor = .animTransp(.animCurrentFrame)
+            tkMainForm.lblAnimRGB.Caption = "RGB (" & red(.animTransp(.animCurrentFrame)) & _
+                                            ", " & green(.animTransp(.animCurrentFrame)) & _
+                                            ", " & blue(.animTransp(.animCurrentFrame)) & ")"
+        End If
+    End With
 End Sub
 
 '========================================================================
@@ -839,6 +860,20 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
         
     End With
     
+End Sub
+
+'========================================================================
+' Update selected color if dropper selected
+'========================================================================
+Private Sub arena_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    If animationList(activeAnimationIndex).theData.animGetTransp Then
+        Dim color As Long
+        color = arena.point(x, y)
+        tkMainForm.transpcolor.BackColor = color
+        tkMainForm.lblAnimRGB.Caption = "RGB (" & red(color) & _
+                                        ", " & green(color) & _
+                                        ", " & blue(color) & ")"
+    End If
 End Sub
 
 '========================================================================
