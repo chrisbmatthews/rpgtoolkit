@@ -208,8 +208,6 @@ End Sub
 '=========================================================================
 Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
-    On Error Resume Next
-
     Dim lineIdx As Long         ' Current line
     Dim inClass As Boolean      ' Inside a class?
     Dim scope As String         ' Current scope (public or private)
@@ -224,8 +222,10 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
     ' Some vars for splitting up the line
     Dim parts() As String, delimiters() As String, chars(1) As String
 
-    ' Make classIdx void
-    classIdx = -1
+    ' See which position to start at in the classes array
+    On Error GoTo error
+    classIdx = UBound(prg.classes.classes)
+    On Error Resume Next
 
     ' Loop over each line
     For lineIdx = 0 To UBound(prg.program)
@@ -508,6 +508,13 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
         End If
 
     Next lineIdx
+
+    Exit Sub
+
+error:
+
+    ' Start a position 0
+    classIdx = -1
 
 End Sub
 

@@ -260,7 +260,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             End If
 
             ' Check for inclusions
-            If (LCase(LeftB$(theLine, 16)) = "#include") Then
+            If (LCase$(LeftB$(theLine, 16)) = "#include") Then
 
                 ' Make sure it's not the include command
                 If (InStrB(1, theLine, "(") = 0) Then
@@ -276,6 +276,14 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                     theLine = vbNullString
 
                 End If
+
+            ElseIf (LCase$(LeftB$(theLine, 20) = "#autolocal")) Then
+
+                ' Put auto localization in effect
+                openProgram.autoLocal = True
+
+                ' Remove this line
+                theLine = vbNullString
 
             End If
 
