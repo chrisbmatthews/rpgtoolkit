@@ -3655,8 +3655,8 @@ Public Sub LoadRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     Call alignBoard(pPos(selectedPlayer).x, pPos(selectedPlayer).y)
     Call openItems
     'Re-render with new board and items.
-    Call renderNow
     Call renderNow(cnvRPGCodeScreen)
+    Call renderRPGCodeScreen
     Call launchBoardThreads(boardList(activeBoardIndex).theData)
 
     saveFileLoaded = True           'Used to prevent new game loading after start menu Load.
@@ -4373,8 +4373,7 @@ Sub PostureRPG(Text$, ByRef theProgram As RPGCodeProgram)
         If theOne = -1 Then Exit Sub 'Player handle not found
         num = inBounds(num, 0, 9)
         pPos(theOne).stance = "Custom " & CStr(num)
-        Call renderNow
-        Call canvasGetScreen(cnvRPGCodeScreen)
+        Call renderNow(cnvRPGCodeScreen)
         Call renderRPGCodeScreen
     End If
 
@@ -4583,16 +4582,12 @@ Sub PushItemRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         
     Else
         'If not running concurrently, run the queued movements now.
-        
+
         Do While moveItems(itemNum)
-            Call renderNow
+            Call renderNow(cnvRPGCodeScreen)
+            Call renderRPGCodeScreen
             Call processEvent
         Loop
-        
-        'Update the rpgcode canvas in case we're still in a program.
-        Call canvasGetScreen(cnvRPGCodeScreen)
-    
-        'Call runQueuedMovements
         
     End If
 
@@ -4774,8 +4769,7 @@ Sub PutItemRPG(Text$, ByRef theProgram As RPGCodeProgram)
     pendingItemMovement(theOne).xTarg = itmPos(theOne).x
     pendingItemMovement(theOne).yTarg = itmPos(theOne).y
     
-    Call renderNow
-    Call canvasGetScreen(cnvRPGCodeScreen)
+    Call renderNow(cnvRPGCodeScreen)
     Call renderRPGCodeScreen
 
     Exit Sub
@@ -4876,8 +4870,7 @@ Sub PutPlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
     pendingPlayerMovement(theOne).yTarg = pPos(theOne).y
     
     Call alignBoard(targetX, targetY)
-    Call renderNow
-    Call canvasGetScreen(cnvRPGCodeScreen)
+    Call renderNow(cnvRPGCodeScreen)
     Call renderRPGCodeScreen
 
 
@@ -5437,8 +5430,7 @@ Sub ReturnRPG(ByRef theProgram As RPGCodeProgram)
     '#Return()
     'Refresh screen
     On Error GoTo errorhandler
-    Call renderNow
-    Call canvasGetScreen(cnvRPGCodeScreen)
+    Call renderNow(cnvRPGCodeScreen, True)
     Call renderRPGCodeScreen
 
     Exit Sub
@@ -6735,8 +6727,7 @@ Sub StanceRPG(Text$, ByRef theProgram As RPGCodeProgram)
             pPos(theOne).stance = "REST"
         End If
         
-        Call renderNow
-        Call canvasGetScreen(cnvRPGCodeScreen)
+        Call renderNow(cnvRPGCodeScreen, True)
         Call renderRPGCodeScreen
         
     End If
@@ -7713,17 +7704,13 @@ Sub WanderRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
         
     Else
         'If not running concurrently, run the queued movements now.
-        
+
         Do While moveItems(itemNum)
-            Call renderNow
+            Call renderNow(cnvRPGCodeScreen)
+            Call renderRPGCodeScreen
             Call processEvent
         Loop
-        
-        'Update the rpgcode canvas in case we're still in a program.
-        Call canvasGetScreen(cnvRPGCodeScreen)
-        
-        'Call runQueuedMovements
-        
+
     End If
 
 End Sub
@@ -8809,7 +8796,7 @@ Sub ErasePlayerRPG(Text$, ByRef theProgram As RPGCodeProgram)
         End If
         If theOne = -1 Then Exit Sub 'Player handle not found
         showPlayer(theOne) = False
-        Call renderNow(-1, True)            'Force a render.
+        Call renderNow(cnvRPGCodeScreen, True)            'Force a render.
         Call renderRPGCodeScreen
 
     Exit Sub
