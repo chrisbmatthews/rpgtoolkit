@@ -109,7 +109,7 @@ VOID APIENTRY mainEventLoop(
     // to break out of this loop is to call PostQuitMessage().
 
 	// Create a pointer to the gameLogic procedure
-	typedef VOID (__stdcall *FUNCTION_POINTER) (VOID);
+	typedef INT (__stdcall *FUNCTION_POINTER) (VOID);
 	CONST FUNCTION_POINTER gameLogic = FUNCTION_POINTER(gameLogicAddress);
 
 	// Calculate how long one frame should take, in milliseconds
@@ -143,20 +143,23 @@ VOID APIENTRY mainEventLoop(
         }
 
 		// Run a frame of game logic
-		gameLogic();
-
-		// Sleep for any remaining time
-		while ((GetTickCount() - dblTimeNow) < dblOneFrame);
-
-		// Update length rendering took
-		dblTimeNow = GetTickCount() - dblTimeNow;
-
-		// Add the time for this loop and increment the counter.
-		// Add only if this is a short loop.
-		if (dblTimeNow < 200)
+		if (gameLogic() != GS_PAUSE)
 		{
-			(*m_renderTime) += double(dblTimeNow) / 1000.0; // (Should kill this division!)
-			(*m_renderCount)++;
+			// Count this loop if not in Paused state
+
+			// Sleep for any remaining time
+			while ((GetTickCount() - dblTimeNow) < dblOneFrame);
+
+			// Update length rendering took
+			dblTimeNow = GetTickCount() - dblTimeNow;
+
+			// Add the time for this loop and increment the counter.
+			// Add only if this is a short loop.
+			if (dblTimeNow < 200)
+			{
+				(*m_renderTime) += double(dblTimeNow) / 1000.0; // (Should kill this division!)
+				(*m_renderCount)++;
+			}
 		}
 
     }

@@ -1,6 +1,6 @@
 Attribute VB_Name = "transMain"
 '=======================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
+'All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '=======================================================================
@@ -16,7 +16,6 @@ Option Explicit
 '=======================================================================
 Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As Long)
 Private Declare Sub initCounter Lib "actkrt3.dll" (ByRef ptrRenderTime As Double, ByRef ptrRenderCount As Long)
-Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 '=======================================================================
 ' Game state enumeration
@@ -276,8 +275,9 @@ End Sub
 
 '=======================================================================
 ' Runs one 'frame' of the game logic
+' Returns the game state to actkrt3
 '=======================================================================
-Private Sub gameLogic()
+Private Function gameLogic() As GAME_LOGIC_STATE
 
     On Local Error Resume Next
 
@@ -289,10 +289,6 @@ Private Sub gameLogic()
 
         Case GS_IDLE, GS_MOVEMENT       'NORMAL STATE
                                         '------------
-
-            ' // = Moved to actkrt3
-            ' //Dim tickCount As Long
-            ' //tickCount = GetTickCount()
 
             ' Don't need this every time!
             gameTime = (Timer() - initTime) + addTime
@@ -319,25 +315,6 @@ Private Sub gameLogic()
                 ' Do nothing, but seems to have an effect
             End If
 
-            ' // = Moved to actkrt3
-
-            ' Cap the fps
-            ' //Do While ((GetTickCount() - tickCount) < AVGTIME_CAP)
-            ' //    Call processEvent
-            ' //Loop
-
-            ' //tickCount = GetTickCount() - tickCount
-            ' //If (tickCount < 200) Then
-            ' //    m_renderTime = m_renderTime + tickCount / 1000
-            ' //    m_renderCount = m_renderCount + 1
-            ' //End If
-
-            ' //If (m_renderTime > 2) Then
-            ' //    ' Next second
-            ' //    m_renderTime = m_renderTime / 2
-            ' //    m_renderCount = m_renderCount \ 2
-            ' //End If
-
         Case GS_PAUSE           'PAUSE STATE
                                 '-----------
             ' Just keep the music looping
@@ -349,8 +326,10 @@ Private Sub gameLogic()
             Call endProgram
 
     End Select
+    
+    gameLogic = gGameState
 
-End Sub
+End Function
 
 '=======================================================================
 ' Open systems
