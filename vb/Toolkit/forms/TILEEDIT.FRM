@@ -364,7 +364,7 @@ Option Explicit
 '========================================================================
 
 'Flood fill a device context with the current brush
-Private Declare Function ExtFloodFill Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long, ByVal wFillType As Long) As Long
+Private Declare Function ExtFloodFill Lib "gdi32" (ByVal hdc As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long, ByVal wFillType As Long) As Long
 
 'Create a solid brush object of the color passed in
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
@@ -464,12 +464,12 @@ Public Sub isoChange( _
         
         'Copy the buffer tile into tilemem.
 
-        Dim x As Integer, y As Integer
-        For x = 0 To 64
-            For y = 0 To 32
-                tileMem(x + 1, y + 1) = bufTile(x, y)
-            Next y
-        Next x
+        Dim X As Integer, Y As Integer
+        For X = 0 To 64
+            For Y = 0 To 32
+                tileMem(X + 1, Y + 1) = bufTile(X, Y)
+            Next Y
+        Next X
 
         xMod = 2
         xRange = 64
@@ -488,11 +488,11 @@ Public Sub isoChange( _
         End If
 
         'Clear the tilemem data.
-        For x = 0 To 64
-            For y = 0 To 32
-                tileMem(x, y) = -1
-            Next y
-        Next x
+        For X = 0 To 64
+            For Y = 0 To 32
+                tileMem(X, Y) = -1
+            Next Y
+        Next X
         
         'Clear the tilename.
         openTileEditorDocs(indice).tileName = ""
@@ -500,11 +500,11 @@ Public Sub isoChange( _
         
         isIsoTile = False
 
-        For x = 0 To 64
-            For y = 0 To 32
-                tileMem(x, y) = -1
-            Next y
-        Next x
+        For X = 0 To 64
+            For Y = 0 To 32
+                tileMem(X, Y) = -1
+            Next Y
+        Next X
         xMod = 1
         xRange = 32
 
@@ -570,9 +570,9 @@ End Sub
 '========================================================================
 ' When you click in the color picker in TkMainform
 '========================================================================
-Public Sub palettebox_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error GoTo ErrorHandler
+Public Sub palettebox_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error GoTo ErrorHandler
     'Set the current color
-    openTileEditorDocs(indice).currentColor = vbFrmPoint(tkMainForm.palettebox, x, y)
+    openTileEditorDocs(indice).currentColor = vbFrmPoint(tkMainForm.palettebox, X, Y)
     
     'Update selected color picturebox in tkMainForm
     Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(indice).currentColor)
@@ -663,14 +663,14 @@ Private Sub Rotate(ByVal how As ROTATE_TYPE)
    'Undo
     Call setUndo
 
-    Dim x As Integer, y As Integer, xx As Integer, yy As Integer
+    Dim X As Integer, Y As Integer, xx As Integer, yy As Integer
    
     'Buff it
-    For x = 1 To 32
-        For y = 1 To 32
-            bufTile(x, y) = tileMem(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            bufTile(X, Y) = tileMem(X, Y)
+        Next Y
+    Next X
    
     'Reset variables
     yy = 1: xx = 1
@@ -678,32 +678,32 @@ Private Sub Rotate(ByVal how As ROTATE_TYPE)
     'Start changing the tiles
     Select Case how
         Case Left
-            For x = 1 To 32
-                For y = 32 To 1 Step -1
-                    tileMem(x, y) = bufTile(xx, yy)
+            For X = 1 To 32
+                For Y = 32 To 1 Step -1
+                    tileMem(X, Y) = bufTile(xx, yy)
                     xx = xx + 1
-                Next y
+                Next Y
                 xx = 1
                 yy = yy + 1
-            Next x
+            Next X
         Case Right
-            For x = 32 To 1 Step -1
-                For y = 1 To 32
-                    tileMem(x, y) = bufTile(xx, yy)
+            For X = 32 To 1 Step -1
+                For Y = 1 To 32
+                    tileMem(X, Y) = bufTile(xx, yy)
                     xx = xx + 1
-                Next y
+                Next Y
                 xx = 1
                 yy = yy + 1
-            Next x
+            Next X
         Case OneHundredEighty
-            For y = 32 To 1 Step -1
-                For x = 32 To 1 Step -1
-                    tileMem(x, y) = bufTile(xx, yy)
+            For Y = 32 To 1 Step -1
+                For X = 32 To 1 Step -1
+                    tileMem(X, Y) = bufTile(xx, yy)
                     xx = xx + 1
-                Next x
+                Next X
                 xx = 1
                 yy = yy + 1
-            Next y
+            Next Y
     End Select
     'Redraw
     Call tileRedraw
@@ -716,23 +716,23 @@ Private Sub Flip(ByVal how As FLIP_TYPE)
     'Undo
     Call setUndo
    
-    Dim x As Integer, y As Integer
+    Dim X As Integer, Y As Integer
    
-    For x = 1 To 32
-        For y = 1 To 32
+    For X = 1 To 32
+        For Y = 1 To 32
             If how = Horizontal Then
-                bufTile(x, y) = tileMem(32 - x + 1, y)
+                bufTile(X, Y) = tileMem(32 - X + 1, Y)
             Else 'Vertical
-                bufTile(x, y) = tileMem(x, 32 - y + 1)
+                bufTile(X, Y) = tileMem(X, 32 - Y + 1)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
    
-    For x = 1 To 32
-        For y = 1 To 32
-            tileMem(x, y) = bufTile(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            tileMem(X, Y) = bufTile(X, Y)
+        Next Y
+    Next X
 
     'Redraw
     Call tileRedraw
@@ -748,13 +748,13 @@ Public Sub setUndo()
     'Enlarge undo array
     ReDim Preserve openTileEditorDocs(indice).undoTile(currentUndo, 64, 32)
 
-    Dim x As Integer, y As Integer
-    For x = 1 To xRange
-        For y = 1 To 32
-            openTileEditorDocs(indice).undoTile(currentUndo, x, y) = tileMem(x, y)
-            openTileEditorDocs(indice).undoTile(x, y) = tileMem(x, y)
-        Next y
-    Next x
+    Dim X As Integer, Y As Integer
+    For X = 1 To xRange
+        For Y = 1 To 32
+            openTileEditorDocs(indice).undoTile(currentUndo, X, Y) = tileMem(X, Y)
+            openTileEditorDocs(indice).undoTile(X, Y) = tileMem(X, Y)
+        Next Y
+    Next X
 
     'Move onto the next place in the array
     currentUndo = currentUndo + 1
@@ -862,14 +862,14 @@ End Sub
 Public Sub changeColor()
     'If the user has choosen the color he wants to change, we go through this loop
     If bChangeColor = 2 Then
-        Dim x As Integer, y As Integer
-        For x = 1 To xRange                            '<-- Edit
-            For y = 1 To 32
-                If tileMem(x, y) = openTileEditorDocs(indice).changeColor Then
-                    tileMem(x, y) = openTileEditorDocs(indice).currentColor
+        Dim X As Integer, Y As Integer
+        For X = 1 To xRange                            '<-- Edit
+            For Y = 1 To 32
+                If tileMem(X, Y) = openTileEditorDocs(indice).changeColor Then
+                    tileMem(X, Y) = openTileEditorDocs(indice).currentColor
                 End If
-            Next y
-        Next x
+            Next Y
+        Next X
         'Redraw the tile
         Call tileRedraw
         'Reset the function
@@ -888,8 +888,8 @@ End Sub
 
 'Fill
 Private Sub fillTile( _
-                        ByVal x As Long, _
-                        ByVal y As Long, _
+                        ByVal X As Long, _
+                        ByVal Y As Long, _
                         ByVal crColor As Long _
                                                 )
 
@@ -904,7 +904,7 @@ Private Sub fillTile( _
 
     'Get the color where the user clicked down
     Dim clickColor As Long
-    clickColor = tileMem(x, y)
+    clickColor = tileMem(X, Y)
 
     If clickColor = crColor Then
         'Click color and color we're changing to are the same- don't bother
@@ -938,7 +938,7 @@ Private Sub fillTile( _
     Call SelectObject(hdc, brush)
 
     'Process the flood fill on the device context
-    Call ExtFloodFill(hdc, x, y, clickColor, 1)
+    Call ExtFloodFill(hdc, X, Y, clickColor, 1)
 
     'Destroy the brush
     Call DeleteObject(brush)
@@ -966,7 +966,7 @@ Private Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
     'Undo
     Call setUndo
     
-    Dim x, y As Integer
+    Dim X, Y As Integer
     Dim Canv As Long
     Dim tc As Long, p As Long
     'Create an offscreen canvas, and test it
@@ -976,17 +976,17 @@ Private Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
     tc = CanvasGetPixel(Canv, 0, 0)
     
     'Copy the tilemem to the offscreen canvas.
-    For x = 1 To xRange
-        For y = 1 To 32
-            If tileMem(x, y) <> -1 Then
-                Call CanvasSetPixel(Canv, x - 1, y - 1, tileMem(x, y))
+    For X = 1 To xRange
+        For Y = 1 To 32
+            If tileMem(X, Y) <> -1 Then
+                Call CanvasSetPixel(Canv, X - 1, Y - 1, tileMem(X, Y))
             Else
                 'Set tc (from above) as the transparent color
-                Call CanvasSetPixel(Canv, x - 1, y - 1, tc)
-                p = CanvasGetPixel(Canv, x - 1, y - 1)
+                Call CanvasSetPixel(Canv, X - 1, Y - 1, tc)
+                p = CanvasGetPixel(Canv, X - 1, Y - 1)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
         
     Select Case how
         Case 1 'Filled Rectangle
@@ -1022,17 +1022,17 @@ Private Sub tileAddShape(ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As I
     End Select
 
     'Copy the canvas back to the tilemem.
-    For x = 1 To xRange
-        For y = 1 To 32
-            p = CanvasGetPixel(Canv, x - 1, y - 1)
+    For X = 1 To xRange
+        For Y = 1 To 32
+            p = CanvasGetPixel(Canv, X - 1, Y - 1)
             If p = tc Then
                 'Transparent colour.
-                tileMem(x, y) = -1
+                tileMem(X, Y) = -1
             Else
-                tileMem(x, y) = p
+                tileMem(X, Y) = p
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
     'Destroy the Canvas
     Call DestroyCanvas(Canv)
@@ -1095,14 +1095,14 @@ End Sub
 '========================================================================
 Private Sub Form_Deactivate(): On Error Resume Next
 
-    Dim x As Integer, y As Integer
+    Dim X As Integer, Y As Integer
     
     'Refresh data
-    For x = 0 To xRange
-        For y = 0 To 32
-            openTileEditorDocs(indice).tileMem(x, y) = tileMem(x, y)
-        Next y
-    Next x
+    For X = 0 To xRange
+        For Y = 0 To 32
+            openTileEditorDocs(indice).tileMem(X, Y) = tileMem(X, Y)
+        Next Y
+    Next X
 
 End Sub
 
@@ -1162,12 +1162,12 @@ Private Sub Form_Load(): On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
 
     'Refresh Data
-    Dim x As Integer, y As Integer
-    For x = 1 To 64
-        For y = 1 To 32
-            openTileEditorDocs(indice).tileMem(x, y) = -1
-        Next y
-    Next x
+    Dim X As Integer, Y As Integer
+    For X = 1 To 64
+        For Y = 1 To 32
+            openTileEditorDocs(indice).tileMem(X, Y) = -1
+        Next Y
+    Next X
     
     'Set some variables for ISO
     xMod = 1
@@ -1289,35 +1289,35 @@ Private Sub highRedraw()
     pixelWidth = (wwidth / xRange)
     pixelHeight = (hheight / 32)
     
-    Dim x As Integer, y As Integer
+    Dim X As Integer, Y As Integer
     Dim xx As Integer, yy As Integer
     
     Dim bottomX As Long, bottomY As Long
     Dim topX As Long, topY As Long
 
-    For x = 1 To xRange
-        For y = 1 To 32
-            xx = (x * pixelWidth) - (pixelWidth - 1)
-            yy = (y * pixelHeight) - (pixelHeight - 1)
+    For X = 1 To xRange
+        For Y = 1 To 32
+            xx = (X * pixelWidth) - (pixelWidth - 1)
+            yy = (Y * pixelHeight) - (pixelHeight - 1)
             
-            If isoMaskBmp(x, y) <> vbQBColor(0) And openTileEditorDocs(indice).isometric Then
+            If isoMaskBmp(X, Y) <> vbQBColor(0) And openTileEditorDocs(indice).isometric Then
                 'Draw background color pixels at the corners if this tile is isometric
                 Call vbPicFillRect(tileform, xx, yy, xx + (pixelWidth - 1), yy + (pixelHeight - 1), Me.BackColor)
-                Call vbPicPSet(tkMainForm.isoMirror, x - 1, y - 1, Me.BackColor)
+                Call vbPicPSet(tkMainForm.isoMirror, X - 1, Y - 1, Me.BackColor)
                 
                 'Clear the tilemem entry
-                tileMem(x, y) = -1
-            ElseIf tileMem(x, y) <> -1 Then
+                tileMem(X, Y) = -1
+            ElseIf tileMem(X, Y) <> -1 Then
                 'If the pixel isn't transparent and isn't masked - both isometric and 2D
                     
-                Call vbPicFillRect(tileform, xx - 1, yy - 1, xx + (pixelWidth - 1) - 2, yy + (pixelHeight - 1) - 2, tileMem(x, y))
+                Call vbPicFillRect(tileform, xx - 1, yy - 1, xx + (pixelWidth - 1) - 2, yy + (pixelHeight - 1) - 2, tileMem(X, Y))
                 
                 If openTileEditorDocs(indice).isometric Then
                     'Draw the isomirror here (moved from tileRedraw.) Don't draw the 2D mirror
-                    Call vbPicPSet(tkMainForm.isoMirror, x - 1, y - 1, tileMem(x, y))
+                    Call vbPicPSet(tkMainForm.isoMirror, X - 1, Y - 1, tileMem(X, Y))
                 Else
                     'Draw the 2D mirror - isomirror drawn in tileRedraw
-                    Call vbPicPSet(tkMainForm.mirror, x - 1, y - 1, tileMem(x, y))
+                    Call vbPicPSet(tkMainForm.mirror, X - 1, Y - 1, tileMem(X, Y))
                 End If
                 
             Else
@@ -1325,8 +1325,8 @@ Private Sub highRedraw()
                 Call vbPicFillRect(tileform, xx - 1, yy - 1, xx + pixelWidth / 2 - 2, yy + pixelHeight / 2 - 2, vbQBColor(7))
                 Call vbPicFillRect(tileform, xx + pixelWidth / 2 - 1, yy + pixelHeight / 2 - 1, xx + (pixelWidth - 1) - 2, yy + (pixelHeight - 1) - 2, vbQBColor(7))
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
     Exit Sub
 'Begin error handling code:
@@ -1352,15 +1352,15 @@ Private Sub drawGrid(): On Error Resume Next
     pixelWidth = Round((tfWidth / xRange))
     pixelHeight = (tfHeight / 32)
     
-    Dim x As Integer, y As Integer
+    Dim X As Integer, Y As Integer
     'Vertical Lines
-    For x = -1 To tfWidth Step pixelWidth
-        Call vbPicLine(tileform, x, -1, x, tfHeight, vbQBColor(1))
-    Next x
+    For X = -1 To tfWidth Step pixelWidth
+        Call vbPicLine(tileform, X, -1, X, tfHeight, vbQBColor(1))
+    Next X
     'Horizontal Lines
-    For y = -1 To tfHeight Step pixelHeight
-        Call vbPicLine(tileform, -1, y, tfWidth, y, vbQBColor(1))
-    Next y
+    For Y = -1 To tfHeight Step pixelHeight
+        Call vbPicLine(tileform, -1, Y, tfWidth, Y, vbQBColor(1))
+    Next Y
 End Sub
 
 '========================================================================
@@ -1384,7 +1384,8 @@ End Sub
 '========================================================================
 ' When you click in the Tile Editor
 '========================================================================
-Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub tileform_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+
     openTileEditorDocs(indice).tileNeedUpdate = True
 
     'Get current color
@@ -1403,8 +1404,8 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single,
         
     'Tile pixel co-ordinates (which pixel selected)
     Dim mouseX As Integer, mouseY As Integer
-    mouseX = Int(x / pixelWidth)
-    mouseY = Int(y / pixelHeight)
+    mouseX = Int(X / pixelWidth)
+    mouseY = Int(Y / pixelHeight)
         
     'If a rouge pixel has been selected, Exit Sub
     If mouseX > (xRange - 1) Or mouseY > 31 Then Exit Sub
@@ -1463,6 +1464,7 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single,
             If openTileEditorDocs(indice).isometric And isoMaskBmp(mouseX + 1, mouseY + 1) = vbQBColor(0) Then
                 'Isometric; update isoMirror only
                 Call vbPicPSet(tkMainForm.isoMirror, mouseX, mouseY, coloruse)
+                Call vbPicRefresh(tkMainForm.isoMirror)
             ElseIf Not (openTileEditorDocs(indice).isometric) Then
                 '2D; update both mirrors
                 Call vbPicPSet(tkMainForm.mirror, mouseX, mouseY, coloruse)
@@ -1487,13 +1489,15 @@ Private Sub tileform_MouseDown(button As Integer, Shift As Integer, x As Single,
         Case 2 'Fill
             Call fillTile(mouseX + 1, mouseY + 1, coloruse)
     End Select
+    
+    DoEvents
 
 End Sub
 
 '========================================================================
 ' When you move the mouse in the Tile Editor
 '========================================================================
-Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub tileform_MouseMove(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
     'Get current color
     Dim coloruse As Long
     coloruse = openTileEditorDocs(indice).currentColor
@@ -1510,8 +1514,8 @@ Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single,
         
     'Tile pixel co-ordinates (which pixel selected)
     Dim mouseX As Integer, mouseY As Integer
-    mouseX = Int(x / pixelWidth)
-    mouseY = Int(y / pixelHeight)
+    mouseX = Int(X / pixelWidth)
+    mouseY = Int(Y / pixelHeight)
         
     'If a rouge pixel has been selected, Exit Sub
     If mouseX > (xRange - 1) Or mouseY > 31 Then Exit Sub
@@ -1593,16 +1597,16 @@ Private Sub tileform_MouseMove(button As Integer, Shift As Integer, x As Single,
             End If
     End Select
     
-    Call tileform_MouseDown(button, Shift, x, y)
+    Call tileform_MouseDown(button, Shift, X, Y)
     bDragBegin = True
-    dragX1 = x
-    dragY1 = y
+    dragX1 = X
+    dragY1 = Y
 End Sub
 
 '========================================================================
 ' When you release the mouse in the Tile Editor
 '========================================================================
-Private Sub tileform_MouseUp(button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub tileform_MouseUp(button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
     Dim tfWidth As Integer, tfHeight As Integer
     tfWidth = (tileform.Width) / Screen.TwipsPerPixelX
     tfHeight = (tileform.height) / Screen.TwipsPerPixelY
@@ -1613,8 +1617,8 @@ Private Sub tileform_MouseUp(button As Integer, Shift As Integer, x As Single, y
     
     Dim x2 As Integer, y2 As Integer
     Dim x1 As Integer, y1 As Integer
-    x2 = Int(x / pixelWidth)
-    y2 = Int(y / pixelHeight)
+    x2 = Int(X / pixelWidth)
+    y2 = Int(Y / pixelHeight)
     x1 = Int(dragX1 / pixelWidth)
     y1 = Int(dragY1 / pixelHeight)
     
@@ -1730,7 +1734,7 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
         'Now we need to rearrange the pixels in the tilemem from 32x32 to 62x32
         
         If UCase(whichType$) = "ISO" Then
-            Dim xCount As Byte, yCount As Byte, x As Integer, y As Integer
+            Dim xCount As Byte, yCount As Byte, X As Integer, Y As Integer
             xCount = 1: yCount = 1
         
             'Now we need to form the 32x32 tile into a 64x32 in tilemem:
@@ -2216,12 +2220,12 @@ Private Sub cmdClear_Click()
     'Undo
     Call setUndo
 
-    Dim x As Integer, y As Integer
-    For x = 1 To xRange
-        For y = 1 To 32
-            tileMem(x, y) = -1
-        Next y
-    Next x
+    Dim X As Integer, Y As Integer
+    For X = 1 To xRange
+        For Y = 1 To 32
+            tileMem(X, Y) = -1
+        Next Y
+    Next X
 
     'Redraw
     Call tileRedraw
@@ -2341,23 +2345,23 @@ Public Sub gryscle_Click()
     'Undo
     Call setUndo
    
-    Dim x As Integer, y As Integer
+    Dim X As Integer, Y As Integer
     Dim rr As Long, gg As Long, bb As Long, newavg As Long
 
     'Start converting
-    For x = 1 To xRange
-        For y = 1 To 32
-            If tileMem(x, y) <> -1 Then
-                rr = red(tileMem(x, y))
-                gg = green(tileMem(x, y))
-                bb = blue(tileMem(x, y))
+    For X = 1 To xRange
+        For Y = 1 To 32
+            If tileMem(X, Y) <> -1 Then
+                rr = red(tileMem(X, Y))
+                gg = green(tileMem(X, Y))
+                bb = blue(tileMem(X, Y))
                 newavg = (rr + gg + bb) / 3
                 If newavg > 255 Then newavg = 255
                 If newavg < 0 Then newavg = 0
-                tileMem(x, y) = RGB(newavg, newavg, newavg)
+                tileMem(X, Y) = RGB(newavg, newavg, newavg)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     'Redraw
     Call tileRedraw
 End Sub
@@ -2407,58 +2411,58 @@ Private Sub blurmnu_Click()
     'Undo
     Call setUndo
     
-    Dim x, y As Integer
+    Dim X, Y As Integer
     Dim aa As Long
     Dim r As Long, g As Long, b As Long
     Dim r2 As Long, g2 As Long, b2 As Long
     Dim nr As Long, ng As Long, nb As Long
     'Start blurring
-    For x = 1 To xRange
-        For y = 1 To 32
+    For X = 1 To xRange
+        For Y = 1 To 32
         
-            aa = tileMem(x, y)
+            aa = tileMem(X, Y)
             If aa = -1 Then aa = vbQBColor(15)
             r = red(aa) / 2
-            aa = tileMem(x, y)
+            aa = tileMem(X, Y)
             If aa = -1 Then aa = vbQBColor(15)
             g = green(aa) / 2
-            aa = tileMem(x, y)
+            aa = tileMem(X, Y)
             If aa = -1 Then aa = vbQBColor(15)
             b = blue(aa) / 2
-            If x = xRange Then
-                aa = tileMem(1, y)
+            If X = xRange Then
+                aa = tileMem(1, Y)
                 If aa = -1 Then aa = vbQBColor(15)
             Else
-                aa = tileMem(x + 1, y)
+                aa = tileMem(X + 1, Y)
                 If aa = -1 Then aa = vbQBColor(15)
             End If
             r2 = red(aa) / 2
-            If x = xRange Then
-                aa = tileMem(1, y)
+            If X = xRange Then
+                aa = tileMem(1, Y)
                 If aa = -1 Then aa = vbQBColor(15)
             Else
-                aa = tileMem(x + 1, y)
+                aa = tileMem(X + 1, Y)
                 If aa = -1 Then aa = vbQBColor(15)
             End If
             g2 = green(aa) / 2
-            If x = xRange Then
-                aa = tileMem(1, y)
+            If X = xRange Then
+                aa = tileMem(1, Y)
                 If aa = -1 Then aa = vbQBColor(15)
             Else
-                aa = tileMem(x + 1, y)
+                aa = tileMem(X + 1, Y)
                 If aa = -1 Then aa = vbQBColor(15)
             End If
             b2 = blue(aa) / 2
             nr = inBounds(r + r2, 0, 255)
             ng = inBounds(g + g2, 0, 255)
             nb = inBounds(b + b2, 0, 255)
-            If x = xRange Then
-                tileMem(1, y) = RGB(nr, ng, nb)
+            If X = xRange Then
+                tileMem(1, Y) = RGB(nr, ng, nb)
             Else
-                tileMem(x + 1, y) = RGB(nr, ng, nb)
+                tileMem(X + 1, Y) = RGB(nr, ng, nb)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     'Redraw
     Call tileRedraw
 
