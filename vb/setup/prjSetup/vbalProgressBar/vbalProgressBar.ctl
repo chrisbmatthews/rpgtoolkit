@@ -49,22 +49,22 @@ Private Type POINTAPI
    x As Long
    y As Long
 End Type
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hDc As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function SelectClipRgn Lib "gdi32" (ByVal hDc As Long, ByVal hRgn As Long) As Long
+Private Declare Function SelectClipRgn Lib "gdi32" (ByVal hdc As Long, ByVal hRgn As Long) As Long
 Private Declare Function CreateRectRgnIndirect Lib "gdi32" (lpRect As RECT) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hwnd As Long, lpRect As RECT) As Long
 Private Declare Function GetSysColorBrush Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
-Private Declare Function FillRect Lib "user32" (ByVal hDc As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDc As Long, ByVal hObject As Long) As Long
+Private Declare Function FillRect Lib "user32" (ByVal hdc As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function InflateRect Lib "user32" (lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hDc As Long, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hDc As Long, ByVal x As Long, ByVal y As Long, lpPoint As POINTAPI) As Long
+Private Declare Function LineTo Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function MoveToEx Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, lpPoint As POINTAPI) As Long
 Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
-Private Declare Function DrawEdge Lib "user32" (ByVal hDc As Long, qrc As RECT, ByVal edge As Long, ByVal grfFlags As Long) As Long
+Private Declare Function DrawEdge Lib "user32" (ByVal hdc As Long, qrc As RECT, ByVal edge As Long, ByVal grfFlags As Long) As Long
 Private Const BDR_RAISEDOUTER = &H1
 Private Const BDR_SUNKENOUTER = &H2
 Private Const BDR_RAISEDINNER = &H4
@@ -78,11 +78,11 @@ Private Const BF_BOTTOM = &H8
 Private Const BF_RECT = (BF_LEFT Or BF_TOP Or BF_RIGHT Or BF_BOTTOM)
 Private Const BF_SOFT = &H1000    ' For softer buttons
 Private Const BF_FLAT = &H4000    ' For flat rather than 3D borders
-Private Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hDc As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hdc As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 Private Const DT_SINGLELINE = &H20
-Private Declare Function SetTextColor Lib "gdi32" (ByVal hDc As Long, ByVal crColor As Long) As Long
-Private Declare Function SetBkColor Lib "gdi32" (ByVal hDc As Long, ByVal crColor As Long) As Long
-Private Declare Function SetBkMode Lib "gdi32" (ByVal hDc As Long, ByVal nBkMode As Long) As Long
+Private Declare Function SetTextColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
+Private Declare Function SetBkColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
+Private Declare Function SetBkMode Lib "gdi32" (ByVal hdc As Long, ByVal nBkMode As Long) As Long
 Private Const OPAQUE = 2
 Private Const TRANSPARENT = 1
 Private Declare Function OleTranslateColor Lib "OLEPRO32.DLL" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, pccolorref As Long) As Long
@@ -97,20 +97,20 @@ Private Declare Function DrawThemeBackground Lib "uxtheme.dll" _
     ByVal iPartId As Long, ByVal iStateId As Long, _
     pRect As RECT, pClipRect As RECT) As Long
 Private Declare Function GetThemeBackgroundContentRect Lib "uxtheme.dll" _
-   (ByVal hTheme As Long, ByVal hDc As Long, _
+   (ByVal hTheme As Long, ByVal hdc As Long, _
     ByVal iPartId As Long, ByVal iStateId As Long, _
     pBoundingRect As RECT, pContentRect As RECT) As Long
 Private Declare Function DrawThemeText Lib "uxtheme.dll" _
-   (ByVal hTheme As Long, ByVal hDc As Long, ByVal iPartId As Long, _
+   (ByVal hTheme As Long, ByVal hdc As Long, ByVal iPartId As Long, _
     ByVal iStateId As Long, ByVal pszText As Long, _
     ByVal iCharCount As Long, ByVal dwTextFlag As Long, _
     ByVal dwTextFlags2 As Long, pRect As RECT) As Long
 Private Declare Function DrawThemeIcon Lib "uxtheme.dll" _
-   (ByVal hTheme As Long, ByVal hDc As Long, ByVal iPartId As Long, _
+   (ByVal hTheme As Long, ByVal hdc As Long, ByVal iPartId As Long, _
     ByVal iStateId As Long, pRect As RECT, _
     ByVal himl As Long, ByVal iImageIndex As Long) As Long
 Private Declare Function DrawThemeEdge Lib "uxtheme.dll" _
-   (ByVal hTheme As Long, ByVal hDc As Long, ByVal iPartId As Long, _
+   (ByVal hTheme As Long, ByVal hdc As Long, ByVal iPartId As Long, _
    ByVal iStateId As Long, pDestRect As RECT, _
    ByVal uEdge As Long, ByVal uFlags As Long, _
    pContentRect As RECT) As Long
@@ -173,7 +173,7 @@ Private m_bSegments As Boolean
 Private m_bXpStyle As Boolean
 
 Public Event Draw( _
-      ByVal hDc As Long, _
+      ByVal hdc As Long, _
       ByVal lLeft As Long, _
       ByVal lTop As Long, _
       ByVal lWidth As Long, _
@@ -323,8 +323,8 @@ Dim bDoDefault As Boolean
    lWidth = Abs(tR.Right - tR.Left)
    lHeight = Abs(tR.Bottom - tR.Top)
 
-   lhDCU = UserControl.hDc
-   lHDC = m_cMemDC.hDc(lWidth, lHeight)
+   lhDCU = UserControl.hdc
+   lHDC = m_cMemDC.hdc(lWidth, lHeight)
    If lHDC = 0 Then
       lHDC = lhDCU
    Else
@@ -338,9 +338,9 @@ Dim bDoDefault As Boolean
       ' Draw background:
       If pbPic(picBack) Then
          If m_eBackPictureMode = epbpTile Then
-            TileArea lHDC, 0, 0, lWidth, lHeight, picBack.hDc, picBack.ScaleWidth \ Screen.TwipsPerPixelX, picBack.ScaleHeight \ Screen.TwipsPerPixelY, 0, 0
+            TileArea lHDC, 0, 0, lWidth, lHeight, picBack.hdc, picBack.ScaleWidth \ Screen.TwipsPerPixelX, picBack.ScaleHeight \ Screen.TwipsPerPixelY, 0, 0
          Else
-            StretchBlt lHDC, 0, 0, lWidth, lHeight, picBack.hDc, 0, 0, picBack.ScaleWidth \ Screen.TwipsPerPixelX, picBack.ScaleHeight \ Screen.TwipsPerPixelY, vbSrcCopy
+            StretchBlt lHDC, 0, 0, lWidth, lHeight, picBack.hdc, 0, 0, picBack.ScaleWidth \ Screen.TwipsPerPixelX, picBack.ScaleHeight \ Screen.TwipsPerPixelY, vbSrcCopy
          End If
       Else
          If (m_bXpStyle) Then
@@ -444,9 +444,9 @@ Dim bDoDefault As Boolean
       
       If pbPic(picBar) Then
          If m_eBarPictureMode = epbpTile Then
-            TileArea lHDC, 0, tBR.Top, tBR.Right - tBR.Left, tBR.Bottom - tBR.Top, picBar.hDc, picBar.ScaleWidth \ Screen.TwipsPerPixelX, picBar.ScaleHeight \ Screen.TwipsPerPixelY, 0, 0
+            TileArea lHDC, 0, tBR.Top, tBR.Right - tBR.Left, tBR.Bottom - tBR.Top, picBar.hdc, picBar.ScaleWidth \ Screen.TwipsPerPixelX, picBar.ScaleHeight \ Screen.TwipsPerPixelY, 0, 0
          Else
-            StretchBlt lHDC, 0, 0, lWidth, lHeight, picBar.hDc, 0, 0, picBar.ScaleWidth \ Screen.TwipsPerPixelX, picBar.ScaleHeight \ Screen.TwipsPerPixelY, vbSrcCopy
+            StretchBlt lHDC, 0, 0, lWidth, lHeight, picBar.hdc, 0, 0, picBar.ScaleWidth \ Screen.TwipsPerPixelX, picBar.ScaleHeight \ Screen.TwipsPerPixelY, vbSrcCopy
          End If
       Else
          If bDrawn Then
@@ -621,7 +621,7 @@ Dim tJunk As POINTAPI
 End Sub
       
 Private Sub TileArea( _
-        ByVal hDc As Long, _
+        ByVal hdc As Long, _
         ByVal x As Long, _
         ByVal y As Long, _
         ByVal Width As Long, _
@@ -669,7 +669,7 @@ Dim lDstHeight As Long
             End If
             'If (lDstWidth > Width) Then lDstWidth = Width
             'If (lDstHeight > Height) Then lDstHeight = Height
-            BitBlt hDc, lDstX, lDstY, lDstWidth, lDstHeight, lSrcDC, lSrcX, lSrcY, vbSrcCopy
+            BitBlt hdc, lDstX, lDstY, lDstWidth, lDstHeight, lSrcDC, lSrcX, lSrcY, vbSrcCopy
             lDstX = lDstX + lDstWidth
             lSrcX = 0
             lDstWidth = lBitmapW
@@ -741,7 +741,7 @@ Attribute ModifyBarPicture.VB_Description = "Applies image processing to the bar
       Dim cDib As New pcDibSection
       cDib.CreateFromPicture picBar
       cDib.ModifyHLS 1, fLuminance, fSaturation
-      cDib.PaintPicture picBar.hDc
+      cDib.PaintPicture picBar.hdc
    End If
 End Function
 Public Function ModifyPicture( _
@@ -753,7 +753,7 @@ Attribute ModifyPicture.VB_Description = "Applies image processing to the backgr
       Dim cDib As New pcDibSection
       cDib.CreateFromPicture picBack
       cDib.ModifyHLS 1, fLuminance, fSaturation
-      cDib.PaintPicture picBack.hDc
+      cDib.PaintPicture picBack.hdc
    End If
 End Function
 
@@ -833,6 +833,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+   On Error Resume Next
    m_hWnd = UserControl.hwnd
    Picture = PropBag.ReadProperty("Picture", Nothing)
    BackColor = PropBag.ReadProperty("BackColor", vbButtonFace)
