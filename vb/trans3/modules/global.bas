@@ -33,7 +33,8 @@ Public resourcePath As String        'resource path
 Public nocodeYN As Boolean           'did it have nocode?
 
 'Tile Editor
-Public buftile(32, 32)               'Tile buffer
+Public buftile(32, 32) As Long               'Tile buffer
+Public lastTileset As String
 
 'Board Editor
 Public activeBoardIndex As Long      'index for active board
@@ -43,7 +44,6 @@ Public playerMem(4) As TKPlayer
 Public activePlayerIndex As Long
 
 'Item Editor:
-' ! MODIFIED BY KSNiloc...
 Public itemMem() As TKItem
 
 Public activeItemIndex As Long
