@@ -246,8 +246,11 @@ Begin VB.Form tileedit
    Begin VB.Menu efmenu 
       Caption         =   "Effects"
       Tag             =   "1475"
-      Begin VB.Menu blurmnu 
+      Begin VB.Menu mnuBlur 
          Caption         =   "Blur"
+      End
+      Begin VB.Menu mnuMotionBlur 
+         Caption         =   "Motion Blur"
          Shortcut        =   ^B
          Tag             =   "1683"
       End
@@ -2590,9 +2593,57 @@ End Sub
 '========================================================================
 ' Effects Menu
 '========================================================================
+Private Sub mnuBlur_Click(): On Error Resume Next
+    Call setUndo
 
-'Blur
-Private Sub blurmnu_Click(): On Error Resume Next
+    Dim x As Long, y As Long, r As Long, g As Long, b As Long, col(3) As Long
+    Dim blurTile(33, 65) As Long
+    
+    'Pad the tile out at the edges, to prevent black edges.
+    For x = 1 To xRange
+        blurTile(x, 0) = tileMem(x, 1)                  'Top.
+        For y = 1 To 32
+            blurTile(0, y) = tileMem(1, y)              'Left.
+            blurTile(x, y) = tileMem(x, y)
+            blurTile(xRange + 1, y) = tileMem(xRange, y) 'Right.
+        Next y
+        blurTile(x, 33) = tileMem(x, 32)                'Bottom.
+    Next x
+    
+    For x = 1 To xRange
+        For y = 1 To 32
+            
+            If blurTile(x, y) <> -1 Then
+                'Average pixels above, below, left and right.
+                'Check for transparent pixels.
+                col(0) = IIf(blurTile(x - 1, y) = -1, blurTile(x, y), blurTile(x - 1, y))
+                col(1) = IIf(blurTile(x, y - 1) = -1, blurTile(x, y), blurTile(x, y - 1))
+                col(2) = IIf(blurTile(x + 1, y) = -1, blurTile(x, y), blurTile(x + 1, y))
+                col(3) = IIf(blurTile(x, y + 1) = -1, blurTile(x, y), blurTile(x, y + 1))
+                                
+                r = (red(col(0)) + red(col(1)) + red(blurTile(x, y)) + red(col(2)) + red(col(3))) \ 5
+                g = (green(col(0)) + green(col(1)) + green(blurTile(x, y)) + green(col(2)) + green(col(3))) \ 5
+                b = (blue(col(0)) + blue(col(1)) + blue(blurTile(x, y)) + blue(col(2)) + blue(col(3))) \ 5
+                               
+                'Not checking transparent pixels - leaves black rings.
+                'r = (red(blurTile(x - 1, y)) + red(blurTile(x, y - 1)) + red(blurTile(x, y)) + red(blurTile(x + 1, y)) + red(blurTile(x, y + 1))) \ 5
+                'g = (green(blurTile(x - 1, y)) + green(blurTile(x, y - 1)) + green(blurTile(x, y)) + green(blurTile(x + 1, y)) + green(blurTile(x, y + 1))) \ 5
+                'b = (blue(blurTile(x - 1, y)) + blue(blurTile(x, y - 1)) + blue(blurTile(x, y)) + blue(blurTile(x + 1, y)) + blue(blurTile(x, y + 1))) \ 5
+            
+                tileMem(x, y) = RGB(r, g, b)
+            End If
+            
+        Next y
+    Next x
+    
+    Call tileRedraw
+    
+End Sub
+
+
+
+'Motion Blur
+Private Sub mnuMotionBlur_Click(): On Error Resume Next
     
     'Undo
     Call setUndo
