@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "richtx32.ocx"
+Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "RICHTX32.OCX"
 Begin VB.Form rpgcodeedit 
    Caption         =   "RPGCode Program Editor (Untitled)"
    ClientHeight    =   5280
@@ -114,6 +114,7 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
+      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -574,7 +575,7 @@ Private Sub CodeForm_KeyPress(KeyAscii As Integer)
     Select Case KeyAscii
     
         Case 22 ' Ctrl+V
-            colorPastedCode
+            'colorPastedCode
             addUndo
 
         Case 3  ' Ctrl+C
@@ -708,7 +709,7 @@ Public Sub mnuNotepadMode_Click()
         Case False ' Entering notepad mode
             mnuNotepadMode.Checked = True
             tkMainForm.WindowState = 0
-            tkMainForm.Width = Width
+            tkMainForm.width = width
             tkMainForm.height = height
             tkMainForm.Top = Top
             tkMainForm.Left = Left
@@ -764,7 +765,7 @@ Private Sub CheckReColor_Timer()
 End Sub
 
 'Added by KSNiloc...
-Private Sub codeform_MouseDown(button As Integer, Shift As Integer, _
+Private Sub codeform_MouseDown(Button As Integer, Shift As Integer, _
  X As Single, Y As Single)
  
  'Record where we're moving from...
@@ -824,7 +825,7 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer)
  ''''''''''''''''''''''''''
 End Sub
 
-Private Sub codeform_MouseUp(button As Integer, Shift As Integer, _
+Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, _
  X As Single, Y As Single)
 
     '''''''''''''''''''''''''''''
@@ -860,7 +861,7 @@ Private Sub codeform_MouseUp(button As Integer, Shift As Integer, _
 
     End If
     
-    If button = 2 Then
+    If Button = 2 Then
 
         'Popup the right-click menu...
         PopupMenu mnuEdit
@@ -1099,7 +1100,7 @@ tprg$ = tprg$ + codeForm.Text
 Call saveprogramtst(projectPath$ + prgPath$ + "sys_test.prg", tprg$)
 
 ' Run Trans3
-a = Shell("trans3 " + mainfile$ + " sys_test.prg")
+a = Shell("trans3 " + mainFile$ + " sys_test.prg")
 
 Exit Sub
 
@@ -1152,9 +1153,9 @@ Set activeRPGCode = Me
 dataIndex = VectRPGCodeNewSlot()
 activeRPGCodeIndex = dataIndex
     
-codeForm.Width = Me.Width * 0.9 - 255
+codeForm.width = Me.width * 0.9 - 255
 codeForm.height = Me.height * 0.9 - 335
-codeForm.Left = (Me.Width * 0.1) / 2
+codeForm.Left = (Me.width * 0.1) / 2
 codeForm.Top = Command1.Top + Command1.height + 335
 
 WindowState = 0
@@ -1199,9 +1200,9 @@ End If
 Dim cfTop As Long
 If mnuBookmarkToolbar.Checked Then cfTop = 335
 codeForm.Move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
-cboBookmarkType.Width = (Me.Width - 60) / 2
-secondCombo.Left = cboBookmarkType.Width
-secondCombo.Width = cboBookmarkType.Width - 60
+cboBookmarkType.width = (Me.width - 60) / 2
+secondCombo.Left = cboBookmarkType.width
+secondCombo.width = cboBookmarkType.width - 60
 secondCombo.Visible = True
 
 Exit Sub
@@ -1389,25 +1390,16 @@ Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 ' SAVE PROGRAM MENU
-Private Sub SavePrgMnu_Click()
-On Error GoTo ErrorHandler
+Private Sub SavePrgMnu_Click(): On Error Resume Next
 
-filename$(2) = rpgcodeList(activeRPGCodeIndex).prgName$
-If filename$(2) = "" Then sasmnu_click: Exit Sub
-
-' ! KSNiloc...
-If tag = "" Then
-    Call saveProgram(projectPath$ + prgPath$ + filename$(2))
-ElseIf tag = "1" Then
-    saveProgram filename(2)
-End If
-
-Exit Sub
-
-'Begin error handling code:
-ErrorHandler:
-Call HandleError
-Resume Next
+    filename(2) = rpgcodeList(activeRPGCodeIndex).prgName$
+    If filename(2) = "" Then sasmnu_click: Exit Sub
+    
+    If tag = "1" Then
+        Call saveProgram(filename(2))
+    Else
+        Call saveProgram(projectPath & prgPath & filename(2))
+    End If
 
 End Sub
 
