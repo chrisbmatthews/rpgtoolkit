@@ -387,12 +387,31 @@ Public Function evaluate(ByRef Text As String, ByRef prg As RPGCodeProgram) As L
         ' Trim this value
         values(idx) = Trim$(values(idx))
 
-        ' If the value is prefixed with a "~", *logically* NOT it. VB's not operator
-        ' cannot acomplish this (it is ~, what we really want is !, but RPGCode already
-        ' uses that), so just calculate it here.
-        If (LeftB$(values(idx), 2) = "~") Then
+        ' Check for logical or binary NOT
+        Dim lv As String
+        lv = LeftB$(values(idx), 2)
+        If (lv = "~") Then
 
             ' Remove the tilda
+            values(idx) = Mid$(values(idx), 2)
+
+            ' Get its value
+            typeVal(idx) = getValue(values(idx), strVal(idx), numVal(idx), prg)
+
+            ' Check for type problems
+            If (typeVal(idx) <> DT_NUM) Then
+
+                ' Error out
+                Call debugger("Binary not is invalid on strings-- " & Text)
+                Exit Function
+
+            End If
+
+            numVal(idx) = Not numVal(idx)
+
+        ElseIf (lv = "!") Then
+
+            ' Remove the mark
             values(idx) = Mid$(values(idx), 2)
 
             ' Get its value
