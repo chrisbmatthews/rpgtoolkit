@@ -28,29 +28,24 @@
 #define CNV_HANDLE long					//Handle to a canvas
 
 //////////////////////////////////////////////////////////////////////////
-// Windowed mode structure
-//////////////////////////////////////////////////////////////////////////
-typedef struct dxWindowedModeTag
-{
-	LPDIRECTDRAWCLIPPER lpddClip;		//clipper
-	RECT surfaceRect;					//rect of surface
-	RECT destRect;						//rect of window's client area
-	DDBLTFX bltFx;						//effects for the blt
-} DXWINDOWEDMODE;
-
-//////////////////////////////////////////////////////////////////////////
 // DirectX info structure
 //////////////////////////////////////////////////////////////////////////
 typedef struct dxInfoTag
 {
-	bool bFullScreen;					//running in fullscreen mode?
-	int nColorDepth;					//color depth
-	int nWidth;							//width of surface
-	int nHeight;						//height of surface
-	LPDIRECTDRAW7 lpdd;					//main direct draw object
-	LPDIRECTDRAWSURFACE7 lpddsPrime;	//direct draw primary surface
-	LPDIRECTDRAWSURFACE7 lpddsSecond;	//direct draw back buffer
-	DXWINDOWEDMODE windowedMode;		//stuff only used in windowed mode
+	bool bFullScreen;					// Running in fullscreen mode?
+	int nColorDepth;					// Color depth
+	int nWidth;							// Width of surface
+	int nHeight;						// Height of surface
+	LPDIRECTDRAW7 lpdd;					// Main direct draw object
+	LPDIRECTDRAWSURFACE7 lpddsPrime;	// Direct draw primary surface
+	LPDIRECTDRAWSURFACE7 lpddsSecond;	// Direct draw back buffer
+	union
+	{
+		LPDIRECTDRAWCLIPPER lpddClip;	// Clipper
+		RECT surfaceRect;				// Rect of surface
+		RECT destRect;					// Rect of window's client area
+		DDBLTFX bltFx;					// Effects for the blt
+	} windowedMode;
 } DXINFO;
 
 //////////////////////////////////////////////////////////////////////////
@@ -66,9 +61,9 @@ inline bool KillGraphicsMode();
 inline bool DrawPixel(int x, int y, long clr);
 inline bool DrawLine(int x1, int y1, int x2, int y2, long clr);
 inline bool DrawFilledRect(int x1, int y1, int x2, int y2, long clr);
-inline bool Refresh();
+inline bool Refresh(CGDICanvas* cnv = NULL);
 inline bool DrawText(int x, int y, std::string strText, std::string strTypeFace, int size, long clr, bool bold = false, bool italics = false, bool underline = false, bool centred = false, bool outlined = false);
-inline int CopyScreenToCanvas(CGDICanvas* pCanvas);
+inline BOOL CopyScreenToCanvas(CGDICanvas* pCanvas);
 inline bool DrawCanvas(CGDICanvas* pCanvas, int x, int y, long lRasterOp = SRCCOPY);
 inline bool DrawCanvasTransparent(CGDICanvas* pCanvas, int x, int y, long crTransparentColor);
 inline bool DrawCanvasTranslucent(CGDICanvas* pCanvas, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor);
@@ -89,7 +84,7 @@ inline CGDICanvas* CreateCanvas(int nWidth, int nHeight, bool bUseDX = false);
 int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen);
 int APIENTRY DXKillGfxMode();
 int APIENTRY DXDrawPixel(int x, int y, long clr);
-int APIENTRY DXRefresh();
+int APIENTRY DXRefresh(CNV_HANDLE cnvHandle = NULL);
 int APIENTRY DXLockScreen();
 int APIENTRY DXUnlockScreen();
 int APIENTRY DXDrawCanvas(CNV_HANDLE cnv, int x, int y, long lRasterOp = SRCCOPY);

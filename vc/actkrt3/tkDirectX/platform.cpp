@@ -11,33 +11,30 @@
 //////////////////////////////////////////////////////////////////////////
 // Inclusions
 //////////////////////////////////////////////////////////////////////////
-#include "platform.h"				//Contains globals, structures,
-									//externs, prototypes, and definitions
-									//for this file
+#include "platform.h"				// Contains globals, structures,
+									// externs, prototypes, and definitions
+									// for this file
 
 //////////////////////////////////////////////////////////////////////////
 // Globals
 //////////////////////////////////////////////////////////////////////////
-bool g_bUseDirectX = false;			//using DirectX?
-HWND ghWndMain = NULL;				//handle to host window
-HINSTANCE ghInstance;				//handle of instance to app
-HDC ghDCLocked = NULL;				//HDC of locked surface
-DXINFO gDXInfo;						//DirectX info structure.
-HRGN g_Clipper = NULL;				//clipping region
-CGDICanvas* g_pBackBuffer = NULL;	//Non-DirectX backbuffer
+bool g_bUseDirectX = false;			// Using DirectX?
+HWND ghWndMain = NULL;				// Handle to host window
+HINSTANCE ghInstance;				// Handle of instance to app
+HDC ghDCLocked = NULL;				// HDC of locked surface
+DXINFO gDXInfo;						// DirectX info structure.
+HRGN g_Clipper = NULL;				// Clipping region
+CGDICanvas* g_pBackBuffer = NULL;	// Non-DirectX backbuffer
 
 //////////////////////////////////////////////////////////////////////////
 // Init DirectX
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDirectX, int nColorDepth, int nFullScreen)
 {
-	if (InitGraphicsMode((HWND)hostHwnd, nScreenX, nScreenY, (bool)nUseDirectX, nColorDepth, (bool)nFullScreen))
-		// Success!
-		return 1;
 
-	else
-		// Failed!
-		return 0;
+	// Initiate the gfx engine
+	return InitGraphicsMode(HWND(hostHwnd), nScreenX, nScreenY, bool(nUseDirectX), nColorDepth, bool(nFullScreen));
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -45,12 +42,7 @@ int APIENTRY DXInitGfxMode(int hostHwnd, int nScreenX, int nScreenY, int nUseDir
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY DXKillGfxMode()
 {
-	if (KillGraphicsMode())
-		//Success!
-		return 1;
-	else
-		//Failed!
-		return 0;
+	return KillGraphicsMode();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,15 +50,15 @@ int APIENTRY DXKillGfxMode()
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY DXDrawPixel(int x, int y, long clr)
 {
-	return (int)DrawPixel(x, y, clr);
+	return DrawPixel(x, y, clr);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Page flip
 //////////////////////////////////////////////////////////////////////////
-int APIENTRY DXRefresh()
+int APIENTRY DXRefresh(CNV_HANDLE cnvHandle)
 {
-	return (int)Refresh();
+	return Refresh((CGDICanvas*)cnvHandle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -75,7 +67,7 @@ int APIENTRY DXRefresh()
 int APIENTRY DXLockScreen()
 {
 	ghDCLocked = OpenDC();
-	return (int)ghDCLocked;
+	return int(ghDCLocked);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -83,7 +75,7 @@ int APIENTRY DXLockScreen()
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY DXUnlockScreen()
 {
-	return (int)UnlockScreen();
+	return UnlockScreen();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -92,7 +84,7 @@ int APIENTRY DXUnlockScreen()
 int APIENTRY DXDrawCanvas(CNV_HANDLE cnv, int x, int y, long lRasterOp)
 {
 	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return (int)DrawCanvas(pCnv, x, y, lRasterOp);
+	return DrawCanvas(pCnv, x, y, lRasterOp);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -101,7 +93,7 @@ int APIENTRY DXDrawCanvas(CNV_HANDLE cnv, int x, int y, long lRasterOp)
 int APIENTRY DXDrawCanvasTransparent(CNV_HANDLE cnv, int x, int y, long crTransparentColor)
 {
 	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return (int)DrawCanvasTransparent(pCnv, x, y, crTransparentColor);
+	return DrawCanvasTransparent(pCnv, x, y, crTransparentColor);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -110,7 +102,7 @@ int APIENTRY DXDrawCanvasTransparent(CNV_HANDLE cnv, int x, int y, long crTransp
 int APIENTRY DXDrawCanvasTranslucent(CNV_HANDLE cnv, int x, int y, double dIntensity, long crUnaffectedColor, long crTransparentColor)
 {
 	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return (int)DrawCanvasTranslucent(pCnv, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
+	return DrawCanvasTranslucent(pCnv, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -127,7 +119,7 @@ int APIENTRY DXClearScreen(long crColor)
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY DXDrawText(int x, int y, char* strText, char* strTypeFace, int size, long clr, int bold, int italics, int underline, int centred, int outlined)
 {
-	return (int)DrawText(x, y, strText, strTypeFace, size, clr, (bool)bold, (bool)italics, (bool)underline, (bool)centred, (bool)outlined);
+	return DrawText(x, y, strText, strTypeFace, size, clr, (bool)bold, (bool)italics, (bool)underline, (bool)centred, (bool)outlined);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -136,7 +128,7 @@ int APIENTRY DXDrawText(int x, int y, char* strText, char* strTypeFace, int size
 int APIENTRY DXDrawCanvasPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long lRasterOp)
 {
 	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return (int)DrawCanvasPartial(pCnv, destx, desty, srcx, srcy, width, height, lRasterOp);
+	return DrawCanvasPartial(pCnv, destx, desty, srcx, srcy, width, height, lRasterOp);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -145,7 +137,7 @@ int APIENTRY DXDrawCanvasPartial(CNV_HANDLE cnv, int destx, int desty, int srcx,
 int APIENTRY DXDrawCanvasTransparentPartial(CNV_HANDLE cnv, int destx, int desty, int srcx, int srcy, int width, int height, long crTransparentColor)
 {
 	CGDICanvas* pCnv = (CGDICanvas*)cnv;
-	return (int)DrawCanvasTransparentPartial(pCnv, destx, desty, srcx, srcy, width, height, crTransparentColor);
+	return DrawCanvasTransparentPartial(pCnv, destx, desty, srcx, srcy, width, height, crTransparentColor);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -187,6 +179,7 @@ inline bool InitGraphicsMode(HWND handle, int nWidth, int nHeight, bool bUseDire
 			KillGraphicsMode();
 			return false;
 		}
+
 	}
 	else
 	{
@@ -245,6 +238,9 @@ inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, 
 	//Create the primary surface
 	if (FAILED(dxInfo.lpdd->CreateSurface(&ddsd, &dxInfo.lpddsPrime, NULL))) return dxInfo;
 
+	// create rectangles for the window and for the surface
+	SetRect(&dxInfo.windowedMode.surfaceRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
+
 	//get the back buffer
 	if (bFullScreen)
 	{
@@ -254,17 +250,14 @@ inline DXINFO InitDirectX(HWND hWnd, int nWidth, int nHeight, long nColorDepth, 
 	else
 	{
 
-		//create clipper
-		dxInfo.lpdd->CreateClipper(0,&dxInfo.windowedMode.lpddClip,NULL);
+		// create clipper
+		dxInfo.lpdd->CreateClipper(0, &dxInfo.windowedMode.lpddClip, NULL);
 
-		//set clipper window
-		dxInfo.windowedMode.lpddClip->SetHWnd(0,hWnd);
+		// set clipper window
+		dxInfo.windowedMode.lpddClip->SetHWnd(0, hWnd);
 
-		//attach clipper
+		// attach clipper
 		dxInfo.lpddsPrime->SetClipper(dxInfo.windowedMode.lpddClip);
-
-		//create rectangles for the window and for the surface
-		SetRect(&dxInfo.windowedMode.surfaceRect, 0, 0, dxInfo.nWidth, dxInfo.nHeight);
 
 		//setup the effects to blt with
 		memset(&dxInfo.windowedMode.bltFx, 0, sizeof(DDBLTFX));
@@ -328,12 +321,13 @@ inline bool KillGraphicsMode()
 			if (FAILED(gDXInfo.lpdd->Release())) return false;
 			gDXInfo.lpdd = NULL;
 		}
+
 	}
+
 	else
-	{
+
 		//kill back buffer...
 		delete g_pBackBuffer;
-	}
 
 	return true;
 }
@@ -479,30 +473,46 @@ inline bool DrawFilledRect(int x1, int y1, int x2, int y2, long clr)
 //////////////////////////////////////////////////////////////////////////
 // Flip back buffer onto the screen
 //////////////////////////////////////////////////////////////////////////
-inline bool Refresh()
+inline bool Refresh(CGDICanvas* cnv)
 {
 	if(g_bUseDirectX && gDXInfo.lpdd)
 	{
+
 		if (gDXInfo.bFullScreen)
-		{
-			//Page flip
-			while (FAILED(gDXInfo.lpddsPrime->Flip(NULL, DDFLIP_WAIT)));
-		}
+
+
+			if (cnv)
+
+				// Blt to a canvas
+				cnv->GetDXSurface()->BltFast(0, 0, gDXInfo.lpddsSecond, &gDXInfo.windowedMode.surfaceRect, NULL);
+
+			else
+
+				// Page flip
+				while (FAILED(gDXInfo.lpddsPrime->Flip(NULL, DDFLIP_WAIT)));
+
 		else
 		{
 
-			//get the point of the window outside of the title bar and border
+			// Get the point of the window outside of the title bar and border
 			POINT ptPrimeBlt;
 			ptPrimeBlt.x = ptPrimeBlt.y = 0;
 			ClientToScreen(ghWndMain, &ptPrimeBlt);
 
-			//now offset the top/left of the window rect by the distance from the
-			//title bar / border
+			// Now offset the top/left of the window rect by the distance from the
+			// title bar / border
 			SetRect(&gDXInfo.windowedMode.destRect, 0, 0, gDXInfo.nWidth, gDXInfo.nHeight);
 			OffsetRect(&gDXInfo.windowedMode.destRect, ptPrimeBlt.x, ptPrimeBlt.y);
 
-			//Blt onto the window
-			gDXInfo.lpddsPrime->Blt(&gDXInfo.windowedMode.destRect, gDXInfo.lpddsSecond, &gDXInfo.windowedMode.surfaceRect, DDBLT_WAIT | DDBLT_ROP, &gDXInfo.windowedMode.bltFx);
+			if (cnv)
+
+				// Blt to a canvas
+				cnv->GetDXSurface()->BltFast(0, 0, gDXInfo.lpddsSecond, &gDXInfo.windowedMode.surfaceRect, DDBLTFAST_NOCOLORKEY);
+
+			else
+
+				// Blt to the screen
+				gDXInfo.lpddsPrime->Blt(&gDXInfo.windowedMode.destRect, gDXInfo.lpddsSecond, &gDXInfo.windowedMode.surfaceRect, DDBLT_WAIT | DDBLT_ROP, &gDXInfo.windowedMode.bltFx);
 
 		}
 	}
@@ -737,9 +747,9 @@ inline bool DrawCanvasTransparentPartial(CGDICanvas* pCanvas, int destx, int des
 //////////////////////////////////////////////////////////////////////////
 // Copy contents of screen to a canvas
 //////////////////////////////////////////////////////////////////////////
-inline int CopyScreenToCanvas(CGDICanvas* pCanvas)
+inline BOOL CopyScreenToCanvas(CGDICanvas* pCanvas)
 {
-	int nRet = 0;
+	BOOL nRet = FALSE;
 	if (pCanvas)
 	{
 		HDC hdcSrc = OpenDC();
