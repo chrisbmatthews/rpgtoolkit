@@ -54,7 +54,7 @@ Public Const DB_LangName = 1000
 Private Sub decimalFix()
     'Fix for decimals that occurs in some countries
     Dim hKey As Long
-    Call RegOpenKey(HKEY_CURRENT_USER, "\Control Panel\International\", hKey)
+    Call RegOpenKey(HKEY_CURRENT_USER, "Control Panel\International\", hKey)
     Call RegSetValueEx(hKey, "sDecimal", 0, REG_SZ, ByVal ".", Len("."))
     Call RegCloseKey(hKey)
 End Sub
