@@ -115,12 +115,12 @@ Public Sub Render()
         m_file = brdPath & RemovePath(currentBoard)
 
         'Fill canvases with the transparent color
-        If canvasMask <> -1 Then
-            Call CanvasFill(canvas, TRANSP_COLOR_ALT)
-            Call CanvasFill(canvasMask, TRANSP_COLOR)
-        Else
+        'If canvasMask <> -1 Then
+        '    Call CanvasFill(canvas, TRANSP_COLOR_ALT)
+        '    Call CanvasFill(canvasMask, TRANSP_COLOR)
+        'Else
             Call CanvasFill(canvas, TRANSP_COLOR)
-        End If
+        'End If
 
         'If board is isometric, render twice as much
         If (boardList(activeBoardIndex).theData.isIsometric = 1) Then

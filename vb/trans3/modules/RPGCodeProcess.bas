@@ -315,7 +315,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     'Now cycle over each line
     For a = 0 To UBound(thePrg.program)
         thePrg.program(a) = Trim(replaceOutsideQuotes(thePrg.program(a), "#", ""))
-        If (UCase(GetCommandName(thePrg.program(a))) = "METHOD") Then
+        If (Left(UCase(Trim(thePrg.program(a))), 6) = "METHOD") Then
             'It's a method
             Call addMethodToPrg(GetMethodName(thePrg.program(a)), a, thePrg)
         End If

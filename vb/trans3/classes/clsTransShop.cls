@@ -57,8 +57,8 @@ Private Const OPTION3 As Double = 6.4   'third option on main menu
 '=========================================================================
 ' Member variables
 '=========================================================================
-Private m_items As CInventory         'the items this shop sells
-Private m_player As CInventory        'the inventory this shop can buy
+Private m_items As CInventory           'the items this shop sells
+Private m_player As CInventory          'the inventory this shop can buy
 Private m_oldView As Long               'saved screen of before the shop opened
 Private m_commonDisplay As Long         'saved common translucent rectangle
 Private m_indices() As Long             'indices that map positions in invs to the menu

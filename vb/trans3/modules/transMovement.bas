@@ -186,7 +186,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     Abs(posX - tPosX) < 1 And _
                     pPos(i).l = pos.l Then
                     
-                    Call traceString("ChkObs:P:T:1")
+                    'Call traceString("ChkObs:P:T:1")
                     
                     checkObstruction = SOLID
                     Exit Function
@@ -203,7 +203,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     pPos(i).l = pos.l And _
                     startingMove Then
                     
-                    Call traceString("ChkObs:P:T:2")
+                    'Call traceString("ChkObs:P:T:2")
                     
                     checkObstruction = SOLID
                     Exit Function
@@ -221,7 +221,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                         Abs(posX - tPosX) < 1 And _
                         pPos(i).l = pos.l Then
                         
-                        Call traceString("ChkObs:P:PX:1 [!]")
+                        'Call traceString("ChkObs:P:PX:1 [!]")
                         
                         checkObstruction = SOLID
                         Exit Function
@@ -234,7 +234,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                         Abs(tPosX - xTarg) < 1 And _
                         pPos(i).l = pos.l Then
                         
-                        Call traceString("ChkObs:P:PX:2")
+                        'Call traceString("ChkObs:P:PX:2")
                         
                         checkObstruction = SOLID
                         Exit Function
@@ -247,7 +247,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                         Abs(xTarg - txTarg) < 1 And _
                         pPos(i).l = pos.l Then
                         
-                        Call traceString("ChkObs:P:PX:3")
+                        'Call traceString("ChkObs:P:PX:3")
                         
                         checkObstruction = SOLID
                         Exit Function
@@ -290,7 +290,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                         coordMatch = False
                     End If
                     
-                    Call traceString("ChkObs:I:T:1")
+                    'Call traceString("ChkObs:I:T:1")
                     
                 End If
                 
@@ -306,7 +306,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                     
                     coordMatch = True
                     
-                    Call traceString("ChkObs:I:T:2")
+                    'Call traceString("ChkObs:I:T:2")
                     
                 End If
                 
@@ -323,7 +323,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                         
                         coordMatch = True
                         
-                        Call traceString("ChkObs:I:PX:4 [!]")
+                        'Call traceString("ChkObs:I:PX:4 [!]")
                         
                     End If
                 
@@ -335,7 +335,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                         
                         coordMatch = True
                         
-                        Call traceString("ChkObs:I:PX:5")
+                        'Call traceString("ChkObs:I:PX:5")
                         
                     End If
                 
@@ -347,7 +347,7 @@ Private Function checkObstruction(ByRef pos As PLAYER_POSITION, ByRef pend As PE
                         
                         coordMatch = True
                         
-                        Call traceString("ChkObs:I:PX:6")
+                        'Call traceString("ChkObs:I:PX:6")
                         
                     End If
                         
@@ -1663,9 +1663,9 @@ Private Function pushPlayer(ByVal pNum As Long, ByVal staticTileType As Byte) As
         pPos(pNum).loopFrame = -1
         Exit Function
     End If
-    
-If pPos(pNum).loopFrame = 0 Then Call traceString(" ")
-Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
+
+'If pPos(pNum).loopFrame = 0 Then 'Call traceString(" ")
+'Call traceString("PLYR.x=" & pPos(pNum).x & ".y=" & pPos(pNum).y & _
                 ".xTarg=" & pendingPlayerMovement(pNum).xTarg & _
                 ".yTarg=" & pendingPlayerMovement(pNum).yTarg & _
                 ".loopFrame=" & pPos(pNum).loopFrame & _
@@ -1846,7 +1846,7 @@ Public Sub setQueuedMovements(ByRef queue As String, ByRef path As String): On E
         queue = jString
     End If
         
-Call traceString("in:setQueuedMovements queue = " & queue)
+'Call traceString("in:setQueuedMovements queue = " & queue)
 
         'Dim qLength As Long, dLength As Long, i As Long
         'qLength = UBound(pendingPlayerMovement(handleNum).queue)

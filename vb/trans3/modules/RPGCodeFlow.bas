@@ -64,13 +64,13 @@ End Type
 '=========================================================================
 ' Call a method in a class
 '=========================================================================
-Public Sub callObjectMethod(ByVal hClass As Long, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+Public Sub callObjectMethod(ByVal hClass As Long, ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN, ByVal methodName As String)
 
     On Error Resume Next
 
     Dim theClass As RPGCODE_CLASS   'The class
 
-    'Get the class
+    ' Get the class
     theClass = getClass(hClass, prg)
 
     If (theClass.strName = "INVALID") Then
@@ -78,14 +78,32 @@ Public Sub callObjectMethod(ByVal hClass As Long, ByVal Text As String, ByRef pr
         Exit Sub
     End If
 
-    'Increase the nestle
+    ' Increase the nestle
     Call increaseNestle(hClass, prg)
 
-    'Call the method
-    Call MethodCallRPG(theClass.strName & "::" & Text, "", prg, retval, True, True)
+    ' Set "this" pointer
+    Dim oldThis As Double, lit As String
+    Call getVariable("this!", lit, oldThis, prg)
+    Call SetVariable("this!", CStr(hClass), prg, True)
 
-    'Decrease the nestle
+    ' Class name to call under
+    Dim thePrefix As String
+
+    ' Check for overridden name
+    thePrefix = checkOverrideName(theClass, methodName)
+    If (thePrefix = "") Then
+        ' Didn't find one
+        thePrefix = theClass.strName
+    End If
+
+    ' Call the method
+    Call MethodCallRPG(thePrefix & "::" & Text, thePrefix & "::" & methodName, prg, retval, True, True)
+
+    ' Decrease the nestle
     Call decreaseNestle(prg)
+
+    ' Restore old "this" pointer
+    Call SetVariable("this!", CStr(oldThis), prg, True)
 
 End Sub
 
@@ -167,7 +185,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
 
     If (theProgram.classes.insideClass And (Not doNotCheckForClasses)) Then
         If (isMethodMember(mName, topNestle(theProgram), theProgram)) Then
-            Call callObjectMethod(topNestle(theProgram), Text, theProgram, retval)
+            Call callObjectMethod(topNestle(theProgram), Text, theProgram, retval, mName)
             Exit Sub
         End If
     End If
@@ -238,37 +256,26 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
             dataG = getValue(parameterList$(pList), lit$, num, theProgram)
             'restore stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
-    
-            'Call traceString("Running line - " & Text & " - at param - " & parameterList$(pList) & " - num: " & num & " - lit: " & lit)
-            'Call traceString("Type is " & dataG)
-    
+
             If (dataG = 0) Then
                 dUse$ = CStr(num)
-                'Call traceString("Came up num, went with " & dUse)
             Else
-                'Call traceString("Came up lit")
-                'Call traceString(Mid(Text, quotes(pList - 1), 1))
                 If ((Mid(Text, quotes(pList - 1), 1) <> Chr(34))) _
                  And (Right(lit, 1) <> "!") And (Right(lit, 1) <> "$") Then
                     If (lit <> parameterList(pList)) Then
-                        'Call traceString("Caught one: " & lit)
                         dUse = lit
                     Else
-                        'Call traceString("Assuming object")
                         lit = lit & "!"
                         theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
                         If (getValue(lit, lit, num, theProgram) = DT_NUM) Then
                             dUse = CStr(num)
-                            'Call traceString("Leaving at DT_NUM with: " & dUse)
                         Else
                             dUse = lit
-                            'Call traceString("Leaving at DT_LIT with: " & dUse)
                         End If
                         theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
                     End If
                 Else
                     dUse = lit
-                    'Call traceString("Leaving at DT_LIT with: " & dUse)
                 End If
             End If
             
@@ -804,7 +811,7 @@ Public Sub runProgram( _
         theProgram.programPos = 0
         Do While _
                    ((theProgram.programPos >= 0) _
-                   And (theProgram.programPos <= theProgram.length) _
+                   And (theProgram.programPos <= theProgram.Length) _
                    And (runningProgram))
 
             prgPos = theProgram.programPos
@@ -2344,22 +2351,22 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
             Call PlayerSpeedRPG(splice, theProgram)
             DoSingleCommand = increment(theProgram)
             Exit Function
-            
+
         Case "MOUSECURSOR"
             Call MouseCursorRPG(splice, theProgram)
             DoSingleCommand = increment(theProgram)
             Exit Function
-            
+
         Case "NEW"
             Call NewRPG(splice, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
-            
+
         Case "GETTEXTWIDTH", "GETTEXTHEIGHT"
             Call GetTextWidthRPG(splice, theProgram, retval)
             DoSingleCommand = increment(theProgram)
             Exit Function
-            
+
         '[Faero]
         Case "IIF"
             Call IIfRPG(splice, theProgram, retval)

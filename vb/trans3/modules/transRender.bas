@@ -279,20 +279,20 @@ Public Sub checkScrollBounds()
     Else
 
         ' Check topX
-        If topX + tilesX > boardList(activeBoardIndex).theData.bSizeX Then _
+        If (topX + tilesX > boardList(activeBoardIndex).theData.bSizeX) Then _
             topX = boardList(activeBoardIndex).theData.bSizeX - tilesX
 
         ' Check topY
-        If topY + tilesY > boardList(activeBoardIndex).theData.bSizeY Then _
+        If (topY + tilesY > boardList(activeBoardIndex).theData.bSizeY) Then _
             topY = boardList(activeBoardIndex).theData.bSizeY - tilesY
-    
+
     End If
 
     ' Can't have x as less than 0
-    If topX < 0 Then topX = 0
+    If (topX < 0) Then topX = 0
 
     ' Can't have y as less than 0
-    If topY < 0 Then topY = 0
+    If (topY < 0) Then topY = 0
 
 End Sub
 
@@ -1362,7 +1362,7 @@ Private Function renderBoard() As Boolean
         (topX + tilesXTemp) <= (scTopX + scTilesXTemp) And _
         (topY + tilesY) <= (scTopY + scTilesY - 1) And _
         (scTopX <> -1 And scTopY <> -1)) Then
-    
+
         scTopX = Int(topX - (tilesXTemp / 2))
         scTopY = Int(topY - (tilesY / 2))
         If scTopX < 0 And topX >= 0 Then scTopX = 0
@@ -1906,13 +1906,13 @@ Public Sub initGraphics(Optional ByVal testingPRG As Boolean)
     resY = screenHeight / Screen.TwipsPerPixelY
 
     'Get res from main file
-    If mainMem.mainResolution = 0 Then
+    If (mainMem.mainResolution = 0) Then
         screenWidth = 640
         screenHeight = 480
-    ElseIf mainMem.mainResolution = 1 Then
+    ElseIf (mainMem.mainResolution = 1) Then
         screenWidth = 800
         screenHeight = 600
-    ElseIf mainMem.mainResolution = 2 Then
+    ElseIf (mainMem.mainResolution = 2) Then
         screenWidth = 1024
         screenHeight = 768
     End If

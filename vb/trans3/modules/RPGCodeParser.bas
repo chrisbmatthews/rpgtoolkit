@@ -234,9 +234,9 @@ Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     Dim use As String, Length As Long, val1 As String, val2 As String, part As String, p As Long
     Dim eqtype As String, startAt As Long, equ As String, val1type As Long, val2type As Long, var1type As Long, var2type As Long
 
-    Text = "Eval( " & Text & " )"
-    Text = ParseRPGCodeCommand(Text, theProgram)
-    Text = Trim(Mid(Text, 7, Len(Text) - 8))
+    'Text = "Eval( " & Text & " )"
+    'Text = ParseRPGCodeCommand(Text, theProgram)
+    'Text = Trim(Mid(Text, 7, Len(Text) - 8))
    
     use$ = Text$
     Length = Len(use$)
@@ -322,14 +322,10 @@ Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgra
         If part$ <> " " Then val2$ = val2 & part$
     Next p
 
-    If (Right(val1, 1) <> "!" And Right(val1, 1) <> "$") Then
-        val1 = val1 & "!"
-    End If
-
-    If equ = "" Then
-        'If only one value was passed, check if it equals 1
-        equ = ">="
-        val2 = "1"
+    If (equ = "") Then
+        ' If only one value was passed, check if it's non-zero
+        equ = "~="
+        val2 = "0"
     End If
 
     Dim lit1 As String, lit2 As String, num1 As Double, num2 As Double
@@ -856,19 +852,11 @@ Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeP
     Dim num As Double
     Dim dataType As RPGC_DT
 
-    'Call traceString("Text is: " & Text)
-    'Call traceString("")
-
     'Get the parameters...
     count = CountData(Text)
     brackets = GetBrackets(Text)
     For a = 1 To count
         dataType = getValue(Trim(GetElement(brackets, a)), lit, num, theProgram)
-        'Call traceString("Element is: " & Trim(GetElement(brackets, a)))
-        'Call traceString("Data type is: " & dataType)
-        'Call traceString("Lit is: " & lit)
-        'Call traceString("Num is: " & num)
-        'Call traceString("")
         ReDim Preserve ret(a - 1)
         Select Case dataType
             Case DT_LIT
@@ -1167,49 +1155,49 @@ End Function
 '=========================================================================
 Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram) As String
 
-    'This will take an array such as Array[a!+2]["Pos"]$ and replace variables, commands,
-    'equations, etc with their values.
+    ' This will take an array such as Array[a!+2]["Pos"]$ and replace variables, commands,
+    ' equations, etc with their values.
 
-    'Just skip errors because they're probably the rpgcoder's fault
+    ' Just skip errors because they're probably the rpgcoder's fault
     On Error GoTo skipError
 
-    'Have something to return incase we leave early
+    ' Have something to return incase we leave early
     parseArray = variable
 
     Dim toParse As String
-    'First remove spaces and tabs
+    ' First remove spaces and tabs
     toParse = replaceOutsideQuotes(variable, " ", "")
     toParse = replaceOutsideQuotes(toParse, vbTab, "")
 
-    If InStr(1, toParse, "[") = 0 Then
-        'There's not a [ so it's not an array and we're not needed
+    If (InStr(1, toParse, "[") = 0) Then
+        ' There's not a [ so it's not an array and we're not needed
         Exit Function
     End If
 
     Dim variableType As String
-    'Grab the variable's type (! or $)
+    ' Grab the variable's type (! or $)
     variableType = Right(toParse, 1)
     If (variableType <> "!" And variableType <> "$") Then variableType = ""
 
     Dim start As Long
     Dim tEnd As Long
 
-    'See where the first [ is
+    ' See where the first [ is
     start = InStr(1, toParse, "[")
 
     Dim variableName As String
-    'Grab the variable's name
+    ' Grab the variable's name
     variableName = Mid(toParse, 1, start - 1)
 
-    'Find the last ]
+    ' Find the last ]
     tEnd = InStr(1, StrReverse(toParse), "]")
     tEnd = Len(toParse) - tEnd + 1
 
-    'Just keep what's inbetween the two
+    ' Just keep what's inbetween the two
     toParse = Mid(toParse, start + 1, tEnd - start - 1)
 
     Dim parseArrayD() As String
-    'Split it at '][' (bewteen elements)
+    ' Split it at '][' (bewteen elements)
     parseArrayD() = Split(toParse, "][")
 
     Dim build As String
@@ -1217,44 +1205,44 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
 
     build = "Array("
 
-    'Mould the array as if it were parameters passed to a command
+    ' Mould the array as if it were parameters passed to a command
     For a = 0 To UBound(parseArrayD)
         build = build & parseArrayD(a)
-        If Not a = UBound(parseArrayD) Then
+        If (a <> UBound(parseArrayD)) Then
             build = build & ","
         Else
             build = build & ")"
         End If
     Next a
 
-    'Parse for commands
+    ' Parse for commands
     build = ParseRPGCodeCommand(build, prg)
 
     Dim arrayElements() As parameters
-    'Use my getParameters() function to retrieve the values of the dimensions
+    ' Use my getParameters() function to retrieve the values of the dimensions
     arrayElements() = GetParameters(build, prg)
 
-    'Begin to build the return value
+    ' Begin to build the return value
     build = variableName
 
-    'For each dimension
+    ' For each dimension
     For a = 0 To UBound(arrayElements)
 
-        'Add on a [
+        ' Add on a [
         build = build & "["
 
-        'Add in the content...
+        ' Add in the content...
         Select Case arrayElements(a).dataType
             Case DT_NUM: build = build & CStr(arrayElements(a).num)
             Case DT_LIT: build = build & Chr(34) & arrayElements(a).lit & Chr(34)
         End Select
 
-        'Add on a ]
+        ' Add on a ]
         build = build & "]"
 
     Next a
 
-    'Pass it back with the type (! or $) on the end
+    ' Pass it back with the type (! or $) on the end
     parseArray = build & variableType
 
 skipError:
