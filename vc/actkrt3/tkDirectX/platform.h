@@ -84,7 +84,7 @@ public:
 	LPDIRECTDRAWSURFACE7 FAST_CALL createSurface(
 		CONST INT width,
 		CONST INT height
-	);
+	) CONST;
 
 	// Kill the graphics mode
 	BOOL FAST_CALL KillGraphicsMode(
@@ -139,7 +139,7 @@ public:
 	// Copy the screen to a canvas
 	BOOL FAST_CALL CopyScreenToCanvas(
 		CONST CGDICanvas *pCanvas
-	);
+	) CONST;
 
 	// Draw a canvas
 	BOOL FAST_CALL DrawCanvas(
@@ -214,7 +214,7 @@ public:
 	LONG FAST_CALL GetPixelColor(
 		CONST INT x,
 		CONST INT y
-	);
+	) CONST;
 
 	// Lock the screen
 	BOOL FAST_CALL LockScreen(
@@ -227,17 +227,17 @@ public:
 	);
 
 	// Check whether we're using DirectDraw
-	BOOL usingDirectX(VOID) { return m_bUseDirectX; }
+	BOOL usingDirectX(VOID) CONST { return m_bUseDirectX; }
 
 	// Obtain the screen's DC
 	HDC OpenDC(
 		VOID
-	);
+	) CONST;
 
 	// Close the screen's DC
 	VOID CloseDC(
 		CONST HDC hdc
-	);
+	) CONST;
 
 	// Deconstructor
 	~CDirectDraw(

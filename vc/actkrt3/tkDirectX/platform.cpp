@@ -239,7 +239,7 @@ BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 //------------------------------------------------------------------------
 // Get DC of the screen
 //------------------------------------------------------------------------
-INLINE HDC CDirectDraw::OpenDC(VOID)
+INLINE HDC CDirectDraw::OpenDC(VOID) CONST
 {
 
 	// Return locked DC, if existent
@@ -278,7 +278,7 @@ INLINE HDC CDirectDraw::OpenDC(VOID)
 //------------------------------------------------------------------------
 INLINE VOID CDirectDraw::CloseDC(
 	CONST HDC hdc
-		)
+		) CONST
 {
 
 	// Check if screen is locked
@@ -358,7 +358,7 @@ BOOL FAST_CALL CDirectDraw::DrawLine(
 LONG FAST_CALL CDirectDraw::GetPixelColor(
 	CONST INT x,
 	CONST INT y
-		)
+		) CONST
 {
 	CONST HDC hdc = OpenDC();
 	CONST LONG lRet = GetPixel(hdc, x, y);
@@ -761,7 +761,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(CONST CONST CGDICanvas 
 //------------------------------------------------------------------------
 // Copy contents of screen to a canvas
 //------------------------------------------------------------------------
-BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(CONST CGDICanvas *pCanvas)
+BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(CONST CGDICanvas *pCanvas) CONST
 {
 	if (pCanvas)
 	{
@@ -857,7 +857,7 @@ BOOL FAST_CALL CDirectDraw::LockScreen(VOID)
 LPDIRECTDRAWSURFACE7 FAST_CALL CDirectDraw::createSurface(
 	CONST INT width,
 	CONST INT height
-		)
+		) CONST
 {
 
 	// Surface ptr to return
