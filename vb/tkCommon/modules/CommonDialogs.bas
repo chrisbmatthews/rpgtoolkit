@@ -250,7 +250,9 @@ End Function
 '=========================================================================
 ' Show a save file dialog
 '=========================================================================
-Public Function SaveFileDialog(ByRef dlgInfo As FileDialogInfo, Optional ByVal hwndParent As Long = 0) As Boolean
+Public Function SaveFileDialog(ByRef dlgInfo As FileDialogInfo, _
+                               Optional ByVal hwndParent As Long = 0, _
+                               Optional ByVal overwritePrompt As Boolean = False) As Boolean
 
     On Error Resume Next
     
@@ -272,7 +274,7 @@ Public Function SaveFileDialog(ByRef dlgInfo As FileDialogInfo, Optional ByVal h
           .lpstrFileTitle = .lpstrFile '
           .nMaxFileTitle = MAX_BUFFER
           .lpstrDefExt = dlgInfo.strDefaultExt
-          .flags = OFN_OVERWRITEPROMPT
+          If overwritePrompt Then .flags = OFN_OVERWRITEPROMPT      'Prompt if overwriting.
     End With
     
     retval = GetSaveFileName(opfS)
