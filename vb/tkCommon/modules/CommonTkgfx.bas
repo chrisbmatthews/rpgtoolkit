@@ -29,11 +29,11 @@ Public Declare Function GFXdrawpixel Lib "actkrt3.dll" (ByVal hdc As Long, ByVal
 Public Declare Function GFXInitScreen Lib "actkrt3.dll" (ByVal screenX As Long, ByVal screenY As Long) As Long
 Public Declare Function GFXdrawtile Lib "actkrt3.dll" (ByVal fName As String, ByVal x As Double, ByVal y As Double, ByVal rRed As Long, ByVal gGreen As Long, ByVal bBlue As Long, ByVal hdc As Long, ByVal nIsometric As Long, Optional ByVal isoEvenOdd As Long = 0) As Long
 Public Declare Function GFXdrawtilemask Lib "actkrt3.dll" (ByVal fName As String, ByVal x As Double, ByVal y As Double, ByVal rRed As Long, ByVal gGreen As Long, ByVal bBlue As Long, ByVal hdc As Long, ByVal nDirectBlt As Long, ByVal nIsometric As Long, ByVal isoEvenOdd As Long) As Long
-Public Declare Function GFXdrawboard Lib "actkrt3.dll" (ByVal hdc As Long, ByVal maskhdc As Long, ByVal layer As Long, ByVal nTopx As Long, ByVal nTopy As Long, ByVal nTilesx As Long, ByVal nTilesy As Long, ByVal nBsizex As Long, ByVal nBsizey As Long, ByVal nBsizel As Long, ByVal ar As Long, ByVal ag As Long, ByVal ab As Long, ByVal nIsometric As Long) As Long
+Public Declare Function GFXdrawboard Lib "actkrt3.dll" (ByVal pBrd As Long, ByVal hdc As Long, ByVal maskhdc As Long, ByVal layer As Long, ByVal nTopx As Long, ByVal nTopy As Long, ByVal nTilesx As Long, ByVal nTilesy As Long, ByVal nBsizex As Long, ByVal nBsizey As Long, ByVal nBsizel As Long, ByVal ar As Long, ByVal ag As Long, ByVal ab As Long, ByVal nIsometric As Long) As Long
 Public Declare Function GFXdrawTstWindow Lib "actkrt3.dll" (ByVal fName As String, ByVal hdc As Long, ByVal start As Long, ByVal tX As Long, ByVal tY As Long, ByVal nIsometric As Long) As Long
-Public Declare Function GFXBitBltTransparent Lib "actkrt3.dll" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal width As Long, ByVal height As Long, ByVal hdcSrc As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal transRed As Long, ByVal transGreen As Long, ByVal transBlue As Long) As Long
-Public Declare Function GFXBitBltTranslucent Lib "actkrt3.dll" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal width As Long, ByVal height As Long, ByVal hdcSrc As Long, ByVal xsrc As Long, ByVal ysrc As Long) As Long
-Public Declare Function GFXBitBltAdditive Lib "actkrt3.dll" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal width As Long, ByVal height As Long, ByVal hdcSrc As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal nPercent As Long) As Long
+Public Declare Function GFXBitBltTransparent Lib "actkrt3.dll" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal width As Long, ByVal Height As Long, ByVal hdcSrc As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal transRed As Long, ByVal transGreen As Long, ByVal transBlue As Long) As Long
+Public Declare Function GFXBitBltTranslucent Lib "actkrt3.dll" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal width As Long, ByVal Height As Long, ByVal hdcSrc As Long, ByVal xSrc As Long, ByVal ySrc As Long) As Long
+Public Declare Function GFXBitBltAdditive Lib "actkrt3.dll" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal width As Long, ByVal Height As Long, ByVal hdcSrc As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nPercent As Long) As Long
 Public Declare Function GFXSetCurrentTileString Lib "actkrt3.dll" (ByVal stringToSet As String) As Long
 Public Declare Function GFXClearTileCache Lib "actkrt3.dll" () As Long
 Public Declare Function GFXGetDOSColor Lib "actkrt3.dll" (ByVal idx As Long) As Long
@@ -41,7 +41,7 @@ Public Declare Function TKInit Lib "actkrt3.dll" () As Long
 Public Declare Function TKClose Lib "actkrt3.dll" () As Long
 Public Declare Function GFXDrawTileCNV Lib "actkrt3.dll" (ByVal fName As String, ByVal x As Double, ByVal y As Double, ByVal rRed As Long, ByVal gGreen As Long, ByVal bBlue As Long, ByVal cnvHandle As Long, ByVal nIsometric As Long, Optional ByVal isoEvenOdd As Long = 0) As Long
 Public Declare Function GFXDrawTileMaskCNV Lib "actkrt3.dll" (ByVal fName As String, ByVal x As Double, ByVal y As Double, ByVal rRed As Long, ByVal gGreen As Long, ByVal bBlue As Long, ByVal cnvHandle As Long, ByVal nDirectBlt As Long, ByVal nIsometric As Long, ByVal isoEvenOdd As Long) As Long
-Public Declare Function GFXDrawBoardCNV Lib "actkrt3.dll" (ByVal cnv As Long, ByVal cnvMask As Long, ByVal layer As Long, ByVal nTopx As Long, ByVal nTopy As Long, ByVal nTilesx As Long, ByVal nTilesy As Long, ByVal nBsizex As Long, ByVal nBsizey As Long, ByVal nBsizel As Long, ByVal ar As Long, ByVal ag As Long, ByVal ab As Long, ByVal nIsometric As Long) As Long
+Public Declare Function GFXDrawBoardCNV Lib "actkrt3.dll" (ByVal pBrd As Long, ByVal cnv As Long, ByVal cnvMask As Long, ByVal layer As Long, ByVal nTopx As Long, ByVal nTopy As Long, ByVal nTilesx As Long, ByVal nTilesy As Long, ByVal nBsizex As Long, ByVal nBsizey As Long, ByVal nBsizel As Long, ByVal ar As Long, ByVal ag As Long, ByVal ab As Long, ByVal nIsometric As Long) As Long
 
 '=========================================================================
 ' Draw a tile
@@ -130,7 +130,7 @@ End Sub
 '=========================================================================
 Public Sub drawTileCNV(ByVal cnv As Long, ByVal file As String, ByVal x As Double, ByVal y As Double, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal bMask As Boolean, Optional ByVal bNonTransparentMask As Boolean = True, Optional ByVal bIsometric As Boolean = False, Optional ByVal isoEvenOdd As Boolean = False)
 
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim anm As TKTileAnm, iso As Long, of As String, Temp As String, ex As String, ff As String
     
@@ -207,7 +207,7 @@ Public Sub drawTileCNV(ByVal cnv As Long, ByVal file As String, ByVal x As Doubl
     
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     
     Resume Next
 End Sub
