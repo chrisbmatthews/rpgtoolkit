@@ -105,7 +105,7 @@ Private Function evaluate(ByVal Text As String) As Double
     operatorIdx = -1
 
     'Eat spaces, replace "(-" with "(-1*", and encase string in ()s
-    Text = "(" & replace(replace(replace(Text, vbTab, ""), " ", ""), "(-", "(-1*") & ")"
+    Text = replace(replace(replace("(" & Text & ")", vbTab, ""), " ", ""), "(-", "(-1*")
 
     'Loop over each character
     For idx = 1 To Len(Text)
