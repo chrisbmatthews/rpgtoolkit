@@ -1,13 +1,13 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
-   ClientHeight    =   10710
+   ClientHeight    =   8190
    ClientLeft      =   165
-   ClientTop       =   855
-   ClientWidth     =   15240
+   ClientTop       =   -1665
+   ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
    StartUpPosition =   3  'Windows Default
@@ -15,12 +15,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8055
-      Left            =   12135
-      ScaleHeight     =   8055
+      Height          =   5325
+      Left            =   8775
+      ScaleHeight     =   5325
       ScaleWidth      =   2730
       TabIndex        =   176
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   2730
       Begin VB.Frame fileTree1 
@@ -113,10 +113,10 @@ Begin VB.MDIForm tkMainForm
       Height          =   375
       Left            =   0
       ScaleHeight     =   375
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   162
-      Top             =   10080
-      Width           =   15240
+      Top             =   7560
+      Width           =   11880
       Begin VB.OptionButton openWindow 
          Caption         =   "Option6"
          Height          =   315
@@ -332,13 +332,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   360
+      Height          =   570
       Left            =   0
       TabIndex        =   1
       Top             =   0
-      Width           =   15240
-      _ExtentX        =   26882
-      _ExtentY        =   635
+      Width           =   11880
+      _ExtentX        =   20955
+      _ExtentY        =   1005
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -526,12 +526,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   8055
-      Left            =   3825
-      ScaleHeight     =   8055
+      Height          =   5325
+      Left            =   465
+      ScaleHeight     =   5325
       ScaleWidth      =   3510
       TabIndex        =   60
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -576,8 +576,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10AA6
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -754,12 +754,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8055
-      Left            =   2010
-      ScaleHeight     =   8055
+      Height          =   5325
+      Left            =   -1350
+      ScaleHeight     =   5325
       ScaleWidth      =   1815
       TabIndex        =   56
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   1815
       Begin VB.PictureBox newBar 
@@ -799,12 +799,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   8055
+      Height          =   5325
       Left            =   0
-      ScaleHeight     =   8055
+      ScaleHeight     =   5325
       ScaleWidth      =   975
       TabIndex        =   11
-      Top             =   360
+      Top             =   570
       Width           =   975
       Begin VB.PictureBox leftbar 
          BorderStyle     =   0  'None
@@ -1432,11 +1432,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   15240
+      ScaleWidth      =   11880
       TabIndex        =   10
-      Top             =   8415
+      Top             =   5895
       Visible         =   0   'False
-      Width           =   15240
+      Width           =   11880
       Begin VB.Frame frmBoardExtras 
          BorderStyle     =   0  'None
          Caption         =   "Frame8"
@@ -2359,12 +2359,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8055
-      Left            =   14865
-      ScaleHeight     =   8055
+      Height          =   5325
+      Left            =   11505
+      ScaleHeight     =   5325
       ScaleWidth      =   375
       TabIndex        =   3
-      Top             =   360
+      Top             =   570
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2422,12 +2422,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   8055
-      Left            =   7335
-      ScaleHeight     =   8055
+      Height          =   5325
+      Left            =   3975
+      ScaleHeight     =   5325
       ScaleWidth      =   4800
       TabIndex        =   2
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   4800
       Begin VB.PictureBox tilesetContainer 
@@ -2532,22 +2532,22 @@ Begin VB.MDIForm tkMainForm
       Height          =   255
       Left            =   0
       TabIndex        =   0
-      Top             =   10455
-      Width           =   15240
-      _ExtentX        =   26882
+      Top             =   7935
+      Width           =   11880
+      _ExtentX        =   20955
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "11/13/2004"
+            TextSave        =   "15/11/2004"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   10954
-            TextSave        =   "5:57 PM"
+            Object.Width           =   5027
+            TextSave        =   "23:23"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2897,10 +2897,14 @@ Public Sub fillTree(ByVal parentNode As String, ByVal folder As String): On Erro
     a = Dir()
     a = Dir()
 
+    TreeView1.Sorted = True     'Sort alphabetically.
+
     With TreeView1.Nodes
         
         Do Until a = ""
-            'If isFolder(folder & a) Then
+        
+            .item(parentNode).Sorted = True
+            
             If GetAttr(folder & a) = vbDirectory Then
             'This is a folder.
             
@@ -3490,8 +3494,8 @@ Public Sub MDIForm_Resize(): On Error Resume Next
     'KSNiloc...
     'ProjectListSize_Timer
 
-    'Resize/move the tree & co
-    TreeView1.height = Me.height - 4985
+    'TreeView1.height = Me.height - 4985
+    fileTree1.height = Me.height - 2000
     
 End Sub
 
@@ -3769,36 +3773,51 @@ Public Sub mnuNewFightBackground_Click()
     frm.Show
 End Sub
 
+'===========================================================================
+' File -> Open Project
+'===========================================================================
 Public Sub mnuOpenProject_Click(): On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = gamPath$
+
+    Dim dlg As FileDialogInfo, antiPath As String
     
-    Dim antiPath As String
+    ChDir (currentDir)
     
+    dlg.strDefaultFolder = gamPath
     dlg.strTitle = "Open Project"
     dlg.strDefaultExt = "gam"
     dlg.strFileTypes = "Supported Files|*.gam|RPG Toolkit Project (*.gam)|*.gam|All files(*.*)|*.*"
     
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-        mainFile$ = antiPath$
+    If OpenFileDialog(dlg, Me.hwnd) Then
+        filename(1) = dlg.strSelectedFile
+        antiPath = dlg.strSelectedFileNoPath
+        mainFile = antiPath
     Else
+        'User pressed cancel.
         Exit Sub
     End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), gamPath$ + antiPath$
-    Call openMainFile(filename$(1))
+    
+    If filename(1) = vbNullString Then Exit Sub
+    
+    FileCopy filename(1), gamPath & antiPath
+    
+    'Close all open editors. Got to do it in reverse order!
+    Dim i As Long
+    For i = Forms.count - 1 To 2 Step -1
+        If Forms(i).formType() >= FT_BOARD Then Call Unload(Forms(i))
+    Next i
+    
+    'Open the main file and show the editor.
+    Call openMainFile(filename(1))
     editmainfile.Show
-    configfile.lastProject$ = antiPath$
-    tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" + antiPath$ + ")"
+    
+    configfile.lastProject = antiPath
+    tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" & antiPath & ")"
     
     Call tkMainForm.TreeView1.Nodes.Clear       'Clear all files from the previous project. [Delano]
-    Call tkMainForm.fillTree("", projectPath$)  'Refill the tree.
+    Call tkMainForm.fillTree("", projectPath)  'Refill the tree.
     
     loadedMainFile = configfile.lastProject ' [KSNiloc]
+    
 End Sub
 
 Public Sub newanimationmnu_Click(): On Error Resume Next
@@ -3926,55 +3945,65 @@ End Sub
 
 '=========================================================================================
 ' ADDED FOURTH BUTTON FOR BOARD TOOLBAR
-Private Sub popButton_Click(Index As Integer)
-    On Error Resume Next
-    If Index = 0 Then
-        If popButton(Index).value = 1 Then
-            popButton(1).value = 0
-            popButton(2).value = 0
-            popButton(3).value = 0
-            rightbar.Visible = True
-            rightbar.SetFocus
-        Else
-            rightbar.Visible = False
-        End If
-    ElseIf Index = 1 Then
-        If popButton(Index).value = 1 Then
-            popButton(0).value = 0
-            popButton(2).value = 0
-            popButton(3).value = 0
+Private Sub popButton_Click(Index As Integer): On Error Resume Next
+    
+    Select Case Index
+        Case 0
+            'File tree.
+            If popButton(Index).value = 1 Then
+                popButton(1).value = 0
+                popButton(2).value = 0
+                popButton(3).value = 0
+                rightbar.Visible = True
+                rightbar.SetFocus
+                Call fillTree("", projectPath)      'Refill the tree every time.
+            Else
+                rightbar.Visible = False
+            End If
             
-            ' ! MODIFIED BY KSNiloc...
+        Case 1
+            'Open editors.
+            If popButton(Index).value = 1 Then
+                popButton(0).value = 0
+                popButton(2).value = 0
+                popButton(3).value = 0
+                
+                ' ! MODIFIED BY KSNiloc...
+                
+                newBarContainerContainer.Visible = True
+                newBarContainerContainer.SetFocus
+            Else
+                newBarContainerContainer.Visible = False
+            End If
             
-            newBarContainerContainer.Visible = True
-            newBarContainerContainer.SetFocus
-        Else
-            newBarContainerContainer.Visible = False
-        End If
-    ElseIf Index = 2 Then
-        If popButton(Index).value = 1 Then
-            popButton(0).value = 0
-            popButton(1).value = 0
-            popButton(3).value = 0
-            tstnum = 0
-            tilesetBar.Visible = True
-            Call fillTilesetBar
-            tilesetBar.SetFocus
-        Else
-            tilesetBar.Visible = False
-        End If
-    ElseIf Index = 3 Then
-        If popButton(Index).value = 1 Then
-            popButton(0).value = 0
-            popButton(1).value = 0
-            popButton(2).value = 0
-            Call boardToolbar.Objects.Populate(activeBoardIndex)
-            pTools.Visible = True
-            pTools.SetFocus
-        Else
-            pTools.Visible = False
-        End If
-    End If
+        Case 2
+            'Tileset browser.
+            If popButton(Index).value = 1 Then
+                popButton(0).value = 0
+                popButton(1).value = 0
+                popButton(3).value = 0
+                tstnum = 0
+                tilesetBar.Visible = True
+                Call fillTilesetBar
+                tilesetBar.SetFocus
+            Else
+                tilesetBar.Visible = False
+            End If
+            
+        Case 3
+            'Board editor toolbar.
+            If popButton(Index).value = 1 Then
+                popButton(0).value = 0
+                popButton(1).value = 0
+                popButton(2).value = 0
+                Call boardToolbar.Objects.Populate(activeBoardIndex)
+                pTools.Visible = True
+                pTools.SetFocus
+            Else
+                pTools.Visible = False
+            End If
+            
+    End Select
 End Sub
 '=========================================================================================
 
