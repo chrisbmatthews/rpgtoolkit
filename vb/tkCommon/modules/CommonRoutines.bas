@@ -826,10 +826,10 @@ loadtileerr:
         Dim getIt As Long
         getIt = longColor
 
-        Dim redcomp As Long, greencomp As Long, bluecomp As Long
+        Dim redcomp As Long, greenComp As Long, blueComp As Long
         redcomp = all(getIt, 1)
-        greencomp = all(getIt, 2)
-        bluecomp = all(getIt, 3)
+        greenComp = all(getIt, 2)
+        blueComp = all(getIt, 3)
 
         Dim t As Long
         For t = 0 To loops
@@ -840,15 +840,15 @@ loadtileerr:
             qbGreen = all(qb, 2)
             qbBlue = all(qb, 3)
     
-            If qbRed = redcomp And qbGreen = greencomp And qbBlue = bluecomp Then
+            If qbRed = redcomp And qbGreen = greenComp And qbBlue = blueComp Then
                 toColor = t
                 Exit Function
             End If
 
             Dim deltaRed As Long, deltaGreen As Long, deltaBlue As Long
             deltaRed = redcomp - qbRed
-            deltaGreen = greencomp - qbGreen
-            deltaBlue = bluecomp - qbBlue
+            deltaGreen = greenComp - qbGreen
+            deltaBlue = blueComp - qbBlue
 
             Dim pythag As Long
             pythag = (deltaRed ^ 2) + (deltaGreen ^ 2) + (deltaBlue ^ 2)
@@ -923,14 +923,14 @@ loadtileerr:
         'Declarations...
         Dim ignore As Boolean
         Dim ret() As String
-        Dim ud() As String
+        Dim uD() As String
         Dim a As Long
         Dim b As Long
         Dim c As String
  
         'Make one space in the arrays...
         ReDim ret(0)
-        ReDim ud(0)
+        ReDim uD(0)
  
         'For each character in the string...
         For a = 1 To Len(txt)
@@ -957,11 +957,11 @@ loadtileerr:
                         ret(UBound(ret)) = Left(ret(UBound(ret)), _
                         Len(ret(UBound(ret))) - 1)
                         'Put it in the ud() array...
-                        ud(UBound(ret)) = c
+                        uD(UBound(ret)) = c
                         'Enlarge the ret() array
                         ReDim Preserve ret(UBound(ret) + 1)
                         'Enlarge the ud() array...
-                        ReDim Preserve ud(UBound(ud) + 1)
+                        ReDim Preserve uD(UBound(uD) + 1)
                     End If
                 Next b
             End If
@@ -973,7 +973,7 @@ loadtileerr:
  
         'Pass back the data...
         multiSplit = ret()
-        usedDelimiters = ud()
+        usedDelimiters = uD()
 
     End Function
 
@@ -1041,7 +1041,12 @@ Public Function green(ByVal longColor As Long) As Long
     'Returns green from the color passed in
     '=======================================================
     On Error Resume Next
-    green = Int(longColor - blue(longColor) / 256)
+    Dim working As Long, blueComp As Long, takeAway As Long
+    working = longColor
+    blueComp = Int(working / 65536)
+    takeAway = blueComp * 256 * 256
+    working = working - takeAway
+    green = Int(working / 256)
 End Function
 
 Public Function red(ByVal longColor As Long) As Long
@@ -1049,11 +1054,14 @@ Public Function red(ByVal longColor As Long) As Long
     'Returns red from the color passed in
     '=======================================================
     On Error Resume Next
-    Dim takeAway As Long
-    takeAway = blue(longColor) * 256 * 256
-    longColor = longColor - takeAway
-    takeAway = green(longColor) * 256
-    red = longColor - takeAway
+    Dim working As Long, blueComp As Long, takeAway As Long, greenComp As Long
+    working = longColor
+    blueComp = Int(working / 65536)
+    takeAway = blueComp * 256 * 256
+    working = working - takeAway
+    greenComp = Int(working / 256)
+    takeAway = greenComp * 256
+    red = working - takeAway
 End Function
 
 'Currently running version
