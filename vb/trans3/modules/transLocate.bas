@@ -15,25 +15,7 @@ Option Explicit
 '=========================================================================
 ' Integral variables
 '=========================================================================
-Private m_movementSize As Double    'movement size (in pixels)
-
-'=========================================================================
-' Returns movement size (in pixels)
-'=========================================================================
-Public Property Get movementSize() As Double
-    movementSize = m_movementSize
-    If movementSize = 0 Then
-        movementSize = 1
-        walkDelay = 0.01
-    End If
-End Property
-
-'=========================================================================
-' Change movement size (in pixels)
-'=========================================================================
-Public Property Let movementSize(ByVal newVal As Double)
-    m_movementSize = newVal
-End Property
+Public movementSize As Double    'movement size (in tiles)
 
 '=========================================================================
 ' Return if we are using pixel movement
