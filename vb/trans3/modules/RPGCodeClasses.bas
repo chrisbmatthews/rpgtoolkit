@@ -497,6 +497,7 @@ error:
 
     ' Start at position 0
     classIdx = -1
+    Resume Next
 
 End Sub
 
@@ -1211,14 +1212,13 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         char = Mid$(Text, a, 1)
         Select Case char
 
-            Case "!", "$", "-"
+            Case "!", "$", " ", ",", "#", "=", "<", ">", "+", "-", ";", "*", "\", "/", "^", "(", ")", "%", "`", "|", "&", "~"
                 ' Could be a public var
                 If (depth = 0 And (Not (ignore)) And (arrayDepth = 0)) Then
-                    If (char <> "-") Then
-                        lngEnd = a
-                    Else
-                        lngEnd = a - 1
-                    End If
+                    Select Case char
+                        Case "!", "$": lngEnd = a
+                        Case Else: lngEnd = a - 1
+                    End Select
                     var = True
                     Exit For
                 End If

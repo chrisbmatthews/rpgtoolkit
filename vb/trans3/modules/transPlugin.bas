@@ -164,19 +164,12 @@ Public obtainedDC As Long
 Private specialMoveList() As String
 Private plugItems() As TKItem
 
-Function CBGetHwnd() As Long
-    'obtain the hwnd of the mainForm window
-    'callback 43
-    On Error GoTo errorhandler
-
+'=========================================================================
+' Get the host window's HWND
+'=========================================================================
+Public Function CBGetHwnd() As Long
+    On Error Resume Next
     CBGetHwnd = host.hwnd
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 '=========================================================================
@@ -464,29 +457,19 @@ Public Function CBGetString(ByVal varname As String) As String
     'varName is the string variable (ie var$)
     'this is callback 1
     On Error Resume Next
-    Dim lit As String
-    Dim num As Double
-    Call getIndependentVariable(varname, lit$, num)
-    CBGetString = lit$
+    Dim lit As String, num As Double
+    Call getIndependentVariable(varname, lit, num)
+    CBGetString = lit
 End Function
 
 Public Function CBGetNumerical(ByVal varname As String) As Double
     'callback to obtain the contents of a numerical var
     'varName is the string variable (ie var!)
     'this is callback 2
-    On Error GoTo errorhandler
-    Dim lit As String
-    Dim num As Double
-    Dim a As Long
-    a = getIndependentVariable(varname, lit$, num)
+    On Error Resume Next
+    Dim num As Double, lit As String
+    Call getIndependentVariable(varname, lit, num)
     CBGetNumerical = num
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
 
 Public Sub CBSetString(ByVal varname As String, ByVal newValue As String)
@@ -1787,58 +1770,27 @@ Public Function CBGetNumElementValue(ByVal rpgcodeCommand As String) As Double
     'if the element is a num variable, it returns the contents
     'of the variable.  if it's a num constant, it returns the
     'constant.
-    On Error GoTo errorhandler
-    Dim lit As String
-    Dim num As Double
-    Dim a As Long
-    Dim aProgram As RPGCodeProgram
-    ReDim aProgram.program(10)
-    aProgram.boardNum = -1
-    a = getValue(rpgcodeCommand, lit$, num, aProgram)
+    On Error Resume Next
+    Dim lit As String, num As Double, prg As RPGCodeProgram
+    Call getValue(rpgcodeCommand, lit, num, prg)
     CBGetNumElementValue = num
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Function
-
 
 Function CBGetElementType(ByVal rpgcodeCommand As String) As Long
     'callback 30
     'calls GetValue (to determine type)
     'returns 0 if the element is evaluated to be a num
     'returns 1 if the element is evaluated to be a lit
-    On Error GoTo errorhandler
-    Dim lit As String
-    Dim num As Double
-    Dim aProgram As RPGCodeProgram
-    ReDim aProgram.program(10)
-    aProgram.boardNum = -1
-    CBGetElementType = getValue(rpgcodeCommand, lit$, num, aProgram)
-
-    Exit Function
-
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+    On Error Resume Next
+    Dim prg As RPGCodeProgram, lit As String, num As Double
+    CBGetElementType = getValue(rpgcodeCommand, lit, num, prg)
 End Function
-
 
 Sub CBDebugMessage(ByVal message As String)
     'callback 31
     'calls debugger function to display text in debug window
-    On Error GoTo errorhandler
+    On Error Resume Next
     Call debugger(message)
-
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
 Function CBGetPathString(ByVal infoCode As Long) As String
@@ -2716,14 +2668,14 @@ Function CBCreateCanvas(ByVal width As Long, ByVal height As Long) As Long
     On Error Resume Next
     If width <= 0 Then width = 1
     If height <= 0 Then height = 1
-    CBCreateCanvas = CreateCanvas(width, height)
+    CBCreateCanvas = createCanvas(width, height)
 End Function
 
 Function CBDestroyCanvas(ByVal canvasID As Long) As Long
     'callback 46
     'destory an offscreen canvas
     On Error Resume Next
-    Call DestroyCanvas(canvasID)
+    Call destroyCanvas(canvasID)
     CBDestroyCanvas = 1
 End Function
 
@@ -2731,11 +2683,11 @@ Function CBDrawCanvas(ByVal canvasID As Long, ByVal x As Long, ByVal y As Long) 
     'callback 47
     'display an offscreen canvas
     On Error Resume Next
-    If CanvasOccupied(canvasID) Then
+    If canvasOccupied(canvasID) Then
         If Not (runningProgram) Then
             Call DXDrawCanvas(canvasID, x, y)
         Else
-            Call Canvas2CanvasBlt(canvasID, cnvRPGCodeScreen, x, y)
+            Call canvas2CanvasBlt(canvasID, cnvRPGCodeScreen, x, y)
         End If
         CBDrawCanvas = 1
     Else
@@ -2747,11 +2699,11 @@ Function CBDrawCanvasPartial(ByVal canvasID As Long, ByVal xDest As Long, ByVal 
     'callback 48
     'display an offscreen canvas (partially)
     On Error Resume Next
-    If CanvasOccupied(canvasID) Then
+    If canvasOccupied(canvasID) Then
         If Not (runningProgram) Then
             Call DXDrawCanvasPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height)
         Else
-            Call Canvas2CanvasBltPartial(canvasID, cnvRPGCodeScreen, xDest, yDest, xsrc, ysrc, width, height)
+            Call canvas2CanvasBltPartial(canvasID, cnvRPGCodeScreen, xDest, yDest, xsrc, ysrc, width, height)
         End If
         CBDrawCanvasPartial = 1
     Else
@@ -2763,11 +2715,11 @@ Function CBDrawCanvasTransparent(ByVal canvasID As Long, ByVal x As Long, ByVal 
     'callback 49
     'display an offscreen canvas with transparency
     On Error Resume Next
-    If CanvasOccupied(canvasID) Then
+    If canvasOccupied(canvasID) Then
         If Not (runningProgram) Then
             Call DXDrawCanvasTransparent(canvasID, x, y, crTransparentColor)
         Else
-            Call Canvas2CanvasBltTransparent(canvasID, cnvRPGCodeScreen, x, y, crTransparentColor)
+            Call canvas2CanvasBltTransparent(canvasID, cnvRPGCodeScreen, x, y, crTransparentColor)
         End If
         CBDrawCanvasTransparent = 1
     Else
@@ -2779,11 +2731,11 @@ Function CBDrawCanvasTransparentPartial(ByVal canvasID As Long, ByVal xDest As L
     'callback 50
     'display an offscreen canvas (partially) with transparency
     On Error Resume Next
-    If CanvasOccupied(canvasID) Then
+    If canvasOccupied(canvasID) Then
         If Not (runningProgram) Then
             Call DXDrawCanvasTransparentPartial(canvasID, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
         Else
-            Call Canvas2CanvasBltTransparentPartial(canvasID, cnvRPGCodeScreen, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
+            Call canvas2CanvasBltTransparentPartial(canvasID, cnvRPGCodeScreen, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
         End If
         CBDrawCanvasTransparentPartial = 1
     Else
@@ -2795,11 +2747,11 @@ Function CBDrawCanvasTranslucent(ByVal canvasID As Long, ByVal x As Long, ByVal 
     'callback 51
     'display an offscreen canvas with translucency
     On Error Resume Next
-    If CanvasOccupied(canvasID) Then
+    If canvasOccupied(canvasID) Then
         If Not (runningProgram) Then
             Call DXDrawCanvasTranslucent(canvasID, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
         Else
-            Call Canvas2CanvasBltTranslucent(canvasID, cnvRPGCodeScreen, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
+            Call canvas2CanvasBltTranslucent(canvasID, cnvRPGCodeScreen, x, y, dIntensity, crUnaffectedColor, crTransparentColor)
         End If
         CBDrawCanvasTranslucent = 1
     Else
@@ -2813,7 +2765,7 @@ Function CBCanvasLoadImage(ByVal canvasID As Long, ByVal filename As String) As 
     'adds path info
     On Error Resume Next
     
-    CBCanvasLoadImage = CanvasLoadPicture(canvasID, PakLocate(projectPath & bmpPath & filename))
+    CBCanvasLoadImage = canvasLoadPicture(canvasID, PakLocate(projectPath & bmpPath & filename))
 End Function
 
 Function CBCanvasLoadSizedImage(ByVal canvasID As Long, ByVal filename As String) As Long
@@ -2822,7 +2774,7 @@ Function CBCanvasLoadSizedImage(ByVal canvasID As Long, ByVal filename As String
     'adds path info
     On Error Resume Next
     
-    Call CanvasLoadSizedPicture(canvasID, PakLocate(projectPath & bmpPath & filename))
+    Call canvasLoadSizedPicture(canvasID, PakLocate(projectPath & bmpPath & filename))
     CBCanvasLoadSizedImage = 1
 End Function
 
@@ -2831,7 +2783,7 @@ Function CBCanvasFill(ByVal canvasID As Long, ByVal crColor As Long) As Long
     'fill canvas with color
     On Error Resume Next
     
-    Call CanvasFill(canvasID, crColor)
+    Call canvasFill(canvasID, crColor)
     CBCanvasFill = 1
 End Function
 
@@ -2840,7 +2792,7 @@ Function CBCanvasResize(ByVal canvasID As Long, ByVal width As Long, ByVal heigh
     'resize canvas
     On Error Resume Next
     
-    Call SetCanvasSize(canvasID, width, height)
+    Call setCanvasSize(canvasID, width, height)
     CBCanvasResize = 1
 End Function
 
@@ -2849,7 +2801,7 @@ Function CBCanvas2CanvasBlt(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal x
     'copy one canvas into another
     On Error Resume Next
     
-    CBCanvas2CanvasBlt = Canvas2CanvasBlt(cnvSrc, cnvDest, xDest, yDest)
+    CBCanvas2CanvasBlt = canvas2CanvasBlt(cnvSrc, cnvDest, xDest, yDest)
 End Function
 
 Function CBCanvas2CanvasBltPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long) As Long
@@ -2857,7 +2809,7 @@ Function CBCanvas2CanvasBltPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, 
     'copy one canvas into another (partially)
     On Error Resume Next
     
-    CBCanvas2CanvasBltPartial = Canvas2CanvasBltPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height)
+    CBCanvas2CanvasBltPartial = canvas2CanvasBltPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height)
 End Function
 
 Function CBCanvas2CanvasBltTransparent(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal crTransparentColor As Long) As Long
@@ -2865,7 +2817,7 @@ Function CBCanvas2CanvasBltTransparent(ByVal cnvSrc As Long, ByVal cnvDest As Lo
     'copy one canvas into another, using transparency
     On Error Resume Next
     
-    CBCanvas2CanvasBltTransparent = Canvas2CanvasBltTransparent(cnvSrc, cnvDest, xDest, yDest, crTransparentColor)
+    CBCanvas2CanvasBltTransparent = canvas2CanvasBltTransparent(cnvSrc, cnvDest, xDest, yDest, crTransparentColor)
 End Function
 
 Function CBCanvas2CanvasBltTransparentPartial(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal width As Long, ByVal height As Long, ByVal crTransparentColor As Long) As Long
@@ -2873,7 +2825,7 @@ Function CBCanvas2CanvasBltTransparentPartial(ByVal cnvSrc As Long, ByVal cnvDes
     'copy one canvas into another, using transparency (partially)
     On Error Resume Next
     
-    CBCanvas2CanvasBltTransparentPartial = Canvas2CanvasBltTransparentPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
+    CBCanvas2CanvasBltTransparentPartial = canvas2CanvasBltTransparentPartial(cnvSrc, cnvDest, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor)
 End Function
 
 Function CBCanvas2CanvasBltTranslucent(ByVal cnvSrc As Long, ByVal cnvDest As Long, ByVal destX As Long, ByVal destY As Long, ByVal dIntensity As Double, ByVal crUnaffectedColor As Long, ByVal crTransparentColor As Long) As Long
@@ -2881,7 +2833,7 @@ Function CBCanvas2CanvasBltTranslucent(ByVal cnvSrc As Long, ByVal cnvDest As Lo
     'copy one canvas into another, using translucency
     On Error Resume Next
     
-    CBCanvas2CanvasBltTranslucent = Canvas2CanvasBltTranslucent(cnvSrc, cnvDest, destX, destY, dIntensity, crUnaffectedColor, crTransparentColor)
+    CBCanvas2CanvasBltTranslucent = canvas2CanvasBltTranslucent(cnvSrc, cnvDest, destX, destY, dIntensity, crUnaffectedColor, crTransparentColor)
 End Function
 
 Function CBCanvasGetScreen(ByVal cnvDest As Long) As Long
@@ -2889,9 +2841,9 @@ Function CBCanvasGetScreen(ByVal cnvDest As Long) As Long
     'copy the screen into a canvas
     On Error Resume Next
     If Not (runningProgram) Then
-        CBCanvasGetScreen = CanvasGetScreen(cnvDest)
+        CBCanvasGetScreen = canvasGetScreen(cnvDest)
     Else
-        Call Canvas2CanvasBlt(cnvRPGCodeScreen, cnvDest, 0, 0)
+        Call canvas2CanvasBlt(cnvRPGCodeScreen, cnvDest, 0, 0)
     End If
 End Function
 
@@ -2907,7 +2859,7 @@ Function CBCanvasDrawText(ByVal canvasID As Long, ByVal Text As String, ByVal fo
     'callback 63
     'draw text to a canvas
     On Error Resume Next
-    Call CanvasDrawText(canvasID, Text, font, size, x, y, crColor, (isBold = 1), (isItalics = 1), (isUnderline = 1), (isCentred = 1), (isOutlined = 1))
+    Call canvasDrawText(canvasID, Text, font, size, x, y, crColor, (isBold = 1), (isItalics = 1), (isUnderline = 1), (isCentred = 1), (isOutlined = 1))
     CBCanvasDrawText = 1
 End Function
 
@@ -2925,7 +2877,7 @@ Function CBCanvasWidth(ByVal canvasID As Long) As Long
     'callback 65
     'get canvas width
     On Error Resume Next
-    CBCanvasWidth = GetCanvasWidth(canvasID)
+    CBCanvasWidth = getCanvasWidth(canvasID)
 End Function
 
 
@@ -2933,7 +2885,7 @@ Function CBCanvasHeight(ByVal canvasID As Long) As Long
     'callback 66
     'get canvas height
     On Error Resume Next
-    CBCanvasHeight = GetCanvasHeight(canvasID)
+    CBCanvasHeight = getCanvasHeight(canvasID)
 End Function
 
 
@@ -2941,7 +2893,7 @@ Function CBCanvasDrawLine(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As 
     'callback 67
     'draw a line to a canvas
     On Error Resume Next
-    Call CanvasDrawLine(canvasID, x1, y1, x2, y2, crColor)
+    Call canvasDrawLine(canvasID, x1, y1, x2, y2, crColor)
     CBCanvasDrawLine = 1
 End Function
 
@@ -2950,7 +2902,7 @@ Function CBCanvasDrawRect(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As 
     'callback 68
     'draw a rect to a canvas
     On Error Resume Next
-    Call CanvasBox(canvasID, x1, y1, x2, y2, crColor)
+    Call canvasBox(canvasID, x1, y1, x2, y2, crColor)
     CBCanvasDrawRect = 1
 End Function
 
@@ -2959,7 +2911,7 @@ Function CBCanvasFillRect(ByVal canvasID As Long, ByVal x1 As Long, ByVal y1 As 
     'callback 69
     'draw a filled rect to a canvas
     On Error Resume Next
-    Call CanvasFillBox(canvasID, x1, y1, x2, y2, crColor)
+    Call canvasFillBox(canvasID, x1, y1, x2, y2, crColor)
     CBCanvasFillRect = 1
 End Function
 
@@ -2969,7 +2921,7 @@ Function CBCanvasDrawHand(ByVal canvasID As Long, ByVal pointx As Long, ByVal po
     'draw a hand pointing to pointx, pointy
     On Error Resume Next
     '-10 added by KSNiloc...
-    Call CanvasDrawHand(canvasID, pointx - 10, pointy)
+    Call canvasDrawHand(canvasID, pointx - 10, pointy)
     CBCanvasDrawHand = 1
 End Function
 
@@ -2978,15 +2930,15 @@ Function CBDrawHand(ByVal pointx As Long, ByVal pointy As Long) As Long
     'draw a hand pointing to pointx, pointy
     On Error Resume Next
     Dim cnv As Long
-    cnv = CreateCanvas(32, 32)
-    Call CanvasFill(cnv, RGB(255, 0, 0))
-    Call CanvasDrawHand(cnv, 32, 10)
+    cnv = createCanvas(32, 32)
+    Call canvasFill(cnv, RGB(255, 0, 0))
+    Call canvasDrawHand(cnv, 32, 10)
     If Not (runningProgram) Then
         Call DXDrawCanvasTransparent(cnv, pointx - 32 - 10, pointy - 10, RGB(255, 0, 0))
     Else
-        Call Canvas2CanvasBltTransparent(cnv, cnvRPGCodeScreen, pointx - 32 - 10, pointy - 10, RGB(255, 0, 0))
+        Call canvas2CanvasBltTransparent(cnv, cnvRPGCodeScreen, pointx - 32 - 10, pointy - 10, RGB(255, 0, 0))
     End If
-    Call DestroyCanvas(cnv)
+    Call destroyCanvas(cnv)
     CBDrawHand = 1
 End Function
 
@@ -3273,7 +3225,7 @@ Sub CBCanvasDrawBackground(ByVal canvasID As Long, ByVal bkgFile As String, ByVa
     'callback 104
     'draw fight background to canvas
     On Error Resume Next
-    Call CanvasDrawBackground(canvasID, projectPath & bkgPath & bkgFile, x, y, width, height)
+    Call canvasDrawBackground(canvasID, projectPath & bkgPath & bkgFile, x, y, width, height)
 End Sub
 
 Function CBCreateAnimation(ByVal file As String) As Long
@@ -3430,7 +3382,7 @@ Function CBDrawTextAbsolute(ByVal Text As String, ByVal font As String, ByVal si
     If Not (runningProgram) Then
         CBDrawTextAbsolute = DXDrawText(x, y, Text, font, size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined)
     Else
-        Call CanvasDrawText(cnvRPGCodeScreen, Text, font, size, x, y, crColor, (isBold = 1), (isItalics = 1), (isUnderline = 1), (isCentred = 1), (isOutlined = 1))
+        Call canvasDrawText(cnvRPGCodeScreen, Text, font, size, x, y, crColor, (isBold = 1), (isItalics = 1), (isUnderline = 1), (isCentred = 1), (isOutlined = 1))
     End If
 End Function
 

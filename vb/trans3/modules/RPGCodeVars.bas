@@ -1077,7 +1077,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
         Case DT_NUM         'NUMERICAL VARIABLE
                             '------------------
 
-            If getVariable(Text, litA, numA, theProgram) = DT_NUM Then
+            If (getVariable(Text, litA, numA, theProgram) = DT_NUM) Then
                 ' Found one!
                 num = numA
             End If
@@ -1087,7 +1087,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
         Case DT_LIT         'LITERAL VARIABLE
                             '----------------
 
-            If getVariable(Text, litA, numA, theProgram) = DT_LIT Then
+            If (getVariable(Text, litA, numA, theProgram) = DT_LIT) Then
                 ' Found one!
                 lit = litA
             End If

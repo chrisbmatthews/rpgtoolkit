@@ -291,8 +291,7 @@ Public Sub getAmbientLevel(ByRef shadeR As Long, ByRef shadeB As Long, ByRef sha
 'Replaces separate functions in transRender, also used in commonTileBitmap
 '==========================
 
-    Dim ambientR As Double, ambientB As Double, ambientG As Double
-    Dim lit As String, lightLevel As Long
+    Dim ambientR As Double, ambientB As Double, ambientG As Double, lightLevel As Long
 
     With boardList(activeBoardIndex)
 
@@ -303,6 +302,7 @@ Public Sub getAmbientLevel(ByRef shadeR As Long, ByRef shadeB As Long, ByRef sha
         addOnG = 0
         addOnB = 0
 
+        Dim lit As String
         Call getIndependentVariable("AmbientRed!", lit, ambientR)
         Call getIndependentVariable("AmbientBlue!", lit, ambientB)
         Call getIndependentVariable("AmbientGreen!", lit, ambientG)

@@ -232,12 +232,8 @@ Public Function MathFunction(ByRef Text As String, ByVal num As Long, Optional B
 
     '// Passing Text ByRef for performance related reasons
 
-    Dim signs() As String   ' Array of math operators
-    Dim p() As Long         ' Positions of those operators
-    Dim whichSpot As Long   ' The spot containing the value returned
-    Dim start As Long       ' Position to start at in text
-    Dim a As Long           ' For loop control variable
-    Dim S As Long           ' For loop control variable
+    Dim signs() As String, p() As Long, signIdx As Long
+    Dim lngStart As Long, i As Long, j As Long, ub As Long
 
     If Not (comparison) Then
         ' Use m_mathSigns
@@ -247,22 +243,43 @@ Public Function MathFunction(ByRef Text As String, ByVal num As Long, Optional B
         signs = m_compSigns
     End If
 
-    'Dimension p to have room for all the signs
-    ReDim p(UBound(signs))
+    ' Get the upper bound of the signs array
+    ub = UBound(signs)
 
-    'Find that sign!
-    start = 1
-    For a = 1 To num
-        For S = 0 To UBound(signs)
-            p(S) = inStrOutsideQuotes(start, Text, signs(S))
-        Next S
-        start = lowest(p, whichSpot) + 1
-        If (a <> num) Then
-            ReDim p(UBound(signs))
+    ' Create p
+    ReDim p(ub)
+
+    ' Start at position one
+    lngStart = 1
+
+    ' Iterate until we reach the correct position
+    For i = 1 To num
+
+        ' For each sign
+        For j = 0 To ub
+
+            ' Find the nearest one starting at the last nearest one
+            p(j) = inStrOutsideQuotes(lngStart, Text, signs(j))
+
+        Next j
+
+        ' Check which one of the signs is left-most
+        lngStart = lowest(p, signIdx) + 1
+
+        ' If this is not the last position
+        If (i <> num) Then
+
+            ' Erase the previous values
+            ReDim p(ub)
+
         Else
-            MathFunction = signs(whichSpot)
+
+            ' Return the correct sign
+            MathFunction = signs(signIdx)
+
         End If
-    Next a
+
+    Next i
 
 End Function
 
@@ -1367,7 +1384,7 @@ End Function
 '=========================================================================
 Public Function parseArray(ByRef variable As String, ByRef prg As RPGCodeProgram) As String
 
-    ' This will take an array such as Array[a!+2]["Pos"]$ and replace variables, commands,
+    ' This will take an array such as array[a! + 2]["Pos"]$ and replace variables, commands,
     ' equations, etc with their values.
 
     '// Passing string(s) ByRef for preformance related reasons

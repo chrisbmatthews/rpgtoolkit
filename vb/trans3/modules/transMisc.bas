@@ -99,9 +99,10 @@ End Function
 ' Returns if a number is within low and high
 '=========================================================================
 Public Function within(ByVal num As Double, ByVal low As Double, ByVal high As Double) As Long
-    On Error Resume Next
-    If num <= high And num >= low Then within = 1: Exit Function
-    within = 0
+    If ((num <= high) And (num >= low)) Then
+        ' It's within!
+        within = 1
+    End If
 End Function
 
 '=========================================================================
@@ -191,59 +192,63 @@ Public Sub alignBoard(ByVal playerX As Double, ByVal playerY As Double)
 End Sub
 
 '=========================================================================
+' Destroy all item sprite canvases
+'=========================================================================
+Public Sub destroyItemSprites()
+
+    On Error GoTo fin
+
+    ' Destroy item canvases
+    Dim i As Long
+    For i = 0 To UBound(boardList(activeBoardIndex).theData.itmActivate)
+        Call destroyCanvas(cnvSprites(i))
+    Next i
+
+fin:
+End Sub
+
+'=========================================================================
 ' Opens all the items on the board
 '=========================================================================
 Public Sub openItems()
 
     On Error Resume Next
 
-    Dim runIt As Boolean                'run item activation program?
-    Dim itemNum As Long                 'item loop control variables
-    Dim lit As String                   'literal variable
-    Dim num As Double                   'numerical variables
-    Dim checkIt As RPGC_DT              'data type of conditional variable
-    Dim valueTestNum As Double          'numerical test value
-    Dim valueTestLit As String          'literal test value
-    Dim multiPrg As String              'the multitasking program
+    Dim itemNum As Long, itemCount As Long
 
-    'Destroy old item canvases
-    For itemNum = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
-        Call DestroyCanvas(cnvSprites(itemNum))
+    ' Get total number of items
+    itemCount = UBound(boardList(activeBoardIndex).theData.itmActivate)
+
+    ' Resize item arrays
+    ReDim pendingItemMovement(itemCount)
+    ReDim lastItemRender(itemCount)
+    ReDim itmPos(itemCount)
+    ReDim itemMem(itemCount)
+    ReDim cnvSprites(itemCount)
+
+    ' Create new item canvases
+    For itemNum = 0 To itemCount
+        cnvSprites(itemNum) = createCanvas(1, 1)
     Next itemNum
 
-    ReDim pendingItemMovement((UBound(boardList(activeBoardIndex).theData.itmActivate)))  'pending item movements
-    ReDim lastItemRender((UBound(boardList(activeBoardIndex).theData.itmActivate)))       'last item renders
-    ReDim itmPos((UBound(boardList(activeBoardIndex).theData.itmActivate)))               'position of items
-    ReDim itemMem((UBound(boardList(activeBoardIndex).theData.itmActivate)))              'item data
-    ReDim cnvSprites((UBound(boardList(activeBoardIndex).theData.itmActivate)))           'item sprites
+    ' Loop over each item
+    For itemNum = 0 To itemCount
 
-    'Create new item canvases
-    For itemNum = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
-        cnvSprites(itemNum) = CreateCanvas(1, 1)
-    Next itemNum
-
-    'Loop over each item
-    For itemNum = 0 To (UBound(boardList(activeBoardIndex).theData.itmActivate))
-
-        'With the active board
+        ' With the active board
         With boardList(activeBoardIndex).theData
 
-            'Copy item values to itmPos() array
+            ' Copy data over to global arrays
             itmPos(itemNum).frame = 0
             itmPos(itemNum).loopFrame = -1
             itmPos(itemNum).x = .itmX(itemNum)
             itmPos(itemNum).y = .itmY(itemNum)
             itmPos(itemNum).l = .itmLayer(itemNum)
-            itmPos(itemNum).stance = "stand_s"  'I am now depreciating the item
-                                                'REST graphic into the southern
-                                                'idling graphic. Older items will
-                                                'have REST copied to this stance
-                                                'upon being opened.
+            itmPos(itemNum).stance = "stand_s"
 
-            'Indicate that there was no last render
+            ' Indicate that there was no last render
             lastItemRender(itemNum).canvas = -1
 
-            'Copy values to pending item movements
+            ' Copy values to pending item movements
             With pendingItemMovement(itemNum)
                 .xOrig = itmPos(itemNum).x
                 .xTarg = .xOrig
@@ -254,80 +259,78 @@ Public Sub openItems()
                 .queue = vbNullString
             End With
 
-            'Check if we should run this item
-            If .itmActivate(itemNum) = 1 Then
+            ' Check if we should open this item
+            Dim runIt As Boolean
+
+            ' If item is conditionally active
+            If (.itmActivate(itemNum) = 1) Then
+
+                ' Default to not opening the item
                 runIt = False
+
+                ' Get the value of the activation variable
+                Dim lit As String, num As Double, checkIt As RPGC_DT
                 checkIt = getIndependentVariable(.itmVarActivate(itemNum), lit, num)
-                If checkIt = DT_NUM Then
-                    valueTestNum = num
-                    runIt = (valueTestNum = .itmActivateInitNum(itemNum))
-                ElseIf checkIt = DT_LIT Then
-                    valueTestLit = lit
-                    runIt = (valueTestLit = .itmActivateInitNum(itemNum))
+
+                If (checkIt = DT_NUM) Then
+
+                    ' It's numerical! Cast value to double and compare.
+                    runIt = (num = CDbl(.itmActivateInitNum(itemNum)))
+
+                ElseIf (checkIt = DT_LIT) Then
+
+                    ' It's literal! Compare right off.
+                    runIt = (lit = .itmActivateInitNum(itemNum))
+
                 End If
+
             Else
+
+                ' Item is always active
                 runIt = True
-            End If
 
-            'If we should, and there is a program, then open it!
-            If (runIt) And (LenB(.itmName(itemNum)) <> 0) Then
+            End If ' (.itmActivate(itemNum) = 1)
+
+            ' If we decided to open the item
+            If ((runIt) And (LenB(.itmName(itemNum)) <> 0)) Then
+
+                ' Open the item
                 itemMem(itemNum) = openItem(projectPath & itmPath & .itmName(itemNum))
+
+                ' Flag the item is open
                 itemMem(itemNum).bIsActive = True
+
+                ' Determine which thread to use
+                Dim multiPrg As String
+
+                ' If this specific item has its own thread
                 If (LenB(.itemMulti(itemNum))) Then
+
+                    ' Use its program
                     multiPrg = .itemMulti(itemNum)
+
                 Else
+
+                    ' Else, use the .itm file's program
                     multiPrg = itemMem(itemNum).itmPrgOnBoard
+
                 End If
-                Call CreateThread(projectPath & prgPath & multiPrg, False, itemNum)
+
+                ' Create the thread
+                Call createThread(projectPath & prgPath & multiPrg, False, itemNum)
+
             Else
+
+                ' Flag item is not active
                 itemMem(itemNum).bIsActive = False
-            End If
 
-        End With
+            End If ' (runIt) And (LenB(.itmName(itemNum)) <> 0)
 
-    Next itemNum
+        End With ' boardList(activeBoardIndex).theData
+
+    Next itemNum ' 0 To itemCount
 
 End Sub
-
-'=========================================================================
-' Gets a spaced element ignoring quotes
-'=========================================================================
-Public Function GetSpacedElement(ByVal Text As String, ByVal eleeNum As Long) As String
-
-    On Error Resume Next
-
-    Dim Length As Long, element As Long, p As Long, part As String, ignore As Long
-    Dim returnVal As String
-    
-    Length = Len(Text$)
-    element = 0
-    For p = 1 To Length + 1
-        part$ = Mid$(Text$, p, 1)
-        If part$ = ("""") Then
-            'A quote
-            If ignore = 0 Then
-                ignore = 1
-            Else
-                ignore = 0
-            End If
-        End If
-        If part$ = "," Then
-            If ignore = 0 Then
-                element = element + 1
-                If element = eleeNum Then
-                    GetSpacedElement = returnVal$
-                    Exit Function
-                Else
-                    returnVal$ = vbNullString
-                End If
-            Else
-                returnVal$ = returnVal & part$
-            End If
-        Else
-            returnVal$ = returnVal & part$
-        End If
-    Next p
-End Function
 
 '=========================================================================
 ' Delay for the number of seconds passed in
@@ -342,22 +345,22 @@ End Sub
 '=========================================================================
 ' Load a character into the slot passed in
 '=========================================================================
-Public Sub CreateCharacter(ByVal file As String, ByVal number As Long)
+Public Sub createCharacter(ByVal file As String, ByVal number As Long)
     On Error Resume Next
-    If number < 0 Or number > 4 Then Exit Sub
+    If (number < 0 Or number > 4) Then Exit Sub
     Call openChar(file, playerMem(number))
     With playerMem(number)
-        playerListAr$(number) = .charname
-        playerFile$(number) = file$
-        Call setIndependentVariable(.experienceVar$, CStr(.initExperience))
-        Call setIndependentVariable(.defenseVar$, CStr(.initDefense))
-        Call setIndependentVariable(.fightVar$, CStr(.initFight))
-        Call setIndependentVariable(.healthVar$, CStr(.initHealth))
-        Call setIndependentVariable(.maxHealthVar$, CStr(.initMaxHealth))
-        Call setIndependentVariable(.nameVar$, .charname$)
-        Call setIndependentVariable(.smVar$, CStr(.initSm))
-        Call setIndependentVariable(.smMaxVar$, CStr(.initSmMax))
-        Call setIndependentVariable(.leVar$, CStr(.initLevel))
+        playerListAr(number) = .charname
+        playerFile(number) = file
+        Call setIndependentVariable(.experienceVar, CStr(.initExperience))
+        Call setIndependentVariable(.defenseVar, CStr(.initDefense))
+        Call setIndependentVariable(.fightVar, CStr(.initFight))
+        Call setIndependentVariable(.healthVar, CStr(.initHealth))
+        Call setIndependentVariable(.maxHealthVar, CStr(.initMaxHealth))
+        Call setIndependentVariable(.nameVar, .charname)
+        Call setIndependentVariable(.smVar, CStr(.initSm))
+        Call setIndependentVariable(.smMaxVar, CStr(.initSmMax))
+        Call setIndependentVariable(.leVar, CStr(.initLevel))
         Call calcLevels(playerMem(number))
     End With
 End Sub
@@ -390,7 +393,7 @@ End Sub
 '=========================================================================
 ' Dertermines if a player is able to use an item
 '=========================================================================
-Public Function CanPlayerUse(ByVal num As Long, ByRef anItem As TKItem) As Boolean
+Public Function canPlayerUse(ByVal num As Long, ByRef anItem As TKItem) As Boolean
 
     On Error Resume Next
    
@@ -408,7 +411,7 @@ Public Function CanPlayerUse(ByVal num As Long, ByRef anItem As TKItem) As Boole
             End If
         Next ll
     End If
-    CanPlayerUse = (okAll = 1)
+    canPlayerUse = (okAll = 1)
 End Function
 
 '=========================================================================

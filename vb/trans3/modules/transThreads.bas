@@ -174,7 +174,7 @@ End Sub
 '=========================================================================
 ' Create a thread
 '=========================================================================
-Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean, Optional ByVal itemNum As Long = -1) As Long
+Public Function createThread(ByVal file As String, ByVal bPersistent As Boolean, Optional ByVal itemNum As Long = -1) As Long
 
     Dim c As Long       'for loop control variables
     Dim size As Long    'size of threads() array
@@ -190,7 +190,7 @@ Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean,
                 .thread.threadID = c
                 .bIsSleeping = False
                 .itemNum = itemNum
-                CreateThread = c
+                createThread = c
                 Exit Function
             End If
         End With
@@ -207,7 +207,7 @@ Public Function CreateThread(ByVal file As String, ByVal bPersistent As Boolean,
         .bIsSleeping = False
         .itemNum = itemNum
     End With
-    CreateThread = size
+    createThread = size
 
 End Function
 
@@ -360,7 +360,7 @@ Public Sub launchBoardThreads(ByRef board As TKBoard)
     Next a
     For a = 0 To UBound(board.Threads)
         If (LenB(board.Threads(a))) Then
-            id = CreateThread(projectPath & prgPath & board.Threads(a), False)
+            id = createThread(projectPath & prgPath & board.Threads(a), False)
             Call CBSetNumerical("Threads[" & CStr(a) & "]!", id)
         End If
     Next a
@@ -742,21 +742,21 @@ Public Sub renderMultiAnimations( _
 
         'Draw the frame onto a canvas
         Dim cnv As Long
-        cnv = CreateCanvas(anim.animSizeX, anim.animSizeY)
-        Call CanvasFill(cnv, TRANSP_COLOR)
+        cnv = createCanvas(anim.animSizeX, anim.animSizeY)
+        Call canvasFill(cnv, TRANSP_COLOR)
         Call AnimDrawFrameCanvas(anim, frame, 0, 0, cnv, True)
 
         'Render the frame
         If cnvTarget <> -1 Then
             'To a canvas
-            Call Canvas2CanvasBltTransparent(cnv, cnvTarget, x, y, TRANSP_COLOR)
+            Call canvas2CanvasBltTransparent(cnv, cnvTarget, x, y, TRANSP_COLOR)
         Else
             'To the screen
             Call DXDrawCanvasTransparent(cnv, x, y, TRANSP_COLOR)
         End If
 
         'Destroy that canvas
-        Call DestroyCanvas(cnv)
+        Call destroyCanvas(cnv)
 
         'If it's been 5ms
         If _

@@ -520,8 +520,8 @@ Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
         Dim imageHeight As Long
         
         'Dimensions of image, stored in canvas. Background image loaded into canvas when board loaded.
-        imageWidth = GetCanvasWidth(cnvBackground)
-        imageHeight = GetCanvasHeight(cnvBackground)
+        imageWidth = getCanvasWidth(cnvBackground)
+        imageHeight = getCanvasHeight(cnvBackground)
         
         Dim percentScrollX As Double, percentScrollY As Double
         Dim maxScrollX As Double, maxScrollY As Double
@@ -560,7 +560,7 @@ Private Sub DXDrawBackground(Optional ByVal cnv As Long = -1)
         If cnv = -1 Then
             Call DXDrawCanvasPartial(cnvBackground, 0, 0, pixelTopX, pixelTopY, pixelTilesX, pixelTilesY)
         Else
-            Call Canvas2CanvasBltPartial(cnvBackground, cnv, 0, 0, pixelTopX, pixelTopY, pixelTilesX, pixelTilesY)
+            Call canvas2CanvasBltPartial(cnvBackground, cnv, 0, 0, pixelTopX, pixelTopY, pixelTilesX, pixelTilesY)
         End If
     End If
 
@@ -596,7 +596,7 @@ Private Sub DXDrawBoard(Optional ByVal cnvTarget As Long = -1)
     Else 'Render to canvas
 
         'If usingDX() Then
-            Call Canvas2CanvasBltTransparentPartial(cnvScrollCache, _
+            Call canvas2CanvasBltTransparentPartial(cnvScrollCache, _
                                                     cnvTarget, _
                                                     0, 0, x1, y1, tilesX * 32, tilesY * 32, TRANSP_COLOR)
         'Else
@@ -618,10 +618,10 @@ Public Sub PopupCanvas(ByVal cnv As Long, ByVal x As Long, ByVal y As Long, ByVa
     Dim h As Long
     Dim c As Long
     Dim cnt As Long
-    If CanvasOccupied(cnv) Then
-        w = GetCanvasWidth(cnv)
-        h = GetCanvasHeight(cnv)
-        Call CanvasGetScreen(cnvAllPurpose)
+    If canvasOccupied(cnv) Then
+        w = getCanvasWidth(cnv)
+        h = getCanvasHeight(cnv)
+        Call canvasGetScreen(cnvAllPurpose)
         Select Case popupType
             Case POPUP_NOFX:
                 'just put it on the screen
@@ -775,11 +775,11 @@ Private Function renderBackground() As Boolean
     ' If we need to render the background
     If (lastRenderedBackground <> boardList(activeBoardIndex).theData.brdBack) Then
         ' Fill bkg will black
-        Call CanvasFill(cnvBackground, 0)
+        Call canvasFill(cnvBackground, 0)
         ' If there's an image set
         If (LenB(boardList(activeBoardIndex).theData.brdBack)) Then
             ' Load the image, stretching to fit the board
-            Call CanvasLoadFullPicture(cnvBackground, projectPath & bmpPath & boardList(activeBoardIndex).theData.brdBack, resX, resY)
+            Call canvasLoadFullPicture(cnvBackground, projectPath & bmpPath & boardList(activeBoardIndex).theData.brdBack, resX, resY)
         End If
         ' Update the last rendered background
         lastRenderedBackground = boardList(activeBoardIndex).theData.brdBack
@@ -901,9 +901,9 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
     Dim spriteWidth As Long, spriteHeight As Long, cornerX As Long, cornerY As Long
     
     'The dimensions of the sprite frame, in pixels.
-    spriteWidth = GetCanvasWidth(cnvFrameID)
-    spriteHeight = GetCanvasHeight(cnvFrameID)
-        
+    spriteWidth = getCanvasWidth(cnvFrameID)
+    spriteHeight = getCanvasHeight(cnvFrameID)
+
     'Will place the top left corner of the sprite frame at cornerX, cornerY:
     cornerX = centreX - spriteWidth \ 2
     cornerY = centreY - spriteHeight
@@ -998,8 +998,10 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
                 Call DXDrawCanvasTransparentPartial(cnvFrameID, cornerX, cornerY, offsetX, offsetY, renderWidth, renderHeight, TRANSP_COLOR)
                 
             Else 'Draw to canvas
-                Call Canvas2CanvasBltTransparentPartial(cnvFrameID, cnvTarget, cornerX, cornerY, offsetX, offsetY, renderWidth, renderHeight, TRANSP_COLOR)
-                
+
+                Call canvas2CanvasBltTransparentPartial(cnvFrameID, cnvTarget, cornerX, cornerY, offsetX, offsetY, renderWidth, renderHeight, TRANSP_COLOR)
+                Call canvas2CanvasBltTransparentPartial(cnvFrameID, cnvTarget, cornerX, cornerY, offsetX, offsetY, renderWidth, renderHeight, TRANSP_COLOR)
+
             End If
         End If
         
@@ -1034,7 +1036,7 @@ Private Sub putSpriteAt(ByVal cnvFrameID As Long, ByVal boardX As Double, ByVal 
             If cnvTarget = -1 Then 'Draw to screen
                 Call DXDrawCanvasTransparent(cnvFrameID, cornerX, cornerY, TRANSP_COLOR)
             Else 'Draw to canvas
-                Call Canvas2CanvasBltTransparent(cnvFrameID, cnvTarget, cornerX, cornerY, TRANSP_COLOR)
+                Call canvas2CanvasBltTransparent(cnvFrameID, cnvTarget, cornerX, cornerY, TRANSP_COLOR)
             End If
         End If
     End If
@@ -1071,7 +1073,10 @@ Private Function renderPlayer(ByVal cnv As Long, _
                 Case Else: direction = -1
             End Select
 
-            If Timer() - .idleTime >= thePlayer.idleTime And LeftB$(LCase$(.stance), 10) <> "stand" Then
+            Dim bIdleGfx As Boolean
+            bIdleGfx = (LeftB$(LCase$(.stance), 10) = "stand")
+
+            If Timer() - .idleTime >= thePlayer.idleTime And (Not (bIdleGfx)) Then
                 'Push into idle graphics if not already.
 
                 'Check that a standing graphic for this direction exists.
@@ -1088,7 +1093,7 @@ Private Function renderPlayer(ByVal cnv As Long, _
 
             End If
 
-            If LeftB$(LCase$(.stance), 10) = "stand" And LenB(thePlayer.standingGfx(direction)) Then
+            If (bIdleGfx) And LenB(thePlayer.standingGfx(direction)) <> 0 Then
                 'We're standing!
 
                 If .loopFrame Mod ((thePlayer.loopSpeed) / movementSize) = 0 Then
@@ -1187,8 +1192,11 @@ Private Function renderItem(ByVal cnv As Long, _
                 Case "walk_se", "stand_se": direction = 7
                 Case Else: direction = -1
             End Select
-                
-            If Timer() - .idleTime >= theItem.idleTime And LeftB$(LCase$(.stance), 10) <> "stand" Then
+            
+            Dim bIdleGfx As Boolean
+            bIdleGfx = (LeftB$(LCase$(.stance), 10) = "stand")
+            
+            If Timer() - .idleTime >= theItem.idleTime And (Not (bIdleGfx)) Then
                 'Push into idle graphics if not already.
                 
                 'Check that a standing graphic for this direction exists.
@@ -1204,7 +1212,7 @@ Private Function renderItem(ByVal cnv As Long, _
                 
             End If
             
-            If LeftB$(UCase$(.stance), 10) = "stand" And LenB(theItem.standingGfx(direction)) Then
+            If (bIdleGfx) And LenB(theItem.standingGfx(direction)) <> 0 Then
                 'We're standing and we have idling graphics.
                 
                 If .loopFrame Mod ((theItem.loopSpeed) / movementSize) = 0 Then
@@ -1258,7 +1266,7 @@ End Function
 '=========================================================================
 Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     On Error Resume Next
-    cnvScrollCache = CreateCanvas(width * 2, height * 2)
+    cnvScrollCache = createCanvas(width * 2, height * 2)
     scTilesX = width * 2 \ 32
     scTilesY = height * 2 \ 32
     'If Not usingDX() Then
@@ -1270,22 +1278,22 @@ Private Sub createCanvases(ByVal width As Long, ByVal height As Long)
     scTopY = -1
     Dim t As Long
     For t = 0 To UBound(cnvPlayer)
-        cnvPlayer(t) = CreateCanvas(32, 32)
+        cnvPlayer(t) = createCanvas(32, 32)
     Next t
-    cnvBackground = CreateCanvas(width, height)
-    cnvRPGCodeScreen = CreateCanvas(width, height)
-    cnvAllPurpose = CreateCanvas(width, height)
+    cnvBackground = createCanvas(width, height)
+    cnvRPGCodeScreen = createCanvas(width, height)
+    cnvAllPurpose = createCanvas(width, height)
     allPurposeCanvas = cnvAllPurpose
-    cnvMsgBox = CreateCanvas(600, 100)
+    cnvMsgBox = createCanvas(600, 100)
     For t = 0 To UBound(cnvRPGCodeBuffers)
-        cnvRPGCodeBuffers(t) = CreateCanvas(32, 32)
+        cnvRPGCodeBuffers(t) = createCanvas(32, 32)
     Next t
-    cnvRPGCodeAccess = CreateCanvas(width, height)
-    cnvRenderNow = CreateCanvas(width, height)
-    Call CanvasFill(cnvRPGCodeScreen, 0)
-    Call CanvasFill(cnvRenderNow, TRANSP_COLOR)
-    cnvMousePointer = CreateCanvas(32, 32)
-    Call CanvasFill(cnvMousePointer, TRANSP_COLOR)
+    cnvRPGCodeAccess = createCanvas(width, height)
+    cnvRenderNow = createCanvas(width, height)
+    Call canvasFill(cnvRPGCodeScreen, 0)
+    Call canvasFill(cnvRenderNow, TRANSP_COLOR)
+    cnvMousePointer = createCanvas(32, 32)
+    Call canvasFill(cnvMousePointer, TRANSP_COLOR)
     globalCanvasHeight = height
     globalCanvasWidth = width
 End Sub
@@ -1295,30 +1303,30 @@ End Sub
 '=========================================================================
 Private Sub destroyCanvases()
     On Error Resume Next
-    Call DestroyCanvas(cnvScrollCache)
+    Call destroyCanvas(cnvScrollCache)
     'If Not usingDX() Then
     '    Call DestroyCanvas(cnvScrollCacheMask)
     'End If
-    Call DestroyCanvas(cnvBackground)
+    Call destroyCanvas(cnvBackground)
     Dim t As Long
     For t = 0 To UBound(cnvPlayer)
-        Call DestroyCanvas(cnvPlayer(t))
+        Call destroyCanvas(cnvPlayer(t))
     Next t
-    Call DestroyCanvas(cnvRPGCodeScreen)
-    Call DestroyCanvas(cnvMsgBox)
+    Call destroyCanvas(cnvRPGCodeScreen)
+    Call destroyCanvas(cnvMsgBox)
     For t = 0 To UBound(cnvSprites)
-        Call DestroyCanvas(cnvSprites(t))
+        Call destroyCanvas(cnvSprites(t))
     Next t
-    Call DestroyCanvas(cnvAllPurpose)
+    Call destroyCanvas(cnvAllPurpose)
     For t = 0 To UBound(cnvRPGCodeBuffers)
-        Call DestroyCanvas(cnvRPGCodeBuffers(t))
+        Call destroyCanvas(cnvRPGCodeBuffers(t))
     Next t
-    Call DestroyCanvas(cnvRPGCodeAccess)
+    Call destroyCanvas(cnvRPGCodeAccess)
     For t = 0 To UBound(cnvRPGCode)
-        Call DestroyCanvas(cnvRPGCode(t))
+        Call destroyCanvas(cnvRPGCode(t))
     Next t
-    Call DestroyCanvas(cnvRenderNow)
-    Call DestroyCanvas(cnvMousePointer)
+    Call destroyCanvas(cnvRenderNow)
+    Call destroyCanvas(cnvMousePointer)
 End Sub
 
 '========================================================================='
@@ -1330,7 +1338,7 @@ Public Sub destroyGraphics()
     Call destroyCanvases
 
     ' Shut down the canvas engine
-    Call CloseCanvasEngine
+    Call closeCanvasEngine
 
     ' Kill the gfx system
     Call GFXKill
@@ -1446,7 +1454,7 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
             Call DXClearScreen(boardList(activeBoardIndex).theData.brdColor)
         Else
             ' To a canvas
-            Call CanvasFill(cnvTarget, boardList(activeBoardIndex).theData.brdColor)
+            Call canvasFill(cnvTarget, boardList(activeBoardIndex).theData.brdColor)
         End If
 
         ' Render background
@@ -1473,9 +1481,9 @@ Public Function renderNow(Optional ByVal cnvTarget As Long = -1, _
             Else
                 ' To a canvas
                 If Not (renderRenderNowCanvasTranslucent) Then
-                    Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, TRANSP_COLOR_ALT)
+                    Call canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, TRANSP_COLOR_ALT)
                 Else
-                    Call Canvas2CanvasBltTranslucent(cnvRenderNow, cnvTarget, 0, 0)
+                    Call canvas2CanvasBltTranslucent(cnvRenderNow, cnvTarget, 0, 0)
                 End If
             End If
         End If

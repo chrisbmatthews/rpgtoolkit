@@ -777,9 +777,9 @@ Public Sub runProgram( _
     Dim retval As RPGCODE_RETURN
 
     If (startupProgram) Then
-        Call CanvasFill(cnvRPGCodeScreen, 0)
+        Call canvasFill(cnvRPGCodeScreen, 0)
     Else
-        Call CanvasGetScreen(cnvRPGCodeScreen)
+        Call canvasGetScreen(cnvRPGCodeScreen)
     End If
 
     Call renderRPGCodeScreen

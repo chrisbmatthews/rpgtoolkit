@@ -746,6 +746,7 @@ Private Function TestLink(ByVal playerNum As Long, ByVal theLink As Long) As Boo
     End With
 
     Call ClearNonPersistentThreads
+    Call destroyItemSprites
     Call openBoard(projectPath & brdPath & targetBoard, boardList(activeBoardIndex).theData)
     Call clearAnmCache  'Delano. 3.0.4.
 

@@ -195,18 +195,18 @@ End Function
 ' Delays for x numbers of seconds
 '========================================================================
 Public Sub animDelay(ByVal seconds As Double): On Error Resume Next
-    
-    Dim StartTime As Double
-    StartTime = Timer
-    
-    Do While Timer - StartTime < seconds
-    
-        'This loop is the "delay", during this loop nothing happens.
-        'Process user input for trans3.
+
+    Dim startTime As Double
+    startTime = Timer()
+
+    Do While Timer() - startTime < seconds
+
+        ' This loop is the "delay", during this loop nothing happens.
+        ' Process user input for trans3.
 #If isToolkit = 0 Then
         Call processEvent
 #End If
-        
+
     Loop
 
 End Sub
@@ -219,8 +219,8 @@ Public Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As
     
     'Initialize
     Dim allPurposeC2 As Long, apHDC As Long
-    allPurposeC2 = CreateCanvas(pixelsMaxX, pixelsMaxY)
-    apHDC = CanvasOpenHDC(allPurposeC2)
+    allPurposeC2 = createCanvas(pixelsMaxX, pixelsMaxY)
+    apHDC = canvasOpenHDC(allPurposeC2)
     Call BitBlt(apHDC, _
                0, _
                0, _
@@ -230,7 +230,7 @@ Public Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As
                xx, _
                yy, _
                &HCC0020)
-    Call CanvasCloseHDC(allPurposeC2, apHDC)
+    Call canvasCloseHDC(allPurposeC2, apHDC)
     
     Dim frames As Long
     Dim aXX As Long, aYY As Long, t As Long
@@ -240,7 +240,7 @@ Public Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As
     
     'Go through the frames
     For t = 0 To frames '+ 1
-        apHDC = CanvasOpenHDC(allPurposeC2)
+        apHDC = canvasOpenHDC(allPurposeC2)
         Call BitBlt(apHDC, _
                0, _
                0, _
@@ -250,11 +250,11 @@ Public Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As
                xx, _
                yy, _
                &HCC0020)
-        Call CanvasCloseHDC(allPurposeC2, apHDC)
+        Call canvasCloseHDC(allPurposeC2, apHDC)
         Call AnimDrawFrame(theAnim, t, aXX, aYY, vbPicHDC(pic))
         Call vbPicRefresh(pic)
         Call animDelay(theAnim.animPause)
-        apHDC = CanvasOpenHDC(allPurposeC2)
+        apHDC = canvasOpenHDC(allPurposeC2)
         Call BitBlt(vbPicHDC(pic), _
                xx, _
                yy, _
@@ -264,9 +264,9 @@ Public Sub AnimateAt(ByRef theAnim As TKAnimation, ByVal xx As Long, ByVal yy As
                0, _
                0, _
                &HCC0020)
-        Call CanvasCloseHDC(allPurposeC2, apHDC)
+        Call canvasCloseHDC(allPurposeC2, apHDC)
     Next t
-    Call DestroyCanvas(allPurposeC2)
+    Call destroyCanvas(allPurposeC2)
 
 End Sub
 
@@ -301,20 +301,20 @@ Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, B
             Call DrawSizedTileBitmap(tbm, 0, 0, theAnim.animSizeX, theAnim.animSizeY, hdc)
         Else
             Dim backBuffer As Long, cnv As Long, transp As Long, bufHDC As Long
-            backBuffer = CreateCanvas(theAnim.animSizeX, theAnim.animSizeY)
+            backBuffer = createCanvas(theAnim.animSizeX, theAnim.animSizeY)
             #If isToolkit = 0 Then
                 If pakFileRunning Then
                     f$ = PakLocate(bmpPath & theAnim.animFrame(framenum))
-                    Call CanvasLoadSizedPicture(allPurposeCanvas, f$)
+                    Call canvasLoadSizedPicture(allPurposeCanvas, f$)
             #Else
                 If 1 = 0 Then
             #End If
             Else
-                Call CanvasLoadSizedPicture(backBuffer, projectPath$ & bmpPath$ & theAnim.animFrame(framenum))
+                Call canvasLoadSizedPicture(backBuffer, projectPath$ & bmpPath$ & theAnim.animFrame(framenum))
             End If
 
             'Blt it on
-            bufHDC = CanvasOpenHDC(backBuffer)
+            bufHDC = canvasOpenHDC(backBuffer)
             Call TransparentBlt(hdc, _
                                 x, _
                                 y, _
@@ -326,8 +326,8 @@ Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, B
                                 theAnim.animSizeX - 1, _
                                 theAnim.animSizeY - 1, _
                                 theAnim.animTransp(framenum))
-            Call CanvasCloseHDC(backBuffer, bufHDC)
-            Call DestroyCanvas(backBuffer)
+            Call canvasCloseHDC(backBuffer, bufHDC)
+            Call destroyCanvas(backBuffer)
            
         End If
             
@@ -378,7 +378,7 @@ Public Sub clearAnmCache(): On Error Resume Next
     ' Kill all cache entires
     Dim i As Long
     For i = 0 To UBound(anmCache)
-        Call DestroyCanvas(anmCache(i).cnv)
+        Call destroyCanvas(anmCache(i).cnv)
         anmCache(i).cnv = 0
         anmCache(i).file = vbNullString
         anmCache(i).frame = 0
@@ -397,7 +397,7 @@ Public Sub AnimationShutdown()
     On Error Resume Next
     Dim t As Long
     For t = 0 To UBound(anmCache)
-        Call DestroyCanvas(anmCache(t).cnv)
+        Call destroyCanvas(anmCache(t).cnv)
     Next t
 End Sub
 
@@ -430,8 +430,8 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
 
     ' Get canvas width and height
     Dim w As Long, h As Long
-    w = GetCanvasWidth(cnv)
-    h = GetCanvasHeight(cnv)
+    w = getCanvasWidth(cnv)
+    h = getCanvasHeight(cnv)
 
     ' Capitalize the file
     file = UCase$(file)     ' Safe because this is never passed important things
@@ -448,12 +448,12 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
             If (anmCache(t).frame = frame) Then
 
                 ' Resize target canvas, if required
-                If (w <> GetCanvasWidth(anmCache(t).cnv) Or h <> GetCanvasHeight(anmCache(t).cnv)) Then
-                    Call SetCanvasSize(cnv, w, h)
+                If (w <> getCanvasWidth(anmCache(t).cnv) Or h <> getCanvasHeight(anmCache(t).cnv)) Then
+                    Call setCanvasSize(cnv, w, h)
                 End If
 
                 ' Blt contents over
-                Call Canvas2CanvasBlt(anmCache(t).cnv, cnv, x, y, SRCCOPY)
+                Call canvas2CanvasBlt(anmCache(t).cnv, cnv, x, y, SRCCOPY)
 
                 ' All done!
                 Exit Sub
@@ -488,10 +488,10 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
 
         ' Resize the canvas if needed.
         If (w <> anm.animSizeX Or h <> anm.animSizeY) Then
-            Call SetCanvasSize(cnv, anm.animSizeX, anm.animSizeY)
+            Call setCanvasSize(cnv, anm.animSizeX, anm.animSizeY)
         End If
 
-        Call CanvasFill(cnv, TRANSP_COLOR)
+        Call canvasFill(cnv, TRANSP_COLOR)
 
         If ext = "TBM" Then
 
@@ -503,16 +503,16 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
             ' DrawSizedTileBitmap moved to here. The following lines must be
             ' done in this order! Don't do *anything* whilst the DC is open!
 
-            cnvTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
-            cnvMaskTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
+            cnvTbm = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
+            cnvMaskTbm = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
             Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
 
-            hdc = CanvasOpenHDC(cnv)
-            Call CanvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
-            Call CanvasCloseHDC(cnv, hdc)
+            hdc = canvasOpenHDC(cnv)
+            Call canvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
+            Call canvasCloseHDC(cnv, hdc)
 
-            Call DestroyCanvas(cnvTbm)
-            Call DestroyCanvas(cnvMaskTbm)
+            Call destroyCanvas(cnvTbm)
+            Call destroyCanvas(cnvMaskTbm)
 
             ' Done
 
@@ -526,16 +526,16 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
             ' DrawSizedTileBitmap code moved to here. The following lines must be
             ' done in this order! Don't do *anything* whilst the DC is open!
 
-            cnvTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
-            cnvMaskTbm = CreateCanvas(tbm.sizex * 32, tbm.sizey * 32)
+            cnvTbm = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
+            cnvMaskTbm = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
             Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
 
-            hdc = CanvasOpenHDC(cnv)
-            Call CanvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
-            Call CanvasCloseHDC(cnv, hdc)
+            hdc = canvasOpenHDC(cnv)
+            Call canvasMaskBltStretch(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc)
+            Call canvasCloseHDC(cnv, hdc)
 
-            Call DestroyCanvas(cnvTbm)
-            Call DestroyCanvas(cnvMaskTbm)
+            Call destroyCanvas(cnvTbm)
+            Call destroyCanvas(cnvMaskTbm)
 
             ' Done
 
@@ -543,27 +543,27 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
 
             ' Have to blt it across from an image
             Dim c2 As Long
-            c2 = CreateCanvas(anm.animSizeX, anm.animSizeY)
-            Call CanvasLoadSizedPicture(c2, projectPath & bmpPath & frameFile)
-            Call Canvas2CanvasBltTransparent(c2, cnv, x, y, anm.animTransp(frame))
-            Call DestroyCanvas(c2)
+            c2 = createCanvas(anm.animSizeX, anm.animSizeY)
+            Call canvasLoadSizedPicture(c2, projectPath & bmpPath & frameFile)
+            Call canvas2CanvasBltTransparent(c2, cnv, x, y, anm.animTransp(frame))
+            Call destroyCanvas(c2)
 
         End If
 
         ' Now place this frame in the sprite cache
         t = nextAnmCacheIdx
-        If (anm.animSizeX <> GetCanvasWidth(anmCache(t).cnv) Or anm.animSizeY <> GetCanvasHeight(anmCache(t).cnv)) Then
+        If (anm.animSizeX <> getCanvasWidth(anmCache(t).cnv) Or anm.animSizeY <> getCanvasHeight(anmCache(t).cnv)) Then
 
             If (anmCache(t).cnv) Then
-                Call SetCanvasSize(anmCache(t).cnv, anm.animSizeX, anm.animSizeY)
+                Call setCanvasSize(anmCache(t).cnv, anm.animSizeX, anm.animSizeY)
             Else
                 ' Create the canvas
-                anmCache(t).cnv = CreateCanvas(anm.animSizeX, anm.animSizeY)
+                anmCache(t).cnv = createCanvas(anm.animSizeX, anm.animSizeY)
             End If
 
         End If
 
-        Call Canvas2CanvasBlt(cnv, anmCache(nextAnmCacheIdx).cnv, 0, 0, SRCCOPY)
+        Call canvas2CanvasBlt(cnv, anmCache(nextAnmCacheIdx).cnv, 0, 0, SRCCOPY)
         anmCache(nextAnmCacheIdx).file = file
         anmCache(nextAnmCacheIdx).frame = frame
         anmCache(nextAnmCacheIdx).maxFrames = maxF
@@ -635,11 +635,11 @@ Public Sub AnimDrawFrameCanvas(ByRef theAnim As TKAnimation, ByVal framenum As L
     On Error Resume Next
     
     Dim cnvTemp As Long
-    cnvTemp = CreateCanvas(32, 32)
+    cnvTemp = createCanvas(32, 32)
     
     Call renderAnimationFrame(cnvTemp, theAnim.animFile, framenum, 0, 0)
-    Call Canvas2CanvasBltTransparent(cnvTemp, cnv, x, y, TRANSP_COLOR)
-    Call DestroyCanvas(cnvTemp)
+    Call canvas2CanvasBltTransparent(cnvTemp, cnv, x, y, TRANSP_COLOR)
+    Call destroyCanvas(cnvTemp)
     
     If playSound And ((LenB(theAnim.animSound(framenum)))) Then
         Const wFlags As Integer = SND_ASYNC Or SND_NODEFAULT
@@ -672,7 +672,7 @@ Public Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y 
             End If
             playSound = True
             If forceTranspFill Then
-                Call CanvasFill(cnv, TRANSP_COLOR)
+                Call canvasFill(cnv, TRANSP_COLOR)
             End If
             Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, x, y, cnv, playSound)
         Else
@@ -680,7 +680,7 @@ Public Sub DrawAnimationIndexCanvas(ByVal idx As Long, ByVal x As Long, ByVal y 
             playSound = False
             If forceDraw Then
                 If forceTranspFill Then
-                    Call CanvasFill(cnv, TRANSP_COLOR)
+                    Call canvasFill(cnv, TRANSP_COLOR)
                 End If
                 Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, x, y, cnv, playSound)
             End If
@@ -702,7 +702,7 @@ Public Sub DrawAnimationIndexCanvasFrame(ByVal idx As Long, ByVal frame As Long,
             anmList(idx).theData.currentAnmFrame = 0
         End If
         If forceTranspFill Then
-            Call CanvasFill(cnv, TRANSP_COLOR)
+            Call canvasFill(cnv, TRANSP_COLOR)
         End If
         Call AnimDrawFrameCanvas(anmList(idx).theData, anmList(idx).theData.currentAnmFrame, x, y, cnv, False)
         

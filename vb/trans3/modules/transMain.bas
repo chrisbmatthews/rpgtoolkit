@@ -585,7 +585,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
 
     If (LenB(mainMem.initChar)) Then
         ' If a main character has been specified, load it
-        Call CreateCharacter(projectPath & temPath & mainMem.initChar, 0)
+        Call createCharacter(projectPath & temPath & mainMem.initChar, 0)
     End If
 
     ' Set up these before the start program runs, in case movement occurs before the
@@ -617,6 +617,7 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
         ' Open up the starting board
         Call ClearNonPersistentThreads
         If (LenB(mainMem.initBoard)) Then
+            Call destroyItemSprites
             Call openBoard(projectPath & brdPath & mainMem.initBoard, boardList(activeBoardIndex).theData)
         End If
         Call alignBoard(boardList(activeBoardIndex).theData.playerX, boardList(activeBoardIndex).theData.playerY)

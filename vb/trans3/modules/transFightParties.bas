@@ -94,9 +94,9 @@ Private Function AttackFighter(ByRef theFighter As Fighter, ByVal amount As Long
         
         'adjust the hp or smp accordingly...
         If toSMP Then
-            Call addEnemySMP(-1 * amount, theFighter.enemy)
+            Call addEnemySMP(-amount, theFighter.enemy)
         Else
-            Call addEnemyHP(-1 * amount, theFighter.enemy)
+            Call addEnemyHP(-amount, theFighter.enemy)
         End If
     End If
     

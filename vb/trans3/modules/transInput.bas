@@ -172,10 +172,10 @@ End Sub
 '=========================================================================
 Public Sub DoEventsFor(ByVal milliSeconds As Long)
 
-    Dim StartTime As Double
+    Dim startTime As Double
 
-    StartTime = Timer()
-    Do Until (Timer() - StartTime >= milliSeconds / 1000)
+    startTime = Timer()
+    Do Until (Timer() - startTime >= milliSeconds / 1000)
         ' Don't lock up
         Call processEvent
     Loop
@@ -716,8 +716,8 @@ Public Sub scanKeys()
     On Error Resume Next
 
     Dim queue As String
-    useArrowKeys = True
-    useNumberPad = True
+    Const useArrowKeys = True
+    Const useNumberPad = True
 
     If (isPressed("RIGHT") And isPressed("UP") And useArrowKeys) Or (isPressed("NUMPAD9") And useNumberPad) Then
         'Move NorthEast
