@@ -222,32 +222,44 @@ Public Function playerGetStanceAnm(ByVal stance As String, ByRef thePlayer As TK
     
         Case "STAND_S":
             toRet = thePlayer.standingGfx(PLYR_WALK_S)
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_S)
         Case "STAND_N":
             toRet = thePlayer.standingGfx(PLYR_WALK_N)
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_N)
         Case "STAND_E":
             toRet = thePlayer.standingGfx(PLYR_WALK_E)
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_E)
         Case "STAND_W":
             toRet = thePlayer.standingGfx(PLYR_WALK_W)
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_W)
         Case "STAND_NW":
             toRet = thePlayer.standingGfx(PLYR_WALK_NW)
             If toRet = "" Then
                 toRet = thePlayer.standingGfx(PLYR_WALK_W)
             End If
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_NW)
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_W)
         Case "STAND_NE":
             toRet = thePlayer.standingGfx(PLYR_WALK_NE)
             If toRet = "" Then
                 toRet = thePlayer.standingGfx(PLYR_WALK_E)
             End If
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_NE)
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_E)
         Case "STAND_SW":
             toRet = thePlayer.standingGfx(PLYR_WALK_SW)
             If toRet = "" Then
                 toRet = thePlayer.standingGfx(PLYR_WALK_W)
             End If
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_SW)
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_W)
         Case "STAND_SE":
             toRet = thePlayer.standingGfx(PLYR_WALK_SE)
             If toRet = "" Then
                 toRet = thePlayer.standingGfx(PLYR_WALK_E)
             End If
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_SE)
+            If toRet = "" Then toRet = thePlayer.gfx(PLYR_WALK_E)
 
         Case "WALK_S":
             toRet = thePlayer.gfx(PLYR_WALK_S)
