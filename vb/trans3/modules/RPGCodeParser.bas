@@ -321,36 +321,9 @@ Public Function GetElement(ByVal Text As String, ByVal eleeNum As Long) As Strin
 End Function
 
 '=========================================================================
-' Count the number of bracket elements in text
-'=========================================================================
-Public Function CountData(ByVal Text As String) As Long
-
-    On Error Resume Next
-
-    'If there is no text, there are no elements
-    Dim gB As String
-    gB = GetBrackets(Text, True)
-    If gB = "" Then Exit Function
-
-    'Setup delimiter array
-    Dim c(1) As String
-    c(0) = ","
-    c(1) = ";"
-
-    'Split at the delimiters
-    Dim S() As String
-    Dim uD() As String
-    S() = multiSplit(Text, c, uD, True)
-
-    'Number of data elements will be one higher than the upper bound
-    CountData = UBound(S) + 1
-
-End Function
-
-'=========================================================================
 ' Return the first space after the command / the opening bracket
 '=========================================================================
-Public Function LocateBrackets(ByVal Text As String) As Long
+Private Function LocateBrackets(ByVal Text As String) As Long
 
     On Error Resume Next
     
