@@ -316,9 +316,9 @@ Begin VB.Form frmMain
             Width           =   6735
             _ExtentX        =   11880
             _ExtentY        =   661
-            Picture         =   "frmMain.frx":13DA
+            Picture         =   "frmMain.frx":13D4
             ForeColor       =   0
-            BarPicture      =   "frmMain.frx":13F6
+            BarPicture      =   "frmMain.frx":13F0
             ShowText        =   -1  'True
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "MS Sans Serif"
@@ -603,7 +603,7 @@ Begin VB.Form frmMain
          ForeColor       =   &H80000008&
          Height          =   4065
          Left            =   120
-         Picture         =   "frmMain.frx":1412
+         Picture         =   "frmMain.frx":140C
          ScaleHeight     =   4035
          ScaleWidth      =   1875
          TabIndex        =   1
