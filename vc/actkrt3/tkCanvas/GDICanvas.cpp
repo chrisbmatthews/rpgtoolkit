@@ -144,6 +144,9 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 		)
 {
 
+	// Destroy existing canvas
+	if (m_hdcMem) Destroy();
+
 	// If a DirectDraw object exists
 	if (g_pDirectDraw)
 	{
@@ -154,16 +157,7 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 
 			// Create a DirectDraw surface
 			m_lpddsSurface = g_pDirectDraw->createSurface(width, height);
-
-		}
-		else
-		{
-
-			// Destroy existing canvas
-			if (m_hdcMem) Destroy();
-
-			// Create a new canvas using GDI
-			m_hdcMem = CreateCompatibleDC(hdcCompatible);
+			return;
 
 		}
 
@@ -171,19 +165,19 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 	else
 	{
 
-		// Destroy existing canvas
-		if (m_hdcMem) Destroy();
-
-		// Create a new device context
-		m_hdcMem = CreateCompatibleDC(hdcCompatible);
-
-		// Create a new bitmap
-		m_hBitmap = CreateCompatibleBitmap(hdcCompatible, width, height);
-
-		// Select the bitmap into the device context
-		m_hOldBitmap = HBITMAP(SelectObject(m_hdcMem, m_hBitmap));
+		// Not using DX
+		m_bUseDX = FALSE;
 
 	}
+
+	// Create a new device context
+	m_hdcMem = CreateCompatibleDC(hdcCompatible);
+
+	// Create a new bitmap
+	m_hBitmap = CreateCompatibleBitmap(hdcCompatible, width, height);
+
+	// Select the bitmap into the device context
+	m_hOldBitmap = HBITMAP(SelectObject(m_hdcMem, m_hBitmap));
 
 	// Record width and height
 	m_nWidth = width;
