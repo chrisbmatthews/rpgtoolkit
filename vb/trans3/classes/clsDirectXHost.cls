@@ -150,31 +150,14 @@ Public Property Let mousePointer(ByRef newValue As String)
 
     Else
 
-        ' Create a canvas
-        Dim cnv As Long
-        cnv = createCanvas(32, 32)
-
-        ' Draw to a canvas
-        Call drawSizedImageCNV(projectPath & bmpPath & newValue, 0, 0, 32, 32, cnv)
-
         ' Create a DC and bitmap for the color cursor
         hColorBmp = CreateCompatibleBitmap(hCompatibleDc, 32, 32)
 
         ' Select the bitmap into the DC
         Call SelectObject(hColorDc, hColorBmp)
 
-        ' Obtain the canvas' DC
-        Dim hCanvasDc As Long
-        hCanvasDc = canvasOpenHDC(cnv)
-
-        ' Blt to the bitmap's DC (and ultimately the bitmap)
-        Call BitBlt(hColorDc, 0, 0, 32, 32, hCanvasDc, 0, 0, vbSrcCopy)
-
-        ' Release the canvas' DC
-        Call canvasCloseHDC(cnv, hCanvasDc)
-
-        ' Destroy the canvas
-        Call destroyCanvas(cnv)
+        ' Draw the image to the DC (and ultimately, the bitmap)
+        Call DrawSizedImage(projectPath & bmpPath & newValue, 0, 0, 32, 32, hColorDc)
 
     End If
 
