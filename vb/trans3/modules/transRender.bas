@@ -190,7 +190,7 @@ Public cnvRenderNow As Long
 ' Should we render cnvRenderNow?
 Public renderRenderNowCanvas As Boolean
 
-' Should it be rendered translucently>
+' Should it be rendered translucently?
 Public renderRenderNowCanvasTranslucent As Boolean
 
 ' Canvas used for the mouse pointer
@@ -236,7 +236,7 @@ Public Sub DXRefresh()
     ' Copy the screen to that canvas
     Call CanvasGetScreen(cnv)
     ' Draw the mouse cursor
-    Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpColor)
+    Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpcolor)
     ' Actually make the flip
     Call DXFlip
     ' Render the screen sans mouse cursor to the back buffer
@@ -1477,7 +1477,7 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
             ' Copy the screen to that canvas
             Call CanvasGetScreen(cnv)
             ' Draw the mouse cursor
-            Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpColor)
+            Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpcolor)
             ' Actually make the flip
             Call DXFlip
             ' Render the screen sans mouse cursor to the back buffer
@@ -1510,7 +1510,7 @@ Public Sub renderRPGCodeScreen()
     Call CanvasGetScreen(cnv)
 
     ' Draw the mouse cursor
-    Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpColor)
+    Call DXDrawCanvasTransparent(cnvMousePointer, getMouseX() - host.cursorHotSpotX, getMouseY() - host.cursorHotSpotY, mainMem.transpcolor)
 
     ' Draw the message box if it's being shown
     If (bShowMsgBox) Then
