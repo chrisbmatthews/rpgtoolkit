@@ -285,6 +285,9 @@ Public Function comPlugin(ByVal plugName As String) As CComPlugin
     ' Default to returning nothing
     Set comPlugin = Nothing
 
+    ' Remove the path
+    plugName = Mid$(plugName, InStrRev(plugName, "\") + 1)
+
     ' Iterate over each loaded COM plugin
     Dim idx As Long
     For idx = 0 To UBound(m_comPlugins)

@@ -28,7 +28,7 @@ Option Explicit
 '============================================================
 
 ' The filename of the plugin
-Public filename As String
+Private m_filename As String
 
 ' The object
 Public obj As Object
@@ -36,6 +36,15 @@ Public obj As Object
 '============================================================
 ' Properties
 '============================================================
+
+Public Property Let filename(ByRef strFileName As String)
+    ' Remove the path
+    m_filename = Mid$(strFileName, InStrRev(strFileName, "\") + 1)
+End Property
+
+Public Property Get filename() As String
+    filename = m_filename
+End Property
 
 Public Property Get version() As String: On Error Resume Next
     ' The plugin's version
