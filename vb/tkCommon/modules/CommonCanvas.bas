@@ -191,7 +191,7 @@ Public Function canvas2CanvasBltTransparentPartial(ByVal canvasSource As Long, B
 End Function
 
 '=========================================================================
-' Transparenly copy a canvas to another one
+' Transparently copy a canvas to another one
 '=========================================================================
 Public Function canvas2CanvasBltTransparent(ByVal canvasSource As Long, ByVal canvasDest As Long, ByVal destX As Long, ByVal destY As Long, Optional ByVal crColor As Long) As Long
     On Error Resume Next
@@ -269,6 +269,8 @@ End Sub
 
 '=========================================================================
 ' Stretch a mask over a canvas
+' Called by drawSizedImage [tbm only], drawSizedImageCNV [tbm only]
+'           drawSizedTileBitmap
 '=========================================================================
 Public Function canvasMaskBltStretch(ByVal canvasIDSource As Long, ByVal canvasIDMask As Long, ByVal destX As Long, ByVal destY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
@@ -307,48 +309,69 @@ End Function
 
 '=========================================================================
 ' Transparently stretch a mask over a canvas
+' Called by RenderAnimationFrame only.
 '=========================================================================
-Public Function canvasMaskBltStretchTransparent(ByVal canvasIDSource As Long, ByVal canvasIDMask As Long, ByVal destX As Long, ByVal destY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal hdc As Long, ByVal crTranspColor As Long) As Long
+Public Function canvasMaskBltStretchTransparent(ByVal cnvSource As Long, _
+                                                ByVal cnvMask As Long, _
+                                                ByVal destX As Long, _
+                                                ByVal destY As Long, _
+                                                ByVal newWidth As Long, _
+                                                ByVal newHeight As Long, _
+                                                ByVal cnvTarget As Long, _
+                                                ByVal crTranspColor As Long) As Long
+    
     On Error Resume Next
-    If canvasOccupied(canvasIDSource) Then
+    
+    If canvasOccupied(cnvSource) Then
+    
         Dim w As Long, h As Long, hdcMask As Long, hdcSource As Long
-        Dim destPicHdc As Long, cnv As Long
-        w = getCanvasWidth(canvasIDSource)
-        h = getCanvasHeight(canvasIDSource)
-        cnv = createCanvas(newWidth, newHeight)
-        Call canvasFill(cnv, crTranspColor)
-        destPicHdc = canvasOpenHDC(cnv)
-        hdcMask = canvasOpenHDC(canvasIDMask)
-        hdcSource = canvasOpenHDC(canvasIDSource)
-        canvasMaskBltStretchTransparent = StretchBlt(destPicHdc, _
-                           0, _
-                           0, _
+        Dim hdcInt As Long, cnvInt As Long
+        
+        w = getCanvasWidth(cnvSource)
+        h = getCanvasHeight(cnvSource)
+        
+        'Create an intermediate canvas.
+        cnvInt = createCanvas(newWidth, newHeight)
+        Call canvasFill(cnvInt, crTranspColor)
+        
+        hdcInt = canvasOpenHDC(cnvInt)
+        
+        'Stretch the mask onto the intermediate canvas.
+        hdcMask = canvasOpenHDC(cnvMask)
+        canvasMaskBltStretchTransparent = StretchBlt(hdcInt, _
+                           0, 0, _
                            newWidth, _
                            newHeight, _
                            hdcMask, _
                            0, 0, _
-                           w, _
-                           h, _
+                           w, h, _
                            SRCAND)
-        canvasMaskBltStretchTransparent = StretchBlt(destPicHdc, _
-                           0, _
-                           0, _
+        Call canvasCloseHDC(cnvMask, hdcMask)
+                           
+        'Stretch the image onto the intermediate canvas.
+        hdcSource = canvasOpenHDC(cnvSource)
+        canvasMaskBltStretchTransparent = StretchBlt(hdcInt, _
+                           0, 0, _
                            newWidth, _
                            newHeight, _
                            hdcSource, _
                            0, 0, _
-                           w, _
-                           h, _
+                           w, h, _
                            SRCPAINT)
-        Call canvasCloseHDC(canvasIDSource, hdcSource)
-        Call canvasCloseHDC(canvasIDMask, hdcMask)
-        Call canvasCloseHDC(cnv, destPicHdc)
-        ' Now blt to dest hdc
-        Call canvasTransBlt2(cnv, newWidth, newHeight, destX, destY, 0, 0, newWidth, newHeight, hdc, crTranspColor)
-        Call destroyCanvas(cnv)
+        Call canvasCloseHDC(cnvSource, hdcSource)
+        
+        Call canvasCloseHDC(cnvInt, hdcInt)
+        
+        'Blt the intermediate canvas to the target canvas.
+        Call canvas2CanvasBltTransparent(cnvInt, cnvTarget, destX, destY, crTranspColor)
+        
+        'Destroy the intermediate canvas.
+        Call destroyCanvas(cnvInt)
+        
     Else
         canvasMaskBltStretchTransparent = -1
     End If
+    
 End Function
 
 '=========================================================================
@@ -524,6 +547,7 @@ End Function
 
 '=========================================================================
 ' Transparently blt a picture box into a canvas
+' Not called in trans3 or toolkit3.
 '=========================================================================
 Public Function canvasTransBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal canvasDestY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal sourceHDC As Long, ByVal crTranscolor As Long) As Long
     On Error Resume Next
@@ -549,6 +573,7 @@ End Function
 
 '=========================================================================
 ' Blt a resized picture box into a canvas
+' Not called in trans3 or toolkit3.
 '=========================================================================
 Public Function canvasStretchBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal canvasDestY As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal sourceHDC As Long) As Long
     On Error Resume Next
@@ -570,6 +595,7 @@ End Function
 
 '=========================================================================
 ' Blt a picture box into a canvas
+' Not called in trans3 or toolkit3.
 '=========================================================================
 Public Function canvasBltInto(ByVal canvasID As Long, ByVal canvasDestX As Long, ByVal canvasDestY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal sourceHDC As Long) As Long
     On Error Resume Next
@@ -592,6 +618,7 @@ End Function
 
 '=========================================================================
 ' Blt a canvas onto a picture box transparently
+' Not called in trans3 or toolkit3.
 '=========================================================================
 Public Function canvasTransBlt2(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal destPicHdc As Long, ByVal crTranscolor As Long) As Long
     On Error Resume Next
@@ -607,6 +634,7 @@ End Function
 
 '=========================================================================
 ' Blt a canvas (resized) onto a picture box
+' Not called in trans3 or toolkit3.
 '=========================================================================
 Public Function canvasStretchBlt2(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal sourceWidth As Long, ByVal sourceHeight As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
@@ -628,6 +656,7 @@ End Function
 
 '=========================================================================
 ' Blt a canvas onto a picture box
+' Not called in trans3 or toolkit3.
 '=========================================================================
 Public Function canvasBlt2(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal sourceX As Long, ByVal sourceY As Long, ByVal width As Long, ByVal height As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next
@@ -650,6 +679,7 @@ End Function
 
 '=========================================================================
 ' Transparently render a canvas onto a picture box
+' Not called in trans3 or toolkit3.
 '=========================================================================
 Public Function canvasTransBlt(ByVal canvasID As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long, ByVal crTranscolor As Long) As Long
     On Error Resume Next
@@ -667,6 +697,7 @@ End Function
 
 '=========================================================================
 ' Reder a canvas (resized) onto a picture box
+' Called by DrawCanvasRPG, DrawCanvasTransparentRPG.
 '=========================================================================
 Public Function canvasStretchBlt(ByVal canvasID As Long, ByVal newWidth As Long, ByVal newHeight As Long, ByVal destX As Long, ByVal destY As Long, ByVal destPicHdc As Long) As Long
     On Error Resume Next

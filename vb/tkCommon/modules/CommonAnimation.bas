@@ -480,14 +480,10 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
     frameFile = anm.animFrame(frame)
 
     ' Now we have the filename of the frame
-    Dim ext As String
-    Dim hdc As Long
+    Dim ext As String, tbm As TKTileBitmap
     Dim cnvTbm As Long, cnvMaskTbm As Long
-    Dim tbm As TKTileBitmap
 
-    ext = UCase$(GetExt(frameFile))
-    If (LenB(frameFile) <> 0) Or Left$(ext, 3) = "TST" Then
-
+    If (LenB(frameFile) <> 0) Then
         ' We can draw the frame!
 
         ' Get the ambient level here. Must be done before opening the DC,
@@ -501,52 +497,42 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
 
         Call canvasFill(cnv, TRANSP_COLOR)
 
-        If ext = "TBM" Then
-
+        ext = UCase$(GetExt(frameFile))
+        If ext = "TBM" Or LeftB$(ext, 6) = "TST" Or ext = "GPH" Then
+        
             ' You *must* load a tile bitmap before opening an hdc
             ' because it'll lock up on windows 98 if you don't.
+            
+            If ext = "TBM" Then
+                Call OpenTileBitmap(projectPath & bmpPath & frameFile, tbm)
+            Else
+                'Set up a 1x1 tile bitmap.
+                Call TileBitmapClear(tbm)
+                Call TileBitmapSize(tbm, 1, 1)
+                tbm.tiles(0, 0) = frameFile
+            End If
 
-            Call OpenTileBitmap(projectPath & bmpPath & frameFile, tbm)
-
-            ' DrawSizedTileBitmap moved to here. The following lines must be
-            ' done in this order! Don't do *anything* whilst the DC is open!
-
+            'Draw the tilebitmap and mask to new canvases.
             cnvTbm = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
             cnvMaskTbm = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
             Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
 
-            hdc = canvasOpenHDC(cnv)
-            Call canvasMaskBltStretchTransparent(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc, anm.animTransp(frame))
-            Call canvasCloseHDC(cnv, hdc)
+            'Stretch the tbm canvas to the required size and draw it to the canvas.
+            'hdc = canvasOpenHDC(cnv)
+            Call canvasMaskBltStretchTransparent(cnvTbm, _
+                                                 cnvMaskTbm, _
+                                                 0, 0, _
+                                                 anm.animSizeX, _
+                                                 anm.animSizeY, _
+                                                 cnv, _
+                                                 anm.animTransp(frame))
+            'Call canvasCloseHDC(cnv, hdc)
 
             Call destroyCanvas(cnvTbm)
             Call destroyCanvas(cnvMaskTbm)
 
-            ' Done
-
-        ElseIf Left$(ext, 3) = "TST" Or ext = "GPH" Then
-
-            ' Set the tbm to a single tile.
-            Call TileBitmapClear(tbm)
-            Call TileBitmapSize(tbm, 1, 1)
-            tbm.tiles(0, 0) = frameFile
-
-            ' DrawSizedTileBitmap code moved to here. The following lines must be
-            ' done in this order! Don't do *anything* whilst the DC is open!
-
-            cnvTbm = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
-            cnvMaskTbm = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
-            Call DrawTileBitmapCNV(cnvTbm, cnvMaskTbm, 0, 0, tbm)
-
-            hdc = canvasOpenHDC(cnv)
-            Call canvasMaskBltStretchTransparent(cnvTbm, cnvMaskTbm, 0, 0, anm.animSizeX, anm.animSizeY, hdc, anm.animTransp(frame))
-            Call canvasCloseHDC(cnv, hdc)
-
-            Call destroyCanvas(cnvTbm)
-            Call destroyCanvas(cnvMaskTbm)
-
-            ' Done
-
+            ' Done!
+        
         Else
 
             ' Have to blt it across from an image
@@ -556,7 +542,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
             Call canvas2CanvasBltTransparent(c2, cnv, x, y, anm.animTransp(frame))
             Call destroyCanvas(c2)
 
-        End If
+        End If 'ext = TBM
 
         ' Now place this frame in the sprite cache
         t = nextAnmCacheIdx
@@ -584,7 +570,7 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
             ReDim Preserve anmCache(ub + 250)
         End If
 
-    End If
+    End If ' LenB(imageFile)
 
 End Sub
 
