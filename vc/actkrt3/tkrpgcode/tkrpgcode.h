@@ -75,5 +75,3 @@ int APIENTRY RPGCGetRedirectName(int nItrOffset, char* pstrToVal);
 int APIENTRY RPGCClearRedirects();
 
 int APIENTRY RPGCCountRedirects();
-
-long double APIENTRY RPGCEvaluate(char* equation);

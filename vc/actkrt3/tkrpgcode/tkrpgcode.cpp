@@ -12,8 +12,6 @@
 #include <list>
 
 #include "tkrpgcode.h"
-#include "calculator.h"
-
 
 //////////////////////////
 // GLOBALS
@@ -396,13 +394,4 @@ int APIENTRY RPGCClearRedirects()
 int APIENTRY RPGCCountRedirects()
 {
 	return gRedirectMap.size();
-}
-
-///////////////////////////////////
-// Evaluate math
-///////////////////////////////////
-long double APIENTRY RPGCEvaluate(char* equation)
-{
-	calculator calc;
-	return calc.solve(equation);
 }
