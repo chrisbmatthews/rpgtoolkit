@@ -854,6 +854,7 @@ loadtileerr:
         Dim a As Long
         Dim b As Long
         Dim c As String
+        Dim depth As Long
  
         'Make one space in the arrays...
         ReDim ret(0)
@@ -865,13 +866,18 @@ loadtileerr:
             c = Mid$(txt, a, 1) 'Get the charater
             ret(UBound(ret)) = ret(UBound(ret)) & c
 
-            If (c = ("""")) Then
-                If ignoreQuotes Then
-                    ignore = (Not ignore)
-                End If
+            If (ignoreQuotes) Then
+                Select Case c
+                    Case """"
+                        ignore = (Not ignore)
+                    Case "["
+                        depth = depth + 1
+                    Case "]"
+                        depth = depth - 1
+                End Select
             End If
-  
-            If Not ignore Then
+ 
+            If ((Not ignore) And (depth = 0)) Then
                 'For each delimiter...
                 For b = 0 To UBound(chars)
                     'It's a delimiter...
