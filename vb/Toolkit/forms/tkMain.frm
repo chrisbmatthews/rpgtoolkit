@@ -1,12 +1,12 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.MDIForm tkMainForm 
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
    ClientHeight    =   8190
    ClientLeft      =   165
-   ClientTop       =   855
+   ClientTop       =   735
    ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
@@ -100,8 +100,8 @@ Begin VB.MDIForm tkMainForm
       Left            =   0
       TabIndex        =   7
       Top             =   0
-      Width           =   11880
-      _ExtentX        =   20955
+      Width           =   15240
+      _ExtentX        =   26882
       _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
@@ -291,11 +291,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1335
       Left            =   0
       ScaleHeight     =   1335
-      ScaleWidth      =   11880
+      ScaleWidth      =   15240
       TabIndex        =   123
-      Top             =   6225
+      Top             =   8865
       Visible         =   0   'False
-      Width           =   11880
+      Width           =   15240
       Begin VB.Frame tileBmpExtras 
          BorderStyle     =   0  'None
          BeginProperty Font 
@@ -859,9 +859,9 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   4200
-      Left            =   465
-      ScaleHeight     =   4200
+      Height          =   6840
+      Left            =   3825
+      ScaleHeight     =   6840
       ScaleWidth      =   3510
       TabIndex        =   99
       Top             =   360
@@ -1087,9 +1087,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
-      Left            =   -1350
-      ScaleHeight     =   4200
+      Height          =   6840
+      Left            =   2010
+      ScaleHeight     =   6840
       ScaleWidth      =   1815
       TabIndex        =   95
       Top             =   360
@@ -1132,9 +1132,9 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   4200
+      Height          =   6840
       Left            =   0
-      ScaleHeight     =   4200
+      ScaleHeight     =   6840
       ScaleWidth      =   975
       TabIndex        =   50
       Top             =   360
@@ -1745,11 +1745,11 @@ Begin VB.MDIForm tkMainForm
       Height          =   1665
       Left            =   0
       ScaleHeight     =   1665
-      ScaleWidth      =   11880
+      ScaleWidth      =   15240
       TabIndex        =   29
-      Top             =   4560
+      Top             =   7200
       Visible         =   0   'False
-      Width           =   11880
+      Width           =   15240
       Begin VB.CommandButton Command21 
          Appearance      =   0  'Flat
          Caption         =   "Draw All Layers"
@@ -2050,9 +2050,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
-      Left            =   11505
-      ScaleHeight     =   4200
+      Height          =   6840
+      Left            =   14865
+      ScaleHeight     =   6840
       ScaleWidth      =   375
       TabIndex        =   22
       Top             =   360
@@ -2111,10 +2111,10 @@ Begin VB.MDIForm tkMainForm
       Height          =   375
       Left            =   0
       ScaleHeight     =   375
-      ScaleWidth      =   11880
+      ScaleWidth      =   15240
       TabIndex        =   9
-      Top             =   7560
-      Width           =   11880
+      Top             =   10200
+      Width           =   15240
       Begin VB.CommandButton openWindowsScrollRight 
          Height          =   255
          Left            =   11760
@@ -2254,9 +2254,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
-      Left            =   3975
-      ScaleHeight     =   4200
+      Height          =   6840
+      Left            =   7335
+      ScaleHeight     =   6840
       ScaleWidth      =   4800
       TabIndex        =   8
       Top             =   360
@@ -2362,9 +2362,9 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   4200
-      Left            =   8775
-      ScaleHeight     =   4200
+      Height          =   6840
+      Left            =   12135
+      ScaleHeight     =   6840
       ScaleWidth      =   2730
       TabIndex        =   1
       Top             =   360
@@ -2460,22 +2460,22 @@ Begin VB.MDIForm tkMainForm
       Height          =   255
       Left            =   0
       TabIndex        =   0
-      Top             =   7935
-      Width           =   11880
-      _ExtentX        =   20955
+      Top             =   10575
+      Width           =   15240
+      _ExtentX        =   26882
       _ExtentY        =   450
       _Version        =   393216
       BeginProperty Panels {8E3867A5-8586-11D1-B16A-00C0F0283628} 
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "16/09/2004"
+            TextSave        =   "15/09/2003"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   5027
-            TextSave        =   "00:04"
+            Object.Width           =   10980
+            TextSave        =   "5:26 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2488,7 +2488,6 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
-            Enabled         =   0   'False
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -2497,6 +2496,25 @@ Begin VB.MDIForm tkMainForm
             TextSave        =   "CAPS"
          EndProperty
       EndProperty
+   End
+   Begin VB.Menu mnuRightClick 
+      Caption         =   "Right-click on open editor"
+      Visible         =   0   'False
+      Begin VB.Menu mnuRes 
+         Caption         =   "&Restore"
+      End
+      Begin VB.Menu mnuMin 
+         Caption         =   "M&inimize"
+      End
+      Begin VB.Menu mnuMax 
+         Caption         =   "M&aximize"
+      End
+      Begin VB.Menu mnuBlankxx 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuCloseWindow 
+         Caption         =   "Close"
+      End
    End
    Begin VB.Menu filemnu 
       Caption         =   "File"
@@ -2681,6 +2699,8 @@ Public boardCount As Integer
 '=========================================================================================
 
 Public toolTop As Integer   'top of tools
+
+Private frmIndex As Long
 
 Public lastIconForm As Form
 
@@ -3223,22 +3243,26 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X 
 'Added code for selection of isometric tiles.
 'Fixed problem where higher tile numbers could be selected.
 
-    Dim tileNumber As Integer
+    Dim iMetric As Integer, tileNumber As Integer
     Dim tilesWide As Integer, tilesHigh As Integer, tileX As Integer, tileY As Integer
     
-    If configfile.lastTileset = "" Then Exit Sub
+    If configfile.lastTileset$ = "" Then Exit Sub
+    
+    'Added:If the current tilset (configfile.lastTileset$) is isometric.
+    'Same return as for getTileInfo on a .iso.
+    If UCase$(GetExt(configfile.lastTileset$)) = "ISO" Then iMetric = 2
     
     'Determine the tile that has been clicked on by considering the
     'size of the form, the position of the scroller, and the type of
     'tileset.
     
-    If UCase$(GetExt(configfile.lastTileset)) = "ISO" Then
-        'Isometric.
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)   'width of window.
-        tileX = Int(X / 64)                                                        'x-tile clicked.
+    If iMetric = 0 Then
+        'Not isometric.
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)   'width of window.
+        tileX = Int(X / 32)                                                        'x-tile clicked.
     Else
-        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)
-        tileX = Int(X / 32)
+        tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
+        tileX = Int(X / 64)
     End If
     
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
@@ -3248,12 +3272,12 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X 
     tileNumber = (tileY * tilesWide) + tileX + 1                        'Tile clicked if scroller = 0.
     tileNumber = tileNumber + (tilesetScroller.value * tilesWide)       'Add the rows that have been scrolled.
     
-    'Check we've not selected a tile that isn't in the set.
+    'Fix:Check we've not selected a tile that isn't in the set.
     If tileNumber > tileset.tilesInSet Then Exit Sub
     
     setFilename = configfile.lastTileset & CStr(tileNumber)
     'inform the system that the set filename has changed. For loading into whichever editor is active.
-    Call activeForm.changeSelectedTile(setFilename)
+    Call activeForm.changeSelectedTile(setFilename$)
 
 End Sub
 
@@ -3408,6 +3432,22 @@ Public Sub MDIForm_Resize()
 
 End Sub
 
+Private Sub mnuCloseWindow_Click()
+    Call Unload(theForms(frmIndex))
+End Sub
+
+Private Sub mnuMax_Click()
+    theForms(frmIndex).WindowState = 2
+End Sub
+
+Private Sub mnuMin_Click()
+    theForms(frmIndex).WindowState = 1
+End Sub
+
+Private Sub mnuRes_Click()
+    theForms(frmIndex).WindowState = 0
+End Sub
+
 Private Sub mnuShowSplashScreen_Click()
     mnuShowSplashScreen.Checked = Not mnuShowSplashScreen.Checked
     If mnuShowSplashScreen.Checked Then
@@ -3428,6 +3468,13 @@ Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, X As Single
     Call unDock(newBar, "New", uD)
     newBarContainerContainer.Visible = False
     popButton(1).Enabled = False
+End Sub
+
+Private Sub openWindow_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If (Button = vbRightButton) Then
+        frmIndex = Index + formsScrollIndex
+        Call PopupMenu(mnuRightClick)
+    End If
 End Sub
 
 Private Sub ProjectListSize_Timer()
@@ -4175,7 +4222,8 @@ Private Sub tilesetScroller_Change(): On Error Resume Next
         If tstnum = 0 Then tstnum = 1
         
         'Added: Check the current tileset file.
-        If UCase$(GetExt(configfile.lastTileset)) = "ISO" Then iMetric = 2
+        iMetric = 0
+        If UCase$(GetExt(tstFile$)) = "ISO" Then iMetric = 2
         
         Call GFXInitScreen(640, 480)
         
