@@ -416,7 +416,7 @@ Private Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
     
     If exp > 0 Or gp > 0 Then
         'give players experience...
-        Call CanvasGetScreen(cnvRPGCodeScreen)
+        Call canvasGetScreen(cnvRPGCodeScreen)
         lineNum = 1
         If exp > 0 Then
             Call AddToMsgBox("Players gained " & CStr(exp) & " experience!", thePrg)
@@ -452,7 +452,7 @@ Public Sub gameOver()
     Dim theProgram As RPGCodeProgram
     Call InitRPGCodeProcess(theProgram)
     theProgram.boardNum = -1
-    Call CanvasGetScreen(cnvRPGCodeScreen)
+    Call canvasGetScreen(cnvRPGCodeScreen)
     If (LenB(mainMem.gameOverPrg) = 0) Then
         Call DXClearScreen(0)
         Call DXDrawText(1, 1, "Game Over...", "Arial", 48, RGB(255, 255, 255), 1, 0, 0, 0, 0)

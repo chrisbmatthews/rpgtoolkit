@@ -16,51 +16,46 @@ Option Explicit
 ' Integral rpgcode variables
 '=========================================================================
 
-Public nextProgram As String            'program to run after current one finishes
-Public lineNum As Long                  'line number of message window
-Public mwinLines As Long                'number of lines in the message window
-Public pointer(100) As String           'list of 100 pointer variable names
-Public correspPointer(100) As String    'corresponding pointers
-Public textX As Double, textY As Double 'current x and y coords of text
-Public endCausesStop As Boolean         'end action swapped for stop action?
-Public buttons(50) As activeButton      '51 buttons on screen
-Public runningProgram As Boolean        'is a program running?
-Public wentToNewBoard As Boolean        'did we go to a new board in the program?
-Public methodReturn As RPGCODE_RETURN   'return value for method calls
-Public preErrorPos As Long              'position before an error occured
+Public nextProgram As String            ' Program to run after current one finishes
+Public lineNum As Long                  ' Line number of message window
+Public mwinLines As Long                ' Number of lines in the message window
+Public pointer(100) As String           ' List of 100 pointer variable names
+Public correspPointer(100) As String    ' Corresponding pointers
+Public textX As Double, textY As Double ' Current x and y coords of text
+Public endCausesStop As Boolean         ' End action swapped for stop action?
+Public g_buttons() As RECT              ' Buttons on the screen
+Public runningProgram As Boolean        ' Is a program running?
+Public wentToNewBoard As Boolean        ' Did we go to a new board in the program?
+Public methodReturn As RPGCODE_RETURN   ' Return value for method calls
+Public preErrorPos As Long              ' Position before an error occured
 
-'Public disregardLooping As Boolean     'disregard being in a loop -> now using multiRunStatus
-Public multiRunStatus As Long           'sim.   0 = not running
-                                        '       1 = running
-                                        '       2 = running + movement occured
-
-Public bFillingMsgBox As Boolean        'filling message box?
-Public shopColors(1) As Long            'colors used in shop
-
-Public Type RPGCODE_RETURN              'rpgcode return structure
-    dataType As RPGC_DT                 '  data type (out)
-    num As Double                       '  data as numerical (out)
-    lit As String                       '  data as string (out)
-    ref As String                       '  data as reference (out)
-    usingReturnData As Boolean          '  is the return data being used? (in)
-End Type
-
-Public Enum RPGC_DT                     'rpgcode data type enum
-    DT_VOID = -1                        '  can't tell
-    DT_NUM = 0                          '  numerical variable
-    DT_LIT = 1                          '  literal variable
-    DT_STRING = 2                       '  string
-    DT_NUMBER = 3                       '  number
-    DT_REFERENCE = 4                    '  reference to a var
+Public Enum MR_STATUS
+    MR_NOT_RUNNING                      ' Not running
+    MR_RUNNING                          ' Running
+    MR_RUNNING_MOVEMENT                 ' Running and movement has occured
 End Enum
 
-Public Type activeButton                'setButton() structure
-    x1 As Integer                       '  x1
-    x2 As Integer                       '  x2
-    y1 As Integer                       '  y1
-    y2 As Integer                       '  y2
-    face As String                      '  image on button
+Public multiRunStatus As MR_STATUS      ' Status of the multiRun() command
+
+Public bFillingMsgBox As Boolean        ' Filling message box?
+Public shopColors(1) As Long            ' Colors used in shop
+
+Public Type RPGCODE_RETURN              ' Rpgcode return structure
+    dataType As RPGC_DT                 '   Data type (out)
+    num As Double                       '   Data as numerical (out)
+    lit As String                       '   Data as string (out)
+    ref As String                       '   Data as reference (out)
+    usingReturnData As Boolean          '   Is the return data being used? (in)
 End Type
+
+Public Enum RPGC_DT                     ' Rpgcode data type enum
+    DT_VOID = -1                        '   Can't tell
+    DT_NUM                              '   Numerical variable
+    DT_LIT                              '   Literal variable
+    DT_STRING                           '   String
+    DT_NUMBER                           '   Number
+    DT_REFERENCE                        '   Reference to a var
+End Enum
 
 '=========================================================================
 ' Call a method in a class
@@ -317,7 +312,7 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
         Dim oldErrorHandler As String
         oldErrorHandler = errorBranch
 
-        Call runBlock(1, theProgram)
+        Call runBlock(1, theProgram, True)
 
         'Restore error handler
         errorBranch = oldErrorHandler
@@ -523,10 +518,7 @@ End Sub
 '=========================================================================
 ' Runs a block of code (or skips it)
 '=========================================================================
-Public Function runBlock( _
-                            ByVal runCommands As Long, _
-                            ByRef prg As RPGCodeProgram _
-                                                          ) As Long
+Public Function runBlock(ByVal runCommands As Long, ByRef prg As RPGCodeProgram, Optional ByVal bIsFunction As Boolean) As Long
 
     Dim retval As RPGCODE_RETURN
     Dim done As Boolean
@@ -549,7 +541,7 @@ Public Function runBlock( _
                 prg.programPos = increment(prg)
 
             Case "END"
-                If Not (endCausesStop) Then
+                If (bIsFunction) Then
                     runCommands = 0
                     prg.programPos = increment(prg)
                 Else

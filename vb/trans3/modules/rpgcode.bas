@@ -1103,8 +1103,8 @@ Sub checkButtonRPG(Text$, ByRef theProgram As RPGCodeProgram, ByRef retval As RP
     Dim theOne As Long, t As Long, b As Long
     theOne = -1
     For t = 0 To 50
-        a = within(x, buttons(t).x1, buttons(t).x2)
-        b = within(y, buttons(t).y1, buttons(t).y2)
+        a = within(x, g_buttons(t).Left, g_buttons(t).Right)
+        b = within(y, g_buttons(t).Top, g_buttons(t).Bottom)
         If a = 1 And b = 1 Then
             theOne = t
             Exit For
@@ -1124,24 +1124,45 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub clearButtons()
-    'clears button buffer
-    On Error GoTo errorhandler
-    
-    Dim t As Long
-    
-    For t = 0 To 50
-        buttons(t).x1 = -1
-        buttons(t).x2 = -1
-        buttons(t).y1 = -1
-        buttons(t).y2 = -1
-    Next t
+'=========================================================================
+' Create a button
+'=========================================================================
+Private Sub createButton(ByVal pos As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long)
+
+    On Error GoTo error
+
+    ' Get upper bound of array
+    Dim ub As Long
+    ub = UBound(g_buttons)
+
+    ' Check if we don't have enough room
+    If (pos > ub) Then
+
+        ' Enlarge the array
+        ReDim Preserve g_buttons(pos + 15)
+
+    End If
+
+    ' Set in the button
+    g_buttons(pos).Left = x1
+    g_buttons(pos).Top = y1
+    g_buttons(pos).Right = x2
+    g_buttons(pos).Bottom = y2
 
     Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
+
+error:
+
+    ReDim g_buttons(15)
+    Resume
+
+End Sub
+
+'=========================================================================
+' Clear all buttons
+'=========================================================================
+Public Sub clearButtons()
+    ReDim g_buttons(15)
 End Sub
 
 Sub clearbuttonsRPG(Text$, ByRef theProgram As RPGCodeProgram)
@@ -5951,49 +5972,42 @@ Sub SetButtonRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Call debugger("Error: SetButton face data type must be literal!-- " + Text$)
         Exit Sub
     End If
+
     If butTo = 1 Or x1to = 1 Or y1to = 1 Or x2to = 1 Or y2to = 1 Then
         Call debugger("Error: SetButton coords must be numerical!-- " + Text$)
     Else
+
         destBut = inBounds(destBut, 0, 50)
         x1 = inBounds(x1, 0, tilesX * 32)
         y1 = inBounds(y1, 0, tilesY * 32)
-        
-        ' ! MODIFIED BY KSNiloc...
-        
-        buttons(destBut).x1 = x1 - 20
-        buttons(destBut).x2 = x1 + dx - 20
-        buttons(destBut).y1 = y1
-        buttons(destBut).y2 = y1 + dy
-        buttons(destBut).face = fface$
-        
-        fface$ = projectPath$ & bmpPath$ & fface$
-        
+
+        Call createButton(destBut, x1, y1, x1 + dx, y1 + dy)
+
+        fface = projectPath & bmpPath & fface
+
         Dim cnv As Long
         cnv = createCanvas(dx, dy)
         
         Dim bLoaded As Boolean, f As String
-        bLoaded = False
-        If pakFileRunning Then
-            f$ = PakLocate(fface$)
-            If fileExists(f$) Then
+        If (pakFileRunning) Then
+            f = PakLocate(fface)
+            If (fileExists(f)) Then
                 bLoaded = True
-                Call canvasLoadSizedPicture(cnv, f$)
+                Call canvasLoadSizedPicture(cnv, f)
             End If
         Else
-            If fileExists(fface$) Then
+            If (fileExists(fface)) Then
                 bLoaded = True
-                Call canvasLoadSizedPicture(cnv, fface$)
+                Call canvasLoadSizedPicture(cnv, fface)
             End If
         End If
-        If bLoaded Then
+
+        If (bLoaded) Then
             Call canvas2CanvasBlt(cnv, cnvRPGCodeScreen, x1, y1)
         End If
+
         Call destroyCanvas(cnv)
-        'Call renderRPGCodeScreen
-        DXDrawCanvasPartial cnvRPGCodeScreen, _
-                            x1, y1, x1, y1, _
-                            dx, dy
-        DXRefresh
+        Call renderRPGCodeScreen
     End If
     
 End Sub
@@ -8750,6 +8764,7 @@ Sub EndRPG(Text$, ByRef theProgram As RPGCodeProgram)
     'End prg or function block.
     'Do nothing.
     On Error GoTo errorhandler
+    runningProgram = False
     'Unload dbwin
 
     Exit Sub

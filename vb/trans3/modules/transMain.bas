@@ -66,6 +66,10 @@ Public host As CDirectXHost
 Public Property Get gAvgTime() As Double
     gAvgTime = m_renderTime / m_renderCount
 End Property
+Public Property Let gAvgTime(ByVal newVal As Double)
+    m_renderTime = newVal
+    m_renderCount = 1
+End Property
 
 '=======================================================================
 ' Main entry point
@@ -564,11 +568,11 @@ Public Sub setupMain(Optional ByVal testingPRG As Boolean)
     End If
 
     ' Set initial game speed
-    Call gameSpeed(mainMem.gameSpeed)
-    
+    Call gameSpeed(CInt(mainMem.gameSpeed))
+
     ' Need a better method than this! Either more accurate estimate, or write last gAvgTime to file.
-    Dim i As Long
     m_renderTime = Timer()
+    Dim i As Long
     For i = 0 To 20
         Call DXRefresh
     Next i
