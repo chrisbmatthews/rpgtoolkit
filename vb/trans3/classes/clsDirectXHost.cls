@@ -130,18 +130,22 @@ Private m_createY As Long
 Private m_buttonHwnd As Long
 
 '=========================================================================
-' Public properties
+' Window's handle
 '=========================================================================
-
 Public Property Get hwnd() As Long
     hwnd = m_hwnd
 End Property
 
+'=========================================================================
+' Window's device context
+'=========================================================================
 Public Property Get hdc() As Long
     hdc = GetDC(m_hwnd)
 End Property
 
+'=========================================================================
 ' Style: 0 - fullscreen; 1 - windowed
+'=========================================================================
 Public Property Let style(ByVal newValue As Long)
     If newValue = 0 Then
         m_createStyle = WS_POPUP
@@ -150,6 +154,9 @@ Public Property Let style(ByVal newValue As Long)
     End If
 End Property
 
+'=========================================================================
+' Window's caption
+'=========================================================================
 Public Property Let Caption(ByVal newValue As String)
     If Not m_created Then
         m_createCaption = newValue
@@ -158,18 +165,30 @@ Public Property Let Caption(ByVal newValue As String)
     End If
 End Property
 
+'=========================================================================
+' Window's class
+'=========================================================================
 Public Property Get className() As String
     className = WINDOWS_CLASS
 End Property
 
+'=========================================================================
+' Window's mouse pointer (TBD)
+'=========================================================================
 Public Property Let mousePointer(ByVal newValue As Long)
-    'Do nothing... yet
+    'TBD
 End Property
 
+'=========================================================================
+' Window's mouse icon (TBD)
+'=========================================================================
 Public Property Let mouseIcon(ByVal newValue As Long)
-    'Do nothing... yet
+    'TBD
 End Property
 
+'=========================================================================
+' Window's width
+'=========================================================================
 Public Property Get Width() As Long
     Width = m_createWidth
 End Property
@@ -177,6 +196,9 @@ Public Property Let Width(ByVal newVal As Long)
      m_createWidth = newVal
 End Property
 
+'=========================================================================
+' Window's height
+'=========================================================================
 Public Property Get height() As Long
     height = m_createHeight
 End Property
@@ -184,6 +206,9 @@ Public Property Let height(ByVal newVal As Long)
      m_createHeight = newVal
 End Property
 
+'=========================================================================
+' Window's X coord
+'=========================================================================
 Public Property Get Left() As Long
     Left = m_createX
 End Property
@@ -191,6 +216,9 @@ Public Property Let Left(ByVal newVal As Long)
      m_createX = newVal
 End Property
 
+'=========================================================================
+' Window's Y coord
+'=========================================================================
 Public Property Get Top() As Long
     Top = m_createY
 End Property
@@ -247,10 +275,10 @@ Public Sub Create()
                                WINDOWS_CLASS, _
                                m_createCaption, _
                                m_createStyle, _
-                               m_createX / screen.TwipsPerPixelX, _
-                               m_createY / screen.TwipsPerPixelY, _
-                               m_createWidth / screen.TwipsPerPixelX, _
-                               m_createHeight / screen.TwipsPerPixelY, _
+                               m_createX / Screen.TwipsPerPixelX, _
+                               m_createY / Screen.TwipsPerPixelY, _
+                               m_createWidth / Screen.TwipsPerPixelX, _
+                               m_createHeight / Screen.TwipsPerPixelY, _
                                0, 0, App.hInstance, _
                                cs _
                                     )

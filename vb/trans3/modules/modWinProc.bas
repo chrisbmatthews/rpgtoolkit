@@ -135,7 +135,7 @@ Public Function WndProc( _
         Case WM_ACTIVATE
             If wParam <> WA_INACTIVE Then
                 'Window is being *activated*
-                gGameState = gPrevGameState
+                gGameState = prevGameState
             Else
                 'Window is being *deactivated*
                 prevGameState = gGameState
