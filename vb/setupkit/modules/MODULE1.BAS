@@ -49,6 +49,7 @@ Global miscpath$            'misc files
 Global savpath$             'saved games
 Global pluginPath$          'plugins
 Global resourcePath$        'lang files
+Public Const plugPath = "Plugin\"              'plugin path
 
 Global fileChosen$  'file of the game (main file or other)
 
@@ -56,6 +57,7 @@ Global mainMem As TKMain    'main file
 
 'Main File editor
 Global projectPath$
+
 
 Function toString(val) As String
     On Error Resume Next
@@ -358,13 +360,13 @@ Sub copyRunTime()
 On Error Resume Next
     ChDir (App.Path)
     
-    If FileExists(destdir$ + "ctl3d32.dll") Then
+    If fileExists(destdir$ + "ctl3d32.dll") Then
         res = InstallFile(destdir$ + "ctl3d32.dll", temppath$ + "ctl3d32.dll")
     Else
         res = InstallFile(winsys$ + "ctl3d32.dll", temppath$ + "ctl3d32.dll")
     End If
     
-    If FileExists(destdir$ + "picclp32.ocx") Then
+    If fileExists(destdir$ + "picclp32.ocx") Then
         res = InstallFile(destdir$ + "picclp32.ocx", temppath$ + "picclp32.ocx")
     Else
         res = InstallFile(winsys$ + "picclp32.ocx", temppath$ + "picclp32.ocx")
@@ -377,19 +379,19 @@ On Error Resume Next
     'End If
     
     '2.20
-    If FileExists(destdir$ + "mci32.ocx") Then
+    If fileExists(destdir$ + "mci32.ocx") Then
         res = InstallFile(destdir$ + "mci32.ocx", temppath$ + "mci32.ocx")
     Else
         res = InstallFile(winsys$ + "mci32.ocx", temppath$ + "mci32.ocx")
     End If
     
-    If FileExists(destdir$ + "VBRun60sp5.exe") Then
+    If fileExists(destdir$ + "VBRun60sp5.exe") Then
         res = InstallFile(destdir$ + "VBRun60sp5.exe", temppath$ + "VBRun60sp5.exe")
     Else
         res = InstallFile(winsys$ + "VBRun60sp5.exe", temppath$ + "VBRun60sp5.exe")
     End If
     
-    If FileExists(destdir$ + "vb5stkit.dll") Then
+    If fileExists(destdir$ + "vb5stkit.dll") Then
         res = InstallFile(destdir$ + "vb5stkit.dll", temppath$ + "vb5stkit.dll")
     Else
         res = InstallFile(winsys$ + "vb5stkit.dll", temppath$ + "vb5stkit.dll")
@@ -587,11 +589,11 @@ Sub createZip(destfile$)
     ChDir (cd$)
 End Sub
 
-Function fileExist(Filename$)
+Function fileExist(filename$)
     'Function checks if a file exists.
     'First see if it's in an archive:
     On Error GoTo errcatch
-    file$ = Filename$
+    file$ = filename$
     num = FreeFile
     Open file$ For Input As #num
     Close #num
@@ -622,15 +624,15 @@ Function getDest()
     dlg.strDefaultExt = "zip"
     dlg.strFileTypes = "Zip Compressed (*.zip)|*.zip|All files(*.*)|*.*"
     If SaveFileDialog(dlg) Then
-        Filename$ = dlg.strSelectedFile
+        filename$ = dlg.strSelectedFile
         antipath$ = dlg.strSelectedFileNoPath
     Else
-        Filename$ = ""
+        filename$ = ""
     End If
     ChDir (currentdir$)
     
     'If Filename$ = "" Then Exit Function
-    getDest = Filename$
+    getDest = filename$
 End Function
 
 Sub icons()
@@ -654,11 +656,11 @@ Sub installFiles()
     a = Shell("tktzip " + destdir$ + " -d -o")
 End Sub
 
-Function removechar(text$, char$)
+Function removechar(Text$, char$)
 'remove char from text
-length = Len(text$)
-For p = 1 To length
-    part$ = Mid$(text$, p, 1)
+Length = Len(Text$)
+For p = 1 To Length
+    part$ = Mid$(Text$, p, 1)
     If part$ <> char$ Then ret$ = ret$ + part$
 Next p
 removechar = ret$
@@ -773,8 +775,8 @@ Function resolve(dfile$)
     'Resolves a directory (puts it in order)
     d$ = dfile$
     'd$ = removechar(d$, " ")
-    length = Len(d$)
-    part$ = Mid$(d$, length, 1)
+    Length = Len(d$)
+    part$ = Mid$(d$, Length, 1)
     If part$ <> "\" Then d$ = d$ + "\"
     resolve = d$
 End Function
@@ -807,9 +809,9 @@ Function unresolve(dfile$)
     'Resolves a directory (puts it in order)
     d$ = dfile$
     d$ = removechar(d$, " ")
-    length = Len(d$)
-    part$ = Mid$(d$, length, 1)
-    If part$ = "\" Then d$ = Mid$(d$, 1, length - 1)
+    Length = Len(d$)
+    part$ = Mid$(d$, Length, 1)
+    If part$ = "\" Then d$ = Mid$(d$, 1, Length - 1)
     unresolve = d$
 End Function
 
