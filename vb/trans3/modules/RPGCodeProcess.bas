@@ -126,9 +126,7 @@ Public Sub openProgram(ByVal file As String, ByRef thePrg As RPGCodeProgram)
 
     Dim filen As String, p As Long, errorsA As Long, num As Long, theLine As String, sz As Long
 
-    'On Error GoTo erropenprg
-    'filen = FindFile(file)
-    'filen = PakLocate(filen)
+    file = PakLocate(file)
     p = 0
     errorsA = 0
     num = FreeFile()
