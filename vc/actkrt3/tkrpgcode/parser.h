@@ -40,7 +40,7 @@ typedef void (__stdcall* CBOneParamStr) (VB_STRING);
 
 //for vb strings
 inline char* initVbString(VB_STRING);
-inline void returnVbString(inlineString);
+inline void returnVbString(inlineString&);
 inline VB_STRING charToVbString(char*);
 inline char* vbStringToChar(VB_STRING);
 inline int vbStringGetLen(VB_STRING);

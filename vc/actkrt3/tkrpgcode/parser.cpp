@@ -28,7 +28,7 @@ void APIENTRY RPGCParseAfter(VB_STRING pText, VB_STRING startSymbol)
 	inlineString text = initVbString(pText);			//Text we're operating on
 	inlineString part(1);								//A character
 	inlineString toRet;									//The thing we'll return
-	inlineString symbol = initVbString(startSymbol);	//symbol we're looking for
+	inlineString symbol(initVbString(startSymbol), 1);	//symbol we're looking for
 	int t = 0;				 							//Loop control variables
 	int length = text.len();							//Length of text
 	bool foundIt = false;								//found symbol yet?
@@ -67,7 +67,7 @@ void APIENTRY RPGCParseBefore(VB_STRING pText, VB_STRING startSymbol)
 	inlineString text = initVbString(pText);			//Text we're operating on
 	inlineString part(1);								//A character
 	inlineString toRet;									//The thing we'll return
-	inlineString symbol = initVbString(startSymbol);	//Symbol we're looking for
+	inlineString symbol(initVbString(startSymbol), 1);	//Symbol we're looking for
 	int t = 0;				 							//Loop control variables
 	int length = text.len();							//Length of text
 
@@ -183,7 +183,7 @@ void APIENTRY RPGCInitParser(int setStringAddress)
 //////////////////////////////////////////////////////////////////////////
 // Return a VB string
 //////////////////////////////////////////////////////////////////////////
-inline void returnVbString(inlineString theString)
+inline void returnVbString(inlineString& theString)
 {
 
 	//First change the char* string to vb string format
