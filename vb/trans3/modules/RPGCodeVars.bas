@@ -627,43 +627,43 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                         If ((tdc <> "$") And (tdc <> "!")) Then
                             ' Append a "!"
                             prevToken = prevToken & "!"
-                            ' Get its value
-                            If (getVariable(prevToken, lit, num, theProgram) = DT_NUM) Then
-                                ' If it's not NULL
-                                If (num <> 0) Then
-                                    ' See if it's an object
-                                    Dim hTokenClass As Long
-                                    hTokenClass = CLng(num)
-                                    If (isObject(hTokenClass, theProgram)) Then
-                                        ' See if it handles said conjuction
-                                        Dim cnj As String
-                                        cnj = "operator" & conjunctions(tokenIdx + toFind)
-                                        If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
-                                            ' Call the method
-                                            Call callObjectMethod(hTokenClass, cnj & "(" & CStr(numberUse(tokenIdx)) & ")", theProgram, retval, cnj)
-                                            ' Switch on returned type
-                                            Dim theVal As String
-                                            Select Case retval.dataType
-                                                Case DT_LIT: theVal = retval.lit
-                                                Case DT_NUM: theVal = CStr(retval.num)
-                                                Case DT_REFERENCE: theVal = retval.ref
-                                            End Select
-                                            ' Fill in new data
-                                            Call getValue(theVal, lit, numberUse(tokenIdx + toFind), theProgram)
-                                            ' Switch on the conjuction we used
-                                            Select Case conjunctions(tokenIdx + toFind)
-                                                Case "+", "-"
-                                                    ' Additive identity is 0
-                                                    numberUse(tokenIdx) = 0
-                                                Case "/", "*", "^", "%"
-                                                    ' Multiplicative identity is 1
-                                                    numberUse(tokenIdx) = 1
-                                                Case "`", "&", "|"
-                                                    ' Logic identity is... ??
-                                            End Select
-                                            ' Flag this spot holds an identity
-                                            nulled(tokenIdx) = True
-                                        End If
+                        End If
+                        ' Get its value
+                        If (getVariable(prevToken, lit, num, theProgram) = DT_NUM) Then
+                            ' If it's not NULL
+                            If (num <> 0) Then
+                                ' See if it's an object
+                                Dim hTokenClass As Long
+                                hTokenClass = CLng(num)
+                                If (isObject(hTokenClass, theProgram)) Then
+                                    ' See if it handles said conjuction
+                                    Dim cnj As String
+                                    cnj = "operator" & conjunctions(tokenIdx + toFind)
+                                    If (isMethodMember(cnj, hTokenClass, theProgram, topNestle(theProgram) <> hTokenClass)) Then
+                                        ' Call the method
+                                        Call callObjectMethod(hTokenClass, cnj & "(" & CStr(numberUse(tokenIdx)) & ")", theProgram, retval, cnj)
+                                        ' Switch on returned type
+                                        Dim theVal As String
+                                        Select Case retval.dataType
+                                            Case DT_LIT: theVal = retval.lit
+                                            Case DT_NUM: theVal = CStr(retval.num)
+                                            Case DT_REFERENCE: theVal = retval.ref
+                                        End Select
+                                        ' Fill in new data
+                                        Call getValue(theVal, lit, numberUse(tokenIdx + toFind), theProgram)
+                                        ' Switch on the conjuction we used
+                                        Select Case conjunctions(tokenIdx + toFind)
+                                            Case "+", "-"
+                                                ' Additive identity is 0
+                                                numberUse(tokenIdx) = 0
+                                            Case "/", "*", "^", "%"
+                                                ' Multiplicative identity is 1
+                                                numberUse(tokenIdx) = 1
+                                            Case "`", "&", "|"
+                                                ' Logic identity is... ??
+                                        End Select
+                                        ' Flag this spot holds an identity
+                                        nulled(tokenIdx) = True
                                     End If
                                 End If
                             End If
