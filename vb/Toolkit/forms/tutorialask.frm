@@ -66,6 +66,18 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What is done
+' + Option Explicit added
+' + Obsolete code removed
+'
+' ---What needs to be done
+' + Apply new visual style
+'
+'=======================================================
+
 Option Explicit
 
 Private Sub Command1_Click()

@@ -100,6 +100,20 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 
+'=======================================================
+'Notes by KSNiloc for 3.04
+'
+' ---What is done
+' + Option Explicit added
+' + Swapped +s for &s where appropriate
+' + Removed $s
+' + Declared everything early-bound
+'
+' ---What needs to be done
+' + Apply new visual style
+'
+'=======================================================
+
 Option Explicit
 
 Private Function getMainFilename() As String
@@ -110,7 +124,7 @@ Private Function getMainFilename() As String
 
     Dim dlg As FileDialogInfo
     With dlg
-        .strDefaultFolder = gampath
+        .strDefaultFolder = gamPath
         .strTitle = "Open Main File"
         .strDefaultExt = "gam"
         .strFileTypes = "RPG Toolkit Main File (*.gam)|*.gam|All files(*.*)|*.*"
@@ -125,7 +139,7 @@ Private Function getMainFilename() As String
 
     ChDir (currentDir)
     If filename(1) = "" Then Exit Function
-    FileCopy filename(1), gampath & antiPath
+    FileCopy filename(1), gamPath & antiPath
     Call openMainFile(filename(1))
     getMainFilename = antiPath
 
@@ -149,7 +163,7 @@ Private Sub Command1_Click()
     tt = Replace(tt, " ", "")
     projectPath = gamePath & tt & "\"
     MsgBox "Your project will be placed in " & projectPath, , "Upgrade File System"
-    Call saveMain(gampath & antiPath, mainMem)
+    Call saveMain(gamPath & antiPath, mainMem)
     'move the files...
     Call moveFilesInto(projectPath)
     'out with the old...
