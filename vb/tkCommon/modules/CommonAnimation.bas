@@ -421,7 +421,9 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByVal file As String, ByVal f
         If maxF = 0 Then
             frame = 0
         Else
-            frame = frame Mod maxF
+            '+ 1 here *not* in animGetMaxFrame. Frames run from 0 to x, but here maxF needs
+            'to be the total number of frames.
+            frame = frame Mod (maxF + 1)
         End If
     Else
         Exit Sub
