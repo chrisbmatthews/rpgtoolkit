@@ -24,11 +24,11 @@ Private Declare Sub TKAudiereDestroyHandle Lib "actkrt3.dll" (ByVal handle As Lo
 Private Declare Function TKAudiereCreateHandle Lib "actkrt3.dll" () As Long
 Private Declare Function TKAudiereGetPosition Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Sub TKAudiereSetPosition Lib "actkrt3.dll" (ByVal handle As Long, ByVal pos As Long)
-Private Declare Function DXInitMusic Lib "actkrt3.dll" (ByVal hWnd As Long) As Long
+Private Declare Function DXInitMusic Lib "actkrt3.dll" (ByVal hwnd As Long) As Long
 Private Declare Sub DXKillMusic Lib "actkrt3.dll" ()
-Private Declare Sub DXPlayMidi Lib "actkrt3.dll" (ByVal strFileName As String, Optional ByVal bLoop As Boolean = False)
+Private Declare Sub DXPlayMidi Lib "actkrt3.dll" (ByVal strFilename As String, Optional ByVal bLoop As Boolean = False)
 Private Declare Sub DXStopMidi Lib "actkrt3.dll" ()
-Private Declare Function DXIsMidiPlaying Lib "actkrt3.dll" () As Boolean
+Private Declare Function DXIsMidiPlaying Lib "actkrt3.dll" () As Long
 
 '=========================================================================
 ' Public variables
@@ -51,7 +51,7 @@ Private Const MID_DEVICE = "midDevice"   ' Music device (MCI)
 ' Checks to make sure the correct music is playing
 '=========================================================================
 Public Sub checkMusic(Optional ByVal forceNow As Boolean)
-    
+
     On Error Resume Next
 
     If Not (forceNow) Then
@@ -59,23 +59,29 @@ Public Sub checkMusic(Optional ByVal forceNow As Boolean)
     End If
 
     Dim boardMusic As String
-    boardMusic = projectPath & mediaPath & boardList(activeBoardIndex).theData.boardMusic
+    boardMusic = UCase$(boardList(activeBoardIndex).theData.boardMusic)
 
     If (LenB(boardMusic) = 0) Then
 
         Call stopMedia
         musicPlaying = vbNullString
 
-    ElseIf (UCase$(boardMusic) = UCase$(musicPlaying)) Then
-
-        If Not (isMediaPlaying(boardMusic)) Then
-            Call playMedia(boardMusic)
-        End If
-
     Else
 
-        Call playMedia(boardMusic)
-        musicPlaying = boardMusic
+        boardMusic = UCase$(projectPath & mediaPath) & boardMusic
+
+        If (boardMusic = musicPlaying) Then
+
+            If Not (isMediaPlaying(boardMusic)) Then
+                Call playMedia(boardMusic)
+            End If
+
+        Else
+
+            Call playMedia(boardMusic)
+            musicPlaying = boardMusic
+
+        End If
 
     End If
 
@@ -90,7 +96,10 @@ Public Sub initMedia()
 
     Call TKAudiereInit
 
-    If (DXInitMusic(host.hWnd) = 0) Then
+    Dim lngInit As Long
+    lngInit = DXInitMusic(host.hwnd)
+
+    If (lngInit = 0) Then
         Call MsgBox("Could not initiate DirectMusic - please make sure you have DirectX 8 or higher installed!")
     End If
 
@@ -117,7 +126,7 @@ Public Function isMediaPlaying(ByRef file As String) As Boolean
         isMediaPlaying = IsPlayingMCI(MID_DEVICE)
 
     ElseIf (isPlayedByAudiere(ext)) Then
-        isMediaPlaying = (TKAudiereIsPlaying(bkgDevice) = 1)
+        isMediaPlaying = TKAudiereIsPlaying(bkgDevice)
 
     End If
 
@@ -140,19 +149,22 @@ End Sub
 '=========================================================================
 ' Play a media file
 '=========================================================================
-Public Sub playMedia(ByVal file As String)
+Public Sub playMedia(ByRef file As String)
 
     On Error Resume Next
 
-    'stop everything
+    ' Stop everything
     Call stopMedia
 
-    'Get extension
+    ' Get extension
     Dim ext As String
     ext = UCase$(GetExt(file))
 
     If (isPlayedByDX(ext)) Then
         Call DXPlayMidi(file)
+        Do Until (DXIsMidiPlaying())
+            ' Do not proceed until MIDI has fully loaded
+        Loop
 
     ElseIf (isPlayedByMCI(ext)) Then
         Call PlayMCI(file, MID_DEVICE)
@@ -264,7 +276,7 @@ Public Sub playVideo(ByVal file As String, Optional ByVal windowed As Boolean)
 
     With video
         .FullScreenMode = Not windowed
-        .Owner = host.hWnd
+        .Owner = host.hwnd
     End With
 
     Call quartz.run
