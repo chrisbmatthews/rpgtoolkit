@@ -499,6 +499,8 @@ End Type
 ' Scrolling object
 Private Scroll As New CScrollBoard
 
+Private m_bAnimating As Boolean
+
 '========================================================================
 ' get tiletype details (color, name) returned as UDT
 '========================================================================
@@ -617,16 +619,41 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
 '===================================================
 'Additions for .iso tiles, for 3.0.4 by Delano
 
-    If file = "" Then Exit Sub
-    
+    If (LenB(file) = 0) Then Exit Sub
+
     ' update tileset filename
     boardList(activeBoardIndex).selectedTile$ = file
-    
+
+    tkMainForm.animTileTimer.Enabled = False
+
     ' open tileset
-    Call openWinTile(projectPath$ + tilePath$ + file)
-    
+    If (UCase$(GetExt(file)) <> "TAN") Then
+        Call openWinTile(projectPath$ & tilePath$ & file)
+        tkMainForm.Command20.Enabled = False
+        tkMainForm.Command22.Enabled = False
+    Else
+        Dim strFirstFrame As String
+        ' Call openTileAnm(projectPath & tilePath & file, selectedAnm)
+        strFirstFrame = TileAnmGet(selectedAnm, selectedAnm.currentAnmFrame)
+        If (LenB(strFirstFrame)) Then
+            file = strFirstFrame
+            Call openWinTile(projectPath & tilePath & strFirstFrame)
+        Else
+            ' Colin, 3.06: Deal with lack of first frame
+            file = vbNullString
+            Dim i As Long, j As Long
+            For i = 1 To 32
+                For j = 1 To 32
+                    tileMem(i, j) = RGB(255, 255, 255)
+                Next j
+            Next i
+        End If
+        tkMainForm.Command20.Enabled = True
+        tkMainForm.Command22.Enabled = True
+    End If
+
     ' if tileset detail inappropiate, increase detail
-    If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
+    If (detail = 2 Or detail = 4 Or detail = 6) Then Call increaseDetail
     
     ' clear isometric tile picture box
     Call vbPicCls(tkMainForm.currenttileIso)
@@ -672,11 +699,6 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     
     ' update current tileset caption to filename. Extra blank characters for XP style captions.
     tkMainForm.bFrame(2).Caption = "Current Tile - " & boardList(activeBoardIndex).selectedTile & "       "
-    
-    ' update main form control values
-    tkMainForm.animTile.Enabled = False
-    tkMainForm.Command20.Enabled = False
-    tkMainForm.Command22.Enabled = False
     
 End Sub
 
@@ -975,7 +997,7 @@ Public Sub playAnimatedTile(): On Error Resume Next
     whichType$ = extention(boardList(activeBoardIndex).selectedTile$)
     
     ' check it is animated tile and enable animated tile timer
-    If UCase$(whichType$) = "TAN" Then: tkMainForm.animTile.Enabled = True
+    If UCase$(whichType$) = "TAN" Then: tkMainForm.animTileTimer.Enabled = True
     
 End Sub
 
@@ -1360,12 +1382,14 @@ Public Sub animateTile()
     
         ' clear current tile picture box
         Call vbPicCls(tkMainForm.currenttile)
+        Call vbPicCls(tkMainForm.currenttileIso)
         
         ' draw next frame of animated tile
-        Call TileAnmDrawNextFrame(selectedAnm, vbPicHDC(tkMainForm.currenttile), 1, 1, 0, 0, 0)
+        Call TileAnmDrawNextFrame(selectedAnm, vbPicHDC(tkMainForm.currenttile), 1, 1, 0, 0, 0, , , , tkMainForm.currenttileIso.hdc)
         
         ' refresh picture box
         Call vbPicRefresh(tkMainForm.currenttile)
+        Call vbPicRefresh(tkMainForm.currenttileIso)
         
     End If
     
@@ -1770,7 +1794,7 @@ Public Sub boardSelectTile(): On Error Resume Next
         tkMainForm.bFrame(2).Caption = "Current Tile - " & boardList(activeBoardIndex).selectedTile & "       "
 
         ' update main form control values
-        tkMainForm.animTile.Enabled = False
+        tkMainForm.animTileTimer.Enabled = False
         tkMainForm.Command20.Enabled = False
         tkMainForm.Command22.Enabled = False
         
@@ -1836,7 +1860,7 @@ Public Sub boardSelectTile(): On Error Resume Next
             tkMainForm.bFrame(2).Caption = "Current Tile - " & boardList(activeBoardIndex).selectedTile & "       "
             
             ' update main form control values
-            tkMainForm.animTile.Enabled = True
+            tkMainForm.animTileTimer.Enabled = False
             tkMainForm.Command20.Enabled = True
             tkMainForm.Command22.Enabled = True
             
@@ -1885,7 +1909,7 @@ Public Sub boardSelectTile(): On Error Resume Next
             tkMainForm.bFrame(2).Caption = "Current Tile - " & boardList(activeBoardIndex).selectedTile & "       "
             
             ' update main form control values
-            tkMainForm.animTile.Enabled = False
+            tkMainForm.animTileTimer.Enabled = False
             tkMainForm.Command20.Enabled = False
             tkMainForm.Command22.Enabled = False
             
@@ -2769,6 +2793,13 @@ Private Sub brdinfomnu_Click(): On Error Resume Next
     boardRedraw
 End Sub
 
+'========================================================================
+' Form lost focus
+'========================================================================
+Private Sub Form_Deactivate()
+    m_bAnimating = tkMainForm.animTileTimer.Enabled
+End Sub
+
 Private Sub itmmenu_Click(): On Error Resume Next
     boardList(activeBoardIndex).boardNeedUpdate = True
     itemmenu.Show vbModal
@@ -2989,6 +3020,7 @@ Private Sub Form_Activate(): On Error Resume Next
     tkMainForm.currenttileIso.Cls
     tkMainForm.bFrame(2).Caption = "Current Tile - None" & "       "
     Call changeSelectedTile(boardList(activeBoardIndex).selectedTile)
+    tkMainForm.animTileTimer.Enabled = m_bAnimating
     
 End Sub
 

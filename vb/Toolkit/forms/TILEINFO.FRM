@@ -569,7 +569,7 @@ Private Sub Form_Load()
 
     On Error Resume Next
     
-    Dim x As Integer, y As Integer, colorit As Long
+    Dim X As Integer, Y As Integer, colorit As Long
     Dim Temp As String, tileopen As String, fn As String, ex As String
     Dim levelnum As Integer, numof As Integer, testtype As Integer, t As Integer
     
@@ -580,11 +580,11 @@ Private Sub Form_Load()
 
     'Hold the current tilemem in the tile buffer.
     openTileEditorDocs(activeTile.indice).oldDetail = detail
-    For x = 1 To 32
-        For y = 1 To 32
-            bufTile(x, y) = tileMem(x, y)
-        Next y
-    Next x
+    For X = 1 To 32
+        For Y = 1 To 32
+            bufTile(X, Y) = tileMem(X, Y)
+        Next Y
+    Next X
     
     'First, see if it's in an archive
     tileopen$ = projectPath$ + tilePath$ + BoardGetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)
@@ -608,15 +608,15 @@ Private Sub Form_Load()
         End If
         
         'Draw the tile 2D. Not edited for .iso, incase people want to use .iso on 2D boards...
-        For x = 1 To 32
-            For y = 1 To 32
-                colorit = tileMem(x, y)
+        For X = 1 To 32
+            For Y = 1 To 32
+                colorit = tileMem(X, Y)
                 If colorit = -1 Then colorit = vbQBColor(15)
-                Call vbPicPSet(tileinfopic, x - 1, y - 1, colorit)
+                Call vbPicPSet(tileinfopic, X - 1, Y - 1, colorit)
                 
-                tileMem(x, y) = bufTile(x, y)
-            Next y
-        Next x
+                tileMem(X, Y) = bufTile(X, Y)
+            Next Y
+        Next X
         detail = openTileEditorDocs(activeTile.indice).oldDetail
     End If
 

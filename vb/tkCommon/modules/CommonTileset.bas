@@ -317,10 +317,12 @@ Public Sub openFromTileSet(ByVal file As String, ByVal number As Long): On Error
     Dim tileBlock() As Byte, size As Long, depth As Long, position As Long
     Dim num As Long, element As Long, x As Long, y As Long
     
-    'Check valid file, valid tile number, valid header.
+    ' Check valid file, valid tile number, valid header.
     If Not fileExists(file) Then Exit Sub
-    If number < 1 Or number > tileset.tilesInSet Then Exit Sub
-    If tilesetInfo(file) <> TSTTYPE And tilesetInfo(file) <> ISOTYPE Then Exit Sub
+    Dim lngInfo As Long
+    lngInfo = tilesetInfo(file)
+    If (number < 1 Or number > tileset.tilesInSet) Then Exit Sub
+    If (lngInfo <> TSTTYPE And lngInfo <> ISOTYPE) Then Exit Sub
  
     detail = tileset.detail
     If detail = ISODETAIL Then detail = 1
