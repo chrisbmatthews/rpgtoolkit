@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form layertile 
+Begin VB.Form frmLayerTile 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Layer Tile"
    ClientHeight    =   1455
@@ -128,7 +128,7 @@ Begin VB.Form layertile
       Width           =   1215
    End
 End
-Attribute VB_Name = "layertile"
+Attribute VB_Name = "frmLayerTile"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -185,7 +185,7 @@ Private Sub cmdOK_Click()
     '!NEW! The user wants to save the changes
     saveChanges = True
     
-    Unload layertile
+    Call Unload(Me)
 
     Exit Sub
 'Begin error handling code:

@@ -487,8 +487,6 @@ Private Function getTransparentColor(ByVal crColor As Long) As Long: On Error Re
     
     'We have a colour code that isn't on the tile.
     getTransparentColor = trColor
-    
-        
 
 End Function
 
