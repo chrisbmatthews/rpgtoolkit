@@ -3255,7 +3255,7 @@ Public Function IfThen(ByVal Text As String, ByRef prg As RPGCodeProgram) As Lon
 
                         ' If using elseif, also evaluate the brackets
                         lngRunBlock = evaluate(GetBrackets(Text), prg)
-                        prg.bRunBlock(prg.programPos) = CBool(lngRunBlock)
+                        prg.bRunBlock(lngLine) = CBool(lngRunBlock)
 
                     End If
 
