@@ -36,7 +36,13 @@ Private Declare Function lClose Lib "kernel32" Alias "_lclose" (ByVal hFile As L
 Private Const REG_SZ = 1                        ' Registry string
 Private Const HKEY_LOCAL_MACHINE = &H80000002   ' Local machine registry section
 Private Const OF_SHARE_EXCLUSIVE = &H10         ' Exclusive access
+Private Const EXE_CRC As Long = 0               ' CRC checksum ran on this file
 Public Const RPGTOOLKIT_VERSION = "3.06"        ' Version of the toolkit
+
+'=========================================================================
+' Members
+'=========================================================================
+Private m_crc(255) As Long                      ' CRC32 table
 
 '=========================================================================
 ' Main entry point
@@ -45,6 +51,12 @@ Public Sub Main()
  
     ' First, initiate the common controls
     Call initCommonControls
+
+    ' Check for valid CRC
+    If (EXE_CRC <> calcCrcFile(App.Path & "\" & App.EXEName & ".exe")) Then
+        Call MsgBox("This file appears to be corrupted. Please try downloading again.")
+        Exit Sub
+    End If
 
     ' Check if same version is already installed
     If (GetSetting("RPGToolkit3", "Settings", "Version", vbNullString) = RPGTOOLKIT_VERSION) Then
@@ -63,6 +75,90 @@ Public Sub Main()
     Call frmMain.Show
 
 End Sub
+
+'=========================================================================
+' Calculate a CRC32 table
+'=========================================================================
+Private Sub calcCrcTable()
+
+    Const CRC_LIMIT = &HEDB88320
+
+    Dim i As Long, j As Long
+    For i = 0 To 255
+        Dim crc As Long
+        crc = i
+        For j = 8 To 1 Step -1
+            Dim lngTemp As Long
+            If (crc < 0) Then
+                lngTemp = crc And &H7FFFFFFF
+                lngTemp = lngTemp \ 2
+                lngTemp = lngTemp Or &H40000000
+            Else
+                lngTemp = crc \ 2
+            End If
+            If (crc And 1) Then
+                crc = lngTemp Xor CRC_LIMIT
+            Else
+                crc = lngTemp
+            End If
+        Next j
+        m_crc(i) = crc
+    Next i
+
+End Sub
+
+'=========================================================================
+' Calculate a CRC32 checksum
+'=========================================================================
+Private Function calcCrc(ByRef str As String) As Long
+
+    Dim crc As Long
+    crc = -1
+
+    Dim i As Long
+    For i = 1 To Len(str)
+
+        Dim lngTemp As Long
+        If (crc < 0) Then
+            lngTemp = crc And &H7FFFFFFF
+            lngTemp = lngTemp \ 256
+            lngTemp = (lngTemp Or &H800000) And &HFFFFFF
+        Else
+            lngTemp = (crc \ 256) And &HFFFFFF
+        End If
+
+        crc = lngTemp Xor m_crc((crc Xor CLng(Asc(Mid$(str, i, 1)))) And &HFF)
+
+    Next i
+
+    crc = crc Xor &HFFFFFFFF
+    calcCrc = crc
+
+End Function
+
+'=========================================================================
+' Run CRC32 on a file
+'=========================================================================
+Private Function calcCrcFile(ByRef strFileName As String) As Long
+
+    ' Read in the file with VB's silly features
+    Dim ff As Integer
+    ff = FreeFile()
+
+    Dim str As String, strCrc As String
+
+    Open strFileName For Input Access Read As ff
+        Do Until (EOF(ff))
+            Line Input #ff, str
+            strCrc = strCrc & str & vbCrLf
+        Loop
+        strCrc = Left$(strCrc, Len(strCrc) - 2)
+    Close ff
+
+    ' Return the CRC result
+    calcCrcFile = calcCrc(strCrc)
+
+End Function
 
 '=========================================================================
 ' Determine whether a file is open
