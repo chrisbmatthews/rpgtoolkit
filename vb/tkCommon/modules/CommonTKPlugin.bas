@@ -243,7 +243,7 @@ End Function
 '=========================================================================
 ' Wait for a command to finish
 '=========================================================================
-Public Function ExecCmd(ByVal cmdline As String)
+Public Sub ExecCmd(ByVal cmdline As String)
 
     Dim proc As PROCESS_INFORMATION
     Dim start As STARTUPINFO
@@ -261,6 +261,5 @@ Public Function ExecCmd(ByVal cmdline As String)
     Call GetExitCodeProcess(proc.hProcess, ret)
     Call CloseHandle(proc.hThread)
     Call CloseHandle(proc.hProcess)
-    ExecCmd = ret
 
-End Function
+End Sub
