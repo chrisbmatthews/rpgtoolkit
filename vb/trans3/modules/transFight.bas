@@ -573,6 +573,9 @@ Public Sub runFight( _
             ' Flag the fight has ended
             fightInProgress = False
 
+            ' Force a render
+            Call renderNow(-1, True)
+
         End If
 
     End If

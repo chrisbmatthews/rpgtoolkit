@@ -44,7 +44,7 @@ Private Const SFX_DEVICE = "sfxDevive"   ' Sound effect device (MCI)
 Private Const MID_DEVICE = "midDevice"   ' Music device (MCI)
 
 '=========================================================================
-' Expose DirecMusic
+' Expose DirectMusic
 '=========================================================================
 Public Property Get getDirectMusic() As CDirectMusic
     ' Return a reference to our member
@@ -250,7 +250,7 @@ Public Sub stopMedia()
     Call StopMCI(SFX_DEVICE)
     Call TKAudiereStop(fgDevice)
     Call TKAudiereStop(bkgDevice)
-    Call m_dm.stopMidi
+    Set m_dm = New CDirectMusic
 
 End Sub
 
