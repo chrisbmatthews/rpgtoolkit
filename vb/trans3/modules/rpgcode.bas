@@ -4817,7 +4817,7 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
             Case "WALK_E": facing = East
         End Select
 
-        'Call runQueuedMovements
+        ' Call runQueuedMovements
 
     End If
 
@@ -5453,7 +5453,7 @@ Sub RestoreScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
         Exit Sub
     End If
         
-    Call DXDrawCanvasPartial(cnvRPGCodeAccess, _
+    Call Canvas2CanvasBltPartial(cnvRPGCodeAccess, cnvRPGCodeScreen, _
                                 xd, yd, _
                                 x1, y1, _
                                 (x2 - x1), (y2 - y1))
@@ -5768,8 +5768,8 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
     Select Case countDat
     
         Case 0
-            Call CanvasGetScreen(cnvRPGCodeAccess)
-            ' Canvas2CanvasBlt cnvRPGCodeScreen, cnvRPGCodeAccess, 0, 0
+            ' Call CanvasGetScreen(cnvRPGCodeAccess)
+            Canvas2CanvasBlt cnvRPGCodeScreen, cnvRPGCodeAccess, 0, 0
             
         Case 1
             Dim paras() As parameters
@@ -5791,7 +5791,8 @@ Public Sub SaveScreenRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 End If
 
                 'Save the screen!
-                CanvasGetScreen cnvRPGCode(paras(0).num)
+                ' CanvasGetScreen cnvRPGCode(paras(0).num)
+                Call Canvas2CanvasBlt(cnvRPGCodeScreen, paras(0).num, 0, 0)
 
             Else
                 debugger "SaveScreen() requires either no data elements or" _
