@@ -32,6 +32,24 @@ CDirectDraw::CDirectDraw(VOID)
 	m_hInstance = NULL;
 	m_hDCLocked = NULL;
 	m_pBackBuffer = NULL;
+	m_bSrcAnd = FALSE;
+	m_bSrcPaint = FALSE;
+}
+
+//------------------------------------------------------------------------
+// Determine whether we support a ROP
+//------------------------------------------------------------------------
+BOOL FAST_CALL CDirectDraw::supportsRop(
+	CONST LONG lRop
+		) CONST
+{
+	// Switch on the ROP
+	switch (lRop)
+	{
+		case SRCAND:	return m_bSrcAnd;
+		case SRCPAINT:	return m_bSrcPaint;
+		default:		return TRUE;
+	}
 }
 
 //------------------------------------------------------------------------
@@ -65,6 +83,14 @@ BOOL FAST_CALL CDirectDraw::InitGraphicsMode(
 			KillGraphicsMode();
 			return FALSE;
 		}
+
+		// Get capabilities of video card
+		DDCAPS ddcA, ddcB;
+		m_lpdd->GetCaps(&ddcA, &ddcB);
+
+		// Check raster operations
+		m_bSrcAnd = (ddcA.dwRops[5] & 0x80);		// SRCAND
+		m_bSrcPaint = (ddcA.dwRops[8] & 0x2000);	// SRCPAINT
 
 	}
 	else

@@ -229,6 +229,11 @@ public:
 	// Check whether we're using DirectDraw
 	BOOL usingDirectX(VOID) CONST { return m_bUseDirectX; }
 
+	// Determine whether we support a ROP
+	BOOL FAST_CALL supportsRop(
+		CONST LONG lRop
+	) CONST;
+
 	// Obtain the screen's DC
 	HDC OpenDC(
 		VOID
@@ -281,6 +286,8 @@ private:
 	HINSTANCE m_hInstance;				// Handle of instance to app
 	HDC m_hDCLocked;					// HDC of locked surface
 	CGDICanvas *m_pBackBuffer;			// Non-DirectX backbuffer
+	BOOL m_bSrcAnd;						// SRCAND support?
+	BOOL m_bSrcPaint;					// SRCPAINT support?
 
 };
 
