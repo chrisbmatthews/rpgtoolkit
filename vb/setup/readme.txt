@@ -2,7 +2,7 @@ RPGToolkit, Version 3 :: Installation Program
 
 To build the installer:
 
-a) prepare a zip.zip from \build (plus trans3.exe and toolkit3.exe)
+a) prepare a zip.zip from \build (plus trans3.exe, toolkit3.exe, and actkrt3.dll)
 
 b) build prjSetup as setup.exe
 
