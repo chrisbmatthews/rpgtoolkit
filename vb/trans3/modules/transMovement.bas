@@ -1721,7 +1721,7 @@ Private Sub playerDoneMove(): On Error Resume Next
         If (checkfight = (1 / movementSize)) Then
             Call fightTest
             checkfight = 0
-            End If
+        End If
 
     End With
 
