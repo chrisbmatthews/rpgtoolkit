@@ -96,6 +96,7 @@ Public cnvRenderNow As Long     'Allows drawing onto renderNow canvas at last st
                                 'This *finally* makes HP bars and the like possible.
 
 Public renderRenderNowCanvas As Boolean     'Should we render cnvRenderNow?
+Public renderRenderNowCanvasTranslucent As Boolean  'Render it translucently?
 
 '=========================================================================
 ' Returns number of items loaded
@@ -1194,10 +1195,18 @@ Public Sub renderNow(Optional ByVal cnvTarget As Long = -1, Optional ByVal force
         If renderRenderNowCanvas Then
             If cnvTarget = -1 Then
                 'To the screen
-                Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, 0)
+                If Not renderRenderNowCanvasTranslucent Then
+                    Call DXDrawCanvasTransparent(cnvRenderNow, 0, 0, 0)
+                Else
+                    Call DXDrawCanvasTranslucent(cnvRenderNow, 0, 0)
+                End If
             Else
                 'To a canvas
-                Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, 0)
+                If Not renderRenderNowCanvasTranslucent Then
+                    Call Canvas2CanvasBltTransparent(cnvRenderNow, cnvTarget, 0, 0, 0)
+                Else
+                    Call Canvas2CanvasBltTranslucent(cnvRenderNow, cnvTarget, 0, 0)
+                End If
             End If
         End If
 

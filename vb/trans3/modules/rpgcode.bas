@@ -12079,8 +12079,10 @@ End Sub
 '=========================================================================
 Public Sub renderNowRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     On Error Resume Next
-    If CountData(Text) <> 1 Then
-        Call debugger("RenderNow() requires one data element-- " & Text)
+    Dim elements As Long
+    elements = CountData(Text)
+    If elements <> 1 And elements <> 2 Then
+        Call debugger("RenderNow() requires one or two data elements-- " & Text)
         Exit Sub
     End If
     Dim paras() As parameters
@@ -12095,6 +12097,13 @@ Public Sub renderNowRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
         renderRenderNowCanvas = False
     Else
         Call debugger("RenderNow()'s data element must be ON or OFF-- " & Text)
+    End If
+    If (elements = 2) And (paras(1).num = 1) Then
+        'Render translucently!
+        renderRenderNowCanvasTranslucent = True
+    Else
+        'Render transparently!
+        renderRenderNowCanvasTranslucent = False
     End If
 End Sub
 
