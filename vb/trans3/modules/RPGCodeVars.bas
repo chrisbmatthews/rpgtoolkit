@@ -92,7 +92,7 @@ Private Function evaluate(ByVal Text As String) As Double
     Const MOD_SIGN = 7              ' Modulus
     Const MULTIPLY_SIGN = 8         ' * sign
     Const DIV_SIGN = 9              ' / sign
-    Const RAISE_SIGN = 10             '^ sign
+    Const RAISE_SIGN = 10           ' ^ sign
 
     Dim idx As Long                 ' Current character
     Dim char As String              ' A character
@@ -421,17 +421,17 @@ End Function
 Public Function getRedirect(ByVal originalMethod As String) As String
 
     On Error Resume Next
-    Dim length As Long
+    Dim Length As Long
     
     originalMethod = UCase$(replace(originalMethod, "#", ""))
     If redirectExists(originalMethod) Then
         Dim getStr As String * 4048
-        length = RPGCGetRedirect(originalMethod, getStr)
-        If length = 0 Then
+        Length = RPGCGetRedirect(originalMethod, getStr)
+        If Length = 0 Then
             getRedirect = originalMethod
             Exit Function
         End If
-        getRedirect = Mid$(getStr, 1, length)
+        getRedirect = Mid$(getStr, 1, Length)
     Else
         getRedirect = vbNullString
     End If
@@ -446,14 +446,14 @@ Public Function getRedirectName(ByVal Index As Long) As String
     On Error Resume Next
     
     Dim max As Long
-    Dim length As Long
+    Dim Length As Long
     max = RPGCCountRedirects()
     If Index > max - 1 Or Index < 0 Then
         getRedirectName = vbNullString
     Else
         Dim inBuf As String * 4024
-        length = RPGCGetRedirectName(Index, inBuf)
-        getRedirectName = Mid$(inBuf, 1, length)
+        Length = RPGCGetRedirectName(Index, inBuf)
+        getRedirectName = Mid$(inBuf, 1, Length)
     End If
 
 End Function
@@ -677,8 +677,12 @@ Public Sub variableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
                                             Case "/", "*", "^", "%"
                                                 ' Multiplicative identity is 1
                                                 numberUse(tokenIdx) = 1
-                                            Case "`", "&", "|"
-                                                ' Logic identity is... ??
+                                            Case "`", "|"
+                                                ' Binary [X]OR identity is 0
+                                                numberUse(tokenIdx) = 0
+                                            Case "&"
+                                                ' Binary AND identity is 255
+                                                numberUse(tokenIdx) = 255
                                         End Select
                                         ' Flag this spot holds an identity
                                         nulled(tokenIdx) = True
@@ -798,7 +802,7 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
     Dim numA As Double      ' Numerical value
     Dim litA As String      ' Literal value
     Dim p As Long           ' For loop control variable
-    Dim length As Long      ' Length of text
+    Dim Length As Long      ' Length of text
     Dim part As String      ' A character
     Dim checkIt As Boolean  ' In quotes?
     Dim newPos As Long      ' New position
@@ -862,10 +866,10 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
                             '------
 
             ' Get the length of the text
-            length = Len(Text)
+            Length = Len(Text)
 
             ' Check if text is in quotes
-            For p = 1 To length
+            For p = 1 To Length
                 If Mid$(Text, p, 1) = ("""") Then
                     checkIt = True
                     Exit For
@@ -874,13 +878,13 @@ Public Function getValue(ByVal Text As String, ByRef lit As String, ByRef num As
 
             If (checkIt) Then
                 ' It is!
-                For p = 1 To length
+                For p = 1 To Length
                     If Mid$(Text, p, 1) = ("""") Then
                         newPos = p
                         Exit For
                     End If
                 Next p
-                For p = (newPos + 1) To (length)
+                For p = (newPos + 1) To (Length)
                     part = Mid$(Text, p, 1)
                     If ((part = ("""")) Or (LenB(part) = 0)) Then
                         lit = sendText
@@ -961,14 +965,14 @@ End Sub
 Public Function GetNumName(ByVal Index As Integer, ByVal heapID As Long) As String
     On Error Resume Next
     
-    Dim max As Long, length As Long
+    Dim max As Long, Length As Long
     max = RPGCCountNum(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetNumName = vbNullString
     Else
         Dim inBuf As String * 4024
-        length = RPGCGetNumName(Index, inBuf, heapID)
-        GetNumName = Mid$(inBuf, 1, length)
+        Length = RPGCGetNumName(Index, inBuf, heapID)
+        GetNumName = Mid$(inBuf, 1, Length)
     End If
 End Function
 
@@ -978,14 +982,14 @@ End Function
 Public Function GetLitName(ByVal Index As Integer, ByVal heapID As Long) As String
     On Error Resume Next
     
-    Dim max As Long, length As Long
+    Dim max As Long, Length As Long
     max = RPGCCountLit(heapID)
     If Index > max - 1 Or Index < 0 Then
         GetLitName = vbNullString
     Else
         Dim inBuf As String * 4024
-        length = RPGCGetLitName(Index, inBuf, heapID)
-        GetLitName = Mid$(inBuf, 1, length)
+        Length = RPGCGetLitName(Index, inBuf, heapID)
+        GetLitName = Mid$(inBuf, 1, Length)
     End If
 End Function
 
@@ -1064,10 +1068,10 @@ Public Function variType(ByVal var As String, ByVal heapID As Long) As Long
 
     On Error Resume Next
     
-    Dim a As String, length As Long, pos As Long, typeIt As Long, part As String
+    Dim a As String, Length As Long, pos As Long, typeIt As Long, part As String
     a$ = var$
-    length = Len(a$)
-    For pos = 1 To length
+    Length = Len(a$)
+    For pos = 1 To Length
         part$ = Mid$(a$, pos, 1)
         If part$ = "$" Then typeIt = 1
         If part$ = "!" Then typeIt = 2
@@ -1356,14 +1360,14 @@ End Function
 '=========================================================================
 Public Function GetLitVar(ByVal varname As String, ByVal heapID As Long) As String
     On Error Resume Next
-    Dim l As Long, length As Long
+    Dim l As Long, Length As Long
     
     l = RPGCGetLitVarLen(UCase$(varname), heapID)
     If l > 0 Then
         l = l + 1
         Dim getStr As String * 4048
-        length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
-        GetLitVar = Mid$(getStr, 1, length)
+        Length = RPGCGetLitVar(UCase$(varname), getStr, heapID)
+        GetLitVar = Mid$(getStr, 1, Length)
     Else
         GetLitVar = vbNullString
     End If
