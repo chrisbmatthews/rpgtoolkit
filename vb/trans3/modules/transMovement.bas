@@ -1613,7 +1613,6 @@ Private Function pushPlayer(ByVal pNum As Long, ByRef staticTileType As Byte) As
     Dim moveFraction As Double
 
     fightInProgress = False
-    stepsTaken = stepsTaken + 1
 
     'Change direction now in case we're going to be walking against a wall.
     Select Case pendingPlayerMovement(pNum).direction
@@ -1648,53 +1647,59 @@ Private Function pushPlayer(ByVal pNum As Long, ByRef staticTileType As Byte) As
         Exit Function
     End If
 
-    'Shift the screen drawing co-ords if needed.
-    Select Case pendingPlayerMovement(pNum).direction
-        Case MV_NORTH
-            If checkScrollNorth(pNum) Then topY = topY - moveFraction
-        Case MV_SOUTH
-            If checkScrollSouth(pNum) Then topY = topY + moveFraction
-        Case MV_EAST
-            If checkScrollEast(pNum) Then topX = topX + moveFraction
-        Case MV_WEST
-            If checkScrollWest(pNum) Then topX = topX - moveFraction
-        Case MV_NE
-            If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-                If checkScrollEast(pNum) Then topX = topX + moveFraction / 2
-                If checkScrollNorth(pNum) Then topY = topY - moveFraction / 2
-            Else
-                If checkScrollEast(pNum) Then topX = topX + moveFraction
+    If pNum = selectedPlayer Then
+    
+        'Shift the screen drawing co-ords if needed, only for selected player movement.
+        Select Case pendingPlayerMovement(pNum).direction
+            Case MV_NORTH
                 If checkScrollNorth(pNum) Then topY = topY - moveFraction
-            End If
-        Case MV_NW
-            If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-                If checkScrollWest(pNum) Then topX = topX - moveFraction / 2
-                If checkScrollNorth(pNum) Then topY = topY - moveFraction / 2
-            Else
-                If checkScrollWest(pNum) Then topX = topX - moveFraction
-                If checkScrollNorth(pNum) Then topY = topY - moveFraction
-            End If
-        Case MV_SE
-            If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-                If checkScrollEast(pNum) Then topX = topX + moveFraction / 2
-                If checkScrollSouth(pNum) Then topY = topY + moveFraction / 2
-            Else
+            Case MV_SOUTH
+                If checkScrollSouth(pNum) Then topY = topY + moveFraction
+            Case MV_EAST
                 If checkScrollEast(pNum) Then topX = topX + moveFraction
-                If checkScrollSouth(pNum) Then topY = topY + moveFraction
-            End If
-        Case MV_SW
-            If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
-                If checkScrollWest(pNum) Then topX = topX - moveFraction / 2
-                If checkScrollSouth(pNum) Then topY = topY + moveFraction / 2
-            Else
+            Case MV_WEST
                 If checkScrollWest(pNum) Then topX = topX - moveFraction
-                If checkScrollSouth(pNum) Then topY = topY + moveFraction
-            End If
-
-    End Select
-
-    topX = Round(topX, 5)               'Need topX,Y as FRACTIONs.
-    topY = Round(topY, 5)
+            Case MV_NE
+                If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+                    If checkScrollEast(pNum) Then topX = topX + moveFraction / 2
+                    If checkScrollNorth(pNum) Then topY = topY - moveFraction / 2
+                Else
+                    If checkScrollEast(pNum) Then topX = topX + moveFraction
+                    If checkScrollNorth(pNum) Then topY = topY - moveFraction
+                End If
+            Case MV_NW
+                If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+                    If checkScrollWest(pNum) Then topX = topX - moveFraction / 2
+                    If checkScrollNorth(pNum) Then topY = topY - moveFraction / 2
+                Else
+                    If checkScrollWest(pNum) Then topX = topX - moveFraction
+                    If checkScrollNorth(pNum) Then topY = topY - moveFraction
+                End If
+            Case MV_SE
+                If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+                    If checkScrollEast(pNum) Then topX = topX + moveFraction / 2
+                    If checkScrollSouth(pNum) Then topY = topY + moveFraction / 2
+                Else
+                    If checkScrollEast(pNum) Then topX = topX + moveFraction
+                    If checkScrollSouth(pNum) Then topY = topY + moveFraction
+                End If
+            Case MV_SW
+                If (boardList(activeBoardIndex).theData.isIsometric = 1) Then
+                    If checkScrollWest(pNum) Then topX = topX - moveFraction / 2
+                    If checkScrollSouth(pNum) Then topY = topY + moveFraction / 2
+                Else
+                    If checkScrollWest(pNum) Then topX = topX - moveFraction
+                    If checkScrollSouth(pNum) Then topY = topY + moveFraction
+                End If
+    
+        End Select
+    
+        topX = Round(topX, 5)               'Need topX,Y as FRACTIONs.
+        topY = Round(topY, 5)
+        
+        'Update the step count (doesn't take pixel movement into account yet).
+        stepsTaken = stepsTaken + 1
+    End If
 
     'We can move, put the test location into the true loc.
     pPos(pNum) = testPos
