@@ -2605,13 +2605,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "06/02/2005"
+            TextSave        =   "2/11/2005"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "15:28"
+            TextSave        =   "5:00 PM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2619,6 +2619,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          BeginProperty Panel5 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   2
+            Enabled         =   0   'False
             TextSave        =   "NUM"
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
@@ -3810,15 +3811,10 @@ Public Sub newplayermnu_Click(): On Error Resume Next
     Call frm.SetFocus
 End Sub
 
-Public Sub newprojectmnu_Click(): On Error GoTo ErrorHandler
-    newGame.Show 1
-    'mainoption.ZOrder 1
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Public Sub newprojectmnu_Click(): On Error Resume Next
+    Call newGame.Show(1)
+    tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" & mainFile & ")"
+    Call editmainfile.Show
 End Sub
 
 Public Sub newrpgcodemnu_Click(): On Error Resume Next

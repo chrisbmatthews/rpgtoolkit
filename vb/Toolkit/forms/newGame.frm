@@ -209,7 +209,7 @@ Private Sub Command1_Click()
             mainMem.mainScreenType = 1
             saveMain gamPath$ + tt$, mainMem
         End If
-        editmainfile.Show
+        ' editmainfile.Show
         Unload newGame
     End If
     Exit Sub
