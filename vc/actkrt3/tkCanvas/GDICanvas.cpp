@@ -145,7 +145,7 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 {
 
 	// Destroy existing canvas
-	if (m_hdcMem) Destroy();
+	if (m_hdcMem || m_lpddsSurface) Destroy();
 
 	// If a DirectDraw object exists
 	if (g_pDirectDraw)
