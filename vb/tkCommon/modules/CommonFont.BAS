@@ -102,7 +102,7 @@ End Sub
 
 Sub antialias()
     'antialiases font
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     Dim X As Long, Y As Long
     For X = 1 To currentX - 1
         For Y = 1 To currentY - 1
@@ -129,7 +129,7 @@ Sub antialias()
 
     Exit Sub
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Sub
@@ -408,7 +408,7 @@ Function SetDeviceFont(ByVal hdc As Long, ByRef theAttribs As fontAttribs, ByRef
 End Function
 
 Function toBinary(ByVal decimala As Long) As String
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     Dim binNum As String, t As Long, Length As Long, newNum As String, part As String
     Dim remain As Long
     binNum$ = ""
@@ -428,7 +428,7 @@ Function toBinary(ByVal decimala As Long) As String
     Exit Function
 
 'Begin error handling code:
-ErrorHandler:
+errorhandler:
     Call HandleError
     Resume Next
 End Function

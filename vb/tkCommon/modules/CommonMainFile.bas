@@ -4,15 +4,16 @@ Attribute VB_Name = "CommonMainFile"
 'Read LICENSE.txt for licensing info
 
 'mainForm file Editor:
+
 Option Explicit
 
-Global mainfile$                'filename
-Global mainNeedUpdate As Boolean
+Public mainfile As String                'filename
+Public mainNeedUpdate As Boolean
 
 ''''''''''''''''''''''project data'''''''''''''''''''''''''
-Global loadedMainFile$
+Public loadedMainFile As String
 
-Type TKMain
+Public Type TKMain
     gameTitle As String               'title of game
     mainScreenType As Integer         'screen type 2=windowed (GDI), 1=DirectX, 0- DirectX (not used)
     extendToFullScreen As Integer     'extend screen to maximum extents  (0=no, 1=yes)
@@ -137,6 +138,59 @@ Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
             End If
         End If
     Next t
+End Sub
+
+Public Sub upgradeBattleSystem()
+
+    '===============================================
+    'Checks if the default BS needs updating
+    'Assumes the main file is already loaded
+    '===============================================
+
+    On Error Resume Next
+
+    If mainMem.fightPlugin = "tk3fight.dll" Then
+
+        Dim fullPath As String
+        fullPath = projectPath & plugPath & "tk3fight.dll"
+
+        Dim theVersion As Long
+        theVersion = pluginVersion(fullPath)
+
+        If theVersion = 30 Then
+
+            'Initial version 3 battle system-- needs updating
+
+            If fileExists(newDLL) Then
+
+                'Backup old fight DLL
+                Dim destPath As String
+                destPath = projectPath & plugPath & "tk3fight_old.dll"
+                Call FileCopy(fullPath, destPath)
+
+                'Put the new DLL in place
+                Dim newDLL As String
+                newDLL = "Game\Basic\Plugin\tk3fight.dll"
+                Call Kill(fullPath)
+                Call FileCopy(newDLL, fullPath)
+
+                If Not isToolkit Then
+
+                    'It's trans3 and the DLL is supposed to already be registered
+                    'but it's not-- make it happen
+                    Call ExecCmd("regsrv32 /s " & chr(34) & fullPath & chr(34))
+
+                    'Now setup the plugin for usage
+                    Call setupVBPlugin(fullPath)
+
+                End If
+
+            End If
+
+        End If
+
+    End If
+
 End Sub
 
 Function openMain(ByVal file As String, ByRef theMain As TKMain) As Integer
@@ -289,8 +343,9 @@ Function openMain(ByVal file As String, ByRef theMain As TKMain) As Integer
         Loop
     End If
     
-    
+    Call upgradeBattleSystem
     openMain = toRet
+    
     Exit Function
 ver2oldmain:
     Open file$ For Input As #num
@@ -378,7 +433,9 @@ ver2oldmain:
         Loop
     End If
 
+    Call upgradeBattleSystem
     Exit Function
+
 openversion1main:
     'OK, apparently we have a version 1 mainForm file.
     updatetype = 2
@@ -408,8 +465,8 @@ openversion1main:
         Next
     Close #num
     openMain = 0
+    Call upgradeBattleSystem
 End Function
-
 
 Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     'saves mainForm file

@@ -99,13 +99,12 @@ Public Type PROCESS_INFORMATION
    dwThreadID As Long
 End Type
 
-'KSNiloc...
 Public vbPlugins() As New clsVbPlugin
 
 Function pluginDescription(ByVal plugFile As String) As String
+
     On Error Resume Next
 
-    ' ! MODIFIED BY KSNiloc...
     If isVBPlugin(plugFile) Then
         pluginDescription = VBPlugin(plugFile).description
     Else
@@ -114,7 +113,19 @@ Function pluginDescription(ByVal plugFile As String) As String
         le = PLUGDescription(plugFile, ret, 1025)
         pluginDescription = Mid(ret, 1, le)
     End If
-   
+
+End Function
+
+Public Function pluginVersion(ByVal plugFile As String) As Long
+
+    On Error Resume Next
+    
+    If isVBPlugin(plugFile) Then
+        pluginVersion = VBPlugin(plugFile).version
+    Else
+        pluginVersion = PLUGVersion(plugFile)
+    End If
+
 End Function
 
 Public Sub setupVBPlugin(ByVal plugName As String)
@@ -239,4 +250,5 @@ Public Function ExecCmd(ByVal cmdline As String)
       Call CloseHandle(proc.hThread)
       Call CloseHandle(proc.hProcess)
       ExecCmd = ret
+
 End Function

@@ -114,6 +114,7 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
+      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -401,10 +402,8 @@ Attribute VB_Exposed = False
 Public dataIndex As Long    'index into the vector of ste maintained in commonenemy
 Private openingPorgram As Boolean  'flag to determine if a program is being opened.  Allows for loading large files in background
 
-'Added by KSNiloc [6/19/04]
 Public blackLine As Boolean
 Private secondCombo As ComboBox
-'Added by KSNiloc [6/20/04]
 Private MouseDownSelStart As Long
 Private MouseDownSelLength As Long
 Private lastType As String
@@ -414,7 +413,6 @@ Private startX As Single
 Private startY As Single
 Private startTop As Single
 Private oldLine As Long
-'Added by KSNiloc [7/7/04]
 Private undoBuffer() As String
 Private oldCaption As String
 Private meOldCaption As String
@@ -468,7 +466,7 @@ Sub OpenProgram(ByVal filename As String)
 On Error GoTo ErrorHandler
 
 ' Load the Program into text box.
-codeForm.LoadFile filename, rtfText
+codeform.LoadFile filename, rtfText
 
 ' Call Syntax Color Routines
 Call SplitLines
@@ -581,7 +579,7 @@ Private Sub CodeForm_KeyPress(KeyAscii As Integer)
             addUndo
 
         Case 3  ' Ctrl+C
-            Clipboard.SetText codeForm.SelText
+            Clipboard.SetText codeform.SelText
             
         Case 26 ' Ctrl+Z
             doUndo
@@ -606,11 +604,11 @@ Private Sub doUndo()
     On Error Resume Next
     Dim oSS As Long
     Dim oSL As Long
-    oSS = codeForm.selStart
-    oSL = codeForm.SelLength
-    codeForm.Text = undoBuffer(-1)
-    codeForm.selStart = oSS
-    codeForm.SelLength = oSL
+    oSS = codeform.selStart
+    oSL = codeform.SelLength
+    codeform.Text = undoBuffer(-1)
+    codeform.selStart = oSS
+    codeform.SelLength = oSL
 
     Dim a As Long
     ReDim Preserve undoBuffer(LBound(undoBuffer) To UBound(undoBuffer) + 1)
@@ -631,11 +629,11 @@ Private Sub doRedo()
     On Error Resume Next
     Dim oSS As Long
     Dim oSL As Long
-    oSS = codeForm.selStart
-    oSL = codeForm.SelLength
-    codeForm.Text = undoBuffer(1)
-    codeForm.selStart = oSS
-    codeForm.SelLength = oSL
+    oSS = codeform.selStart
+    oSL = codeform.SelLength
+    codeform.Text = undoBuffer(1)
+    codeform.selStart = oSS
+    codeform.SelLength = oSL
     
     Dim a As Long
     ReDim Preserve undoBuffer(LBound(undoBuffer) - 1 To UBound(undoBuffer))
@@ -662,7 +660,7 @@ Private Sub addUndo()
         undoBuffer(a + 1) = undoBuffer(a)
     Next a
     
-    undoBuffer(0) = codeForm.Text
+    undoBuffer(0) = codeform.Text
 
 End Sub
 
@@ -670,13 +668,13 @@ Private Sub colorPastedCode()
 
     Dim oldSS As Long
     Dim oldSL As Long
-    oldSS = codeForm.selStart
-    oldSL = codeForm.SelLength
-    SplitLines oldLine, codeForm.GetLineFromChar(oldSS)
-    codeForm.selStart = oldSS
-    codeForm.SelLength = oldSL
+    oldSS = codeform.selStart
+    oldSL = codeform.SelLength
+    SplitLines oldLine, codeform.GetLineFromChar(oldSS)
+    codeform.selStart = oldSS
+    codeform.SelLength = oldSL
     blackLine = True
-    codeForm.SetFocus
+    codeform.SetFocus
     blackLine = False
 
 End Sub
@@ -747,8 +745,8 @@ Private Sub RestartReColor_Timer()
  'Added by KSNiloc
  On Error Resume Next
  If programEditorCountDown = 0 Then CheckReColor.Enabled = True
- If codeForm.SelText = "" And Not codeForm.SelColor = _
-  &H0& Then codeForm.SelColor = &H0&
+ If codeform.SelText = "" And Not codeform.SelColor = _
+  &H0& Then codeform.SelColor = &H0&
 End Sub
 
 Private Sub CheckReColor_Timer()
@@ -771,10 +769,10 @@ Private Sub codeform_MouseDown(button As Integer, Shift As Integer, _
  X As Single, Y As Single)
  
  'Record where we're moving from...
- MouseDownSelStart = codeForm.selStart
- MouseDownSelLength = codeForm.SelLength
+ MouseDownSelStart = codeform.selStart
+ MouseDownSelLength = codeform.SelLength
  
- oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+ oldLine = codeform.GetLineFromChar(codeform.selStart)
 
 End Sub
 
@@ -783,8 +781,8 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer)
 
  If Not mnuNotepadMode.Checked Then
   Dim inf As TextLineInfo
-  inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
-  tkMainForm.StatusBar1.Panels(3).Text = toString(codeForm.GetLineFromChar(codeForm.selStart) + 1)
+  inf = getTextLineInfo(codeform.Text, codeform.selStart)
+  tkMainForm.StatusBar1.Panels(3).Text = toString(codeform.GetLineFromChar(codeform.selStart) + 1)
   tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
  End If
 
@@ -795,7 +793,7 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer)
  
  'This addition allows for real-time syntax coloring
  
- oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+ oldLine = codeform.GetLineFromChar(codeform.selStart)
  
  'Declare variables...
  Dim enterKey As String
@@ -834,7 +832,7 @@ Private Sub codeform_MouseUp(button As Integer, Shift As Integer, _
     'Color the line we just left'
     '''''''''''''''''''''''''''''
 
-    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+    oldLine = codeform.GetLineFromChar(codeform.selStart)
 
     'Make sure we aren't wasting time coloring a line that's already colored
     If blackLine Then
@@ -844,12 +842,12 @@ Private Sub codeform_MouseUp(button As Integer, Shift As Integer, _
         Dim nSL As Long
  
         'Record where the mouse clicked down...
-        nSS = codeForm.selStart
-        nSL = codeForm.SelLength
+        nSS = codeform.selStart
+        nSL = codeform.SelLength
  
         'Move back to the line we just left...
-        codeForm.selStart = MouseDownSelStart
-        codeForm.SelLength = MouseDownSelLength
+        codeform.selStart = MouseDownSelStart
+        codeform.SelLength = MouseDownSelLength
 
         'Color the line we just left...
         ReColorLine
@@ -858,8 +856,8 @@ Private Sub codeform_MouseUp(button As Integer, Shift As Integer, _
         blackLine = False
  
         'Move back to where the mouse clicked down...
-        codeForm.selStart = nSS
-        codeForm.SelLength = nSL
+        codeform.selStart = nSS
+        codeform.SelLength = nSL
 
     End If
     
@@ -997,7 +995,7 @@ End Sub
 Private Sub closemnu_Click()
 On Error GoTo ErrorHandler
 
-rpgcodeList(activeRPGCodeIndex).prgText$ = codeForm.Text
+rpgcodeList(activeRPGCodeIndex).prgText$ = codeform.Text
 Unload rpgcodeedit
 
 Exit Sub
@@ -1013,8 +1011,8 @@ Private Sub codeform_Click()
 On Error Resume Next
 
 Dim inf As TextLineInfo
-inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
-tkMainForm.StatusBar1.Panels(3).Text = toString(codeForm.GetLineFromChar(codeForm.selStart) + 1)
+inf = getTextLineInfo(codeform.Text, codeform.selStart)
+tkMainForm.StatusBar1.Panels(3).Text = toString(codeform.GetLineFromChar(codeform.selStart) + 1)
 tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
 End Sub
 
@@ -1047,11 +1045,11 @@ On Error Resume Next
 
 ' Edit as Event
 
-numLines = countTextLines(codeForm.Text)
+numLines = countTextLines(codeform.Text)
 ReDim evtList$(numLines + 500)
 Dim i As Integer
 For i = 0 To numLines - 1
-    evtList(i) = getTextLineNumber(codeForm.Text, i)
+    evtList(i) = getTextLineNumber(codeform.Text, i)
 Next i
 EventEdit.Show
 
@@ -1096,7 +1094,7 @@ If rpgcodeList(activeRPGCodeIndex).Iboard$ <> "" Then
 End If
 tprg$ = tprg$ + "#BREAK()" + chr$(13) + chr$(10)
 
-tprg$ = tprg$ + codeForm.Text
+tprg$ = tprg$ + codeform.Text
     
 ' Save Test Program
 Call saveprogramtst(projectPath$ + prgPath$ + "sys_test.prg", tprg$)
@@ -1155,10 +1153,10 @@ Set activeRPGCode = Me
 dataIndex = VectRPGCodeNewSlot()
 activeRPGCodeIndex = dataIndex
     
-codeForm.Width = Me.Width * 0.9 - 255
-codeForm.height = Me.height * 0.9 - 335
-codeForm.Left = (Me.Width * 0.1) / 2
-codeForm.Top = Command1.Top + Command1.height + 335
+codeform.Width = Me.Width * 0.9 - 255
+codeform.height = Me.height * 0.9 - 335
+codeform.Left = (Me.Width * 0.1) / 2
+codeform.Top = Command1.Top + Command1.height + 335
 
 WindowState = 0
 
@@ -1174,9 +1172,9 @@ Form_Resize
 ' ADDED BY KSNiloc...
 ReDim undoBuffer(0 To 0)
 
-codeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", "")
-If codeForm.Text <> "" Then codeForm.Text = codeForm.Text & vbCrLf
-codeForm.selStart = Len(codeForm.Text)
+codeform.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", "")
+If codeform.Text <> "" Then codeform.Text = codeform.Text & vbCrLf
+codeform.selStart = Len(codeform.Text)
 
 formLoaded = True
 
@@ -1201,7 +1199,7 @@ End If
 'Numbers changed to work with bookmarks...
 Dim cfTop As Long
 If mnuBookmarkToolbar.Checked Then cfTop = 335
-codeForm.Move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
+codeform.Move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
 cboBookmarkType.Width = (Me.Width - 60) / 2
 secondCombo.Left = cboBookmarkType.Width
 secondCombo.Width = cboBookmarkType.Width - 60
@@ -1221,7 +1219,7 @@ Private Sub Form_Unload(Cancel As Integer)
 On Error GoTo ErrorHandler
 
 programEditorCount = programEditorCount - 1
-rpgcodeList(activeRPGCodeIndex).prgText$ = codeForm.Text
+rpgcodeList(activeRPGCodeIndex).prgText$ = codeform.Text
 Call hideAllTools
 
 ' KSNiloc...
@@ -1249,7 +1247,7 @@ End Sub
 Private Sub mnuCopy_Click()
 On Error Resume Next
 
-Clipboard.SetText codeForm.SelText
+Clipboard.SetText codeform.SelText
 End Sub
 
 ' CUT MENU
@@ -1257,10 +1255,10 @@ Private Sub mnuCut_Click()
 On Error Resume Next
 
 ' Copy Selected Text Into Clipboard
-Clipboard.SetText codeForm.SelText
+Clipboard.SetText codeform.SelText
 
 ' Remove Selected Text From Text Box
-codeForm.SelText = vbNullString
+codeform.SelText = vbNullString
 End Sub
 
 ' PASTE MENU
@@ -1271,7 +1269,7 @@ On Error Resume Next
 
 If Clipboard.GetFormat(vbCFText) = True Then
     ' Place the contents of the clipboard into current location in text box
-    codeForm.SelText = Clipboard.GetText
+    codeform.SelText = Clipboard.GetText
     colorPastedCode
 End If
 
@@ -1300,8 +1298,8 @@ ErrorHandler:
 End Sub
 
 Private Sub mnuSelectAll_Click()
-codeForm.selStart = 0
-codeForm.SelLength = Len(codeForm.Text)
+codeform.selStart = 0
+codeform.SelLength = Len(codeform.Text)
 End Sub
 
 ' RUN CODE MENU
@@ -1339,7 +1337,7 @@ Private Sub rprg_Click()
     End If
     
     ' Complete TestPRG String
-    TestPRG = TestPRG & codeForm.Text
+    TestPRG = TestPRG & codeform.Text
 
     ' ! MODIFIED BY KSNiloc...
     Dim num As Long
@@ -1416,10 +1414,10 @@ End Sub
 
 Private Sub splitLinesTimer_Timer()
     splitLinesTimer.Enabled = False
-    If codeForm.tag <> "1" Then
+    If codeform.tag <> "1" Then
         SplitLines
-        codeForm.SetFocus
-        codeForm.selStart = Len(codeForm.Text)
+        codeform.SetFocus
+        codeform.selStart = Len(codeform.Text)
         blackLine = False
     End If
 End Sub
