@@ -4743,10 +4743,13 @@ Sub PushRPG(ByRef Text As String, ByRef theProgram As RPGCodeProgram)
     
         'Search the player handles for a match:
         For i = 0 To 4
-            If UCase$(playerListAr(i)) = UCase$(paras(0).lit) Then playerNum = i
+            If (UCase$(playerListAr(i)) = UCase$(paras(1).lit)) Then
+                playerNum = i
+                Exit For
+            End If
         Next i
         
-        If paras(0).dataType = DT_LIT Then
+        If ((paras(1).dataType = DT_LIT) And (playerNum = -1)) Then
             Select Case UCase$(paras(1).lit)
                 Case "TARGET": If targetType = 0 Then playerNum = target
                 Case "SOURCE": If sourceType = 0 Then playerNum = Source
