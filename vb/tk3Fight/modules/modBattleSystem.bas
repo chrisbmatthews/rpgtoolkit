@@ -140,18 +140,14 @@ Private Function mainLoop() As Long
     Do
 
         'See if the fight is over
-        Dim toRet As Long
-        If fightHasEnded(toRet) Then
+        If fightHasEnded(mainLoop) Then
             'The fight has ended!
-            mainLoop = toRet
-            Call renderScene
             Exit Do
         End If
 
         'See if we ran away
-        If ranAway Then
+        If (ranAway) Then
             mainLoop = FIGHT_RUN_AUTO
-            Call renderScene
             Exit Do
         End If
 
@@ -168,6 +164,9 @@ Private Function mainLoop() As Long
         Call CBDoEvents
 
     Loop
+
+    'Render the final scene
+    Call renderScene
 
 End Function
 
@@ -1026,14 +1025,10 @@ Private Sub drawImageTransparent( _
     '====================================================================================
     'Draws an image transparently on the canvas passed in
     '====================================================================================
-    
+
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
-    If image <> "" Then
-        Call CBCanvasLoadSizedImage(cnv, image)
-    Else
-        Call CBCanvasFill(cnv, 0)
-    End If
+    Call CBCanvasLoadSizedImage(cnv, image)
     If lngColor = -1 Then
         Call CBCanvas2CanvasBltTransparent(cnv, destCnv, x, y, RGB(transR, transG, transB))
     Else
@@ -1055,14 +1050,10 @@ Private Sub drawImageTranslucent( _
     '====================================================================================
     'Draws an image translucently on the canvas passed in
     '====================================================================================
-    
+
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
-    If image <> "" Then
-        Call CBCanvasLoadSizedImage(cnv, image)
-    Else
-        Call CBCanvasFill(cnv, 0)
-    End If
+    Call CBCanvasLoadSizedImage(cnv, image)
     Call CBCanvas2CanvasBltTranslucent(cnv, destCnv, x, y, 0.5, -1, -1)
     Call CBDestroyCanvas(cnv)
 
@@ -1083,11 +1074,7 @@ Private Sub drawImage( _
 
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
-    If image <> "" Then
-        Call CBCanvasLoadSizedImage(cnv, image)
-    Else
-        Call CBCanvasFill(cnv, 0)
-    End If
+    Call CBCanvasLoadSizedImage(cnv, image)
     Call CBCanvas2CanvasBlt(cnv, destCnv, x, y)
     Call CBDestroyCanvas(cnv)
 
