@@ -410,6 +410,8 @@ Public ignoreDeactivate As Boolean
 
 '!NEW! For the changecolor function
 Private bchangecolor As Integer
+
+Dim fromActivate As Boolean
 '========================================================================
 ' Identify type of form
 '========================================================================
@@ -427,9 +429,8 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
     'If we have a .iso open, will drop into isometric mode.
     'If a .tst/.gph is open, will drop into normal mode.
     'Changing .iso -> .tst calls an error msg - not possible!
-    
-    If isoCheck = theData.isometric Then Exit Sub
-    
+    If fromActivate And isoCheck = theData.isometric Then Exit Sub
+
     If isoCheck Then
         If publicTile.tileneedupdate Then
             Dim result As Byte
@@ -463,7 +464,7 @@ Public Sub isoChange(ByVal isoCheck As Boolean)
             Next y
         Next x
         
-        tkMainForm.isoMirror.BorderStyle = 1
+        tkMainForm.isoMirror.BorderStyle = 0
         'Unenable some stuff
         mnuRotate.Enabled = False
         cutcornermnu.Enabled = False
@@ -969,7 +970,10 @@ Private Sub Form_Activate()
     tkMainForm.isoMirror.cls
     Call tileRedraw                                     '<-- New
     
+    fromActivate = True
     Call isoChange(theData.isometric)                   '<-- New
+    fromActivate = False
+    
     'Set the current tool
     Call ToolSet(theData.tilemode)
     'Set the selected color
