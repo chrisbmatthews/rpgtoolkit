@@ -22,11 +22,11 @@ echo why the installer would not have been able to register
 echo said components (ie. being logged under an account
 echo with insufficient capabilties). Regardless of your
 echo situation, running this file can do no harm, so you
-echo may as well try.
+echo might as well try.
 echo.
-echo Registering the SSTab...
+echo Registering the "SSTab" ActiveX control...
 regsvr32 /s TABCTL32.OCX
-echo Registering the rich text box...
+echo Registering the "Rich Text Box" ActiveX control...
 regsvr32 /s richtx32.ocx
 echo.
 echo Done!
