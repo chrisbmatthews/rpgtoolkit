@@ -928,8 +928,29 @@ End Sub
 '=========================================================================
 ' Form unload
 '=========================================================================
-Private Sub Form_Unload(ByRef Cancel As Integer)
-    On Error Resume Next
+Private Sub Form_Unload(ByRef Cancel As Integer): On Error Resume Next
+    
+    'See if the board needs saving:
+    If itemList(activeItemIndex).itemNeedUpdate Then
+        
+        'Use caption to set "Untitled" for blank boards.
+        Dim answer As VbMsgBoxResult
+        answer = MsgBox("Save changes to " & insideBrackets(Me.Caption) & "?", vbYesNoCancel + vbQuestion)
+        
+        If answer = vbCancel Then
+            
+            'Cancel unload.
+            Cancel = 1
+            Exit Sub
+            
+        ElseIf answer = vbYes Then
+        
+            'Save the file; prompt for untitled.
+            Call saveFile
+            
+        End If
+    End If
+    
     Call hideAllTools
 End Sub
 
@@ -1002,7 +1023,7 @@ Private Sub saveasmnu_Click()
     dlg.strTitle = "Save Item As"
     dlg.strDefaultExt = "itm"
     dlg.strFileTypes = "RPG Toolkit Item (*.itm)|*.itm|All files(*.*)|*.*"
-    If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
+    If SaveFileDialog(dlg, Me.hwnd, True) Then  'Prompt overwrite.
         filename$(1) = dlg.strSelectedFile
         Dim antiPath As String
         antiPath$ = dlg.strSelectedFileNoPath
