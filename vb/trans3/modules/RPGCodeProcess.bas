@@ -121,10 +121,17 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
         Exit Function
     End If
 
-    Dim p As Long                 'Ongoing length of program
-    Dim num As Long               'File number
-    Dim theLine As String         'Line read from file
-    Dim thePrg As RPGCodeProgram  'Return value
+    Dim p As Long                   'Ongoing length of program
+    Dim num As Long                 'File number
+    Dim theLine As String           'Line read from file
+    Dim thePrg As RPGCodeProgram    'Return value
+    Dim c(2) As String              'Delimiter array
+    Dim lines() As String           'Array of lines
+    Dim uD() As String              'Delimters used
+    Dim a As Long                   'Loop control variables
+    Dim buildLine As String         'Whole line we're building
+    Dim buildTemp As String         'To add to the whole line
+    Dim done As Boolean             'Done?
 
     'Init the PRG
     Call InitRPGCodeProcess(thePrg)
@@ -135,6 +142,15 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
     'Get a free file number
     num = FreeFile()
 
+    'Fix the problem with commands on the same line as an if(),
+    'method(), etc
+    c(0) = "{"
+    c(1) = "}"
+
+    'Allow multiple commands on one line:
+    'MWin("TEST") # System.Pause()
+    c(2) = "#"
+
     'Open the file
     Open file For Input Access Read As num
 
@@ -144,12 +160,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
         Do Until EOF(num)
 
             'Read a line
-            Line Input #num, theLine
-
-            Dim c(2) As String      'Delimiter array
-            Dim lines() As String   'Array of lines
-            Dim uD() As String      'Delimters used
-            Dim a As Long           'Loop control variables
+            theLine = stripComments(fread(num))
 
             'Trim up that line...
             theLine = replaceOutsideQuotes(Trim(theLine), vbTab, "")
@@ -158,12 +169,9 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 'This line is actually only part of a line, let's get the
                 'whole line...
 
-                Dim buildLine As String
-                Dim buildTemp As String
-
                 buildLine = Trim(Mid(theLine, 1, Len(theLine) - 1))
 
-                Dim done As Boolean
+                done = False
                 Do Until done
                     If Not EOF(num) Then
                         buildTemp = replace(Trim(fread(num)), vbTab, "")
@@ -184,19 +192,10 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             End If
 
             'Remove prefixed #
-            If Left(theLine, 1) = "#" Then theLine = Right(theLine, Len(theLine) - 1)
+            If (Left(theLine, 1) = "#") Then theLine = Right(theLine, Len(theLine) - 1)
 
             'Read line if not comment
             If (Not Left(theLine, 1) = "*") And Not (Left(theLine, 2) = "//") Then
-
-                'Fix the problem with commands on the same line as an if(),
-                'method(), etc...
-                c(0) = "{"
-                c(1) = "}"
-
-                'Allow multiple commands on one line:
-                'MWin("TEST") # System.Pause()
-                c(2) = "#"
 
                 'Split that sucker like it has NEVER been split before!
                 lines() = multiSplit(theLine, c, uD, True)
@@ -213,7 +212,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                             thePrg.program(p + a) = uD(UBound(lines))
                         End If
 
-                    ElseIf a = 0 Then
+                    ElseIf (a = 0) Then
                         thePrg.program(p + a) = lines(a)
 
                     Else
@@ -254,10 +253,6 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
 
     Close num
 
-    'Add stop to end of RPG
-    thePrg.program(p) = "Stop()"
-    p = p + 1
-
     'Now remove all #s because they are evil...
     For a = 0 To UBound(thePrg.program)
         thePrg.program(a) = replaceOutsideQuotes(thePrg.program(a), "#", "")
@@ -273,6 +268,27 @@ enlargeProgram:
     ReDim Preserve thePrg.program(UBound(thePrg.program) + 1)
     Resume
 
+End Function
+
+'=========================================================================
+' Strip comments off a line
+'=========================================================================
+Public Function stripComments(ByVal text As String) As String
+    Dim a As Long, char As String, ignore As Boolean
+    For a = 1 To Len(text)
+        char = Mid(text, a, 2)
+        If (Left(char, 1) = Chr(34)) Then
+            If (ignore) Then
+                ignore = False
+            Else
+                ignore = True
+            End If
+        ElseIf (char = "//") And (Not ignore) Then
+            stripComments = Mid(text, 1, a - 1)
+            Exit Function
+        End If
+    Next a
+    stripComments = text
 End Function
 
 '=========================================================================
