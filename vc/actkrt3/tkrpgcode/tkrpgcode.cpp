@@ -98,8 +98,10 @@ int APIENTRY RPGCSetLitVar(const char *pstrVarName, BSTR pstrValue, HEAP_HANDLE 
 	if (pstrVarName == NULL || p == NULL) 
 		return 0;
 
-	p->litVars[pstrVarName].theBstr = pstrValue;
-	p->litVars[pstrVarName].theByteLen = byteLen;
+	RPGCODE_LIT_VAR *theVar = &p->litVars[pstrVarName];
+
+	theVar->theBstr = pstrValue;
+	theVar->theByteLen = byteLen;
 
 	return 1;
 
@@ -114,7 +116,7 @@ int APIENTRY RPGCGetLitVarByteLen(const char *pStrVarName, const HEAP_HANDLE hea
 	if (pStrVarName == NULL || p == NULL) 
 		return 0;
 
-	if (p->numVars.count(strVarName) > 0)
+	if (p->numVars.count(pStrVarName) > 0)
 		return p->litVars[pStrVarName].theByteLen;
 	else
 		return 0;
