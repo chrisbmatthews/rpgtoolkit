@@ -28,45 +28,45 @@ Private Const ITEM_REST = 8
 ' An item
 '=========================================================================
 Public Type TKItem
-    itemName As String          'Item name (handle)
-    itmDescription As String    'description of item (one-line string)
-    EquipYN As Byte             'Equipable item? 0- No, 1- yes
-    MenuYN As Byte              'Menu item? 0-No, 1-Y
-    BoardYN As Byte             'Board item? 0-N, 1-Y
-    FightYN As Byte             'Battle item? 0-N, 1-Y
-    usedBy As Byte              'Item used by 0-all 1-defined
-    itmChars(50) As String      '50 characters who can use the item
-    buyPrice As Long            'price to buy at
-    sellPrice As Long           'price to sell at
-    keyItem As Byte             'is it a key item (0-no, 1-yes)
-    itemArmor(7) As Byte        'Equip on what body locations? 1-7 (head->accessory)
-    accessory As String         'Accessory name
-    equipHP As Long             'Hp increase when equipped
-    equipDP As Long             'dp increase when equipped
-    equipFP As Long             'fp increase when equipped
-    equipSM As Long             'sm increase when equipped
-    prgEquip As String          'prg to run when equipped
-    prgRemove As String         'prg to run when remobed
-    mnuHPup As Long             'HP increase when used from menu
-    mnuSMup As Long             'SMP increase wjen used from menu
-    mnuUse As String            'program to run when used from menu
-    fgtHPup As Long             'HP increase when used from fight
-    fgtSMup As Long             'SMP increase wjen used from fight
-    fgtUse As String            'program to run when used from fight
-    itmAnimation As String      'animation for battle
-    itmPrgOnBoard As String     'Program to run while item is on board
-    itmPrgPickUp As String      'Program to run when picked up.
-    itmSizeType As Byte         'graphics size type 0=32x32, 1=64x32
-    gfx(9) As String            'filenames of standard animations for graphics
-    customGfx() As String       'customized animations
-    customGfxNames() As String  'customized animations (handles)
-    standingGfx(7) As String    'Filenames of the standing animations/graphics
-    idleTime As Double          'Seconds to wait proir to switching to
-                                'STAND_ graphics
-    speed As Double             'Speed of this item
+    itemName As String              'Item name (handle)
+    itmDescription As String        'description of item (one-line string)
+    EquipYN As Byte                 'Equipable item? 0- No, 1- yes
+    MenuYN As Byte                  'Menu item? 0-No, 1-Y
+    BoardYN As Byte                 'Board item? 0-N, 1-Y
+    FightYN As Byte                 'Battle item? 0-N, 1-Y
+    usedBy As Byte                  'Item used by 0-all 1-defined
+    itmChars(50) As String          '50 characters who can use the item
+    buyPrice As Long                'price to buy at
+    sellPrice As Long               'price to sell at
+    keyItem As Byte                 'is it a key item (0-no, 1-yes)
+    itemArmor(7) As Byte            'Equip on what body locations? 1-7 (head->accessory)
+    accessory As String             'Accessory name
+    equipHP As Long                 'Hp increase when equipped
+    equipDP As Long                 'dp increase when equipped
+    equipFP As Long                 'fp increase when equipped
+    equipSM As Long                 'sm increase when equipped
+    prgEquip As String              'prg to run when equipped
+    prgRemove As String             'prg to run when remobed
+    mnuHPup As Long                 'HP increase when used from menu
+    mnuSMup As Long                 'SMP increase wjen used from menu
+    mnuUse As String                'program to run when used from menu
+    fgtHPup As Long                 'HP increase when used from fight
+    fgtSMup As Long                 'SMP increase wjen used from fight
+    fgtUse As String                'program to run when used from fight
+    itmAnimation As String          'animation for battle
+    itmPrgOnBoard As String         'Program to run while item is on board
+    itmPrgPickUp As String          'Program to run when picked up.
+    itmSizeType As Byte             'graphics size type 0=32x32, 1=64x32
+    gfx(9) As String                'filenames of standard animations for graphics
+    customGfx() As String           'customized animations
+    customGfxNames() As String      'customized animations (handles)
+    standingGfx(7) As String        'Filenames of the standing animations/graphics
+    idleTime As Double              'Seconds to wait proir to switching to
+                                    'STAND_ graphics
+    speed As Double                 'Speed of this item
     #If isToolkit = 0 Then
-        bIsActive As Boolean     'is item active?
-        hasIdleGfx(7) As Boolean 'do we have idling graphics?
+        bIsActive As Boolean        'is item active?
+        hasIdleGfx(7) As Boolean    'do we have idling graphics?
     #End If
 End Type
 
@@ -193,8 +193,12 @@ Public Function itemGetStanceAnm(ByVal stance As String, ByRef theItem As TKItem
                 If toRet = "" Then
                     toRet = .gfx(ITEM_WALK_E)
                 End If
-            Case "REST":
-                toRet = .gfx(ITEM_REST)
+            Case "REST":    'The item stance REST has been depreciated into
+                            'the idling stances; old items will be converted
+                            'upon opening.
+
+                toRet = .standingGfx(ITEM_WALK_S)
+                If toRet = "" Then toRet = .gfx(ITEM_WALK_S)
             Case Else:
                 'it's a custom stance
                 'search the custom stances...
@@ -467,6 +471,11 @@ Public Function openItem(ByVal file As String) As TKItem
                     End If
                 Next t
             #End If
+            If (minorVer < 6) Then
+                'REST has been depreciated-- move REST graphic to STAND_S
+                theItem.standingGfx(ITEM_WALK_S) = theItem.gfx(ITEM_REST)
+                theItem.gfx(ITEM_REST) = ""
+            End If
             Dim cnt As Long
             cnt = BinReadLong(num)
             For t = 0 To cnt
@@ -553,7 +562,7 @@ Public Function openItem(ByVal file As String) As TKItem
             Call SaveTileBitmap(tbmName$, tbm)
             anm.animFrame(0) = RemovePath(tbmName$)
             Call saveAnimation(anmName$, anm)
-            theItem.gfx(ITEM_REST) = RemovePath(anmName$)
+            theItem.standingGfx(ITEM_WALK_S) = RemovePath(anmName$)
             
             theItem.itmSizeType = 1
         End If
@@ -751,7 +760,7 @@ ver2olditem:
         Call SaveTileBitmap(tbmName$, tbm)
         anm.animFrame(0) = RemovePath(tbmName$)
         Call saveAnimation(anmName$, anm)
-        theItem.gfx(ITEM_REST) = RemovePath(anmName$)
+        theItem.standingGfx(ITEM_WALK_S) = RemovePath(anmName$)
         
         theItem.itmSizeType = 1
         openItem = theItem
@@ -785,7 +794,7 @@ Public Sub saveItem(ByVal file As String, ByRef theItem As TKItem)
     Open file For Binary Access Write As #num
         Call BinWriteString(num, "RPGTLKIT ITEM")    'Filetype
         Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 5)    'Minor version (1= ie 2.1 = 64x32 cgfx allowed 2= binary, 3=longs used instead of ints, 4=Version 3 item-- use animations for gfx)
+        Call BinWriteInt(num, 6)    'Minor version (1= ie 2.1 = 64x32 cgfx allowed 2= binary, 3=longs used instead of ints, 4=Version 3 item-- use animations for gfx)
         
         Call BinWriteString(num, theItem.itemName)
         Call BinWriteString(num, theItem.itmDescription)

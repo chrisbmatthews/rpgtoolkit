@@ -230,20 +230,24 @@ Public Sub openItems()
 
             'Copy item values to itmPos() array
             itmPos(itemNum).frame = 0
-            itmPos(itemNum).x = .itmX(itemNum)
-            itmPos(itemNum).y = .itmY(itemNum)
+            itmPos(itemNum).X = .itmX(itemNum)
+            itmPos(itemNum).Y = .itmY(itemNum)
             itmPos(itemNum).l = .itmLayer(itemNum)
-            itmPos(itemNum).stance = "REST"
+            itmPos(itemNum).stance = "STAND_S"  'I am now depreciating the item
+                                                'REST graphic into the southern
+                                                'idling graphic. Older items will
+                                                'have REST copied to this stance
+                                                'upon being opened.
 
             'Indicate that there was no last render
             lastItemRender(itemNum).canvas = -1
 
             'Copy values to pending item movements
             With pendingItemMovement(itemNum)
-                .xOrig = itmPos(itemNum).x
-                .xTarg = itmPos(itemNum).x
-                .yOrig = itmPos(itemNum).y
-                .yTarg = itmPos(itemNum).y
+                .xOrig = itmPos(itemNum).X
+                .xTarg = itmPos(itemNum).X
+                .yOrig = itmPos(itemNum).Y
+                .yTarg = itmPos(itemNum).Y
             End With
 
             'Check if we should run this item
@@ -341,7 +345,7 @@ End Sub
 Public Sub CreateCharacter(ByVal file As String, ByVal number As Long)
     On Error Resume Next
     If number < 0 Or number > 4 Then Exit Sub
-    Call openchar(file, playerMem(number))
+    Call openChar(file, playerMem(number))
     With playerMem(number)
         playerListAr$(number) = .charname
         playerFile$(number) = file$
