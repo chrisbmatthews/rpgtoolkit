@@ -150,6 +150,10 @@ Public Property Let mousePointer(ByRef newValue As String)
         hColorBmp = objBitmap.handle()
         Call SelectObject(hColorDc, hColorBmp)
 
+        ' Cursor HotSpot is 1, 1
+        cursorHotSpotX = 1
+        cursorHotSpotY = 1
+
     Else
 
         ' Create a bitmap for the color cursor
