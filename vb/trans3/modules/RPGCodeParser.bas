@@ -1189,6 +1189,25 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
     ' Grab the variable's name
     variableName = Mid(toParse, 1, start - 1)
 
+    ' Check it it's an object
+    Dim hClass As Long, hClassDbl As Double, lit As String
+    Call getValue(variableName & "!", lit, hClassDbl, prg)
+    hClass = CLng(hClassDbl)
+    If (hClass <> 0) Then
+        If (isObject(hClass, prg)) Then
+            ' Check for overloaded [] operator
+            If (Not isMethodMember("operator[]", hClass, prg, topNestle(prg) <> hClass)) Then
+                ' Alert the user
+                Call debugger("Overloaded [] operator not found or cannot be reached-- " & variable)
+                ' Nullify hClass
+                hClass = 0
+            End If
+        Else
+            ' Nullify hClass
+            hClass = 0
+        End If
+    End If
+
     ' Find the last ]
     tEnd = InStr(1, StrReverse(toParse), "]")
     tEnd = Len(toParse) - tEnd + 1
@@ -1222,23 +1241,47 @@ Public Function parseArray(ByVal variable As String, ByRef prg As RPGCodeProgram
     ' Use my getParameters() function to retrieve the values of the dimensions
     arrayElements() = GetParameters(build, prg)
 
+    ' Splice out the object's overloaded [] operator, if existent
+    If (hClass <> 0) Then
+        ' Create a return value
+        Dim retVal As RPGCODE_RETURN
+        ' Call the method
+        If (arrayElements(0).dataType = DT_LIT) Then
+            Call callObjectMethod(hClass, "operator[](" & Chr(34) & arrayElements(0).lit & Chr(34) & ")", prg, retVal, "operator[]")
+        Else
+            Call callObjectMethod(hClass, "operator[](" & CStr(arrayElements(0).num) & ")", prg, retVal, "operator[]")
+        End If
+        ' Make sure we got a reference
+        If (retVal.dataType <> DT_REFERNCE) Then
+            Call debugger("Overloaded [] operator must return a reference to a variable-- " & variable)
+            Exit Function
+        End If
+        ' Vold the data in between the []s
+        arrayElements(0).dataType = DT_VOID
+        ' Set in the new variable name
+        variableName = retVal.ref
+        ' Check for postfixed sign
+        Dim postFix As String
+        postFix = Right(variableName, 1)
+        If ((postFix = "!") Or (postFix = "$")) Then
+            ' Override this array's sign
+            variableType = postFix
+            ' Remove the sign from the variable name
+            variableName = Mid(variableName, 1, Len(variableName) - 1)
+        End If
+    End If
+
     ' Begin to build the return value
     build = variableName
 
     ' For each dimension
     For a = 0 To UBound(arrayElements)
 
-        ' Add on a [
-        build = build & "["
-
         ' Add in the content...
         Select Case arrayElements(a).dataType
-            Case DT_NUM: build = build & CStr(arrayElements(a).num)
-            Case DT_LIT: build = build & Chr(34) & arrayElements(a).lit & Chr(34)
+            Case DT_NUM: build = build & "[" & CStr(arrayElements(a).num) & "]"
+            Case DT_LIT: build = build & "[" & Chr(34) & arrayElements(a).lit & Chr(34) & "]"
         End Select
-
-        ' Add on a ]
-        build = build & "]"
 
     Next a
 

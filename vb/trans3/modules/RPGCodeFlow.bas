@@ -41,6 +41,7 @@ Public Type RPGCODE_RETURN              'rpgcode return structure
     dataType As RPGC_DT                 '  data type (out)
     num As Double                       '  data as numerical (out)
     lit As String                       '  data as string (out)
+    ref As String                       '  data as reference (out)
     usingReturnData As Boolean          '  is the return data being used? (in)
 End Type
 
@@ -51,6 +52,7 @@ Public Enum RPGC_DT                     'rpgcode data type enum
     DT_STRING = 2                       '  string
     DT_NUMBER = 3                       '  number
     DT_EQUATION = 4                     '  equation
+    DT_REFERNCE = 5                     '  reference to a var
 End Enum
 
 Public Type activeButton                'setButton() structure
@@ -2383,35 +2385,3 @@ Public Function DoSingleCommand(ByVal rpgcodeCommand As String, ByRef theProgram
     End Select
 
 End Function
-
-Public Sub IIfRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
-    'Added by Faero
-    'Emulates the VB IIf statement
-    
-    'str$ = IIf(x! == y!, "yes", "no")
-    'num! = IIf(x! == y!, 324, 102)
-    
-    Dim cd As Integer
-    cd = CountData(Text)
-   
-    If cd <> 3 Then
-        debugger "IIf() requires three data elements -- " & Text
-        Exit Sub
-    End If
-   
-    Dim paras() As parameters
-    paras() = GetParameters(Text, prg)
-   
-    If paras(1).dataType <> paras(2).dataType Then
-        debugger "IIf()'s second and third data elements must be of the same type -- " & Text
-        Exit Sub
-    End If
-   
-    If retval.usingReturnData And paras(1).dataType = DT_LIT Then
-        retval.dataType = DT_LIT
-        retval.lit = IIf(evaluate(paras(0).dat, prg) = 1, paras(1).lit, paras(2).lit)
-    Else
-        retval.dataType = DT_NUM
-        retval.num = IIf(evaluate(paras(0).dat, prg) = 1, paras(1).num, paras(2).num)
-    End If
-End Sub

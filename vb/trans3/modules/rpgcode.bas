@@ -5586,17 +5586,40 @@ errorhandler:
     Resume Next
 End Sub
 
-Sub ReturnMethodRPG(Text$, ByRef theProgram As RPGCodeProgram)
+Sub ReturnMethodRPG(ByVal Text$, ByRef theProgram As RPGCodeProgram)
     '#ReturnMethod(var!)
     'Returns value from method.
     'if var! is not referenced in the argument list
     'then the value becomes the return value for the current
     'method
     
-    On Error GoTo errorhandler
+    On Error Resume Next
+
     Dim use As String, dataUse As String, number As Long, useIt As String, useIt1 As String, useIt2 As String, useIt3 As String, lit As String, num As Double, a As Long, lit1 As String, lit2 As String, lit3 As String, num1 As Double, num2 As Double, num3 As Double
-    dataUse$ = GetBrackets(Text$)
-    'Now look for this variable in the pointer list
+    dataUse$ = Trim(GetBrackets(Text$))
+
+    ' Check for reference
+    If (Left(dataUse, 1) = "&") Then
+        ' Get the var's name
+        Dim toRef As String
+        toRef = Mid(dataUse, 2)
+        ' Parse out arrays
+        toRef = parseArray(toRef, theProgram)
+        ' Check if it's a member of this class
+        If (theProgram.classes.insideClass) Then
+            If (isVarMember(toRef, topNestle(theProgram), theProgram)) Then
+                ' Get the new name
+                toRef = getObjectVarName(toRef, topNestle(theProgram))
+            End If
+        End If
+        ' Write it in
+        methodReturn.dataType = DT_REFERNCE
+        methodReturn.ref = toRef
+        ' Leave now
+        Exit Sub
+    End If
+
+    ' Now look for this variable in the pointer list
     Dim foundIt As Long, t As Long, aa As Long, datu As String
     foundIt = -1
     For t = 1 To 100
@@ -5627,7 +5650,7 @@ Sub ReturnMethodRPG(Text$, ByRef theProgram As RPGCodeProgram)
                 'End If
             
             End If
-            'go to previous stack...
+            ' go to previous stack...
             theProgram.currentHeapFrame = theProgram.currentHeapFrame - 1
             Call SetVariable(correspPointer$(t), datu$, theProgram)
             theProgram.currentHeapFrame = theProgram.currentHeapFrame + 1
@@ -5657,11 +5680,6 @@ Sub ReturnMethodRPG(Text$, ByRef theProgram As RPGCodeProgram)
         
     'End If
 
-    Exit Sub
-'Begin error handling code:
-errorhandler:
-    
-    Resume Next
 End Sub
 
 Sub ReturnRPG(ByRef theProgram As RPGCodeProgram)
@@ -11788,13 +11806,14 @@ End Sub
 ' MultiRun() {} :: Run commands as a group in a thread
 '=========================================================================
 Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) As Long
+
     On Error Resume Next
     
     If GetBrackets(Text) <> "" Then
         Call debugger("MultiRun() requires no data elements-- " & Text)
     Else
         multiRunStatus = 1
-        
+
         'Clear all the object queues: this is a prg and we don't want movement occuring.
         'But we do want multitasking objects to move, so check this isn't a thread!
         If Not isMultiTasking() Then
@@ -11806,16 +11825,51 @@ Public Function MultiRunRPG(ByVal Text As String, ByRef prg As RPGCodeProgram) A
                 pendingItemMovement(i).queue = vbNullString
             Next i
         End If
-        
+
         MultiRunRPG = runBlock(1, prg)
-        
+
         'Added: 3.0.5: Run any movements made in the block simultaneously at the end of the block.
-        If multiRunStatus = 2 Then runQueuedMovements
-        
+        If multiRunStatus = 2 Then Call runQueuedMovements
         multiRunStatus = 0
+
     End If
     
 End Function
+
+'=========================================================================
+' Added by Faero
+' Emulates the VB IIf statement
+'=========================================================================
+' str$ = IIf(x! == y!, "yes", "no")
+' num! = IIf(x! == y!, 324, 102)
+'=========================================================================
+Public Sub IIfRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, ByRef retval As RPGCODE_RETURN)
+
+    Dim cd As Long
+    cd = CountData(Text)
+
+    If (cd <> 3) Then
+        debugger "IIf() requires three data elements -- " & Text
+        Exit Sub
+    End If
+
+    Dim paras() As parameters
+    paras() = GetParameters(Text, prg)
+
+    If (paras(1).dataType <> paras(2).dataType) Then
+        debugger "IIf()'s second and third data elements must be of the same type -- " & Text
+        Exit Sub
+    End If
+
+    If (retval.usingReturnData And paras(1).dataType = DT_LIT) Then
+        retval.dataType = DT_LIT
+        retval.lit = IIf(evaluate(paras(0).dat, prg) = 1, paras(1).lit, paras(2).lit)
+    Else
+        retval.dataType = DT_NUM
+        retval.num = IIf(evaluate(paras(0).dat, prg) = 1, paras(1).num, paras(2).num)
+    End If
+
+End Sub
 
 '=========================================================================
 ' ShopColors(pos!,r!,g!,b!) :: Set the colors used in the shop
@@ -11908,6 +11962,7 @@ Public Sub MouseCursorRPG(ByVal Text As String, ByRef prg As RPGCodeProgram)
     If (theFile <> "") Then Call Kill(theFile)
 End Sub
 
+'=========================================================================
 ' Added by Shao, for 3.0.5
 '=========================================================================
 ' width! = GetTextWidth(text$)
@@ -11930,13 +11985,13 @@ Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, By
         Exit Sub
     End If
 
-    Dim hdc As Long, textWidth As Long, textHeight As Long, stringIn As String
+    Dim hdc As Long, textWidth As Long, textHeight As Long, stringin As String
 
-    stringIn = paras(0).lit
+    stringin = paras(0).lit
 
     If (UCase(GetExt(fontName)) = "FNT") Then
         ' Tk2 fixed-width font
-        textWidth = Len(stringIn) * fontSize
+        textWidth = Len(stringin) * fontSize
         textHeight = fontSize
     Else
         ' Using a true type font!
@@ -11950,7 +12005,7 @@ Public Sub GetTextWidthRPG(ByVal Text As String, ByRef prg As RPGCodeProgram, By
         Dim hFontNew As Long, hFontOld As Long, textRectSize As size
         hFontOld = SetDeviceFont(hdc, theAttrib, hFontNew)
         textRectSize.cx = 0: textRectSize.cy = 0
-        Call GetTextExtentPoint32(hdc, stringIn, Len(stringIn), textRectSize)
+        Call GetTextExtentPoint32(hdc, stringin, Len(stringin), textRectSize)
         textWidth = textRectSize.cx: textHeight = textRectSize.cy
         Call SelectObject(hdc, hFontOld)
         Call DeleteObject(hFontNew)
