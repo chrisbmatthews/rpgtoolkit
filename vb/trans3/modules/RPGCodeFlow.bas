@@ -583,6 +583,8 @@ Public Function runBlock(ByVal runCommands As Long, ByRef prg As RPGCodeProgram,
                     Else
                         runningProgram = False
                     End If
+                Else
+                    prg.programPos = increment(prg)
                 End If
 
             Case Else
