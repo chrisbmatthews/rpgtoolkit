@@ -161,6 +161,8 @@ Public Sub upgradeBattleSystem()
 
             'Initial version 3 battle system-- needs updating
 
+            Dim newDLL As String
+            newDLL = "Game\Basic\Plugin\tk3fight.dll"
             If fileExists(newDLL) Then
 
                 'Backup old fight DLL
@@ -169,8 +171,6 @@ Public Sub upgradeBattleSystem()
                 Call FileCopy(fullPath, destPath)
 
                 'Put the new DLL in place
-                Dim newDLL As String
-                newDLL = "Game\Basic\Plugin\tk3fight.dll"
                 Call Kill(fullPath)
                 Call FileCopy(newDLL, fullPath)
 
