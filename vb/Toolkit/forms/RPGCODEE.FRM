@@ -114,6 +114,7 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
+      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -1597,11 +1598,7 @@ End Sub
 Private Sub mnuopen_Click()
 On Error Resume Next
 
-' ! MODIFIED BY KSNiloc
-
-If tag = "" Then
-    tkMainForm.openmnu_Click
-ElseIf tag = "1" Then
+If tag = "1" Then
     ChDir (currentDir)
     Dim antiPath As String
     Dim dlg As FileDialogInfo
@@ -1617,7 +1614,10 @@ ElseIf tag = "1" Then
     ChDir (currentDir)
     If filename(1) = "" Then Exit Sub
     Shell App.path & "\" & App.EXEName & ".exe " & filename(1), vbNormalFocus
+Else
+    Call tkMainForm.openmnu_Click
 End If
+
 End Sub
 
 ' RPG CODE PRIMER MENU

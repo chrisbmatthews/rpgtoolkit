@@ -7833,47 +7833,36 @@ Public Sub VariableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
     Dim fType As String
     Dim number As Long, lit As String
     
-    textTst$ = Text$ + "+0+0"
-    number = ValueNumber(textTst$)     'How many elements do we have?
+    textTst = Text
     
-    'Changed to 0... [KSNiloc]
-    If number <= 0 Then
-        Call debugger("Error: Variable expresion requires more data!-- " + Text$)
-        Exit Sub
+    Destination = GetVarList(textTst$, 1) 'get first var (dest)
+    Destination = removeChar(Destination$, "#")
+    Destination = removeChar(Destination$, " ")
+    Destination = removeChar(Destination$, Chr$(9))    'remove tabs
+    
+    dType = dataType(Destination$)
+    If dType = DT_NUM Then
+        textTst = textTst & "+0+0"
     End If
-    Destination$ = GetVarList(textTst$, 1) 'get first var (dest)
-    Destination$ = removeChar(Destination$, "#")
-    Destination$ = removeChar(Destination$, " ")
-    Destination$ = removeChar(Destination$, Chr$(9))    'remove tabs
+    number = ValueNumber(textTst)    'How many elements do we have?
     For t = 2 To number
-        valueList$(t) = GetVarList(textTst$, t) 'get values on other side of equals
+        valueList$(t) = GetVarList(textTst$, t)  'get values on other side of equals
         If Not (stringContains(valueList$(t), Chr$(34))) Then
-            valueList$(t) = removeChar(valueList$(t), " ")  'remove spaces if not a lit var
+            valueList$(t) = removeChar(valueList$(t), " ")   'remove spaces if not a lit var
         End If
     Next t
-    dType = dataType(Destination$)
+
     Select Case dType
         Case 0:
             'destination is numerical var
-            Dim numberUse(100) As Double
+            ReDim numberUse(number) As Double
             For t = 2 To number
-                tst = getValue(valueList$(t), lit$, numberUse(t), theProgram)
-                'If tst = 1 Then
-                '    Call debugger("Error: Values on right must be numerical!-- " + text$)
-                '    Exit Sub
-                'End If
+                Call getValue(valueList$(t), lit$, numberUse(t), theProgram)
             Next t
             'Now to perform math on values
             
             'Allow for some other cool stuff [KSNiloc]...
             equal = MathFunction(Text, 1)
-            If equal = "++" Or equal = "--" Then
-                'If Not number = 1 Then
-                '    debugger "Error: ++ and -- equations should have nothin" _
-                '        & "g on the right side-- " & text
-                '    Exit Sub
-                'End If
-            End If
             Select Case equal
                 Case "++"
                     SetVariable Destination, _
@@ -7919,36 +7908,25 @@ Public Sub VariableManip(ByVal Text As String, ByRef theProgram As RPGCodeProgra
             End If
 
         Case 1:
-            ReDim Lituse$(100)
+
+            ReDim litUse(number) As String
             For t = 2 To number
-                Dim num As Double
-                tst = getValue(valueList$(t), Lituse$(t), num, theProgram)
-                'If tst = 0 Then
-                '    Call debugger("Error: Values on right must be literal!-- " + Text$)
-                '    Exit Sub
-                'End If
-                'MsgBox lituse$(t)
+                litUse(t) = replace(valueList(t), Chr(34), "")
             Next t
+
             'Now to perform "math" on values
-            equal$ = MathFunction(Text$, 1)
-            'Select Case equal
-            'If equal$ <> "=" Then
-            '    If Not noErrors Then Call debugger("Error: No equal sign!-- " + text$)
-            '    Exit Sub
-            'End If
-            For t = 2 To number - 1
-                fType$ = MathFunction(Text$, t)
-                'Select Case ftype$
-                '    Case "+":
-                        Lituse$(t + 1) = Lituse$(t) + Lituse$(t + 1)
-                'End Select
+            equal = MathFunction(Text$, 1)
+            Dim res As String
+            For t = 2 To number
+                fType = MathFunction(Text, t)
+                res = res & litUse(t)
             Next t
             
             If equal = "+=" Or equal = "=+" Then
                 SetVariable Destination, _
-                    CBGetString(Destination) & Lituse(number), theProgram
+                    CBGetString(Destination) & res, theProgram
             Else
-                SetVariable Destination$, Lituse$(number), theProgram
+                SetVariable Destination$, res, theProgram
             End If
             
         Case 2, 3:

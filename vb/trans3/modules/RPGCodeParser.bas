@@ -453,6 +453,8 @@ Public Function GetVarList(ByVal Text As String, ByVal number As Long) As String
         End If
 
     Next p
+    
+    GetVarList = returnVal
 
 End Function
 
