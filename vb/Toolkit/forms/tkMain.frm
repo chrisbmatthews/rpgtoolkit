@@ -576,8 +576,8 @@ Begin VB.MDIForm tkMainForm
          TabCaption(1)   =   "Display"
          TabPicture(1)   =   "tkMain.frx":10AA6
          Tab(1).ControlEnabled=   0   'False
-         Tab(1).Control(0)=   "Frame4"
-         Tab(1).Control(1)=   "Frame5"
+         Tab(1).Control(0)=   "Frame5"
+         Tab(1).Control(1)=   "Frame4"
          Tab(1).ControlCount=   2
          Begin VB.Frame Frame5 
             Caption         =   "Current Layer"
@@ -2547,7 +2547,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   10980
-            TextSave        =   "14:25"
+            TextSave        =   "14:57"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3291,7 +3291,7 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
     Exit Sub
 End Sub
 
-Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 '===========================================================
 'MouseDown event on the flyout tileset viewer.
 '===========================================================
@@ -3315,14 +3315,14 @@ Private Sub currentTilesetForm_MouseDown(Button As Integer, Shift As Integer, X 
     If iMetric = 0 Then
         'Not isometric.
         tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 32)   'width of window.
-        tilex = Int(X / 32)                                                        'x-tile clicked.
+        tilex = Int(x / 32)                                                        'x-tile clicked.
     Else
         tilesWide = Int((currentTilesetForm.width / Screen.TwipsPerPixelX) / 64)
-        tilex = Int(X / 64)
+        tilex = Int(x / 64)
     End If
     
     tilesHigh = Int((currentTilesetForm.height / Screen.TwipsPerPixelY) / 32)
-    tiley = Int(Y / 32)
+    tiley = Int(y / 32)
     
     'Alterations for the scroller. Now scrolls row by row.
     tileNumber = (tiley * tilesWide) + tilex + 1                        'Tile clicked if scroller = 0.
@@ -3525,7 +3525,7 @@ Private Sub mnuTips_Click()
     configfile.tipsOnOff = booleanToLong(mnuTips.Checked)
 End Sub
 
-Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim uD As TK_UNDOCK_DATA
     uD.E = True: uD.W = True
     Call unDock(newBar, "New", uD)
@@ -3533,7 +3533,7 @@ Private Sub NewBarTop_mouseDown(Button As Integer, Shift As Integer, X As Single
     popButton(1).Enabled = False
 End Sub
 
-Private Sub openWindow_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub openWindow_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     If (Button = vbRightButton) Then
         frmIndex = Index + formsScrollIndex
         Call PopupMenu(mnuRightClick)
@@ -3579,7 +3579,7 @@ Private Sub ReadCommandLine_Timer()
         Dim Edit As New rpgcodeedit
         With Edit
             .tag = "1"
-            .mnuNewProject.Visible = False
+            .mnunewproject.Visible = False
             .mnuNew.Visible = False
             .mnuNewPRG.Visible = True
             .mnuOpenProject.Visible = False
@@ -3916,8 +3916,8 @@ Public Sub openmnu_Click(): On Error Resume Next
     Call tkMainForm.openFile(filename$(1))
 End Sub
 
-Private Sub palettebox_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeTile.palettebox_MouseDown(Button, Shift, X, Y)
+Private Sub palettebox_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeTile.palettebox_MouseDown(Button, Shift, x, y)
 End Sub
 
 Private Sub Picture1_Click(): On Error Resume Next
@@ -4008,7 +4008,7 @@ Private Sub rightbar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub rightbar_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub rightbar_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     'ignoreFocus = False
     'rightbar.SetFocus
     'If rightbar.width = 2730 Then
@@ -4258,8 +4258,8 @@ Private Sub tileTool_Click(Index As Integer): On Error Resume Next
     Call activeTile.ToolSet(Index)
 End Sub
 
-Private Sub tiletypes_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call activeBoard.ChangeTileType(Button, Shift, X, Y)
+Private Sub tiletypes_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call activeBoard.ChangeTileType(Button, Shift, x, y)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -4274,7 +4274,7 @@ Public Sub toggle_Click(): On Error Resume Next
     Call activeBoard.toggleTileType
 End Sub
 
-Private Sub ToolsTopBar_mouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub ToolsTopBar_mouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
  ' ! ADDED BY KSNiloc...
 
@@ -4294,7 +4294,7 @@ Private Sub TreeView1_DblClick(): On Error Resume Next
     ignoreFocus = False
 End Sub
 
-Private Sub TreeView1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub TreeView1_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     ignoreFocus = True
 End Sub
 
@@ -4398,7 +4398,7 @@ Private Sub boardAutotileDraw_Click(): On Error Resume Next
     Call activeBoard.boardAutotiler(boardAutotileDraw.value)
 End Sub
 Private Sub boardMultiSelect_Click(): On Error Resume Next
-    Call activeBoard.boardMultiSelect(boardMultiSelect.value)
+    Call activeBoard.boardMultiSelect
 End Sub
 Private Sub boardGradient_Click(): On Error Resume Next
     Call activeBoard.boardGradient
