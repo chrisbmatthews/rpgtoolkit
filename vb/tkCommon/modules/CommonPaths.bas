@@ -206,16 +206,11 @@ End Function
 '=========================================================================
 ' Determine if a file exists
 '=========================================================================
-Public Function fileExists(ByVal inFile As String) As Boolean
-    On Local Error GoTo feErr
-    Dim num As Long, retval As Boolean
-    num = FreeFile()
-    retval = True
-    Open inFile For Input Access Read As num
-    Close num
-    fileExists = retval
-    Exit Function
-feErr:
-    retval = False
-    Resume Next
+Public Function fileExists(ByVal file As String) As Boolean
+
+On Local Error Resume Next
+
+    fileExists = (GetAttr(file) And vbDirectory) = 0
+    
 End Function
+
