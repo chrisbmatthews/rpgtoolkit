@@ -1,8 +1,8 @@
 VERSION 5.00
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form tilesetedit 
-   BorderStyle     =   1  'Fixed Single
-   Caption         =   "Tile Set Editor"
+   BorderStyle     =   3  'Fixed Dialog
+   Caption         =   "Tileset Editor"
    ClientHeight    =   5415
    ClientLeft      =   45
    ClientTop       =   330
@@ -10,8 +10,10 @@ Begin VB.Form tilesetedit
    Icon            =   "tilesetedit.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
+   MinButton       =   0   'False
    ScaleHeight     =   5415
    ScaleWidth      =   5655
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1564"
    Begin VB.CommandButton cmdOK 
@@ -45,7 +47,6 @@ Begin VB.Form tilesetedit
       TabPicture(1)   =   "tilesetedit.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "frmVisual"
-      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Advanced"
       TabPicture(2)   =   "tilesetedit.frx":0D02
