@@ -87,7 +87,7 @@ End Property
 Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
 
     On Error Resume Next
-    
+
     Dim num As Long, a As Long
     num = FreeFile()
     m_LangFile = ""
@@ -110,11 +110,8 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
             tutCurrentLesson = BinReadInt(num)
             m_LangFile = BinReadString(num)
             lastTileset = BinReadString(num)
-            
             grabTips = BinReadInt(num)
             advTilesetTips = BinReadInt(num)
-
-            
         Else
             Close num
             Open file For Input Access Read As num
@@ -136,7 +133,6 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
             Next a
             tutCurrentLesson = fread(num)
             m_LangFile = fread(num)
-            
             grabTips = 1
             advTilesetTips = 1
         End If
@@ -184,7 +180,6 @@ Public Sub saveConfig(Optional ByVal file As String = CONFIG_FILE)
         Call BinWriteInt(num, tutCurrentLesson)
         Call BinWriteString(num, m_LangFile)
         Call BinWriteString(num, lastTileset)
-        
         Call BinWriteInt(num, grabTips)
         Call BinWriteInt(num, advTilesetTips)
     Close num
