@@ -173,3 +173,5 @@ EXPORTS
 	;transHost
 	mainEventLoop		@224
 	createHostWindow	@225
+	initEventProcessor	@226
+	processEvent		@227
