@@ -40,10 +40,6 @@ Public ItalicCodes(5) As Double
 Public UnderlineCodes(5) As Double
 Public ActiveModule As String
 
-Private Property Get CurrentObject() As RichTextBox
-    Set CurrentObject = tkMainForm.activeForm.codeForm
-End Property
-
 Public Function SplitLines(Optional ByVal min As Long = -1, Optional ByVal max As Long = -1)
 ActiveModule = "SplitLines()"
 ' Synatx Coloring
@@ -54,31 +50,37 @@ Dim StopTime As Double
 Dim TimeToColor As Double
 Dim X As Long
 
-'Added by KSNiloc...
-GetLineColors
+Dim currentObject As RichTextBox
+Set currentObject = activeRPGCode.codeForm
 
-CurrentObject.tag = "1"
+Call GetLineColors
+
+currentObject.tag = "1"
 
 'Clear bookmarks...
-tkMainForm.activeForm.cboMethodBookmarks.Clear
-tkMainForm.activeForm.cboCommentBookmarks.Clear
-tkMainForm.activeForm.cboLabelBookmarks.Clear
+With activeRPGCode
+    .cboMethodBookmarks.Clear
+    .cboCommentBookmarks.Clear
+    .cboLabelBookmarks.Clear
+End With
 
-CurrentObject.Visible = False
-CurrentObject.Text = CapitalizeRPGCode(CurrentObject.Text)
-linesArray() = Split(CurrentObject.Text, vbNewLine)
+currentObject.Visible = False
+If min = -1 Then
+    currentObject.Text = CapitalizeRPGCode(currentObject.Text)
+End If
+linesArray() = Split(currentObject.Text, vbNewLine)
 runningTotal = 0
 
 'StartTime = GetTickCount
 For X = 0 To UBound(linesArray())
     'If UBound(linesArray()) > 0 Then frmMain.StatusBar1.Panels(1).text = "Coloring " & Int((x / UBound(linesArray())) * 100) & "%"
 
-    CurrentObject.selStart = runningTotal
-    CurrentObject.SelLength = Len(linesArray(X))
+    currentObject.selStart = runningTotal
+    currentObject.SelLength = Len(linesArray(X))
 
     If (X >= min And X <= max) Or (min = -1 And max = -1) Then
 
-        With CurrentObject
+        With currentObject
             .SelFontName = "Courier New"
             .SelFontSize = 10
         End With
@@ -98,8 +100,8 @@ For X = 0 To UBound(linesArray())
 Next X
 
 'StopTime = GetTickCount
-If min = -1 Then CurrentObject.selStart = 1
-CurrentObject.Visible = True
+If min = -1 Then currentObject.selStart = 1
+currentObject.Visible = True
 'TimeToColor = Round((StopTime - StartTime) / 1000, 2)
 'frmMain.StatusBar1.Panels(1).text = "Loaded " & (UBound(linesArray()) - 1) & " liines in " & TimeToColor & " seconds"
 End Function
@@ -111,23 +113,26 @@ Dim SpaceLessLine As String ' Define a variable to hold the line of code
 Dim moveFromStart As Long
 ' Set the active code text box as CurrentObject
 
+Dim currentObject As RichTextBox
+Set currentObject = activeRPGCode.codeForm
+
 SpaceLessLine = LTrim( _
- Replace(Replace(lineText, " ", ""), vbTab, "") _
+ replace(replace(lineText, " ", ""), vbTab, "") _
  ) ': CurrentObject.SelText = RTrim(CurrentObject.SelText) ' Remove spaces, tabs and line feed from the line of code
 
 If Mid(SpaceLessLine, 1, 2) = "//" Then
-    ColorSelection CurrentObject, 1
+    ColorSelection currentObject, 1
     If Not noBookmarks Then addBookmark lineText
     Exit Function
 End If
 
 Select Case Mid(SpaceLessLine, 1, 1) ' Check first character of the line
 Case "@"
-    ColorSelection CurrentObject, 0
+    ColorSelection currentObject, 0
 Case "*"
-    ColorSelection CurrentObject, 1
+    ColorSelection currentObject, 1
 Case "{", "}"
-    ColorSelection CurrentObject, 2
+    ColorSelection currentObject, 2
 
     ' Check for comments
     If InStr(1, SpaceLessLine, "*") > 0 Then
@@ -140,7 +145,7 @@ Case "{", "}"
         ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "*") + 1, 1
     End If
 Case ":"
-    ColorSelection CurrentObject, 3
+    ColorSelection currentObject, 3
     If InStr(1, SpaceLessLine, "*") > 0 Then
         moveFromStart = InStr(1, lineText, "*") + runningTotal
         ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "*") + 1, 1
@@ -152,7 +157,7 @@ Case ":"
     End If
 Case Else ' It's a command
 
-    ColorSelection CurrentObject, 0 ' set the whole line to command color
+    ColorSelection currentObject, 0 ' set the whole line to command color
     Dim SplitCommandUp() As String ' Create a blank array
     Dim insideBrackets() As String ' Create a second blank array
 
@@ -194,7 +199,7 @@ Case Else ' It's a command
     ' Check for Variable Defenitions
     ElseIf InStr(1, SpaceLessLine, "!") > 0 Or InStr(1, SpaceLessLine, "$") Then
                
-        ColorSelection CurrentObject, 5
+        ColorSelection currentObject, 5
         moveFromStart = InStr(1, lineText, "=") + runningTotal
         ColorSection moveFromStart - 1, Len(lineText) - InStr(1, lineText, "=") + 1, 4
     
@@ -246,20 +251,20 @@ Function ColorSection(SectionStart As Double, SectionLen As Double, SectionColor
  On Error Resume Next
 
  'Access the RTF box...
- Dim CurrentObject As RichTextBox
- Set CurrentObject = tkMainForm.activeForm.codeForm
+ Dim currentObject As RichTextBox
+ Set currentObject = tkMainForm.activeForm.codeForm
  
  'Select the text...
- CurrentObject.selStart = SectionStart
- CurrentObject.SelLength = SectionLen
+ currentObject.selStart = SectionStart
+ currentObject.SelLength = SectionLen
  
  'Apply the color...
- CurrentObject.SelColor = ColorCodes(SectionColor)
+ currentObject.SelColor = ColorCodes(SectionColor)
  
  'Apply the style...
- CurrentObject.SelBold = CVar(BoldCodes(SectionColor))
- CurrentObject.SelItalic = CVar(ItalicCodes(SectionColor))
- CurrentObject.SelUnderline = CVar(UnderlineCodes(SectionColor))
+ currentObject.SelBold = CVar(BoldCodes(SectionColor))
+ currentObject.SelItalic = CVar(ItalicCodes(SectionColor))
+ currentObject.SelUnderline = CVar(UnderlineCodes(SectionColor))
  
 End Function
 
@@ -273,9 +278,10 @@ Public Sub GotoLine(ByVal lineText As String)
  Dim count As Long
  Dim a As Long
  
- 'Access the richTextBox...
- Set rtf = tkMainForm.activeForm.codeForm
- With rtf
+ Dim currentObject As RichTextBox
+ Set currentObject = activeRPGCode.codeForm
+
+ With currentObject
  
   'Split the code up into lines...
   lines() = Split(.Text, vbCrLf, , vbTextCompare)
@@ -331,9 +337,10 @@ Public Sub ReColorLine(Optional ByRef blackLine As Boolean = -2, _
  Dim a As Long
  Dim b As Long
  
- 'Access the RTF box...
- Set cf = tkMainForm.activeForm
- With CurrentObject 'cf.codeform
+ Dim currentObject As RichTextBox
+ Set currentObject = activeRPGCode.codeForm
+ 
+ With currentObject 'cf.codeform
  
   .Visible = False
  
@@ -382,7 +389,7 @@ Public Sub ReColorLine(Optional ByRef blackLine As Boolean = -2, _
 
    'If the line's only got one charater MAKE SURE it's colored...
    If Len(Trim( _
-   Replace(Replace(Replace(.SelText, " ", ""), vbTab, ""), vbCrLf, "") _
+   replace(replace(replace(.SelText, " ", ""), vbTab, ""), vbCrLf, "") _
    )) = 1 Then blackLine = True
   
    If Not colorBlack Then
@@ -434,9 +441,7 @@ End Sub
 
 Private Sub makeLineBlack(ByVal lineText As String)
  'Take away its bookmark (if there is one...)
- Dim af As rpgcodeedit
- Set af = tkMainForm.activeForm
- With af
+ With activeRPGCode
   Select Case LCase(GetCommandName(AddNumberSignIfNeeded(lineText)))
    Case "label": .removeBookmark lineText, .cboLabelBookmarks
    Case "method": .removeBookmark RemoveNumberSignIfThere(lineText), .cboMethodBookmarks
@@ -509,6 +514,6 @@ Public Function AddNumberSignIfNeeded(ByVal txt As String) As String
 End Function
 
 Public Function RemoveNumberSignIfThere(ByVal txt As String) As String
- txt = Replace(txt, "#", "")
+ txt = replace(txt, "#", "")
  RemoveNumberSignIfThere = txt
 End Function
