@@ -701,6 +701,10 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     Dim start As Long               'Start of object manipulation
     Dim hClassDbl As Double         'Handle to a class (double)
     Dim hClass As Long              'Handle to a class
+    Dim var As Boolean              'Variable?
+    Dim varLit As String            'Literal variable
+    Dim varNum As Double            'Numerical variable
+    Dim varType As RPGC_DT          'Type of var
     Dim a As Long                   'Loop var
 
     'Get location of first ->
@@ -717,6 +721,14 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
         'Get a character
         char = Mid(text, a, 1)
         Select Case char
+
+            Case "!", "$"
+                'Could be a public var
+                If (depth = 0) Then
+                    lngEnd = a
+                    var = True
+                    Exit For
+                End If
 
             Case "("
                 If (Not ignore) Then
@@ -775,6 +787,11 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
             Case Chr(34)
                 'Found a quote
                 ignore = (Not ignore)
+                spacesOK = False
+            
+            Case Else
+                'Not a space, so they aren't okay anymore
+                spacesOK = False
 
         End Select
     Next a
@@ -787,22 +804,29 @@ Public Function spliceForObjects(ByVal text As String, ByRef prg As RPGCodeProgr
     Call getVariable(object, object, hClassDbl, prg)
     hClass = CLng(hClassDbl)
 
-    'Check if we're to release
-    If (Trim(UCase((replace(replace(cLine, ")", ""), "(", "")))) = "RELEASE") Then
-        Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retVal)
-        Call clearObject(classes(hClass), prg)
-    Else
+    If (Not var) Then
 
-        'Execute the method
-        Call callObjectMethod(hClass, cLine, prg, retVal)
+        'Check if we're to release
+        If (Trim(UCase((replace(replace(cLine, ")", ""), "(", "")))) = "RELEASE") Then
+            Call callObjectMethod(hClass, "~" & classes(hClass).strInstancedFrom, prg, retVal)
+            Call clearObject(classes(hClass), prg)
+        Else
 
-        'Replace text with value the method returned
-        If (retVal.dataType = DT_NUM) Then
-            value = " " & CStr(retVal.num)
-        ElseIf (retVal.dataType = DT_LIT) Then
-            value = " " & Chr(34) & retVal.lit & Chr(34)
+            'Execute the method
+            Call callObjectMethod(hClass, cLine, prg, retVal)
+
+            'Replace text with value the method returned
+            If (retVal.dataType = DT_NUM) Then
+                value = " " & CStr(retVal.num)
+            ElseIf (retVal.dataType = DT_LIT) Then
+                value = " " & Chr(34) & retVal.lit & Chr(34)
+            End If
+
         End If
 
+    Else
+        'It's a variable
+        value = getObjectVarName(cLine, hClass)
     End If
 
     'Complete the return string
