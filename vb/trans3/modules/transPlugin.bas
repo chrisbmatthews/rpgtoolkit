@@ -393,7 +393,7 @@ errorhandler:
     Call HandleError
     Resume Next
 End Sub
-Function QueryPlugins(mName$, text$, ByRef retVal As RPGCODE_RETURN) As Boolean
+Function QueryPlugins(mName$, text$, ByRef retval As RPGCODE_RETURN) As Boolean
     'mname$ is the name of a method to call.  text$ is the full command.
     'this fuction checks if a plugin can perform this command.
     'if it can, the command is performed and we return true.
@@ -470,11 +470,11 @@ Sub CBRpgCode(ByVal rpgcodeCommand As String)
     'rpgcodeCommand is the command to run
     'this is callback 0
     On Error GoTo errorhandler
-    Dim retVal As RPGCODE_RETURN
+    Dim retval As RPGCODE_RETURN
     Dim vv As Long
     
     Call CanvasGetScreen(cnvRPGCodeScreen)
-    vv = DoIndependentCommand(rpgcodeCommand, retVal)
+    vv = DoIndependentCommand(rpgcodeCommand, retval)
 
     Exit Sub
 'Begin error handling code:
@@ -923,7 +923,7 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
     '   20- direction we are facing (1-s, 2-w, 3-n, 4-e)    facing
     '   21- percent till next level
     On Error GoTo errorhandler
-    Dim Temp As Long
+    Dim temp As Long
 
     playerSlot = inbounds(playerSlot, 0, 4)
     Select Case infoCode
@@ -952,9 +952,9 @@ Function CBGetPlayerNum(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal pl
             CBGetPlayerNum = playerMem(playerSlot).initLevel
             Exit Function
         Case 8:
-            Temp = playerMem(playerSlot).smYN
-            If Temp = 0 Then CBGetPlayerNum = 1
-            If Temp = 1 Then CBGetPlayerNum = 0
+            temp = playerMem(playerSlot).smYN
+            If temp = 0 Then CBGetPlayerNum = 1
+            If temp = 1 Then CBGetPlayerNum = 0
             Exit Function
         Case 9:
             arrayPos = inbounds(arrayPos, 0, 200)
@@ -2098,14 +2098,17 @@ errorhandler:
     Resume Next
 End Function
 
-
 Sub CBLoadItem(ByVal file As String, ByVal itmSlot As Long)
     'loads an item into item slot 0-11
     'file should be *without* path info
     'callback 36
     On Error GoTo errorhandler
-    itmSlot = inbounds(itmSlot, 0, 11)
-    Call openitem(projectPath$ + itmPath$ + file, itemMem(itmSlot))
+    
+    'MODIFIED BY KSNiloc...
+    Do While MAXITEM < itmSlot
+        dimensionItemArrays
+    Loop
+    Call openitem(projectPath$ & itmPath$ & file, itemMem(itmSlot))
 
     Exit Sub
 'Begin error handling code:
@@ -2113,8 +2116,6 @@ errorhandler:
     Call HandleError
     Resume Next
 End Sub
-
-
 
 Function CBGetItemString(ByVal infoCode As Long, ByVal arrayPos As Long, ByVal itmSlot As Long) As String
     'get item info (string)
@@ -3123,13 +3124,13 @@ Sub CBRunProgram(ByVal prgFile As String)
     Call runProgram(projectPath$ + prgPath$ + prgFile, -1, False)
 End Sub
 
-Sub CBSetTarget(ByVal targetIdx As Long, ByVal ttype As Long)
+Sub CBSetTarget(ByVal targetIdx As Long, ByVal tType As Long)
     'callback 79
     'set RPGCode target
     On Error Resume Next
     
     target = targetIdx
-    targetType = ttype
+    targetType = tType
 End Sub
 
 Sub CBSetSource(ByVal sourceIdx As Long, ByVal sType As Long)
@@ -3137,7 +3138,7 @@ Sub CBSetSource(ByVal sourceIdx As Long, ByVal sType As Long)
     'set RPGCode source
     On Error Resume Next
     
-    Source = sourceIdx
+    source = sourceIdx
     sourceType = sType
 End Sub
 
