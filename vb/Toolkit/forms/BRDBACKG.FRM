@@ -26,18 +26,18 @@ Begin VB.Form brdbackground
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1079"
-   Begin Toolkit.TKButton Command3 
+   Begin Toolkit.TKButton cmdOK 
       Height          =   375
       Left            =   6240
       TabIndex        =   8
       Top             =   600
       Width           =   855
-      _ExtentX        =   1508
+      _ExtentX        =   661
       _ExtentY        =   661
       Object.Width           =   360
       Caption         =   "OK"
    End
-   Begin VB.PictureBox command16 
+   Begin VB.PictureBox cmdChangeBoardBitmap 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
@@ -63,7 +63,7 @@ Begin VB.Form brdbackground
       Object.Width           =   4215
       Caption         =   "Board Background"
    End
-   Begin VB.Frame Frame3 
+   Begin VB.Frame brdColour 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       Caption         =   "Board Color"
@@ -83,18 +83,18 @@ Begin VB.Form brdbackground
       Tag             =   "1083"
       Top             =   480
       Width           =   2535
-      Begin Toolkit.TKButton command1 
+      Begin Toolkit.TKButton cmdSelectColor 
          Height          =   375
          Left            =   600
          TabIndex        =   7
          Top             =   480
          Width           =   1815
-         _ExtentX        =   3201
+         _ExtentX        =   661
          _ExtentY        =   661
          Object.Width           =   360
          Caption         =   "Select Color"
       End
-      Begin VB.PictureBox Picture1 
+      Begin VB.PictureBox picBoardColor 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
          BackColor       =   &H80000005&
@@ -108,7 +108,7 @@ Begin VB.Form brdbackground
          Width           =   375
       End
    End
-   Begin VB.Frame Frame1 
+   Begin VB.Frame brdBitmap 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       Caption         =   "Board Bitmap"
@@ -145,7 +145,7 @@ Begin VB.Form brdbackground
          Top             =   600
          Width           =   2295
       End
-      Begin VB.Label Label2 
+      Begin VB.Label brdBitmapFilename 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
@@ -181,130 +181,102 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'==============================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'==============================================================================
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+Option Explicit
 
-Private Sub borderselect_Click()
+'==============================================================================
+'Change the board bitmap text field.
+'==============================================================================
+Private Sub brdbmpname_Change(): On Error Resume Next
 
+    boardList(activeBoardIndex).theData.brdBack = brdbmpname.Text
+    
+    'Destroy the old image canvas, reset the pointer.
+    If boardList(activeBoardIndex).theData.brdBackCNV <> 0 Then
+        Call DestroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
+        boardList(activeBoardIndex).theData.brdBackCNV = 0
+    End If
+    
 End Sub
 
-Private Sub brdbmpfilename_Click()
-End Sub
-
-Private Sub borderbmpname_Change()
-    On Error Resume Next
-    boardList(activeBoardIndex).theData.borderBack$ = borderbmpname.Text
-End Sub
-
-Private Sub brdbmpname_Change()
-    On Error Resume Next
-    boardList(activeBoardIndex).theData.brdBack$ = brdbmpname.Text
-End Sub
-
-Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
+'==============================================================================
+'"Select color" - Change the board background colour.
+'==============================================================================
+Private Sub cmdSelectColor_Click(): On Error Resume Next
     boardList(activeBoardIndex).theData.brdColor = ColorDialog()
-    Call vbPicFillRect(Picture1, 0, 0, 1000, 1000, brdColor)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    'Call HandleError
-    Resume Next
+    Call vbPicFillRect(picBoardColor, 0, 0, 1000, 1000, boardList(activeBoardIndex).theData.brdColor)
 End Sub
 
-Private Sub Command16_Click()
-On Error Resume Next
-    Dim dlg As FileDialogInfo
-    ChDir (currentDir$)
-    dlg.strDefaultFolder = projectPath$ + bmpPath$
+'==============================================================================
+'Change the board background bitmap.
+'==============================================================================
+Private Sub cmdChangeBoardBitmap_Click(): On Error Resume Next
+
+    ChDir (currentDir)
+
+    Dim dlg As FileDialogInfo, antiPath As String
+    dlg.strDefaultFolder = projectPath & bmpPath
     dlg.strTitle = "Open Bitmap"
     dlg.strDefaultExt = "bmp"
     dlg.strFileTypes = strFileDialogFilterGfx
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
+    
+    If OpenFileDialog(dlg, Me.hwnd) Then
+        filename(1) = dlg.strSelectedFile
+        antiPath = dlg.strSelectedFileNoPath
     Else
-        Exit Sub
+        Exit Sub    'User pressed cancel.
     End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
-    thextention$ = extention(filename$(1))
-   ' If UCase$(thextention$) = "GIF" Then
-   '     dummy = GifToBMP(Filename$(1), "rpgscrtc.bmp")
-   '     Filename$(1) = "rpgscrtc.bmp"
-   ' End If
-    boardList(activeBoardIndex).theData.brdBack$ = antiPath$
-    brdbmpname.Text = antiPath$
+    ChDir (currentDir)
+    
+    If dlg.strSelectedFile = "" Then Exit Sub
+    
+    FileCopy dlg.strSelectedFile, projectPath & bmpPath & antiPath
+   
+    boardList(activeBoardIndex).theData.brdBack = antiPath
+    
+    'Destroy the old image canvas, reset the pointer.
+    If boardList(activeBoardIndex).theData.brdBackCNV <> 0 Then
+        Call DestroyCanvas(boardList(activeBoardIndex).theData.brdBackCNV)
+        boardList(activeBoardIndex).theData.brdBackCNV = 0
+    End If
+    
+    brdbmpname.Text = antiPath
+    
 End Sub
 
-Private Sub Command3_Click()
-    On Error GoTo ErrorHandler
-    boardNeedUpdate = True
+'==============================================================================
+'OK = exit.
+'==============================================================================
+Private Sub cmdOK_Click(): On Error Resume Next
+    boardList(activeBoardIndex).boardNeedUpdate = True
     Unload brdbackground
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command4_Click()
-On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmpPath$
-    dlg.strTitle = "Open Graphic"
-    dlg.strDefaultExt = "bmp"
-    dlg.strFileTypes = strFileDialogFilterGfx
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
-    thextention$ = extention(filename$(1))
-   ' If UCase$(thextention$) = "GIF" Then
-   '     dummy = GifToBMP(Filename$(1), "rpgscrtc.bmp")
-   '     Filename$(1) = "rpgscrtc.bmp"
-   ' End If
-    boardList(activeBoardIndex).theData.borderBack$ = antiPath$
-    borderbmpname.Text = antiPath$
+Private Sub Form_Activate(): On Error Resume Next
+    'Refill data.
+    brdbmpname.Text = boardList(activeBoardIndex).theData.brdBack
 End Sub
 
-Private Sub Form_Activate()
-    On Error GoTo ErrorHandler
-If boardList(activeBoardIndex).theData.brdBack$ <> "" Then brdbmpname.Text = boardList(activeBoardIndex).theData.brdBack$
-If boardList(activeBoardIndex).theData.borderBack$ <> "" Then borderbmpname.Text = boardList(activeBoardIndex).theData.borderBack$
+Private Sub Form_Load(): On Error Resume Next
 
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Form_Load()
-    On Error GoTo ErrorHandler
     Call LocalizeForm(Me)
 
-    If boardList(activeBoardIndex).theData.brdBack$ <> "" Then brdbmpname.Text = boardList(activeBoardIndex).theData.brdBack$
-    Call vbPicFillRect(Picture1, 0, 0, 1000, 1000, boardList(activeBoardIndex).theData.brdColor)
+    'Set data.
+    brdbmpname.Text = boardList(activeBoardIndex).theData.brdBack
+    Call vbPicFillRect(picBoardColor, 0, 0, 1000, 1000, boardList(activeBoardIndex).theData.brdColor)
+    
+    cmdChangeBoardBitmap.MouseIcon = Images.MouseLink()
+    
     Set TopBar.theForm = Me
-    command16.MouseIcon = Images.MouseLink()
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    
 End Sub
 
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
+    'Redraw the board when we leave.
+    Call activeBoard.boardRedraw
+End Sub
