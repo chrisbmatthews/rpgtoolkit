@@ -115,7 +115,7 @@ INT APIENTRY createHostWindow(
 //-------------------------------------------------------------------
 // Trans main event loop
 //-------------------------------------------------------------------
-VOID APIENTRY mainEventLoop(INT gameLogicAddress)
+VOID APIENTRY mainEventLoop(CONST INT gameLogicAddress)
 {
 
     // This is the main event loop of the whole trans3 engine.
@@ -126,8 +126,7 @@ VOID APIENTRY mainEventLoop(INT gameLogicAddress)
 
 	// Create a pointer to the gameLogic procedure
 	typedef VOID (__stdcall *FUNCTIONPOINTER)();
-	FUNCTIONPOINTER gameLogic;
-	gameLogic = FUNCTIONPOINTER(gameLogicAddress);
+	CONST FUNCTIONPOINTER gameLogic = FUNCTIONPOINTER(gameLogicAddress);
 
 	// Calculate how long one frame should take
 	CONST DWORD dblOneFrame = 1000 / FPS_CAP;

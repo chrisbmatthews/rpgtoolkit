@@ -43,7 +43,7 @@ CONST INT GS_PAUSE = 4;				// Pause game (do nothing)
 //-------------------------------------------------------------------
 // Prototypes
 //-------------------------------------------------------------------
-VOID APIENTRY mainEventLoop(INT gameLogicAddress);
+VOID APIENTRY mainEventLoop(CONST INT gameLogicAddress);
 INT APIENTRY createHostWindow(INT x, INT y, INT width, INT height, INT style, LPSTR caption, INT instance, LPSTR className, INT hCursor);
 VOID APIENTRY createEventCallbacks(INT forceRender, INT closeSystems, INT setAsciiKeyState, INT keyDownEvent, INT mouseMoveEvent, INT mouseDownEvent, INT isShuttingDown, INT getGameState, INT setGameState);
 VOID APIENTRY processEvent(VOID);
