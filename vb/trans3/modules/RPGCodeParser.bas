@@ -22,6 +22,7 @@ Private Declare Sub RPGCGetVarList Lib "actkrt3.dll" (ByVal text As Long, ByVal 
 Private Declare Sub RPGCParseWithin Lib "actkrt3.dll" (ByVal text As Long, ByVal startSymbol As Long, ByVal endSymbol As Long)
 Private Declare Function RPGCValueNumber Lib "actkrt3.dll" (ByVal theString As Long) As Long
 Private Declare Sub RPGCGetElement Lib "actkrt3.dll" (ByVal text As Long, ByVal elemNum As Long)
+Private Declare Function RPGCInStrOutsideQuotes Lib "actkrt3.dll" (ByVal startAt As Long, ByVal theString As Long, ByVal theSubString As Long) As Long
 
 '=========================================================================
 ' Member variables
@@ -898,21 +899,7 @@ End Function
 ' InStr outside quotes
 '=========================================================================
 Public Function inStrOutsideQuotes(ByVal start As Long, ByVal text As String, ByVal find As String) As Long
-    On Error Resume Next
-    Dim a As Long, ignore As Boolean, char As String
-    For a = start To Len(text)
-        char = Mid(text, a, Len(find))
-        If Left(char, 1) = Chr(34) Then
-            If ignore Then
-                ignore = False
-            Else
-                ignore = True
-            End If
-        ElseIf (char = find) And (Not ignore) Then
-            inStrOutsideQuotes = a
-            Exit Function
-        End If
-    Next a
+    inStrOutsideQuotes = RPGCInStrOutsideQuotes(start, StrPtr(text), StrPtr(find))
 End Function
 
 '=========================================================================
