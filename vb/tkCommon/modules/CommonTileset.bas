@@ -1,6 +1,6 @@
 Attribute VB_Name = "CommonTileset"
 '==============================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
+'All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '==============================================================================
@@ -413,8 +413,6 @@ Public Function tilesetInfo(ByVal file As String) As Long: On Error Resume Next
             Get num, 1, tileset
         Close num
         
-        Debug.Print tileset.detail & " " & tileset.tilesInSet & " " & tileset.version
-    
         If tileset.version = ISO_VERSION And tileset.detail = ISODETAIL And UCase$(GetExt(file)) = "ISO" Then
             'This is an isometric tileset.
             tilesetInfo = ISOTYPE
