@@ -885,7 +885,11 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             Case "!", "$", "-"
                 'Could be a public var
                 If (depth = 0 And (Not ignore) And (arrayDepth = 0)) Then
-                    lngEnd = a
+                    If (char <> "-") Then
+                        lngEnd = a
+                    Else
+                        lngEnd = a - 1
+                    End If
                     var = True
                     Exit For
                 End If
@@ -930,7 +934,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
         cLine = parseArray(cLine, prg)
         If (Right(cLine, 1) <> "!" And Right(cLine, 1) <> "$") Then
             'Assume object
-            cLine = replace(replace(cLine & "!", "-", ""), " ", "")
+            cLine = cLine & "!"
         End If
     End If
 
@@ -981,7 +985,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     'Get its handle
     If (object <> "THIS") Then
         If (Right(object, 1) <> "!" And Right(object, 1) <> "$") Then object = object & "!"
-        Call getVariable(object, object, hClassDbl, prg)
+        Call getValue(object, object, hClassDbl, prg)
         hClass = CLng(hClassDbl)
         'Check if we're calling from outside
         outside = (topNestle(prg) <> hClass)
