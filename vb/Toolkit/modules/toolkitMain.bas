@@ -36,7 +36,7 @@ Private Sub initDirectories()
     'Create "resource", "game", and "help" folders
     '=======================================================
     On Error Resume Next
-    currentDir = CurDir
+    currentDir = CurDir()
     Call MkDir(Mid(resourcePath, 1, Len(resourcePath) - 1))
     Call MkDir(Mid(gamPath, 1, Len(gamPath) - 1))
     Call MkDir(Mid(helpPath, 1, Len(helpPath) - 1))
@@ -64,7 +64,6 @@ Private Sub initRuntimes()
         Call MsgBox("Could not initialize actkrt3.dll.  Do you have actkrt3.dll, freeimage.dll, and audiere.dll in the working directory?")
         End
     End If
-    mainMem.mainResolution = 0
 End Sub
 
 Private Sub initTimer()
@@ -96,17 +95,15 @@ Private Sub initBoardAndTileEditor()
     'Initiate the board and tile editors
     '=======================================================
     On Error Resume Next
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     boardList(activeBoardIndex).spotLightRadius = 2
     boardList(activeBoardIndex).percentFade = 100
     detail = 1
-    For X = 1 To 32
-        For Y = 1 To 32
-            tileMem(X, Y) = -1
-            publicTile.undoTile(X, Y) = -1
-            boardList(activeBoardIndex).BoardTile(X, Y) = -1
-        Next Y
-    Next X
+    For x = 1 To 19
+        For y = 1 To 11
+            boardList(activeBoardIndex).BoardTile(x, y) = -1
+        Next y
+    Next x
     boardList(activeBoardIndex).theData.brdColor = vbQBColor(15)
     boardList(activeBoardIndex).theData.Bsizex = 19
     boardList(activeBoardIndex).theData.Bsizey = 11

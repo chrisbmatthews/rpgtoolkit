@@ -653,14 +653,14 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     ' update current board tile
     For X = 1 To 32
         For Y = 1 To 32
-            boardList(activeBoardIndex).BoardTile(X, Y) = tilemem(X, Y)
-            tilemem(X, Y) = buftile(X, Y)
+            boardList(activeBoardIndex).BoardTile(X, Y) = tileMem(X, Y)
+            tileMem(X, Y) = bufTile(X, Y)
         Next Y
     Next X
     
     ' update board detail
     boardList(activeBoardIndex).BoardDetail = detail
-    detail = publicTile.oldDetail
+    detail = openTileEditorDocs(activeTile.indice).oldDetail
     
     Dim dx As Long, dy As Long, colorDraw As Long
     
@@ -1570,12 +1570,12 @@ Public Sub boardSelectTile(): On Error Resume Next
     ignore = 1
     
     ' set old detail
-    publicTile.oldDetail = detail
+    openTileEditorDocs(activeTile.indice).oldDetail = detail
     
     ' get old tile
     For X = 1 To 32
         For Y = 1 To 32
-            buftile(X, Y) = tilemem(X, Y)
+            bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
     
@@ -1651,14 +1651,14 @@ Public Sub boardSelectTile(): On Error Resume Next
         ' update current board tile
         For X = 1 To 32
             For Y = 1 To 32
-                boardList(activeBoardIndex).BoardTile(X, Y) = tilemem(X, Y)
-                tilemem(X, Y) = buftile(X, Y)
+                boardList(activeBoardIndex).BoardTile(X, Y) = tileMem(X, Y)
+                tileMem(X, Y) = bufTile(X, Y)
             Next Y
         Next X
 
         ' update board detail
         boardList(activeBoardIndex).BoardDetail = detail
-        detail = publicTile.oldDetail
+        detail = openTileEditorDocs(activeTile.indice).oldDetail
         
         Dim dx As Long, dy As Long, colorDraw As Long
         
@@ -1708,14 +1708,14 @@ Public Sub boardSelectTile(): On Error Resume Next
             ' update current board tile
             For X = 1 To 32
                 For Y = 1 To 32
-                    boardList(activeBoardIndex).BoardTile(X, Y) = tilemem(X, Y)
-                    tilemem(X, Y) = buftile(X, Y)
+                    boardList(activeBoardIndex).BoardTile(X, Y) = tileMem(X, Y)
+                    tileMem(X, Y) = bufTile(X, Y)
                 Next Y
             Next X
 
             ' update board detail
             boardList(activeBoardIndex).BoardDetail = detail
-            detail = publicTile.oldDetail
+            detail = openTileEditorDocs(activeTile.indice).oldDetail
             
             ' draw new tile in 'current tile' picture box
             For dx = 1 To 32
@@ -1757,14 +1757,14 @@ Public Sub boardSelectTile(): On Error Resume Next
             ' update current board tile
             For X = 1 To 32
                 For Y = 1 To 32
-                    boardList(activeBoardIndex).BoardTile(X, Y) = tilemem(X, Y)
-                    tilemem(X, Y) = buftile(X, Y)
+                    boardList(activeBoardIndex).BoardTile(X, Y) = tileMem(X, Y)
+                    tileMem(X, Y) = bufTile(X, Y)
                 Next Y
             Next X
             
             ' update board detail
             boardList(activeBoardIndex).BoardDetail = detail
-            detail = publicTile.oldDetail
+            detail = openTileEditorDocs(activeTile.indice).oldDetail
             
             ' draw new tile in 'current tile' picture box
             For dx = 1 To 32
@@ -2207,17 +2207,17 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
                         If startG < 0 Then startG = 0
                         If startB < 0 Then startB = 0
                         
-                        For publicTile.angle = 0 To 360
+                        For openTileEditorDocs(activeTile.indice).angle = 0 To 360
                         
-                            radian = (publicTile.angle * 3.14159) / 180
+                            radian = (openTileEditorDocs(activeTile.indice).angle * 3.14159) / 180
                             
                             Dim xyx As Double, yxy As Double
                             
                             xyx = Cos(radian)
                             yxy = Sin(radian)
                             
-                            xyx = round(xyx * radius)
-                            yxy = round(yxy * radius)
+                            xyx = Round(xyx * radius)
+                            yxy = Round(yxy * radius)
                             
                             Dim lx As Double, ly As Double
                             
@@ -2233,7 +2233,7 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
                                 boardList(activeBoardIndex).theData.ambientblue(lx + boardList(activeBoardIndex).topX, ly + boardList(activeBoardIndex).topY, boardList(activeBoardIndex).currentLayer) = startB
                             End If
 
-                        Next publicTile.angle
+                        Next openTileEditorDocs(activeTile.indice).angle
                         
                     Next radius
                     
@@ -3071,7 +3071,7 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
     ' get tile data
     For X = 1 To 32
         For Y = 1 To 32
-            buftile(X, Y) = tilemem(X, Y)
+            bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
     
@@ -3130,7 +3130,7 @@ Public Sub redrawbrd(ByVal layer As Long): On Error Resume Next
     ' restore tile
     For X = 1 To 32
         For Y = 1 To 32
-            tilemem(X, Y) = buftile(X, Y)
+            tileMem(X, Y) = bufTile(X, Y)
         Next Y
     Next X
     
@@ -3618,18 +3618,18 @@ End Sub
 Private Function tilesX(twips As Long) As Long
 
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
-        tilesX = round(((twips / Screen.TwipsPerPixelX) + 32) / 64)
+        tilesX = Round(((twips / Screen.TwipsPerPixelX) + 32) / 64)
     Else
-        tilesX = round((twips / Screen.TwipsPerPixelX) / 32)
+        tilesX = Round((twips / Screen.TwipsPerPixelX) / 32)
     End If
     
 End Function
 Private Function tilesY(twips As Long) As Long
     
     If boardList(activeBoardIndex).theData.isIsometric = 1 Then
-        tilesY = round(((twips / Screen.TwipsPerPixelY) + 16) / 16)
+        tilesY = Round(((twips / Screen.TwipsPerPixelY) + 16) / 16)
     Else
-        tilesY = round((twips / Screen.TwipsPerPixelY) / 32)
+        tilesY = Round((twips / Screen.TwipsPerPixelY) / 32)
     End If
 
 End Function

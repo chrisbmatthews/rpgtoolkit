@@ -288,7 +288,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'editor vars
-Public bGridOnOff As Boolean 'publictile.grid on / off
+Public bGridOnOff As Boolean 'openTileEditorDocs(activeTile.indice).grid on / off
 Public toolMode As Integer  'tool selected (0- pointer, 1-image, 2- text, 3- button, 4- line, 5- rect)
 Public curcolor As Long     'cuurent color
 Public curfilename As String   'current filename
@@ -1086,7 +1086,7 @@ Sub redraw()
     'draw background image...
     Call redrawBackground
     
-    'draw publictile.grid...
+    'draw openTileEditorDocs(activeTile.indice).grid...
     If bGridOnOff Then
         For X = 0 To 19 * 32 Step 10
             For Y = 0 To 11 * 32 Step 10
@@ -1384,16 +1384,16 @@ Private Sub boardform_MouseDown(button As Integer, Shift As Integer, X As Single
         Dim num As Integer
         bClicked = checkButtonClicked(xx, yy, num)
         If bClicked = True Then
-            codeform.Visible = True
+            codeForm.Visible = True
             nButtonNum = num
-            codeform.Text = theButtons(num).rpgcode
+            codeForm.Text = theButtons(num).rpgcode
         Else
             nButtonNum = -1
             If formLoadRpgCode = "" Then
                 formLoadRpgCode = "* Form Load Event (this code gets run each time the screen is refreshed)" + chr$(13) + chr$(10) + "* TBD: Input your own code here:"
             End If
-            codeform.Visible = True
-            codeform.Text = formLoadRpgCode
+            codeForm.Visible = True
+            codeForm.Text = formLoadRpgCode
         End If
     End If
 
@@ -1419,8 +1419,8 @@ Private Sub boardform_MouseMove(button As Integer, Shift As Integer, X As Single
     yy = Y * (11 * 32) / (boardform.height / Screen.TwipsPerPixelY)
       
     If bGridOnOff Then
-        xx = round(xx / 10) * 10
-        yy = round(yy / 10) * 10
+        xx = Round(xx / 10) * 10
+        yy = Round(yy / 10) * 10
     End If
       
     coords.Caption = str$(xx) + "," + str$(yy)
@@ -1474,9 +1474,9 @@ End Sub
 Private Sub codeform_Change()
     On Error GoTo ErrorHandler
     If nButtonNum = -1 Then
-        formLoadRpgCode = codeform.Text
+        formLoadRpgCode = codeForm.Text
     Else
-        theButtons(nButtonNum).rpgcode = codeform.Text
+        theButtons(nButtonNum).rpgcode = codeForm.Text
     End If
 
     Exit Sub

@@ -153,7 +153,7 @@ Private Sub chkPreview_Click()
         For X = 1 To 32
             For Y = 1 To 32
                 'If tilemem(x, y) <> -1 Then
-                    tilemem(X, Y) = tilepreview(X, Y)
+                    tileMem(X, Y) = tilePreview(X, Y)
                 'End If
             Next Y
         Next X
@@ -183,7 +183,7 @@ Private Sub cmdOK_Click()
     Call Preview
     
     '!NEW! The user wants to save the changes
-    SaveChanges = True
+    saveChanges = True
     
     Unload layertile
 
@@ -204,7 +204,7 @@ Private Sub cmdOpenTile_Click()
     
     For X = 1 To 32
         For Y = 1 To 32
-            buftile(X, Y) = tilemem(X, Y)
+            bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
     
@@ -245,16 +245,16 @@ Private Sub cmdOpenTile_Click()
     Call vbPicFillRect(layerpic, 0, 0, 100, 100, vbQBColor(15))
     For X = 1 To 32
         For Y = 1 To 32
-            If tilemem(X, Y) <> -1 Then
-                Call vbPicPSet(layerpic, X - 1, Y - 1, tilemem(X, Y))
+            If tileMem(X, Y) <> -1 Then
+                Call vbPicPSet(layerpic, X - 1, Y - 1, tileMem(X, Y))
             End If
         Next Y
     Next X
     For X = 1 To 32
         For Y = 1 To 32
-            buffer(X, Y) = tilemem(X, Y)
-            tilemem(X, Y) = buftile(X, Y)
-            buftile(X, Y) = buffer(X, Y)
+            buffer(X, Y) = tileMem(X, Y)
+            tileMem(X, Y) = bufTile(X, Y)
+            bufTile(X, Y) = buffer(X, Y)
         Next Y
     Next X
     ChDir (currentDir$)
@@ -274,19 +274,19 @@ End Sub
 '========================================================================
 Private Sub Form_Activate()
     On Error GoTo ErrorHandler
-    If publicTile.transparentLayer = 1 Then transp.value = 1 Else transp.value = 0
+    If openTileEditorDocs(activeTile.indice).transparentLayer = 1 Then transp.value = 1 Else transp.value = 0
     
     '!NEW! Used to store the current tile for when the "preview" function is used
     For X = 1 To 32
         For Y = 1 To 32
             'If tilemem(x, y) <> -1 Then
-                tilepreview(X, Y) = tilemem(X, Y)
+                tilePreview(X, Y) = tileMem(X, Y)
             'End If
         Next Y
     Next X
     
     '!NEW! Set the variable to False at the start...
-    SaveChanges = False
+    saveChanges = False
     
     Exit Sub
 'Begin error handling code:
@@ -307,14 +307,14 @@ End Sub
 '========================================================================
 Private Sub Form_Unload(Cancel As Integer)
     'If the user has pressed the X in the form, he doesn't wants to add the changes
-    If Not SaveChanges Then
+    If Not saveChanges Then
     
     'Use new undo
-    Call activeTile.SetUndo
+    Call activeTile.setUndo
     For X = 1 To 32
         For Y = 1 To 32
-            If tilemem(X, Y) <> -1 Then
-                tilemem(X, Y) = tilepreview(X, Y)
+            If tileMem(X, Y) <> -1 Then
+                tileMem(X, Y) = tilePreview(X, Y)
             End If
         Next Y
     Next X
@@ -329,7 +329,7 @@ End Sub
 '========================================================================
 Private Sub transp_Click()
     On Error GoTo ErrorHandler
-    If publicTile.transparentLayer = 0 Then publicTile.transparentLayer = 1 Else publicTile.transparentLayer = 0
+    If openTileEditorDocs(activeTile.indice).transparentLayer = 0 Then openTileEditorDocs(activeTile.indice).transparentLayer = 1 Else openTileEditorDocs(activeTile.indice).transparentLayer = 0
     
     '!NEW! Preview the tile, if preview is checked
     If chkPreview.value = 1 Then Call Preview
@@ -350,31 +350,31 @@ Private Sub Preview()
     'First we need to to set the tile back to how it was at the start
     For X = 1 To 32
         For Y = 1 To 32
-            If tilemem(X, Y) <> -1 Then
-                tilemem(X, Y) = tilepreview(X, Y)
+            If tileMem(X, Y) <> -1 Then
+                tileMem(X, Y) = tilePreview(X, Y)
             End If
         Next Y
     Next X
     
     For X = 1 To 32
         For Y = 1 To 32
-            If publicTile.transparentLayer = 0 Then
-                If buftile(X, Y) = -1 Then buftile(X, Y) = tilemem(X, Y)
-                tilemem(X, Y) = buftile(X, Y)
+            If openTileEditorDocs(activeTile.indice).transparentLayer = 0 Then
+                If bufTile(X, Y) = -1 Then bufTile(X, Y) = tileMem(X, Y)
+                tileMem(X, Y) = bufTile(X, Y)
             Else
-                If buftile(X, Y) = -1 Then
-                    buftile(X, Y) = tilemem(X, Y)
+                If bufTile(X, Y) = -1 Then
+                    bufTile(X, Y) = tileMem(X, Y)
                 Else
-                    rrbuf = red(buftile(X, Y))
-                    ggbuf = green(buftile(X, Y))
-                    bbbuf = blue(buftile(X, Y))
-                    rrtile = red(tilemem(X, Y))
-                    ggtile = green(tilemem(X, Y))
-                    bbtile = green(tilemem(X, Y))
+                    rrbuf = red(bufTile(X, Y))
+                    ggbuf = green(bufTile(X, Y))
+                    bbbuf = blue(bufTile(X, Y))
+                    rrtile = red(tileMem(X, Y))
+                    ggtile = green(tileMem(X, Y))
+                    bbtile = green(tileMem(X, Y))
                     rrtile = rrtile + rrbuf: If rrtile > 255 Then rrtile = 255
                     ggtile = ggtile + ggbuf: If ggtile > 255 Then ggtile = 255
                     bbtile = bbtile + bbbuf: If bbtile > 255 Then bbtile = 255
-                    tilemem(X, Y) = RGB(rrtile, ggtile, bbtile)
+                    tileMem(X, Y) = RGB(rrtile, ggtile, bbtile)
                 End If
             End If
         Next Y

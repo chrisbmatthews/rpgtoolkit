@@ -435,7 +435,7 @@ Private Sub cmdCopy_Click()
         
         For X = 1 To 32
             For Y = 1 To 32
-                buftile(X, Y) = tilemem(X, Y)
+                bufTile(X, Y) = tileMem(X, Y)
             Next Y
         Next X
         
@@ -444,7 +444,7 @@ Private Sub cmdCopy_Click()
         lstFiles.Refresh
         For X = 1 To 32
             For Y = 1 To 32
-                tilemem(X, Y) = buftile(X, Y)
+                tileMem(X, Y) = bufTile(X, Y)
             Next Y
         Next X
     End If
@@ -490,7 +490,7 @@ Private Sub lstFiles_Click()
     
     For X = 1 To 32
         For Y = 1 To 32
-            buftile(X, Y) = tilemem(X, Y)
+            bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
     
@@ -498,7 +498,7 @@ Private Sub lstFiles_Click()
     Call vbPicFillRect(pcbBrowse, 0, 0, 100, 100, vbQBColor(15))
     For X = 0 To 31
         For Y = 0 To 31
-            col = tilemem(X + 1, Y + 1)
+            col = tileMem(X + 1, Y + 1)
                 If col = -1 Then col = vbQBColor(15)
             Call vbPicPSet(pcbBrowse, X, Y, col)
         Next Y
@@ -506,7 +506,7 @@ Private Sub lstFiles_Click()
 
     For X = 1 To 32
         For Y = 1 To 32
-            tilemem(X, Y) = buftile(X, Y)
+            tileMem(X, Y) = bufTile(X, Y)
         Next Y
     Next X
 End Sub
@@ -521,7 +521,7 @@ Private Sub lstTileset_Click()
     
     For X = 1 To 32
         For Y = 1 To 32
-            buftile(X, Y) = tilemem(X, Y)
+            bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
 
@@ -529,7 +529,7 @@ Private Sub lstTileset_Click()
     Call vbPicFillRect(pcbBrowse, 0, 0, 100, 100, vbQBColor(15))
     For X = 0 To 31
         For Y = 0 To 31
-            col = tilemem(X + 1, Y + 1)
+            col = tileMem(X + 1, Y + 1)
             If col = -1 Then col = vbQBColor(15)
             Call vbPicPSet(pcbBrowse, X, Y, col)
         Next Y
@@ -537,7 +537,7 @@ Private Sub lstTileset_Click()
     
     For X = 1 To 32
         For Y = 1 To 32
-            tilemem(X, Y) = buftile(X, Y)
+            tileMem(X, Y) = bufTile(X, Y)
         Next Y
     Next X
 End Sub
@@ -679,7 +679,7 @@ Sub createHashTable()
             total = 0
             Call openTile2(projectPath$ + tilePath$ + a$)
             For t = 1 To 16
-                hv = tilemem(t, t) Mod 11
+                hv = tileMem(t, t) Mod 11
                 total = total + hv
             Next t
             If total < 0 Then total = total * -1
@@ -719,11 +719,11 @@ Sub backUpTile()
     
     For X = 1 To 32
         For Y = 1 To 32
-            buftile(X, Y) = tilemem(X, Y)
+            bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
     
-    publicTile.oldDetail = detail
+    openTileEditorDocs(activeTile.indice).oldDetail = detail
 
     Exit Sub
 'Begin error handling code:
@@ -800,13 +800,13 @@ Function compareTiles(ByVal f1 As String, ByVal f2 As String) As Boolean
     Call openTile2(projectPath & tilePath & f1)
     For X = 1 To 32
         For Y = 1 To 32
-            myBuf(X, Y) = tilemem(X, Y)
+            myBuf(X, Y) = tileMem(X, Y)
         Next Y
     Next X
     Call openTile2(projectPath & tilePath & f2$)
     For X = 1 To 32
         For Y = 1 To 32
-            If Not (myBuf(X, Y) = tilemem(X, Y)) Then
+            If Not (myBuf(X, Y) = tileMem(X, Y)) Then
                 'found difference
                 Exit Function
             End If

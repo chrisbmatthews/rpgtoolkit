@@ -422,12 +422,12 @@ Private Sub ReturnToEditor_Click()
 '=================================
 'Exits the Tile Info window.
 '=================================
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Unload tileinfo
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -436,7 +436,7 @@ Private Sub EraseTile_Click()
 '============================
 'Erases the current tile.
 '============================
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim xx As Long, yy As Long
     
@@ -451,7 +451,7 @@ Private Sub EraseTile_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -488,7 +488,7 @@ Private Sub ChangeTileType_Click()
 '=================================
 'Cycles through the tile types.
 '=================================
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
     Dim thistile As Integer, levelnum As Integer
     
@@ -517,7 +517,7 @@ Private Sub ChangeTileType_Click()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     Call HandleError
     Resume Next
 End Sub
@@ -559,8 +559,8 @@ Private Sub Form_Load()
 
     On Error Resume Next
     
-    Dim x As Integer, y As Integer, colorit As Long
-    Dim temp As String, tileopen As String, fn As String, ex As String
+    Dim X As Integer, Y As Integer, colorit As Long
+    Dim Temp As String, tileopen As String, fn As String, ex As String
     Dim levelnum As Integer, numof As Integer, testtype As Integer, t As Integer
     
     Call LocalizeForm(Me)
@@ -569,15 +569,15 @@ Private Sub Form_Load()
     Call vbPicAutoRedraw(tileInfoIso, True)         'Added.
 
     'Hold the current tilemem in the tile buffer.
-    publicTile.oldDetail = detail
-    For x = 1 To 32
-        For y = 1 To 32
-            buftile(x, y) = tilemem(x, y)
-        Next y
-    Next x
+    openTileEditorDocs(activeTile.indice).oldDetail = detail
+    For X = 1 To 32
+        For Y = 1 To 32
+            bufTile(X, Y) = tileMem(X, Y)
+        Next Y
+    Next X
     
     'First, see if it's in an archive
-    tileopen$ = projectPath$ + tilepath$ + BoardGetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)
+    tileopen$ = projectPath$ + tilePath$ + BoardGetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)
     ex$ = UCase$(GetExt(tilesetFilename(tileopen$)))
     
     If ex$ = "TAN" Then
@@ -586,8 +586,8 @@ Private Sub Form_Load()
     Else
         '.gph, .tst, .iso
         
-        Call openwintile(tileopen$)
-        If detail = 2 Then Call increasedetail
+        Call openWinTile(tileopen$)
+        If detail = 2 Then Call increaseDetail
         
         'Added.
         'Draw the tile isometrically. Draws tilemem which was loaded in openwintile.
@@ -598,39 +598,39 @@ Private Sub Form_Load()
         End If
         
         'Draw the tile 2D. Not edited for .iso, incase people want to use .iso on 2D boards...
-        For x = 1 To 32
-            For y = 1 To 32
-                colorit = tilemem(x, y)
+        For X = 1 To 32
+            For Y = 1 To 32
+                colorit = tileMem(X, Y)
                 If colorit = -1 Then colorit = vbQBColor(15)
-                Call vbPicPSet(tileinfopic, x - 1, y - 1, colorit)
+                Call vbPicPSet(tileinfopic, X - 1, Y - 1, colorit)
                 
-                tilemem(x, y) = buftile(x, y)
-            Next y
-        Next x
-        detail = publicTile.oldDetail
+                tileMem(X, Y) = bufTile(X, Y)
+            Next Y
+        Next X
+        detail = openTileEditorDocs(activeTile.indice).oldDetail
     End If
 
 'Fill in info
     filename.Caption = ""
-    temp$ = BoardGetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)
-    ex$ = UCase$(GetExt(tilesetFilename(temp$)))
+    Temp$ = BoardGetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)
+    ex$ = UCase$(GetExt(tilesetFilename(Temp$)))
     
     If UCase$(ex$) = "TST" Or UCase$(ex$) = "ISO" Then
-        numof = getTileNum(temp$)
-        fn$ = tilesetFilename(temp$)
-        fn$ = projectPath$ + tilepath$ + fn$
-        fn$ = nopath$(fn$)
+        numof = getTileNum(Temp$)
+        fn$ = tilesetFilename(Temp$)
+        fn$ = projectPath$ + tilePath$ + fn$
+        fn$ = noPath$(fn$)
         fn$ = Mid$(fn$, 2, Len(fn$) - 1)
         fn$ = fn$ + toString(numof)
         'fn$ = nospace(fn$)
-        temp$ = fn$
+        Temp$ = fn$
     Else
-        temp$ = projectPath$ + tilepath$ + BoardGetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)
-        temp$ = nopath$(temp$)
-        temp$ = Mid$(temp$, 2, Len(temp$) - 1)
+        Temp$ = projectPath$ + tilePath$ + BoardGetTile(boardList(activeBoardIndex).infoX, boardList(activeBoardIndex).infoY, boardList(activeBoardIndex).currentLayer, boardList(activeBoardIndex).theData)
+        Temp$ = noPath$(Temp$)
+        Temp$ = Mid$(Temp$, 2, Len(Temp$) - 1)
     End If
     
-    filename.Caption = temp$
+    filename.Caption = Temp$
     location.Caption = str$(boardList(activeBoardIndex).infoX) + "," + str$(boardList(activeBoardIndex).infoY)
     layer.Caption = str$(boardList(activeBoardIndex).currentLayer)
     

@@ -116,7 +116,7 @@ Option Explicit
 
 Sub drawTstGrid(Optional ByVal autoRefresh As Boolean = False)
 '=============================================================
-'draws publictile.grid around tileset tiles
+'draws openTileEditorDocs(activeTile.indice).grid around tileset tiles
 '=============================================================
     On Error GoTo ErrorHandler
     
@@ -236,7 +236,7 @@ Private Sub Form_Load()
     'Put the current tilemem into the buffer.
     For X = 1 To 32
         For Y = 1 To 32
-            buftile(X, Y) = tileMem(X, Y)
+            bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
     
@@ -370,7 +370,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     For X = 1 To 32
         For Y = 1 To 32
-            tileMem(X, Y) = buftile(X, Y)
+            tileMem(X, Y) = bufTile(X, Y)
         Next Y
     Next X
 
@@ -443,7 +443,7 @@ Private Sub tiles_MouseDown(button As Integer, Shift As Integer, X As Single, Y 
     num = num + tilesetBrowserScroll.value * tX + 1
     
     'Check we've not selected a tile that isn't in the set.
-    If publicTile.bAllowExtraTst = True Then
+    If openTileEditorDocs(activeTile.indice).bAllowExtraTst = True Then
         'When selecting "Save Into Tileset..." from the tile editor menu, the tilesetform is
         'called to allow selection of the position to insert the tile.
         If num > tileset.tilesInSet + 1 Then Exit Sub

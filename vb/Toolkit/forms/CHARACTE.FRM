@@ -1535,10 +1535,10 @@ ReDim supertile(64, 64)
     'End If
     If UCase$(thextention$) = "GPH" Then
         'Backup the tile in memory
-        publicTile.oldDetail = detail
+        openTileEditorDocs(activeTile.indice).oldDetail = detail
         For xx = 1 To 32
             For yy = 1 To 32
-                buftile(xx, yy) = tilemem(xx, yy)
+                bufTile(xx, yy) = tileMem(xx, yy)
             Next yy
         Next xx
         
@@ -1550,10 +1550,10 @@ ReDim supertile(64, 64)
         xx = 1: yy = 1
         For X = 1 To 32
             For Y = 1 To 32
-                supertile(xx, yy) = tilemem(X, Y)
-                supertile(xx, yy + 1) = tilemem(X, Y)
-                supertile(xx + 1, yy) = tilemem(X, Y)
-                supertile(xx + 1, yy + 1) = tilemem(X, Y)
+                supertile(xx, yy) = tileMem(X, Y)
+                supertile(xx, yy + 1) = tileMem(X, Y)
+                supertile(xx + 1, yy) = tileMem(X, Y)
+                supertile(xx + 1, yy + 1) = tileMem(X, Y)
                 yy = yy + 2
             Next Y
             yy = 1
@@ -1561,10 +1561,10 @@ ReDim supertile(64, 64)
         Next X
         For xx = 1 To 32
             For yy = 1 To 32
-                tilemem(xx, yy) = buftile(xx, yy)
+                tileMem(xx, yy) = bufTile(xx, yy)
             Next yy
         Next xx
-        detail = publicTile.oldDetail
+        detail = openTileEditorDocs(activeTile.indice).oldDetail
         
         'Now that we've properly resized the GPH, draw it:
         For X = 1 To 64

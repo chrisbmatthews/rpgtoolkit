@@ -218,10 +218,10 @@ Public Sub changeSelectedTile(ByVal file As String)
     
     Dim dx As Long, dy As Long, colorDraw As Long
     
-    detail = publicTile.oldDetail
+    detail = openTileEditorDocs(activeTile.indice).oldDetail
     For dx = 1 To 32
         For dy = 1 To 32
-            colorDraw = tilemem(dx, dy)
+            colorDraw = tileMem(dx, dy)
             If colorDraw = -1 Then colorDraw = vbQBColor(15)
             Call vbPicPSet(tkMainForm.tileBmpSelectedTile, dx - 1, dy - 1, colorDraw)
         Next dy
@@ -444,7 +444,7 @@ Public Sub tilebmpSelectTile()
     'tool
     On Error Resume Next
     ignore = 1
-    publicTile.oldDetail = detail
+    openTileEditorDocs(activeTile.indice).oldDetail = detail
     
     Dim X As Long, Y As Long
     Dim antiPath As String
@@ -454,7 +454,7 @@ Public Sub tilebmpSelectTile()
     
     For X = 1 To 32
         For Y = 1 To 32
-            buftile(X, Y) = tilemem(X, Y)
+            bufTile(X, Y) = tileMem(X, Y)
         Next Y
     Next X
     ChDir (currentDir$)
@@ -491,10 +491,10 @@ Public Sub tilebmpSelectTile()
         Call openWinTile(filename$(1))
         If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
         'MsgBox boardList(activeBoardIndex).ambient
-        detail = publicTile.oldDetail
+        detail = openTileEditorDocs(activeTile.indice).oldDetail
         For dx = 1 To 32
             For dy = 1 To 32
-                colorDraw = tilemem(dx, dy)
+                colorDraw = tileMem(dx, dy)
                 If colorDraw = -1 Then colorDraw = vbQBColor(15)
                 Call vbPicPSet(tkMainForm.tileBmpSelectedTile, dx - 1, dy - 1, colorDraw)
             Next dy
@@ -505,7 +505,7 @@ Public Sub tilebmpSelectTile()
     
     For X = 1 To 32
         For Y = 1 To 32
-            tilemem(X, Y) = buftile(X, Y)
+            tileMem(X, Y) = bufTile(X, Y)
         Next Y
     Next X
 End Sub

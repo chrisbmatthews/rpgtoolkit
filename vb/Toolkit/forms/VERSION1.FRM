@@ -130,45 +130,45 @@ Option Explicit
 
 Private Sub colcode_Change()
     On Error Resume Next
-    If val(colcode.Text) > 255 Then colcode.Text = "255"
-    If val(colcode.Text) < 0 Then colcode.Text = "0"
-    Call vbPicFillRect(doscurrentcol, 0, 0, 100, 100, GFXGetDOSColor(val(colcode.Text)))
-    publicTile.currentColor = GFXGetDOSColor(val(colcode.Text))
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, publicTile.currentColor)
+    If val(colCode.Text) > 255 Then colCode.Text = "255"
+    If val(colCode.Text) < 0 Then colCode.Text = "0"
+    Call vbPicFillRect(dosCurrentCol, 0, 0, 100, 100, GFXGetDOSColor(val(colCode.Text)))
+    openTileEditorDocs(activeTile.indice).currentColor = GFXGetDOSColor(val(colCode.Text))
+    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(activeTile.indice).currentColor)
 End Sub
 
-Private Sub dospal_MouseDown(button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub dospal_MouseDown(button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
     Dim xx As Long, yy As Long, theColor As Long
-    xx = Int((x / 10))
-    yy = Int((y / 10))
+    xx = Int((X / 10))
+    yy = Int((Y / 10))
     theColor = yy * 16 + xx
-    Call vbPicFillRect(doscurrentcol, 0, 0, 100, 100, GFXGetDOSColor(theColor))
-    colcode.Text = str(theColor)
-    publicTile.currentColor = GFXGetDOSColor(theColor)
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, publicTile.currentColor)
+    Call vbPicFillRect(dosCurrentCol, 0, 0, 100, 100, GFXGetDOSColor(theColor))
+    colCode.Text = str(theColor)
+    openTileEditorDocs(activeTile.indice).currentColor = GFXGetDOSColor(theColor)
+    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(activeTile.indice).currentColor)
     If detail <> 1 And detail <> 2 Then
         If detail = 3 Or detail = 4 Then
-            publicTile.currentColor = theColor
+            openTileEditorDocs(activeTile.indice).currentColor = theColor
         ElseIf detail = 5 Or detail = 6 Then
-            publicTile.currentColor = toColor(publicTile.currentColor, 16)
+            openTileEditorDocs(activeTile.indice).currentColor = toColor(openTileEditorDocs(activeTile.indice).currentColor, 16)
         End If
-        Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, GFXGetDOSColor(publicTile.currentColor))
+        Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, GFXGetDOSColor(openTileEditorDocs(activeTile.indice).currentColor))
     End If
 End Sub
 
 Private Sub Form_Activate()
     On Error Resume Next
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     Dim xx As Long, yy As Long
     Dim color As Long
     For yy = 0 To 15
         For xx = 0 To 15
-            Call vbPicFillRect(dospal, xx * 10, yy * 10, xx * 10 + 8, yy * 10 + 8, GFXGetDOSColor(color))
+            Call vbPicFillRect(dosPal, xx * 10, yy * 10, xx * 10 + 8, yy * 10 + 8, GFXGetDOSColor(color))
             color = color + 1
         Next xx
     Next yy
-    Call vbPicRefresh(dospal)
+    Call vbPicRefresh(dosPal)
 End Sub
 
 Private Sub Form_Load()
@@ -178,6 +178,6 @@ End Sub
 
 Private Sub selectdoscol_Click()
     On Error Resume Next
-    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, publicTile.currentColor)
+    Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, 100, 100, openTileEditorDocs(activeTile.indice).currentColor)
     Unload Me
 End Sub

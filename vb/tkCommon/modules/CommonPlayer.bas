@@ -344,7 +344,7 @@ Sub savechar(ByVal file As String, ByRef thePlayer As TKPlayer)
     
     Open file For Binary As #num
         Call BinWriteString(num, "RPGTLKIT CHAR")   'Filetype
-        Call BinWriteInt(num, Major)               'Version
+        Call BinWriteInt(num, major)               'Version
         Call BinWriteInt(num, 5)            'Minor version (ie 2.5 = Version 3.0 file  2.3-- binary 2.2-- 64x64 fight gfx, 2.1-- 64x32 chars (2.0== 32x32 chars))
         Call BinWriteString(num, thePlayer.charname$)      'Charactername
         Call BinWriteString(num, thePlayer.experienceVar$)
@@ -441,10 +441,11 @@ On Error Resume Next
     Dim x As Long, y As Long
     For x = 0 To 32
         For y = 0 To 32
-            buftile(x, y) = tilemem(x, y)
+            bufTile(x, y) = tileMem(x, y)
         Next y
     Next x
-    publicTile.oldDetail = detail
+    Dim oldDetail As Long
+    oldDetail = detail
     detail = 1
     tstName$ = replace(RemovePath(file$), ".", "_") + ".tst"
     tstName$ = projectPath$ + tilePath$ + tstName$
@@ -467,7 +468,7 @@ On Error Resume Next
         If fileHeader$ <> "RPGTLKIT CHAR" Then Close #num: MsgBox "Unrecognised File Format! " + file$, , "Open Character": Exit Sub
         majorVer = BinReadInt(num)         'Version
         minorVer = BinReadInt(num)         'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Sub
         
         thePlayer.charname$ = BinReadString(num)
         thePlayer.experienceVar$ = BinReadString(num)
@@ -735,7 +736,7 @@ ver2oldchar:
         If fileHeader$ <> "RPGTLKIT CHAR" Then Close #num: GoTo Version1Char
         Input #num, majorVer           'Version
         Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> Major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Sub
+        If majorVer <> major Then MsgBox "This Character was created with an unrecognised version of the Toolkit", , "Unable to open Character": Close #num: Exit Sub
         thePlayer.charname = fread(num)    'Charactername
         thePlayer.experienceVar$ = fread(num)
         thePlayer.defenseVar$ = fread(num)
@@ -776,7 +777,7 @@ ver2oldchar:
             tstPos = 1
             For x = 1 To 32
                 For y = 1 To 32
-                    Input #num, tilemem(x, y) 'Character Walking Graphics
+                    tileMem(x, y) = fread(num)
                 Next y
             Next x
             Call createNewTileSet(tstName$)
@@ -788,7 +789,7 @@ ver2oldchar:
             For t = 1 To 15
                 For x = 1 To 32
                     For y = 1 To 32
-                        Input #num, tilemem(x, y) 'Character Walking Graphics
+                        tileMem(x, y) = fread(num)
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
@@ -815,7 +816,7 @@ ver2oldchar:
             For t = 1 To 4
                 For x = 1 To 32
                     For y = 1 To 32
-                        tilemem(x, y) = fgfx(x, y, t)
+                        tileMem(x, y) = fgfx(x, y, t)
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
@@ -829,7 +830,7 @@ ver2oldchar:
             For t = 1 To 4
                 For x = 1 To 32
                     For y = 1 To 32
-                        tilemem(x, y) = sgfx(x, y, t)
+                        tileMem(x, y) = sgfx(x, y, t)
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
@@ -843,7 +844,7 @@ ver2oldchar:
             For t = 1 To 4
                 For x = 1 To 32
                     For y = 1 To 32
-                        tilemem(x, y) = defgfx(x, y, t)
+                        tileMem(x, y) = defgfx(x, y, t)
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
@@ -857,7 +858,7 @@ ver2oldchar:
             For t = 1 To 4
                 For x = 1 To 32
                     For y = 1 To 32
-                        tilemem(x, y) = diegfx(x, y, t)
+                        tileMem(x, y) = diegfx(x, y, t)
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
@@ -871,7 +872,7 @@ ver2oldchar:
             
             For x = 1 To 32
                 For y = 1 To 32
-                    Input #num, tilemem(x, y)       'Character at rest graphic
+                    tileMem(x, y) = fread(num)
                 Next y
             Next x
             Call addToTileSet(tstName$)
@@ -885,7 +886,7 @@ ver2oldchar:
             For t = 0 To 9
                 For x = 1 To 32
                     For y = 1 To 32
-                        Input #num, tilemem(x, y)   'Character at custom graphics
+                        tileMem(x, y) = fread(num)
                     Next y
                 Next x
                 Call addToTileSet(tstName$)
@@ -1120,10 +1121,11 @@ ver2oldchar:
     
     For x = 0 To 32
         For y = 0 To 32
-            tilemem(x, y) = buftile(x, y)
+            tileMem(x, y) = bufTile(x, y)
         Next y
     Next x
-    detail = publicTile.oldDetail
+
+    detail = oldDetail
     
     Exit Sub
 
@@ -1131,7 +1133,6 @@ Version1Char:
 Close #num
 
 End Sub
-
 
 Sub PlayerClear(ByRef thePlayer As TKPlayer)
     On Error Resume Next
