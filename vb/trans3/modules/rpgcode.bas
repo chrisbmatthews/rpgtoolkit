@@ -10526,14 +10526,10 @@ arrayError:
     Resume Next
 End Function
 
-Public Function SwitchCase( _
+Public Function switchCase( _
                               ByVal Text As String, _
                               ByRef prg As RPGCodeProgram _
                                                             ) As Long
-
-    '=========================================================================
-    'Switch case 'structure' added by KSNiloc
-    '=========================================================================
 
     'Switch(var!)
     '{
@@ -10602,26 +10598,10 @@ Public Function SwitchCase( _
                 
                 On Error Resume Next
                 
-                If Not LCase$(paras(0).lit) = "else" Then
+                If LCase$(paras(0).lit) <> "else" Then
             
                     Dim vtype As Long
                     Dim a As Long
-
-                    'Determine type of variable in Switch()...
-                    vtype = dataType(.item(.count), prg, True)
-                    Select Case vtype
-                        Case 0, 3: vtype = DT_NUM
-                        Case 1, 2: vtype = DT_LIT
-                    End Select
-
-                    'Make sure all the passed variables are that type...
-                    For a = 0 To UBound(paras)
-                        If Not paras(a).dataType = vtype Then
-                            debugger "All variables in Case() must be the sam" _
-                                & "e type as the Switch()-- " & Text
-                            On Error GoTo skipBlock: Err.Raise 0
-                        End If
-                    Next a
 
                     'For each of the variables...
                     Dim u As String
@@ -10629,7 +10609,7 @@ Public Function SwitchCase( _
                     Dim useMath As Boolean
                     For a = 0 To UBound(paras)
                         On Error Resume Next
-                        If paras(a).dataType = DT_LIT Then u = paras(a).lit
+                        If paras(a).dataType = DT_LIT Then u = """" & paras(a).lit & """"
                         If paras(a).dataType = DT_NUM Then u = CStr(paras(a).num)
 
                         'See if the they're trying to use their own comparison
@@ -10640,7 +10620,7 @@ Public Function SwitchCase( _
                         End Select
 
                         If Not useMath Then
-                            eval = evaluate(.item(.count) & " = " & u, prg)
+                            eval = evaluate(.item(.count) & " == " & u, prg)
                         Else
                             eval = evaluate(.item(.count) & u, prg)
                         End If
@@ -10671,7 +10651,7 @@ Public Function SwitchCase( _
 
                         'Let the main loop take care of this...
                         startThreadLoop prg, TYPE_IF
-                        SwitchCase = prg.programPos
+                        switchCase = prg.programPos
                         Exit Function
                     
                     End If
@@ -10682,7 +10662,7 @@ Public Function SwitchCase( _
                 runningProgram = True
                 prg.programPos = runBlock(CLng(run), prg)
                 runningProgram = bRunningPrg
-                SwitchCase = prg.programPos
+                switchCase = prg.programPos
       
         End Select
     
@@ -10699,7 +10679,7 @@ skipBlock:
         .programPos = increment(prg)
         .programPos = runBlock(0, prg)
         .programPos = increment(prg)
-        SwitchCase = .programPos
+        switchCase = .programPos
     End With
     Exit Function
     
