@@ -150,7 +150,7 @@ Public Property Let mousePointer(ByRef newValue As String)
 
     Else
 
-        ' Create a DC and bitmap for the color cursor
+        ' Create a bitmap for the color cursor
         hColorBmp = CreateCompatibleBitmap(hCompatibleDc, 32, 32)
 
         ' Select the bitmap into the DC
