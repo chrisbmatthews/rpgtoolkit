@@ -19,13 +19,13 @@ HWND hostHwnd = NULL;
 // Prototypes
 //////////////////////////////////////////////////////////////////////////
 void APIENTRY mainEventLoop(int gameLogicAddress);
-int APIENTRY createHostWindow(int x, int y, int width, int height, int style, char* caption, int instance, int wndProc, char* className);
+int APIENTRY createHostWindow(int x, int y, int width, int height, int style, char* caption, int instance, int wndProc, char* className, int hCursor);
 
 //////////////////////////////////////////////////////////////////////////
 // Create the DirectX host window
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY createHostWindow(
-                               int x, 
+                               int x,
 							   int y, 
 							   int width, 
 							   int height,
@@ -33,8 +33,9 @@ int APIENTRY createHostWindow(
 							   char* caption, 
 							   int instance, 
 							   int wndProc, 
-							   char* className 
-											   )
+							   char* className,
+							   int hCursor 
+										   )
 {
 
 	//This function will create the DirectX host window and return
@@ -46,7 +47,10 @@ int APIENTRY createHostWindow(
 	wnd.cbSize = sizeof(wnd); //callback size == length of the structure
 	wnd.cbWndExtra = NULL;
 	wnd.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH); //black background
-	wnd.hCursor = NULL;
+	if (hCursor == 0)
+		wnd.hCursor = NULL;
+	else
+		wnd.hCursor = (HICON)hCursor;
 	wnd.hIcon = NULL;
 	wnd.hIconSm = NULL;
 	wnd.hInstance = (HINSTANCE)instance; //instance of owning application

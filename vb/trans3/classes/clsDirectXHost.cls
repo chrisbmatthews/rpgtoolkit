@@ -49,7 +49,7 @@ Private m_createY As Long           'y position window should start at
 '=========================================================================
 ' Member declarations
 '=========================================================================
-Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal style As Long, ByVal caption As String, ByVal instance As Long, ByVal wndProc As Long, ByVal className As String) As Long
+Private Declare Function createHostWindow Lib "actkrt3.dll" (ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal height As Long, ByVal style As Long, ByVal Caption As String, ByVal instance As Long, ByVal wndProc As Long, ByVal className As String, ByVal hCursor As Long) As Long
 
 '=========================================================================
 ' Member enumerations
@@ -85,7 +85,7 @@ End Property
 '=========================================================================
 ' Window's caption
 '=========================================================================
-Public Property Let caption(ByVal newValue As String)
+Public Property Let Caption(ByVal newValue As String)
     If Not m_created Then
         m_createCaption = newValue
     Else
@@ -117,10 +117,10 @@ End Property
 '=========================================================================
 ' Window's width
 '=========================================================================
-Public Property Get width() As Long
-    width = m_createWidth
+Public Property Get Width() As Long
+    Width = m_createWidth
 End Property
-Public Property Let width(ByVal newVal As Long)
+Public Property Let Width(ByVal newVal As Long)
      m_createWidth = newVal
 End Property
 
@@ -175,6 +175,15 @@ Public Sub Create()
 
     On Error Resume Next
 
+    Dim cursor As Long
+    If mainMem.mouseCursor = 1 Then
+        'Show the cursor
+        cursor = 0
+    Else
+        'Don't show the cursor!
+        cursor = LoadResPicture(101, vbResCursor).handle
+    End If
+
     hwnd = createHostWindow( _
                                m_createX / Screen.TwipsPerPixelX, _
                                m_createY / Screen.TwipsPerPixelY, _
@@ -184,8 +193,9 @@ Public Sub Create()
                                m_createCaption, _
                                App.hInstance, _
                                AddressOf wndProc, _
-                               WINDOWS_CLASS _
-                                               )
+                               WINDOWS_CLASS, _
+                               cursor _
+                                        )
 
     'Flag the window has been created
     m_created = True
