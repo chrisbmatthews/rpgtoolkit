@@ -1,0 +1,932 @@
+RPG TOOLKIT DEVELOPMENT SYSTEM, 3.0 HISTORY
+
+RPG Toolkit Development System 3.0.4
+Instructions and What's New
+Sept 7, 2004 
+Copyright 2004 by 
+Christopher Matthews and Contributors (Vampz, KSNiloc, John@aljo, Delano, Euix, Geoff, Woozy, occasionally_Correct (With their respective copyrights, released as open source))
+
+Toolkit Editor - toolkit3.exe
+-----------------------------
+
++ Toolkit main window (KSNiloc)
+- Files in tree not associated with the tk will open in their default application.
+- File tree updated (old files removed) when opening a new project.
+- "Show Splashscreen" and "Show Tips" options in the Toolkit menu.
+- Window skin implementations begun.
+- Toolbars are dockable.
+- Known issues: None.
+
++ Project Editor (KSNiloc)
+- Pixel movement and speed settings can be made in the StartUp tab.
+
++ Board Editor (Delano, KSNiloc, Xavier)
+- Isometric boards now draw and scroll correctly. Boards size correctly, minimum values appear when changing board size.
+- Window to set persistent threads running on boards.
+--Link: Detailed thread with images: http://www.toolkitzone.com/forums/viewtopic.php?t=5186
+- Known issues: None.
+
++Tile Editor (Woozy, KSNiloc)
+++ New Tile Editor toolbar (Woozy)
+- A few new buttons to make working on the Tile Editor faster.
+- Looks more organized.
+- New isometric tile mode for .iso tiles (see below).
+
+++ Effects/Tools are updated (Woozy)
+- Import image tool has a "Go back to tile after opening" checkbox. When checked, you don't have to click the "Ok" button once more after loading the picture (Requested by Spyder).
+- Layer Tile, Shade Tile, Light Source, Texturize, Translucentize, Cut Corner, Skew now all have a Preview checkbox.
+- New rotation options, there now are: 180, 90 CW, 90 CCW, Flip Horizontal, Flip Vertical.
+- Known issues: None.
+
++ Animation Editor (Woozy)
+- Animation is now always centered.
+- You can't make the form smaller than the animation.
+- When animation is resized, so is the form.
+- The current frame (In the bottom toolbar, right-bottom) doesn't display "-1" anymore.
+- Size settings are no longer off the bottom of the screen.
+- Known issues: None.
+
++ RPGCode Editor (KSNiloc)
+- Real-time coloring implemented.
+- New options screen (Tools -> Options).
+- Right-click menu (Copy, Cut, Paste, Select All).
+- Bookmark system: "jump to" lists for comments, labels and methods. Link: http://www.toolkitzone.com/forums/viewtopic.php?t=4737
+- Indent wizard: properly indents code inside {} brackets.
+- "Test Program" now works, "Debug" removed.
+- Known issues: None.
+
++ New Tileset Editor (Delano)
+- The tileset editor from tk2 is available through launch buttons on the top toolbar and the Editor fly-out bar on the right.
+- In the new "Advanced" section you can now re-arrange and delete tiles, and move tiles between sets (.tst and .iso). Has a welcome note with more information.
+- Known issues: None.
+- Link: http://www.toolkitzone.com/forums/viewtopic.php?t=5777
+
++ Rewritten Tile Grabber (Delano)
+- Accessed through the "Image" menu in the Tile Editor ("Grab Tiles").
+- Saves directly into tilesets, grabs both normal and isometric tiles (.tst, .iso), has a moveable grid, can grab selections or whole image. Copies a selected tile into the active tile editor. Has a welcome note with more information.
+- Known issues: None.
+- Future plans: Increased grab speed.
+
++ New isometric tilesets, ".iso" (Delano, Woozy)
+- True isometric (62x32 diamond) tiles - appear exactly as drawn/grabbed.
+- Used in the same way as .tst's - can be edited in the Tile Editor, used on (isometric) boards.
+- Known issues: Do not work for tile bitmaps, character graphics, items, animated tiles. Tile editor mode not always persistent with multiple tiles open.
+- Link: http://www.toolkitzone.com/forums/viewtopic.php?t=5777
+
++ Tileset browser (Delano, KSNiloc)
+- Smooth scrolling, row by row.
+
++ EXE maker (Build -> Make EXE) (KSNiloc)
+- Compiles games into one executable file - no need for extracting zips.
+- Link: http://www.toolkitzone.com/forums/viewtopic.php?t=5459
+
++ New Toolkit Installer (KSNiloc)
+- New install options and appearance.
+
++ Help File rewrites (Occasionally_Correct)
+
+++ Rewrite of the 'RPGCode Primer', with TK3's RPGCode, new descriptions, and new sections. The new sections include:
+- Program Flow > The 'Else' statement. An in-depth look at using the Else() command accordingly with If statements.
+- Program Flow > The 'Switch' statement. An in-depth look at using Switch Cases, and how they sometimes have an advantage over If statements.
+- Program Flow > For Loops. Not included in the original help files, the For Loop section teaches how to use For Loops and the advantages they sometimes have over other loops.
+- Multitasking > Threading. Teaches the basics of threading programs (quite basic at the moment. More to be added for the next release).
+- Advanced Features > Scope. The Scope section teaches the difference between local and global scope.
+- Advanced Features > In-Line Commands. Teaches the basics of using commands as parameters, equations in parameters, etc..
+- Advanced Features > Error Handling. An in-depth look at what error handling is and how it works.
+
+++ Rewrite of the 'Command Reference' using TK3's RPGCode for every code example. It includes 220+ documented commands, and I've taken out all of the out-dated commands.
+
+++ New format using CSS for an easy to read, easy to update layout. The new formatting for both the RPGCode Primer and Command Reference saves at least 600KB of space, while still featuring much more than the originals.
+
+End toolkit3.exe
+
+Toolkit Game Engine - trans3.exe
+--------------------------------
+
++ Interface changes (KSNiloc)
+- You may notice a slight change to the windowed appearance of trans3 - this is due to a rewrite of the interface.
+- Keyboard input is more responsive.
+
++ Pixel movement (KSNiloc, Delano)
+- Pixel movement implemented on 2D boards: sprites now travel a minimum of a quarter tile per move ( = 8 pixels).
+- Program, item and tile placement is unaffected, and collision detection and RPGCode have been revised to handle the movement.
+- Both RPGCode commands (see below) and options in the Project Window control pixel movement, and the game speed may have to be adjusted to suit your computer (although attempts have been made to "normalize" the speed).
+- Known issues: Although tested, there may be situations where characters interact incorrectly with other objects. If this happens, please report it, giving details of how it can be repeated. Note that some problems may occur with "wide" sprites - pixel movement has been configured for use with sprites that are around 32 pixels wide. Also, you may encounter speed issues - try altering the GameSpeed setting,.
+
++ Ambient effects for sprites (Delano, Woozy)
+- Sprites (tiles only) are now affected by ambient effects as boards are (e.g., day/night, weather and the global variables AmbientRed! etc.)
+- Known issues: Only works for sprites composed of tiles (.tst, .gph, .tbm), not enabled for image files yet.
+
++ Battle System (KSNiloc)
+- The default battle system has been rewritten, with a new look and increased stability. The bugs that plagued the old system have been fixed too.
+- Known issues: None.
+
++ Shop System (CallShop() command) (KSNiloc)
+- The internal shop has had a total make-over, and now works!
+- Known issues: None.
+
+RPGCode (KSNiloc)
+-----------------
+
++ Threading/Multitasking
+- For, While and If loops (all constructs that use {}) no longer lock up the Tk: they now properly multitask.
+- This allows objects such as persistent HP bars and rain programs to be created, and a dedicated canvas has been created for such things (see below, and board editor above).
+- Animations now multitask as well.
+
++ RPGCode math now follows order of operations (operator precedence).
++ Equations (including funtions) are valid anywhere (even inside parameter brackets).
++ Multi-dimensional arrays added.
+
+New/Altered commands:
+Code:
+
++ With()
+   + Manipulates a particular object or file
+
+   With(System)
+   {
+      .Pause()
+   }
+
++ Select case
+
+   + Switch(var!$ or command)
+      {
+          Case("Boo!",x$,Wait())
+          {
+              *It's "Boo!", the value of x$ or what the user pressed for Wait()
+          }
+          Case(Else)
+          {
+              *It wasn't one of the other choices
+          }
+      }
+
++ Multiple commands on a line, separated by the hash "#":
+
+     MWin("Test") # Wait()
+
++ Split one command among multiple lines using the underscore "_" :
+ 
+  *Check if it is an arrow key...
+  if( _
+        key$~="LEFT" _
+        and key$~="RIGHT" _
+        and key$~="UP" _
+        and key$~="DOWN" _
+                           ) _
+                               {done!=1}
+
++ Stop() command which stops a program in its tracks (end() doesn't quite work like that)
+
++ SpliceVariables(text$)
+
+   Show ( SpliceVariables("Bob! = <bob!>") )
+   Wait()
+
+   An utterly pointless example. SpliceVariables()
+   replaces what's in <var$!> with their values.
+
++ Split(text$,delimiter$,array$)
+
+   The best string manipulator... ever. It doesn't
+   get any better than this. Splits the string in
+   text$ at delimiter$ and places it into array$.
+
+   Split("Hi there, OC!"," ","Test[]$")
+
+   The result:
+   Test[0]$ = "Hi"
+   Test[1]$ = "there,"
+   Test[2]$ = "OC!"
+
+   Array$ does _need_ to be in quotes. You can have
+   it pumped into the second, third, or any
+   dimension of an array too (but don't mention
+   this as these cool things are standard amoung
+   all commands now). Example:
+
+   Split("I told you!"," ","Test[a!][]$")
+
+   This first finds the value of a! and then pumps
+   the results into the second dimension of that
+   array.
+
++ Asc(char$) / Chr(char!)
+
+   Converts characters to and from ASCII. Custom
+   system people simply couldn't live without.
+
+   Chr(8) would detect backspace, Chr(9) tab...
+   need I go on?
+
++ Trim(str$)
+
+   Removes spaces and tabs from the edges of a
+   string.
+
+   Show( Trim("    I put spaces here!111!!!") )
+
+   Would show "I put spaces here!111!!!"
+
++ Right(str$,amount!) and Left(str$,amount!)
+
+   Takes characters from the right and left of a
+   string respectfully.
+
+   Show( Left("I love you!",4) + "athe" + _
+           Right("I love you!",5) )
+
+   Would show "I loathe you!"
+
++ CursorMapHand(file$, [stretchYN!])
+
+   Changes the hand used on the menu, cursor maps,
+   etc to the specified file$ and optionally
+   stretches it to 32x32 pixels. You can use the
+   word "Default" instead of a file to return the
+   cursor to its original graphic.
+
++ MsgBox(text$,[title$],[type!],[textColor!],[bgColor!],[bgPic$])
+
+   Pops up a message box (but not a windows one...)
+   and returns the button that was pressed. I don't
+   feel like listing all the return value and types
+   so have fun, OC! =P
+
++ SetConstants()
+
+   Updates the RPGCode constants.
+
++ RestoreScreenArray(pos! [,other parameters!])
+
+   Restores a screen from the array.
+
+---Log(number!)
+
++ number! (in) - number to find log of
++ return! (out) - evaluation
+
+---OnBoard(pNum!)
+
++ pNum! (in) - player number (0-4)
++ return! (out) - 1/0
+
+Is player shown on board?
+
+---AutoLocal()
+
+Place at top of program and implicitly created variables will be forced to the local heap.
+
+---GetBoardName()
+
++ return$ (out) - result
+
+Returns board player is on.
+
+---LCase(text$)
+
++ return$ (out) - lower case of text passed in
+
+---UCase(text$)
+
++ return$ (out) - upper case of text passed in
+
+---AppPath()
+
++ return$ (out) - path to toolkit3\ folder (utterly useless, IMO, yell at ComputerDude!)
+
+---Mid(string$,start!,length!)
+
+Return string$ starting at start! for length! characters.
+
+---Replace(string$,find$,replace$)
+
+Return string$ substituting find$ for replace$
+
+---PixelMovement(ON/OFF)
+
+Toggle pixel movement (now fully functioning!)
+
+---GameSpeed(0 - 4)
+
+Added higher speed (4).
+
+---EndAnimation(AnimationID!)
+
+End an animation created with Animation() or SizedAnimation()
+
++ MultiRun() {}
+
+Has all commands run run-after-another in a thread (rather than possibly losing control)
+
++ PixelMovement(ON/OFF)
+   +Change pixel movement in-game
+
++ ShopColors (pos!, r!, g!, b!)
+   + Internal shop colours.
+
++ RenderNow(ON/OFF)
+   + See threading below.
+
+---Error Handling
+
++ Debugger(text$)
+
+   Pops up the RPGCode debugger provided it is
+   enabled. Will trigger an error if error handling
+   is in place.
+
+On Error...
+
+   Changes what happens on an error.
+
+   On Error Resume Next
+      + Nothing happens, program continues from
+        the next line as if there was no error.
+
+   On Error Goto :label
+      + The only (and only) time when I will
+        actually endorse labels. Branches to
+        a label when an error occurs. ONLY
+        BRANCH TO PLACES WITHIN THE SAME
+        METHOD!!! Can be used for all sorts
+        of fun things such as detecting
+        whether a file exists.
+
+        When you branch on an error, DO NOT
+        continue program flow. Use...
+
+        Resume Next
+
+        to continue from the next line after
+         setting a variable like error! to 1
+        so you can react appropriately.
+
+---Changes to existing commands
+
+Canvases
+
+   + They work :)
+   + All drawing/image commands now take an extra,
+     optional parameter (the ID of the canvas)
+
+Get()
+
+   a$ = Get()
+   a$ = Get(milliSeconds!)
+   Get(a$)
+   Get(a$,milliSeconds!)
+
+   ...are all valid. milliSeconds! is the length
+   to doEvents in order to get input for.
+
+SaveScreen( [pos!] )
+
+   Now can save into an array. In other words,
+   unlimited savescreen buffers.
+
+Animation(file$,x!,y![,loop!])
+
+   Changes ONLY apply to threads:
+
+   + Loop means the animation will loop until the thread
+     is ended or EndAnimation() is used
+
+   + It return RETURN an AnimationID (numerical) which
+     you can use in EndAnimation() and potentially more
+     things later on
+
+SizedAnimation(file$,x!,y!,width!,height![,loop!])
+
+   + Same changes as Animation()
+
++ One canvas is already created called cnvRenderNow! If you use RenderNow(on), it will constantly render to the screen (for HP bars and the like)
+
+End RPGCode
+
+++ Miscellaneous fixes
+
++ Isometric tiletype fix
+- Was possible to move across corners of solid isometric tiles (aesthetic bug).
++ On isometric tiles in a game pure black pixels appeared transparent.
+- (Didn't happen in the board editor and didn't affect 2D boards).
+
+
+End trans3.exe
+
+++ Notes
+
++ The RPGCode Class system has been removed for 3.0.4 for reworking, but will re-appear in a later release.
++ KSNiloc's VB Plugin SDK is not included with 3.0.4 - this will be released separately at a later date.
++ Partial transparency has not been coded for this release.
+
+END 3.0.4 
+
+
+
+RPG Toolkit Development System 3.0.3
+Instructions and What's New
+May 23, 2004 
+Copyright 2003, 2004 by Christopher Matthews
+With contributions by: Vampz, KSNiloc, John@aljo, Delano, Euix, Geoff, Woozy, occasionally_Correct (With their respective copyrights, released as open source)
+
+GENERAL OVERVIEW
+(see http://www.toolkitzone.com/forums/viewtopic.php?t=3627 for full list and credits to open source developers.)
+
+Toolkit 3 Fixes 
+-----------------
+(Board Editor)
+- Tile type positions and setting now fully functional.
+- Slow board drawing when setting tiletpyes fixed. 
+- Background pictures now scroll correctly. 
+- Board now refreshes when you set a program, item or warp so you can view it. 
+- When using fill tool, it now fills with selected tiletype too. 
+- Draw lock toggle control now set to selected when you open a new board. 
+(Special Move Editors)
+- Improved editing to make life easier.
+(Program Editor)
+- Improved syntax clouring.
+
+Toolkit 3 Improvements
+-----------------
+(General)
+- No longer crashes when you run your game.
+(Board Editor)
+- Warps are now shown as a green X to differentiate from a normal program. 
+- Refined bottom bar, added feature that layers now show layer name if one is present. 
+- Added ability to right-click a tile and then set tile type and erase it. 
+- Added new optional Toolbar which has two main features; 
+
+	1. Allows you to view and sort programs, items and warps. You can then click 
+	one of them to edit the object itself, change the settings or remove. 
+
+	2. You can set various display options such as always redraw all layers and 
+	have certain objects such as programs and items always be displayed.
+
+(Tile Editor)
+- Added new tool allowing you to specify the transparent colour, and when selected all 
+pixels change to transparent.
+- Tile editor bottom bar also refined and improved. 
+(Help Files)
+- New commands added by open source developers documented and listed, also rpg code tutorial added.
+
+Trans 3 Fixes/Imrpovements
+-----------------
+- No longer crashes when you close Trans3.
+- "target" or "source" now work in #Push("n", "target") 
+- #Send failed, the board no longer re-aligns to the corner. 
+- #PutPlayer now centres screen on player. 
+- No pause when moving to a new board. 
+- Tile placement corrected on large isometric boards. 
+- Items can no move on "under" tiles. 
+- Attempt to improve character and cursor speeds. 
+- Moving to the same tile as an item no longer causes player to not be able to interact with board. 
+- #PathFind now updated in line with #Push and #PushItem commands, now returns a string of 
+directions separated by commas. 
+- Enemies no longer die with one hit. 
+- Small boards now centered on screen. 
+- #Get command no longer inverts LEFT and RIGHT keys. 
+- Added support for the number-pad for movement, and for cursor maps. 
+- #Get and #Wait now return "SPACE" for the spacebar instead of " "
+
+New RPGCode commands:
+-----------------
+- New item commands; #GetItemName, #GetItemDesc, #GetItemCost, and #GetItemSell.
+- New string manipulation commands; #StringLen and #InStr
+- Added Class support! For full details view KSNiloc's class help file (in help folder)
+- Made #Push and #PushItem backwards compatible (you do not have to comma seperate the directions, but you should).
+
+
+END OF 3.0.3 NOTES
+
+
+
+RPG Toolkit Development System 3.0.2
+Instructions and What's New
+April 28, 2004 
+Copyright 2003, 2004 by Christopher Matthews
+With contributions by: Vampz, KSNiloc, John@aljo, Delano (With their respective copyrights, released as open source)
+
+GENERAL OVERVIEW
+(see http://www.toolkitzone.com/forums/viewtopic.php?t=2598 for full list and credits to open source developers.)
+
+Toolkit 3 Fixes 
+-----------------
+(Board Editor)
+- Wallpaper routine removed to prevent memory leak.
+- Isometric support increased dramatically with fixes for the grid, tiletypes and eraser.
+- Grid now refreshes when scrolling.
+- After reverting back to 8 layers from 4, board is no longer reset to 0 width and 0 height.
+- Tool settings remembered for each board when switiching between them.
+- Layer drop down list now shows correct number of layers.
+
+
+Trans 3 Fixes/Improvements
+-----------------
+- Couple of bugs fixed in #CallShop, no longer allows you to buy and sell "nothing" items.
+- Sprites now move to correct position when using #TargetLocation(x!, y!) etc.
+- Isometric diagonal walking corrected and general diagonal walking bug fixed.
+- Vertical scrolling no longer moves character as well.
+- Horizontal scrolling works correctly for isometric movement.
+- Moving to isometric boards from any other place now centres the screen on the player.
+- Bottom rows and end columns are now drawn in isometric mode.
+- Background images no disappear when an isometric board begins to scroll.
+- Moving from one board with an item to another with an item (of the same number) 
+no longer causes the new item to retain the pending movements of the previous item.
+- Walking on "under" tiles at the top of the screen no longer causes trans3 to crash.
+- Sprites no longer disappear prematurely off the right side of the screen.
+- Normal boards now scroll to edges.
+- After removing an item from the board with #EraseItem, #DestroyItem, the tile where 
+the item was no longer remains solid to players. 
+
+New RPGCode stuff
+-----------------
+- #Push and #PushItem commands modified to allow for diagonal pushing; #Push("N,W,E") or #Push("NW,E,SE")
+- #Wander now facilitates diagonal movement
+
+New RPGCode commands:
+-----------------
+- Array of new commands added for file handling;
+
+#OpenFileInput, #OpenFileOutput , #OpenFileAppend, #OpenFileBinary, #CloseFile, 
+#FileInput, #FilePrint, #FileGet, #FilePut and #FileEOF.
+
+END OF 3.0.2 NOTES
+
+
+
+RPG Toolkit Development System 3.0 beta
+Instructions and What's New
+August 23, 2003 
+Copyright 2003 by Christopher Matthews
+
+I've been in the process of moving to a new city and having fun in the summer for
+the past 3 months, but I've done a bit of work on the Toolkti as well.  TK3 still
+needs a lot of work, but hopefully you'll find this beta version a bit more 
+stable and a lot more usable.
+
+Interface improvements
+----------------------
+-In the editor, you will find that open files are now listed along the bottom of the screen.
+-To the left side of the screen, you can 'flyout' windows such as the project file list
+-I've added a couple of much demanded features:
+	-First, you'll find a flyout to the right of the screen that will give you the 
+	 editor buttons you are familiar with from version 2.
+	-Second, you will also find a flyout for selectign tiles from the current tileset.
+	 This makes things a lot easier when creating boards.
+-You will find a configuration button in the main button bar.  
+ This lets you set a background picture in the editor.
+-In the main file editor, you can now disable the joystick. This is useful if your joystick
+ is making your character run all over the place and you don't want that.
+ 
+
+Graphics system improvements
+----------------------------
+-In the main file editor, you will find that you can set the game to run in full screen, and 
+ you can also specify the color depth to run in (16 bit is fastest).
+ 	-If the system cannot initialize a specific color depth, it will try alternatives.
+-#CallShop works, but only in windowed mode.
+
+Various bugfixes have been introduced, but the system is likely still crawlign with problems.
+So help me find them :)
+
+
+END OF BETA 1 NOTES
+
+
+RPG Toolkit Development System 3.0 alpha
+Instructions and What's New
+May 22, 2003 
+Copyright 2003 by Christopher Matthews
+
+Well, it's been 9 months in the making, and here's the first public release of TK3.
+It's an alpha release, so it's not perfect (yet).  The speed and stability
+will changes as we move towards a 3.0 release.  See the following for more info...
+
+Upgrading your version 2 game
+-----------------------------
+-I *highly* suggest that you keep a backup copy of the version 2 game, since TK3 will
+ change a lot of files on you.
+-Let's say your game is called MyGame:
+	-Copy the contents of the Toolkit2\Game\MyGame\ folder to Toolkit3\Game\MyGame\
+	-Copy Toolkit2\Main\MyGame.gam to Toolkit3\Main\
+	-Copy the files in Toolkit2\Plugin\ to Toolkit3\Game\MyGame\Plugin\
+		-*DO NOT* copy multiplug.  Yo shouldn't use multiplug with version 3.
+	-Copy the files in Toolkit3\Game\Basic\Plugin\ to Toolkit3\Game\MyGame\Plugin\
+	-You may have to manually set the plugins you wish to use by editing your main file.
+-That should do it.
+-When files are openend, they will be converted for you.  Some changes from v2 to v3:
+	-When a character, item or enemy is loaded, their graphics are converted to Tile Bitmap 
+	 files (*.tbm) saved in the Bitmap\ folder, ansd the animations are converted to 
+	 Animation (*.anm) files, saved in the Misc\ folder.
+	-It wouldn't hurt to open your players/items/enemies and save them in the editor to
+	 force this process to occur.  Otherwise it is done automatically when you run trans3
+
+What's done
+-----------
+-Completely re-done graphics system using DirectX.
+-Largely re-done interface for the editor, including MDI.
+-New RPGCode commands.
+-New [true] multitasking system.
+-Updated plugin system.
+-Menu and Fight plugins.
+-Basic setup utility
+
+What needs to be done
+---------------------
+-Lots of testing.
+-Help files need to be written.
+-Finalized plugin SDK should be released.
+-System needs to be made localizable (currently only works in English).
+-Isometric boards need to be improved *a lot*.  It's very primitive at the 
+ moment.
+-#Prompt, #CallShop, #CallPlayerSwap commands need to be updated.
+-Update the audio system.  Currently I'm considering Audiere and FMOD.
+-Increase number of items per board.
+-Update UI for the editor.
+-New demo game.
+-Need lots of new default media -- can anyone help?
+-Update the RPGCode editor with components from VorteX (currently 
+ it uses no VorteX code).
+-Pixel-based movement.
+
+New RPGCode stuff
+-----------------
+-We now have true multitasking!  You'll see that your RPGCode programs truly
+ do run concurrently (players/npcs walk at the same time, etc).
+-RPGCode3 has some new tricks.  The biggest is the ability to return values from 
+ methods.  For example, you can now do:
+ 
+ #a$ = Wait()
+ 
+ instead of:
+ 
+ #Wait(a$)
+ 
+-Commands that return values can still take a variable in their arguments, but it is now 
+ optional.  The preferred way is to return the value into the variable on the left hand side of
+ an '=' sign.
+
+-New RPGCode commands:
+
+MISC COMMANDS:
+-------------
+#AutoCommand
+	-Removes the requirement to use the '#' symbol in front of every command.
+	-Put this at the top of every program :)
+	-Example:
+		#AutoCommand
+		
+		Mwin("Hello!")
+		a$ = wait()
+
+#GameSpeed(speed!)
+	-Replaces #CharacterSpeed
+	-Defines the overall game speed.
+	-if speed! == 3, then the game will run it's fastest
+	-if speed! == 0, the game will run it's slowest.
+
+
+SCOPE COMMANDS:
+---------------
+-RPGCode3 defines *scope* for variables.  Scope is just a way of managing where variables can
+ be read from.
+
+-In Toolkit2, all variables were *Global*.  This means that if you set a variable in one 
+ program, it could be read in a different program anytime in the game.
+
+-TK3 still defauls all variables to global scope, but it now has the ability to set
+ varaibles to *Local* scope.
+ 
+-Local variables are variables that exist only while the program that created them
+ is running.  When that program ends, those variables are destroyed and cannot
+ be read by a different program.
+
+-What's more, methods can have their own local variables that cannot be ready by 
+ parts of the same program that lie outside the method.
+ 
+#value$ = Local( varName$ [, value$] )
+#value! = Local( varName! [, value!] )
+	-Create a local variable, or explicitly get it's value.
+	-Example:
+		#AutoCommand
+		
+		*Create a local variable
+		local( myLocalVar! )
+		
+		*show the value of that variable (will be 0)
+		mwin( "<myLocalVar!>")
+		
+		*explicitly show the avlue of that variable:
+		mwin( "<local(myLocalVar!)>")
+		wait()
+		end
+
+#value$ = Global( varName$ [, value$] )
+#value! = Global( varName! [, value!] )
+	-Create a global variable, or explicitly get it's value.
+	-Example:
+		#AutoCommand
+		
+		*Create a gloabl variable
+		global( myGlobalVar! )
+		
+		*show the value of that variable (will be 0)
+		mwin( "<myGlobalVar!>")
+		
+		*explicitly show the avlue of that variable:
+		mwin( "<global(myGlobalVar!)>")
+		wait()
+		end
+
+-It is good practice to explicitly declare all of your variables as local or global 
+ before using them.  For example:
+ 
+ #AutoCommand
+ 
+ local(name$)
+ name$ = prompt("What is your name?")
+ mwin("Hello, <name$>")
+ wait()
+ end
+ 
+ -Creates a local variable called name$.  When this program ends, name$ is destroyed.
+
+
+CURSOR MAP COMANDS:
+-------------------
+-Cursor maps are a fancy way to create a menu.  They allow you to specifiy 'hotspots'
+ on the screen that the user can move a pointer between with the keyboard or mouse.
+ 
+#id! = CreateCursorMap( [id!] )
+	-Create a cursor map.
+	-Return: id of cursor map created.
+	
+#KillCursorMap( id! )
+	-Destroy a previously created cursor map.
+
+#CursorMapAdd( x!, y!, id! )
+	-Add a hotspot to the cursor map.
+	-x! and y! are the screen coordinates where the hotspot exists.
+	-id! is the id of the cursor map to add it to.
+	
+#selected! = CursorMapRun( id! [, selected!] )
+	-Run a cursor map.  Allows the user to choose between the hotspots
+	 on the screen.
+	-Returns the index of the selected hotspot (in the order they were created)
+	 starting at 0.  Returns -1 if the user pressed ESC.
+	 
+Cursor Map Example:
+done! = 0
+while ( done! == 0 )
+{
+	text( 17, 10.5, "New Game" )
+	text( 17, 12, "Load Game" )
+	text( 17, 13.5, "Quit" )
+
+	cMap! = CreateCursorMap()
+	CursorMapAdd( 295, 180, cMap! )
+	CursorMapAdd( 295, 210, cMap! )
+	CursorMapAdd( 295, 230, cMap! )
+	res! = CursorMapRun( cMap! )
+	KillCursorMap( cMap! )
+
+	if ( res! == 0 )
+	{
+		* new game
+		history()
+		done! = 1
+		end
+	}
+	if ( res! == 1 )
+	{
+		* load game
+	        dirsav(dest$)
+	        if(dest$~="CANCEL")
+	        {
+	            load(dest$)
+	            done!=1
+	            end
+	        }
+	}
+	if ( res! == 2 )
+	{
+		* new game
+		dos
+		done! = 1
+		end
+	}
+}
+end
+
+
+CANVAS COMMANDS:
+----------------
+-Canvases are offscreen drawing areas.  You can later draw these onto the screen.
+
+#id! = CreateCanvas( sizex!, sizey! [, id!] )
+	-Create a new canvas of size sizex! X sizey! ( in pixels)
+	-Returns the id of the canvas you can later refer to.
+	
+#KillCanvas( id! )
+	-Destroy an offscreen canvas.
+	-Remember to kill all canvases you create when you are done with them.
+	 Offscreen canvases take up enough memory that you can really start slowing
+	 things down if you're not dilligent.
+	 
+#DrawCanvas( id!, x!, y! [, sizex!, sizey! [, destId!] ] )
+	-Draw a canvas, either to the screen or another canvas
+	-id! is the canvas to draw
+	-x! and y! are the location to draw to.
+	-if specified, sizex! and sizey! are the size in pixels to scale it to.
+	-if specified, destId! is the id of the destination canvas to draw to.
+	 If not specified, this is the screen.
+	 
+-Many drawing commands allow you to use canvases.
+-For instance:
+	*draw title.jpg to the screen...
+	#Bitmap( "title.jpg" )
+	
+	#id! = CreateCanvas( 50, 50 )
+	*Draw title.jpg to canvas id!
+	#Bitmap( "title.jpg", id! )
+	
+	#DrawCanvas( id!, 10, 10 )
+	#KillCanvas( id! )
+	
+	
+THREAD COMMANDS:
+----------------
+-These commands manage threads.  Threads are just multitasking RPGCode programs...
+
+id! = #Thread( program$, persist![, id!] )
+	-Create a multitasking thread.
+		-program$ is the name of the program to run.
+		-if persist! == 1, then the thread continues to run after the player has
+		 left this board.
+		-if persist! == 0, then the thread will stop when the player leaves this board.
+		-id! is an optional variable that will hold the return value.  The preferred way is to
+		 leave this out and assign the return value to the variable onthe left hand side of the
+		 '=' sign.
+	-Returns: An id you can use to refer to this thread in the future.
+	-Example:
+		#id! = CreateThread( "mythread.prg", 0 )
+		-Creates a thread from the program mythread.prg, which will run only as long as 
+		 the user is on this board.  We will later refer to this thread with the
+		 value stored in id!
+		 
+#KillThread( id! )
+	-Stop execution of a thread
+	-id! is the id of the thread to stop.
+	-Example:
+		KillThread( id! )
+		-Stops the thread created in the last example.
+		
+id! = #GetThreadId( [id!] )
+	-Get the thread id of the currently running program.
+	-id! is an optional value.  The preferred way is to get the return value on the left 
+	 hand side of the '=' sign.
+	-Returns: The thread id, or -1 if the program running is not a multitasking thread.
+	-Example:
+		in mythread.prg:
+		
+		#id! = GetThreadId()
+		#KillThread( id! )	*equivalent to #end
+		-When the mythread.prg starts to run, it can call this to get it's own thread id.
+
+#ThreadSleep( id!, duration! )
+	-Put a thread to sleep for a certain amount of time.
+	-id! is the id of the thread to put to sleep
+	-duration! is the time in seconds for the thread to sleep
+	-When a thread is asleep, it does not execute and requires no CPU time.
+	-Example:
+		#ThreadSleep( GetThreadId(), 10 )
+		#MWin( "10 seconds later!" )
+		-Puts the current thread to sleep for 10 seconds.  
+		-When 10 seconds is up, execution continues as normal.
+		
+#ThreadWake( id! )
+	-Force a sleeping thread to wake up
+	-id! is the id of the thread to wake up.
+	-If a thread has been put to sleep, this command will start it executing again
+
+#remain! = ThreadSleepRemaining( id! [, remain!] )
+	-Find how much time is left in a sleeping thread.
+
+#ret$ = TellThread( id!, command$ [, ret$] )
+#ret! = TellThread( id!, command$ [, ret!] )
+	-Call a command inside a thread from outside the thread.
+	-Allows one thread to communicate with another.
+	-id! is the id of the thread to communicate with
+	-command$ is an RPGCode command to run inside that thread
+	-The return value from that command is returned to us.
+	-Example:
+		Say we have a running thread, and it's id is stored in the 
+		variable id!
+		
+		That thread has a method called #talk that retirns a number.
+		
+		We can call that #talk method from a different program:
+		
+		#ret! = TellThread( id!, "#Talk()" )

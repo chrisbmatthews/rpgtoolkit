@@ -1,0 +1,5029 @@
+<!--helpfile:CommandReference-->
+
+<style type='text/css'> 
+body, .normal { 
+   font-family: verdana; 
+   font-size: 10;
+   text-decoration: none;  
+}
+.PageHeader {
+   font-size: 25;
+} 
+.MajorHeader { 
+   font-size: 20; 
+} 
+.MinorHeader {
+   font-size: 15;
+   font-weight: bold;
+}
+.code {
+   background-color: #F9F9F9;
+   font-family: courier new; 
+   font-size: 11;
+   color: #000DD0;
+   text-decoration: none;
+   border-left: 1px solid #000000;
+   border-right: 1px solid #000000;
+   border-top: 1px solid #000000;
+   border-bottom: 1px solid #000000;
+   margin-left: 10px;
+   margin-right: 10px;
+}
+.BoxedText {
+   background-color: #C0C0C0;
+   border-left: 1px solid #000000;
+   border-right: 1px solid #000000;
+   border-top: 1px solid #000000;
+   border-bottom: 1px solid #000000;
+   margin-left: 10px;
+   margin-right: 10px;
+}
+.LinkList {
+   background-color: #F5F5F5;
+   font-size: 10;
+   border-left: 1px solid #000000;
+   border-right: 1px solid #000000;
+   border-top: 1px solid #000000;
+   border-bottom: 1px solid #000000;
+   margin-left: 10px;
+   margin-right: 10px;
+}
+a:link, a:active, a:visited {
+   color: #505050;
+   text-decoration: none;
+}
+a:hover {
+   color: #B0B0B0;
+   text-decoration: none;
+}
+</style>
+
+<div class="PageHeader"><b>Command Reference</b></div><br><br><br>
+
+<div class="Normal"><b>INDEX:</b><br>
+- <a href="#blank">@</a><br>
+- <a href="#comment">//</a><br>
+- <a href="#ppautolocal">#autolocal</a><br>
+- <a href="#ppglobal">#global</a><br>
+- <a href="#ppinclude">#include</a><br>
+- <a href="#addplayer">AddPlayer</a><br>
+- <a href="#ai">AI</a><br>
+- <a href="#animation">Animation</a><br>
+- <a href="#applystatus">ApplyStatus</a><br>
+- <a href="#apppath">AppPath</a><br>
+- <a href="#asc">Asc</a><br>
+- <a href="#attackall">AttackAll</a><br>
+- <a href="#autolocal">AutoLocal</a><br>
+- <a href="#bitmap">Bitmap</a><br>
+- <a href="#bold">Bold</a><br>
+- <a href="#branch">Branch</a><br>
+- <a href="#callplayerswap">CallPlayerSwap</a><br>
+- <a href="#callshop">CallShop</a><br>
+- <a href="#castint">CastInt</a><br>
+- <a href="#castlit">CastLit</a><br>
+- <a href="#castnum">CastNum</a><br>
+- <a href="#change">Change</a><br>
+- <a href="#charat">CharAt</a><br>
+- <a href="#checkbutton">CheckButton</a><br>
+- <a href="#chr">Chr</a><br>
+- <a href="#class">Class</a><br>
+- <a href="#clear">Clear</a><br>
+- <a href="#clearbuffer">ClearBuffer</a><br>
+- <a href="#clearbuttons">ClearButtons</a><br>
+- <a href="#closefile">CloseFile</a><br>
+- <a href="#colorrgb">ColorRGB</a><br>
+- <a href="#cos">Cos</a><br>
+- <a href="#createcanvas">CreateCanvas</a><br>
+- <a href="#createcursormap">CreateCursorMap</a><br>
+- <a href="#createitem">CreateItem</a><br>
+- <a href="#cursormapadd">CursorMapAdd</a><br>
+- <a href="#cursormaphand">CursorMapHand</a><br>
+- <a href="#cursormaprun">CursorMapRun</a><br>
+- <a href="#debug">Debug</a><br>
+- <a href="#debugger">Debugger</a><br>
+- <a href="#delay">Delay</a><br>
+- <a href="#destroyitem">DestroyItem</a><br>
+- <a href="#destroyplayer">DestroyPlayer</a><br>
+- <a href="#dirsav">DirSav</a><br>
+- <a href="#done">Done</a><br>
+- <a href="#drainall">DrainAll</a><br>
+- <a href="#drawcanvas">DrawCanvas</a><br>
+- <a href="#drawcanvastransparent">DrawCanvasTransparent</a><br>
+- <a href="#drawcircle">DrawCircle</a><br>
+- <a href="#drawline">DrawLine</a><br>
+- <a href="#drawrect">DrawRect</a><br>
+- <a href="#earthquake">Earthquake</a><br>
+- <a href="#else">Else</a><br>
+- <a href="#elseif">ElseIf</a><br>
+- <a href="#empty">Empty</a><br>
+- <a href="#end">End</a><br>
+- <a href="#endanimation">EndAnimation</a><br>
+- <a href="#equip">Equip</a><br>
+- <a href="#eraseitem">EraseItem</a><br>
+- <a href="#eraseplayer">ErasePlayer</a><br>
+- <a href="#fade">Fade</a><br>
+- <a href="#fight">Fight</a><br>
+- <a href="#fightenemy">FightEnemy</a><br>
+- <a href="#fightmenugraphic">FightMenuGraphic</a><br>
+- <a href="#fileeof">FileEOF</a><br>
+- <a href="#fileget">FileGet</a><br>
+- <a href="#fileinput">FileInput</a><br>
+- <a href="#fileprint">FilePrint</a><br>
+- <a href="#fileput">FilePut</a><br>
+- <a href="#fillcircle">FillCircle</a><br>
+- <a href="#fillrect">FillRect</a><br>
+- <a href="#font">Font</a><br>
+- <a href="#fontsize">FontSize</a><br>
+- <a href="#for">For</a><br>
+- <a href="#forceredraw">ForceRedraw</a><br>
+- <a href="#gamespeed">GameSpeed</a><br>
+- <a href="#get">Get</a><br>
+- <a href="#getboardname">GetBoardName</a><br>
+- <a href="#getboardtile">GetBoardTile</a><br>
+- <a href="#getboardtiletype">GetBoardTileType</a><br>
+- <a href="#getcolor">GetColor</a><br>
+- <a href="#getcorner">GetCorner</a><br>
+- <a href="#getdp">GetDP</a><br>
+- <a href="#getfontsize">GetFontSize</a><br>
+- <a href="#getfp">GetFP</a><br>
+- <a href="#getgp">GetGP</a><br>
+- <a href="#gethp">GetHP</a><br>
+- <a href="#getitemcost">GetItemCost</a><br>
+- <a href="#getitemdesc">GetItemDesc</a><br>
+- <a href="#getitemname">GetItemName</a><br>
+- <a href="#getitemsellprice">GetItemSellPrice</a><br>
+- <a href="#getsmp">GetSMP</a><br>
+- <a href="#getlevel">GetLevel</a><br>
+- <a href="#getmaxhp">GetMaxHP</a><br>
+- <a href="#getmaxsmp">GetMaxSMP</a><br>
+- <a href="#getpixel">GetPixel</a><br>
+- <a href="#getres">GetRes</a><br>
+- <a href="#gettextheight">GetTextHeight</a><br>
+- <a href="#gettextwidth">GetTextWidth</a><br>
+- <a href="#getthreadid">GetThreadID</a><br>
+- <a href="#global">Global</a><br>
+- <a href="#giveexp">GiveEXP</a><br>
+- <a href="#givegp">GiveGP</a><br>
+- <a href="#givehp">GiveHP</a><br>
+- <a href="#giveitem">GiveItem</a><br>
+- <a href="#givesmp">GiveSMP</a><br>
+- <a href="#gone">Gone</a><br>
+- <a href="#hp">HP</a><br>
+- <a href="#if">If</a><br>
+- <a href="#iif">Iif</a><br>
+- <a href="#include">Include</a><br>
+- <a href="#inn">Inn</a><br>
+- <a href="#internalmenu">InternalMenu</a><br>
+- <a href="#instr">InStr</a><br>
+- <a href="#italics">Italics</a><br>
+- <a href="#itemcount">ItemCount</a><br>
+- <a href="#itemlocation">ItemLocation</a><br>
+- <a href="#itemspeed">ItemSpeed</a><br>
+- <a href="#itemstance">ItemStance</a><br>
+- <a href="#itemstep">ItemStep</a><br>
+- <a href="#kill">Kill</a><br>
+- <a href="#killallredirects">KillAllRedirects</a><br>
+- <a href="#killcanvas">KillCanvas</a><br>
+- <a href="#killcursormap">KillCursorMap</a><br>
+- <a href="#killredirect">KillRedirect</a><br>
+- <a href="#killthread">KillThread</a><br>
+- <a href="#layerput">LayerPut</a><br>
+- <a href="#lcase">LCase</a><br>
+- <a href="#left">Left</a><br>
+- <a href="#length">Length</a><br>
+- <a href="#load">Load</a><br>
+- <a href="#local">Local</a><br>
+- <a href="#mainfile">MainFile</a><br>
+- <a href="#maxhp">MaxHP</a><br>
+- <a href="#maxsmp">MaxSMP</a><br>
+- <a href="#mediaplay">MediaPlay</a><br>
+- <a href="#mediastop">MediaStop</a><br>
+- <a href="#mem">Mem</a><br>
+- <a href="#menugraphic">MenuGraphic</a><br>
+- <a href="#method">Method</a><br>
+- <a href="#mid">Mid</a><br>
+- <a href="#mouseclick">MouseClick</a><br>
+- <a href="#mousecursor">MouseCursor</a><br>
+- <a href="#mousemove">MouseMove</a><br>
+- <a href="#move">Move</a><br>
+- <a href="#msgbox">MsgBox</a><br>
+- <a href="#multirun">MultiRun</a><br>
+- <a href="#mwin">Mwin</a><br>
+- <a href="#mwincls">MwinCls</a><br>
+- <a href="#mwinsize">MwinSize</a><br>
+- <a href="#new">New</a><br>
+- <a href="#newplyr">NewPlyr</a><br>
+- <a href="#onboard">OnBoard</a><br>
+- <a href="#onerror">On Error Goto</a><br>
+- <a href="#onerrorresume">On Error Resume Next</a><br>
+- <a href="#openfileappend">OpenFileAppend</a><br>
+- <a href="#openfilebinary">OpenFileBinary</a><br>
+- <a href="#openfileinput">OpenFileInput</a><br>
+- <a href="#openfileoutput">OpenFileOutput</a><br>
+- <a href="#over">Over</a><br>
+- <a href="#pathfind">PathFind</a><br>
+- <a href="#pixelmovement">PixelMovement</a><br>
+- <a href="#pixeltext">PixelText</a><br>
+- <a href="#playavi">PlayAvi</a><br>
+- <a href="#playavismall">PlayAviSmall</a><br>
+- <a href="#playerspeed">PlayerSpeed</a><br>
+- <a href="#playerstance">PlayerStance</a><br>
+- <a href="#playerstep">PlayerStep</a><br>
+- <a href="#posture">Posture</a><br>
+- <a href="#prg">Prg</a><br>
+- <a href="#prompt">Prompt</a><br>
+- <a href="#push">Push</a><br>
+- <a href="#pushitem">PushItem</a><br>
+- <a href="#putitem">PutItem</a><br>
+- <a href="#putplayer">PutPlayer</a><br>
+- <a href="#random">Random</a><br>
+- <a href="#redirect">Redirect</a><br>
+- <a href="#remove">Remove</a><br>
+- <a href="#removeplayer">RemovePlayer</a><br>
+- <a href="#removestatus">RemoveStatus</a><br>
+- <a href="#rendernow">RenderNow</a><br>
+- <a href="#replace">Replace</a><br>
+- <a href="#reset">Reset</a><br>
+- <a href="#restoreplayer">RestorePlayer</a><br>
+- <a href="#restorescreen">RestoreScreen</a><br>
+- <a href="#restorescreenarray">RestoreScreenArray</a><br>
+- <a href="#resumenext">Resume Next</a><br>
+- <a href="#return">Return</a><br>
+- <a href="#returnmethod">ReturnMethod</a><br>
+- <a href="#right">Right</a><br>
+- <a href="#rpgcode">RPGCode</a><br>
+- <a href="#run">Run</a><br>
+- <a href="#save">Save</a><br>
+- <a href="#savescreen">SaveScreen</a><br>
+- <a href="#scan">Scan</a><br>
+- <a href="#send">Send</a><br>
+- <a href="#setbutton">SetButton</a><br>
+- <a href="#setconstants">SetConstants</a><br>
+- <a href="#setimage">SetImage</a><br>
+- <a href="#setimageadditive">SetImageAdditive</a><br>
+- <a href="#setimagetranslucent">SetImageTranslucent</a><br>
+- <a href="#setimagetransparent">SetImageTransparent</a><br>
+- <a href="#setpixel">SetPixel</a><br>
+- <a href="#shopcolors">ShopColors</a><br>
+- <a href="#show">Show</a><br>
+- <a href="#sin">Sin</a><br>
+- <a href="#sizedanimation">SizedAnimation</a><br>
+- <a href="#smp">SMP</a><br>
+- <a href="#sourcehandle">SourceHandle</a><br>
+- <a href="#sourcelocation">SourceLocation</a><br>
+- <a href="#split">Split</a><br>
+- <a href="#sqrt">Sqrt</a><br>
+- <a href="#stance">Stance</a><br>
+- <a href="#start">Start</a><br>
+- <a href="#stop">Stop</a><br>
+- <a href="#struct">Struct</a><br>
+- <a href="#switch">Switch</a><br>
+- <a href="#takegp">TakeGP</a><br>
+- <a href="#takeitem">TakeItem</a><br>
+- <a href="#tan">Tan</a><br>
+- <a href="#targethandle">TargetHandle</a><br>
+- <a href="#targetlocation">TargetLocation</a><br>
+- <a href="#tellthread">TellThread</a><br>
+- <a href="#text">Text</a><br>
+- <a href="#thread">Thread</a><br>
+- <a href="#threadsleep">ThreadSleep</a><br>
+- <a href="#threadsleepremaining">ThreadSleepRemaining</a><br>
+- <a href="#threadwake">ThreadWake</a><br>
+- <a href="#tiletype">TileType</a><br>
+- <a href="#trim">Trim</a><br>
+- <a href="#ucase">UCase</a><br>
+- <a href="#underline">Underline</a><br>
+- <a href="#until">Until</a><br>
+- <a href="#viewbrd">ViewBrd</a><br>
+- <a href="#wait">Wait</a><br>
+- <a href="#wander">Wander</a><br>
+- <a href="#while">While</a><br>
+- <a href="#win">Win</a><br>
+- <a href="#windows">Windows</a><br>
+- <a href="#wincolorrgb">WinColorRGB</a><br>
+- <a href="#wingraphic">WinGraphic</a><br>
+- <a href="#wipe">Wipe</a><br>
+- <a href="#with">With</a><br>
+- <a href="#zoom">Zoom</a><br><br>
+
+- <a href="#sortbytask"><b>CATEGORIZE BY TASK</b></a><br>
+
+<br><br><br>
+
+At this point, you have learned enough about programming in RPGCode that you can create very flexible programs. There are more commands in RPGCode, however, and many are very useful in creating special effects, or pretty much anything you could think of. All the commands for RPGCode are alphabetically listed and explained in detail in the following pages...</div><br><br><br>
+
+
+
+<a name="blank"></a>
+<div class="MinorHeader">NAME: Blank line<br>
+FORMAT: @</div><br>
+<div class="Normal">This places a blank line in the Message window. Since 'real' blank lines are ignored by the computer, you should use this when spacing two lines of text in the message window.</div><br>
+
+<div class="Code">
+Mwin("This is one line.")<br>
+@<br>
+Mwin("This is another line.")</div><br><br><br>
+
+
+
+<a name="comment"></a>
+<div class="MinorHeader">NAME: Comment<br>
+FORMAT: //</div><br>
+<div class="Normal">Two slashes tells the computer to ignore the rest of the line. This is used for adding comments to your code. Comments are used as ways of explaining what some parts of a program do. Comments can appear on the same line as a command as long as the comment is to the right side of the command. The * ('asterisk' or 'star') symbol can also be used for commenting programs. The upside to C++ style comments ('//') is that the Toolkit will not mistake it for a math operation (as it does when you use * comments on the same line as an equation).</div><br>
+
+<div class="Code">
+*This is a comment.<br>
+*It gets ignored by the computer.<br><br>
+
+Mwin("Woo hoo!") //This is another comment.<br>
+a! = 10 //This is a C++ style comment.</div><br><br><br>
+
+
+
+<a name="ppautolocal"></a>
+<div class="MinorHeader">NAME: Force Local Variables<br>
+FORMAT: #autolocal</div><br>
+<div class="Normal">This is the preprocessor equivalent of the AutoLocal() command. It forces all implicitly declared variables to be of local scope. Global variables can still be declared with the Global() command.</div><br>
+
+<div class="Code">
+#autolocal<br><br>
+
+x! = 5 //Local variable</div><br><br><br>
+
+
+
+<a name="ppglobal"></a>
+<div class="MinorHeader">NAME: Declare global<br>
+FORMAT: #global handle value</div><br>
+<div class="Normal">This is a preprocessor command that creates a global variable, or instance of a class. If it's an object, <i>value</i> should be the constructor of the class.<br>
+- handle is the variable or object name.<br>
+- value is the value of the variable or object.</div><br>
+
+<div class="Code">
+#global var! 7<br>
+#global var$ "Hello, world!"<br><br>
+
+Show(var!)<br>
+Show(var$)</div><br><br><br>
+
+
+
+<a name="ppinclude"></a>
+<div class="MinorHeader">NAME: Include file<br>
+FORMAT: #include filename</div><br>
+<div class="Normal">This is a preprocessor command that includes a file. If you include a file, you will be able to use the methods from inside that file. This is extremely useful for making method libraries and importing them wherever you need them.<br>
+- filename is the name of the file.</div><br>
+
+<div class="Code">
+#include "system.prg"<br><br>
+
+Mwin("Hello!")<br>
+Pause()</div><br><br><br>
+
+
+
+<a name="addplayer"></a>
+<div class="MinorHeader">NAME: Add Player<br>
+FORMAT: AddPlayer(player_filename$)</div><br>
+<div class="Normal">This command adds a player to the current party, or team. There is a maximum of 5 players allowed on one team at any time. When the player is added to the team, their stats (HP/SMP/etc.) are set to the initial values specified in the character editor.<br>
+- player_filename$ is the filename of the player to add to the team.</div><br>
+
+<div class="Code">
+AddPlayer("Tano.tem")<br>
+Mwin("Tano joined your team!")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="ai"></a>
+<div class="MinorHeader">NAME: Artificial Intelligence<br>
+FORMAT: AI(level!)</div><br>
+<div class="Normal">This command causes an enemy to use it's artificial intelligence routine in battle. The AI command can only be used from inside of an enemy AI program (see Enemy Editor - Tactics).<br>
+- level! is a numerical value between 0 and 3. 0 being the lowest, 3 being the highest.</div><br>
+
+<div class="Code">
+//Enemy AI program<br>
+move!++<br>
+If(move! == 1)<br>
+{<br>
+&nbsp;&nbsp; AI(0)<br>
+}<br>
+If(move! == 2)<br>
+{<br>
+&nbsp;&nbsp; AI(3)<br>
+}<br>
+If(move! == 3)<br>
+{<br>
+&nbsp;&nbsp; Mwin("Aren't you getting tired of me?")<br>
+&nbsp;&nbsp; move! = 0<br>
+}</div><br><br><br>
+
+
+
+<a name="animation"></a>
+<div class="MinorHeader">NAME: Run Animation<br>
+FORMAT: id! = Animation(file$, x!, y![, loop!])</div><br>
+<div class="Normal">Plays an animation file created in the animation editor.<br>
+- file$ is the filename of the animation.<br>
+- x!,y! are the x and y coordinates to place the animation.<br>
+- loop! is an optional parameter <i>only</i> for threads. It causes the animation to loop until the thread is killed, or EndAnimation() is used.<br>
+- id! is the returned animation ID. Use this when ending an animation.</div><br>
+
+<div class="Code">
+Animation("explosion.anm", 10, 10)</div><br><br><br>
+
+
+
+<a name="applystatus"></a>
+<div class="MinorHeader">NAME: Apply Status Effect<br>
+FORMAT: ApplyStatus(handle$, file$)</div><br>
+<div class="Normal">This command applies a status effect created in the status effect editor to a player or enemy. This command accepts the 'target' and 'source' handles for applying the effect to the currently selected player or enemy.<br>
+- handle$ is the handle of the player or enemy. 'target' and 'source' are valid handles.<br>
+- file$ is the filename of the status effect to apply.</div><br>
+
+<div class="Code">
+//Apply "fast" on the source, and<br>
+//"slow" on the target.<br>
+ApplyStatus("source", "fast.ste")<br>
+ApplyStatus("target", "slow.ste")</div><br><br><br>
+
+
+
+<a name="apppath"></a>
+<div class="MinorHeader">NAME: Application Path<br>
+FORMAT: dest$ = AppPath()</div><br>
+<div class="Normal">This command retrieves the file path of the RPGToolkit3 and returns it to dest$.<br>
+- dest$ is the returned path.</div><br>
+
+<div class="Code">
+//Show the application path...<br>
+Show(AppPath())</div><br><br><br>
+
+
+
+<a name="asc"></a>
+<div class="MinorHeader">NAME: ASCII<br>
+FORMAT: dest! = Asc(char$)</div><br>
+<div class="Normal">Asc() converts characters to and from ASCII characters.<br>
+- char$ is the character(s) to replace with an ASCII character(s).<br>
+- dest! is the returned ASCII.</div><br>
+
+<div class="Code">
+ascii! = Asc(char$)</div><br><br><br>
+
+
+
+<a name="attackall"></a>
+<div class="MinorHeader">NAME: Attack All<br>
+FORMAT: AttackAll(fp!)</div><br>
+<div class="Normal">This command will attack all of the players or enemies in battle. When used with a special move, this will damage the group of enemies or players depending on which was targeted with the special move.<br>
+- fp! is the amount of FP to put into the attack.</div><br>
+
+<div class="Code">
+//Attack a group with an FP of 100...<br>
+AttackAll(100)</div><br><br><br>
+
+
+
+<a name="autolocal"></a>
+<div class="MinorHeader">NAME: Auto Local<br>
+FORMAT: AutoLocal()</div><br>
+<div class="Normal">This command automatically sets all implicitly declared variables to local scope. This means that all variables created after the use of this command will be local, unless they are created with the Global() command.</div><br>
+
+<div class="Code">
+AutoLocal()</div><br><br><br>
+
+
+
+<a name="bitmap"></a>
+<div class="MinorHeader">NAME: Bitmap<br>
+FORMAT: Bitmap(file$[, id!])</div><br>
+<div class="Normal">This displays a bitmap image on the screen. Supported file formats include .bmp, .gif, .jpg, .png, .mng, .ico, and many more. All images shown with the bitmap command must be placed in the bitmap folder to work correctly.<br>
+- file$ is the filename of the image.<br>
+- id! is an optional parameter for assigning the image to a canvas.</div><br>
+
+<div class="Code">
+//Put the title image on the screen...<br>
+Bitmap("title.bmp")</div><br><br><br>
+
+
+
+<a name="bold"></a>
+<div class="MinorHeader">NAME: Bold<br>
+FORMAT: Bold(on_off$)</div><br>
+<div class="Normal">This command turns the bold attribute on all text on or off.<br>
+- on_off$ is a literal value that can either be "on" or "off".</div><br>
+
+<div class="Code">
+Bold("off")<br>
+Mwin("Boring regular text...")<br>
+Wait()<br>
+Bold("on")<br>
+Mwin("Bold text!")</div><br><br><br>
+
+
+
+<a name="branch"></a>
+<div class="MinorHeader">NAME: Branch to Label<br>
+FORMAT: Branch(:label_name)</div><br>
+<div class="Normal">This command is used to branch, or skip to another part of the program. If you use this command, you must create a label. Labels are case sensitive, which means the label in the Branch command must be identical to the label in the program. Labels must not be indented. They must also begin with a colon (':'). The same effect of branching can be achieved more effectively, however, by using a While loop instead.<br>
+- :label_name is the name of the label to branch to. It must be identical to the label in the program.</div><br>
+
+<div class="Code">
+Mwin("Line 1")<br>
+Mwin("Line 2")<br>
+Branch(:next_line)<br>
+Mwin("Line 3")<br>
+:next_line<br>
+Mwin("Line 4")<br><br>
+
+//Because we branched to :next_line,<br>
+//the Mwin command that said "Line 3"<br>
+//was skipped.</div><br><br><br>
+
+
+
+
+<a name="callplayerswap"></a>
+<div class="MinorHeader">NAME: Call Player Swap<br>
+FORMAT: CallPlayerSwap()</div><br>
+<div class="Normal">This command opens the player swap menu. It allows you to add and remove players to your party. The players available for adding to your party are the ones that were removed with the RemovePlayer() command. They won't show up if they were removed with DestroyPlayer().</div><br>
+
+<div class="Code">
+//Time to swap some players!<br>
+CallPlayerSwap()</div><br><br><br>
+
+
+
+<a name="callshop"></a>
+<div class="MinorHeader">NAME: Call Shop<br>
+FORMAT: CallShop(item1$[, item2$, etc.])</div><br>
+<div class="Normal">This command opens the shop menu. Players can buy and sell items here. The prices of items are defined in the item editor.<br>
+- itemX$ is the filename of the items to sell. Shops can hold as many items as you wish.</div><br>
+
+<div class="Code">
+CallShop("sword.itm", "book.itm", "pizza.itm")<br>
+//Opens a shop selling three items.</div><br><br><br>
+
+
+
+<a name="castint"></a>
+<div class="MinorHeader">NAME: Cast to integer<br>
+FORMAT: dest! = CastInt(source!)</div><br>
+<div class="Normal">This command takes a floating point number and disguards the decimal, casting it to a whole number (an integer).<br>
+- source! is the source number to cast to int.<br>
+- dest! is the returned value.</div><br>
+
+<div class="Code">
+int! = CastInt(10.482) //Result: puts 10 in int!<br><br>
+
+char$ = CastLit(int!) //Result: puts "10" in char$<br><br>
+
+num! = CastNum(char$) //Result: puts 10 in num!</div><br><br><br>
+
+
+
+<a name="castlit"></a>
+<div class="MinorHeader">NAME: Cast numerical values to literal<br>
+FORMAT: dest$ = CastLit(source!)</div><br>
+<div class="Normal">This command converts a numeric value to a literal value.<br>
+- source! is the source number to cast to literal.<br>
+- dest$ is the returned value.</div><br>
+
+<div class="Code">
+int! = CastInt(10.482) //Result: puts 10 in int!<br><br>
+
+char$ = CastLit(int!) //Result: puts "10" in char$<br><br>
+
+num! = CastNum(char$) //Result: puts 10 in num!</div><br><br><br>
+
+
+
+<a name="castnum"></a>
+<div class="MinorHeader">NAME: Cast literal values to numerical<br>
+FORMAT: dest! = CastNum(source$)</div><br>
+<div class="Normal">This command converts a literal value to a numerical value.<br>
+- source$ is the source literal to cast to numeric.<br>
+- dest! is the returned value.</div><br>
+
+<div class="Code">
+int! = CastInt(10.482) //Result: puts 10 in int!<br><br>
+
+char$ = CastLit(int!) //Result: puts "10" in char$<br><br>
+
+num! = CastNum(char$) //Result: puts 10 in num!</div><br><br><br>
+
+
+
+<a name="change"></a>
+<div class="MinorHeader">NAME: Change Program<br>
+FORMAT: Change(file$)</div><br>
+<div class="Normal">This command changes the program filename of the currently running program. The program will continue to it's end, but when the player steps on the tile where the program is again, it will run the new program that was set with Change(). If the player leaves the board then returns, the tile will run the original program that was set there.<br>
+- file$ is the filename of the new program to run when the player steps on the tile again.</div><br>
+
+<div class="Code">
+//An example of using the Change command...<br>
+Mwin("I'm gonna change the program!")<br>
+Wait()<br>
+Change("another.prg")<br>
+Mwin("Alright, it's changed. But we have to wait")<br>
+Mwin("for this program to end!")</div><br><br><br>
+
+
+
+<a name="charat"></a>
+<div class="MinorHeader">NAME: Character At<br>
+FORMAT: dest$ = CharAt(string$, pos!)</div><br>
+<div class="Normal">This command allows you to splice apart a string by getting one character at a time. A 'string' is a term that means 'string of characters', or 'text'.<br>
+- string$ is the string of characters to get a character from.<br>
+- pos! is the character position in the string.<br>
+- dest$ is the returned character.</div><br>
+
+<div class="Code">
+//Get a string, reverse it, and return it to string$<br><br>
+
+//Call the reverse() method<br>
+string$ = Reverse("hello")<br><br>
+
+//Create the 'reverse' method...<br>
+Method Reverse(string$)<br>
+{<br>
+&nbsp;&nbsp; For(n! = Length(string$); n! > 0; n!--)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; dest$ += CharAt(string$, n!)<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; ReturnMethod(dest$)<br>
+&nbsp;&nbsp; Kill(n!, dest$)<br>
+}</div><br><br><br>
+
+
+
+<a name="checkbutton"></a>
+<div class="MinorHeader">NAME: Check if a Button was pressed<br>
+FORMAT: buttonNum! = CheckButton(x!, y!)</div><br>
+<div class="Normal">This command checks if a button set with the SetButton command was pressed.<br>
+- x!,y! are the x and y coordinates of the last mouse click on the screen.<br>
+- buttonNum! is the returned value. If no buttons were pressed, buttonNum! is set to requal -1. Otherwise, it is set to the number of that button.</div><br>
+
+<div class="Code">
+//Set the button...<br>
+SetButton("button1.jpg", 0, 10, 10, 100, 100)<br>
+done! = 0<br>
+//Loop through while done! is equal<br>
+//to it's inital value...<br>
+While(done!)<br>
+{<br>
+&nbsp;&nbsp; MouseClick(mx!, my!)<br>
+&nbsp;&nbsp; dest! = CheckButton(mx!, my!)<br>
+&nbsp;&nbsp; //Check if a button was pressed<br>
+&nbsp;&nbsp; If(dest! == 0)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwin("You pressed a button!")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1 //Break out of the loop<br>
+&nbsp;&nbsp; }<br>
+}<br>
+ClearButtons()</div><br><br><br>
+
+
+
+<a name="chr"></a>
+<div class="MinorHeader">NAME: Character<br>
+FORMAT: char$ = Chr(char!)</div><br>
+<div class="Normal">This command returns a character to char$ from an ASCII character(s).<br>
+- char! is the key number to detect.</div><br>
+
+<div class="Code">
+spc$ = Chr(8) //Detects the backspace key.<br>
+tab$ = Chr(9) //Detects the tab key.</div><br><br><br>
+
+
+
+<a name="class"></a>
+<div class="MinorHeader">NAME: Create a Class<br>
+FORMAT: class <i>ClassName</i> { <i>code</i> }</div><br>
+<div class="Normal">This command creates a new class. Classes are used for structuring and organizing your code. They can contain data such as variables and methods that you can call at any time, by creating an object for the class (also called 'instancing' the class). You can define methods and variables in a class as private, so you can have data that can't be used or changed unless you access the data from inside a method, or the public command, where you can define data/methods that can be changed/used freely. Data and methods are accessed through a class by using the accessor operator (->).<br>
+- <i>ClassName</i> is the name of the class.<br>
+- <i>code</i> is the public/private data to go into the class.</div><br>
+
+<div class="Code">
+//Example of a class.<br><br>
+
+//Define the 'Cat' class...<br>
+class Cat<br>
+{<br>
+&nbsp;&nbsp; public:<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // Public data. This can be<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // changed or used just by<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // accessing it.<br><br>
+
+&nbsp;&nbsp; &nbsp;&nbsp; Method SetName(name$) { catName$ = name$ }<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Method Meow()<br><br>
+
+&nbsp;&nbsp; private:<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // Private data. This cannot be<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // changed directly. You need<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // to access this through a<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // method.<br><br>
+
+&nbsp;&nbsp; &nbsp;&nbsp; catName$ //the name of the cat<br>
+}<br><br>
+
+// SetName method<br>
+Method Cat::Meow()<br>
+{<br>
+&nbsp;&nbsp; Mwin("Meeeoooww!")<br>
+&nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; Mwincls()<br>
+}<br><br>
+
+//Create an object for the class ('instance' the class)...<br>
+kitten = New(Cat)<br><br>
+
+//Make the kitten meow...<br>
+kitten->Meow()<br><br>
+
+//Kill the data...<br>
+kitten->Release()</div><br><br><br>
+
+
+
+<a name="clear"></a>
+<div class="MinorHeader">NAME: Clear<br>
+FORMAT: Clear()</div><br>
+<div class="Normal">The Clear command clears the screen entirely, leaving it black. When the program ends, the screen will be restored unless the program was ended with the Done command. Clear is useful for setting up menus or story sequences throughout the game.</div><br>
+
+<div class="Code">
+//Clear the screen...<br>
+Clear()<br>
+//Now, show a board<br>
+ViewBrd("another.brd")</div><br><br><br>
+
+
+
+<a name="clearbuffer"></a>
+<div class="MinorHeader">NAME: Clear Keyboard Buffer<br>
+FORMAT: ClearBuffer()</div><br>
+<div class="Normal">This command clears the keyboard buffer. Sometimes the keyboard buffer gets full and continues 'typing' even after the player has finished pressing any buttons. This command clears the buffer to prevent this from happening.</div><br>
+
+<div class="Code">
+//Clear the keyboard buffer...<br>
+ClearBuffer()<br>
+Mwin("Hello!")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="clearbuttons"></a>
+<div class="MinorHeader">NAME: Clear Buttons<br>
+FORMAT: ClearButtons()</div><br>
+<div class="Normal">This command clears all the buttons from memory that were set with the SetButton command. It's always a good idea to clear buttons after you're done with them, as having too many in memory slows down your game.</div><br>
+
+<div class="Code">
+//Set the button...<br>
+SetButton("button1.jpg", 0, 10, 10, 100, 100)<br>
+done! = 0<br>
+//Loop through while done! is equal<br>
+//to it's inital value...<br>
+While(done!)<br>
+{<br>
+&nbsp;&nbsp; MouseClick(mx!, my!)<br>
+&nbsp;&nbsp; dest! = CheckButton(mx!, my!)<br>
+&nbsp;&nbsp; //Check if a button was pressed<br>
+&nbsp;&nbsp; If(dest! == 0)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwin("You pressed a button!")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1 //Break out of the loop<br>
+&nbsp;&nbsp; }<br>
+}<br>
+ClearButtons()</div><br><br><br>
+
+
+
+<a name="closefile"></a>
+<div class="MinorHeader">NAME: Close a file<br>
+FORMAT: CloseFile(file$)</div><br>
+<div class="Normal">Closes an open file opened in either append, input, output, or binary mode.<br>
+- file$ is the file to close.</div><br>
+
+<div class="Code">
+OpenFileInput("start.brd","Boards") //Opens a file in 'input mode'<br>
+CloseFile("start.brd") //Close the file</div><br><br><br>
+
+
+
+<a name="colorrgb"></a>
+<div class="MinorHeader">NAME: Change RGB Color<br>
+FORMAT: ColorRGB(red!, green!, blue!)</div><br>
+<div class="Normal">This command changes the color of the text that is displayed in the message window, the text displayed with the Text command, and the fade color of the Fade command.<br>
+- red!,green!,blue! are numerical values from 0 to 255 which specify the concentration of red, green, and blue pigment in the color.</div><br>
+
+<div class="Code">
+ColorRGB(0, 0, 0) //Set the color to black<br>
+Mwin("Black text!")<br>
+ColorRGB(255, 255, 255) //Set the color to white<br>
+Mwin("White text!")<br>
+ColorRGB(255, 0, 0) //Set the color to red<br>
+Mwin("Red text!")</div><br><br><br>
+
+
+
+<a name="cos"></a>
+<div class="MinorHeader">NAME: Cosine<br>
+FORMAT: dest! = Cos(angle!)</div><br>
+<div class="Normal">Calculates the cosine of an angle and returns the value to dest!.<br>
+- angle! is the angle (in degrees) to calculate.<br>
+- dest! is the returned value.</div><br>
+
+<div class="Code">
+c! = Cos(90)<br>
+s! = Sin(90)<br>
+t! = Tan(90)</div><br><br><br>
+
+
+
+<a name="createcanvas"></a>
+<div class="MinorHeader">NAME: Create Canvas<br>
+FORMAT: id! = CreateCanvas(sizex!, sizey!)</div><br>
+<div class="Normal">Creates a canvas of sizex! and sizey! (in pixels), and returns the ID so you can refer to it later.<br>
+- sizex!, sizey! are the width (x) and height (y) of the canvas.<br>
+- id! is the id of the canvas.</div><br>
+
+<div class="Code">
+cnvTitle! = CreateCanvas(64, 64)<br>
+//Create a new canvas...<br>
+Bitmap("title.bmp", cnvTitle!) //Put an image in the canvas.<br>
+DrawCanvas(cnvTitle!, 0, 100) //Draw the canvas on screen.<br>
+KillCanvas(cnvTitle!) //Now, kill the canvas once I'm done with it.</div><br><br><br>
+
+
+
+<a name="createcursormap"></a>
+<div class="MinorHeader">NAME:Create Cursor Map<br>
+FORMAT: id! = CreateCursorMap()</div><br>
+<div class="Normal">This command creates a new cursor map, and returns it's ID. A Cursor Map is a mini-menu that the user can create. It allows the user to specify a spot on the screen where a pointer image will appear, letting them scroll through options with the keyboard.<br>
+- id! is the id of the cursor map.</div><br>
+
+<div class="Code">
+PixelText(300, 180, "New Game")<br>
+PixelText(300, 210, "Load Game")<br>
+PixelText(300, 230, "Quit")<br><br>
+
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; cMap! = CreateCursorMap()<br>
+&nbsp;&nbsp; //Create a cursor map with the id cMap!<br>
+&nbsp;&nbsp; //Set where the cursor can go to...<br>
+&nbsp;&nbsp; CursorMapAdd(295, 180, cMap!)<br>
+&nbsp;&nbsp; CursorMapAdd(295, 210, cMap!)<br>
+&nbsp;&nbsp; CursorMapAdd(295, 230, cMap!)<br>
+&nbsp;&nbsp; res! = CursorMapRun(cMap!)<br>
+&nbsp;&nbsp; //Run the selected cursor map position<br>
+&nbsp;&nbsp; KillCursorMap(cMap!)<br>
+&nbsp;&nbsp; //Kill the cursor map id<br>
+}<br><br>
+
+Switch(res!) {<br>
+&nbsp;&nbsp; Case(0) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //New game<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; Case(1) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Load game<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; Case(2) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Quit<br>
+&nbsp;&nbsp; }<br>
+}<br></div><br><br><br>
+
+
+
+<a name="createitem"></a>
+<div class="MinorHeader">NAME: Create Item<br>
+FORMAT: CreateItem(filename$, num!)</div><br>
+<div class="Normal">This command loads an item into memory. This is a very useful command for creating story sequences with players and NPC's, as the can move the items that you created around the board and make them interact with things.<br>
+- filename$ is the filename of the item.<br>
+- num! is the returned item slot. When an item is created in memory, it is given a slot. That value is returned to num!, so you can refer to it with other item related commands.</div><br>
+
+<div class="Code">
+CreateItem("soldier.itm", pos!) //Load the item into a slot<br>
+PutItem(pos!, 3, 2, 1) //Put the item on the board<br>
+PushItem(pos!, "E,E,E") //Push the item east three times<br>
+Mwin("Hi! Bye!")<br>
+Wait()<br>
+EraseItem(pos!) //Erase the item from the board<br>
+DestroyItem(pos!) //Remove the item from memory</div><br><br><br>
+
+
+
+<a name="cursormapadd"></a>
+<div class="MinorHeader">NAME: Cursor Map Add<br>
+FORMAT: CursorMapAdd(x!, y!, id!)</div><br>
+<div class="Normal">Adds a new cursor map position. Use this to specify where the pointer image can go on the screen. When the user presses an arrow key on the keyboard, the cursor will 'jump' to the next/previous map (if one exists).<br>
+- x!, y! are the x and y coordinates (in pixels) to place the cursor.<br>
+- id! is the id of the cursor map.</div><br>
+
+<div class="Code">
+PixelText(300, 180, "New Game")<br>
+PixelText(300, 210, "Load Game")<br>
+PixelText(300, 230, "Quit")<br><br>
+
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; cMap! = CreateCursorMap()<br>
+&nbsp;&nbsp; //Create a cursor map with the id cMap!<br>
+&nbsp;&nbsp; //Set where the cursor can go to...<br>
+&nbsp;&nbsp; CursorMapAdd(295, 180, cMap!)<br>
+&nbsp;&nbsp; CursorMapAdd(295, 210, cMap!)<br>
+&nbsp;&nbsp; CursorMapAdd(295, 230, cMap!)<br>
+&nbsp;&nbsp; res! = CursorMapRun(cMap!)<br>
+&nbsp;&nbsp; //Run the selected cursor map position<br>
+&nbsp;&nbsp; KillCursorMap(cMap!)<br>
+&nbsp;&nbsp; //Kill the cursor map id<br>
+}<br><br>
+
+Switch(res!) {<br>
+&nbsp;&nbsp; Case(0) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //New game<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; Case(1) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Load game<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; Case(2) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Quit<br>
+&nbsp;&nbsp; }<br>
+}<br></div><br><br><br>
+
+
+
+<a name="cursormaphand"></a>
+<div class="MinorHeader">NAME: Change Cursor Map Hand<br>
+FORMAT: CursorMapHand(file$[, stretchYN!])</div><br>
+<div class="Normal">Changes the hand image used on the menu, cursor maps, etc. to the specified file. Optionally, you can stretch it to 32x32 pixels. To change the hand to the original image, type "Default" instead of a filename.<br>
+- file$ is the filename of the image to use.<br>
+- stretchYN! is an optional parameter used to stretch the image (1 - yes, 0 - no).</div><br>
+
+<div class="Code">
+CursorMapHand("hand.bmp") //Set a new cursormap hand</div><br><br><br>
+
+
+
+<a name="cursormaprun"></a>
+<div class="MinorHeader">NAME: Cursor Map Run<br>
+FORMAT: dest! = CursorMapRun(id!)</div><br>
+<div class="Normal">This command runs the currently selected cursor map position, and returns the index of the selected cursor map position. The returned value starts at 0 (if the first option was selected), and goes up from there.<br>
+- id! is the id of the cursor map.<br>
+- dest! is the selected cursor map.</div><br>
+
+<div class="Code">
+PixelText(300, 180, "New Game")<br>
+PixelText(300, 210, "Load Game")<br>
+PixelText(300, 230, "Quit")<br><br>
+
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; cMap! = CreateCursorMap()<br>
+&nbsp;&nbsp; //Create a cursor map with the id cMap!<br>
+&nbsp;&nbsp; //Set where the cursor can go to...<br>
+&nbsp;&nbsp; CursorMapAdd(295, 180, cMap!)<br>
+&nbsp;&nbsp; CursorMapAdd(295, 210, cMap!)<br>
+&nbsp;&nbsp; CursorMapAdd(295, 230, cMap!)<br>
+&nbsp;&nbsp; res! = CursorMapRun(cMap!)<br>
+&nbsp;&nbsp; //Run the selected cursor map position<br>
+&nbsp;&nbsp; KillCursorMap(cMap!)<br>
+&nbsp;&nbsp; //Kill the cursor map id<br>
+}<br><br>
+
+Switch(res!) {<br>
+&nbsp;&nbsp; Case(0) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //New game<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; Case(1) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Load game<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; Case(2) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Quit<br>
+&nbsp;&nbsp; }<br>
+}<br></div><br><br><br>
+
+
+
+<a name="debug"></a>
+<div class="MinorHeader">NAME: Turn Debugging on/off<br>
+FORMAT: Debug(on_off$)</div><br>
+<div class="Normal">This command allows you to enable or disable debugging in your programs. If debugging is enabled and you run into an error in a program, the RPGCode debug window will pop up with an error. You can stop this by turning it off.<br>
+- on_off$ is a literal value which can be "on" or "off".</div><br>
+
+<div class="Code">
+Debug("on") //Turn debugging on<br>
+sadfd()<br>
+//This will cause an error and pop<br>
+//up the debug window.<br><br>
+
+Debug("off")<br>
+another error()<br>
+//This is another error, however, it<br>
+//will not bring up the debug window.</div><br><br><br>
+
+
+
+<a name="debugger"></a>
+<div class="MinorHeader">NAME: Debugger Message<br>
+FORMAT: Debugger(text$)</div><br>
+<div class="Normal">Calls the debug window with a message inside of it. A very useful command for error handling. To use the debug window, debugging must be enabled.<br>
+- text$ is the message to be placed inside of the debug window.</div><br>
+
+<div class="Code">
+Method FileExists(file$, folder$)<br>
+{<br>
+&nbsp; &nbsp;//Declare the variable 'exists!'<br>
+&nbsp; &nbsp;Local(exists!)<br><br>
+
+&nbsp; &nbsp;//Assume the file exists<br>
+&nbsp; &nbsp;exists! = 1<br><br>
+
+&nbsp; &nbsp;On Error Goto :error<br><br>
+
+&nbsp; &nbsp;//Try to open the file. If it doesn't exist,<br>
+&nbsp; &nbsp;//it will cause an error.<br>
+&nbsp; &nbsp;OpenFileInput(file$, folder$)<br><br>
+
+&nbsp; &nbsp;//Close the file just incase it was opened, but<br>
+&nbsp; &nbsp;//don't trigger another error.<br>
+&nbsp; &nbsp;On Error Resume Next<br>
+&nbsp; &nbsp;CloseFile(file$)<br><br>
+
+&nbsp; &nbsp;//Return the result<br>
+&nbsp; &nbsp;ReturnMethod(exists!)<br><br>
+
+&nbsp; &nbsp;//End the method so the error handler isn't run<br>
+&nbsp; &nbsp;End()<br><br>
+
+:error<br>
+&nbsp; &nbsp;//If we get here, there was an error<br>
+&nbsp; &nbsp;exists! = 0<br>
+&nbsp; &nbsp;Resume Next<br>
+}<br><br>
+
+If(FileExists("SomePrg.prg","Prg") == 1) {<br>
+&nbsp;&nbsp; Mwin("There was no error!")<br>
+}<br>
+Else() {<br>
+&nbsp;&nbsp; Debugger("Error opening file!")<br>
+}</div><br><br><br>
+
+
+
+<a name="delay"></a>
+<div class="MinorHeader">NAME: Delay<br>
+FORMAT: Delay(seconds!)</div><br>
+<div class="Normal">This command causes the computer to pause for a specified number of seconds.<br>
+- seconds! is the number of seconds to delay the program for.</div><br>
+
+<div class="Code">
+Mwin("Delaying...")<br>
+@<br>
+Delay(4)<br>
+Mwin("Delayed for 4 seconds!")</div><br><br><br>
+
+
+
+<a name="destroyitem"></a>
+<div class="MinorHeader">NAME: Destroy Item<br>
+FORMAT: DestroyItem(num!)</div><br>
+<div class="Normal">This command removes an item from memory, freeing up space so another item can be loaded to it's slot.<br>
+- num! is the item slot number to destroy.</div><br>
+
+<div class="Code">
+CreateItem("soldier.itm", pos!) //Load the item into a slot<br>
+PutItem(pos!, 3, 2, 1) //Put the item on the board<br>
+PushItem(pos!, "E,E,E") //Push the item east three times<br>
+Mwin("Hi! Bye!")<br>
+Wait()<br>
+EraseItem(pos!) //Erase the item from the board<br>
+DestroyItem(pos!) //Remove the item from memory</div><br><br><br>
+
+
+
+<a name="destroyplayer"></a>
+<div class="MinorHeader">NAME: Destroy Player<br>
+FORMAT: DestroyPlayer(handle$)</div><br>
+<div class="Normal">This command removes a player from the party. Unlike RemovePlayer(), however, it destroys the players stats so you won't be able to bring back the character with RestorePlayer().<br>
+- handle$ is the handle, or name, of the player.</div><br>
+
+<div class="Code">
+AddPlayer("Frap.tem")<br>
+DestroyPlayer("Frap")</div><br><br><br>
+
+
+
+<a name="dirsav"></a>
+<div class="MinorHeader">NAME: Directory of saved games<br>
+FORMAT: dest$ = DirSav()</div><br>
+<div class="Normal">Opens a window showing a list of all the saved games (with the *.sav extension) in the \Saved\ directory. When you save your progress during a game, a new .sav file is made in that directory.<br>
+- dest$ is the returned value of the saved games directory window. The DirSav command returns "CANCEL" is the user selected the cancel option.</div><br>
+
+<div class="Code">
+//This will load a saved game.<br>
+file$ = DirSav()<br>
+//Show the saved games and store the selected<br>
+//file in file$<br>
+If(file$ ~= "CANCEL")<br>
+{<br>
+&nbsp;&nbsp; Load(file$)<br>
+}<br>
+//If a file was selected, load the file.</div><br><br><br>
+
+
+
+<a name="done"></a>
+<div class="MinorHeader">NAME: Done with program<br>
+FORMAT: Done()</div><br>
+<div class="Normal">This command ends execution of a program, but does not restore the screen to what it was before the program began. If there were graphics put on the board, they will still be there when the program ends. The same goes for text in the message window, and other things.</div><br>
+
+<div class="Code">
+//Set some graphics...<br>
+LayerPut(2, 5, 1, "terrain.gph")<br>
+LayerPut(2, 6, 1, "terrain.gph")<br>
+//Now, end the program, but keep<br>
+//the graphics on the board...<br>
+Done()</div><br><br><br>
+
+
+
+<a name="drainall"></a>
+<div class="MinorHeader">NAME: Drain All<br>
+FORMAT: DrainAll(smp!)</div><br>
+<div class="Normal">This command will drain all SMP of the players or enemies in battle. When used with a special move, this will take the smp of the group of enemies or players depending on which was targeted with the special move.<br>
+- smp! is the amount of SMP to drain.</div><br>
+
+<div class="Code">
+//Drain a group of 100 SMP...<br>
+DrainAll(100)</div><br><br><br>
+
+
+
+<a name="drawcanvas"></a>
+<div class="MinorHeader">NAME: Draw Canvas<br>
+FORMAT: DrawCanvas(id!, x!, y![, sizex!, sizey!, destId!])</div><br>
+<div class="Normal">Draws a canvas to the screen or to another canvas.<br>
+- id! is the id of the canvas.<br>
+- x!, y! are the x and y coordinates to draw the canvas to.<br>
+- sizex!, sizey! (if specified) are the width and height (in pixels) to scale the canvas to.<br>
+- destId! (if specified) is the destination id to draw the canvas to.</div><br>
+
+<div class="Code">
+cnvTitle! = CreateCanvas(64, 64)<br>
+//Create a new canvas...<br>
+Bitmap("title.bmp", cnvTitle!) //Put an image in the canvas.<br>
+DrawCanvas(cnvTitle!, 0, 100) //Draw the canvas on screen.<br>
+KillCanvas(cnvTitle!) //Now, kill the canvas once I'm done with it.</div><br><br><br>
+
+
+
+<a name="drawcanvastransparent"></a>
+<div class="MinorHeader">NAME: Draw Canvas Transparently<br>
+FORMAT: DrawCanvasTransparent(cnv!,x!,y!,r!,g!,b![,width!,height!,destCnv!])</div><br>
+<div class="Normal">This command draws a canvas to the screen using transparency.<br>
+- cnv! is the id of the canvas.<br>
+- x!, y! are the x and y coordinates to draw the canvas to.<br>
+- r!, g!, b! are the RGB values for the transparent color.<br>
+- width!, height! are optional parameters for the width and height.<br>
+- destCnv! is an optional parameter for the destination id to draw the canvas to.</div><br>
+
+<div class="Code">
+id! = CreateCanvas(640, 480)<br>
+SetImageTransparent("layout.gif", 0, 0, 640, 480, 0, 0, 0)<br>
+DrawCanvasTransparent(id!, 0, 0, 0, 0, 0)</div><br><br><br>
+
+
+
+<a name="drawcircle"></a>
+<div class="MinorHeader">NAME: Draw a Circle<br>
+FORMAT: DrawCircle(x!, y!, radius![, sAngle!, eAngle!])</div><br>
+<div class="Normal">This command draws a circle with it's center at x! and y! and a radius of specified by radius!.<br>
+- x!,y! are the x and y coordinates of the center of the circle.<br>
+- radius! is the radius of the circle.<br>
+- sAngle!,eAngle! are optional parameters that allow you to specify start and end angles for an arc.</div><br>
+
+<div class="Code">
+//Draw a bunch of circles extending from the origin...<br>
+For(x! = 0; x! < 80; x! += 5)<br>
+{<br>
+&nbsp;&nbsp; For(y! = 0; y! < 80; y! += 5)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; ColorRGB(x!, x!, x!)<br>
+&nbsp;&nbsp; &nbsp;&nbsp; DrawCircle(x!, y!, 10)<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="drawline"></a>
+<div class="MinorHeader">NAME: Draw a Line<br>
+FORMAT: DrawLine(x1!, y1!, x2!, y2![, cnvID!])</div><br>
+<div class="Normal">This command draws a line from x1!,y1! to x2!,y2!. The color of the line is specified with the ColorRGB command.<br>
+- x1!,y1! are the starting x and y coordinates of the line.<br>
+- x2!,y2! are the ending x and y coordinates of the line.<br>
+- cnvID! is an optional parameter for drawing to a canvas.</div><br>
+
+<div class="Code">
+//Draw a line extending from the origin...<br>
+For(x! = 0; x! < 80; x! += 5)<br>
+{<br>
+&nbsp;&nbsp; For(y! = 0; y! < 80; y! += 5)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; ColorRGB(x!, x!, x!)<br>
+&nbsp;&nbsp; &nbsp;&nbsp; DrawLine(10, 10, x!, y!)<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="drawrect"></a>
+<div class="MinorHeader">NAME: Draw Rectangle<br>
+FORMAT: DrawRect(x1!, y1!, x2!, y2![, cnvID!])</div><br>
+<div class="Normal">This command draws a rectangle with the corner coordinates at x1!,y1! and x2!,y2!. The color of the rectangle is specified with the ColorRGB command.<br>
+- x1!,y1! are the top corner coordinates of the rectangle.<br>
+- x2!,y2! are the bottom corner coordinates of the rectangle.<br>
+- cnvID! is an optional parameter for drawing to a canvas.</div><br>
+
+<div class="Code">
+//Draw a bunch of random rectangles...<br>
+For(count! = 0; count! <= 15; count!++)<br>
+{<br>
+&nbsp;&nbsp; color! = Random(255)<br>
+&nbsp;&nbsp; ColorRGB(color!, color!, color!)<br>
+&nbsp;&nbsp; x1! = Random(608)<br>
+&nbsp;&nbsp; y1! = Random(352)<br>
+&nbsp;&nbsp; x2! = Random(608)<br>
+&nbsp;&nbsp; y2! = Random(352)<br>
+&nbsp;&nbsp; DrawRect(x1!, y1!, x2!, y2!)<br>
+}</div><br><br><br>
+
+
+
+<a name="earthquake"></a>
+<div class="MinorHeader">NAME: Earthquake<br>
+FORMAT: Earthquake(intensity!)</div><br>
+<div class="Normal">This command causes the screen to shake for an earthquake-like effect.<br>
+- intensity! is a numerical value which defines the strength and duration of the earthquake.</div><br>
+
+<div class="Code">
+//Let's shake the earth!<br>
+Earthquake(10)</div><br><br><br>
+
+
+
+<a name="else"></a>
+<div class="MinorHeader">NAME: Else<br>
+FORMAT: Else()</div><br>
+<div class="Normal">The Else command executes a block of code inside it's opening and closing braces as long as the preceding If statement and/or ElseIf statement is false. If the if, elseif, or else statements are used and one of the conditions are true, the other statements are ignored.</div><br>
+
+<div class="Code">
+If(x! == 12)<br>
+{<br>
+&nbsp;&nbsp; Mwin("x! is 12")<br>
+}<br>
+ElseIf(x! < 12)<br>
+{<br>
+&nbsp;&nbsp; Mwin("x! is less than 12")<br>
+}<br>
+Else()<br>
+{<br>
+&nbsp;&nbsp; Mwin("x! is higher than 12")<br>
+}</div><br><br><br>
+
+
+
+<a name="elseif"></a>
+<div class="MinorHeader">NAME: Else If<br>
+FORMAT: ElseIf(<i>condition</i>)</div><br>
+<div class="Normal">The ElseIf command executes a block of code inside it's opening and closing braces as long as it's condition is true. However, it will not execute if the preceding If statements condition's are true. If you have more than one ElseIf statement, only one will run.</div><br>
+
+<div class="Code">
+If(x! == 12)<br>
+{<br>
+&nbsp;&nbsp; Mwin("x! was 12")<br>
+}<br>
+ElseIf(x! == 15)<br>
+{<br>
+&nbsp;&nbsp; Mwin("x! was 15")<br>
+}<br>
+Else()<br>
+{<br>
+&nbsp;&nbsp; Mwin("x! was neither 12 nor 15!")<br>
+}</div><br><br><br>
+
+
+
+<a name="empty"></a>
+<div class="MinorHeader">NAME: Empty all variables<br>
+FORMAT: Empty()</div><br>
+<div class="Normal">This command clears all variables in your game of their values. Be very careful when using this command! It could mess up some parts of your game if you don't use it sparingly!</div><br>
+
+<div class="Code">
+//Kill all variables...<br>
+Empty()</div><br><br><br>
+
+
+
+<a name="end"></a>
+<div class="MinorHeader">NAME: End execution<br>
+FORMAT: End()</div><br>
+<div class="Normal">This command is used to stop flow of the program. Most people used it to end execution of a program in TK2, but it is now preferred to use Stop() for that. The End() command can be used to end a method at a certain point, or various other things relating to program flow.</div><br>
+
+<div class="Code">
+Method Something()<br>
+{<br>
+&nbsp;&nbsp; done! = 0<br>
+&nbsp;&nbsp; While(done! == 0)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwin("Press A to end the method, or B to continue.")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; If(LCase(Wait()) == "a")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; End() //End the method<br>
+&nbsp;&nbsp; &nbsp;&nbsp; }<br>
+&nbsp;&nbsp; &nbsp;&nbsp; If(LCase(Wait()) == "b")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; Mwin("You wanted to continue!")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; Mwin("Sadly, we have to end now...")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; }<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="endanimation"></a>
+<div class="MinorHeader">NAME: End Animation<br>
+FORMAT: EndAnimation(id!)</div><br>
+<div class="Normal">Ends execution of an animation started with the Animation() or SizedAnimation() commands.<br>
+- id! is the ID of the animation to end.</div><br>
+
+<div class="Code">
+EndAnimation(anmID!)</div><br><br><br>
+
+
+
+<a name="equip"></a>
+<div class="MinorHeader">NAME: Equip item<br>
+FORMAT: Equip(handle$, location!, item$)</div><br>
+<div class="Normal">This command equips an item on a player. The item must already be in the players inventory and must be equipable to that player. Otherwise, it will not work.<br>
+- handle$ is the handle of the player. "target" is an acceptable value.<br>
+- location! is a numerical value between 1 and 16. It specifies where to equip the item to. Legal positions are:<br>
+1 - Head<br>
+2 - Neck accessory<br>
+3 - Right hand<br>
+4 - Left hand<br>
+5 - Body<br>
+6 - Legs<br>
+7 to 16 - accessories 1 through 10.<br>
+- item$ is the filename of the item to equip.</div><br>
+
+<div class="Code">
+//Give the player an item and equip it<br>
+GiveItem("sword.itm")<br>
+Equip("Frap", 3, "sword.itm")</div><br><br><br>
+
+
+
+<a name="eraseitem"></a>
+<div class="MinorHeader">NAME: Erase Item<br>
+FORMAT: EraseItem(item_num!)</div><br>
+<div class="Normal">This command removes an item from the screen. The item will still be in memory, but it won't be on the screen. You can recall the item using the PutItem command.<br>
+- item_num! is the memory slot of the item to erase.</div><br>
+
+<div class="Code">
+CreateItem("soldier.itm", pos!) //Load the item into a slot<br>
+PutItem(pos!, 3, 2, 1) //Put the item on the board<br>
+PushItem(pos!, "E,E,E") //Push the item east three times<br>
+Mwin("Hi! Bye!")<br>
+Wait()<br>
+EraseItem(pos!) //Erase the item from the board<br>
+DestroyItem(pos!) //Remove the item from memory</div><br><br><br>
+
+
+
+<a name="eraseplayer"></a>
+<div class="MinorHeader">NAME: Erase Player<br>
+FORMAT: ErasePlayer(handle$)</div><br>
+<div class="Normal">This command erases a player from the board. This is very useful for characters entering and leaving story sequences.<br>
+- handle$ is the name of the player to erase.</div><br>
+
+<div class="Code">
+//Short story sequence in which Frap and Tano interact.<br>
+//Frap is the main character and is already on the board.<br>
+//Let's say he's at 5,5. We'll have Tano emerge from<br>
+//this location.<br><br>
+
+PutPlayer("Tano", 5, 5, 1)<br>
+Push("E,E,W", "Tano")<br>
+Mwin("Tano: Well, here we are in some strange RPGCode story sequence.")<br>
+Wait()<br>
+Mwincls()<br>
+Mwin("Frap: Watch this!")<br>
+Wait()<br>
+Mwincls()<br>
+Push("N,E,E,S", "Frap")<br>
+Mwin("Tano: Wow, that's really great. You can walk. Now I'm going")<br>
+Mwin("to walk toward you and vanish into your chest somehow.")<br>
+Wait()<br>
+Mwincls()<br>
+Mwin("Frap: Cool.")<br>
+Wait()<br>
+Mwincls()<br>
+Push("E", "Tano")<br>
+ErasePlayer("Tano")</div><br><br><br>
+
+
+
+<a name="fade"></a>
+<div class="MinorHeader">NAME: Fade<br>
+FORMAT: Fade(fade_type!)</div><br>
+<div class="Normal">Fade() is used to "fade out" the screen. The color of the fade is specified by the ColorRGB command.<br>
+- fade_type! is a numerical value from 0 to 4. Each number represents a different type of "fade". The fading types are as follows (note that leaving out the fade_type! parameter defaults it to 0):<br>
+0 - A growing and shrinking box that blots out the screen.<br>
+1 - Better fading type that blots out the screen with vertical lines.<br>
+2 - "True fade"; fades the screen from white to black.<br>
+3 - A fading line sweeps across the screen.<br>
+4 - A black circle swoops down and swallows the player.</div><br>
+
+<div class="Code">
+ColorRGB(0, 0, 255) //Set the color to blue.<br>
+Fade(1) //Fade the screen with vertical lines.<br>
+ColorRGB(255, 255, 255)</div><br><br><br>
+
+
+
+<a name="fight"></a>
+<div class="MinorHeader">NAME: Fight<br>
+FORMAT: Fight(skill_level!, background$)</div><br>
+<div class="Normal">This command initiates a fight between the player and an enemy from a program. This command ends execution of a program, so everything after this command will not be run. To have code run after the fight is over, simple place a continuation of the program in the "program to run upon defeating enemy" slot in the enemy editor. This command is useful for initiating fighting sequences with bosses, because your fighting program can be attached to a tile, or an NPC of the boss.<br>
+- skill_level! is the skill level of the enemy. If a few enemies to set to, let's say, level 37, and you specify that you want to fight a level 37 enemy, the toolkit will randomly select an enemy of that level for you to fight. If you want to fight a specific enemy, put that enemy on a level of it's own which no other enemy has, or, use the FightEnemy command to specify exactly which enemy to fight.<br>
+- background$ is the background image to fight against. This is the same background as the ones you set for the board when a battle starts.</div><br>
+
+<div class="Code">
+//Demonstration of using the Fight command.<br>
+//Let's have some evil guy attack you with<br>
+//his random bunch of minions.<br>
+Mwin("Ha! Now I will have random minions fight you!")<br>
+Wait()<br>
+Mwin("Get him!")<br>
+Wait()<br>
+Mwincls()<br>
+Fight(10, "background.bkg")<br>
+//Fight an enemy of level 10<br>
+//on the "background.bkg" background.</div><br><br><br>
+
+
+
+<a name="fightenemy"></a>
+<div class="MinorHeader">NAME: Fight Enemy<br>
+FORMAT: FightEnemey(enemy1$[, enemy2$, etc.], background$)</div><br>
+<div class="Normal">This command initiates a fight between the player and the specified enemy(s). This command is slightly better to use than the Fight command in the case of boss fights, as the can specify which enemies you want to fight directly.<br>
+- enemyX$ are the filenames of the enemies to fight. You can have any number of enemies from 1 to 4.<br>
+- background$ is the background image to fight on.</div><br>
+
+<div class="Code">
+FightEnemy("mole.ene", "badguy.ene", "background.bkg")<br>
+//Fight two enemies on the "background.bkg" background.</div><br><br><br>
+
+
+
+<a name="fightmenugraphic"></a>
+<div class="MinorHeader">NAME: Change Fight Menu Graphic<br>
+FORMAT: FightMenuGraphic(graphic$)</div><br>
+<div class="Normal">By default, the menu for the battle system is black. You can place a background image on the menu using this command.<br>
+- graphic$ is the graphic file to change the background to.</div><br>
+
+<div class="Code">
+//Change the fight menu graphic...<br>
+FightMenuGraphic("fight.jpg")</div><br><br><br>
+
+
+
+<a name="fileeof"></a>
+<div class="MinorHeader">NAME: End of File<br>
+FORMAT: dest! = FileEOF(file$)</div><br>
+<div class="Normal">Checks to see if the end of an open file has been reached. If so, it returns 1. If not, it returns 0. The supported mode for this command is "input mode" or "output mode".<br>
+- file$ is the file to check.<br>
+- dest! is the returned value.</div><br>
+
+<div class="Code">
+OpenFileInput("mymethods.prg","Prg") //Opens a file in input mode<br>
+dest! = FileEOF("mymethods.prg")<br>
+//Has the end of the file been reached?<br>
+CloseFile("mymethods.prg") //Close the file when done</div><br><br><br>
+
+
+
+<a name="fileget"></a>
+<div class="MinorHeader">NAME: File Get<br>
+FORMAT: dest! = FileGet(file$)</div><br>
+<div class="Normal">Gets binary data from a file. The supported mode for this command is "binary mode".<br>
+- file$ is the file to check.<br>
+- dest! is the returned data.</div><br>
+
+<div class="Code">
+OpenFileBinary("mymethods.prg","Prg") //Opens a file in binary mode<br>
+dest! = FileGet("mymethods.prg")<br>
+//Get some data from the program!<br>
+CloseFile("mymethods.prg") //Close the file when done</div><br><br><br>
+
+
+
+<a name="fileinput"></a>
+<div class="MinorHeader">NAME: File Input<br>
+FORMAT: dest$ = FileInput(file$)</div><br>
+<div class="Normal">Returns a line from an open file. Once the line from the file is returned, it positions itself at the next line in the file. The supported mode for this command is "input mode".<br>
+- file$ is the file to get input from.<br>
+- dest$ is the returned value.</div><br>
+
+<div class="Code">
+OpenFileInput("mymethods.prg","Prg") //Opens a file in input mode<br>
+dest$ = FileInput("mymethods.prg") //Return data<br>
+CloseFile("mymethods.prg") //Close the file when done</div><br><br><br>
+
+
+
+<a name="fileprint"></a>
+<div class="MinorHeader">NAME: File Print<br>
+FORMAT: FilePrint(file$, data$)</div><br>
+<div class="Normal">Prints data into a file. The supported mode for this command is "append mode".<br>
+- file$ is the file to append to.<br>
+- data$ is the data to append to the file.</div><br>
+
+<div class="Code">
+OpenFileAppend("mymethods.prg","Prg") //Opens a file in append mode<br>
+FilePrint("mymethods.prg", "yay") //Print this data to the file<br>
+CloseFile("mymethods.prg") //Close the file when done</div><br><br><br>
+
+
+
+<a name="fileput"></a>
+<div class="MinorHeader">NAME: File Put<br>
+FORMAT: FilePut(file$, data$)</div><br>
+<div class="Normal">Puts binary data into a file. The supported mode for this command is "binary mode".<br>
+- file$ is the file to put binary data in.<br>
+- data$ is the data to put into the file.</div><br>
+
+<div class="Code">
+OpenFileBinary("mymethods.prg","Prg") //Opens a file in input mode<br>
+FilePut("mymethods.prg",binarydata$) //Put this binary data in the file<br>
+CloseFile("mymethods.prg") //Close the file when done</div><br><br><br>
+
+
+
+<a name="fillcircle"></a>
+<div class="MinorHeader">NAME: Fill Circle<br>
+FORMAT: FillCircle(x!, y!, radius![, cnvID!])</div><br>
+<div class="Normal">This command draws a filled circle on the screen. The color of the circle is specified with the ColorRGB command.<br>
+- x!,y! are the x and y coordinates of the center of the circle.<br>
+- radius! is the radius of the circle.<br>
+- cnvID! is an optional parameter for drawing to a canvas.</div><br>
+
+<div class="Code">
+//Draw a bunch of circles extending from the origin<br>
+For(x! = 0; x! < 80; x! += 5)<br>
+{<br>
+&nbsp;&nbsp; For(y! = 0; y! < 80; y! += 5)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; ColorRGB(x!, x!, x!)<br>
+&nbsp;&nbsp; &nbsp;&nbsp; FillCircle(x!, y!, 10)<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="fillrect"></a>
+<div class="MinorHeader">NAME: Fill Rectangle<br>
+FORMAT: FillRect(x1!, y1!, x2!, y2![, cnvID!])</div><br>
+<div class="Normal">This command draws a filled rectangle on the screen with corners at x1,y1 and x2,y2. The color of the rectangle is specified with the colorRGB command.<br>
+- x1!,y1! are the top corner x and y coordinates for the rectangle.<br>
+- x2!,y2! are the bottom corner x and y coordinates for the rectangle.<br>
+- cnvID! is an optional parameter for drawing to a canvas.</div><br>
+
+<div class="Code">
+//Draw a bunch of random rectangles...<br>
+For(count! = 0; count! <= 15; count!++)<br>
+{<br>
+&nbsp;&nbsp; color! = Random(255)<br>
+&nbsp;&nbsp; ColorRGB(color!, color!, color!)<br>
+&nbsp;&nbsp; x1! = Random(608)<br>
+&nbsp;&nbsp; y1! = Random(352)<br>
+&nbsp;&nbsp; x2! = Random(608)<br>
+&nbsp;&nbsp; y2! = Random(352)<br>
+&nbsp;&nbsp; FillRect(x1!, y1!, x2!, y2!)<br>
+}</div><br><br><br>
+
+
+
+<a name="font"></a>
+<div class="MinorHeader">NAME: Change Font<br>
+FORMAT: Font(new_font$)</div><br>
+<div class="Normal">This command changes the font of the game from the default. The font must be in the font folder for it to work correctly. Remember to use the fonts actual name when specifying which you want to use.<br>
+- new_font$ is the new font to change the current font to.</div><br>
+
+<div class="Code">
+Mwin("Default font...")<br>
+Wait()<br>
+Mwincls()<br>
+Font("verdana")<br>
+Mwin("New font!")</div><br><br><br>
+
+
+
+<a name="fontsize"></a>
+<div class="MinorHeader">NAME: Change Font Size<br>
+FORMAT: FontSize(size!)</div><br>
+<div class="Normal">This command allows you to change the size of the font. By default, this is set to 16.<br>
+- size! represents the size of the font in pixels.</div><br>
+
+<div class="Code">
+FontSize(8)<br>
+Mwin("Small font.")<br>
+Wait()<br>
+Mwincls()<br>
+FontSize(16)<br>
+Mwin("Big font.")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="for"></a>
+<div class="MinorHeader">NAME: For-Loop<br>
+FORMAT: For(<i>initial; condition; increment</i>)</div><br>
+<div class="Normal">The For command allows you to initiate a For-loop. For-loops in RPGCode have the same syntax as C++. A For-loop is a set of commands (called a "block of code") that gets executed over and over again until a certain condition is false. This is much more convinient than writing 100 lines of repetitive code. The For-loop goes through four stages. First, it initiates a variable (<i>intial;</i>). Next, it checks if a condition is true (<i>condition;</i>). If it is, then it will run the block of code inside of the braces (the { and }). Once it's done, it will go through the incrementation process, where you can increment or decrement the variable. It then goes back to the second stage, checking if the condition is still true, and goes from there. It does this until the condition is false.</div><br>
+
+<div class="Code">
+//This is a demonstration of the For-loop.<br>
+//This will run a statement over and over again<br>
+//until a certain condition is false.<br><br>
+
+For(count! = 1; count! < 5; count!++)<br>
+{<br>
+&nbsp;&nbsp; //As you can see, I created the variable 'count!'<br>
+&nbsp;&nbsp; //and gave it the value 1. This is the 'initial' stage.<br>
+&nbsp;&nbsp; //Next, I checked if count! is less than 5. Since count!<br>
+&nbsp;&nbsp; //equals 1, this condition is 'true'. So now we'll run<br>
+&nbsp;&nbsp; //the block of code...<br><br>
+
+&nbsp;&nbsp; Show(count!) //Show the contents of 'count!'<br><br>
+
+&nbsp;&nbsp; //Alright, now we're at the end of the block. So,<br>
+&nbsp;&nbsp; //the 'increment' stage is run. 'count!++' means<br>
+&nbsp;&nbsp; //that we're incrementing 'count!' by 1. Now count!<br>
+&nbsp;&nbsp; //equals 2. We'll go back to the top and check the<br>
+&nbsp;&nbsp; //condition again. Since it's only 2 now, we'll run<br>
+&nbsp;&nbsp; //the statements over again. However, we don't have to<br>
+&nbsp;&nbsp; //type the statements again because the For-loop does<br>
+&nbsp;&nbsp; //that by itself!<br>
+}</div><br><br><br>
+
+
+
+<a name="forceredraw"></a>
+<div class="MinorHeader">NAME: Force Redraw<br>
+FORMAT: ForceRedraw()</div><br>
+<div class="Normal">This command forces the board to redraw itself. If you have put any graphics on the board, they will disappear. This command is very useful when changing the ambient color values of the board.</div><br>
+
+<div class="Code">
+//Fade out...<br>
+For(x! = 0; x! > -255; x! -= 10)<br>
+{<br>
+&nbsp;&nbsp; ambientred! = x!<br>
+&nbsp;&nbsp; ambientgreen! = x!<br>
+&nbsp;&nbsp; ambientblue! = x!<br>
+&nbsp;&nbsp; ForceRedraw()<br>
+}</div><br><br><br>
+
+
+
+<a name="gamespeed"></a>
+<div class="MinorHeader">NAME: Game Speed<br>
+FORMAT: GameSpeed(speed!)</div><br>
+<div class="Normal">The new GameSpeed command replaces #WalkSpeed, #CharacterSpeed, #ItemWalkSpeed, and #BattleSpeed. You no longer have to set up all of these commands in order to have the game run as fast or slow as you want. Just use GameSpeed()<br>
+- speed! is a numeric value between 0 and 3. 0 being the slowest, and 3 being the fastest.</div><br>
+
+<div class="Code">
+GameSpeed(0) //Sets the speed of the game to slow.</div><br><br><br>
+
+
+
+<a name="get"></a>
+<div class="MinorHeader">NAME: Get<br>
+FORMAT: a$ = Get([milliSeconds!])</div><br>
+<div class="Normal">The Get command works like the Wait command, except it doesn't freeze the computer until the user presses a button. It returns the current keyboard buffer (what the user pressed) to a variable, while still executing the program.<br>
+- a$ is the variable that holds the returned value.<br>
+- milliSeconds! is an optional parameter to specify how long you would like to wait for the user input.</div><br>
+
+<div class="Code">
+a$ = Get(5000)<br>
+//Gives the user 5 seconds to press a key.<br></div><br><br><br>
+
+
+
+<a name="getboardname">
+<div class="MinorHeader">NAME: Get Board Name<br>
+FORMAT: dest$ = GetBoardName()</div><br>
+<div class="Normal">This command gets the board name and stores it in dest$ for later use.</div><br>
+
+<div class="Code">
+boardName$ = GetBoardName()</div><br><br><br>
+
+
+
+<a name="getboardtile"></a>
+<div class="MinorHeader">NAME: Get Board Tile Name<br>
+FORMAT: dest$ = GetBoardTile(x!, y!, layer!)</div><br>
+<div class="Normal">This command saves the filename of a tile on the board at x,y,layer into dest.<br>
+- x!,y! are the x and y coordinates of the tile.<br>
+- layer! is the layer on the board that the tile is on.<br>
+- dest$ is the returned name of the tile.</div><br>
+
+<div class="Code">
+tile$ = GetBoardTile(3, 10, 1)<br>
+Show(tile$)<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="getboardtiletype"></a>
+<div class="MinorHeader">NAME: Get Board Tile Type<br>
+FORMAT: dest$ = GetBoardTileType(x!, y!, layer!)</div><br>
+<div class="Normal">This command gets the tile-type of a tile at x,y,layer and returns the type to dest$.<br>
+- x!,y! are the x and y coordinates of the tile.<br>
+- layer! is the layer on the board that the tile is on.<br>
+- dest$ is the returned type. Valid types are "NORMAL", "SOLID", "UNDER", "NS", "EW", and "STAIRSx", where 'x' is a number between 1 and 8 for the 8 layers you can have.</div><br>
+
+<div class="Code">
+type$ = GetBoardTileType(5, 5, 1)<br>
+Show(type$)<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="getcolor"></a>
+<div class="MinorHeader">NAME: Get Color<br>
+FORMAT: GetColor(r!, g!, b!)</div><br>
+<div class="Normal">This command gets the current color set by the ColorRGB command and returns the red, green, and blue values of the color to r!,g!,b!.</div><br>
+
+<div class="Code">
+GetColor(r!,g!,b!)<br>
+Mwin("The color value is: &#60;r!&#62;,&#60;g!&#62;,&#60;b!&#62;")<br>
+Wait()<br>
+Mwin("Let's switch them around!")<br>
+temp! = r!<br>
+r! = g!<br>
+g! = b!<br>
+b! = temp!<br>
+ColorRGB(r!, g!, b!)</div><br><br><br>
+
+
+
+<a name="getcorner"></a>
+<div class="MinorHeader">NAME: Get Corner<br>
+FORMAT: GetCorner(topx!, topy!)</div><br>
+<div class="Normal">This command gets the top x and y coordinates that the board is currently scrolled to.<br>
+- topx!,topy! are the returned top x and y coordinates.</div><br>
+
+<div class="Code">
+GetCorner(top_x!, top_y!)<br>
+Mwin("The board is scrolled to: &#60;top_x!&#62;, &#60;top_y!&#62;")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="getdp"></a>
+<div class="MinorHeader">NAME: Get DP<br>
+FORMAT: dest! = GetDP(handle$)</div><br>
+<div class="Normal">This command gets the DP of a player or enemy.<br>
+- handle$ is the player/enemy handle. "target" and "source" are valid handles.<br>
+- dest! is the returned DP of the player or enemy.</div><br>
+
+<div class="Code">
+dp! = GetDP("Frap")<br>
+//Get Frap's DP<br>
+targDP! = GetDP("target")<br>
+//Get the targets DP</div><br><br><br>
+
+
+
+<a name="getfontsize"></a>
+<div class="MinorHeader">NAME: Get Font Size<br>
+FORMAT: dest! = GetFontSize()</div><br>
+<div class="Normal">This command gets the current font size.<br>
+- dest! is the returned font size value.</div><br>
+
+<div class="Code">
+size! = GetFontSize()<br>
+Mwin("The font size is: &#60;size!&#62;")</div><br><br><br>
+
+
+
+<a name="getfp"></a>
+<div class="MinorHeader">NAME: Get FP<br>
+FORMAT: dest! = GetFP(handle$)</div><br>
+<div class="Normal">This command gets the FP of a player or enemy.<br>
+- handle$ is the player/enemy handle. "target" and "source" are valid handles.<br>
+- dest! is the returned FP of the player or enemy.</div><br>
+
+<div class="Code">
+fp! = GetFP("Frap")<br>
+//Get Frap's FP<br>
+targFP! = GetFP("target")<br>
+//Get the targets FP</div><br><br><br>
+
+
+
+<a name="getgp"></a>
+<div class="MinorHeader">NAME: Get GP<br>
+FORMAT: gp! = GetGP()</div><br>
+<div class="Normal">This command gets your GP value.<br>
+- gp! is the returned gp.</div><br>
+
+<div class="Code">
+gp! = GetGP()<br>
+If(gp &#60; 50)<br>
+{<br>
+Mwin("Hey, you don't have enough gp!")<br>
+}</div><br><br><br>
+
+
+
+<a name="gethp"></a>
+<div class="MinorHeader">NAME: Get HP<br>
+FORMAT: dest! = GetHP(handle$)</div><br>
+<div class="Normal">This command gets the HP of a player or enemy.<br>
+- handle$ is the player/enemy handle. "target" and "source" are valid handles.<br>
+- dest! is the returned HP of the player or enemy.</div><br>
+
+<div class="Code">
+hp! = GetHP("Frap")<br>
+//Get Frap's HP<br>
+targHP! = GetHP("target")<br>
+//Get the targets HP</div><br><br><br>
+
+
+
+<a name="getitemcost"></a>
+<div class="MinorHeader">NAME: Get Item Cost<br>
+FORMAT: dest! = GetItemCost(filename$)</div><br>
+<div class="Normal">Gets the buying price of an item and returns it to dest!.<br>
+- filename$ is the filename of the item.<br>
+- dest! is the returned value.</div><br>
+
+<div class="Code">
+dest! = GetItemCost("my_item.itm")<br>
+Mwin("This item costs &#60;dest!&#62;.")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="getitemdesc"></a>
+<div class="MinorHeader">NAME: Get Item Description<br>
+FORMAT: dest$ = GetItemDesc(filename$)</div><br>
+<div class="Normal">Gets the description of an item and returns it to dest$.<br>
+- filename$ is the filename of the item.<br>
+- dest$ is the returned value.</div><br>
+
+<div class="Code">
+dest$ = GetItemDesc("my_item.itm")<br>
+Mwin("Item &#60;dest$&#62;")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="getitemname"></a>
+<div class="MinorHeader">NAME: Get Item Name<br>
+FORMAT: dest$ = GetItemName(filename$)</div><br>
+<div class="Normal">Gets the handle (name) of an item and returns it to dest$.<br>
+- filename$ is the filename of the item.<br>
+- dest$ is the returned value.</div><br>
+
+<div class="Code">
+dest$ = GetItemName("my_item.itm")<br>
+Mwin("You have recieved &#60;dest$&#62;!")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="getitemsellprice"></a>
+<div class="MinorHeader">NAME: Get Item Selling Price<br>
+FORMAT: dest! = GetItemSellPrice(filename$)</div><br>
+<div class="Normal">Gets the selling price of an item and returns it to dest!.<br>
+- filename$ is the filename of the item.<br>
+- dest! is the returned value.</div><br>
+
+<div class="Code">
+dest! = GetItemSellPrice("my_item.itm")<br>
+Mwin("You may sell this item for &#60;dest!&#62;.")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="getsmp"></a>
+<div class="MinorHeader">NAME: Get SMP<br>
+FORMAT: dest! = GetSMP(handle$)</div><br>
+<div class="Normal">This command gets the SMP of a player or enemy.<br>
+- handle$ is the player/enemy handle. "target" and "source" are valid handles.<br>
+- dest! is the returned SMP of the player or enemy.</div><br>
+
+<div class="Code">
+smp! = GetSMP("Frap")<br>
+//Get Frap's SMP<br>
+targSMP! = GetSMP("target")<br>
+//Get the targets SMP</div><br><br><br>
+
+
+
+<a name="getlevel"></a>
+<div class="MinorHeader">NAME: Get Level<br>
+FORMAT: dest! = GetLevel(handle$)</div><br>
+<div class="Normal">This command gets the level of a player.<br>
+- handle$ is the player handle. "target" and "source" are valid handles.<br>
+- dest! is the returned level of the player.</div><br>
+
+<div class="Code">
+level! = GetLevel("Frap")<br>
+//Get Frap's level<br>
+targLevel! = GetLevel("target")<br>
+//Get the targets level</div><br><br><br>
+
+
+
+<a name="getmaxhp"></a>
+<div class="MinorHeader">NAME: Get Max HP<br>
+FORMAT: dest! = GetMaxHP(handle$)</div><br>
+<div class="Normal">This command gets the max HP of a player.<br>
+- handle$ is the player handle. "target" and "source" are valid handles.<br>
+- dest! is the returned max HP of the player.</div><br>
+
+<div class="Code">
+maxhp! = GetMaxHP("Frap")<br>
+//Get Frap's max hp<br>
+targMaxHP! = GetMaxHP("target")<br>
+//Get the targets max hp</div><br><br><br>
+
+
+
+<a name="getmaxsmp"></a>
+<div class="MinorHeader">NAME: Get Max SMP<br>
+FORMAT: dest! = GetMaxSMP(handle$)</div><br>
+<div class="Normal">This command gets the max SMP of a player.<br>
+- handle$ is the player handle. "target" and "source" are valid handles.<br>
+- dest! is the returned max SMP of the player.</div><br>
+
+<div class="Code">
+maxsmp! = GetMaxSMP("Frap")<br>
+//Get Frap's max smp<br>
+targMaxSMP! = GetMaxSMP("target")<br>
+//Get the targets max smp</div><br><br><br>
+
+
+
+<a name="getpixel"></a>
+<div class="MinorHeader">NAME: Get Pixel<br>
+FORMAT: GetPixel(x!, y!, r!, g!, b!, cnv!)</div><br>
+<div class="Normal">This command returns the RGB value of a pixel at x,y.<br>
+- x!,y! are the x and y coordinates of the pixel.<br>
+- r!,g!,b! are the returned red, green, and blue color values of the pixel.<br>
+- cnv! is an optional parameter for getting the pixel from a canvas.</div><br>
+
+<div class="Code">
+GetPixel(10, 30, r!, g!, b!)</div><br><br><br>
+
+
+
+<a name="getres"></a>
+<div class="MinorHeader">NAME: Get Resolution<br>
+FORMAT: GetRes(x!, y!)</div><br>
+<div class="Normal">This command gets the current game resolution (the resolution the game is set to in the main file editor).<br>
+- x!,y! are the width and height of the game screen.</div><br>
+
+<div class="Code">
+GetRes(width!, height!)<br>
+Mwin("The games resolution is: &#60;width!&#62;,&#60;height!&#62;")</div><br><br><br>
+
+
+
+<a name="gettextheight"></a>
+<div class="MinorHeader">NAME: Get Text Height<br>
+FORMAT: height! = GetTextHeight(string$)</div><br>
+<div class="Normal">This command returns the height of a string of text in pixels, relative to the current font size.<br>
+- string$ is the text to get the height of.<br>
+- height! is the returned number of pixels.</div><br>
+
+<div class="Code">
+height! = GetTextHeight("Hiya")</div><br><br><br>
+
+
+
+<a name="gettextwidth"></a>
+<div class="MinorHeader">NAME: Get Text Width<br>
+FORMAT: width! = GetTextWidth(string$)</div><br>
+<div class="Normal">This command returns the width of a string of text in pixels, relative to the current font size.<br>
+- string$ is the text to get the width of.<br>
+- width! is the returned number of pixels.</div><br>
+
+
+
+<div class="Code">
+width! = GetTextWidth("Hiya")</div><br><br><br>
+
+
+
+<a name="getthreadid"></a>
+<div class="MinorHeader">NAME: Get Thread ID<br>
+FORMAT: id! = GetThreadID()</div><br>
+<div class="Normal">Gets the thread id of the currently running multitask program. This is useful when you want to kill a thread.<br>
+- id! is the id of the thread to return.</div><br>
+
+<div class="Code">
+tID! = Thread("mythread.prg", 0)<br>
+//Run the thread "mythread.prg"<br>
+KillThread(tID!) //Kill the thread when done</div><br><br><br>
+
+
+
+<a name="giveexp"></a>
+<div class="MinorHeader">NAME: Give Experience Points<br>
+FORMAT: GiveEXP(handle$, amount!)</div><br>
+<div class="Normal">Gives the player a set amount of experience points. It will automatically give the player a level up if needed.<br>
+- handle$ is the handle of the player to give experience to.<br>
+- amount! is the amount of exp to give.</div><br>
+
+<div class="Code">
+GiveEXP("Frap", 500)</div><br><br><br>
+
+
+
+<a name="givegp"></a>
+<div class="MinorHeader">NAME: Give GP<br>
+FORMAT: GiveGP(amount!)</div><br>
+<div class="Normal">Gives the player a set amount of GP.<br>
+- amount! is the amount of GP to give.</div><br>
+
+<div class="Code">
+GiveGP(100)</div><br><br><br>
+
+
+
+<a name="givehp"></a>
+<div class="MinorHeader">NAME: Give HP<br>
+FORMAT: GiveHP(handle$, amount!)</div><br>
+<div class="Normal">Gives the player or enemy a certain amount of hp.<br>
+- handle$ is the handle of the player to give hp to. "target" and "source" are valid handles.<br>
+- amount! is the amount of hp to give.</div><br>
+
+<div class="Code">
+HP("Frap", 100) //Give Frap 100 HP<br>
+GiveHP("Frap", 20) //Give Frap 120 HP<br>
+GiveHP("Frap", -90) //Take away 90 HP</div><br><br><br>
+
+
+
+<a name="giveitem"></a>
+<div class="MinorHeader">NAME: Give Item<br>
+FORMAT: GiveItem(item_name$)</div><br>
+<div class="Normal">This command gives an item to the player.<br>
+- item_name$ is the filename of the item to give.</div><br>
+
+<div class="Code">
+GiveItem("sword.itm")<br>
+Mwin("You've obtained a sword!")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="givesmp"></a>
+<div class="MinorHeader">NAME: Give SMP<br>
+FORMAT: GiveSMP(handle$, amount!)</div><br>
+<div class="Normal">Gives the player or enemy a certain amount of smp.<br>
+- handle$ is the handle of the player to give smp to. "target" and "source" are valid handles.<br>
+- amount! is the amount of smp to give.</div><br>
+
+<div class="Code">
+SMP("Frap", 20) //Give Frap 20 SMP<br>
+GiveSMP("Frap", 20) //Give Frap 40 SMP<br>
+GiveSMP("Frap", -10) //Take away 10 SMP</div><br><br><br>
+
+
+
+<a name="global"></a>
+<div class="MinorHeader">NAME: Create Global Variable<br>
+FORMAT: Global(varName[, value])</div><br>
+<div class="Normal">By default, the Toolkit sets all variables to Global scope. Global variables can be read from anywhere in your game unless you Kill() them. If you create a variable with the Local() command and you meant to create it globally, you can use the Global() command to re-declare it as global.<br>
+- varName is the name of the variable.<br>
+- value is the value to assign to the variable.</div><br>
+
+<div class="Code">
+AutoLocal()<br>
+//Since I've specified that all implicitly delcared variables<br>
+//are automatically 'local', I'll need to use Global() to make<br>
+//a global variable.<br>
+Global(x!) //Declare the x! as global</div><br><br><br>
+
+
+
+<a name="gone"></a>
+<div class="MinorHeader">NAME: Gone<br>
+FORMAT: Gone()</div><br>
+<div class="Normal">This command ends execution of a program and removes the program from the board. So if the player steps on the tile again, there will be no program that runs. This is only in effect, however, until the player leaves and reenters the board.</div><br>
+
+<div class="Code">
+Mwin("Farewell, cruel world!")<br>
+//Now, end the program and remove it...<br>
+Gone()</div><br><br><br>
+
+
+
+<a name="hp"></a>
+<div class="MinorHeader">NAME: HP<br>
+FORMAT: HP(handle$, new_HP!)</div><br>
+<div class="Normal">Gives the player or enemy a set amount of hp.<br>
+- handle$ is the handle of the player to give hp to. "target" and "source" are valid handles.<br>
+- new_HP! is the amount of hp to give.</div><br>
+
+<div class="Code">
+HP("Frap", 100) //Give Frap 100 HP<br>
+GiveHP("Frap", 20) //Give Frap 120 HP<br>
+GiveHP("Frap", -90) //Take away 90 HP</div><br><br><br>
+
+
+
+<a name="if"></a>
+<div class="MinorHeader">NAME: If...<br>
+FORMAT: If(condition) { code to run }</div><br>
+<div class="Normal">This command lets you check if a variable has a certain value or not. The condition is some condition that you are testing. It can test if two values are equal to, not equal to, less than or greater than each other. If the condition is true, a block of code will be executed.<br><br>
+
+The If command has six basic conditions it can test. They are as follows: Equal to (==), Not equal to (~=), Greater than (&#62;), Less than (&#60;), Greater than or equal to (&#62;=), Less than or equal to (&#60;=).<br><br>
+
+The If command also supports inline commands, equasions, and logical operators. For more about these more advanced If features, please read the RPGCode Primer.<br><br>
+
+Between the brackets (the { and }, which are also called 'curly braces), you can put a block of code. This block of code will, again, only be executed if the condition in the If command is true. All of this together is called an 'If statement'.</div><br>
+
+<div class="Code">
+//Here's an example showing the six basic<br>
+//if statement conditions...<br><br>
+
+var! = 1<br>
+If(var! == 1)<br>
+{<br>
+&nbsp;&nbsp; //This block of code will only get executed<br>
+&nbsp;&nbsp; //if 'var!' is equal to 1.<br>
+&nbsp;&nbsp; Mwin("Hello!")<br>
+&nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; var!++<br>
+}<br><br>
+
+If(var! ~= 1)<br>
+{<br>
+&nbsp;&nbsp; //This block of code will only get executed<br>
+&nbsp;&nbsp; //if 'var!' is NOT 1.<br>
+&nbsp;&nbsp; Mwin("How are you?")<br>
+&nbsp;&nbsp; Wait()<br>
+}<br><br>
+
+If(var! < 10)<br>
+{<br>
+&nbsp;&nbsp; //This block of code will only get executed<br>
+&nbsp;&nbsp; //if 'var!' is less than 10.<br>
+&nbsp;&nbsp; Mwin("Nice day, isn't it?")<br>
+&nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; var! = 10<br>
+}<br><br>
+
+If(var! <= 10)<br>
+{<br>
+&nbsp;&nbsp; //This block of code will only get executed<br>
+&nbsp;&nbsp; //if 'var!' is less than or equal to 10.<br>
+&nbsp;&nbsp; Mwin("I'm running out of things to say!")<br>
+&nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; var!++<br>
+}<br><br>
+
+If(var! => 11)<br>
+{<br>
+&nbsp;&nbsp; //This block of code will only get executed<br>
+&nbsp;&nbsp; //if 'var!' is greater than or equal to 11.<br>
+&nbsp;&nbsp; Mwin("Read any good books lately?")<br>
+&nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; var! += 3<br>
+}<br><br>
+
+If(var! > 12)<br>
+{<br>
+&nbsp;&nbsp; //This block of code will only get executed<br>
+&nbsp;&nbsp; //if 'var!' is greater than 12.<br>
+&nbsp;&nbsp; Mwin("Time to go. Bye bye!")<br>
+&nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; Mwincls()<br>
+}</div><br><br><br>
+
+
+
+<a name="iif"></a>
+<div class="MinorHeader">NAME: Iif Statement<br>
+FORMAT: ret = iif(condition, true, false)</div><br>
+<div class="Normal">This statement resembles an advanced version of the If statement. It checks the condition you specify, and returns the value of true or false depending on if the condition is true or false.<br>
+- condition is the condition to check.<br>
+- true is the value to return if the condition is true. This can be either a literal or numerical value.<br>
+- false is the value to return if the condition is false. This can be either a literal or numerical value.<br>
+- ret is the returned value. It can be either literal or numerical.</div><br>
+
+<div class="Code">
+x! = Prompt("Enter a number")<br>
+y! = Prompt("Enter another number")<br>
+ret$ = iif(x! == y!, "Yay!", "Boo!")<br>
+Show(ret$)</div><br><br><br>
+
+
+
+<a name="include"></a>
+<div class="MinorHeader">NAME: Include File<br>
+FORMAT: Include(filename$)</div><br>
+<div class="Normal">This commands includes an RPGCode program into the currently running program. If you include a file, you will be able to use the methods from inside of that file. This is extremely useful for making method libraries and importing them wherever you need them.<br>
+- filename$ is the filename of the RPGCode program to include.</div><br>
+
+<div class="Code">
+//Include the "system" library.<br>
+Inlcude("system.prg")<br><br>
+
+//Now, I can use methods from inside of that<br>
+//program. For example, 'Pause()'.<br>
+Mwin("Try pressing the arrow keys!")<br>
+Pause()</div><br><br><br>
+
+
+
+<a name="inn"></a>
+<div class="MinorHeader">NAME: Restore HP/SMP<br>
+FORMAT: Inn()</div><br>
+<div class="Normal">This command refills the HP and SMP of all players on your team.</div><br>
+
+<div class="Code">
+Inn()</div><br><br><br>
+
+
+
+<a name="internalmenu"></a>
+<div class="MinorHeader">NAME: Pop up internal menu<br>
+FORMAT: InternalMenu(menu_number!)</div><br>
+<div class="Normal">This command pops up one of the internal menus.<br>
+- menu_number! is a numerical value between 0 and 4. Here are the corresponding pop up menus:<br>
+0 - Main menu<br>
+1 - Items<br>
+2 - Equip<br>
+3 - Abilities</div><br>
+
+<div class="Code">
+InternalMenu(0)<br>
+//Pop up the main menu.</div><br><br><br>
+
+
+
+<a name="instr"></a>
+<div class="MinorHeader">NAME: In String<br>
+FORMAT: dest! = InStr(string1$, string2$)</div><br>
+<div class="Normal">Checks to see if there is an occurance of one part of a string inside of another and returns either 1 or 0 to dest!.<br>
+- string1$ is the first string.<br>
+- string2$ is the string to compare string1$ to.<br>
+- dest! is the outcome. Returns 1 if there is an occurance of string1$ in string2$. Returns 0 if there isn't.</div><br>
+
+<div class="Code">
+dest! = InStr("Hello world!", "Hello")<br>
+//Finds out if there is any similarities in sometext1$<br>
+//and sometext2$. If there is, it returns 1. If not, it<br>
+//returns 0.<br>
+Mwin("Look at that, sometext1$ and sometext2$ both have the word")<br>
+Mwin("Hello in them. That means InStr will return 1!")<br>
+Mwin("I'll prove it: &#60;dest!&#62;. See?!")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="italics"></a>
+<div class="MinorHeader">NAME: Turn italics on/off<br>
+FORMAT: Italics(on_off$)</div><br>
+<div class="Normal">This command turns the italics effect on or off on your text.<br>
+- on_off$ is a literal value that can be "on" or "off".</div><br>
+
+<div class="Code">
+Italics("off")<br>
+Mwin("Boring regular text...")<br>
+Wait()<br>
+Mwincls()<br>
+Italics("on")<br>
+Mwin("Italic text!")</div><br><br><br>
+
+
+
+<a name="itemcount"></a>
+<div class="MinorHeader">NAME: Item count<br>
+FORMAT: dest! = ItemCount(item_name$)</div><br>
+<div class="Normal">This command counts how many of any particular item the player is carrying.<br>
+- item_name$ is the name of the item to count.<br>
+- dest! is the returned number.</div><br>
+
+<div class="Code">
+nCure! = ItemCount("cure")<br>
+Mwin("You have &#60;nCure!&#62; cures.")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="itemlocation"></a>
+<div class="MinorHeader">NAME: Item Location<br>
+FORMAT: ItemLocation(item_num!, x!, y!, layer!)</div><br>
+<div class="Normal">This command locates a specific item on the board.<br>
+- item_num! is a numerical value for which item you wish to find.<br>
+- x!,y!,layer! are the x, y, and layer coordinates returned as the location.</div><br>
+
+<div class="Code">
+CreateItem("man.itm", itmMan!)<br>
+PutItem(itmMan!, 3, 3, 1)<br>
+ItemLocation(itmMan!, itmx!, itmy!, itmLayer!)</div><br><br><br>
+
+
+
+<a name="itemspeed"></a>
+<div class="MinorHeader">NAME: Set Item Speed<br>
+FORMAT: ItemSpeed(num!, speed!)</div><br>
+<div class="Normal">This command allows you to set the walk speed of a specific item on the board.<br>
+- num! is the number of the item.<br>
+- speed! is the speed of the item.</div><br>
+
+<div class="Code">
+CreateItem("man.itm", pos!)<br>
+PutItem(pos!, 3, 5)<br>
+ItemSpeed(pos!, 2)</div><br><br><br>
+
+
+
+<a name="itemstance"></a>
+<div class="MinorHeader">NAME: Item Stance<br>
+FORMAT: ItemStance(slot!, stance$)</div><br>
+<div class="Normal">This command allows you to put an item in any stance. Their stances are the custom postures and animations set in the item editor.<br>
+- slot! is the item slot.<br>
+- stance$ is the stance to use.</div><br>
+
+<div class="Code">
+//Put the item in a 'sleeping' position<br>
+ItemStance(0, "sleeping")</div><br><br><br>
+
+
+
+<a name="itemstep"></a>
+<div class="MinorHeader">NAME: Item Step<br>
+FORMAT: ItemStep(item_num!, x!, y!)</div><br>
+<div class="Normal">This command causes the specified item to walk one step toward x and y.<br>
+- item_num! is the item number.<br>
+- x!,y! are the x and y coordinates of where the item should go.</div><br>
+
+<div class="Code">
+//This causes an item to step toward<br>
+//the player...<br>
+CreateItem("item.itm", item!)<br>
+PutItem(item!, 5, 5, 1)<br>
+ItemStep(item!, playerX[0]!, playerY[0]!)</div><br><br><br>
+
+
+
+<a name="kill"></a>
+<div class="MinorHeader">NAME: Kill<br>
+FORMAT: Kill(var1, var2, etc...)</div><br>
+<div class="Normal">This command deletes variables from memory, thus freeing up space and allowing you to create more variables. It's always a good idea to kill variables that you aren't going to use in the long run, as they'll only clutter things.<br>
+- var1, var2, etc. are the variables to delete from memory. You can delete as many variables at one time as you wish.</div><br>
+
+<div class="Code">
+var1! = 18<br>
+var2$ = "Bob"<br>
+Show(var1!) //Output: 18<br>
+Show(var2$) //Output: "Bob"<br>
+Kill(var1!, var2$)<br>
+Show(var1!) //Output: 0<br>
+Show(var2$) //Output: ""</div><br><br><br>
+
+
+
+<a name="killallredirects"></a>
+<div class="MinorHeader">NAME: Kill All Redirects<br>
+FORMAT: KillAllRedirects()</div><br>
+<div class="Normal">This command nullifies all of the redirects in use.</div><br>
+
+<div class="Code">
+KillAllRedirects()</div><br><br><br>
+
+
+
+<a name="killcanvas"></a>
+<div class="MinorHeader">NAME: Kill Canvas<br>
+FORMAT: KillCanvas(id!)</div><br>
+<div class="Normal">Kills a canvas id. Remember that you should always kill a canvas when you're done with it, because canvases take up a lot of memory and can easily slow your game down.<br>
+- id! is the id of the canvas.</div><br>
+
+<div class="Code">
+cnvTitle! = CreateCanvas(64, 64)<br>
+//Create a new canvas...<br>
+Bitmap("title.bmp", cnvTitle!) //Put an image in the canvas.<br>
+DrawCanvas(cnvTitle!, 0, 100) //Draw the canvas on screen.<br>
+KillCanvas(cnvTitle!) //Now, kill the canvas once I'm done with it.</div><br><br><br>
+
+
+
+<a name="killcursormap"></a>
+<div class="MinorHeader">NAME: Kill Cursor Map<br>
+FORMAT: KillCursorMap(id!)</div><br>
+<div class="Normal">Kills a cursor map specified by id!. Use this when you're done with your cursor map.<br>
+- id! is the id of the cursor map to kill.</div><br><br><br>
+
+<div class="Code">
+PixelText(300, 180, "New Game")<br>
+PixelText(300, 210, "Load Game")<br>
+PixelText(300, 230, "Quit")<br><br>
+
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; cMap! = CreateCursorMap()<br>
+&nbsp;&nbsp; //Create a cursor map with the id cMap!<br>
+&nbsp;&nbsp; //Set where the cursor can go to...<br>
+&nbsp;&nbsp; CursorMapAdd(295, 180, cMap!)<br>
+&nbsp;&nbsp; CursorMapAdd(295, 210, cMap!)<br>
+&nbsp;&nbsp; CursorMapAdd(295, 230, cMap!)<br>
+&nbsp;&nbsp; res! = CursorMapRun(cMap!)<br>
+&nbsp;&nbsp; //Run the selected cursor map position<br>
+&nbsp;&nbsp; KillCursorMap(cMap!)<br>
+&nbsp;&nbsp; //Kill the cursor map id<br>
+}<br><br>
+
+Switch(res!) {<br>
+&nbsp;&nbsp; Case(0) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //New game<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; Case(1) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Load game<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; Case(2) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Quit<br>
+&nbsp;&nbsp; }<br>
+}<br></div><br><br><br>
+
+
+
+<a name="killredirect"></a>
+<div class="MinorHeader">NAME: Kill a Redirect<br>
+FORMAT: KillRedirect(methodName$)</div><br>
+<div class="Normal">This command deletes a redirection that had been created with Redirect().<br>
+- methodName$ is the redirect to kill.</div><br>
+
+<div class="Code">
+KillRedirect()</div><br><br><br>
+
+
+
+<a name="killthread"></a>
+<div class="MinorHeader">NAME: Kill Thread<br>
+FORMAT: KillThread(id!)</div><br>
+<div class="Normal">Stop execution of a multitask program (thread).<br>
+- id! is the id of the thread to kill.</div><br>
+
+<div class="Code">
+tID! = Thread("mythread.prg", 0)<br>
+//Run the thread "mythread.prg"<br>
+KillThread(id!) //Kill the thread when done</div><br><br><br>
+
+
+
+<a name="layerput"></a>
+<div class="MinorHeader">NAME: Layer Put<br>
+FORMAT: LayerPut(x!, y!, layer!, graphic$)</div><br>
+<div class="Normal">This command places a tile graphic on the board at the specified location. The graphic will only remain on the board for the duration of time that the player is on the board.<br>
+- x!,y!,layer! are the x, y, and layer coordinates to place the graphic.<br>
+- graphic$ is the tile graphic to place on the board. The graphic file must be a valid .gph or .tst file.</div><br>
+
+<div class="Code">
+LayerPut(4, 6, 1, "graphic1.gph")<br>
+LayerPut(3, 2, 1, "terrain.tst1")</div><br><br><br>
+
+
+
+<a name="lcase"></a>
+<div class="MinorHeader">NAME: Lower Case<br>
+FORMAT: dest$ = LCase(string$)</div><br>
+<div class="Normal">Casts a string of characters to all lower-case characters and returns it to dest$.<br>
+- string$ is the string of characters to cast to lower-case.<br>
+- dest$ is the returned string.</div><br>
+
+<div class="Code">
+string$ = Prompt("What's your name?")<br>
+name$ = LCase(string$)<br>
+Mwin("Hello, &#60;name$&#62;")</div><br><br><br>
+
+
+
+<a name="left"></a>
+<div class="MinorHeader">NAME: Left<br>
+FORMAT: dest$ = Left(text$, amount!)</div><br>
+<div class="Normal">This command takes characters from the left side of a string, and returns it to dest$.<br>
+- text$ is the text to take characters from.<br>
+- amount! is the number of characters to take from the left side of text$.<br>
+- dest$ is the returned sub-string.</div><br>
+
+<div class="Code">
+Show( Left("I love you!", 4) + "athe" + Right("I love you!", 5) )<br>
+//Result: "I loathe you!"<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="length"></a>
+<div class="MinorHeader">NAME: Length<br>
+FORMAT: dest! = Length(string$)</div><br>
+<div class="Normal">Gets the length of a string and returns the value to dest!.<br>
+- string$ is the text to get the length of.<br>
+- dest! is the number of characters in the string.</div><br>
+
+<div class="Code">
+dest! = Length("Hello!")<br>
+//Finds out how many characters are in the string<br>
+//"Hello!". A string is just a fancy way to say<br>
+//text.<br>
+Mwin("There are &#60;dest!&#62; characters in the string 'hello!'")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="load"></a>
+<div class="MinorHeader">NAME: Load Game<br>
+FORMAT: Load(filename$)</div><br>
+<div class="Normal">Throughout your game, you have the choice to save your progress using programs that have the Save command. In order to play these saved games, there must be a program that loads the saved files. You can do this with the Load command. When the game loads, the currently running program and game end and you are taken to the board where you last saved. All of the previously used variables are reassigned their values.<br>
+- filename$ is the name of the file to load.</div><br>
+
+<div class="Code">
+//This will load a saved game.<br>
+file$ = DirSav()<br>
+//Show the saved games and store the selected<br>
+//file in file$<br>
+If(file$ ~= "CANCEL")<br>
+{<br>
+&nbsp;&nbsp; Load(file$)<br>
+}<br>
+//If a file was selected, load the file.</div><br><br><br>
+
+
+
+<a name="local"></a>
+<div class="MinorHeader">NAME: Create Local Variable<br>
+FORMAT: Local(varName[, value])</div><br>
+<div class="Normal">By default, the Toolkit sets all variables to Global scope. Global variables can be read from anywhere in your game unless you #Kill them. With the #Local command, you can create a local variable which will only be accessible in the program that you declare it in. When the program ends, the variable will be destroyed.<br>
+- varName is the name of the variable.<br>
+- value is the value to assign to the variable.</div><br>
+
+<div class="Code">
+Local(x!) //Create a local variable x!</div><br><br><br>
+
+
+
+<a name="mainfile"></a>
+<div class="MinorHeader">NAME: Load main file<br>
+FORMAT: MainFile(file$)</div><br>
+<div class="Normal">This command resets the game and runs the specified main file. This is a good way for showing off unlockable secrets once you beat a game, like playing as the bad guys.<br>
+- file$ is the main file to run.</div><br>
+
+<div class="Code">
+//Example showing some different main files...<br>
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; Mwin("Who would you like to play as?")<br>
+&nbsp;&nbsp; Mwin("1 - the good guys")<br>
+&nbsp;&nbsp; Mwin("2 - the bad guys")<br>
+&nbsp;&nbsp; a! = Wait()<br>
+&nbsp;&nbsp; If(a! == 1)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Run the main file for the good guys...<br>
+&nbsp;&nbsp; &nbsp;&nbsp; MainFile("good.gam")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; If(a! == 2)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Run the main file for the bad guys...<br>
+&nbsp;&nbsp; &nbsp;&nbsp; MainFile("bad.gam")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="maxhp"></a>
+<div class="MinorHeader">NAME: Set Max HP<br>
+FORMAT: MaxHP(handle$, new_maxhp!)</div><br>
+<div class="Normal">This command sets the maximum amount of HP that the player can have.<br>
+- handle$ is the handle of the player. "target" is also a valid handle.<br>
+- new_maxhp! is the new amount of HP that the player can have at max.</div><br>
+
+<div class="Code">
+old_maxhp! = GetMaxHP("Frap")<br>
+Mwin("Frap's old max HP: &#60;old_maxhp!&#62;")<br>
+MaxHP("Frap", old_maxhp!+100)<br>
+new_maxhp! = GetMaxHP("Frap")<br>
+Mwin("Frap's new max HP: &#60;new_maxhp!&#62;")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="maxsmp"></a>
+<div class="MinorHeader">NAME: Set Max SMP<br>
+FORMAT: MaxSMP(handle$, new_maxsmp!)</div><br>
+<div class="Normal">This command sets the maximum amount of SMP that the player can have.<br>
+- handle$ is the handle of the player. "target" is also a valid handle.<br>
+- new_maxsmp! is the new amount of SMP that the player can have at max.</div><br>
+
+<div class="Code">
+old_maxsmp! = GetMaxSMP("Frap")<br>
+Mwin("Frap's old max SMP: &#60;old_maxsmp!&#62;")<br>
+MaxSMP("Frap", old_maxsmp!+100)<br>
+new_maxsmp! = GetMaxSMP("Frap")<br>
+Mwin("Frap's new max SMP: &#60;new_maxsmp!&#62;")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="mediaplay"></a>
+<div class="MinorHeader">NAME: Play a media file<br>
+FORMAT: MediaPlay(filename$)</div><br>
+<div class="Normal">This command plays a media file. It supports the file extensions .mid, .mp3, .wav, and more.<br>
+- filename$ is the filename of the media file to play.</div><br>
+
+<div class="code">
+MediaPlay("Song.mp3")</div><br><br><br>
+
+
+
+<a name="mediastop"></a>
+<div class="MinorHeadeR">NAME: Stop a media file<br>
+FORMAT: MediaStop(filename$)</div><br>
+<div class="Normal">This command stops a media file played with MediaPlay().<br>
+- filename$ is the name of the file to stop.</div><br>
+
+<div class="Code">
+MediaStop("Song.mp3")</div><br><br><br>
+
+
+
+<a name="mem"></a>
+<div class="MinorHeader">NAME: Put a scanned tile on board<br>
+FORMAT: Mem(x!, y!, mem_position!)</div><br>
+<div class="Normal">This command places a tile on the board that has been scanned into memory with the Scan() command.<br>
+- x!,y! are the x and y coordinates to place the tile on. The x and y locations are restricted to what the board is scrolled to, so x! is a value from 1 to 19, and y! is a value from 1 to 11.<br>
+- mem_position! is a numeric value between 1 and 10 stating which tile you would like to load from memory.</div><br>
+
+<div class="Code">
+//Example showing the Scan and Mem commands.<br>
+Scan(3, 8, 1)<br>
+//Save the tile at 3,8 into memory position 1.<br>
+Mem(1,1,1)<br>
+//Now, place that tile at 1,1.</div><br><br><br>
+
+
+
+<a name="menugraphic"></a>
+<div class="MinorHeader">NAME: Change Menu Graphic<br>
+FORMAT: MenuGraphic(graphic$)</div><br>
+<div class="Normal">This command allows you to change the background image of the menu.<br>
+- graphic$ is the filename of the graphic to change it to.</div><br>
+
+<div class="Code">
+MenuGraphic("wow.jpg")</div><br><br><br>
+
+
+
+<a name="method"></a>
+<div class="MinorHeader">NAME: Declare a method<br>
+FORMAT: Method <i>methodName</i>(<i>parameters</i>)</div><br>
+<div class="Normal">The Method command allows you to define a method. Methods, for those who may know Java/C/C++, are similar to functions. For those who aren't familiar with functions, functions are blocks of code that can be executed by typing in one line of code. Using methods, you can extend RPGCode to do even more than it can already by creating your own personalized commands. Commands created with the Method command work in the same exact way that normal commands do. That is to say, methods have names, and you type in the name and parameters (if any are needed) the same way you would with a regular command.<br>
+- <i>methodName</i> is the name of your method. The name of the method should relate to what the method does. Your method name cannot start with a number, cannot be a variable, and cannot be in quotation marks.<br>
+- <i>parameter(s)</i> is the parameter(s) that your method uses. These are just like the parameters of a normal command.</div><br>
+
+<div class="Code">
+//Example of how to create a method<br>
+//that makes a player walk around in circles.<br><br>
+
+Method WalkInCircles(handle$)<br>
+{<br>
+&nbsp;&nbsp; //handle$ is our parameter. It's the name of the player<br>
+&nbsp;&nbsp; //to make walk around in circles.<br><br>
+
+&nbsp;&nbsp; Push("N,NE,E,SE,S,SW,W,NW,N", handle$)<br>
+&nbsp;&nbsp; //Now the player has walked in a circle.<br>
+&nbsp;&nbsp; //It's always a good idea to Kill all variables used in<br>
+&nbsp;&nbsp; //a method when the method is finished. So let's do that...<br>
+&nbsp;&nbsp; Kill(handle$)<br>
+}<br><br>
+
+//Now, we can call the method like this...<br>
+WalkInCircles("Frap")<br>
+//This makes "Frap" walk around in a circle.</div><br><br><br>
+
+
+
+<a name="mid"></a>
+<div class="MinorHeader">NAME: Mid<br>
+FORMAT: dest$ = Mid(string$, start!, length!)</div><br>
+<div class="Normal">Finds characters in a string starting at start! and ending at length!. It then returns it to dest$.<br>
+- string$ is the string of characters to search in.<br>
+- start! is the starting character position.<br>
+- length! is the ending character position.<br>
+- dest$ is the returned string.</div><br>
+
+<div class="Code">
+newString$ = Mid("Awesome", 4, Length("Awesome"))<br>
+Show(newString$)<br>
+//Shows: "some" in the message window.</div><br><br><br>
+
+
+
+<a name="mouseclick"></a>
+<div class="MinorHeader">NAME: Wait for mouse click<br>
+FORMAT: MouseClick(x!, y!, wait!)</div><br>
+<div class="Normal">This command waits for the user to click the mouse, storing the location in x,y. This command is like the Wait command, but the player has to click a button set with the SetButton command instead of pressing a key on the keyboard.<br>
+- x!,y! are the returned x and y coordinates of where the user clicked.<br>
+- wait! is an optional parameter. If it is set to 1, it will not wait for the user.</div><br>
+
+<div class="Code">
+//Set the button...<br>
+SetButton("button1.jpg", 0, 10, 10, 100, 100)<br>
+done! = 0<br>
+//Loop through while done! is equal<br>
+//to it's inital value...<br>
+While(done!)<br>
+{<br>
+&nbsp;&nbsp; MouseClick(mx!, my!)<br>
+&nbsp;&nbsp; dest! = CheckButton(mx!, my!)<br>
+&nbsp;&nbsp; //Check if a button was pressed<br>
+&nbsp;&nbsp; If(dest! == 0)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwin("You pressed a button!")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1 //Break out of the loop<br>
+&nbsp;&nbsp; }<br>
+}<br>
+ClearButtons()</div><br><br><br>
+
+
+
+<a name="mousecursor"></a>
+<div class="MinorHeader">NAME: Change Mouse Cursor<br>
+FORMAT: MouseCursor(file$, x!, y!, r!, g!, b!)</div><br>
+<div class="Normal">This command changes the mouse cursor file.<br>
+- file$ is the filename of the image to use.<br>
+- x!, y! are the x and y coordinates of the cursors hot-spot.<br>
+- r!, g!, b! are the RGB color values to treat as transparent.</div><br>
+
+<div class="code">
+MouseCursor("mouse.jpg", 1, 1, 255, 0, 0)</div><br><br><br>
+
+
+
+<a name="mousemove"></a>
+<div class="MinorHeader">NAME: Wait for mouse move<br>
+FORMAT: MouseMove(x!, y!)</div><br>
+<div class="Normal">This command waits for the user to move the mouse and stores the location in x,y.<br>
+- x!,y! are the returned x and y coordinates of where the mouse moves.</div><br>
+
+<div class="Code">
+//Set the button...<br>
+SetButton("button1.jpg", 0, 10, 10, 100, 100)<br>
+done! = 0<br>
+//Loop through while done! is equal<br>
+//to it's inital value...<br>
+While(done!)<br>
+{<br>
+&nbsp;&nbsp; MouseClick(mx!, my!)<br>
+&nbsp;&nbsp; dest! = CheckButton(mx!, my!)<br>
+&nbsp;&nbsp; //Check if a button was pressed<br>
+&nbsp;&nbsp; If(dest! == 0)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwin("You pressed a button!")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1 //Break out of the loop<br>
+&nbsp;&nbsp; }<br>
+}<br>
+ClearButtons()</div><br><br><br>
+
+
+
+<a name="move"></a>
+<div class="MinorHeader">NAME: Move program<br>
+FORMAT: Move(x!, y![, layer!])</div><br>
+<div class="Normal">This command continues execution of the currently running program, but moves the program to a new location on the board. The next time the player steps on the tile that had this program, nothing will happen. If, however, the player steps on the tile where the program was newly assigned to, the program will run.<br>
+- x!,y! are the coordinates to move the program to. The x and y locations are restricted to what the board is scrolled to, so x! is a value from 1 to 19, and y! is a value from 1 to 11.<br>
+- layer! is an optional parameters specifying what layer to put the program on. If it is left out, layer! is assumed to be layer 1.</div><br>
+
+<div class="Code">
+Move(3, 5, 1)<br>
+//This program will move to 3,5 on layer 1.<br>
+Mwin("Program moved!")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="msgbox"></a>
+<div class="MinorHeader">NAME: Message Box<br>
+FORMAT: dest! = MsgBox(text$[, title$, type!, textColor!, bgColor!, bgPic$])</div><br>
+<div class="Normal">Pops up a message box with a combination of buttons. It then returns a number depending on which button was pressed.<br>
+- text$ is the message to appear in the box.<br>
+- type! is the type of button combintation. Check below the example for a list of combinations.<br>
+- textColor! is the color of the text.<br>
+- bgColor! is the background color of the box.<br>
+- bgPic$ is an optional parameter for a background image in the message box.<br><br>
+
+The different 'types' of message box bottom combinations are as follows:<br>
+0 - diplays 'OK' only.<br>
+1 - displays 'Yes' and 'No'.<br><br>
+
+The returned values are as follows (the returned value depends on what the user pressed):<br>
+'OK' returns 1.<br>
+'Yes' returns 6.<br>
+'No' returns 7.</div><br>
+
+<div class="Code">
+//Shows a message box where you can<br>
+//only choose 'ok'. Heh heh...<br>
+ret! = MsgBox("Aren't these message boxes cool?", "MsgBox", 0)</div><br><br><br>
+
+
+
+<a name="multirun"></a>
+<div class="MinorHeader">NAME: Multi-Run<br>
+FORMAT: MultiRun() { <i>commands</i> }</div><br>
+<div class="Normal">This command runs multiple commands inside it's opening and closing brackets. If used in a thread, it's useful for running a block of code without the thread giving control to another program. It can also be used for various other things, like making NPC's walk simultaneously (the commands aren't executed until Trans3 sees the closing bracket).<br>
+- <i>commands</i> is the block of code to run.</div><br>
+
+<div class="Code">
+//MultiRun() will execute all commands before<br>
+//handing control over to something else.<br>
+MultiRun()<br>
+{<br>
+&nbsp;&nbsp; PushItem(0, "N,N,N,N")<br>
+&nbsp;&nbsp; PushItem(1, "S,S,S,S")<br>
+}</div><br><br><br>
+
+
+
+
+<a name="mwin"></a>
+<div class="MinorHeader">NAME: Message Window<br>
+FORMAT: Mwin(text$)</div><br>
+<div class="Normal">This command displays text in the message window. You can also display the values of variables with Mwin. There are two ways of doing this. The first way is enclosing the variable name in left and right angle brackets (&#60; and &#62;). The second way is closing off your text with a closing quotation mark, putting a plus sign (+) after that, and then the variable name.<br>
+- text$ is the text to be placed in the message window. All text must be in quotation marks.</div><br>
+
+<div class="Code">
+Mwin("This is some text.")<br>
+Wait()<br>
+var! = 5<br>
+Mwin("Now, I'll display a variable: &#60;var!&#62;")<br>
+Wait()<br>
+name$ = Prompt("What's your name?")<br>
+Mwin("Hello, " + name$ + "!")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="mwincls"></a>
+<div class="MinorHeader">NAME: Clear Message Window<br>
+FORMAT: MwinCls()</div><br>
+<div class="Normal">This command clears the message window and it's text from the screen. It's a good idea to use this whenever the message window gets full.</div><br>
+
+<div class="Code">
+Mwin("Hi there.")<br>
+Wait()<br>
+Mwincls()</div><br><br><br>
+
+
+
+<a name="mwinsize"></a>
+<div class="MinorHeader">NAME: Message Window Size<br>
+FORMAT: MwinSize(size!)</div><br>
+<div class="Normal">This command defines the size of the message window.<br>
+- size! is a numeric value that specifies the percentage of the screen that the message window will take up horizontally. The default is 95.</div><br>
+
+<div class="Code">
+Mwin("Text before...")<br>
+Wait()<br>
+Mwincls()<br>
+MwinSize(70)<br>
+Mwin("Text after...")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="new"></a>
+<div class="MinorHeader">NAME: Create new instance<br>
+FORMAT: object = New(handle)</div><br>
+<div class="Normal">This command allows you to create an instance of a class or structure. Instancing a class or structure means that you create an "object" that which lets you use the class'/structs variables or methods.<br>
+- object is the object to access the class'/structs data.<br>
+- handle is the handle (the name) of the class/struct.</div><br>
+
+<div class="Code">
+//Example of a class.<br><br>
+
+//Define the 'Cat' class...<br>
+class Cat<br>
+{<br>
+&nbsp;&nbsp; public:<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // Public data. This can be<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // changed or used just by<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // accessing it.<br><br>
+
+&nbsp;&nbsp; &nbsp;&nbsp; Method SetName(name$) { catName$ = name$ }<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Method Meow()<br><br>
+
+&nbsp;&nbsp; private:<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // Private data. This cannot be<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // changed directly. You need<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // to access this through a<br>
+&nbsp;&nbsp; &nbsp;&nbsp; // method.<br><br>
+
+&nbsp;&nbsp; &nbsp;&nbsp; catName$ //the name of the cat<br>
+}<br><br>
+
+// SetName method<br>
+Method Cat::Meow()<br>
+{<br>
+&nbsp;&nbsp; Mwin("Meeeoooww!")<br>
+&nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; Mwincls()<br>
+}<br><br>
+
+//Create an object for the class ('instance' the class)...<br>
+kitten = New(Cat)<br><br>
+
+//Make the kitten meow...<br>
+kitten->Meow()<br><br>
+
+//Kill the data...<br>
+kitten->Release()</div><br><br><br>
+
+
+
+<a name="newplyr"></a>
+<div class="MinorHeader">NAME: Change player graphics<br>
+FORMAT: NewPlyr(filename$)</div><br>
+<div class="Normal">This command changes the graphics of the player, but doesn't change the stats, or any other traits of the character. This is a good way to have airships, disguise items, and other things.<br>
+- filename$ is the filename of the graphics to use. It must be either a .tem, .cha, or .gph file.</div><br>
+
+<div class="Code">
+Mwin("Out with the old...")<br>
+Wait()<br>
+NewPlyr("awesome.tem")<br>
+Mwin("In with the new!!!")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="onboard"></a>
+<div class="MinorHeader">NAME: Check if player is On Board<br>
+FORMAT: dest! = OnBoard(pNum!)</div><br>
+<div class="Normal">This command checks to see if the player is on the board.<br>
+- pNum! is the slot of the player (0 - 4)<br>
+- dest! is the returned value. 1 is returned if the player is on the board, 0 if not.</div><br>
+
+<div class="Code">
+If(OnBoard(0) == 0)<br>
+{<br>
+&nbsp;&nbsp; PutPlayer(playerHandle[0]$, 3, 5, 1)<br>
+}</div><br><br><br>
+
+
+
+<a name="onerror"></a>
+<div class="MinorHeader">NAME: On Error Go to Label<br>
+FORMAT: On Error Goto :label_name</div><br>
+<div class="Normal">Branches to a label inside of a method when an error occurs. When you branch to an error using the On Error command, do not resume the program normally. Use "Resume Next" to resume the line of code after the error.<br>
+- :label_name is the name of the label to branch to. The labels must be inside of the method and you must not indent the labels.</div><br>
+
+<div class="Code">
+Method FileExists(file$, folder$)<br>
+{<br>
+&nbsp; &nbsp;//Declare the variable 'exists!'<br>
+&nbsp; &nbsp;Local(exists!)<br><br>
+
+&nbsp; &nbsp;//Assume the file exists<br>
+&nbsp; &nbsp;exists! = 1<br><br>
+
+&nbsp; &nbsp;On Error Goto :error<br><br>
+
+&nbsp; &nbsp;//Try to open the file. If it doesn't exist,<br>
+&nbsp; &nbsp;//it will cause an error.<br>
+&nbsp; &nbsp;OpenFileInput(file$, folder$)<br><br>
+
+&nbsp; &nbsp;//Close the file just incase it was opened, but<br>
+&nbsp; &nbsp;//don't trigger another error.<br>
+&nbsp; &nbsp;On Error Resume Next<br>
+&nbsp; &nbsp;CloseFile(file$)<br><br>
+
+&nbsp; &nbsp;//Return the result<br>
+&nbsp; &nbsp;ReturnMethod(exists!)<br><br>
+
+&nbsp; &nbsp;//End the method so the error handler isn't run<br>
+&nbsp; &nbsp;End()<br><br>
+
+:error<br>
+&nbsp; &nbsp;//If we get here, there was an error<br>
+&nbsp; &nbsp;exists! = 0<br>
+&nbsp; &nbsp;Resume Next<br>
+}<br><br>
+
+If(FileExists("SomePrg.prg","Prg") == 1) {<br>
+&nbsp;&nbsp; Mwin("There was no error!")<br>
+}<br>
+Else() {<br>
+&nbsp;&nbsp; Debugger("Error opening file!")<br>
+}</div><br><br><br>
+
+
+
+<a name="onerrorresume"></a>
+<div class="MinorHeader">NAME: On Error Resume Next<br>
+FORMAT: On Error Goto :label_name</div><br>
+<div class="Normal">If you use this command, any errors after this line of code will be "nullified" per se. It will act as if there was no error and resume the next line of code.</div><br>
+
+<div class="Code">
+Method FileExists(file$, folder$)<br>
+{<br>
+&nbsp; &nbsp;//Declare the variable 'exists!'<br>
+&nbsp; &nbsp;Local(exists!)<br><br>
+
+&nbsp; &nbsp;//Assume the file exists<br>
+&nbsp; &nbsp;exists! = 1<br><br>
+
+&nbsp; &nbsp;On Error Goto :error<br><br>
+
+&nbsp; &nbsp;//Try to open the file. If it doesn't exist,<br>
+&nbsp; &nbsp;//it will cause an error.<br>
+&nbsp; &nbsp;OpenFileInput(file$, folder$)<br><br>
+
+&nbsp; &nbsp;//Close the file just incase it was opened, but<br>
+&nbsp; &nbsp;//don't trigger another error.<br>
+&nbsp; &nbsp;On Error Resume Next<br>
+&nbsp; &nbsp;CloseFile(file$)<br><br>
+
+&nbsp; &nbsp;//Return the result<br>
+&nbsp; &nbsp;ReturnMethod(exists!)<br><br>
+
+&nbsp; &nbsp;//End the method so the error handler isn't run<br>
+&nbsp; &nbsp;End()<br><br>
+
+:error<br>
+&nbsp; &nbsp;//If we get here, there was an error<br>
+&nbsp; &nbsp;exists! = 0<br>
+&nbsp; &nbsp;Resume Next<br>
+}<br><br>
+
+If(FileExists("SomePrg.prg","Prg") == 1) {<br>
+&nbsp;&nbsp; Mwin("There was no error!")<br>
+}<br>
+Else() {<br>
+&nbsp;&nbsp; Debugger("Error opening file!")<br>
+}</div><br><br><br>
+
+
+
+<a name="openfileappend"></a>
+<div class="MinorHeader">NAME: Open File in Append mode<br>
+FORMAT: OpenFileAppend(file$, folder$)</div><br>
+<div class="Normal">Opens a file in append mode. Append mode writes to the end of a file specified by file$. If the file does not exist, it will be created.<br>
+- file$ is the file to open.<br>
+- folder$ is the game folder to get the file from.</div><br>
+
+<div class="Code">
+OpenFileAppend("start.brd","Boards") //Opens a file in 'append mode'<br>
+CloseFile("start.brd") //Close the file</div><br><br><br>
+
+
+
+<a name="openfilebinary"></a>
+<div class="MinorHeader">NAME: Open File in Binary mode<br>
+FORMAT: OpenFileBinary(file$, folder$)</div><br>
+<div class="Normal">Opens a file in binary mode. Binary mode accesses a file as binary. If the file does not exist, it will be created.<br>
+- file$ is the file to open.<br>
+- folder$ is the game folder to get the file from.</div><br>
+
+<div class="Code">
+OpenFileBinary("start.brd","Boards") //Opens a file in 'binary mode'<br>
+CloseFile("start.brd") //Close the file</div><br><br><br>
+
+
+
+<a name="openfileinput"></a>
+<div class="MinorHeader">NAME: Open File in Input mode<br>
+FORMAT: OpenFileInput(file$, folder$)</div><br>
+<div class="Normal">Opens a file in input mode. Input mode reads blocks of code in a program starting from the top and ending at a line break (a space between two blocks of code).<br>
+- file$ is the file to open.<br>
+- folder$ is the game folder to get the file from.</div><br>
+
+<div class="Code">
+OpenFileInput("start.brd","Boards") //Opens a file in 'input mode'<br>
+CloseFile("start.brd") //Close the file</div><br><br><br>
+
+
+
+<a name="openfileoutput"></a>
+<div class="MinorHeader">NAME: Open File in Output mode<br>
+FORMAT: OpenFileOutput(file$, folder$)</div><br>
+<div class="Normal">Opens a file in output mode. Output mode overwrites any existing data in the file. If the file does not exist, it will be created.<br>
+- file$ is the file to open.<br>
+- folder$ is the game folder to get the file from.</div><br>
+
+<div class="Code">
+OpenFileOutput("start.brd","Boards") //Opens a file in 'output mode'<br>
+CloseFile("start.brd") //Close the file</div><br><br><br>
+
+
+
+<a name="over"></a>
+<div class="MinorHeader">NAME: Game Over<br>
+FORMAT: Over()</div><br>
+<div class="Normal">This command displays a "game over" message in the message window and waits for the user to press a key, then resets the game back to the main file. If you wish to spruce up the game over, you may want to add your own effects and use Reset() to restart the game.</div><br>
+
+<div class="Code">
+//uh-oh, you lost the game!<br>
+Over()<br>
+//This will show a "game over" message,<br>
+//wait for the user to press a key,<br>
+//then restart the game.</div><br><br><br>
+
+
+
+<a name="pathfind"></a>
+<div class="MinorHeader">NAME: Path Find<br>
+FORMAT: PathFind(x1!, y1!, x2!, y2![, dest$])</div><br>
+<div class="Normal">Calculates the shortest path from points x1 and y1 to x2 and y2, then returns the path to dest$ to be used in #Push or #PushItem.<br>
+- x1!, y1! are the starting x and y coordinates (tile based).<br>
+- x2!, y2! are the ending coordinates, where the player will end up standing.<br>
+- dest$ is the returned value. The coordinates are placed in this.</div><br>
+
+<div class="Code">
+dest$ = PathFind(1,1,5,1)<br>
+//Returns the string "W,W,W,W" and stores it in dest$<br>
+Push(dest$,"Frap") //Pushes Frap to coords 5 x and 1 y</div><br><br><br>
+
+
+
+<a name="pixelmovement"></a>
+<div class="MinorHeader">NAME: Pixel Movement<br>
+FORMAT: PixelMovement(ON/OFF)</div><br>
+<div class="Normal">This command turns pixel movement for players and items on and off.<br>
+- ON/OFF is a literal value that can be either "ON" or "OFF".</div><br>
+
+<div class="Code">
+PixelText("on")</div><br><br><br>
+
+
+
+<a name="pixeltext"></a>
+<div class="MinorHeader">NAME: Pixel Text<br>
+FORMAT: PixelText(x!, y!, text$[, cnvId!])</div><br>
+<div class="Normal">This command displays text on the screen the same way the Text() command does, except it uses pixel coordinates. The color of the text is defined with the ColorRGB() command.<br>
+- x!,y! are the x and y coordinates on the screen to place the text.<br>
+- text$ is the text to display on the screen.<br>
+- cnvId! is an optional parameter to draw the text to a canvas.</div><br>
+
+<div class="Code">
+PixelText(100, 100, "This text is at the pixel coordinates: 100, 100")</div><br><br><br>
+
+
+
+<a name="playavi"></a>
+<div class="MinorHeader">NAME: Play Avi (full screen)<br>
+FORMAT: PlayAvi(filename$)</div><br>
+<div class="Normal">This command plays a full screen .avi file. It's always a good idea to stop any music in the background with MidiRest() before playing an avi file.<br>
+- filename$ is the filename of the .avi file to play.</div><br>
+
+<div class="Code">
+MidiRest()<br>
+PlayAvi("movie.avi")</div><br><br><br>
+
+
+
+<a name="playavismall"></a>
+<div class="MinorHeader">NAME: Play Avi (window)<br>
+FORMAT: PlayAviSmall(filename$)</div><br>
+<div class="Normal">This command plays a .avi file in a window. It's always a good idea to stop any music in the background with MidiRest() before playing an avi file.<br>
+- filename$ is the filename of the .avi file to play.</div><br>
+
+<div class="Code">
+MidiRest()<br>
+PlayAviSmall("movie.avi")</div><br><br><br>
+
+
+
+<a name="playerspeed"></a>
+<div class="MinorHeader">NAME: Set Character Speed<br>
+FORMAT: PlayerSpeed(num!, speed!)</div><br>
+<div class="Normal">This command allows you to set the walk speed of a specific character on the board. The character must be in your party.<br>
+- num! is the number of the item.<br>
+- speed! is the speed of the item.</div><br>
+
+<div class="Code">
+PutPlayer("Frap", 3, 5)<br>
+PlayerSpeed(0, 2)</div><br><br><br>
+
+
+
+<a name="playerstance"></a>
+<div class="MinorHeader">NAME: Player Stance<br>
+FORMAT: PlayerStance(slot!, stance$)</div><br>
+<div class="Normal">This command allows you to put the player in any stance. Their stances are the custom postures and animations set in the character editor.<br>
+- slot! is the player slot (0 for player 1, 1 for player 2, etc.).<br>
+- stance$ is the stance to use.</div><br>
+
+<div class="Code">
+//Put the player in a 'sleeping' position<br>
+PlayerStance(0, "sleeping")</div><br><br><br>
+
+
+
+<a name="playerstep"></a>
+<div class="MinorHeader">NAME: Player Step<br>
+FORMAT: PlayerStep(handle$, x!, y!)</div><br>
+<div class="Normal">This command makes the player take a step towards x,y. It automatically calculates the shortest path and steps in that direction.<br>
+- handle$ is the handle of the player to move.<br>
+- x!,y! are the x and y coordinates to move the player toward.</div><br>
+
+<div class="Code">
+PlayerStep("Frap", 4, 4)</div><br><br><br>
+
+
+
+<a name="posture"></a>
+<div class="MinorHeader">NAME: Show custom Posture<br>
+FORMAT: Posture(posture_num!, handle$)</div><br>
+<div class="Normal">This command shows a custom posture of the character. In the character editor, you can create your own postures. This command shows them.<br>
+- posture_num! is a numeric value between 0 and 10.<br>
+- handle$ is an optional parameter. By default, it is the main player, but you may specify differently.</div><br>
+
+<div class="Code">
+//Cycle through postures 0-3.<br>
+For(pos! = 0; pos! <= 3; pos!++)<br>
+{<br>
+&nbsp;&nbsp; Posture(pos!, "Frap")<br>
+}</div><br><br><br>
+
+
+
+<a name="prg"></a>
+<div class="MinorHeader">NAME: Move program<br>
+FORMAT: Prg(filename$, x!, y![, layer!])</div><br>
+<div class="Normal">This command moves a program to a new location on the board. The change only remains in effect while the player is on the board.<br>
+- filename$ is the filename of the program to move. Alternatively, you may use a numeric value for the item number (specified in the program menu).<br>
+- x!,y! are the x and y coordinates to move the program to. The x and y locations are restricted to what the board is scrolled to, so x! is a value from 1 to 19, and y! is a value from 1 to 11.<br>
+- layer! is an optional parameter that specifies which layer to move the program to. If you leave it blank, it is assumed to be layer 1.</div><br>
+
+<div class="Code">
+Prg("test.prg", 5, 5, 1)<br>
+//Program "test.prg" was moved.</div><br><br><br>
+
+
+
+<a name="prompt"></a>
+<div class="MinorHeader">NAME: Prompt the user<br>
+FORMAT: dest$ = Prompt(question$)</div><br>
+<div class="Normal">This command brings up the prompt window and asks the user a question. It will stay there until the user types in a response, which will be stored in dest$.<br>
+- question$ is the question to prompt the player with.<br>
+- dest$ is the returned answer from the player.</div><br>
+
+<div class="Code">
+//Example showing the prompt command.<br>
+//This asks the user for their name, and<br>
+//places the answer in name$<br>
+name$ = Prompt("What's your name?")<br>
+Mwin("Hello, &#60;name$&#62;!")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="push"></a>
+<div class="MinorHeader">NAME: Push<br>
+FORMAT: Push(direction$, handle$)</div><br>
+<div class="Normal">Pushes a player around the screen in the specified directions. For Push to work, the player must be on the board, and they must be in your team at the time. The directions allowed are the following:<br>
+- "N", "NORTH", and "1" all push the player north.<br>
+- "S", "SOUTH", and "2" all push the player south.<br>
+- "E", "EAST", and "3" all push the player east.<br>
+- "W", "WEST", and "4" all push the player west.<br>
+- "NE", "NORTHEAST", and "5" all push the player north-east.<br>
+- "NW", "NORTHWEST", and "6" all push the player north-west.<br>
+- "SE", "SOUTHEAST", and "7" all push the player south-east.<br>
+- "SW", "SOUTHWEST", and "8" all push the player south-west.<br>
+- handle$ is the handle of the player to push.</div><br>
+
+<div class="BoxedText">By default, the value of handle$ is "Target" which is the player you are currently using. This means that if you leave handle$ out, it pushes the player that you see walking around when you play a game.<br><br>
+
+All directions must be inside quotation marks (" ") and must be separated by a comma (,). Different types of directions are allowed to be mixed. This means that you are allowed to have this as the directions: "N, SOUTH, 3, 1, NE, SW".</div><br>
+
+<div class="Code">
+PutPlayer("Frap",3,5,1)<br>
+Mwin("Frap: Hey, watch me walk diagonally.")<br>
+Wait()<br>
+Mwincls()<br>
+Push("NE,NE,SW,SE", "Frap") //Pushes Frap diagonally<br>
+Mwin("Frap: Now, I'll walk in a circle!")<br>
+Wait()<br>
+Mwincls()<br>
+Push("S,SE,E,NE,N,NW,W,SW", "Frap")</div><br><br><br>
+
+
+
+<a name="pushitem"></a>
+<div class="MinorHeader">NAME: Push Item<br>
+FORMAT: PushItem(itemNum!, direction$)</div><br>
+<div class="Normal">Pushes an item around the screen in the specified directions. For PushItem to work, the item must be on the board.<br>
+- itemNum! is the number of the item to push.<br>
+The directions allowed are the following:<br>
+- "N", "NORTH", and "1" all push the item north.<br>
+- "S", "SOUTH", and "2" all push the item south.<br>
+- "E", "EAST", and "3" all push the item east.<br>
+- "W", "WEST", and "4" all push the item west.<br>
+- "NE", "NORTHEAST", and "5" all push the item north-east.<br>
+- "NW", "NORTHWEST", and "6" all push the item north-west.<br>
+- "SE", "SOUTHEAST", and "7" all push the item south-east.<br>
+- "SW", "SOUTHWEST", and "8" all push the item south-west.</div><br>
+
+<div class="BoxedText">All directions must be inside quotation marks (" ") and must be separated by a comma (,). Different types of directions are allowed to be mixed. This means that you are allowed to have this as the directions: "N, SOUTH, 3, 1, NE, SW".</div><br>
+
+<div class="Code">
+CreateItem("OldMan.itm",pos!)<br>
+PutItem(pos!,1,1,1)<br>
+Mwin("Old Man: Watch me walk around!")<br>
+Wait()<br>
+Mwincls()<br>
+PushItem(pos!,"SW,SW,1,3,NORTH,SOUTHWEST")<br>
+EraseItem(pos!)<br>
+DestroyItem(pos!)</div><br><br><br>
+
+
+
+<a name="putitem"></a>
+<div class="MinorHeader">NAME: Put Item on the Board<br>
+FORMAT: PutItem(item_num!, x!, y!, layer!)</div><br>
+<div class="Normal">This command places an item on the board at the specified x,y,layer coordinates. This command in useful in conjuntion with the CreateItem() command for making NPC's that walk around and talk in story sequences.<br>
+- item_num! is the number of the item specified in the board editor, or with the CreateItem() command.<br>
+- x!,y!,layer! are the x, y, and layer coordinates to place the item.</div><br>
+
+<div class="Code">
+CreateItem("soldier.itm", pos!) //Load the item into a slot<br>
+PutItem(pos!, 3, 2, 1) //Put the item on the board<br>
+PushItem(pos!, "E,E,E") //Push the item east three times<br>
+Mwin("Hi! Bye!")<br>
+Wait()<br>
+EraseItem(pos!) //Erase the item from the board<br>
+DestroyItem(pos!) //Remove the item from memory</div><br><br><br>
+
+
+
+<a name="putplayer"></a>
+<div class="MinorHeader">NAME: Put Player on the Board<br>
+FORMAT: PutPlayer(handle$, x!, y!, layer!)</div><br>
+<div class="Normal">This command place a player on the board at the specified x,y,layer coordinates. When used in conjuntion with the Push() and ErasePlayer() commands, can make story senquences where characters can enter and leave the scene.<br>
+- handle$ is the handle of the player to put on the board. The player must be in your party at the time.<br>
+- x!,y!,layer! are the x, y, and layer coordinates to place the character.</div><br>
+
+<div class="Code">
+//Short story sequence in which Frap and Tano interact.<br>
+//Frap is the main character and is already on the board.<br>
+//Let's say he's at 5,5. We'll have Tano emerge from<br>
+//this location.<br><br>
+
+PutPlayer("Tano", 5, 5, 1)<br>
+Push("E,E,W", "Tano")<br>
+Mwin("Tano: Well, here we are in some strange RPGCode story sequence.")<br>
+Wait()<br>
+Mwincls()<br>
+Mwin("Frap: Watch this!")<br>
+Wait()<br>
+Mwincls()<br>
+Push("N,E,E,S", "Frap")<br>
+Mwin("Tano: Wow, that's really great. You can walk. Now I'm going")<br>
+Mwin("to walk toward you and vanish into your chest somehow.")<br>
+Wait()<br>
+Mwincls()<br>
+Mwin("Frap: Cool.")<br>
+Wait()<br>
+Mwincls()<br>
+Push("E", "Tano")<br>
+ErasePlayer("Tano")</div><br><br><br>
+
+
+
+<a name="random"></a>
+<div class="MinorHeader">NAME: Generate random number<br>
+FORMAT: dest! = Random(range!)</div><br>
+<div class="Normal">This command generates a random number between 1 and the specified range. For example, if range! were 100, then it would be a number between 1 and 100.<br>
+- range! is the range of the number.<br>
+- dest! is the returned number.</div><br>
+
+<div class="Code">
+For(num! = 1; num! <= 5; num!++)<br>
+{<br>
+&nbsp;&nbsp; //Generate a random number...<br>
+&nbsp;&nbsp; res! = Random(100)<br>
+&nbsp;&nbsp; Show(res!)<br>
+}</div><br><br><br>
+
+
+
+<a name="redirect"></a>
+<div class="MinorHeader">NAME: Redirect method<br>
+FORMAT: Redirect(old_method$, new_method$)</div><br>
+<div class="Normal">This command creates a redirection from one method to another. When you create a redirection, it will allow you to use new_method$ and new_method$ will do whatever old_method$ did.<br>
+- old_method$ is the method or command to redirect.<br>
+- new_method$ is the method for old_method$ to be redirected to.</div><br>
+
+<div class="Code">
+Redirect("Mwin", "customMwin")<br>
+//Now, all Mwin commands will be<br>
+//redirected to customMwin.</div><br><br><br>
+
+
+
+<a name="remove"></a>
+<div class="MinorHeader">NAME: Remove equipment<br>
+FORMAT: Remove(handle$, body_position!)</div><br>
+<div class="Normal">This command removes equipment from the player and returns it to the equipment inventory.<br>
+- handle$ is the handle of the player to remove equipment from.<br>
+- body_position! is a numeric value between 1 and 16. Legal positions are:<br>
+1 - Head<br>
+2 - Neck accessory<br>
+3 - Right hand<br>
+4 - Left hand<br>
+5 - Body<br>
+6 - Legs<br>
+7 to 16 - accessories 1 through 10.</div><br>
+
+<div class="Code">
+//Remove the sword on Frap's right hand<br>
+Remove("Frap", 4)</div><br><br><br>
+
+
+
+<a name="removeplayer"></a>
+<div class="MinorHeader">NAME: Remove player from team<br>
+FORMAT: RemovePlayer(handle$)</div><br>
+<div class="Normal">This command removes one player from your party. There is a maximum of five players at one time. Unlike DestroyPlayer(), this command allows you to bring the player back in using CallPlayerSwap() or RestorePlayer().<br>
+- handle$ is the handle of the player to remove.</div><br>
+
+<div class="Code">
+//Remove Tano from the team<br>
+RemovePlayer("Tano")</div><br><br><br>
+
+
+
+<a name="removestatus"></a>
+<div class="MinorHeader">NAME: Remove status effect<br>
+FORMAT: RemoveStatus(handle$, file$)</div><br>
+<div class="Normal">This command removes a status effect from the player or enemy.<br>
+- handle$ is the handle of the player or enemy. "target" and "source" are valid handles.<br>
+- file$ is the filename of the status effect to remove.</div><br>
+
+<div class="Code">
+RemoveStatus("target", "poison.ste")</div><br><br><br>
+
+
+
+<a name="rendernow"></a>
+<div class="MinorHeader">NAME: Render Screen<br>
+FORMAT: RenderNow(on/off)</div><br>
+<div class="Normal">When you start a game with the Toolkit, a canvas is created called 'cnvRenderNow!'. This command will constantly render that canvas, meaning you can constantly render custom HP bars for a real-time effect, and other things. Note that this command only works for the cnvRenderNow! canvas.<br>
+- on/off can either be on or off.</div><br>
+
+<div class="Code">
+RenderNow(on)</div><br><br><br>
+
+
+
+<a name="replace"></a>
+<div class="MinorHeader">NAME: Replace<br>
+FORMAT: dest$ = Replace(expression$, find$, replace$)</div><br>
+<div class="Normal">The Replace command replaces the specified character(s) in find$ with replace$. It then returns the string to dest$.<br>
+- expression$ is the string of text in which to find the characters defined with find$.<br>
+- find$ are the characters in expression$ to replace.<br>
+- replace$ is what will replace the characters in find$.<br>
+- dest$ is the returned string of characters.</div><br>
+
+<div class="Code">
+var$ = "newVar$"<br>
+Show(var$) //Shows the value "newVar$"<br>
+dest$ = Replace(var$, "$", "!=1")<br>
+RPGCode(dest$)<br>
+Show(newVar!) //Shows the value 1<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="reset"></a>
+<div class="MinorHeader">NAME: Reset to startup<br>
+FORMAT: Reset()</div><br>
+<div class="Normal">This command resets your game, losing all unsaved game information and returns to the startup screen.</div><br>
+
+<div class="Code">
+//Example using Reset()<br>
+Mwin("Reset the game.")<br>
+Mwin("Are you sure? [Y/N]")<br>
+yn$ = Wait()<br>
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; If(yn$ == "y") { Reset() }<br>
+&nbsp;&nbsp; If(yn$ == "n")<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Break out of the loop.<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+
+<a name="restoreplayer"></a>
+<div class="MinorHeader">NAME: Restore Player<br>
+FORMAT: RestorePlayer(handle$)</div><br>
+<div class="Normal">This command brings a player back into your team that has been removed with RemovePlayer(). The stats and level of the player are the same as they were when the player was removed.<br>
+- handle$ is the name of the player to add back to your team.</div><br>
+
+<div class="Code">
+//Add, remove, and restore a player<br>
+AddPlayer("Tano.tem")<br>
+RemovePlayer("Tano.tem")<br>
+RestorePlayer("Tano.tem")</div><br><br><br>
+
+
+
+<a name="restorescreen"></a>
+<div class="MinorHeader">NAME: Restore screen<br>
+FORMAT: RestoreScreen([x1!, y1!, x2!, y2!, xdest!, ydest!])</div><br>
+<div class="Normal">Restores the screen to the way it was when you used the SaveScreen() command. All parameters are optional. If you leave them out, it will restore the entire screen.<br>
+- x1!,y1! are the starting coordinates (from left and from top) on the screen to draw from.<br>
+- x2!,y2! are the ending coordinates on the screen to draw from.<br>
+- xdest!,ydest! are the top-left coordinates to draw to.</div><br>
+
+<div class="Code">
+SaveScreen()<br>
+RestoreScreen()</div><br><br><br>
+
+
+
+<a name="restorescreenarray"></a>
+<div class="MinorHeader">NAME: Restore Screen Array<br>
+FORMAT: RestoreScreenArray(pos![, x1!, y1!, x2!, y2!, xdest!, ydest!])</div><br>
+<div class="Normal">Restores a screen from the screen buffer array. All parameters after pos! are optional. If you leave them out, it will restore the entire screen from the buffer position.<br>
+- pos! is the array position to restore the screen from.<br>
+- x1!,y1! are the starting coordinates (from left and from top) on the screen (in pixels) to draw from.<br>
+- x2!,y2! are the ending coordinates on the screen to draw from.<br>
+- xdest!,ydest! are the coordinates to draw to.</div><br>
+
+<div class="Code">
+SaveScreen(0) //Save the screen...<br>
+Push("W,N,N,N") //Now change the screen by pushing the character.<br>
+RestoreScreenArray(0) //Restore the entire screen.<br>
+</div><br><br><br>
+
+
+
+<a name="resumenext"></a>
+<div class="MinorHeader">NAME: Resume Next Line<br>
+FORMAT: Resume Next</div><br>
+<div class="Normal">Resumes the next line of code after branching to a label with On Error. </div><br>
+
+<div class="Code">
+Method FileExists(file$, folder$)<br>
+{<br>
+&nbsp; &nbsp;//Declare the variable 'exists!'<br>
+&nbsp; &nbsp;Local(exists!)<br><br>
+
+&nbsp; &nbsp;//Assume the file exists<br>
+&nbsp; &nbsp;exists! = 1<br><br>
+
+&nbsp; &nbsp;On Error Goto :error<br><br>
+
+&nbsp; &nbsp;//Try to open the file. If it doesn't exist,<br>
+&nbsp; &nbsp;//it will cause an error.<br>
+&nbsp; &nbsp;OpenFileInput(file$, folder$)<br><br>
+
+&nbsp; &nbsp;//Close the file just incase it was opened, but<br>
+&nbsp; &nbsp;//don't trigger another error.<br>
+&nbsp; &nbsp;On Error Resume Next<br>
+&nbsp; &nbsp;CloseFile(file$)<br><br>
+
+&nbsp; &nbsp;//Return the result<br>
+&nbsp; &nbsp;ReturnMethod(exists!)<br><br>
+
+&nbsp; &nbsp;//End the method so the error handler isn't run<br>
+&nbsp; &nbsp;End()<br><br>
+
+:error<br>
+&nbsp; &nbsp;//If we get here, there was an error<br>
+&nbsp; &nbsp;exists! = 0<br>
+&nbsp; &nbsp;Resume Next<br>
+}<br><br>
+
+If(FileExists("SomePrg.prg","Prg") == 1) {<br>
+&nbsp;&nbsp; Mwin("There was no error!")<br>
+}<br>
+Else() {<br>
+&nbsp;&nbsp; Debugger("Error opening file!")<br>
+}</div><br><br><br>
+
+
+
+<a name="return"></a>
+<div class="MinorHeader">NAME: Return the screen to normal<br>
+FORMAT: Return()</div><br>
+<div class="Normal">This command returns the screen to what it was before the program started, removing all text and graphics that may have been set during the program. This is often used in conjunction with the clear command.</div><br>
+
+<div class="Code">
+Clear()<br>
+Mwin("The screen is cleared.")<br>
+Mwin("Press a button to return the screen.")<br>
+Wait()<br>
+Return()</div><br><br><br>
+
+
+
+<a name="returnmethod"></a>
+<div class="MinorHeader">NAME: Return method data<br>
+FORMAT: ReturnMethod(variable$ or variable!)</div><br>
+<div class="Normal">This command returns a value from a method to a variable. This is very useful for returning information to the user for specifying what a certain value is, did an action fail or not, and many other things. For more information on returning values, please take a look at the Methods section of the RPGCode Primer.<br>
+- variable$ or variable! is a value that can either be literal or numerical.</div><br>
+
+<div class="Code">
+//Example using ReturnMethod()<br>
+//We'll create a method that adds two numbers<br>
+//together and return the value to add_dest!<br><br>
+
+Method Add(add_num!, add_num2!)<br>
+{<br>
+&nbsp;&nbsp; ReturnMethod(add_num! + add_num2!)<br>
+&nbsp;&nbsp; Kill(add_num!, add_num2!)<br>
+}<br><br>
+
+//Now, we'll call the method and show the result<br>
+//in the message window.<br>
+num! = Add(4, 1)<br>
+Mwin("4 + 1 = &#60;num!&#62;")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="right"></a>
+<div class="MinorHeader">NAME: Right<br>
+FORMAT: dest$ = Right(text$, amount!)</div><br>
+<div class="Normal">This command takes characters from the right side of a string, and returns it to dest$.<br>
+- text$ is the text to take characters from.<br>
+- amount! is the number of characters to take from the right side of text$.<br>
+- dest$ is the returned sub-string.</div><br>
+
+<div class="Code">
+Show( Left("I love you!", 4) + "athe" + Right("I love you!", 5) )<br>
+//Result: "I loathe you!"<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="rpgcode"></a>
+<div class="MinorHeader">NAME: RPGCode<br>
+FORMAT: RPGCode(data$)</div><br>
+<div class="Normal">The most versatile of all RPGCode commands, RPGCode() allows you to run an RPGCode command, create complex and advanced functions, and much more.<br>
+- data$ is the data to pass in to RPGCode() and run. This must be a literal value.</div><br>
+
+<div class="Code">
+//Example using RPGCode()<br>
+//This will allow the user to create<br>
+//a multi-dimensional array using a<br>
+//method.<br><br>
+
+Method NewMultiArray(varName$, n!, n2!, value$)<br>
+{<br>
+&nbsp;&nbsp; RPGCode(varName$ + "[" + CastLit(n!) + "][" + CastLit(n2!) + "]$ = value$")<br>
+}<br><br>
+
+//Now, call the method...<br>
+NewMultiArray("test", 0, 1, "hello")<br>
+Show(test[0][1]$) //This will show "hello"</div><br><br><br>
+
+
+
+<a name="run"></a>
+<div class="MinorHeader">NAME: Run program<br>
+FORMAT: Run(file$)</div><br>
+<div class="Normal">This command runs an RPGCode program internally from the currently running program. This is useful for breaking up larger programs into smaller pieces.<br>
+- file$ is the filename of the RPGCode program to run.</div><br>
+
+<div class="Code">
+Mwin("This is program 1!")<br>
+Mwin("Press a button to run program 2.")<br>
+Wait()<br>
+Run("another.prg")</div><br><br><br>
+
+
+
+<a name="save"></a>
+<div class="MinorHeader">NAME: Save game<br>
+FORMAT: Save(file$)</div><br>
+<div class="Normal">Throughout the game, the player has a chance to save his/her game if they want to resume playing later. This is done through a program that has the Save() command. The Save() command saves a game to the \saved\ folder.<br>
+- file$ is the filename of the game to save.</div><br>
+
+<div class="Code">
+//This will load a saved game.<br>
+file$ = DirSav()<br>
+//Show the saved games and store the selected<br>
+//file in file$<br>
+If(file$ ~= "CANCEL")<br>
+{<br>
+&nbsp;&nbsp; Save(file$)<br>
+}<br>
+//If a file was selected, load the file.</div><br><br><br>
+
+
+
+<a name="savescreen"></a>
+<div class="MinorHeader">NAME: Save Screen<br>
+FORMAT: SaveScreen([pos!])</div><br>
+<div class="Normal">This saves a screen into the save screen buffer. In TK2, you could only save one screen. However, you can now save as many screens as you want.<br>
+- pos! is the buffer position to save the screen to.</div><br>
+
+<div class="Code">
+SaveScreen(0) //Save the screen...<br>
+Push("W,N,N,N") //Now change the screen by pushing the character.<br>
+RestoreScreenArray(0) //Restore the entire screen.<br>
+</div><br>
+
+<div class="boxedtext">Remember: Do not save too many screens at one time. As the screen buffer stores more memory, it will slow down the game.</div><br><br><br>
+
+
+
+<a name="scan"></a>
+<div class="MinorHeader">NAME: Scan tile<br>
+FORMAT: Scan(x!, y!, mem_pos!)</div><br>
+<div class="Normal">This command scans a tile on the board and saves it into a memory slot. This tile can later be accessed using the Mem() command.<br>
+- x!,y! are the x and y coordinates of the tile to save.<br>
+- mem_pos! is a numeric value from 1 to 10 to save the tile to.</div><br>
+
+<div class="Code">
+//Example showing the Scan and Mem commands.<br>
+Scan(3, 8, 1)<br>
+//Save the tile at 3,8 into memory position 1.<br>
+Mem(1,1,1)<br>
+//Now, place that tile at 1,1.</div><br><br><br>
+
+
+
+<a name="send"></a>
+<div class="MinorHeader">NAME: Send player to board<br>
+FORMAT: Send(board$, x!, y![, layer!])</div><br>
+<div class="Normal">This command loads a new board and places the character at the specified x and y coordinates. This is a very useful command for making doors to rooms and other such things.<br>
+- board$ is the filename of the board to send the player to.<br>
+- x!,y! are the x and y coordinates on the board to place the character.<br>
+- layer! is an optional parameter specifying which layer to put the player on. If left out, it will assume that the layer is layer 1.</div><br>
+
+<div class="Code">
+//Send the player to a new board<br>
+//when they walk up to a door...<br>
+Send("house.brd", 6, 8, 1)</div><br><br><br>
+
+
+
+<a name="setbutton"></a>
+<div class="MinorHeader">NAME: SetButton<br>
+FORMAT: SetButton(file$, pos!, x!, y!, width!, height!)</div><br>
+<div class="Normal">This command places a button on the screen. In conjunction with the CheckButton and MouseClick commands, you can make working, clickable buttons for menus, and other things.<br>
+- file$ is the filename of the button to set on the screen.<br>
+- pos! is the 'slot' position to set the button in.<br>
+- x!,y! are the x and y coordinates on the screen to place the button.<br>
+- width!,height! are the width and height of button.</div><br>
+
+<div class="Code">
+//Set the button...<br>
+SetButton("button1.jpg", 0, 10, 10, 100, 100)<br>
+done! = 0<br>
+//Loop through while done! is equal<br>
+//to it's inital value...<br>
+While(done!)<br>
+{<br>
+&nbsp;&nbsp; MouseClick(mx!, my!)<br>
+&nbsp;&nbsp; dest! = CheckButton(mx!, my!)<br>
+&nbsp;&nbsp; //Check if a button was pressed<br>
+&nbsp;&nbsp; If(dest! == 0)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwin("You pressed a button!")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Wait()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1 //Break out of the loop<br>
+&nbsp;&nbsp; }<br>
+}<br>
+ClearButtons()</div><br><br><br>
+
+
+
+<a name="setconstants"></a>
+<div class="MinorHeader">NAME: Set Constants<br>
+FORMAT: SetConstants()</div><br>
+<div class="Normal">Updates the values of the constants in the RPGToolkit. The 'constants' are the reserved variables which are automatically created for you. For a list of the reserved variables, check the RPGCode Primer.</div><br>
+
+<div class="Code">
+//A useful example of using the SetConstants() command.<br>
+//Updates the player location and returns it to you.<br>
+Method GetPlayerCoords(slot!, px!, py!)<br>
+{<br>
+&nbsp;&nbsp; SetConstants()<br>
+&nbsp;&nbsp; px! = playerx[slot!]!<br>
+&nbsp;&nbsp; py! = playery[slot!]!<br>
+&nbsp;&nbsp; ReturnMethod(px!)<br>
+&nbsp;&nbsp; ReturnMethod(py!)<br>
+&nbsp;&nbsp; Kill(slot!, px!, py!)<br>
+}</div><br><br><br>
+
+
+
+<a name="setimage"></a>
+<div class="MinorHeader">NAME: Set Image<br>
+FORMAT: SetImage(file$, x!, y!, width!, height![, cnv!])</div><br>
+<div class="Normal">This command sets an image on the screen.<br>
+- file$ is the filename of the image.<br>
+- x!,y! are the x and y coordinates on the screen to place the image.<br>
+- width!,height! are the width and height of the image.<br>
+- cnv! is an optional parameter for drawing the image to a canvas.</div><br>
+
+<div class="Code">
+SetImage("Wow.jpg", 0, 0, 600, 300)</div><br><br><br>
+
+
+
+<a name="setimageadditive"></a>
+<div class="MinorHeader">NAME: Set Image Additive<br>
+FORMAT: SetImageAdditive(file$, x!, y!, width!, height!, percent![, cnv!])</div><br>
+<div class="Normal">This command sets an image on the screen with an additive attribute for translucency.<br>
+- file$ is the filename of the image.<br>
+- x!,y! are the x and y coordinates on the screen to place the image.<br>
+- width!,height! are the width and height of the image.<br>
+- percent! is the percent of the additive translucency to use.<br>
+- cnv! is an optional parameter for drawing the image to a canvas.</div><br>
+
+<div class="Code">
+SetImageAdditive("Wow.jpg", 0, 0, 600, 300, 50)</div><br><br><br>
+
+
+
+<a name="setimagetranslucent"></a>
+<div class="MinorHeader">NAME: Set Image Translucent<br>
+FORMAT: SetImageTranslucent(file$, x!, y!, width!, height![, cnv!])</div><br>
+<div class="Normal">This command sets an image on the screen and blends it in with the background for a translucent effect.<br>
+- file$ is the filename of the image.<br>
+- x!,y! are the x and y coordinates on the screen to place the image.<br>
+- width!,height! are the width and height of the image.<br>
+- cnv! is an optional parameter for drawing the image to a canvas.</div><br>
+
+<div class="Code">
+SetImageTranslucent("Wow.jpg", 0, 0, 600, 300)</div><br><br><br>
+
+
+
+<a name="setimagetransparent"></a>
+<div class="MinorHeader">NAME: Set Image Transparent<br>
+FORMAT: SetImageTransparent(file$, x!, y!, width!, height!, r!, g!, b![, cnv!])</div><br>
+<div class="Normal">This command sets an image on the screen with a transparent color.<br>
+- file$ is the filename of the image.<br>
+- x!,y! are the x and y coordinates on the screen to place the image.<br>
+- width!,height! are the width and height of the image.<br>
+- r!,g!,b! are the RGB color values to treat as transparent.<br>
+- cnv! is an optional parameter for drawing the image to a canvas.</div><br>
+
+<div class="Code">
+SetImageTransparent("Wow.jpg", 0, 0, 600, 300, 255, 255, 255)</div><br><br><br>
+
+
+
+<a name="setpixel"></a>
+<div class="MinorHeader">NAME: Set Pixel<br>
+FORMAT: SetPixel(x!, y![, cnvID!])</div><br>
+<div class="Normal">This command sets a pixel somewhere on the screen. It's color is defined by the ColorRGB command.<br>
+- x!,y! are the x and y coordinates on the screen to place the pixel.<br>
+- cnvID! is an optional parameter for setting the pixel in a canvas. Use the Canvas ID for this.</div><br>
+
+<div class="Code">
+//Draws a pixel line from 0,100 to 255,100<br>
+For(x! = 0; x! < 255; x!++)<br>
+{<br>
+&nbsp;&nbsp; ColorRGB(0, 0, x!)<br>
+&nbsp;&nbsp; SetPixel(x!, 100)<br>
+}</div><br><br><br>
+
+
+
+<a name="shopcolors"></a>
+<div class="MinorHeader">NAME: Change Shop Colors<br>
+FORMAT: ShopColors(pos!, r!, g!, b!)</div><br>
+<div class="Normal">This command changes the colors of the shop window.<br>
+- pos! is the area to change. 0 for background, 1 for foreground.<br>
+- r!,g!,b! are the RGB color values used to change the color of the window.</div><br>
+
+<div class="Code">
+ShopColors(0, 0, 0, 0)<br>
+ShopColors(1, 255, 255, 255)<br>
+CallShop("sword.itm", "potion.itm")</div><br><br><br>
+
+
+
+<a name="show"></a>
+<div class="MinorHeader">NAME: Show variable contents<br>
+FORMAT: Show(variable)</div><br>
+<div class="Normal">This command shows the contents (value) of a variable in the message window on it's own line.<br>
+- variable can either be a literal or numerical variable. The contents of that variable are shown in the message window.</div><br>
+
+<div class="Code">
+var1! = 15<br>
+var2$ = "Hello"<br>
+Show(var!) //This shows "15" in the message window<br>
+Show(var$) //This shows "Hello" in the message window</div><br><br><br>
+
+
+
+<a name="sin"></a>
+<div class="MinorHeader">NAME: Calculate Sine<br>
+FORMAT: dest! = Sin(angle!)</div><br>
+<div class="Normal">This command calculates the sine of an angle and returns the answer to dest!.</div><br>
+
+<div class="Code">
+c! = Cos(90)<br>
+s! = Sin(90)<br>
+t! = Tan(90)</div><br><br><br>
+
+
+
+<a name="sizedanimation"></a>
+<div class="MinorHeader">NAME: Play Sized Animation<br>
+FORMAT: id! = SizedAnimation(file$, x!, y!, sizex!, sizey![, loop!])</div><br>
+<div class="Normal">This command plays a sized animation, made with the animation editor, on the screen.<br>
+- file$ is the filename of the animation to play.<br>
+- x!,y! are the x and y coordinates on the screen to play the animation.<br>
+- sizex!,sizey! are the width and height of the animation.<br>
+- loop! is an optional parameter <i>only</i> for threads. It causes the animation to loop until the thread is killed, or EndAnimation() is used.<br>
+- id! is the returned animation ID. Use this when ending an animation.</div><br>
+
+<div class="Code">
+anmId! = SizedAnimation("Explosion.anm", 10, 10, 100, 100)</div><br><br><br>
+
+
+
+<a name="smp"></a>
+<div class="MinorHeader">NAME: New SMP<br>
+FORMAT: SMP(handle$, new_smp!)</div><br>
+<div class="Normal">This command changes the current amount of SMP that the specified player or enemy has.<br>
+- handle$ is the handle of the player or enemy. "target" and "source" are valid handles.<br>
+- new_smp! is the amount of SMP to replace the current SMP that the player or enemy has.</div><br>
+
+<div class="Code">
+GetSMP("Frap", smp!)<br>
+SMP("Frap", smp!+smp!)<br>
+//Set Frap's smp to double it's original value.</div><br><br><br>
+
+
+
+<a name="sourcehandle"></a>
+<div class="MinorHeader">NAME: Source Handle<br>
+FORMAT: dest$ = SourceHandle()</div><br>
+<div class="Normal">This command retrieves the handle of the current "source" handle. The answer is placed in dest$.</div><br>
+
+<div class="Code">
+handle$ = SourceHandle()<br>
+GiveHP(handle$, 100)<br>
+//Give the 'source' 100 HP</div><br><br><br>
+
+
+
+<a name="sourcelocation"></a>
+<div class="MinorHeader">NAME: Get Source Location<br>
+FORMAT: SourceLocation(x!, y!)</div><br>
+<div class="Normal">This command gets the x and y coordinates of the 'source' character or enemy in battle. This is useful for programs that run with special moves because you can put an explosion graphic or something on the enemy or player.<br>
+- x!,y! are the returned x and y coordinates of the player or enemy in battle.</div><br>
+
+<div class="Code">
+SourceLocation(x!, y!)<br>
+LayerPut(x!, y!, 1, "boom.gph")<br>
+MediaPlay("boom.wav")</div><br><br><br>
+
+
+
+<a name="split"></a>
+<div class="MinorHeader">NAME: Split<br>
+FORMAT: Split(text$, delimiter$, array[])</div><br>
+<div class="Normal">Splits a string of text into a new array when it reaches the string delimiter.<br>
+- text$ is the text to split.<br>
+- delimiter$ is the the point in text$ where it gets split into a new array.<br>
+- array[] is the name of the array to use to store the split text.</div><br>
+
+<div class="Code">
+Split("Nice to see you again!", " ", "nice[]$")<br>
+//This stores "Nice" in the array 'nice[0]$',<br>
+//"to" in the array 'nice[1]$', etc.<br>
+//The delimiter is " " (a space), so each word<br>
+//is split into a different array.</div><br>
+
+<div class="BoxedText">Note: the array name must be in quotation marks for it to work.</div><br><br><br>
+
+
+
+<a name="sqrt"></a>
+<div class="MinorHeader">NAME: Calculate Square root<br>
+FORMAT: dest! = Sqrt(value!)</div><br>
+<div class="Normal">This command calculates the square root of a number.<br>
+- value! is the number to calculate.<br>
+- dest! is the returned value.</div><br>
+
+<div class="Code">
+dest! = Sqrt(9)</div><br><br><br>
+
+
+
+<a name="stance"></a>
+<div class="MinorHeader">NAME: Stance<br>
+FORMAT: Stance(position![, handle$])</div><br>
+<div class="Normal">This command gives you access to all of the individual images used for the characters animations.<br>
+- position! is a numerical value that accesses the images. The way they are accessed is in this order:<br>
+Walking south<br>
+Walking east<br>
+Walking north<br>
+Walking west<br>
+Fight graphics<br>
+Special move graphics<br>
+Defense graphics<br>
+Dying graphics<br>
+Custom postures<br>
+Fight at rest<br>
+- handle$ is an optional parameter for specifying which players postures to use. By default, it's the main character on the team.</div><br>
+
+<div class="Code">
+//Cycle through south walking graphics<br>
+For(count! = 1; count! <= 4; count!++)<br>
+{<br>
+&nbsp;&nbsp; Stance(count!, "Frap")<br>
+}</div><br><br><br>
+
+
+
+<a name="start"></a>
+<div class="MinorHeader">NAME: Start<br>
+FORMAT: Start(file$)</div><br>
+<div class="Normal">This command allows you to run almost any file from the RPGToolkit. The file-type extension must be a valid extension. This will not allow you to run files with a .exe, .lnk, .pif, or .com file extension. As long as the extension is included, the Operating System will know what you want to do.<br>
+- file$ is the filename of the file to run. You must include the extension or else it will not run.</div><br>
+
+<div class="Code">
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; Mwin("What would you like to do?")<br>
+&nbsp;&nbsp; Mwin("1 - Play AVI file")<br>
+&nbsp;&nbsp; Mwin("2 - Visit RPGToolkit Website")<br>
+&nbsp;&nbsp; Mwin("3 - Exit the program")<br>
+&nbsp;&nbsp; a! = Wait()<br>
+&nbsp;&nbsp; Switch(a!) {<br>
+&nbsp;&nbsp;&nbsp; Cast(1) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Play .avi file<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Start("movie.avi")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; Cast(2) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Visit the RPGToolkit Website<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Start("http://www.rpgtoolkit.com/")<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp; Cast(3) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Exit the loop/program<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+<a name="stop"></a>
+<div class="MinorHeader">NAME: Stop program<br>
+FORMAT: Stop()</div><br>
+<div class="Normal">This command is used to stop execution of a program.</div><br>
+
+<div class="Code">
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; Mwin("Press Q to stop the program!")<br>
+&nbsp;&nbsp; If(LCase(Wait()) == "q")<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Stop() //Stop the program!<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="struct"></a>
+<div class="MinorHeader">NAME: Create structure<br>
+FORMAT: struct <i>StructName</i> { <i>code</i> }</div><br>
+<div class="Normal">This command creates a new structure. Structures are used for structuring and organizing your code. They can contain data such as variables and arrays. You can recall the data by creating an object for the structure (or 'instancing' the structure). Data is accessed through a class by using the accessor operator (->).<br>
+- <i>StructName</i> is the name of the structure.<br>
+- <i>code</i> is the data to go into the structure.</div><br>
+
+<div class="Code">
+//Example of using a structure<br><br>
+
+//Define the structure<br>
+struct Enemy<br>
+{<br>
+&nbsp;&nbsp; //Enemy data...<br>
+&nbsp;&nbsp; name$<br>
+&nbsp;&nbsp; hp!<br>
+&nbsp;&nbsp; maxhp!<br>
+&nbsp;&nbsp; smp!<br>
+&nbsp;&nbsp; maxsmp!<br>
+&nbsp;&nbsp; att!<br>
+&nbsp;&nbsp; def!<br>
+}<br><br>
+
+//Create an object and assign some values...<br>
+Enemy[4] = new(Enemy)<br><br>
+
+Enemy[0]->name$ = "Bob"<br>
+Enemy[0]->hp! = 50<br>
+Enemy[0]->maxhp! = 50<br>
+//etc...</div><br><br><br>
+
+
+
+<a name="switch"></a>
+<div class="MinorHeader">NAME: Switch<br>
+FORMAT: Switch(var! or var$ or command())</div><br>
+<div class="Normal">The Switch command makes checking for true conditions even easier than using a bunch of If statements. It uses 'Cases' to check for values.<br>
+- var!, var$, or command() is the parameter for checking.</div><br>
+
+<div class="Code">
+Switch(x!)<br>
+{<br>
+&nbsp;&nbsp; Case(1) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //If x! is equal to 1, do this<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //block of code.<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Show(x!)<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; Case(Else) {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Mwin("x! was not 1)<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="takegp"></a>
+<div class="MinorHeader">NAME: Take GP<br>
+FORMAT: TakeGP(amount!)</div><br>
+<div class="Normal">This command takes a certain amount of GP away from the player.<br>
+- amount! is the amount of gp to take.</div><br>
+
+<div class="Code">
+gp! = GetGP()<br>
+Mwin("You have: &#60;gp!&#62;GP")<br>
+GiveGP(100)<br>
+gp! = GetGP()<br>
+Mwin("Now you have: &#60;gp!&#62;GP")<br>
+TakeGP(100)<br>
+gp! = GetGP()
+Mwin("Now you have: &#60;gp!&#62;GP")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="takeitem"></a>
+<div class="MinorHeader">NAME: Take Item<br>
+FORMAT: TakeItem(item_name$)</div><br>
+<div class="Normal">This command takes an item away from the player.<br>
+- item_name$ is the filename of the item to take away.</div><br>
+
+<div class="Code">
+//Take away a sword.<br>
+TakeItem("sword.itm")<br>
+Mwin("You lost your sword!")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="tan"></a>
+<div class="MinorHeader">NAME: Calculate Tangent<br>
+FORMAT: dest! = Tan(angle!)</div><br>
+<div class="Normal">This command calculates the tangent of an angle and returns the value to dest!.</div><br>
+
+<div class="Code">
+c! = Cos(90)<br>
+s! = Sin(90)<br>
+t! = Tan(90)</div><br><br><br>
+
+
+
+<a name="targethandle"></a>
+<div class="MinorHeader">NAME: Target Handle<br>
+FORMAT: dest$ = TargetHandle()</div><br>
+<div class="Normal">This command retrieves the current "target" handle. The answer is placed in dest$.</div><br>
+
+<div class="Code">
+handle$ = TargetHandle()<br>
+GiveHP(handle$, 100)<br>
+//Give the 'target' 100 HP</div><br><br><br>
+
+
+
+<a name="targetlocation"></a>
+<div class="MinorHeader">NAME: Get Target Location<br>
+FORMAT: TargetLocation(x!, y!)</div><br>
+<div class="Normal">This command gets the x and y coordinates of the 'taret' character or enemy in battle. This is useful for programs that run with special moves because you can put an explosion graphic or something on the enemy or player.<br>
+- x!,y! are the returned x and y coordinates of the player or enemy in battle.</div><br>
+
+<div class="Code">
+TargetLocation(x!, y!)<br>
+LayerPut(x!, y!, 1, "boom.gph")<br>
+MediaPlay("boom.wav")</div><br><br><br>
+
+
+
+<a name="tellthread"></a>
+<div class="MinorHeader">NAME: Tell Thread<br>
+FORMAT: return = TellThread(id!, command$)</div><br>
+<div class="Normal">This command lets you run a command or method inside of the currently running multitask program (or "threaded" program) from an outside program.<br>
+- id! is the id of the thread.<br>
+- command$ is the RPGCode command or method to run.<br>
+- return is an optional parameter which can be either literal or numeric that returns a value from the command that was passed into the thread.</div><br>
+
+<div class="Code">
+tID! = Thread("mythread.prg", 0) //Run the thread "mythread.prg"<br><br>
+
+ret! = TellThread(id!, "Talk()")<br>
+//Runs the method "Talk()"<br>
+//and returns a value.<br>
+KillThread(tID!) //Kill the thread when done</div><br><br><br>
+
+
+
+<a name="text"></a>
+<div class="MinorHeader">NAME: Text<br>
+FORMAT: Text(x!, y!, text$[, cnvID!])</div><br>
+<div class="Normal">This command very useful. It allows you place text anywhere on the game-screen. You aren't limited to the message window. The range of the x and y coordinates are determined by the font size. You can determine the maximum size for each easily: For x, divide the width of the game screen resolution by the font size. For y, divide the height of the games screen resolution by the font size. The color of the text is defined by the ColorRGB command. Text will stay on the screen only for the duration of time that the program is running.<br>
+- x!,y! are the x and y coordinates on the screen to place the text. Note: the x and y are not the same as the board grid, and are not in pixels.<br>
+- text$ is the text to show on the screen.<br>
+- cnvId! is an optional parameter to draw the text to a canvas.</div><br>
+
+<div class="Code">
+//This will display text at positions 1,1<br>
+Text(1, 1, "Hello, player!")<br><br>
+
+//This will show the contents of a variable<br>
+var$ = "Yay"<br>
+Text(1, 2, var$)<br><br>
+
+//You can also combine text and variables<br>
+name$ = Prompt("What's your name?")<br>
+Text(1, 3, "Hello, " + name$)</div><br><br><br>
+
+
+
+<a name="thread"></a>
+<div class="MinorHeader">NAME: Thread<br>
+FORMAT: id! = Thread(program$, persist!)</div><br>
+<div class="Normal">This command runs a multitasking program (or "threaded" program), which means the player can still walk around and interact while the program is running.<br>
+- program$ is the multitask program to run.<br>
+- persist! is a numeric value between 0 and 1. If 0, the thread will stop when the player leaves the board. If 1, the thread will loop and run when the player is on another board too.<br>
+- id! is an optional parameter that holds the returned ID of the thread.</div><br>
+
+<div class="Code">
+id! = Thread("my_program.prg", 0)<br>
+//Sets the multitask program "my_program.prg".<br>
+//Only runs while player is on the board.</div><br><br><br>
+
+
+
+<a name="threadsleep"></a>
+<div class="MinorHeader">NAME: Thread Sleep<br>
+FORMAT: ThreadSleep(id!, duration!)</div><br>
+<div class="Normal">This stops a multitask program (thread) for a certain amount of time specified by duration!.<br>
+- id! is the id of the thread.<br>
+- duration! is the time (in seconds) for the thread to sleep.</div><br>
+
+<div class="Code">
+id! = Thread("mythread.prg", 0)<br>
+//Run the thread "mythread.prg"<br>
+ThreadSleep(id!, 60) //Make the thread sleep for 60 seconds<br><br>
+
+//Oh no, an event came up! Wake up the thread!<br>
+ThreadWake(id!)<br>
+KillThread(id!) //Kill the thread when done</div><br><br><br>
+
+
+
+<a name="threadsleepremaining"></a>
+<div class="MinorHeader">NAME: Thread Sleep Remaining<br>
+FORMAT: remain! = ThreadSleepRemaining(id!)</div><br>
+<div class="Normal">Gets the time (in seconds) that remains until a sleeping thread wakes up.<br>
+- id! is the id of the thread.<br>
+- remain! is a returned value that stores the remaining time.</div><br>
+
+<div class="Code">
+id! = Thread("mythread.prg", 0) //Run the thread "mythread.prg"<br>
+ThreadSleep(id!, 60) //Make the thread sleep for 60 seconds<br><br>
+
+tSeconds! = ThreadSleepRemaining(id!) //Get the seconds remaining<br>
+KillThread(id!) //Kill the thread when done</div><br><br><br>
+
+
+
+<a name="threadwake"></a>
+<div class="MinorHeader">NAME: Thread Wake<br>
+FORMAT: ThreadWake(id!)</div><br>
+<div class="Normal">Makes a sleeping thread 'wake up' and become active once again.<br>
+- id! is the id of the thread.</div><br>
+
+<div class="Code">
+id! = Thread("mythread.prg", 0) //Run the thread "mythread.prg"<br>
+ThreadSleep(id!, 60) //Make the thread sleep for 60 seconds<br>
+//Oh no, an event came up! Wake up the thread!<br>
+ThreadWake(id!)<br>
+KillThread(id!) //Kill the thread when done</div><br><br><br>
+
+
+
+<a name="trim"></a>
+<div class="MinorHeader">NAME: Trim<br>
+FORMAT: dest$ = Trim(text$)</div><br>
+<div class="Normal">Trims tabs and/or spaces off of the ends of a string of text.<br>
+- text$ is the text to trim the spaces/tabs off of.<br>
+- dest$ is the returned trimmed text.</div><br>
+
+<div class="Code">
+someText$ = " &nbsp; &nbsp; La la la. &nbsp;"<br>
+someText$ = Trim(someText$)<br>
+Wait()<br>
+//Trims the sides of the string so it'll look<br>
+//like this: "La la la."<br><br>
+
+//Example 2:<br>
+Show( Trim("Yay! &nbsp; &nbsp; ") )<br>
+//Shows "Yay" instead of "Yay! &nbsp; &nbsp; ".</div><br><br><br>
+
+
+
+<a name="tiletype"></a>
+<div class="MinorHeader">NAME: Change Tile Type<br>
+FORMAT: TileType(x!, y!, type$[, layer!])</div><br>
+<div class="Normal">This command changes the type of a tile at the specified x,y,layer coordinates.
+- x!,y! are the x and y coordinates on the board to change the type.<br>
+- type$ is the type of tile to change it to. Valid types are: "NORMAL", "SOLID", and "UNDER".<br>
+- layer! is an optional parameter for specifying the layer. The default is 1.</div><br>
+
+<div class="Code">
+//Change the tile type at 10,10,1 to SOLID<br>
+TileType(10, 10, "SOLID", 1)</div><br><br><br>
+
+
+
+<a name="ucase"></a>
+<div class="MinorHeader">NAME: Upper Case<br>
+FORMAT: dest$ = UCase(string$)</div><br>
+<div class="Normal">Casts a string of characters to all upper-case characters and returns it to dest$.<br>
+- string$ is the string of characters to cast to upper-case.<br>
+- dest$ is the returned string.</div><br>
+
+<div class="Code">
+string$ = Prompt("What's your name?")<br>
+dest$ = UCase(string$)<br>
+Mwin("Hello, &#60;name$&#62;")</div><br><br><br>
+
+
+
+<a name="underline"></a>
+<div class="MinorHeader">NAME: Underline<br>
+FORMAT: Underline(on_off$)</div><br>
+<div class="Normal">This command turns on and off the underline effect on your text.<br>
+- on_off$ is a literal value that can be "on" or "off".</div><br>
+
+<div class="Code">
+Mwin("Boring regular text...")<br>
+Wait()<br>
+Mwincls()<br>
+Underline("on")<br>
+Mwin("Underlined text!")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="until"></a>
+<div class="MinorHeader">NAME: Until<br>
+FORMAT: Until(condition) { commands }</div><br>
+<div class="Normal">This command acts almost the same way as a While loop does. It loops through a block of commands until a condition is met.<br>
+- condition is the condition to meet to break the loop.<br>
+- commands is the block of code to run.</div><br>
+
+<div class="Code">
+//Example of the Until Loop.<br><br>
+
+//Leaving the variable alone as the condition<br>
+//is the same as 'Until(done! == 1)'.<br>
+Until(done!)<br>
+{<br>
+&nbsp;&nbsp; var!++ //Increment var!<br>
+&nbsp;&nbsp; Show(var!)<br>
+&nbsp;&nbsp; If(var! > 1)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1 //Break out of the loop.<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="viewbrd"></a>
+<div class="MinorHeader">NAME: View Board<br>
+FORMAT: Viewbrd(filename$[, topx!, topy!])</div><br>
+<div class="Normal">This command loads a board and displays it on the screen. Once the program has ended, the board is erased, and the game goes back to the board the program started from.<br>
+- filename$ is the filename of the board to view.<br>
+- topx!,topy! are optoinal parameters for specifying a top corner to draw to.</div><br>
+
+<div class="Code">
+Viewbrd("another.brd")</div><br><br><br>
+
+
+
+<a name="wait"></a>
+<div class="MinorHeader">NAME: Wait for keypress<br>
+FORMAT: dest$ = Wait()</div><br>
+<div class="Normal">This command pauses the program and waits for the user to press a key on the keyboard. If the user presses one of the arrow keys, either "UP", "DOWN", "LEFT", or "RIGHT" is returned. Optionally, you don't have to specify a return variable if you just need to wait for a keypress, and not store it in a variable for use in a block of code.<br>
+- dest$ is the returned character that the user pressed.</div><br>
+
+<div class="Code">
+Mwin("Press a key!")<br>
+a$ = Wait()<br>
+//This returns the keypress to a$<br>
+Mwin("You pressed " + a$)<br>
+Wait() //This doesn't return a keypress.</div><br><br><br>
+
+
+
+<a name="wander"></a>
+<div class="MinorHeader">NAME: Wander<br>
+FORMAT: Wander(itemNum![, restrict!])</div><br>
+<div class="Normal">Makes an item (npc) wander around the board. Use this to create walking npc's, items, or enemies.<br>
+- itemNum! is the item number to push around the board. This can be left as just a local variable.<br>
+You can also restrict the item's walking range by using the restrict! parameter. The allowed restrictions are the following:<br>
+- 0 (or left blank) is the default, which only lets the item wander N, S, E, and W on a normal board and NE, NW, SE, and SW on an isometric board.<br>
+- 1 always moves the item N, S, E, or W.<br>
+- 2 always moves the item NE, NW, SE, or SW.<br>
+- 3 allows the item to wander in all directions.</div><br>
+
+
+<div class="Code">
+Local(isActive!)<br>
+isActive! = 1<br>
+While(isActive! == 1)<br>
+{<br>
+&nbsp;&nbsp; Wander("target", 0) //Pushes the item in the default directions.<br>
+}</div><br><br><br>
+
+
+
+<a name="while"></a>
+<div class="MinorHeader">NAME: While-loop<br>
+FORMAT: While(condition) { code to run }</div><br>
+<div class="Normal">This command initiates a while loop. While-loops in RPGCode are much like while loops in C/C++. A while-loop is a group of commands that will be executed over and over again until a certain condition is false. The While command tests the condition just like the If and For commands test a condition. If the condition is true (for example, your condition is 'done! == 0', and 'done!' is in fact equal to 0, that is true), the block of code inside the while-loop's brackets will be executed. Once all of the commands are executed, the While command will check to see if the condition is still true. If so, it will loop through again. It keeps doing this until the condition is false.<br>
+- <i>condition</i> is the condition to test. If it's true, the block of code inside the brackets of the while command will be executed.<br>
+- <i>code to run</i> is the block of code to run <i>while</i> the condition is true.</div><br>
+
+<div class="Code">
+//Example using a While-loop.<br>
+//Let's say we want this loop to run while<br>
+//done! is equal to 0.<br>
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; Mwin("What do you want to do?")<bR>
+&nbsp;&nbsp; Mwin("1 - Play the game")<br>
+&nbsp;&nbsp; Mwin("2 - Quite")<br>
+&nbsp;&nbsp; a$ = Wait()<br>
+&nbsp;&nbsp; If(a$ == "1")<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //The user chose to play the game<br>
+&nbsp;&nbsp; &nbsp;&nbsp; MainFile("game.gam") //Start the game<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1 //Break out of the loop<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; If(a$ == "2")<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Windows()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Break out of the loop<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="win"></a>
+<div class="MinorHeader">NAME: Win the game<br>
+FORMAT: Win()</div><br>
+<div class="Normal">This command displays a "You won the game" message, waits for the user to press a key, and then resets the game to the startup program. You may want to create a more interesting sequence for winning the game, however, like credits or something of the sort. It adds a bit more class to your game. Once the sequence is complete, you can use the Reset() command to reset the game to the startup program, or use the Windows() command to quit to Windows.</div><br>
+
+<div class="Code">
+Win() //You won the game!</div><br><br><br>
+
+
+
+<a name="windows"></a>
+<div class="MinorHeader">NAME: Quit to windows<br>
+FORMAT: Windows()</div><br>
+<div class="Normal">This command ends execution of the currently running program and quits to Windows. Use this when you want to turn off the game through a program.</div><br>
+
+<div class="Code">
+done! = 0<br>
+While(done! == 0)<br>
+{<br>
+&nbsp;&nbsp; Mwincls()<br>
+&nbsp;&nbsp; Mwin("What do you want to do?")<bR>
+&nbsp;&nbsp; Mwin("1 - Play the game")<br>
+&nbsp;&nbsp; Mwin("2 - Quite")<br>
+&nbsp;&nbsp; a! = Wait()<br>
+&nbsp;&nbsp; If(a! == 1)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //The user chose to play the game<br>
+&nbsp;&nbsp; &nbsp;&nbsp; MainFile("game.gam") //Start the game<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1 //Break out of the loop<br>
+&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; If(a! == 2)<br>
+&nbsp;&nbsp; {<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //This will quit the game and go back to windows.<br>
+&nbsp;&nbsp; &nbsp;&nbsp; Windows()<br>
+&nbsp;&nbsp; &nbsp;&nbsp; done! = 1<br>
+&nbsp;&nbsp; &nbsp;&nbsp; //Break out of the loop<br>
+&nbsp;&nbsp; }<br>
+}</div><br><br><br>
+
+
+
+<a name="wincolorrgb"></a>
+<div class="MinorHeader">NAME: Change Message Window Color<br>
+FORMAT: WinColorRGB(r!, g!, b!)</div><br>
+<div class="Normal">By default, the message window has a black background. You can change that by using this command.<br>
+- r!,g!,b! are the RGB color values to change the background color to.</div><br>
+
+<div class="Code">
+Mwin("Black background.")<br>
+Wait()<br>
+Mwincls()<br>
+WinColorRGB(0, 0, 255)<br>
+Mwin("Blue background.")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="wingraphic"></a>
+<div class="MinorHeader">NAME: Change Message Window Graphic<br>
+FORMAT: WinGraphic(file$)</div><br>
+<div class="Normal">By default, the message window has no background image. You can put a background in the message window by using this command.<br>
+- file$ is the filename of the image to use.</div><br><br>
+
+
+
+<div class="Code">
+Mwin("Black background.")<br>
+Wait()<br>
+Mwincls()<br>
+WinGraphic("mwin.jpg")<br>
+Mwin("Now we have a graphic!")<br>
+Wait()</div><br><br><br>
+
+
+
+<a name="wipe"></a>
+<div class="MinorHeader">NAME: Wipe to new graphic<br>
+FORMAT: Wipe(file$, effect![, speed!])</div><br>
+<div class="Normal">This command loads a new graphic and 'wipes' that graphic onto the screen.<br>
+- file$ is the filename of the image to wipe to.<br>
+- effect! is a numeric value between 1 and 12. The valid types are:<br>
+1 - Wipe right<br>
+2 - Wipe left<br>
+3 - Wipe down<br>
+4 - Wipe up<br>
+5 - Wipe NW to SE<br>
+6 - Wipe NE to SW<br>
+7 - Wipe SW to NE<br>
+8 - Wipe SE to NW<br>
+9 - Wipe right 'zelda' style<br>
+10 - Wipe left 'zelda' style<br>
+11 - Wipe down 'zelda' style<br>
+12 - Wipe up 'zelda' style<br>
+- speed! is an optional specifying how fast the screen wipes to the new image. The default is 1, but you can make it a higher number if you want it to go faster.</div><br>
+
+<div class="Code">
+Wipe("Menu.gif", 9, 1) //Wipe right Zelda style</div><br><br><br>
+
+
+
+<a name="with"></a>
+<div class="MinorHeader">NAME: With<br>
+FORMAT: With(handle$)</div><br>
+<div class="Normal">This command allows you to use methods from within a file without having to include the file directly, or use implicit includes. Instead, you specify which file to use methods from and access them by typing a period ('.') followed by the name of the method. You can also use this command for accessing member methods or variables in a class or structure, by using the '->' operator, followed by the method or variable name.<br>
+- handle$ is the name of the file, class, or structure to access.</div><br>
+
+<div class="Code">
+With("System")<br>
+{<br>
+&nbsp;&nbsp; Mwin("Just testing the With command!")<br>
+&nbsp;&nbsp; .Pause()<br>
+}</div><br><br><br>
+
+
+
+<a name="zoom"></a>
+<div class="MinorHeader">NAME: Zoom in on the screen<br>
+FORMAT: Zoom(percent!)</div><br>
+<div class="Normal">This command zooms in on the screen.<br>
+- percent! is the percent to zoom in.</div><br>
+
+<div class="Code">
+//Zoom in on the screen.<br>
+For(z! = 0; z! < 4; z!++)<br>
+{<br>
+&nbsp;&nbsp; Zoom(5)<br>
+}</div><br><br><br>
+
+
+
+<a name="sortbytask"></a>
+<div class="MajorHeader">Commands Categorized by Task</div><br>
+<div class="Normal">In this section you will see all of the categories of RPGCode commands and what commands fit into them. If you want to quickly reference one, just click on it's name below. Commands are listed alphabetically. Categories contain sub-categories that are relative to the commands.</div><br>
+
+<div class="MajorHeader">Sprite Commands</div><br>
+<div class="LinkList">
+
+<div class="MinorHeader">Players</div>
+
+<a href="#addplayer">AddPlayer</a>, 
+<a href="#callplayerswap">CallPlayerSwap</a>, 
+<a href="#destroyplayer">DestroyPlayer</a>, 
+<a href="#eraseplayer">ErasePlayer</a>, 
+<a href="#getdp">GetDP</a>, 
+<a href="#getfp">GetFP</a>, 
+<a href="#gethp">GetHP</a>, 
+<a href="#getlevel">GetLevel</a>, 
+<a href="#getmaxhp">GetMaxHP</a>, 
+<a href="#getmaxsmp">GetMaxSMP</a>, 
+<a href="#getsmp">GetSMP</a>, 
+<a href="#giveexp">GiveEXP</a>, 
+<a href="#givehp">GiveHP</a>, 
+<a href="#givesmp">GiveSMP</a>, 
+<a href="#hp">HP</a>, 
+<a href="#maxhp">MaxHP</a>, 
+<a href="#maxsmp">MaxSMP</a>, 
+<a href="#newplyr">NewPlyr</a>, 
+<a href="#onboard">OnBoard</a>, 
+<a href="#playerspeed">PlayerSpeed</a>,
+<a href="#playerstance">PlayerStance</a>,
+<a href="#playerstep">PlayerStep</a>, 
+<a href="#posture">Posture</a>, 
+<a href="#push">Push</a>, 
+<a href="#putplayer">PutPlayer</a>, 
+<a href="#removeplayer">RemovePlayer</a>, 
+<a href="#removestatus">RemoveStatus</a>, 
+<a href="#restoreplayer">RestorePlayer</a>, 
+<a href="#smp">SMP</a>, 
+<a href="#stance">Stance</a>, 
+<a href="#targethandle">TargetHandle</a>, 
+<a href="#targetlocation">TargetLocation</a><br><br>
+
+<div class="MinorHeader">Items</div>
+
+<a href="#createitem">CreateItem</a>, 
+<a href="#destroyitem">DestoryItem</a>, 
+<a href="#equip">Equip</a>, 
+<a href="#eraseitem">EraseItem</a>, 
+<a href="#getitemcost">GetItemCost</a>, 
+<a href="#getitemdesc">GetItemDesc</a>, 
+<a href="#getitemname">GetItemName</a>, 
+<a href="#getitemsellprice">GetItemSellPrice</a>, 
+<a href="#giveitem">GiveItem</a>, 
+<a href="#itemcount">ItemCount</a>, 
+<a href="#itemlocation">ItemLocation</a>, 
+<a href="#itemspeed">ItemSpeed</a>,
+<a href="#itemstance">ItemStance</a>,
+<a href="#itemstep">ItemStep</a>, 
+<a href="#pushitem">PushItem</a>, 
+<a href="#putitem">PutItem</a>, 
+<a href="#remove">Remove</a>, 
+<a href="#takeitem">TakeItem</a>,
+<a href="#wander">Wander</a></div><br><br>
+
+
+
+<div class="MajorHeader">Game Commands</div><br>
+<div class="LinkList">
+
+<div class="MinorHeader">Battle</div>
+
+<a href="#ai">AI</a>, 
+<a href="#applystatus">ApplyStatus</a>, 
+<a href="#drainall">DrainAll</a>, 
+<a href="#fight">Fight</a>, 
+<a href="#fightenemy">FightEnemy</a>, 
+<a href="#sourcehandle">SourceHandle</a>, 
+<a href="#sourcelocation">SourceLocation</a><br><br>
+
+<div class="MinorHeader">Boards</div>
+
+<a href="#getboardname">GetBoardName</a>, 
+<a href="#getboardtile">GetBoardTile</a>, 
+<a href="#getboardtiletype">GetBoardTileType</a>,
+<a href="#pathfind">PathFind</a>,
+<a href="#tiletype">TileType</a>,
+<a href="#viewbrd">ViewBrd</a><br><br>
+
+<div class="MinorHeader">Buttons</div>
+
+<a href="#checkbutton">CheckButton</a>,
+<a href="#clearbuttons">ClearButtons</a>,
+<a href="#setbutton">SetButton</a><br><br>
+
+<div class="MinorHeader">Cursor Maps</div>
+
+<a href="#createcursormap">CreateCursorMap</a>, 
+<a href="#cursormapadd">CursorMapAdd</a>, 
+<a href="#cursormaphand">CursorMapHand</a>, 
+<a href="#cursormaprun">CursorMapRun</a>, 
+<a href="#killcursormap">KillCursorMap</a><br><br>
+
+<div class="MinorHeader">Default Systems</div>
+
+<a href="#callshop">CallShop</a>,
+<a href="#dirsav">DirSav</a>,
+<a href="#inn">Inn</a>, 
+<a href="#internalmenu">InternalMenu</a>,
+<a href="#load">Load</a>,
+<a href="#msgbox">MsgBox</a>,
+<a href="#save">Save</a>,
+<a href="#setconstants">SetConstants</a>,
+<a href="#shopcolors">ShopColors</a><br><br>
+
+<div class="MinorHeader">Message Windows</div>
+
+<a href="#mwin">Mwin</a>,
+<a href="#mwincls">MwinCls</a>,
+<a href="#mwinsize">MwinSize</a>,
+<a href="#show">Show</a>,
+<a href="#wincolorrgb">WinColorRGB</a>,
+<a href="#wingraphic">WinGraphic</a><br><br>
+
+<div class="MinorHeader">Threads</div>
+
+<a href="#getthreadid">GetThreadID</a>, 
+<a href="#killthread">KillThread</a>, 
+<a href="#multirun">MultiRun</a>, 
+<a href="#tellthread">TellThread</a>, 
+<a href="#thread">Thread</a>, 
+<a href="#threadsleep">ThreadSleep</a>, 
+<a href="#threadsleepremaining">ThreadSleepRemaining</a>, 
+<a href="#threadwake">ThreadWake</a></div><br><br>
+
+
+
+<div class="MajorHeader">Multimedia and Drawing Commands</div><br>
+<div class="LinkList">
+
+<div class="MinorHeader">Animations</div>
+
+<a href="#animation">Animation</a>,
+<a href="#endanimation">EndAnimation</a>,
+<a href="#playavi">PlayAvi</a>, 
+<a href="#playavismall">PlayAviSmall</a>,
+<a href="#sizedanimation">SizedAnimation</a><br><br>
+
+<div class="MinorHeader">Canvases and Drawing</div>
+<a href="#createcanvas">CreateCanvas</a>,
+<a href="#drawcanvas">DrawCanvas</a>,
+<a href="#drawcanvastransparent">DrawCanvasTransparent</a>,
+<a href="#drawcircle">DrawCircle</a>, 
+<a href="#drawline">DrawLine</a>, 
+<a href="#drawrect">DrawRect</a>,
+<a href="#fillcircle">FillCircle</a>, 
+<a href="#fillrect">FillRect</a>,
+<a href="#killcanvas">KillCanvas</a>,
+<a href="#rendernow">RenderNow</a><br><br>
+
+<div class="MinorHeader">Color</div>
+<a href="#colorrgb">ColorRGB</a>,
+<a href="#getcolor">GetColor</a>,
+<a href="#getpixel">GetPixel</a><br><br>
+
+<div class="MinorHeader">Effects</div>
+
+<a href="#earthquake">Earthquake</a>,
+<a href="#fade">Fade</a>,
+<a href="#forceredraw">ForceRedraw</a>,
+<a href="#wipe">Wipe</a>, 
+<a href="#zoom">Zoom</a><br><br>
+
+<div class="MinorHeader">Graphics</div>
+
+<a href="#bitmap">Bitmap</a>, 
+<a href="#fightmenugraphic">FightMenuGraphic</a>, 
+<a href="#layerput">LayerPut</a>, 
+<a href="#mem">Mem</a>, 
+<a href="#menugraphic">MenuGraphic</a>, 
+<a href="#mousecursor">MouseCursor</a>,
+<a href="#setimage">SetImage</a>, 
+<a href="#setimageadditive">SetImageAdditive</a>, 
+<a href="#setimagetranslucent">SetImageTranslucent</a>, 
+<a href="#setimagetransparent">SetImageTransparent</a>, 
+<a href="#setpixel">SetPixel</a><br><br>
+
+<div class="MinorHeader">Music</div>
+
+<a href="#mediaplay">MediaPlay</a>, 
+<a href="#mediastop">MediaStop</a><br><br>
+
+<div class="MinorHeader">Screen</div>
+
+<a href="#getcorner">GetCorner</a>,
+<a href="#getres">GetRes</a>,
+<a href="#restorescreen">RestoreScreen</a>, 
+<a href="#restorescreenarray">RestoreScreenArray</a>,
+<a href="#savescreen">SaveScreen</a><br><br>
+
+<div class="MinorHeader">Text</div>
+
+<a href="#bold">Bold</a>,
+<a href="#font">Font</a>,
+<a href="#fontsize">FontSize</a>,
+<a href="#getfontsize">GetFontSize</a>,
+<a href="#italics">Italics</a>,
+<a href="#pixeltext">PixelText</a>,
+<a href="#text">Text</a>,
+<a href="#underline">Underline</a></div><br><br>
+
+
+
+<div class="MajorHeader">Program Structure</div><br>
+<div class="LinkList">
+
+<div class="MinorHeader">Program Flow</div>
+
+<a href="#branch">Branch</a>, 
+<a href="#else">Else</a>, 
+<a href="#elseif">ElseIf</a>, 
+<a href="#for">For</a>, 
+<a href="#if">If</a>, 
+<a href="#iif">Iif</a>, 
+<a href="#switch">Switch</a>, 
+<a href="#until">Until</a>, 
+<a href="#while">While</a><br><br>
+
+<div class="MinorHeader">Error Handling</div>
+
+<a href="#debug">Debug</a>, 
+<a href="#debugger">Debugger</a>, 
+<a href="#onerror">On Error Goto</a>, 
+<a href="#onerrorresume">On Error Resume Next</a>, 
+<a href="#resumenext">Resume Next</a><br><br>
+
+<div class="MinorHeader">Methods</div>
+
+<a href="#killallredirects">KillAllRedirects</a>, 
+<a href="#killredirect">KillRedirect</a>,
+<a href="#method">Method</a>,
+<a href="#redirect">Redirect</a>,
+<a href="#returnmethod">ReturnMethod</a><br><br>
+
+<div class="MinorHeader">Classes and Structures</div>
+
+<a href="#class">Class</a>,
+<a href="#new">New</a>,
+<a href="#struct">Struct</a></div><br><br>
+
+
+
+<div class="MajorHeader">Data Commands</div><br>
+<div class="LinkList">
+
+<div class="MinorHeader">I/O (input/output)</div>
+<a href="#closefile">CloseFile</a>, 
+<a href="#fileeof">FileEOF</a>, 
+<a href="#fileget">FileGet</a>, 
+<a href="#fileinput">FileInput</a>, 
+<a href="#fileprint">FilePrint</a>, 
+<a href="#fileput">FilePut</a>,
+<a href="#get">Get</a>,
+<a href="#mouseclick">MouseClick</a>, 
+<a href="#mousemove">MouseMove</a>, 
+<a href="#openfileappend">OpenFileAppend</a>, 
+<a href="#openfilebinary">OpenFileBinary</a>, 
+<a href="#openfileinput">OpenFileInput</a>, 
+<a href="#openfileoutput">OpenFileOuput</a>,
+<a href="#prompt">Prompt</a>, 
+<a href="#wait">Wait</a><br><br>
+
+<div class="MinorHeader">String Manipulation</div>
+
+<a href="#charat">CharAt</a>, 
+<a href="#chr">Chr</a>, 
+<a href="#instr">InStr</a>, 
+<a href="#lcase">LCase</a>, 
+<a href="#left">Left</a>, 
+<a href="#length">Length</a>, 
+<a href="#mid">Mid</a>, 
+<a href="#replace">Replace</a>,
+<a href="#right">Right</a>, 
+<a href="#split">Split</a>, 
+<a href="#trim">Trim</a>, 
+<a href="#ucase">UCase</a><br><br>
+
+<div class="MinorHeader">Variables and Math</div>
+<a href="#autolocal">AutoLocal</a>, 
+<a href="#castint">CastInt</a>, 
+<a href="#castlit">CastLit</a>, 
+<a href="#castnum">CastNum</a>, 
+<a href="#cos">Cos</a>, 
+<a href="#empty">Empty</a>, 
+<a href="#global">Global</a>, 
+<a href="#local">Local</a>, 
+<a href="#random">Random</a>, 
+<a href="#sin">Sin</a>, 
+<a href="#sqrt">Sqrt</a>, 
+<a href="#tan">Tan</a></div><br><br>
+
+
+
+<div class="MajorHeader">System Commands</div><br>
+<div class="LinkList">
+
+<div class="MinorHeader">Game</div>
+
+<a href="#gamespeed">GameSpeed</a>, 
+<a href="#getgp">GetGP</a>, 
+<a href="#givegp">GiveGP</a>, 
+<a href="#over">Over</a>, 
+<a href="#pixelmovement">PixelMovement</a>, 
+<a href="#reset">Reset</a>, 
+<a href="#takegp">TakeGP</a><br><br>
+
+<div class="MinorHeader">Other</div>
+
+<a href="#blank">@</a>, 
+<a href="#comment">//</a>, 
+<a href="#change">Change</a>,
+<a href="#clear">Clear</a>, 
+<a href="#clearbuffer">ClearBuffer</a>, 
+<a href="#delay">Delay</a>, 
+<a href="#done">Done</a>,
+<a href="#end">End</a>,
+<a href="#gettextheight">GetTextHeight</a>,
+<a href="#gettextwidth">GetTextWidth</a>,
+<a href="#gone">Gone</a>,
+<a href="#include">Include</a>,
+<a href="#kill">Kill</a>, 
+<a href="#mainfile">MainFile</a>, 
+<a href="#move">Move</a>,
+<a href="#prg">Prg</a>,
+<a href="#return">Return</a>, 
+<a href="#rpgcode">RPGCode</a>, 
+<a href="#run">Run</a>,
+<a href="#scan">Scan</a>, 
+<a href="#start">Start</a>,
+<a href="#stop">Stop</a>,
+<a href="#win">Win</a>, 
+<a href="#windows">Windows</a>,
+<a href="#with">With</a><br><br>
+
+<div class="MinorHeader">Preprocessor</div>
+
+<a href="#ppautolocal">#autolocal</a>,
+<a href="#ppglobal">#global</a>,
+<a href="#ppinclude">#include</a></div>

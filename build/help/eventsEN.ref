@@ -1,0 +1,1409 @@
+9
+Text
+Display
+Player
+Fight
+Control
+Items
+Variable Manipulation
+Input
+Info
+164
+*********************************************************
+Player
+AddPlayer - Add a player to the party.
+#AddPlayer
+1
+chrs\
+Filename of player to add.
+*********************************************************
+Fight
+AI - Cause enemy to use artificial intellignece.
+#AI
+1
+!
+Level of AI to use (0-3).
+*********************************************************
+Display
+Animation - Run an animation.
+#Animation
+3
+misc\
+Filename of animation to use.
+!
+X position of the animation.
+!
+Y Position of the animation.
+*********************************************************
+Fight
+ApplyStatus - Apply status effect to a player.
+#ApplyStatus
+2
+$
+Handle of player.
+StatusE\
+Filename of status effect.
+*********************************************************
+Fight
+AttackAll - Attack all targeted entities.
+#AttackAll
+1
+!
+FP
+*********************************************************
+Fight
+BattleSpeed - Change battle speed
+#BattleSpeed
+1
+!
+Battle speed (0-7).
+*********************************************************
+Display
+Bitmap - Show a bitmap.
+#Bitmap
+1
+Bitmap\
+Filename to show.
+*********************************************************
+Text
+Bold - 	Turn text bold on or off.
+#Bold
+1
+$
+'On' or 'Off'.
+*********************************************************
+Display
+BorderColor - Change the border color.
+#BorderColor
+3
+!
+Red amount (0-255).
+!
+Green amount (0-255).
+!
+Blue amount (0-255).
+*********************************************************
+Control
+Branch - Branch to another location in the program.
+#Branch
+1
+$
+:labelname to branch to.
+*********************************************************
+Control
+Break - Pop up the debugger (Powerhouse Editon only).
+#Break
+0
+*********************************************************
+Player
+CallPlayerSwap - Popup player swap window.
+#CallPlayerSwap
+0
+*********************************************************
+Items
+CallShop - Popup shop window.
+#CallShop
+1
+Item\
+Item to sell
+*********************************************************
+Control
+Change - Change the currently running program to another program.
+#Change
+1
+Prg\
+Filename to change the program to.
+*********************************************************
+Variable Manipulation
+CharAt - Obtain a single character from a string variable.
+#CharAt
+3
+$
+String to inspect.
+!
+Character position to get.
+$v
+Destination variable.
+*********************************************************
+Variable Manipulation
+CastInt - Cast a numerical value to an integer.
+#CastInt
+2
+!
+Source value.
+!v
+Destination variable.
+*********************************************************
+Variable Manipulation
+CastLit - Cast a numerical value to a string.
+#CastLit
+2
+!
+Source value.
+$v
+Destination variable.
+*********************************************************
+Variable Manipulation
+CastNum - Cast a string to a numerical variable.
+#CastNum
+2
+$
+Source string.
+!v
+Destination variable.
+*********************************************************
+Player
+CharacterSpeed - Adjust character walking speed.
+#CharacterSpeed
+1
+!
+New speed (0-3).
+*********************************************************
+Input
+CheckButton - Check if a button was pressed
+#CheckButton
+3
+!
+X location where mouse was clicked.
+!
+Y location where mouse was clicked.
+!v
+Variable to store the number of the button that was pressed, if any.
+*********************************************************
+Display
+Clear - Clear the screen.
+#Clear
+0
+*********************************************************
+Input
+ClearBuffer - Clear keyboard buffer.
+#ClearBuffer
+0
+*********************************************************
+Input
+ClearButtons - Clear clickable buttons from memory.
+#ClearButtons
+0
+*********************************************************
+Text
+Color - Change text color.
+#Color
+1
+!
+DOS color code (0-255).
+*********************************************************
+Text
+ColorRGB - Change text color (16 million color version).
+#ColorRGB
+3
+!
+Red color value (0-255).
+!
+Green color value (0-255).
+!
+Blue color value (0-255).
+*********************************************************
+Variable Manipulation
+Cos - Cosine.
+#Cos
+2
+!
+Angle (degrees) to calculate.
+!v
+Destination variable.
+*********************************************************
+Items
+CreateItem - Load an item into memory.
+#CreateItem
+2
+Item\
+Filename of item to load.
+!v
+Destination variable for memory slot item was loaded into.
+*********************************************************
+Control
+Debug - Turn RPGCode debug window on or off.
+#Debug
+1
+$
+'on' or 'off'.
+*********************************************************
+Control
+Delay - Pause for a few seconds.
+#Delay
+1
+!
+Number of seconds to pause.
+*********************************************************
+Items
+DestroyItem - Remove an item from memory.
+#DestroyItem
+1
+!
+Memory slot the item is currently loaded into.
+*********************************************************
+Player
+DestroyPlayer - Remove a player from the party forever.
+#DestroyPlayer
+1
+$
+Handle or filename of player to remove.
+*********************************************************
+Input
+DirSav - Show a directory of all saved games.
+#DirSav
+0
+*********************************************************
+Control
+Done - End program without redrawing the screen.
+#Done
+0
+*********************************************************
+Control
+Dos - Exit to Windows.
+#Dos
+0
+*********************************************************
+Fight
+DrainAll - Drain SMP from all targeted entities.
+#DrainAll
+1
+!
+Special move power to remove from targets.
+*********************************************************
+Display
+DrawCircle - Draw a circle or arc.
+#DrawCircle
+5
+!
+X position of centre point.
+!
+Y position of centre point.
+!
+Radius of circle.
+!o
+Starting angle of circle (optional).
+!o
+Ending angle of circle (optional).
+*********************************************************
+Display
+DrawEnemy - Draw an enemy.
+#DrawEnemy
+3
+Enemy\
+Filename of enemy to draw.
+!
+X location to draw to.
+!
+Y location to draw to.
+*********************************************************
+Display
+DrawLine - Draw a line.
+#DrawLine
+4
+!
+X position of first point.
+!
+Y position of first point.
+!
+X position of second point.
+!
+Y position of second point.
+*********************************************************
+Display
+DrawRect - Draw a rectangle.
+#DrawRect
+4
+!
+X position of top left corner.
+!
+Y position of top left corner.
+!
+X position of bottom right corner.
+!
+Y position of bottom right corner.
+*********************************************************
+Display
+Earthquake - Cause an earthquake.
+#Earthquake
+1
+!
+Intensity.
+*********************************************************
+Variable Manipulation
+Empty - Clear all variables (use with caution!)
+#Empty
+0
+*********************************************************
+Control
+End - End program or function block.
+#End
+0
+*********************************************************
+Items
+Equip - Equip an item to a player.
+#Equip
+3
+$
+Handle of player to equip to.
+!
+Body location to equip to.
+Item\
+Filename of item to equip.
+*********************************************************
+Items
+EraseItem - Erase an item from the screen.
+#EraseItem
+1
+!
+Item number (0-10) to erase (memory slot of item).
+*********************************************************
+Player
+ErasePlayer - Erase a player from the screen.
+#ErasePlayer
+1
+$
+Handle of player to erase.
+*********************************************************
+Display
+Fade - Fade screen.
+#Fade
+1
+!o
+Fade type (optional)
+*********************************************************
+Control
+Fbranch - Function-branch to another location in the program.
+#Fbranch
+1
+$
+:labelname to branch to.
+*********************************************************
+Fight
+Fight - Begin a fight.
+#Fight
+2
+!
+Enemy skill to fight.
+Bkrounds\
+Filename of background to fight against.
+*********************************************************
+Fight
+FightEnemy - Fight a specific enemy.
+#FightEnemy
+2
+Enemy\
+Filename of enemy to fight.
+Bkrounds\
+Filename of background to fight against.
+*********************************************************
+Display
+FightMenuGraphic - Change graphic in the background of the fight menu.
+#FightMenuGraphic
+1
+Bitmap\
+Filename of image to use.
+*********************************************************
+Fight
+FightStyle - Change fighting style.
+#FightStyle
+1
+!
+Style to use (0-side, 1-front).
+*********************************************************
+Display
+FillCircle - Draw a filled circle.
+#FillCircle
+3
+!
+X position of circle centre.
+!
+Y position of circle centre.
+!
+Radius of circle.
+*********************************************************
+Display
+FillRect - Draw a filled rectangle.
+#FillRect
+4
+!
+X position of top left corner.
+!
+Y position of top left corner.
+!
+X position of bottom right corner.
+!
+Y position of bottom right corner.
+*********************************************************
+Text
+Font - Change the text font.
+#Font
+1
+Font\
+Filename of font to use.
+*********************************************************
+Text
+FontSize - Change the font size.
+#FontSize
+1
+!
+New font size, in pixels.
+*********************************************************
+Display
+ForceRedraw - Redraw the board.
+#ForceRedraw
+0
+*********************************************************
+Player
+GiveGP - Give the player gold.
+#GiveGP
+1
+!
+Amount of gold to give the player.
+*********************************************************
+Player
+GiveHP - Give the player HP.
+#GiveHP
+2
+$
+Handle of player.
+!
+Amount of HP to give.
+*********************************************************
+Items
+GiveItem - Give the player an item.
+#GiveItem
+1
+Item\
+Filename of item to give.
+*********************************************************
+Player
+GiveSMP - Give the player SMP.
+#GiveSMP
+2
+$ 
+Handle of player.
+!
+Amount of SMP to give.
+*********************************************************
+Input
+Get - Get a key from the keyboard buffer.
+#Get
+1
+$v
+Destination varibale to put key in.
+*********************************************************
+Info
+GetBoardTile - Get the filename of a board tile.
+#GetBoardTile
+4
+!
+Board x.
+!
+Board y.
+!
+Board layer.
+$v
+Destination variable.
+*********************************************************
+Info
+GetBoardTileType - Get the tiletype of a board tile.
+#GetBoardTileType
+4
+!
+Board x.
+!
+Board y.
+!
+Board layer.
+$v
+Destination variable.
+*********************************************************
+Info
+GetColor - Get the currently set color.
+#GetColor
+3
+!v
+Destination variable red.
+!v
+Destination variable green.
+!v
+Destination variable blue.
+*********************************************************
+Info
+GetCorner - Get the top corner of the board.
+#GetCorner
+2
+!v
+Destination variable of the x coord.
+!v
+Destination variable of the y coord.
+*********************************************************
+Player
+GetDP -	Get the current DP level of a player.
+#GetDP
+2
+$
+Handle of player.
+!v
+Destination variable.
+*********************************************************
+Info
+GetFontSize - Get current font size.
+#GetFontSize
+1
+!v
+Destination variable.
+*********************************************************
+Player
+GetFP - Get the current FP level of a player.
+#GetFP
+2
+$
+Handle of player.
+!v
+Destination variable.
+*********************************************************
+Player
+GetGP - Get the amount of gold the player has.
+#GetGP
+1
+!
+Destination variable.
+*********************************************************
+Player
+GetHP - Get the current HP level of a player.
+#GetHP
+2
+$
+Handle of player.
+!v
+Destination variable.
+*********************************************************
+Player
+GetSMP - Get the current SMP level of a player.
+#GetSMP
+2
+$
+Handle of player.
+!v
+Destination variable.
+*********************************************************
+Player
+GetLevel - Get the current Level of a player.
+#GetLevel
+2
+$
+Handle of player.
+!v
+Destination variable.
+*********************************************************
+Player
+GetMaxHP - Get max HP of a player.
+#GetMaxHP
+2
+$
+Handle of player.
+!v
+Destination variable.
+*********************************************************
+Player
+GetMaxSMP - Get max SMP of a player.
+#GetMaxSMP
+2
+$
+Handle of player.
+!v
+Destination variable.
+*********************************************************
+Display
+GetPixel - Obtain the color of a pixel.
+#GetPixel
+5
+!
+X position of the pixel.
+!
+Y position of the pixel.
+!v
+Destination variable red.
+!v
+Destination variable green.
+!v
+Destination variable blue.
+*********************************************************
+Control
+Gone - Remove program from the board.
+#Gone
+0
+*********************************************************
+Player
+HP - Give HP to a player.
+#HP
+2
+$
+Handle of player.
+!
+HP to add.
+*********************************************************
+Control
+Include - Include RPGCode program in this program.
+#Include
+1
+Prg\
+Filename to include.
+*********************************************************
+Player
+Inn - Restores all players to prefect health.
+#Inn()
+0
+*********************************************************
+Control
+InternalMenu - Pop up the internal menu system.
+#InternalMenu
+1
+!
+Menu to pop up (0- main, 1-item, 2-equip, 3-details, 4-abilities)
+*********************************************************
+Display
+Italics - Turn italics on or off.
+#Italics
+1
+$
+"On" or "Off"
+*********************************************************
+Items
+ItemCount - Count the number of items a player is carrying.
+#ItemCount
+2
+$
+Player handle or filename.
+!v
+Destination variable.
+*********************************************************
+Items
+ItemLocation - Find an item's board location.
+#ItemLocation
+4
+$
+Item 'handle' (it, "Item 1", "Item 2", etc).
+!v
+Destination variable x.
+!v
+Destination variable y.
+!v
+Destination variable layer.
+*********************************************************
+Items
+ItemWalkSpeed - Adjust the walking speed of items.
+#ItemWalkSpeed
+1
+$
+'fast' or 'slow'
+*********************************************************
+Variable Manipulation
+Kill - Destroy a variable.
+#Kill
+1
+!v
+Variable to destroy.
+*********************************************************
+Display
+LayerPut - Put a tile on the screen, at a specific layer.
+#LayerPut
+4
+!
+X location.
+!
+Y location.
+!
+Layer.
+Tiles\
+Filename of tile to display.
+*********************************************************
+Control
+Load - Load saved game.
+#Load
+1
+$
+Filename of saved game.
+*********************************************************
+Control
+MainFile - Restart game using a specified main file.
+#MainFile
+1
+$
+Filename of main file.
+*********************************************************
+Player
+MaxHP - Set player's max HP.
+#MaxHP
+2
+$
+Handle of player.
+!
+New max HP level.
+*********************************************************
+Player
+MaxSMP - Set player's max SMP.
+#MaxSMP
+2
+$
+Handle of player.
+!
+New max SMP level.
+*********************************************************
+Display
+Mem - Draw a memory-saved tile onto the screen.
+#Mem
+4
+!
+X location.
+!
+Y location
+!
+Memory location the image was saved to.
+!o
+Layer.
+*********************************************************
+Display
+MenuGraphic - Set background image on the internal menu.
+#MenuGraphic
+1
+Bitmap\
+Filename to use.
+*********************************************************
+Display
+MidiPlay - Play a midi file.
+#MidiPlay
+1
+Media\
+Play a midi file.
+*********************************************************
+Display
+MidiRest - Stop the playing music.
+#MidiRest
+0
+*********************************************************
+Input
+MouseClick - Wait for user to click mouse.
+#MouseClick
+2
+!v
+Destination of click x.
+!v
+Destination of click y.
+*********************************************************
+Input
+MouseMove - Wait for user to move mouse.
+#MouseMove
+2
+!v
+Destination of move x.
+!v
+Destination of move y.
+*********************************************************
+Control
+Move - Move program to a new location.
+#Move
+3
+!
+New x location.
+!
+New y location
+!o
+New layer.
+*********************************************************
+Display
+MP3 - Play an mp3 or wav file.
+#MP3
+1
+Media\
+Filename to play.
+*********************************************************
+Display
+MP3Pause - Play an mp3 file, but pause game.
+#MP3Pause
+1
+Media\
+Filename to play.
+*********************************************************
+Text
+MWin - Display text in message window.
+#MWin
+1
+$
+Text to display.
+*********************************************************
+Text
+MWinCls - Clear the message window.
+#MWinCls
+0
+*********************************************************
+Text
+MWinSize - Change size of message window.
+#MWinSize
+1
+!
+Percent of screen width to use.
+*********************************************************
+Player
+Newplyr - Change player graphics.
+#Newplyr
+1
+Chrs\
+Filename of new graphic set to use.
+*********************************************************
+Control
+Over - Game over!
+#Over
+0
+*********************************************************
+Display
+PlayAvi - Play an avi file, fullscreen.
+#PlayAvi
+1
+Media\
+File to play.
+*********************************************************
+Display
+PlayAviSmall - Play an avi file, windowed.
+#PlayAviSmall
+1
+Media\
+File to play.
+*********************************************************
+Player
+Posture - Change player posture.
+#Posture
+2
+!
+Posture slot to use (0-9)
+$
+Player handle.
+*********************************************************
+Control
+Prg - Move program to a new location.
+#Prg
+4
+!
+Program number to move (0-50)
+!
+New x location.
+!
+New y location
+!o
+New layer.
+*********************************************************
+Text
+Print - Print text to screen.
+#Print
+1
+$
+Text to display.
+*********************************************************
+Input
+Prompt - Prompt player with a question.
+#Prompt
+2
+$
+Question.
+$v
+Destination of answer.
+*********************************************************
+Player
+Push - Push player (make him walk).
+#Push
+2
+$
+Direction ("N", "S", "E", "W").
+$
+Handle of player.
+*********************************************************
+Items
+PushItem - Push item (make him walk).
+#PushItem
+2
+!
+Item number to push (0-10).
+$
+Direction ("N", "S", "E", "W")
+*********************************************************
+Display
+Put - Draw a tile to the screen.
+#Put
+3
+!
+X location.
+!
+Y Location
+Tiles\
+Tile to display.
+*********************************************************
+Items
+PutItem - Draw an item to the screen.
+#PutItem
+4
+!
+Item number (0-10)
+!
+X location.
+!
+Y location.
+!
+Layer.
+*********************************************************
+Player
+PutPlayer - Put a player on the screen.
+#PutPlayer
+4
+$
+Player handle.
+!
+X location.
+!
+Y location.
+!
+Layer.
+*********************************************************
+Variable Manipulation
+Random - Generate a random number
+#Random
+2
+!
+Range (ie, if it's 100, then a number between 1 and 100 is generated).
+!
+Destination variable.
+*********************************************************
+Items
+Remove - Remove equipment from a player.
+#Remove
+2
+$
+Player handle.
+!
+Body location to remove from
+*********************************************************
+Player
+RemovePlayer - Remove player from the party.
+#RemovePlayer
+1
+Chrs\
+Filename of player to remove.
+*********************************************************
+Player
+RemoveStatus - Remove status effect from a player.
+#RemoveStatus
+2
+$
+Handle of player.
+StatusE\
+Filename of status effect to remove.
+*********************************************************
+Control
+Reset - Reset the game.
+#Reset
+0
+*********************************************************
+Player
+RestorePlayer - Restore a player to the party.
+#RestorePlayer
+1
+Chrs\
+Filename of player to restore.
+*********************************************************
+Display
+RestoreScreen - Restore part of the screen previously saved in a buffer.
+#RestoreScreen
+6
+!o
+Top-left x
+!o
+Top-left y
+!o
+Bottom-right x
+!o
+Bottom-right y
+!o
+Destination x to draw to
+!o
+Destination y to draw to
+*********************************************************
+Display
+Return - Refresh the screen.
+#Return
+0
+*********************************************************
+Variable Manipulation
+ReturnMethod - Return a variable from a method.
+#ReturnMethod
+1
+!v
+Variable to return.
+*********************************************************
+Control
+RPGCode - Run an RPGCode command.
+#RPGCode
+1
+$
+RPGCode command to run.
+*********************************************************
+Control
+Run - Run another program.
+#Run
+1
+Prg\
+Program to run.
+*********************************************************
+Control
+Save - Save game.
+#Save
+1
+$
+Filename to save as.
+*********************************************************
+Display
+SaveScreen - Save screen into buffer.
+#SaveScreen
+0
+*********************************************************
+Display
+Scan - Save tile into memory slot.
+#Scan
+3
+!
+X location of tile.
+!
+Y location of tile.
+!
+Memory slot to save into 0-9.
+*********************************************************
+Player
+Send - Send player to another board.
+#Send
+4
+Boards\
+Board to send to.
+!
+X location.
+!
+Y location.
+!o
+Layer.
+*********************************************************
+Input
+SetButton - Set a button on the screen.
+#SetButton
+6
+Bitmap\
+Filename of button face.
+!
+Button slot to use (0-50)
+!
+X location
+!
+Y location
+!
+Width
+!
+Height
+*********************************************************
+Display
+SetImage - Draw an image onto the screen
+#SetImage
+5
+Bitmap\
+File to display
+!
+X location
+!
+Y location
+!
+Width
+!
+Height
+*********************************************************
+Display
+SetImageAdditive - Draw an additive translucent image to the screen.
+#SetImageAdditive
+6
+Bitmap\
+File to display
+!
+X location
+!
+Y location
+!
+Width
+!
+Height
+!
+Percent of translucency
+*********************************************************
+Display
+SetImageTranslucent - Draw a translucent image to the screen.
+#SetImageTranslucent
+5
+Bitmap\
+File to display
+!
+X location
+!
+Y location
+!
+Width
+!
+Height
+*********************************************************
+Display
+SetPixel - Draw a pixel to the screen using the current color.
+#SetPixel
+2
+!
+X location.
+!
+Y location.
+*********************************************************
+Text
+Show - Show a variable in the message window.
+#Show
+1
+!v
+Variable to show.
+*********************************************************
+Variable Manipulation
+Sin - Calculate the sine of an angle.
+#Sin
+2
+!
+Angle.
+!v
+Destination variable.
+*********************************************************
+Display
+SizedAnimation - Run an animation, scaled.
+#SizedAnimation
+5
+Misc\
+File to play.
+!
+X location
+!
+Y location
+!
+Width
+!
+Height
+*********************************************************
+Player
+SMP - Set SMP level of a player.
+#SMP
+2
+$
+Handle of player
+!
+New SMP level.
+*********************************************************
+Variable Manipulation
+SourceHandle - Obtain the handle of the SOURCE entitiy.
+#SourceHandle
+1
+$v
+Destination Variable.
+*********************************************************
+Variable Manipulation
+SourceLocation - Obtain coords of SOURCE entitiy.
+#SourceLocation
+2
+!v
+Destination variable x
+!v
+Destination variable y
+*********************************************************
+Variable Manipulation
+Sqrt - Calculate squareroot
+#Sqrt
+2
+!
+Value to squareroot.
+!v
+Destination variable.
+*********************************************************
+Player
+Stance - Draw a player's stance graphic.
+#Stance
+2
+$
+Handle of player.
+!
+Stance to show (0-43)
+*********************************************************
+Control
+Start - Start a file in Windows
+#Start
+1
+$
+Filename to start.
+*********************************************************
+Player
+TakeGP - Take gold from the player.
+#TakeGP
+1
+!
+Amount to take.
+*********************************************************
+Items
+TakeItem - Take an item from the player
+#TakeItem
+1
+Items\
+Filename of item to remove.
+*********************************************************
+Variable Manipulation
+Tan - Calculate tangent of an angle.
+#Tan
+2
+!
+Angle to take tan of.
+!v
+Destination variable.
+*********************************************************
+Variable Manipulation
+TargetHandle - Obtain handle of TARGET entity.
+#TargetHandle
+1
+$v
+Destination variable.
+*********************************************************
+Variable Manipulation
+TargetLocation - Obtain coords of TARGET entity.
+#TargetLocation
+2
+!v
+Destination variable x
+!v
+Destination variable y
+*********************************************************
+Variable Manipulation
+TileType - Set tiletype of a tile on the board.
+#TileType
+4
+!
+X location
+!
+Y Location
+$
+New type to use (SOLID, NORMAL, UNDER, etc)
+!o
+Layer
+*********************************************************
+Text
+Text - Show text on the screen.
+#Text
+3
+!
+X location
+!
+Y location
+$
+Text to display.
+*********************************************************
+Text
+TextSpeed - Set the speed of the text.
+#TextSpeed
+1
+!
+Speed (0-3)
+*********************************************************
+Display
+UnderArrow - Turn under arrow on or off.
+#UnderArrow
+1
+$
+'On' or 'Off'
+*********************************************************
+Text
+Underline - Turn text underlining on or off.
+#Underline
+1
+$
+'On' or 'Off'
+*********************************************************
+Display
+Viewbrd - Show part of a board.
+#Viewbrd
+1
+Boards\
+Filename of board to show.
+*********************************************************
+Input
+Wait - Wait for user to press a key.
+#Wait
+1
+$v
+Destination variable of key pressed.
+*********************************************************
+Player
+WalkSpeed - Set the speed at which the player walks.
+#WalkSpeed
+1
+$
+'Fast' or 'Slow'
+*********************************************************
+Items
+Wander - Cause an item to take a step in a random direction.
+#Wander
+1
+!
+Item number (0-10)
+*********************************************************
+Display
+WavStop - Stop the currently playing wav or mp3 file.
+#WavStop
+0
+*********************************************************
+Display
+Win- Show a 'you win' message and end game.
+#Win
+0
+*********************************************************
+Text
+WinColor  - Set the message window color.
+#WinColor
+1
+!
+A DOS color code.
+*********************************************************
+Text
+WinColorRGB - Set the message window color.
+#WinColorRGB
+3
+!
+Red component.
+!
+Green component.
+!
+Blue component.
+*********************************************************
+Text
+WinGraphic - Set the message window graphic.
+#WinGraphic
+1
+Bitmap\
+File to use.
+*********************************************************
+Display
+Wipe - Wipe to a loaded image.
+#Wipe
+2
+Bitmap\
+File to wipe to
+!
+Wipe type (1-8)
+*********************************************************
+Display
+Zoom - Zoom the screen.
+#Zoom
+1
+!
+Percent to zoom.
+*********************************************************
