@@ -10,6 +10,7 @@ Attribute VB_Name = "RPGCodeVars"
 '=========================================================================
 
 Option Explicit
+Option Compare Text
 
 '=========================================================================
 ' Integral variables

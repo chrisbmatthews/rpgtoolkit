@@ -10,6 +10,7 @@ Attribute VB_Name = "RPGCodeClasses"
 '=========================================================================
 
 Option Explicit
+Option Compare Text
 
 '=========================================================================
 ' All classes
@@ -300,12 +301,12 @@ Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS
     parseArrayD() = Split(toParse, "][")
 
     'Add the vars
-    ReDim x(UBound(parseArrayD)) As Long
+    ReDim X(UBound(parseArrayD)) As Long
     ReDim size(UBound(parseArrayD)) As Long
     For idx = 0 To UBound(size)
         size(idx) = CLng(parseArrayD(idx))
     Next idx
-    Call getVarsFromArray(0, size(), x(), scope, variableName, variableType)
+    Call getVarsFromArray(0, size(), X(), scope, variableName, variableType)
 
 End Sub
 
@@ -795,24 +796,24 @@ End Function
 '=========================================================================
 ' Grab vars from an array
 '=========================================================================
-Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef x() As Long, ByRef scope As RPGCODE_CLASS_SCOPE, ByVal prefix As String, ByVal postFix As String)
+Private Sub getVarsFromArray(ByVal depth As Long, ByRef size() As Long, ByRef X() As Long, ByRef scope As RPGCODE_CLASS_SCOPE, ByVal prefix As String, ByVal postFix As String)
 
     On Error Resume Next
 
     Dim dimIdx As Long      'Dimension index
     Dim theVar As String    'The variable
 
-    For x(depth) = 0 To size(depth)
+    For X(depth) = 0 To size(depth)
         If (depth <= UBound(size)) Then
-            Call getVarsFromArray(depth + 1, size(), x(), scope, prefix, postFix)
+            Call getVarsFromArray(depth + 1, size(), X(), scope, prefix, postFix)
         Else
             theVar = ""
             For dimIdx = 0 To UBound(size)
-                theVar = theVar & "[" & CStr(x(dimIdx)) & "]"
+                theVar = theVar & "[" & CStr(X(dimIdx)) & "]"
             Next dimIdx
             Call addVarToScope(prefix & theVar & postFix, scope)
         End If
-    Next x(depth)
+    Next X(depth)
 
 End Sub
 

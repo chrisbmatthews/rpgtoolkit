@@ -10,6 +10,7 @@ Attribute VB_Name = "RPGCodeProcess"
 '=========================================================================
 
 Option Explicit
+Option Compare Text
 
 '=========================================================================
 ' Integral variables
@@ -27,7 +28,7 @@ Public Function getMethodLine(ByVal name As String, ByRef prg As RPGCodeProgram)
     Dim idx As Long     'For for loops
 
     'Make name all caps
-    name = UCase(name)
+    name = Trim(UCase(name))
 
     'Cycle through all methods in the program
     For idx = 0 To UBound(prg.methods)
@@ -55,7 +56,7 @@ Public Sub addMethodToPrg(ByVal name As String, ByVal line As Long, ByRef prg As
     Dim space As Long   'Space for entry
 
     'Make name all caps
-    name = UCase(name)
+    name = Trim(UCase(name))
 
     'Make space invalid
     space = -1
@@ -267,7 +268,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                 For a = 0 To (UBound(lines) + 1)
 
                     If (a = UBound(lines) + 1) Then
-                        If Not uD(UBound(lines)) = "" Then
+                        If (uD(UBound(lines)) <> "") Then
                             thePrg.program(p + a) = uD(UBound(lines))
                         End If
 
@@ -277,7 +278,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                     Else
 
                         Select Case uD(a - 1)
-                
+
                             Case "{", "}"
                                 thePrg.program(p + a) = uD(a - 1)
                                 thePrg.program(p + a + 1) = lines(a)
@@ -339,10 +340,10 @@ End Function
 '=========================================================================
 ' Strip comments off a line
 '=========================================================================
-Public Function stripComments(ByVal text As String) As String
+Public Function stripComments(ByVal Text As String) As String
     Dim a As Long, char As String, ignore As Boolean
-    For a = 1 To Len(text)
-        char = Mid(text, a, 2)
+    For a = 1 To Len(Text)
+        char = Mid(Text, a, 2)
         If (Left(char, 1) = Chr(34)) Then
             If (ignore) Then
                 ignore = False
@@ -350,11 +351,11 @@ Public Function stripComments(ByVal text As String) As String
                 ignore = True
             End If
         ElseIf (char = "//") And (Not ignore) Then
-            stripComments = Mid(text, 1, a - 1)
+            stripComments = Mid(Text, 1, a - 1)
             Exit Function
         End If
     Next a
-    stripComments = text
+    stripComments = Text
 End Function
 
 '=========================================================================
