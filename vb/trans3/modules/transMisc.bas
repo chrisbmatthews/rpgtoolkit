@@ -361,11 +361,13 @@ End Sub
 '=========================================================================
 ' Calculate level up stuff
 '=========================================================================
-Public Sub calcLevels(ByRef player As TKPlayer)
+Public Sub calcLevels(ByRef player As TKPlayer, Optional ByVal setInit As Boolean = True)
     On Error Resume Next
     With player
-        .nextLevel = .levelType
-        .levelProgression = .levelType - .initExperience
+        If (setInit) Then
+            .nextLevel = .levelType
+            .levelProgression = .levelType - .initExperience
+        End If
         ReDim .levelStarts(.maxLevel)
         Dim levIdx As Long, exp As Long
         .levelStarts(.initLevel) = .initExperience

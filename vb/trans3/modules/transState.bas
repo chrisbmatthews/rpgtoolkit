@@ -105,7 +105,7 @@ Public Sub RestoreCharacter(ByVal file As String, ByVal number As Long, ByVal re
         End If
     End If
 
-    Call calcLevels(playerMem(number))
+    Call calcLevels(playerMem(number), False)
 
 End Sub
 

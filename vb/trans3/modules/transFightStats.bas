@@ -235,12 +235,14 @@ Sub increaseLevel(ByRef thePlayer As TKPlayer)
     Dim thePrg As RPGCodeProgram
     Call InitRPGCodeProcess(thePrg)
     thePrg.boardNum = -1     'not attached to the board
-    
+
+    Call MWinClsRPG("MWinCls()", thePrg)
     Call CanvasGetScreen(cnvRPGCodeScreen)
     lineNum = 1
     Call AddToMsgBox(h & " " + LoadStringLoc(2047, "Level Up!"), thePrg)
     Call renderRPGCodeScreen
     Call WaitForKey
+    Call MWinClsRPG("MWinCls()", thePrg)
 End Sub
 
 Function getPlayerMaxHP(ByRef thePlayer As TKPlayer) As Double

@@ -427,6 +427,7 @@ Private Sub rewardPlayers(ByVal numEnemies As Long, ByVal rewardPrg As String)
         End If
         Call renderRPGCodeScreen
         Call WaitForKey
+        Call MWinClsRPG("MWinCls()", thePrg)
     End If
     
     For t = 0 To UBound(playerListAr)
