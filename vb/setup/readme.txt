@@ -2,7 +2,7 @@ RPGToolkit, Version 3 :: Installation Program
 
 To build the installer:
 
-a) prepare a zip.zip (this will contain uninstall.exe built from prjUninstaller)
+a) prepare a zip.zip from \build
 
 b) build prjSetup as setup.exe
 
