@@ -170,21 +170,40 @@ Public Sub MethodCallRPG(ByVal Text As String, ByVal commandName As String, ByRe
     theMethod.lngParams = number
     theMethod.name = UCase$(Trim$(mName))
     ReDim theMethod.dtParams(number - 1)
-    Dim i As Long
+    ReDim theMethod.classTypes(number - 1)
+    Dim i As Long, bTryAgain As Boolean
     For i = 1 To number
         theMethod.dtParams(i - 1) = params(i - 1).dataType
+        If (theMethod.dtParams(i - 1) = DT_NUM) Then
+            If (isObject(params(i - 1).num, theProgram)) Then
+                theMethod.classTypes(i - 1) = objectType(params(i - 1).num)
+                theMethod.dtParams(i - 1) = DT_OTHER
+                bTryAgain = True
+            End If
+        End If
     Next i
     Dim foundIt As Long
     foundIt = getMethodLine(theMethod, theProgram, i)
 
     If (foundIt = -1) Then
 
-        ' Method doesn't exist!
-        If Not (noMethodNotFound) Then
-            Call debugger("Error: Method not found!-- " & Text)
+        If (bTryAgain) Then
+            For i = 1 To number
+                theMethod.dtParams(i - 1) = params(i - 1).dataType
+            Next i
+            foundIt = getMethodLine(theMethod, theProgram, i)
         End If
 
-        Exit Sub
+        If (foundIt = -1) Then
+
+            ' Method doesn't exist!
+            If Not (noMethodNotFound) Then
+                Call debugger("Error: Method not found!-- " & Text)
+            End If
+
+            Exit Sub
+
+        End If
 
     End If
 
@@ -679,7 +698,7 @@ Public Sub runProgram( _
 
     '// Passing string(s) ByRef for preformance related reasons
 
-    If Trim$(Right$(file, 1)) = "\" Then Exit Sub
+    If Trim$(right$(file, 1)) = "\" Then Exit Sub
 
     runningProgram = True
 
@@ -826,8 +845,8 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
 
-    ElseIf Left$(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
-        onError "OnError(" & Right$(checkIt, Len(checkIt) - InStr(1, _
+    ElseIf left$(checkIt, 11) = "onerrorgoto" Then ' On Error Goto :label
+        onError "OnError(" & right$(checkIt, Len(checkIt) - InStr(1, _
             LCase$(rpgcodeCommand), "goto") - 1) & ")", theProgram
         DoSingleCommand = increment(theProgram)
         Exit Function
@@ -886,7 +905,7 @@ Public Function DoSingleCommand(ByRef rpgcodeCommand As String, ByRef theProgram
 
         testText = getRedirect(testText)
 
-        If Left$(testText, 1) = "." Then
+        If left$(testText, 1) = "." Then
             testText = UCase$(GetWithPrefix() & testText)
         End If
 

@@ -24,14 +24,19 @@ Public errorKeep As RPGCodeProgram
 '=========================================================================
 ' Determine if two 'RPGCodeMethod' structs are equal
 '=========================================================================
-Public Function methodsAreEqual(ByRef Left As RPGCodeMethod, ByRef Right As RPGCodeMethod) As Boolean
-    If (Left.name = Right.name) Then
-        If (Left.lngParams = Right.lngParams) Then
-            If (Left.lngParams) Then
+Public Function methodsAreEqual(ByRef left As RPGCodeMethod, ByRef right As RPGCodeMethod, ByRef prg As RPGCodeProgram) As Boolean
+    If (left.name = right.name) Then
+        If (left.lngParams = right.lngParams) Then
+            If (left.lngParams) Then
                 Dim i As Long
-                For i = 0 To Left.lngParams
-                    If (Left.dtParams(i) <> Right.dtParams(i)) Then
+                For i = 0 To left.lngParams - 1
+                    If (left.dtParams(i) <> right.dtParams(i)) Then
                         Exit Function
+                    End If
+                    If (left.dtParams(i) = DT_OTHER) Then
+                        If Not (classIsKindOf(classFromName(left.classTypes(i), prg), right.classTypes(i), prg)) Then
+                            Exit Function
+                        End If
                     End If
                 Next i
             End If
@@ -52,7 +57,7 @@ Public Function getMethodLine(ByRef theMethod As RPGCodeMethod, ByRef prg As RPG
 
     ' Cycle through all methods in the program
     For i = 0 To ub
-        If (methodsAreEqual(theMethod, prg.methods(i))) Then
+        If (methodsAreEqual(theMethod, prg.methods(i), prg)) Then
             ' Found it!
             lngMethodIdx = i
             getMethodLine = prg.methods(i).line
@@ -88,16 +93,28 @@ Public Sub addMethodToPrg(ByVal strName As String, ByVal strDeclaration As Strin
     brackets = GetBrackets(strDeclaration)
     theMethod.lngParams = CountData(brackets)
     ReDim theMethod.dtParams(theMethod.lngParams - 1)
+    ReDim theMethod.classTypes(theMethod.lngParams - 1)
     ReDim theMethod.paramNames(theMethod.lngParams)
     For i = 0 To theMethod.lngParams - 1
-        theMethod.paramNames(i + 1) = GetElement(brackets, i + 1)
-        Select Case RightB$(theMethod.paramNames(i + 1), 2)
-            Case "!": theMethod.dtParams(i) = DT_NUM
-            Case "$": theMethod.dtParams(i) = DT_LIT
-            Case Else
+        theMethod.paramNames(i + 1) = Trim$(GetElement(brackets, i + 1))
+        Dim objType() As String
+        objType = Split(theMethod.paramNames(i + 1), " ")
+        If (UBound(objType) = 0) Then
+            Select Case RightB$(theMethod.paramNames(i + 1), 2)
+                Case "!": theMethod.dtParams(i) = DT_NUM
+                Case "$": theMethod.dtParams(i) = DT_LIT
+                Case Else
+                    theMethod.paramNames(i + 1) = theMethod.paramNames(i + 1) & "!"
+                    theMethod.dtParams(i) = DT_NUM
+            End Select
+        Else
+            theMethod.dtParams(i) = DT_OTHER
+            theMethod.classTypes(i) = UCase$(objType(0))
+            theMethod.paramNames(i + 1) = objType(1)
+            If (RightB$(theMethod.paramNames(i + 1), 2) <> "!") Then
                 theMethod.paramNames(i + 1) = theMethod.paramNames(i + 1) & "!"
-                theMethod.dtParams(i) = DT_NUM
-        End Select
+            End If
+        End If
     Next i
 
     ' Make pos invalid
@@ -105,10 +122,7 @@ Public Sub addMethodToPrg(ByVal strName As String, ByVal strDeclaration As Strin
 
     ' Cycle through all methods already in the program
     For i = 0 To UBound(prg.methods)
-        If (methodsAreEqual(prg.methods(i), theMethod)) Then
-            ' Already in program
-            Exit Sub
-        ElseIf (LenB(prg.methods(i).name) = 0) Then
+        If (LenB(prg.methods(i).name) = 0) Then
             ' If we haven't found a space
             If (pos = -1) Then
                 ' This is an empty space
@@ -213,7 +227,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             ' Trim up that line...
             theLine = replaceOutsideQuotes(Trim$(theLine), vbTab, vbNullString)
 
-            If (Right$(theLine, 1) = "_") Then
+            If (right$(theLine, 1) = "_") Then
                 ' This line is actually only part of a line, let's get the
                 ' whole line...
 
@@ -309,7 +323,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
                                 p = p + 1
 
                             Case "#"
-                                If Left$(lines(a), 1) = " " Then
+                                If left$(lines(a), 1) = " " Then
                                     openProgram.program(p + a) = uD(a - 1) & lines(a)
                                 Else
                                     openProgram.program(p + a - 1) = _
@@ -381,7 +395,7 @@ Public Function openProgram(ByVal file As String) As RPGCodeProgram
             Dim istr As Long
             istr = InStr(1, openProgram.program(a), ":")
             If (istr) Then
-                strClass = Trim$(replace(Left$(openProgram.program(a), istr - 1), "class", vbNullString, , 1, vbTextCompare))
+                strClass = Trim$(replace(left$(openProgram.program(a), istr - 1), "class", vbNullString, , 1, vbTextCompare))
             Else
                 strClass = GetMethodName(openProgram.program(a))
             End If
@@ -473,7 +487,7 @@ Public Function stripComments(ByVal Text As String) As String
     Dim a As Long, char As String, ignore As Boolean
     For a = 1 To Len(Text)
         char = Mid$(Text, a, 2)
-        If (Left$(char, 1) = ("""")) Then
+        If (left$(char, 1) = ("""")) Then
             ignore = Not (ignore)
         ElseIf (char = "//") And (Not (ignore)) Then
             stripComments = Mid$(Text, 1, a - 1)

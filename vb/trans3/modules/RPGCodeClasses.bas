@@ -35,6 +35,7 @@ Public Type RPGCodeMethod
     dtParams() As RPGC_DT                   ' Types of params
     lngParams As Long                       ' Count of params
     paramNames() As String                  ' Names of parameters
+    classTypes() As String                  ' Types of classes required for parameters
 End Type
 
 '=========================================================================
@@ -98,6 +99,7 @@ Public Enum RPGC_DT
     DT_STRING                               ' String
     DT_NUMBER                               ' Number
     DT_REFERENCE                            ' Reference to a var
+    DT_OTHER                                ' Other type
 End Enum
 
 '=========================================================================
@@ -149,12 +151,11 @@ End Function
 '=========================================================================
 Public Function isObject(ByVal hClass As Long, ByRef prg As RPGCodeProgram) As Boolean
 
-    On Error GoTo fin
+    On Error Resume Next
 
     ' Return if it's an object
     isObject = (LenB(g_objects((hClass - m_objectOffset) / 8).strInstancedFrom))
 
-fin:
 End Function
 
 '=========================================================================
@@ -195,6 +196,75 @@ Public Sub addClassToProgram(ByRef theClass As RPGCODE_CLASS, ByRef prg As RPGCo
     prg.classes.classes(pos) = theClass
 
 End Sub
+
+'=========================================================================
+' Obtain the type of an object
+'=========================================================================
+Public Function objectType(ByVal hObject As Long) As String
+
+    ' Check the object's type
+    objectType = g_objects((hObject - m_objectOffset) / 8).strInstancedFrom
+
+End Function
+
+'=========================================================================
+' Obtain a class from its name
+'=========================================================================
+Public Function classFromName(ByVal strClass As String, ByRef prg As RPGCodeProgram) As RPGCODE_CLASS
+
+    ' Capitalize strClass
+    strClass = UCase$(strClass)
+
+    ' Cycle over every class it could be
+    Dim i As Long
+    For i = 0 To UBound(prg.classes.classes)
+        If (prg.classes.classes(i).strName = strClass) Then
+            ' Found it!
+            classFromName = prg.classes.classes(i)
+            Exit Function
+        End If
+    Next i
+
+End Function
+
+'=========================================================================
+' Determine if one class is a type of another
+'=========================================================================
+Public Function classIsKindOf(ByRef theClass As RPGCODE_CLASS, ByVal strClass As String, ByRef prg As RPGCodeProgram) As Boolean
+
+    ' Capitalize strClass
+    strClass = UCase$(strClass)
+
+    ' Check if this is what we're looking for
+    If (theClass.strName = strClass) Then
+
+        ' No more work required
+        classIsKindOf = True
+        Exit Function
+
+    End If
+
+    ' Cycle over what it dervied from
+    Dim i As Long
+    For i = 0 To UBound(theClass.strDerived)
+
+        ' If there's a base here
+        If (LenB(theClass.strDerived(i))) Then
+
+            ' Recurse
+            If (classIsKindOf(classFromName(theClass.strDerived(i), prg), strClass, prg)) Then
+
+                ' Success!
+                classIsKindOf = True
+                Exit Function
+
+            End If
+
+        End If
+
+    Next i
+
+End Function
 
 '=========================================================================
 ' Read all data on classes from a program
@@ -434,7 +504,7 @@ Public Sub spliceUpClasses(ByRef prg As RPGCodeProgram)
 
             End If
 
-        ElseIf (inClass And (LenB(scope) <> 0) And (LenB(prg.program(lineIdx)) <> 0) And (Right$(prg.program(lineIdx), 1) <> ":") And (depth = 1)) Then
+        ElseIf (inClass And (LenB(scope) <> 0) And (LenB(prg.program(lineIdx)) <> 0) And (right$(prg.program(lineIdx), 1) <> ":") And (depth = 1)) Then
             If (InStrB(1, prg.program(lineIdx), "(")) Then
                 ' Found a method
                 If Not (inStruct) Then
@@ -558,7 +628,7 @@ Private Sub addArrayToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS
     toParse = Trim$(theVar)
 
     ' Grab the variable's type (! or $)
-    variableType = Right$(toParse, 1)
+    variableType = right$(toParse, 1)
     If (variableType <> "!" And variableType <> "$") Then
         ' It's an object
         variableType = vbNullString
@@ -628,7 +698,7 @@ Private Sub addVarToScope(ByVal theVar As String, ByRef scope As RPGCODE_CLASS_S
             Call debugger("You cannot set initial values in abstract types, use the constructor to acomplish this-- " & theVar)
         End If
         ' Keep only until first space
-        theVar = Left$(theVar, spacePos - 1)
+        theVar = left$(theVar, spacePos - 1)
     End If
 
     ' Make theVar all caps
@@ -707,9 +777,18 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
         params = getParameters(Text, prg, number)
         theMethod.lngParams = number
         theMethod.name = methodName
+        ReDim theMethod.dtParams(number - 1)
+        ReDim theMethod.classTypes(number - 1)
         Dim i As Long
         For i = 1 To number
-            theMethod.dtParams(i - 1) = params(i - 1).dataType
+            Dim objType() As String
+            objType = Split(params(i - 1).dat, " ")
+            If (UBound(objType) = 0) Then
+                theMethod.dtParams(i - 1) = params(i - 1).dataType
+            Else
+                theMethod.dtParams(i - 1) = DT_OTHER
+                theMethod.classTypes(i - 1) = UCase$(objType(0))
+            End If
         Next i
         theLine = getMethodLine(theMethod, prg, i)
         theMethod = prg.methods(i)
@@ -736,14 +815,7 @@ Public Sub addMethodToScope(ByVal theClass As String, ByVal Text As String, ByRe
 
     ' Find an open position
     For idx = 0 To UBound(scope.methods)
-        If (methodsAreEqual(theMethod, scope.methods(idx))) Then
-            ' Illegal redifinition
-            ' If Not (noErrorOnRedefine) Then
-            '     Call debugger("Illegal redefinition of method " & origName & " -- " & Text)
-            ' End If
-            Exit Sub
-
-        ElseIf (LenB(scope.methods(idx).name) = 0) Then
+        If (LenB(scope.methods(idx).name) = 0) Then
             If (pos = -1) Then
                 ' Found a spot
                 pos = idx
@@ -898,7 +970,7 @@ Public Function isVarMember(ByVal var As String, ByVal hClass As Long, ByRef prg
     istr = InStr(1, var, "[")
     If (istr) Then
         ' Get the var without its brackets
-        anArray = Left$(var, istr - 1) & Right$(var, 1)
+        anArray = left$(var, istr - 1) & right$(var, 1)
     End If
 
     ' For each scope
@@ -1216,7 +1288,7 @@ Private Function createParams(ByRef params() As String, ByVal noParams As Boolea
         For idx = 0 To UBound(params)
             createParams = createParams & params(idx) & ","
         Next idx
-        createParams = Left$(createParams, Len(createParams) - 1)
+        createParams = left$(createParams, Len(createParams) - 1)
     End If
 
     ' Finish the return string
@@ -1430,20 +1502,21 @@ Public Function spliceForObjects( _
                         Call callObjectMethod(hClass, "~" & cls.strDerived(i), prg, retval, "~" & cls.strDerived(i))
                     End If
                 Next i
-                Call callObjectMethod(hClass, "~" & g_objects(hClass).strInstancedFrom, prg, retval, "~" & g_objects(hClass).strInstancedFrom)
+                Dim gObjectIndex As Long
+                gObjectIndex = (hClass - m_objectOffset) / 8
+                Call callObjectMethod(hClass, "~" & g_objects(gObjectIndex).strInstancedFrom, prg, retval, "~" & g_objects(gObjectIndex).strInstancedFrom)
 
                 ' Kill the object's members
-                hClass = (hClass - m_objectOffset) / 8
                 Call clearObject(g_objects(hClass), prg)
 
                 ' Kill the object
-                Call killHandle(hClass)
+                Call killHandle(gObjectIndex)
 
                 ' Clear the object's hClass
-                g_objects(hClass).hClass = 0
+                g_objects(gObjectIndex).hClass = 0
 
                 ' Clear what the object was instanced from
-                g_objects(hClass).strInstancedFrom = vbNullString
+                g_objects(gObjectIndex).strInstancedFrom = vbNullString
 
             ElseIf (cmdName = "GETTYPE") Then
 
