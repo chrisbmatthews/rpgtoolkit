@@ -1,6 +1,6 @@
 Attribute VB_Name = "RPGCodeClasses"
 '=========================================================================
-' All contents copyright 2004, Colin James Fitzpatrick (KSNiloc)
+' All contents copyright 2004, Colin James Fitzpatrick
 ' All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
 ' Read LICENSE.txt for licensing info
 '=========================================================================
@@ -1400,6 +1400,9 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
             Next i
             Call callObjectMethod(hClass, theClass & createParams(constructParams, noParams), prg, retval, theClass)
 
+            ' Mark this object for collection
+            Call markForCollection(heap, hClass)
+
         Else
 
             ' Cannot create an abstract class
@@ -1408,9 +1411,6 @@ Public Function createRPGCodeObject(ByVal theClass As String, ByRef prg As RPGCo
         End If
 
     End If
-
-    ' Mark this object for collection
-    Call markForCollection(heap, hClass)
 
     ' Return a pointer to the object
     createRPGCodeObject = hClass
@@ -1498,23 +1498,28 @@ Public Function copyObject(ByVal hObject As Long, ByRef prg As RPGCodeProgram, O
     Dim cls As RPGCODE_CLASS, lngAddress As Long
     cls = getClass(hObject, prg)
 
-    ' Create a new handle
-    copyObject = newHandle()
-
-    ' Make sure we have enough room in the objects array
-    If (UBound(g_objects) < copyObject) Then
-        ' Enlarge the array
-        ReDim Preserve g_objects(copyObject + 250)
-    End If
-
     ' Write in the data
     If (hDestObject) Then
+
+        ' Use destination memory
         copyObject = hDestObject
+
     Else
+
+        ' Create a new handle
+        copyObject = newHandle()
+
+        ' Make sure we have enough room in the objects array
+        If (UBound(g_objects) < copyObject) Then
+            ' Enlarge the array
+            ReDim Preserve g_objects(copyObject + 250)
+        End If
+
         g_objects(copyObject).strInstancedFrom = cls.strName
         lngAddress = VarPtr(g_objects(copyObject))
         g_objects(copyObject).hClass = lngAddress
         copyObject = lngAddress
+
     End If
 
     ' Check if this class has a copy constructor
@@ -1581,7 +1586,7 @@ Public Function copyObject(ByVal hObject As Long, ByRef prg As RPGCodeProgram, O
 
         Next i ' = 0 To 1
 
-    End If ' (getMethodLine(copyCtor, prg) <> -1)
+    End If ' (bCopyConstruct)
 
 End Function
 
