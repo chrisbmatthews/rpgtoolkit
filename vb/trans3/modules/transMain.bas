@@ -15,7 +15,7 @@ Option Explicit
 ' Declarations
 '=======================================================================
 Private Declare Sub mainEventLoop Lib "actkrt3.dll" (ByVal gameLogicAddress As Long)
-Private Declare Function initCounter Lib "actkrt3.dll" (ByVal ptrRenderTime As Long, ByVal ptrRenderCount As Long)
+Private Declare Function initCounter Lib "actkrt3.dll" (ByRef ptrRenderTime As Double, ByRef ptrRenderCount As Long)
 Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 '=======================================================================
@@ -285,70 +285,70 @@ Private Sub gameLogic()
     ' a few other things.
 
     Select Case gGameState
-    
+
         Case GS_IDLE, GS_MOVEMENT       'NORMAL STATE
                                         '------------
-        
-            '// = Moved to actkrt3
-            '//Dim tickCount As Long
-            '//tickCount = GetTickCount()
-        
-            'Don't need this every time!
+
+            ' // = Moved to actkrt3
+            ' //Dim tickCount As Long
+            ' //tickCount = GetTickCount()
+
+            ' Don't need this every time!
             gameTime = (Timer() - initTime) + addTime
-            
-            If gGameState = GS_IDLE Then
-                'Only accept input if we've finished moving the player.
-                'Or in scanKeys?
+
+            If (gGameState = GS_IDLE) Then
+                ' Only accept input if we've finished moving the player.
+                ' Or in scanKeys?
                 Call scanKeys
             End If
-            
+
             Call checkMusic
             Call multiTaskNow
             Call movePlayers
             Call moveItems
-            
-            ' Render the scene.
-            Call renderNow(, True)
-            
-            ' Show FPS in title bar if enabled.
+
+            ' Render the scene
+            Call renderNow(-1, True)
+
+            ' Show FPS in title bar if enabled
             If (mainMem.bFpsInTitleBar) Then
                 ' Build the string
                 host.Caption = mainMem.gameTitle & " [" & CStr(Round(m_renderCount / m_renderTime, 1)) & " fps]"
             Else
-                ' Do nothing, but seems to have an effect.
+                ' Do nothing, but seems to have an effect
             End If
-    
-            '// = Moved to actkrt3
-            
-            'Cap the fps.
-            '//While (GetTickCount() - tickCount) < AVGTIME_CAP
-            '//    Call processEvent
-            '//Wend
-            
-            '//tickCount = GetTickCount() - tickCount
-            '//If tickCount < 200 Then
-            '//    m_renderTime = m_renderTime + tickCount / 1000
-            '//    m_renderCount = m_renderCount + 1
-            '//End If
-        
-            '//If m_renderTime > 2 Then
-            '//    'Next second.
-            '//    m_renderTime = m_renderTime / 2
-            '//    m_renderCount = m_renderCount \ 2
-            '//End If
-    
+
+            ' // = Moved to actkrt3
+
+            ' Cap the fps
+            ' //While ((GetTickCount() - tickCount) < AVGTIME_CAP)
+            ' //    Call processEvent
+            ' //Wend
+
+            ' //tickCount = GetTickCount() - tickCount
+            ' //If (tickCount < 200) Then
+            ' //    m_renderTime = m_renderTime + tickCount / 1000
+            ' //    m_renderCount = m_renderCount + 1
+            ' //End If
+
+            ' //If (m_renderTime > 2) Then
+            ' //    ' Next second
+            ' //    m_renderTime = m_renderTime / 2
+            ' //    m_renderCount = m_renderCount \ 2
+            ' //End If
+
         Case GS_PAUSE           'PAUSE STATE
                                 '-----------
             ' Just keep the music looping
             Call checkMusic
-            
+
         Case GS_QUIT            'QUIT STATE
                                 '----------
             ' End the program
             Call endProgram
-    
+
     End Select
-    
+
 End Sub
 
 '=======================================================================
@@ -359,7 +359,7 @@ Private Sub openSystems()
     Call initEventProcessor
     Call initSprites
     Call initGraphics(m_testingPRG) ' Creates host window
-    Call initCounter(VarPtr(m_renderTime), VarPtr(m_renderCount))   'Pass the variables to ackrt3.
+    Call initCounter(m_renderTime, m_renderCount)  'Pass the variables to actkrt3
     Call setupCOM(True)
     Call correctPaths
     Call InitPlugins
