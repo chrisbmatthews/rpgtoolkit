@@ -191,7 +191,7 @@ void APIENTRY RPGCInitParser(int setStringAddress)
 //////////////////////////////////////////////////////////////////////////
 inline void returnVbString(inlineString theString)
 {
-	setLastString(CharToBSTR((char*)theString));
+	setLastString(Char2BSTR((char*)theString));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -205,7 +205,7 @@ inline void initVbString(char* theString)
 //////////////////////////////////////////////////////////////////////////
 // Convert a pointer to a string to a BSTR
 //////////////////////////////////////////////////////////////////////////
-inline BSTR CharToBSTR(char* stringPointer)
+inline BSTR Char2BSTR(char* stringPointer)
 {
 
 	//get the length of the string passed in

@@ -15,13 +15,18 @@ Option Compare Text
 '=========================================================================
 ' Member declarations
 '=========================================================================
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
-Private Declare Function RPGCGetMethodName Lib "actkrt3.dll" (ByVal Text As String, ByRef size As Long) As Long
-Private Declare Function RPGCParseAfter Lib "actkrt3.dll" (ByVal Text As String, ByVal startSymbol As String, ByRef size As Long) As Long
-Private Declare Function RPGCParseBefore Lib "actkrt3.dll" (ByVal Text As String, ByVal endSymbol As String, ByRef size As Long) As Long
+Private Declare Sub RPGCInitParser Lib "actkrt3.dll" (ByVal setLastParseStringAddress As Long)
+Private Declare Sub RPGCGetMethodName Lib "actkrt3.dll" (ByVal text As String)
+Private Declare Sub RPGCParseAfter Lib "actkrt3.dll" (ByVal text As String, ByVal startSymbol As String)
+Private Declare Sub RPGCParseBefore Lib "actkrt3.dll" (ByVal text As String, ByVal endSymbol As String)
 
 '=========================================================================
-' Integral variables
+' Member variables
+'=========================================================================
+Private m_lastStr As String
+
+'=========================================================================
+' Integral strcutures
 '=========================================================================
 Public Type parameters          'rpgcode parmater structure
     num As Double               '  numerical
@@ -31,33 +36,42 @@ Public Type parameters          'rpgcode parmater structure
 End Type
 
 '=========================================================================
+' Initiate the parser
+'=========================================================================
+Public Sub initRPGCodeParser()
+    Call RPGCInitParser(AddressOf setLastParseString)
+End Sub
+
+'=========================================================================
+' Allows actkrt3.dll to set the current string
+'=========================================================================
+Private Sub setLastParseString(ByVal theString As String)
+    'Set the string
+    m_lastStr = theString
+End Sub
+
+'=========================================================================
 ' Returns the name of the method from a method delcaration
 '=========================================================================
-Public Function GetMethodName(ByVal Text As String) As String
-    On Error Resume Next
-    Dim size As Long, memPos As Long
-    memPos = RPGCGetMethodName(Text, size)
-    Call CopyMemory(GetMethodName, memPos, size)
+Public Function GetMethodName(ByVal text As String) As String
+    Call RPGCGetMethodName(text)
+    GetMethodName = m_lastStr
 End Function
 
 '=========================================================================
 ' Return content in text after startSymbol is located
 '=========================================================================
-Public Function ParseAfter(ByVal Text As String, ByVal startSymbol As String) As String
-    On Error Resume Next
-    Dim size As Long, memPos As Long
-    memPos = RPGCParseAfter(Text, startSymbol, size)
-    Call CopyMemory(ParseAfter, memPos, size)
+Public Function ParseAfter(ByVal text As String, ByVal startSymbol As String) As String
+    Call RPGCParseAfter(text, startSymbol)
+    ParseAfter = m_lastStr
 End Function
 
 '=========================================================================
 ' Return content from text until startSymbol is located
 '=========================================================================
-Public Function ParseBefore(ByVal Text As String, ByVal endSymbol As String) As String
-    On Error Resume Next
-    Dim size As Long, memPos As Long
-    memPos = RPGCParseBefore(Text, endSymbol, size)
-    Call CopyMemory(ParseBefore, memPos, size)
+Public Function ParseBefore(ByVal text As String, ByVal endSymbol As String) As String
+    Call RPGCParseBefore(text, endSymbol, size)
+    ParseBefore = m_lastStr
 End Function
 
 '=========================================================================
@@ -82,7 +96,7 @@ End Function
 '=========================================================================
 ' Returns the math function at pos num, optionally including comparsion
 '=========================================================================
-Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional ByVal comparison As Boolean) As String
+Public Function MathFunction(ByVal text As String, ByVal num As Long, Optional ByVal comparison As Boolean) As String
 
     On Error Resume Next
 
@@ -121,7 +135,7 @@ Public Function MathFunction(ByVal Text As String, ByVal num As Long, Optional B
     start = 1
     For a = 1 To num
         For S = 0 To UBound(signs)
-            p(S) = inStrOutsideQuotes(start, Text, signs(S))
+            p(S) = inStrOutsideQuotes(start, text, signs(S))
         Next S
         start = lowest(p, whichSpot) + 1
         If a <> num Then
@@ -136,18 +150,18 @@ End Function
 '=========================================================================
 ' Evaluates if the text passed in is true (1) or false (0)
 '=========================================================================
-Public Function evaluate(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As Long
+Public Function evaluate(ByVal text As String, ByRef theProgram As RPGCodeProgram) As Long
 
     On Error GoTo errorhandler
 
     Dim use As String, Length As Long, val1 As String, val2 As String, part As String, p As Long
     Dim eqtype As String, startAt As Long, equ As String, val1type As Long, val2type As Long, var1type As Long, var2type As Long
 
-    Text = "Eval( " & Text & " )"
-    Text = ParseRPGCodeCommand(Text, theProgram)
-    Text = Trim(Mid(Text, 7, Len(Text) - 8))
+    text = "Eval( " & text & " )"
+    text = ParseRPGCodeCommand(text, theProgram)
+    text = Trim(Mid(text, 7, Len(text) - 8))
    
-    use$ = Text$
+    use$ = text$
     Length = Len(use$)
     val1$ = ""
        
@@ -311,15 +325,15 @@ End Function
 '=========================================================================
 ' Get the variable at number in an equation
 '=========================================================================
-Public Function GetVarList(ByVal Text As String, ByVal number As Long) As String
+Public Function GetVarList(ByVal text As String, ByVal number As Long) As String
 
     On Error Resume Next
 
     Dim ignoreNext As Long, element As Long, part As String, p As Long, returnVal As String
     
-    For p = 1 To Len(Text) + 1
+    For p = 1 To Len(text) + 1
 
-        part = Mid(Text, p, 1)
+        part = Mid(text, p, 1)
 
         If part = Chr(34) Then
             If ignoreNext = 0 Then
@@ -354,7 +368,7 @@ End Function
 '=========================================================================
 ' Return the content in text between the start and end symbols
 '=========================================================================
-Public Function ParseWithin(ByVal Text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
+Public Function ParseWithin(ByVal text As String, ByVal startSymbol As String, ByVal endSymbol As String) As String
 
     On Error Resume Next
 
@@ -365,15 +379,15 @@ Public Function ParseWithin(ByVal Text As String, ByVal startSymbol As String, B
     Dim toRet As String
     Dim ignoreDepth As Integer
     
-    Length = Len(Text)
+    Length = Len(text)
     'find opening symbol...
     For t = 1 To Length
-        part = Mid(Text, t, 1)
+        part = Mid(text, t, 1)
         If part = startSymbol Then
             'founf start symbol.
             'now locate end symbol...
             For l = t + 1 To Length
-                part = Mid(Text, l, 1)
+                part = Mid(text, l, 1)
                 If part = startSymbol Then
                     ignoreDepth = ignoreDepth + 1
                 ElseIf part = endSymbol Then
@@ -406,17 +420,17 @@ End Function
 '=========================================================================
 ' Count the number of values in an equation
 '=========================================================================
-Public Function ValueNumber(ByVal Text As String) As Long
+Public Function ValueNumber(ByVal text As String) As Long
 
     On Error Resume Next
 
     Dim ignoreNext As Long, Length As Long, ele As Long, p As Long, part As String
     
     ignoreNext = 0
-    Length = Len(Text$)
+    Length = Len(text$)
     ele = 1
     For p = 1 To Length
-        part = Mid(Text, p, 1)
+        part = Mid(text, p, 1)
         If part = Chr(34) Then
             If ignoreNext = 1 Then
                 ignoreNext = 0
@@ -435,23 +449,23 @@ End Function
 '=========================================================================
 ' Remove the character passed in from the text passed in
 '=========================================================================
-Public Function removeChar(ByVal Text As String, ByVal char As String) As String
+Public Function removeChar(ByVal text As String, ByVal char As String) As String
     On Error Resume Next
-    removeChar = replace(Text, char, "")
+    removeChar = replace(text, char, "")
 End Function
 
 '=========================================================================
 ' Get the bracket element at eleeNum
 '=========================================================================
-Public Function GetElement(ByVal Text As String, ByVal eleeNum As Long) As String
+Public Function GetElement(ByVal text As String, ByVal eleeNum As Long) As String
 
     On Error Resume Next
 
     Dim Length As Long, element As Long, part As String, ignore As Long, returnVal As String, p As Long
     
-    Length = Len(Text$)
+    Length = Len(text$)
     For p = 1 To Length + 1
-        part = Mid(Text, p, 1)
+        part = Mid(text, p, 1)
         If part = Chr(34) Then
             'A quote
             If ignore = 0 Then
@@ -484,13 +498,13 @@ End Function
 '=========================================================================
 ' Count the number of bracket elements in text
 '=========================================================================
-Public Function CountData(ByVal Text As String) As Long
+Public Function CountData(ByVal text As String) As Long
 
     On Error Resume Next
 
     'If there is no text, there are no elements
     Dim gB As String
-    gB = GetBrackets(Text, True)
+    gB = GetBrackets(text, True)
     If gB = "" Then Exit Function
 
     'Setup delimiter array
@@ -501,7 +515,7 @@ Public Function CountData(ByVal Text As String) As Long
     'Split at the delimiters
     Dim S() As String
     Dim uD() As String
-    S() = multiSplit(Text, c, uD, True)
+    S() = multiSplit(text, c, uD, True)
 
     'Number of data elements will be one higher than the upper bound
     CountData = UBound(S) + 1
@@ -511,16 +525,16 @@ End Function
 '=========================================================================
 ' Return the first space after the command / the opening bracket
 '=========================================================================
-Public Function LocateBrackets(ByVal Text As String) As Long
+Public Function LocateBrackets(ByVal text As String) As Long
 
     On Error Resume Next
     
     Dim Length As Long, p As Long, part As String, posAt As Long
     
     'First look for brackets--make it easy:
-    Length = Len(Text$)
+    Length = Len(text$)
     For p = 1 To Length
-        part = Mid$(Text$, p, 1)
+        part = Mid$(text$, p, 1)
         If part = "(" Then
             posAt = p
             Exit For
@@ -533,7 +547,7 @@ Public Function LocateBrackets(ByVal Text As String) As Long
 
     'OK- no brackets.  Find position of first space after command.
     For p = 1 To Length
-        part = Mid(Text, p, 1)
+        part = Mid(text, p, 1)
         If part = "#" Then posAt = p
         Exit For
     Next p
@@ -541,14 +555,14 @@ Public Function LocateBrackets(ByVal Text As String) As Long
         Exit Function 'couldn't find a command!
     End If
     For p = posAt To Length     'Find first occurrence of command name
-        part = Mid(Text$, p, 1)
+        part = Mid(text$, p, 1)
         If part <> " " Then
             posAt = p
             Exit For
         End If
     Next p
     For p = posAt To Length     'Find where command name ends.
-        part = Mid(Text$, p, 1)
+        part = Mid(text$, p, 1)
         If part = " " Then
             posAt = p
             Exit For
@@ -562,7 +576,7 @@ End Function
 '=========================================================================
 ' Retrieve the text inside the brackets
 '=========================================================================
-Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBrackets As Boolean) As String
+Public Function GetBrackets(ByVal text As String, Optional ByVal doNotCheckForBrackets As Boolean) As String
 
     On Error Resume Next
 
@@ -570,13 +584,13 @@ Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBr
     Dim use As String, location As Long, Length As Long, bracketDepth As Long, p As Long, part As String
     Dim fullUse As String
     
-    use = Text
+    use = text
     location = LocateBrackets(use)
-    Length = Len(Text)
+    Length = Len(text)
     
     If Not doNotCheckForBrackets Then
-        If Not stringContains(Text, "(") Then
-            If Not stringContains(Text, ")") Then
+        If Not stringContains(text, "(") Then
+            If Not stringContains(text, ")") Then
                 'No (s or )s here!
                 Exit Function
             End If
@@ -584,7 +598,7 @@ Public Function GetBrackets(ByVal Text As String, Optional ByVal doNotCheckForBr
     End If
 
     For p = location + 1 To Length
-        part$ = Mid$(Text$, p, 1)
+        part$ = Mid$(text$, p, 1)
         If ((part = ")") And ignoreClosing = False And bracketDepth <= 0) Or part = "" Then
             Exit For
         Else
@@ -757,7 +771,7 @@ End Function
 '=========================================================================
 ' Retrieve the parameters from the command passed in
 '=========================================================================
-Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeProgram) As parameters()
+Public Function GetParameters(ByVal text As String, ByRef theProgram As RPGCodeProgram) As parameters()
 
     On Error Resume Next
 
@@ -771,8 +785,8 @@ Public Function GetParameters(ByVal Text As String, ByRef theProgram As RPGCodeP
     Dim dataType As RPGC_DT
  
     'Get the parameters...
-    count = CountData(Text)
-    brackets = GetBrackets(Text)
+    count = CountData(text)
+    brackets = GetBrackets(text)
     For a = 1 To count
         dataType = getValue(GetElement(brackets, a), lit, num, theProgram)
         ReDim Preserve ret(a - 1)
@@ -977,7 +991,7 @@ End Function
 '=========================================================================
 ' Replace not within quotes
 '=========================================================================
-Public Function replaceOutsideQuotes(ByVal Text As String, ByVal find As String, ByVal replace As String)
+Public Function replaceOutsideQuotes(ByVal text As String, ByVal find As String, ByVal replace As String)
 
     On Error Resume Next
 
@@ -986,8 +1000,8 @@ Public Function replaceOutsideQuotes(ByVal Text As String, ByVal find As String,
     Dim char As String
     Dim a As Long
 
-    For a = 1 To Len(Text)
-        char = Mid(Text, a, 1)
+    For a = 1 To Len(text)
+        char = Mid(text, a, 1)
         Select Case char
             Case """"
                 If ignore Then
@@ -1007,11 +1021,11 @@ End Function
 '=========================================================================
 ' InStr outside quotes
 '=========================================================================
-Public Function inStrOutsideQuotes(ByVal start As Long, ByVal Text As String, ByVal find As String) As Long
+Public Function inStrOutsideQuotes(ByVal start As Long, ByVal text As String, ByVal find As String) As Long
     On Error Resume Next
     Dim a As Long, ignore As Boolean, char As String
-    For a = start To Len(Text)
-        char = Mid(Text, a, Len(find))
+    For a = start To Len(text)
+        char = Mid(text, a, Len(find))
         If Left(char, 1) = Chr(34) Then
             If ignore Then
                 ignore = False
@@ -1028,27 +1042,27 @@ End Function
 '=========================================================================
 ' Replace vars like <var!> with their values
 '=========================================================================
-Public Function MWinPrepare(ByVal Text As String, ByRef prg As RPGCodeProgram) As String
+Public Function MWinPrepare(ByVal text As String, ByRef prg As RPGCodeProgram) As String
 
     On Error Resume Next
 
     'Find the first <
     Dim firstLocation As Long
-    firstLocation = InStr(1, Text, "<")
+    firstLocation = InStr(1, text, "<")
 
     'If we found one
     If firstLocation > 0 Then
 
         'Find the associated >
         Dim secondLocation As Long
-        secondLocation = InStr(1, Text, ">")
+        secondLocation = InStr(1, text, ">")
 
         'If we found one
         If secondLocation > 0 Then
 
             'Get the name of the variable between them
             Dim theVar As String
-            theVar = Mid(Text, firstLocation + 1, secondLocation - firstLocation - 1)
+            theVar = Mid(text, firstLocation + 1, secondLocation - firstLocation - 1)
 
             'Put the variable in brackets
             Dim cLine As String
@@ -1067,10 +1081,10 @@ Public Function MWinPrepare(ByVal Text As String, ByRef prg As RPGCodeProgram) A
             End If
 
             'Replace <var!> with the var's value
-            Text = replace(Text, "<" & theVar & ">", theValue)
+            text = replace(text, "<" & theVar & ">", theValue)
 
             'Recurse passing in the running text
-            MWinPrepare = MWinPrepare(Text, prg)
+            MWinPrepare = MWinPrepare(text, prg)
 
             Exit Function
 
@@ -1079,7 +1093,7 @@ Public Function MWinPrepare(ByVal Text As String, ByRef prg As RPGCodeProgram) A
     End If
 
     'Return what we've done
-    MWinPrepare = Text
+    MWinPrepare = text
 
 End Function
 

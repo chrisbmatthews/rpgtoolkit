@@ -21,19 +21,14 @@ Public movementSize As Double    'movement size (in tiles)
 ' Return if we are using pixel movement
 '=========================================================================
 Public Property Get usingPixelMovement() As Boolean
-    If (Not movementSize = 1) And (Not boardIso()) Then
-        usingPixelMovement = True
-    End If
+    usingPixelMovement = ((movementSize <> 1) And (Not boardIso))
 End Property
 
 '=========================================================================
 ' Return if we're on an isometric board
 '=========================================================================
 Public Property Get boardIso() As Boolean
-    On Error Resume Next
-    If boardList(activeBoardIndex).theData.isIsometric = 1 Then
-        boardIso = True
-    End If
+    boardIso = (boardList(activeBoardIndex).theData.isIsometric = 1)
 End Property
 
 '=========================================================================
@@ -178,37 +173,37 @@ Public Sub incrementPosition( _
                 Case MV_NE
                     .X = .X + moveFraction
                     .Y = .Y - moveFraction
-            
+
                 Case MV_NW
                     .X = .X - moveFraction
                     .Y = .Y - moveFraction
-            
+
                 Case MV_SE
                     .X = .X + moveFraction
                     .Y = .Y + moveFraction
-            
+
                 Case MV_SW
                     .X = .X - moveFraction
                     .Y = .Y + moveFraction
-            
+
                 Case MV_NORTH
                     .Y = .Y - moveFraction
-            
+
                 Case MV_SOUTH
                     .Y = .Y + moveFraction
-            
+
                 Case MV_EAST
                     .X = .X + moveFraction
-            
+
                 Case MV_WEST
                     .X = .X - moveFraction
-            
+
             End Select
 
         End If
-    
+
     End With
-    
+
 End Sub
 
 '=========================================================================
@@ -242,7 +237,7 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
                         .yTarg = .yOrig - stepSize
                         .lTarg = .lOrig
                     End If
-                
+
                 Case MV_NW
                     If .yOrig Mod 2 = 0 Then
                         .xTarg = .xOrig - stepSize
@@ -253,7 +248,7 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
                         .yTarg = .yOrig - stepSize
                         .lTarg = .lOrig
                     End If
-            
+
                 Case MV_SE
                     If .yOrig Mod 2 = 0 Then
                         .xTarg = .xOrig
@@ -264,7 +259,7 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
                         .yTarg = .yOrig + stepSize
                         .lTarg = .lOrig
                     End If
-            
+
                 Case MV_SW
                     If .yOrig Mod 2 = 0 Then
                         .xTarg = .xOrig - stepSize
@@ -275,27 +270,27 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
                         .yTarg = .yOrig + stepSize
                         .lTarg = .lOrig
                     End If
-            
+
                 Case MV_NORTH
                     .xTarg = .xOrig
                     .yTarg = .yOrig - stepSize * 2
                     .lTarg = .lOrig
-            
+
                 Case MV_SOUTH
                     .xTarg = .xOrig
                     .yTarg = .yOrig + stepSize * 2
                     .lTarg = .lOrig
-            
+
                 Case MV_EAST
                     .xTarg = .xOrig + stepSize
                     .yTarg = .yOrig
                     .lTarg = .lOrig
-            
+
                 Case MV_WEST
                     .xTarg = .xOrig - stepSize
                     .yTarg = .yOrig
                     .lTarg = .lOrig
-            
+
                 Case Else
                     .xTarg = .xOrig
                     .yTarg = .yOrig
@@ -311,42 +306,42 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
                     .xTarg = .xOrig + stepSize
                     .yTarg = .yOrig - stepSize
                     .lTarg = .lOrig
-            
+
                 Case MV_NW
                     .xTarg = .xOrig - stepSize
                     .yTarg = .yOrig - stepSize
                     .lTarg = .lOrig
-            
+
                 Case MV_SE
                     .xTarg = .xOrig + stepSize
                     .yTarg = .yOrig + stepSize
                     .lTarg = .lOrig
-            
+
                 Case MV_SW
                     .xTarg = .xOrig - stepSize
                     .yTarg = .yOrig + stepSize
                     .lTarg = .lOrig
-            
+
                 Case MV_NORTH
                     .xTarg = .xOrig
                     .yTarg = .yOrig - stepSize
                     .lTarg = .lOrig
-            
+
                 Case MV_SOUTH
                     .xTarg = .xOrig
                     .yTarg = .yOrig + stepSize
                     .lTarg = .lOrig
-            
+
                 Case MV_EAST
                     .xTarg = .xOrig + stepSize
                     .yTarg = .yOrig
                     .lTarg = .lOrig
-            
+
                 Case MV_WEST
                     .xTarg = .xOrig - stepSize
                     .yTarg = .yOrig
                     .lTarg = .lOrig
-            
+
                 Case Else
                     .xTarg = .xOrig
                     .yTarg = .yOrig
@@ -355,7 +350,7 @@ Public Sub insertTarget(ByRef pend As PENDING_MOVEMENT)
             End Select
 
         End If
-    
+
     End With
 
 End Sub

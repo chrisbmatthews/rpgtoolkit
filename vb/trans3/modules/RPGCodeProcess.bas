@@ -25,7 +25,7 @@ Public Function getMethodLine(ByVal name As String, ByRef prg As RPGCodeProgram)
 
     On Error Resume Next
 
-    Dim idx As Long     'For for loops
+    Dim idx As Long                 'For for loops
 
     'Make name all caps
     name = Trim(UCase(name))
@@ -52,8 +52,8 @@ Public Sub addMethodToPrg(ByVal name As String, ByVal line As Long, ByRef prg As
 
     On Error Resume Next
 
-    Dim idx As Long     'For for loops
-    Dim space As Long   'Space for entry
+    Dim idx As Long                 'For for loops
+    Dim space As Long               'Space for entry
 
     'Make name all caps
     name = Trim(UCase(name))

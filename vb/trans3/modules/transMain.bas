@@ -76,6 +76,7 @@ End Sub
 Public Sub closeSystems()
     On Error Resume Next
     gShuttingDown = True
+    Call ClearAllThreads
     Call stopMedia
     Call stopMenuPlugin
     Call stopFightPlugin
@@ -84,7 +85,6 @@ Public Sub closeSystems()
     Call AnimationShutdown
     Call destroyGraphics
     Call UnLoadFontsFromFolder(projectPath & fontPath)
-    Call ClearAllThreads
     Call killMedia
     Call DeletePakTemp
     Call host.Destroy
@@ -390,6 +390,7 @@ End Sub
 Private Sub openSystems(Optional ByVal testingPRG As Boolean)
     On Error Resume Next
     Call initActiveX
+    Call initRPGCodeParser
     Call initEventProcessor
     Call initGraphics(testingPRG)
     Call correctPaths

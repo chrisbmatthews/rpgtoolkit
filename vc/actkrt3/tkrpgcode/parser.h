@@ -35,7 +35,7 @@ inline void initVbString(char* theString);
 inline void returnVbString(inlineString theString);
 
 //for BSTRs
-inline BSTR CharToBSTR(char* stringPointer);
+inline BSTR Char2BSTR(char* stringPointer);
 
 //exports
 void APIENTRY RPGCInitParser(int setStringAddress);

@@ -187,3 +187,4 @@ EXPORTS
 	RPGCGetMethodName	@234
 	RPGCParseAfter		@235
 	RPGCParseBefore		@236
+	RPGCInitParser		@237
