@@ -80,6 +80,30 @@ Public Const COLOR24 As Byte = 1      '24-bit color
 Public Const COLOR32 As Byte = 2      '32-bit color
 
 '=========================================================================
+' Constants for MainMem.PixelMovement (see PixelMovementRPG)
+'=========================================================================
+Public Const TILE_MOVEMENT = 0
+Public Const PIXEL_MOVEMENT_TILE_PUSH = 1
+Public Const PIXEL_MOVEMENT_PIXEL_PUSH = 2
+
+'=========================================================================
+' Store a gamespeed value between -127 and +127 in the mainMem byte.
+'=========================================================================
+Public Sub setGameSpeed(ByRef gameSpeed As Byte, ByVal value As Long)
+    On Error Resume Next
+    value = inBounds(value, -127, 127)
+    gameSpeed = value + 128
+End Sub
+
+'=========================================================================
+' Read a gamespeed value between -127 and +127 from the mainMem byte.
+'=========================================================================
+Public Function getGameSpeed(ByVal gameSpeed As Byte) As Long
+    On Error Resume Next
+    getGameSpeed = gameSpeed - 128
+End Function
+
+'=========================================================================
 ' Add a plugin to a project
 '=========================================================================
 Public Sub MainAddPlugin(ByRef theMain As TKMain, ByVal file As String)
