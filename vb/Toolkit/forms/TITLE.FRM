@@ -36,7 +36,7 @@ Begin VB.Form frmMain
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Release 3.0.4 (August 2004)"
+      Caption         =   "Release 3.0.4 (September 2004)"
       ForeColor       =   &H00000000&
       Height          =   255
       Left            =   120
@@ -70,10 +70,10 @@ Begin VB.Form frmMain
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Copyright 2003, 2004 By Christopher B. Matthews And Contibutors"
+      Caption         =   "Copyright 2004 By Christopher Matthews and the TK3 Dev Team"
       ForeColor       =   &H00000000&
       Height          =   375
-      Left            =   2520
+      Left            =   2400
       TabIndex        =   0
       Tag             =   "1094"
       Top             =   3240

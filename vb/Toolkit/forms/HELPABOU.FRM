@@ -3,7 +3,7 @@ Begin VB.Form helpabout
    Appearance      =   0  'Flat
    BorderStyle     =   1  'Fixed Single
    Caption         =   "About RPG Toolkit"
-   ClientHeight    =   4515
+   ClientHeight    =   5850
    ClientLeft      =   2595
    ClientTop       =   2730
    ClientWidth     =   7365
@@ -22,7 +22,7 @@ Begin VB.Form helpabout
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   4515
+   ScaleHeight     =   5850
    ScaleWidth      =   7365
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1115"
@@ -43,8 +43,16 @@ Begin VB.Form helpabout
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   6
-      Top             =   2520
+      Top             =   3720
       Width           =   6855
+   End
+   Begin VB.Label Label7 
+      Caption         =   $"HELPABOU.frx":0CCA
+      Height          =   855
+      Left            =   480
+      TabIndex        =   9
+      Top             =   2640
+      Width           =   6255
    End
    Begin VB.Label Label4 
       Alignment       =   2  'Center
@@ -174,7 +182,7 @@ Begin VB.Form helpabout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Copyright 2003, 2004 By Christopher B. Matthews and Contibutors"
+      Caption         =   "Copyright 2004 By Christopher Matthews and the TK3 Dev Team"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -235,7 +243,7 @@ Private Sub Form_Load()
     lname.Visible = True
 
     Dim theText As String
-    theText = theText & "Open source contributions by: Vampz, KSNiloc, John@aljo, Delano, Euix, Geoff, Woozy" & vbCrLf & vbCrLf
+    theText = theText & "Open source contributions by: Colin James Fitzpatrick (KSNiloc), Phil Carty (Xavier), John@aljo, Jonathan Hughes (Delano), Chris Hutchinson (Euix), Geoff, Sander Knape (Woozy), Samuel Bedwell (Occasionally_Correct)" & vbCrLf & vbCrLf
     theText = theText & "Spanish translations provided by Ignacio Chitinsky and Jaime Peña.  French translation provided by Alexandre Thomas.  German translation provided by Martin Holtz.  Italian translation provided by Andrea Piras." & vbCrLf & vbCrLf
     theText = theText & "RPGToolkit Fo' Sho' Music Pak v2.18 composed by Chris and Craig Reeves, Copyright 2000.  Used with permission.  http://www.vipcouncil.com" & vbCrLf & vbCrLf
     theText = theText & "Menu System graphic and layout based on designs provided by |3lue.  Used with permission." & vbCrLf & vbCrLf
