@@ -282,7 +282,7 @@ Public Sub highredrawLIGHT()
 
 End Sub
 
-Public Function inBounds(ByVal num As Double, ByVal low As Double, ByVal high As Double)
+Public Function inBounds(ByVal num As Double, ByVal low As Double, ByVal high As Double) As Double
     '=======================================================
     'Returns num in bounds of low and high
     '=======================================================
