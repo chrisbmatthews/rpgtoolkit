@@ -320,17 +320,10 @@ LRESULT CALLBACK eventProcessor(
 			}
 		} break;
 
-		// Event we don't handle
-		default:
-		{
-			// Let windows do the dirty work
-			return DefWindowProc(hwnd, msg, wParam, lParam);
-		} break;
-
 	}
 
 	// Return success
-	return TRUE;
+	return DefWindowProc(hwnd, msg, wParam, lParam);
 
 }
 
