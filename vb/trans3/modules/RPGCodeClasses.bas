@@ -1140,14 +1140,17 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
     If (object = "") Then object = GetWithPrefix()
 
     ' Get its handle
-    If (getValue(object, object, hClassDbl, prg) = DT_LIT) Then
-        If (Right(object, 1) <> "!" And Right(object, 1) <> "$") Then
-            ' Must be a var
-            object = object & "!"
-            Call getVariable(object, object, hClassDbl, prg)
-        End If
+    If (Right(object, 1) <> "!" And Right(object, 1) <> "$") Then
+        ' Append an !
+        Call getValue(object & "!", object, hClassDbl, prg)
+    Else
+        ' ! already found
+        Call getValue(object, object, hClassDbl, prg)
     End If
+
+    ' Convert the handle to long
     hClass = CLng(hClassDbl)
+
     ' Check if we're calling from outside
     outside = (topNestle(prg) <> hClass)
 
@@ -1165,7 +1168,7 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
             If (isMethodMember(cmdName, hClass, prg, outside)) Then
 
                 ' Execute the method
-                Call callObjectMethod(hClass, cLine, prg, retVal, GetCommandName(cLine))
+                Call callObjectMethod(hClass, cLine, prg, retVal, cmdName)
 
                 ' Replace text with value the method returned
                 If (retVal.dataType = DT_NUM) Then
@@ -1197,7 +1200,8 @@ Public Function spliceForObjects(ByVal Text As String, ByRef prg As RPGCodeProgr
 
     ' Complete the return string
     spliceForObjects = Mid(Text, 1, start - 1) & value & Mid(Text, lngEnd + 1)
-    If (Trim(spliceForObjects) = "0") Then
+
+    If ((lngEnd = Len(Text)) And (start = 1)) Then
         spliceForObjects = ""
     Else
         ' Recurse, passing in the running text
