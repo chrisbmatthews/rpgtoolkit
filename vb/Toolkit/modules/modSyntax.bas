@@ -41,7 +41,7 @@ Public UnderlineCodes(5) As Double
 Public ActiveModule As String
 
 Private Property Get CurrentObject() As RichTextBox
- Set CurrentObject = tkMainForm.activeForm.codeform
+    Set CurrentObject = tkMainForm.activeForm.codeForm
 End Property
 
 Public Function SplitLines(Optional ByVal min As Long = -1, Optional ByVal max As Long = -1)
@@ -57,22 +57,7 @@ Dim X As Long
 'Added by KSNiloc...
 GetLineColors
 
-''''''''''''''''''''''''''
-'  Commented by KSNiloc  '
-''''''''''''''''''''''''''
-'[6/19/04]
-'ColorCodes(0) = CDbl(GetSetting("RPGToolkit3", "Colors", "#", "8388608"))
-'ColorCodes(1) = CDbl(GetSetting("RPGToolkit3", "Colors", "*", "32768"))
-'ColorCodes(2) = CDbl(GetSetting("RPGToolkit3", "Colors", "{}", "15490"))
-'ColorCodes(3) = CDbl(GetSetting("RPGToolkit3", "Colors", ":", "12632064"))
-'ColorCodes(4) = CDbl(GetSetting("RPGToolkit3", "Colors", "()", "0"))
-'ColorCodes(5) = CDbl(GetSetting("RPGToolkit3", "Colors", "!$", "10223809"))
-''''''''''''''''''''''''''
-'     End Commenting     '
-''''''''''''''''''''''''''
-
-'Dim CurrentObject As RichTextBox
-'Set CurrentObject = tkMainForm.activeForm.codeform
+CurrentObject.tag = "1"
 
 'Clear bookmarks...
 tkMainForm.activeForm.cboMethodBookmarks.Clear
@@ -80,10 +65,9 @@ tkMainForm.activeForm.cboCommentBookmarks.Clear
 tkMainForm.activeForm.cboLabelBookmarks.Clear
 
 CurrentObject.Visible = False
+CurrentObject.Text = CapitalizeRPGCode(CurrentObject.Text)
 linesArray() = Split(CurrentObject.Text, vbNewLine)
 runningTotal = 0
-
-'CurrentObject.text = CapitalizeRPGCode(CurrentObject.text)
 
 'StartTime = GetTickCount
 For X = 0 To UBound(linesArray())
@@ -93,10 +77,12 @@ For X = 0 To UBound(linesArray())
     CurrentObject.SelLength = Len(linesArray(X))
 
     If (X >= min And X <= max) Or (min = -1 And max = -1) Then
-    
-        CurrentObject.SelFontName = "Courier New"
-        CurrentObject.SelFontSize = 10
-            
+
+        With CurrentObject
+            .SelFontName = "Courier New"
+            .SelFontSize = 10
+        End With
+
         If min = -1 Then
             ColorLine linesArray(X), runningTotal
         Else
@@ -108,6 +94,7 @@ For X = 0 To UBound(linesArray())
     If Not min - 1 Then addBookmark linesArray(X)
 
     runningTotal = runningTotal + Len(linesArray(X)) + 2
+     
 Next X
 
 'StopTime = GetTickCount
@@ -119,7 +106,7 @@ End Function
 
 Function ColorLine(lineText As String, runningTotal As Double, Optional ByVal noBookmarks As Boolean)
 ActiveModule = "ColorLine()"
-On Error GoTo errorhandler ' Skip any errors, 90% of the time they are RPG code mistake anyway
+On Error GoTo ErrorHandler ' Skip any errors, 90% of the time they are RPG code mistake anyway
 Dim SpaceLessLine As String ' Define a variable to hold the line of code
 Dim moveFromStart As Long
 ' Set the active code text box as CurrentObject
@@ -226,7 +213,7 @@ End Select
 
 If Not noBookmarks Then addBookmark lineText
 
-errorhandler:
+ErrorHandler:
 End Function
 
 Private Sub addBookmark(ByVal lineText As String)
@@ -260,7 +247,7 @@ Function ColorSection(SectionStart As Double, SectionLen As Double, SectionColor
 
  'Access the RTF box...
  Dim CurrentObject As RichTextBox
- Set CurrentObject = tkMainForm.activeForm.codeform
+ Set CurrentObject = tkMainForm.activeForm.codeForm
  
  'Select the text...
  CurrentObject.selStart = SectionStart
@@ -287,7 +274,7 @@ Public Sub GotoLine(ByVal lineText As String)
  Dim a As Long
  
  'Access the richTextBox...
- Set rtf = tkMainForm.activeForm.codeform
+ Set rtf = tkMainForm.activeForm.codeForm
  With rtf
  
   'Split the code up into lines...
@@ -339,6 +326,8 @@ Public Sub ReColorLine(Optional ByRef blackLine As Boolean = -2, _
  Dim oldSS As Long
  Dim oldSL As Long
  Dim done As Boolean
+ Dim tempSS As Long
+ Dim tempSL As Long
  Dim a As Long
  Dim b As Long
  
@@ -381,14 +370,13 @@ Public Sub ReColorLine(Optional ByRef blackLine As Boolean = -2, _
    'just color the first line as it's sometimes missed...
    If a = UBound(lines) Then b = 1
   Next a
-
-  'Select the line...
-  '.selStart = a
-  '.SelLength = b - a + 1
   
-  'Make sure we only have *one* line...
-  '.SelText = RTrim(Replace(.SelText, vbCrLf, ""))
-
+  tempSS = .selStart
+  tempSL = .SelLength
+  .SelText = CapitalizeRPGCode(.SelText)
+  .selStart = tempSS
+  .SelLength = tempSL
+  
   If Not blackLine = -2 Then
    'We're going to change the boolean passed in...
 
