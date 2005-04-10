@@ -135,6 +135,144 @@ INLINE CGDICanvas::~CGDICanvas(VOID)
 	}
 }
 
+//------------------------------------------------------------------------
+// Draw text onto the screen
+//------------------------------------------------------------------------
+BOOL FAST_CALL CGDICanvas::DrawText(
+	CONST INT x,
+	CONST INT y,
+	CONST std::string strText,
+	CONST std::string strTypeFace,
+	CONST INT size,
+	CONST LONG clr,
+	CONST BOOL bold,
+	CONST BOOL italics,
+	CONST BOOL underline,
+	CONST BOOL centred,
+	CONST BOOL outlined
+		)
+{
+
+	// Create a font
+	CONST HFONT hFont = CreateFont(
+		size,
+		0,
+		0,
+		0,
+		bold ? FW_BOLD : FW_NORMAL,
+		italics,
+		underline,
+		0,
+		DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		DEFAULT_PITCH,
+		strTypeFace.c_str()
+	);
+
+	// If the font was valid
+	if (hFont)
+	{
+
+		// Open the DC
+		CONST HDC hdc = OpenDC();
+
+		// Set its background it transparent
+		SetBkMode(hdc, TRANSPARENT);
+
+		// Select out any old font
+		CONST HGDIOBJ hOld = SelectObject(hdc, hFont);
+
+		// Set the text color
+		SetTextColor(hdc, clr);
+
+		// Set allignment
+		SetTextAlign(hdc, centred ? TA_CENTER : TA_LEFT);
+
+		// Create a new brush
+		CONST HGDIOBJ hNewBrush = CreateSolidBrush(clr);
+
+		// Select out any old brush
+		CONST HGDIOBJ hOldBrush = SelectObject(hdc, hNewBrush);
+
+		// If the text is to be outlined
+		if (outlined)
+		{
+
+			// Draw the text
+			BeginPath(hdc);
+			TextOut(hdc, x, y, strText.c_str(), strText.length());
+			EndPath(hdc);
+
+			// Outline the text
+			SetBkColor(hdc, clr);
+			SetBkMode(hdc, OPAQUE);
+			StrokeAndFillPath(hdc);
+
+		} 
+		else
+		{
+
+			// Just draw the text
+			TextOut(hdc, x, y, strText.c_str(), strText.length());
+
+		}
+
+		// Restore old objects
+		SelectObject(hdc, hOldBrush);
+		DeleteObject(hNewBrush);
+		SelectObject(hdc, hOld);
+		DeleteObject(hFont);
+
+		// Close the DC
+		CloseDC(hdc);
+	}
+	else
+	{
+		// Failed
+		return FALSE;
+	}
+
+	// All's good
+	return TRUE;
+
+}
+
+//------------------------------------------------------------------------
+// Clear the canvas to a color
+//------------------------------------------------------------------------
+VOID FAST_CALL CGDICanvas::ClearScreen(CONST LONG crColor)
+{
+
+	// Open the screen's DC
+	CONST HDC hdc = OpenDC();
+
+	// Create a rect
+	RECT r = {0, 0, 0, 0};
+	r.right = m_nWidth + 1;
+	r.bottom = m_nHeight + 1;
+
+	// Create and select objects
+	CONST HPEN pen = CreatePen(0, 1, crColor);
+	CONST HGDIOBJ l = SelectObject(hdc, pen);
+	CONST HBRUSH brush = CreateSolidBrush(crColor);
+	CONST HGDIOBJ m = SelectObject(hdc, brush);
+
+	// Fill the screen
+	FillRect(hdc, &r, brush);
+
+	// Unselect and delete objects
+	SelectObject(hdc, m);
+	SelectObject(hdc, l);
+	DeleteObject(brush);
+	DeleteObject(pen);
+
+	// Close the dc
+	CloseDC(hdc);
+
+}
+
 //--------------------------------------------------------------------------
 // Find the closest match to a colour
 //--------------------------------------------------------------------------

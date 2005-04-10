@@ -348,6 +348,24 @@ public:
 		CONST BOOL bInRam
 	) CONST;
 
+	VOID FAST_CALL ClearScreen(
+		CONST LONG crColor
+	);
+
+	BOOL FAST_CALL DrawText(
+		CONST INT x,
+		CONST INT y,
+		CONST std::string strText,
+		CONST std::string strTypeFace,
+		CONST INT size,
+		CONST LONG clr,
+		CONST BOOL bold = FALSE,
+		CONST BOOL italics = FALSE,
+		CONST BOOL underline = FALSE,
+		CONST BOOL centred = FALSE,
+		CONST BOOL outlined = FALSE
+	);
+
 	INT FAST_CALL ShiftLeft(
 		CONST INT nPixels
 	);
