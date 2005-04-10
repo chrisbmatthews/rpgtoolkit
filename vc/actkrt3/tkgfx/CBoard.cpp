@@ -13,7 +13,7 @@
 //--------------------------------------------------------------------------
 #include "CBoard.h"			// Stuff for this file
 #include "tkgfx.h"			// Main gfx routines
-#include "CUtil.h"			// Utility functions
+#include "../../tkCommon/tkGfx/CUtil.h"			// Utility functions
 #include "CTileAnim.h"		// Animated tiles
 
 //--------------------------------------------------------------------------

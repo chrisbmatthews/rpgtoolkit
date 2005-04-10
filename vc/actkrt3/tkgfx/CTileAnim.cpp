@@ -12,7 +12,7 @@
 // Inclusions
 //--------------------------------------------------------------------------
 #include "CTileAnim.h"					// Stuff for this file
-#include "CUtil.h"						// Utility functions
+#include "../../tkCommon/tkGfx/CUtil.h"						// Utility functions
 
 //--------------------------------------------------------------------------
 // Definitions

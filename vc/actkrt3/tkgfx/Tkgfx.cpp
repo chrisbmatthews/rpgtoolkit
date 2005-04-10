@@ -54,9 +54,8 @@ int g_nNumCallbacks;			//number of elements in the above array.
 #include "stdafx.h"
 #include "CBoard.h"
 #include "tkgfx.h"
-#include "CTile.h"
 tilesetHeader tileset;
-#include "CUtil.h"
+#include "../../tkCommon/tkGfx/CUtil.h"
 #include "tkpluglocalfns.h"
 #include <vector>
 

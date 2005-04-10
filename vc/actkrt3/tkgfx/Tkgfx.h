@@ -27,7 +27,7 @@
 #include "stdafx.h"
 #include <set>
 #include <string>
-#include "CTile.h"
+#include "../../tkCommon/tkGfx/CTile.h"
 
 #ifndef TKGFX_H
 #define TKGFX_H

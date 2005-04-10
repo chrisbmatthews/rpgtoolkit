@@ -16,8 +16,7 @@
 #include <string.h>
 #include "freeimage.h"
 #include "tkimage.h"
-#include "..\tkCanvas\GDICanvas.h"
-#include "..\tkgfx\CUtil.h"
+#include "../../tkCommon/tkGfx/CUtil.h"
 
 //----------------------------------------------------------------
 // Initiate FreeImage
@@ -35,54 +34,6 @@ INT APIENTRY IMGClose(VOID)
 {
 	FreeImage_DeInitialise();
 	return 1;
-}
-
-//----------------------------------------------------------------
-// Save the contents of a canvas to a *.ico file
-//----------------------------------------------------------------
-VOID APIENTRY IMGCreateIcon(CGDICanvas *CONST cnv, LPCSTR strFileName)
-{
-
-	// Create a new bitmap
-	DDPIXELFORMAT ddpf;
-	DD_INIT_STRUCT(ddpf);
-	cnv->GetDXSurface()->GetPixelFormat(&ddpf);
-	FIBITMAP *bmp = FreeImage_Allocate(32, 32, ddpf.dwRGBBitCount);
-
-	// Lock the canvas
-	cnv->Lock();
-
-	// The x axis
-	for (INT i = 0; i < 32; i++)
-	{
-
-		// The y axis
-		for (INT j = 0, y = 31; j < 32; j++, y--)
-		{
-
-			// Obtain rgb at this location
-			CONST INT rgb = cnv->GetPixel(i, j);
-			RGBQUAD rgbq;
-			rgbq.rgbBlue = util::blue(rgb);
-			rgbq.rgbGreen = util::green(rgb);
-			rgbq.rgbRed = util::red(rgb);
-
-			// Set onto destination bitmap
-			FreeImage_SetPixelColor(bmp, i, y, &rgbq);
-
-		}
-
-	}
-
-	// Unlock the canvas
-	cnv->Unlock();
-
-	// Save to destination file
-	FreeImage_Save(FIF_ICO, bmp, strFileName);
-
-	// Clean up
-	FreeImage_Unload(bmp);
-
 }
 
 //----------------------------------------------------------------

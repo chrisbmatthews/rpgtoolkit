@@ -128,7 +128,7 @@ SOURCE=.\tkgfx\CBoard.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkgfx\CTile.cpp
+SOURCE=..\tkCommon\tkGfx\CTile.cpp
 # End Source File
 # Begin Source File
 
@@ -136,11 +136,7 @@ SOURCE=.\tkgfx\CTileAnim.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkgfx\CTileCanvas.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\tkgfx\CUtil.cpp
+SOURCE=..\tkCommon\tkGfx\CUtil.cpp
 # End Source File
 # Begin Source File
 
@@ -156,7 +152,7 @@ SOURCE=.\tkgfx\CBoard.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkgfx\CTile.h
+SOURCE=..\tkCommon\tkGfx\CTile.h
 # End Source File
 # Begin Source File
 
@@ -164,11 +160,7 @@ SOURCE=.\tkgfx\CTileAnim.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkgfx\CTileCanvas.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\tkgfx\CUtil.h
+SOURCE=..\tkCommon\tkGfx\CUtil.h
 # End Source File
 # Begin Source File
 
@@ -264,15 +256,15 @@ SOURCE=.\tkzip\zlib.lib
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\tkCanvas\CCanvasPool.h
+SOURCE=..\tkCommon\tkCanvas\CCanvasPool.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkCanvas\GDICanvas.h
+SOURCE=..\tkCommon\tkCanvas\GDICanvas.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkCanvas\tkCanvas.h
+SOURCE=..\tkCommon\tkCanvas\tkCanvas.h
 # End Source File
 # End Group
 # Begin Group "tkCanvas - source"
@@ -280,15 +272,15 @@ SOURCE=.\tkCanvas\tkCanvas.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\tkCanvas\CCanvasPool.cpp
+SOURCE=..\tkCommon\tkCanvas\CCanvasPool.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkCanvas\GDICanvas.cpp
+SOURCE=..\tkCommon\tkCanvas\GDICanvas.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkCanvas\tkCanvas.cpp
+SOURCE=..\tkCommon\tkCanvas\tkCanvas.cpp
 # End Source File
 # End Group
 # End Group
@@ -412,11 +404,11 @@ SOURCE=.\GUISystem\platform\transHost.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\tkDirectX\platform.cpp
+SOURCE=..\tkCommon\tkDirectX\platform.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkDirectX\platform.h
+SOURCE=..\tkCommon\tkDirectX\tkDirectX.cpp
 # End Source File
 # End Group
 # Begin Group "tkDirectX"
@@ -424,11 +416,11 @@ SOURCE=.\tkDirectX\platform.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\tkDirectX\tkDirectX.cpp
+SOURCE=..\tkCommon\tkDirectX\platform.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkDirectX\tkDirectX.h
+SOURCE=..\tkCommon\tkDirectX\tkDirectX.h
 # End Source File
 # End Group
 # End Group
