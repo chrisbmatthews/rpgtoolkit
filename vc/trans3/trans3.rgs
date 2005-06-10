@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		{7DCD094B-A9E9-443D-A9BD-0C8F9B6621B8} = s 'trans3'
+		'trans3.EXE'
+		{
+			val AppID = s {7DCD094B-A9E9-443D-A9BD-0C8F9B6621B8}
+		}
+	}
+}

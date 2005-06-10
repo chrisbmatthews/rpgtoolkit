@@ -17,6 +17,7 @@
 #include "../common/board.h"
 #include "../input/input.h"
 #include "../misc/misc.h"
+#include "winmain.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commdlg.h>
@@ -288,11 +289,12 @@ VOID closeSystems(VOID)
 }
 
 #include <direct.h>
+#include "../plugins/CPlugin.h"
 
 /*
  * Main entry point.
  */
-INT WINAPI WinMain(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
+INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
 
 	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"

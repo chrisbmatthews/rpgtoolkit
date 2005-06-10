@@ -1,0 +1,24 @@
+HKCR
+{
+	Trans3.Callbacks.1 = s 'Callbacks Class'
+	{
+		CLSID = s '{6FD78CD3-F15B-4092-B549-EB07DEC99432}'
+	}
+	Trans3.Callbacks = s 'Callbacks Class'
+	{
+		CLSID = s '{6FD78CD3-F15B-4092-B549-EB07DEC99432}'
+		CurVer = s 'Trans3.Callbacks.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {6FD78CD3-F15B-4092-B549-EB07DEC99432} = s 'Callbacks Class'
+		{
+			ProgID = s 'Trans3.Callbacks.1'
+			VersionIndependentProgID = s 'Trans3.Callbacks'
+			ForceRemove 'Programmable'
+			LocalServer32 = s '%MODULE%'
+			val AppID = s '{7DCD094B-A9E9-443D-A9BD-0C8F9B6621B8}'
+			'TypeLib' = s '{E3916E35-68ED-4C43-88EE-03C4AAA569B8}'
+		}
+	}
+}

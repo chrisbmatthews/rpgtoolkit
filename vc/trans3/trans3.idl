@@ -1,0 +1,46 @@
+//////////////////////////////////////////////////////////////////
+// This is ATL generated code.
+//
+// Do not modify this file directly. If you need to change its
+// contents, use ATL's wizards.
+//////////////////////////////////////////////////////////////////
+
+// trans3.idl : IDL source for trans3.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (trans3.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(C146901F-ABFA-4D24-A4F2-D83C961D37B9),
+		dual,
+		helpstring("ICallbacks Interface"),
+		pointer_default(unique)
+	]
+	interface ICallbacks : IDispatch
+	{
+		[id(1), helpstring("method test")] HRESULT test(void);
+	};
+
+[
+	uuid(E3916E35-68ED-4C43-88EE-03C4AAA569B8),
+	version(1.0),
+	helpstring("trans3 1.0 Type Library")
+]
+library TRANS3Lib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(6FD78CD3-F15B-4092-B549-EB07DEC99432),
+		helpstring("Callbacks Class")
+	]
+	coclass Callbacks
+	{
+		[default] interface ICallbacks;
+	};
+};
