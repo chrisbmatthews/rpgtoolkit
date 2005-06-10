@@ -28,4 +28,9 @@ std::string waitForKey(void);
  */
 LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+/*
+ * Scan for keys.
+ */
+void scanKeys(void);
+
 #endif

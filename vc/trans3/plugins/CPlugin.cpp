@@ -17,7 +17,6 @@
  */
 CPlugin::CPlugin(void)
 {
-	CoInitialize(NULL);
 	m_plugin = NULL;
 }
 
@@ -28,7 +27,6 @@ CPlugin::CPlugin(void)
  */
 CPlugin::CPlugin(const std::wstring cls)
 {
-	CoInitialize(NULL);
 	m_plugin = NULL;
 	load(cls);
 }
@@ -40,7 +38,6 @@ CPlugin::CPlugin(const std::wstring cls)
  */
 CPlugin::CPlugin(const CPlugin &rhs)
 {
-	CoInitialize(NULL);
 	if (m_plugin = rhs.m_plugin)
 	{
 		m_plugin->AddRef();
@@ -71,7 +68,6 @@ CPlugin &CPlugin::operator=(const CPlugin &rhs)
 CPlugin::~CPlugin(void)
 {
 	unload();
-	CoUninitialize();
 }
 
 /*

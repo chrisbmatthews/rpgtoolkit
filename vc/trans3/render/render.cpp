@@ -302,6 +302,9 @@ void showScreen(const int width, const int height)
 	ShowWindow(g_hHostWnd, SW_SHOW);
 	g_pDirectDraw->Refresh();
 
+	extern void initInput(void);
+	initInput();
+
 	createCanvases();
 
 }

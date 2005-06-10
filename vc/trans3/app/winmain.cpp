@@ -214,6 +214,7 @@ VOID openSystems(VOID)
 INT gameLogic(VOID)
 {
 	renderNow();
+	scanKeys();
 	return GS_IDLE;
 }
 
@@ -286,10 +287,11 @@ INT mainEventLoop(VOID)
 VOID closeSystems(VOID)
 {
 	closeGraphics();
+	extern void freeInput(void);
+	freeInput();
 }
 
 #include <direct.h>
-#include "../plugins/CPlugin.h"
 
 /*
  * Main entry point.

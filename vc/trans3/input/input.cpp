@@ -11,12 +11,16 @@
 #include <windows.h>
 #include <vector>
 #include <string>
+#define DIRECTINPUT_VERSION DIRECTINPUT_HEADER_VERSION
+#include <dinput.h>
 #include "input.h"
 
 /*
  * Globals.
  */
 static std::vector<char> g_keys;
+static IDirectInput8A *g_lpdi = NULL;
+static IDirectInputDevice8A *g_lpdiKeyboard = NULL;
 
 /*
  * Process an event from the message queue.
@@ -68,6 +72,92 @@ std::string waitForKey(void)
 	}
 	const char toRet[] = {chr, '\0'};
 	return toRet;
+}
+
+/*
+ * Enumerate keyboards.
+ */
+BOOL CALLBACK diEnumKeyboardProc(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
+{
+	*(LPGUID)pvRef = lpddi->guidProduct;
+	if (GET_DIDEVICE_SUBTYPE(lpddi->dwDevType) == DI8DEVTYPEKEYBOARD_PCENH)
+	{
+		return DIENUM_STOP;
+	}
+	return DIENUM_CONTINUE;
+}
+
+/*
+ * Initialize input.
+ */
+void initInput(void)
+{
+	if (g_lpdi) return;
+	extern HINSTANCE g_hInstance;
+	DirectInput8Create(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8A, (void **)&g_lpdi, NULL);
+	GUID kbGuid = GUID_SysKeyboard;
+	g_lpdi->EnumDevices(DI8DEVTYPE_KEYBOARD, diEnumKeyboardProc, &kbGuid, DIEDFL_ATTACHEDONLY);
+	g_lpdi->CreateDevice(kbGuid, &g_lpdiKeyboard, NULL);
+	extern HWND g_hHostWnd;
+	g_lpdiKeyboard->SetCooperativeLevel(g_hHostWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+	g_lpdiKeyboard->SetDataFormat(&c_dfDIKeyboard);
+	g_lpdiKeyboard->Acquire();
+}
+
+/*
+ * Close input.
+ */
+void freeInput(void)
+{
+	if (!g_lpdi) return;
+	g_lpdiKeyboard->Unacquire();
+	g_lpdiKeyboard->Release();
+	g_lpdiKeyboard = NULL;
+	g_lpdi->Release();
+	g_lpdi = NULL;
+}
+
+/*
+ * Scan for keys.
+ */
+void scanKeys(void)
+{
+	BYTE keys[256];
+	g_lpdiKeyboard->GetDeviceState(256, keys);
+	#define SCAN_KEY_DOWN(x) (keys[DIK_##x] & 0x80)
+
+	if (SCAN_KEY_DOWN(RIGHT) && SCAN_KEY_DOWN(UP))
+	{
+		// Northeast.
+	}
+	else if (SCAN_KEY_DOWN(LEFT) && SCAN_KEY_DOWN(UP))
+	{
+		// Northwest.
+	}
+	else if (SCAN_KEY_DOWN(RIGHT) && SCAN_KEY_DOWN(DOWN))
+	{
+		// Southeast.
+	}
+	else if (SCAN_KEY_DOWN(LEFT) && SCAN_KEY_DOWN(DOWN))
+	{
+		// Southwest.
+	}
+	else if (SCAN_KEY_DOWN(UP))
+	{
+		// North.
+	}
+	else if (SCAN_KEY_DOWN(DOWN))
+	{
+		// South.
+	}
+	else if (SCAN_KEY_DOWN(RIGHT))
+	{
+		// East.
+	}
+	else if (SCAN_KEY_DOWN(LEFT))
+	{
+		// West.
+	}
 }
 
 /*
