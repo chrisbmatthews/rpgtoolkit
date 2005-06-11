@@ -58,9 +58,9 @@ bool tagAnimation::open(const std::string fileName)
 					animTransp.push_back(num);
 					animSound.push_back(strB);
 				}
-				// Effective "UBound".
-				animFrames = animFrame.size() - 1;
 			}
+			// Effective "UBound".
+			animFrames = animFrame.size() - 1;
 			file >> animPause;
 		}
 		else
@@ -204,7 +204,7 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 	ANIMATION anm;
 	if (!anm.open(g_projectPath + MISC_PATH + file)) return false;
 
-    frame = frame % (anm.animFrames + 1);
+    frame %= (anm.animFrames + 1);
 
 	const std::string frameFile = anm.animFrame[frame];
 
