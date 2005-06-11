@@ -11,6 +11,8 @@
 /*
  * Inclusions.
  */
+#include "../render/render.h"
+#include "tilebitmap.h"
 #include <string>
 #include <vector>
 
@@ -31,8 +33,39 @@ typedef struct tagAnimation
 	int timerFrame;						// This number will be 0 to 29 to indicate how many times the timer has clicked.
 	int currentAnmFrame;				// Currently animating frame.
 	std::string animFile;				// Filename (no path).
-	void open(const std::string fileName);
+	bool open(const std::string fileName);
 	void save(const std::string fileName) const;
 } ANIMATION;
 
+/*
+ * One frame of an animation.
+ */
+typedef struct tagAnimationFrame
+{
+	CGDICanvas* cnv;					// Canvas of frame.
+	std::string file;					// Animation filename.
+	int frame;							// Frame number.
+	int maxFrames;						// Max frames in this anim.
+	std::string strSound;				// Sound played on this frame.
+} ANIMATION_FRAME;
+
+/*
+ * Render "frame" of animation "file" at location "x,y" at canvas "cnv".
+ * Checks through the animation cache for previous renderings of this frame,
+ * if not found, it is rendered here and copied to the animation cache.
+ */
+bool renderAnimationFrame(CGDICanvas* cnv,
+						  std::string file, 
+						  int frame, 
+						  const int x, 
+						  const int y);
+
+bool canvasMaskBltStretchTransparent (const CGDICanvas *cnvSource,
+									  const CGDICanvas *cnvMask,
+									  const int destX,
+									  const int destY,
+									  const int newWidth,
+									  const int newHeight, 
+									  const CGDICanvas *cnvTarget,
+									  const int crTranspColor);
 #endif
