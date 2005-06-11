@@ -710,7 +710,7 @@ CVariant CProgram::evaluate(const std::string str)
 			const CVariant::DATA_TYPE dt = var.getType();
 			if (dt == CVariant::DT_LIT || dt == CVariant::DT_NULL)
 			{
-				var = "\"" + var.getLit() + "\"";
+				var = '"' + var.getLit() + '"';
 			}
 		}
 		else
