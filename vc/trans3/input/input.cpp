@@ -125,6 +125,7 @@ void freeInput(void)
 void scanKeys(void)
 {
 	BYTE keys[256];
+	memset(keys, 0, sizeof(keys));
 	g_lpdiKeyboard->GetDeviceState(256, keys);
 	#define SCAN_KEY_DOWN(x) (keys[DIK_##x] & 0x80)
 
@@ -236,12 +237,11 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			if (wParam != WA_INACTIVE)
 			{
 				// Window is being *activated*
-				
+				if (g_lpdiKeyboard) g_lpdiKeyboard->Acquire();
 			}
 			else
 			{
 				// Window is being *deactivated*
-				
 			}
 		} break;
 
