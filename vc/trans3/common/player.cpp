@@ -14,6 +14,7 @@
 /*
  * Definitions.
  */
+/*
 #define PLYR_WALK_S 0
 #define PLYR_WALK_N 1
 #define PLYR_WALK_E 2
@@ -27,7 +28,7 @@
 #define PLYR_SPC 10
 #define PLYR_DIE 11
 #define PLYR_REST 12
-
+*/
 /*
  * Open a player.
  *
@@ -157,10 +158,11 @@ void tagPlayer::open(const std::string fileName)
 			// gfx.clear();
 			for (i = 0; i <= UBOUND_GFX; i++)
 			{
-				file >> gfx[i];
-				// std::string str;
-				// file >> str;
+				// file >> gfx[i];
+				std::string str;
+				file >> str;
 				// gfx.push_back(str);
+				spriteAttr.gfx.push_back(str);
 			}
 
 			if (minorVer >= 6)
@@ -168,28 +170,29 @@ void tagPlayer::open(const std::string fileName)
 				// standingGfx.clear();
 				for (i = 0; i <= UBOUND_STANDING_GFX; i++)
 				{
-					file >> standingGfx[i];
-					// std::string str;
-					// file >> str;
+					// file >> standingGfx[i];
+					std::string str;
+					file >> str;
 					// standingGfx.push_back(str);
+					spriteAttr.standingGfx.push_back(str);
 				}
 			}
 
 			if (minorVer >= 7)
 			{
-				file >> idleTime;
-				file >> speed;
+				file >> spriteAttr.idleTime;	// file >> idleTime;
+				file >> spriteAttr.speed;		// file >> speed;
 			}
 			else
 			{
-				idleTime = 3.0;
-				speed = 0.05;
+				spriteAttr.idleTime = 3.0;		// idleTime = 3.0;
+				spriteAttr.speed = 0.05;		// speed = 0.05;
 			}
 
 			int cnt;
 			file >> cnt;
-			customGfx.clear();
-			customGfxNames.clear();
+			spriteAttr.customGfx.clear();		// customGfx.clear();
+			spriteAttr.customGfxNames.clear();	// customGfxNames.clear();
 			for (i = 0; i <= cnt; i++)
 			{
 				std::string anim, handle;
@@ -197,8 +200,8 @@ void tagPlayer::open(const std::string fileName)
 				file >> handle;
 				if (!handle.empty())
 				{
-					customGfx.push_back(anim);
-					customGfxNames.push_back(handle);
+					spriteAttr.customGfx.push_back(anim);			// customGfx.push_back(anim);
+					spriteAttr.customGfxNames.push_back(handle);	// customGfxNames.push_back(handle);
 				}
 			}
 			return;
@@ -207,3 +210,4 @@ void tagPlayer::open(const std::string fileName)
 	// Definitely don't need this.
 	MessageBox(NULL, ("Please save " + fileName + " in the editor!").c_str(), NULL, 0);
 }
+

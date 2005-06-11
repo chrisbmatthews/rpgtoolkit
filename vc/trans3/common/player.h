@@ -11,8 +11,7 @@
 /*
  * Inclusions.
  */
-#include <string>
-#include <vector>
+#include "sprite.h"
 
 /*
  * Definitions.
@@ -63,17 +62,21 @@ typedef struct tagPlayer
 	std::string charLevelUpRPGCode;				// Rpgcode program to run on level up.
 	char charLevelUpType;						// Level up type 0- exponential, 1-linear.
 	char charSizeType;							// Size type: 0- 32x32, 1 - 64x32.
-	std::string gfx[14];						// Filenames of standard animations for graphics.
-	std::vector<std::string> customGfx;			// Customized animations.
-	std::vector<std::string> customGfxNames;	// Customized animations (handles).
-	std::string standingGfx[8];					// Filenames of the standing animations/graphics.
-	double idleTime;							// Seconds to wait proir to switching toSTAND_ graphics.
-	double speed;								// Seconds between each frame increase.
-	int loopSpeed;								// .speed converted to loops.
+
+	SPRITE_ATTR spriteAttr;
+/*	std::string gfx[14];						// common // Filenames of standard animations for graphics.
+	std::vector<std::string> customGfx;			// common // Customized animations.
+	std::vector<std::string> customGfxNames;	// common // Customized animations (handles).
+	std::string standingGfx[8];					// common // Filenames of the standing animations/graphics.
+	double idleTime;							// common // Seconds to wait proir to switching toSTAND_ graphics.
+	double speed;								// common // Seconds between each frame increase.
+//	int loopSpeed;								// common // .speed converted to loops.
+*/
 	// std::vector<FIGHTER_STATUS> status;			// Status effects applied to player.
 	short nextLevel;							// Exp value at which level up occurs.
 	short levelProgression;						// Exp required until level up.
 	std::vector<double> levelStarts;			// Exp values at which all levels start.
+
 	void open(const std::string fileName);
 } PLAYER;
 

@@ -48,13 +48,15 @@ typedef struct tagItem
 	std::string itmPrgOnBoard;					// Program to run while item is on board.
 	std::string itmPrgPickUp;					// Program to run when picked up.
 	char itmSizeType;							// Graphics size type 0=32x32, 1=64x32.
-	std::string gfx[10];						// Filenames of standard animations for graphics.
-	std::vector<std::string> customGfx;			// Customized animations.
-	std::vector<std::string> customGfxNames;	// Customized animations (handles).
-	std::string standingGfx[8];					// Filenames of the standing animations/graphics.
-	double idleTime;							// Seconds to wait proir to switching to STAND_ graphics.
-	double speed;								// Speed of this item.
-	int loopSpeed;								// .speed converted to loops (3.0.5).
+//	std::vector<std::string> gfx;
+	std::string gfx[10];						// common // Filenames of standard animations for graphics.
+	std::vector<std::string> customGfx;			// common // Customized animations.
+	std::vector<std::string> customGfxNames;	// common // Customized animations (handles).
+//	std::vector<std::string> standingGfx;
+	std::string standingGfx[8];					// common // Filenames of the standing animations/graphics.
+	double idleTime;							// common // Seconds to wait proir to switching to STAND_ graphics.
+	double speed;								// common // Speed of this item.
+//	int loopSpeed;								// common // .speed converted to loops (3.0.5).
 	short bIsActive;							// Is item active?
 	void open(const std::string fileName);
 } ITEM;
