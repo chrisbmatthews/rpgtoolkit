@@ -130,6 +130,7 @@ void CAudioSegment::freeLoader(void)
 {
 	if (!m_pLoader) return;
 	m_pLoader->Release();
+	m_pLoader = NULL;
 }
 
 /*
