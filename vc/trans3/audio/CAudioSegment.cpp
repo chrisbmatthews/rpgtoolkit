@@ -40,6 +40,10 @@ void CAudioSegment::open(const std::string file)
 		{
 			m_pSegment->Download(m_pPerformance);
 		}
+		else
+		{
+			m_pSegment = NULL;
+		}
 	}
 	else
 	{
