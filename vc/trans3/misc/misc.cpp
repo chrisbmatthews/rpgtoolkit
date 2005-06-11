@@ -12,6 +12,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <vector>
+#include <sstream>
 
 /*
  * Definitions.
@@ -60,14 +61,10 @@ void saveSetting(const std::string strKey, const double dblValue)
 {
 	HKEY hKey;
 	RegCreateKey(HKEY_CURRENT_USER, KEY_TRANS3, &hKey);
-	RegSetValueEx(
-		hKey,
-		strKey.c_str(),
-		0,
-		REG_BINARY,
-		LPBYTE(const_cast<double *>(&dblValue)),
-		sizeof(dblValue)
-	);
+	std::stringstream ss;
+	ss << dblValue;
+	const char *str = ss.str().c_str();
+	RegSetValueEx(hKey, strKey.c_str(), 0, REG_SZ, (LPBYTE)str, strlen(str) + 1);
 	RegCloseKey(hKey);
 }
 
@@ -81,7 +78,15 @@ void getSetting(const std::string strKey, double &dblValue)
 {
 	HKEY hKey;
 	RegCreateKey(HKEY_CURRENT_USER, KEY_TRANS3, &hKey);
-	DWORD dwSize = sizeof(dblValue);
-	RegQueryValueEx(hKey, strKey.c_str(), 0, NULL, LPBYTE(&dblValue), &dwSize);
+	unsigned char str[255];
+	DWORD dwSize = sizeof(str);
+	if (FAILED(RegQueryValueEx(hKey, strKey.c_str(), 0, NULL, str, &dwSize)))
+	{
+		dblValue = -1;
+	}
+	else
+	{
+		dblValue = atof((const char *)str);
+	}
 	RegCloseKey(hKey);
 }
