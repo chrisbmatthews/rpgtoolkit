@@ -144,11 +144,6 @@ VOID setUpGame(VOID)
 				break;
 		}
 	}
-	/*
-	 * NOTE: Players move far too slowly with their speeds
-	 *		 from 3.0.6. Something needs to be done.
-	 */
-	g_renderTime = -1;
 	if (g_renderTime == -1)
 	{
 		// Do an fps estimate.
@@ -169,7 +164,7 @@ VOID setUpGame(VOID)
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())
 	{
-//		CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg).run();
+		// CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg).run();
 	}
 
 	if (!g_mainFile.initBoard.empty())
@@ -292,7 +287,9 @@ INT mainEventLoop(VOID)
 			// Add only if this is a short loop.
 			if (dwTimeNow < 200)
 			{
-				g_renderTime += double(dwTimeNow) / 1000.0; // (Should kill this division!)
+				// Colin: Using GetTickCount() everywhere now, so we don't 
+				//		  want to divide here, right?
+				g_renderTime += double(dwTimeNow) /*/ 1000.0*/;
 				g_renderCount++;
 			}
 		}

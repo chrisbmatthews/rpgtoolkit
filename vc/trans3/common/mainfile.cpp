@@ -55,7 +55,7 @@ void tagMainFile::open(const std::string fileName)
 	file >> mainDisableProtectReg;
 
 	file >> strUnused;
-	// ^ langauge file
+	// ^ language file
 
 	file >> startupPrg;
 	file >> initBoard;
