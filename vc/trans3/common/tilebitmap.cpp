@@ -10,13 +10,15 @@
  */
 #include "tilebitmap.h"
 #include "CFile.h"
+#include "paths.h"
 
 /*
  * Open a tile bitmap.
  *
  * fileName (in) - file to open
+ * bool (out) - open success
  */
-void tagTileBitmap::open(const std::string fileName)
+bool tagTileBitmap::open(const std::string fileName)
 {
 
 	CFile file(fileName);
@@ -27,7 +29,7 @@ void tagTileBitmap::open(const std::string fileName)
 	if (fileHeader != "TK3 TILEBITMAP")
 	{
 		MessageBox(NULL, ("Invalid tile bitmap " + fileName).c_str(), "Open Tile Bitmap", 0);
-		return;
+		return false;
 	}
 
 	short majorVer, minorVer;
@@ -48,7 +50,7 @@ void tagTileBitmap::open(const std::string fileName)
 			file >> blue[i][j];
 		}
 	}
-
+	return true;
 }
 
 /*
@@ -116,4 +118,64 @@ void tagTileBitmap::resize(const int width, const int height)
 			d.push_back(0);
 		}
 	}
+}
+
+/*
+ * Draw a tile bitmap, including tst.
+ * Called when rendering sprite frames.
+ */
+bool tagTileBitmap::draw(CGDICanvas *cnv, 
+						 CGDICanvas *cnvMask, 
+						 const int x, 
+						 const int y)
+{
+    const int xx = x / 32 + 1, yy = y / 32 + 1;
+
+    for (int i = 0; i != width; i++)
+	{
+        for (int j = 0; j != height; j++)
+		{
+            if (!tiles[i][j].empty())
+			{
+                if (cnv)
+				{
+/*                
+                   'Ambient levels determined in renderAnimationFrame *before*
+                    'opening DC.
+
+					'Declare variables defined in transRender if running
+					'in toolkit3.exe project
+					Dim addOnR As Double, addOnG As Double, addOnB As Double
+*/
+					if (!drawTileCnv(cnv, 
+						TILE_PATH + tiles[i][j], 
+						i + xx, j + yy,						
+						red[i][j], // + addOnR, 
+						green[i][j], // + addOnG, 
+						blue[i][j], // + addOnB, 
+						false, true, false, false)) return false;
+                }                
+                if (cnvMask)
+				{                
+					if (!drawTileCnv(cnvMask, 
+						TILE_PATH + tiles[i][j],
+						i + xx, j + yy,
+						red[i][j],
+						green[i][j],
+						blue[i][j],
+						true, true)) return false;                        
+	             }
+            }
+			else
+			{
+                if (cnv && cnvMask)
+				{
+//                    Call canvasFillBox(cnv, x + i * 32, y + j * 32, x + 32 + i * 32, y + 32 + j * 32, TRANSP_COLOR_ALT)
+//                    Call canvasFillBox(cnvMask, x + i * 32, y + j * 32, x + 32 + i * 32, y + 32 + j * 32, TRANSP_COLOR)
+                }
+            } // if (!theTileBmp.tiles[i][j].empty())
+		}	// for (j)
+	} // for (i)
+
+	return true;        
 }

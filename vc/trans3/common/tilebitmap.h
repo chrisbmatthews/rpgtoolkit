@@ -11,6 +11,7 @@
 /*
  * Inclusions.
  */
+#include "../render/render.h"
 #include <string>
 #include <vector>
 
@@ -27,9 +28,13 @@ typedef struct tagTileBitmap
 	std::vector<VECTOR_SHORT> red;
 	std::vector<VECTOR_SHORT> green;
 	std::vector<VECTOR_SHORT> blue;
-	void open(const std::string fileName);
+	bool open(const std::string fileName);
 	void save(const std::string fileName) const;
 	void resize(const int width, const int height);
+	bool draw(CGDICanvas *cnv, 
+			  CGDICanvas *cnvMask, 
+			  const int x, 
+			  const int y);
 } TILE_BITMAP;
 
 #endif
