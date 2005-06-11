@@ -28,6 +28,11 @@ void CAudioSegment::open(const std::string file)
 	const std::string ext = parser::uppercase(getExtension(file));
 	if (ext == "MID" || ext == "MIDI" || ext == "RMI" || ext == "MPL" || ext == "WAV")
 	{
+		if (m_pSegment)
+		{
+			m_pSegment->Unload(m_pPerformance);
+			m_pSegment->Release();
+		}
 		m_audiere = false;
 		WCHAR wstrFile[MAX_PATH + 1];
 		MultiByteToWideChar(CP_ACP, 0, file.c_str(), -1, wstrFile, MAX_PATH);
