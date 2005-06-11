@@ -20,19 +20,6 @@
 #define KEY_TRANS3 "Software\\VB and VBA Program Settings\\RPGToolkit3\\Trans3"
 
 /*
- * Load a character.
- *
- * file (in) - file to load
- * slot (in) - slot to load into
- */
-void createCharacter(const std::string file, const int slot)
-{
-	extern std::vector<PLAYER> g_playerMem;
-	g_playerMem[slot].open(file);
-	/* ... set rpgcode variables ... */
-}
-
-/*
  * Replace within a string.
  *
  * str (in) - string in question

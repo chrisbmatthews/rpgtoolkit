@@ -13,14 +13,6 @@
 #include <string>
 
 /*
- * Load a character.
- *
- * file (in) - file to load
- * slot (in) - slot to load into
- */
-void createCharacter(const std::string file, const int slot);
-
-/*
  * Replace within a string.
  *
  * str (in) - string in question
