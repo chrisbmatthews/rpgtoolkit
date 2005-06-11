@@ -13,6 +13,8 @@
 #include "../common/item.h"
 #include "../common/player.h"
 #include "../render/render.h"
+#include "../movement/CPlayer/CPlayer.h"
+#include "../movement/CItem/CItem.h"
 #include "../movement/movement.h"
 #include "../common/board.h"
 #include "../input/input.h"
@@ -27,18 +29,25 @@
 /*
  * Definitions.
  */
+
+/* Header?
 #define GS_IDLE 0					// Just re-renders the screen
 #define GS_MOVEMENT 1				// Movement is occurring (players or items)
 #define GS_PAUSE 2					// Pause game (do nothing)
 #define GS_QUIT 3					// Shutdown sequence
+*/
 
 /*
  * Globals.
  */
+int g_gameState;					// The current gamestate.
 MAIN_FILE g_mainFile;				// The loaded main file.
 BOARD g_activeBoard;				// The active board.
-std::vector<PLAYER> g_playerMem;	// Loaded players.
-std::vector<ITEM> g_itemMem;		// Loaded items.
+
+std::vector<CPlayer *> g_players;	// Loaded players.
+std::vector<CItem *> g_items;		// Loaded items.
+CSprite* g_pSelectedPlayer = NULL;	// Pointer to selected player?
+
 HINSTANCE g_hInstance = NULL;		// Handle to application.
 int g_renderCount = 0;				// Count of GS_MOVEMENT state loops.
 double g_renderTime = 0.0;			// Cumulative GS_MOVEMENT state loop time.
@@ -99,10 +108,7 @@ VOID setUpGame(VOID)
 
 	extern double g_movementSize;
 	extern int g_selectedPlayer;
-	extern std::vector<bool> g_showPlayer;
 	extern std::string g_projectPath;
-	extern SPRITE_POSITIONS g_pPos;
-	extern PENDING_MOVEMENTS g_pendingPlayerMovement;
 
 	g_movementSize = g_mainFile.pixelMovement ? 0.25 : 1.0;
 	g_selectedPlayer = 0;
@@ -138,28 +144,27 @@ VOID setUpGame(VOID)
 				break;
 		}
 	}
+	if (g_renderTime = -1)
+	{
+		// Do a fps estimate.
+		g_renderTime = 0.1;
+	}	
 	g_renderCount = 100;
 	g_renderTime *= g_renderCount;
 
-	// Load initial character.
+	// Create and load start player.
+	g_players.clear();
+	g_players.reserve(5);			// Reserve places for 5 players (can be expanded).
 	if (!g_mainFile.initChar.empty())
 	{
-		createCharacter(g_projectPath + TEM_PATH + g_mainFile.initChar, 0);
-	}
-
-	// Hide all players except the walking graphic one.
-	const int size = g_showPlayer.size();
-	for (unsigned int i = 0; i < size; i++)
-	{
-		g_showPlayer[i] = (i == g_selectedPlayer);
-		g_pPos[i].stance = "WALK_S";
-		g_pPos[i].loopFrame = -1;
+		g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true));
+		g_pSelectedPlayer = g_players.front();
 	}
 
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())
 	{
-		CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg).run();
+//		CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg).run();
 	}
 
 	if (!g_mainFile.initBoard.empty())
@@ -169,11 +174,9 @@ VOID setUpGame(VOID)
 		{
 			CProgram(g_projectPath + PRG_PATH + g_activeBoard.enterPrg).run();
 		}
-		SPRITE_POSITION &pos = g_pPos[g_selectedPlayer];
-		PENDING_MOVEMENT &pend = g_pendingPlayerMovement[g_selectedPlayer];
-		pend.xOrig = pos.x = g_activeBoard.playerX ? g_activeBoard.playerX : 1;
-		pend.yOrig = pos.y = g_activeBoard.playerY ? g_activeBoard.playerY : 1;
-		pend.lOrig = pos.l = g_activeBoard.playerLayer ? g_activeBoard.playerLayer : 1;
+		g_players[g_selectedPlayer]->setPosition(g_activeBoard.playerX ? g_activeBoard.playerX : 1,
+												g_activeBoard.playerY ? g_activeBoard.playerY : 1,
+												g_activeBoard.playerLayer ? g_activeBoard.playerLayer : 1);
 	}
 
 }
@@ -183,27 +186,12 @@ VOID setUpGame(VOID)
  */
 VOID openSystems(VOID)
 {
-
 	extern VOID initRpgCode(VOID);
-	extern SPRITE_POSITIONS g_pPos;
-	extern std::vector<bool> g_showPlayer;
-	extern PENDING_MOVEMENTS g_pendingPlayerMovement;
 
 	srand(GetTickCount());
-
-	// Five players for now.
-	for (unsigned int i = 0; i < 5; i++)
-	{
-		g_playerMem.push_back(PLAYER());
-		g_pPos.push_back(SPRITE_POSITION());
-		g_showPlayer.push_back(false);
-		g_pendingPlayerMovement.push_back(PENDING_MOVEMENT());
-	}
-
 	initGraphics();
 	initRpgCode();
 	setUpGame();
-
 }
 
 /*
@@ -213,9 +201,37 @@ VOID openSystems(VOID)
  */
 INT gameLogic(VOID)
 {
-	renderNow();
-	scanKeys();
-	return GS_IDLE;
+	std::vector<CPlayer *>::const_iterator i = g_players.begin();
+
+	switch (g_gameState)
+	{
+		case GS_IDLE:
+		case GS_MOVEMENT:
+			// Timer stuff.
+			// Input.
+			scanKeys();
+			// Movement.
+			for (; i != g_players.end(); i++)
+			{
+				(*i)->move();
+			}
+			//for (i = g_items.begin(); i != g_items.end(); i++) i->move();
+
+			// Render.
+			renderNow();
+			break;
+
+		case GS_PAUSE:
+			// Music.
+			break;
+
+		case GS_QUIT:
+		default:
+			// Close down.
+			break;
+	}
+
+	return g_gameState;
 }
 
 /*
@@ -289,6 +305,16 @@ VOID closeSystems(VOID)
 	closeGraphics();
 	extern void freeInput(void);
 	freeInput();
+
+	// Destroy sprites (move to somewhere)
+	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); i++)
+	{
+		delete (*i);
+	}
+	g_players.clear();
+
+	// Items...
+
 }
 
 #include <direct.h>
@@ -299,7 +325,8 @@ VOID closeSystems(VOID)
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
 
-	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	//#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	g_hInstance = hInstance;
 
