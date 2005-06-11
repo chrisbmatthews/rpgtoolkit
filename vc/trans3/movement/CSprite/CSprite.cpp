@@ -67,7 +67,6 @@ CSprite &CSprite::operator=(const CSprite &rhs)
  */
 CSprite::~CSprite() 
 {
-	delete m_pAttr;
 	m_pCanvas->Destroy();
 	delete m_pCanvas;
 }
