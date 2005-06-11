@@ -9,6 +9,7 @@
  */
 #include "render.h"
 #include "../../tkCommon/tkGfx/CTile.h"
+#include "../movement/CPlayer/CPlayer.h"
 #include "../common/mainfile.h"
 #include "../common/board.h"
 #include "../common/paths.h"
@@ -38,6 +39,7 @@ int scTilesY = 0;							// Maximum scroll cache capacity, on height
 std::vector<CTile *> g_tiles;				// Cache of tiles.
 CGDICanvas *g_cnvRpgCode;					// RPGCode canvas.
 std::vector<bool> g_showPlayer;				// Show these players?
+double g_translucentOpacity = 0.25;			// Opacity to draw translucent sprites at.
 
 /*
  * Render the RPGCode screen.
@@ -50,7 +52,7 @@ void renderRpgCodeScreen(void)
 }
 
 /*
- * Draw a tile.
+ * Draw a tile. (GFXDrawTileCNV)
  *
  * fileName (in) - tile to draw
  * x (in) - board x coordinate to draw at
@@ -62,7 +64,12 @@ void renderRpgCodeScreen(void)
  * bIsometric (in) - draw isometrically?
  * nIsoEvenOdd (in) - iso is even or odd?
  */
-void drawTile(const std::string fileName, const int x, const int y, const int r, const int g, const int b, CGDICanvas *cnv, const bool bIsometric, const int nIsoEvenOdd)
+bool drawTile(const std::string fileName, 
+			  const int x, const int y, 
+			  const int r, const int g, const int b, 
+			  CGDICanvas *cnv, 
+			  const bool bIsometric, 
+			  const int nIsoEvenOdd)
 {
 
 	extern std::string g_projectPath;
@@ -103,7 +110,11 @@ void drawTile(const std::string fileName, const int x, const int y, const int r,
 			}
 		}
 	}
-
+/*
+	// See if we need to clear the tile cache
+	if (gvTiles.size() > TILE_CACHE_SIZE)
+		GFXClearTileCache();
+*/
 	const RGBSHADE rgb = {r, g, b};
 	const std::string strFileName = g_projectPath + TILE_PATH + fileName;
 
@@ -120,29 +131,254 @@ void drawTile(const std::string fileName, const int x, const int y, const int r,
 					{
 						// Found a match.
 						(*i)->cnvDraw(cnv, xx, yy);
-						return;
+						return true;
 					}
 				}
 				else if (!(*i)->isIsometric())
 				{
 					// Found a match.
 					(*i)->cnvDraw(cnv, xx, yy);
-					return;
+					return true;
 				}
 			}
 		}
-	}
+	} // for (i)
 
-	// Load the tile
+	// Load the tile.
 	CTile *const pTile = new CTile(NULL, strFileName, rgb, SHADE_UNIFORM, bIsometric);
 
-	// Push it into the vector
+	// Push it into the vector.
 	g_tiles.push_back(pTile);
 
 	// Draw the tile.
 	pTile->cnvDraw(cnv, xx, yy);
-
+	return true;
 }
+
+
+/*
+ * Draw a tile mask. (GFXDrawTileMaskCNV)
+ *
+ * fileName (in) - tile to draw
+ * x (in) - board x coordinate to draw at
+ * y (in) - board y coordinate to draw at
+ * r (in) - red shade
+ * g (in) - green shade
+ * b (in) - blue shade
+ * cnv (in) - destination canvas
+ * nDirectBlt - 0: rendered directly (with transparency).
+ *				1: blitted.
+ * bIsometric (in) - draw isometrically?
+ * nIsoEvenOdd (in) - iso is even or odd?
+ */
+bool drawTileMask (const std::string fileName, 
+				   const int x, const int y, 
+				   const int r, const int g, const int b, 
+				   CGDICanvas *cnv,
+				   const int nDirectBlt,
+				   const bool bIsometric,
+				   const int nIsoEvenOdd) 
+{
+	extern std::string g_projectPath;
+
+	int xx = 0, yy = 0;
+
+	if (!bIsometric)
+	{
+		xx = x * 32 - 32;
+		yy = y * 32 - 32;
+	}
+	else
+	{
+		if (!nIsoEvenOdd)
+		{
+			if (!(y % 2))
+			{
+				xx = x * 64 - 64;
+				yy = y * 16 - 32;
+			}
+			else
+			{
+				xx = x * 64 - 96;
+				yy = y * 16 - 32;
+			}
+		}
+		else
+		{
+			if (!(y % 2))
+			{
+				xx = x * 64 - 96;
+				yy = y * 16 - 32;
+			}
+			else
+			{
+				xx = x * 64 - 64;
+				yy = y * 16 - 32;
+			}
+		}
+	}
+/*
+	//see if we need to clear the tile cache...
+	if (gvTiles.size() > TILE_CACHE_SIZE)
+		GFXClearTileCache();
+*/
+
+	const RGBSHADE rgb = {r, g, b};
+	const std::string strFileName = g_projectPath + TILE_PATH + fileName;
+
+	// Check if this tile has already been drawn.
+	for (std::vector<CTile*>::iterator i = g_tiles.begin(); i != g_tiles.end(); i++)
+	{
+		const std::string strVect = (*i)->getFilename();
+		if (strVect.compare(strFileName) == 0)
+		{
+			if (bIsometric)
+			{
+				if ((*i)->isIsometric())
+				{
+					// Found a match.
+					if (nDirectBlt)
+					{
+						(*i)->cnvDrawAlpha(cnv, xx, yy);
+					}
+					else
+					{
+						(*i)->cnvRenderAlpha(cnv, xx, yy);
+					}
+					return true;
+				}
+			}
+			else
+			{
+				if (!(*i)->isIsometric())
+				{
+					// Found a match.
+					if (nDirectBlt)
+					{
+						(*i)->cnvDrawAlpha(cnv, xx, yy);
+					}
+					else
+					{
+						(*i)->cnvRenderAlpha(cnv, xx, yy);
+					}
+					return true;
+				}
+			}
+		}
+	} // for (i)
+
+	// Load the tile.
+	CTile *const pTile = new CTile(NULL, strFileName, rgb, SHADE_UNIFORM, bIsometric);
+
+	// Push it into the vector.
+	g_tiles.push_back(pTile);
+
+	if (nDirectBlt)
+	{
+		pTile->cnvDrawAlpha(cnv, xx, yy);
+	}
+	else
+	{
+		pTile->cnvRenderAlpha(cnv, xx, yy);
+	}
+	return true;
+}
+
+/*
+ * Draw a tile onto a canvas (CommonTkGfx drawTileCnv)
+ */
+bool drawTileCnv(CGDICanvas *cnv, 
+				 const std::string file, 
+				 const double x,
+				 const double y, 
+				 const int r, 
+				 const int g,
+				 const int b, 
+				 const bool bMask, 
+				 const bool bNonTransparentMask, 
+				 const bool bIsometric, 
+				 const bool isoEvenOdd)
+{
+	extern std::string g_projectPath;
+
+    TILEANIM anm;
+   
+    if (removePath(file).empty()) return false;
+    
+	int iso = (bIsometric ? 1 : 0);
+	int isoEO = (isoEvenOdd ? 0 : 1);
+
+//    if (pakFileRunning)
+	if (false)
+	{
+        // Do check for pakfile system
+		std::string of = file, Temp = removePath(file);
+		std::string ex = parser::uppercase(getExtension(Temp));
+        if (ex.substr(0, 3) == "TST")
+		{
+            // numof = getTileNum(temp$)
+//            Temp = util::tilesetFilename(Temp);
+        }
+//			file = PakLocate(TILE_PATH + Temp);
+		std::string ff = "";
+        if (ex == "TAN")
+		{
+            ff = removePath(Temp);
+            anm.open(g_projectPath + TILE_PATH + ff);
+//                file = TileAnmGet(anm, 0);
+		}
+    
+//        _chdir (PakTempPath);
+        ff = removePath(of);
+		if (!bMask)
+		{
+			drawTile(ff, x, y, r, g, b, cnv, iso, isoEO);
+		}
+		else
+		{
+			if (bNonTransparentMask)
+			{
+				drawTileMask(ff, x, y, r, g, b, cnv, 1, iso, isoEO);
+			} 
+			else 
+			{
+				drawTileMask(ff, x, y, r, g, b, cnv, 0, iso, isoEO);
+			}
+		}
+//		_chdir (currentDir$);
+
+	}
+	else
+	{
+		std::string ex = getExtension(file);
+		std::string ff = removePath(file);
+        if (parser::uppercase(ex) == "TAN")
+		{
+            if (!anm.open(g_projectPath + TILE_PATH + ff)) return false;
+//            file$ = projectPath & tilePath & TileAnmGet(anm, 0)
+        }
+//        _chdir(g_projectPath);
+        ff = removePath(file);
+        if (!bMask)
+		{
+            drawTile(ff, x, y, r, g, b, cnv, iso, isoEO);
+		}
+        else
+		{
+            if (bNonTransparentMask)
+			{
+                drawTileMask(ff, x, y, r, g, b, cnv, 1, iso, isoEO);
+            } 
+			else 
+			{
+                drawTileMask(ff, x, y, r, g, b, cnv, 0, iso, isoEO);
+			}
+        }
+//        _chdir(WORKING_DIRECTOY);
+    }
+	return true;
+}
+
 
 /*
  * Draw a board.
@@ -213,6 +449,11 @@ void createCanvases(void)
 	g_cnvRpgCode = new CGDICanvas();
 	g_cnvRpgCode->CreateBlank(NULL, g_resX, g_resY, TRUE);
 	g_cnvRpgCode->ClearScreen(0);
+
+	// Create sprite cache.
+	extern std::vector<ANIMATION_FRAME> g_anmCache;
+	g_anmCache.clear();
+//	g_anmCache.reserve(128);
 }
 
 /*
@@ -321,10 +562,21 @@ bool renderNow(CGDICanvas * /*cnv*/, const bool bForce)
 	CGDICanvas cnv;
 	cnv.CreateBlank(NULL, g_resX, g_resY, TRUE);
 	cnv.ClearScreen(0);
+
 	extern BOARD g_activeBoard;
 	drawBoard(g_activeBoard, &cnv, 0, 0, 0, g_tilesX, g_tilesY, 0, 0, 0, false);
+	
+	extern std::vector<CPlayer *> g_players;
+	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); i++)
+	{
+		// Render the player's current frame.
+		(*i)->render(&cnv);
+		(*i)->putSpriteAt(&cnv);	// Not here!
+	}
+
 	g_pDirectDraw->DrawCanvas(&cnv, 0, 0);
 	g_pDirectDraw->Refresh();
+	cnv.Destroy();
 	return true;
 }
 
