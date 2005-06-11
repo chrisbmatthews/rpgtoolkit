@@ -46,7 +46,7 @@ BOARD g_activeBoard;				// The active board.
 
 std::vector<CPlayer *> g_players;	// Loaded players.
 std::vector<CItem *> g_items;		// Loaded items.
-CSprite* g_pSelectedPlayer = NULL;	// Pointer to selected player?
+CSprite *g_pSelectedPlayer = NULL;	// Pointer to selected player?
 
 HINSTANCE g_hInstance = NULL;		// Handle to application.
 int g_renderCount = 0;				// Count of GS_MOVEMENT state loops.
@@ -144,9 +144,14 @@ VOID setUpGame(VOID)
 				break;
 		}
 	}
-	if (g_renderTime = -1)
+	/*
+	 * NOTE: Players move far too slowly with their speeds
+	 *		 from 3.0.6. Something needs to be done.
+	 */
+	g_renderTime = -1;
+	if (g_renderTime == -1)
 	{
-		// Do a fps estimate.
+		// Do an fps estimate.
 		g_renderTime = 0.1;
 	}	
 	g_renderCount = 100;
@@ -221,9 +226,10 @@ INT gameLogic(VOID)
 			renderNow();
 			break;
 
-		case GS_PAUSE:
+		// case GS_PAUSE:
 			// Music.
-			break;
+			// Colin: No. Music shall be threaded.
+			// break;
 
 		case GS_QUIT:
 		default:
@@ -325,8 +331,8 @@ VOID closeSystems(VOID)
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
 
-	//#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	g_hInstance = hInstance;
 
