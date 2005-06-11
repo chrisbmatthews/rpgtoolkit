@@ -1,6 +1,6 @@
 /*
- * All contents copyright 2005, Colin James Fitzpatrick.
- * All rights reserved. You may not remove this notice.
+ * All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors.
+ * All rights reserved. You may not remove this notice
  * Read license.txt for licensing details.
  */
 
