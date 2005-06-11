@@ -19,6 +19,7 @@
 #include "../common/board.h"
 #include "../input/input.h"
 #include "../misc/misc.h"
+#include "../audio/CAudioSegment.h"
 #include "winmain.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -43,6 +44,7 @@
 int g_gameState;					// The current gamestate.
 MAIN_FILE g_mainFile;				// The loaded main file.
 BOARD g_activeBoard;				// The active board.
+CAudioSegment *g_bkgMusic = NULL;	// Playing background music.
 
 std::vector<CPlayer *> g_players;	// Loaded players.
 std::vector<CItem *> g_items;		// Loaded items.
@@ -170,6 +172,8 @@ VOID setUpGame(VOID)
 	if (!g_mainFile.initBoard.empty())
 	{
 		g_activeBoard.open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
+		g_bkgMusic->open(g_activeBoard.boardMusic);
+		g_bkgMusic->play(true);
 		if (!g_activeBoard.enterPrg.empty())
 		{
 			CProgram(g_projectPath + PRG_PATH + g_activeBoard.enterPrg).run();
@@ -191,6 +195,8 @@ VOID openSystems(VOID)
 	srand(GetTickCount());
 	initGraphics();
 	initRpgCode();
+	CAudioSegment::initLoader();
+	g_bkgMusic = new CAudioSegment();
 	setUpGame();
 }
 
@@ -220,11 +226,6 @@ INT gameLogic(VOID)
 			// Render.
 			renderNow();
 			break;
-
-		// case GS_PAUSE:
-			// Music.
-			// Colin: No. Music shall be threaded.
-			// break;
 
 		case GS_QUIT:
 		default:
@@ -317,6 +318,9 @@ VOID closeSystems(VOID)
 	g_players.clear();
 
 	// Items...
+
+	delete g_bkgMusic;
+	CAudioSegment::freeLoader();
 
 }
 
