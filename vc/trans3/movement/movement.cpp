@@ -15,13 +15,20 @@
 /*
  * Globals.
  */
+
+// Temp. uncomment to allow compile.
+typedef std::vector<SPRITE_POSITION> SPRITE_POSITIONS;
+typedef std::vector<PENDING_MOVEMENT> PENDING_MOVEMENTS;
+
 SPRITE_POSITIONS g_pPos;					// Player positions.
 SPRITE_POSITIONS g_itmPos;					// Positions of items on board.
 PENDING_MOVEMENTS g_pendingPlayerMovement;	// Pending player movements.
 PENDING_MOVEMENTS g_pendingItemMovement;	// Pending item movements.
+
 int g_selectedPlayer = 0;					// Index of current player.
 int g_loopOffset = 0;						// Offset for movement loops.
 double g_movementSize = 1.0;				// Movement size (in fractions of a tile).
+int g_stepsTaken = 0;						// Number of steps the player has taken.
 
 /*
  * Externals.
@@ -67,8 +74,8 @@ bool checkAbove(const int x, const int y, const int z)
 int checkObstruction(SPRITE_POSITION &pos, PENDING_MOVEMENT &pend, const int currentPlayer, const int currentItem, char &staticTileType, const bool bStartingMove = false)
 {
 
-	extern std::vector<bool> g_showPlayer;
-	extern std::vector<ITEM> g_itemMem;
+	/*extern*/ std::vector<bool> g_showPlayer;
+	/*extern*/ std::vector<ITEM> g_itemMem;
 
 	// Transform pixel isometrics.
 	double posX, posY, xTarg, yTarg;

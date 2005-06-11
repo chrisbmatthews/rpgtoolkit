@@ -11,7 +11,16 @@
  * Inclusions.
  */
 #include <string>
-#include <vector>
+#include <deque>
+
+/*
+ * Definitions.
+ */
+
+#define GS_IDLE 0					// Just re-renders the screen
+#define GS_MOVEMENT 1				// Movement is occurring (players or items)
+#define GS_PAUSE 2					// Pause game (do nothing)
+#define GS_QUIT 3					// Shutdown sequence
 
 /*
  * Movement definitions.
@@ -86,18 +95,9 @@ typedef struct tagSpritePosition
     double y;				// Current board y position (fraction of tiles).
     int l;					// Current layer.
     int loopFrame;			// Current frame in a movement loop (different from .frame).
+	int loopSpeed;			// speed converted to loops.
     IDLE_INFO idle;
 } SPRITE_POSITION;
-typedef std::vector<SPRITE_POSITION> SPRITE_POSITIONS;
-
-/*
- * A movement queue.
- */
-typedef struct tagMovementQueue
-{
-    int lngSize;					// Size of the queue
-    std::vector<int> lngMovements;	// Movements in the queue
-} MOVEMENT_QUEUE;
 
 /*
  * A pending movement.
@@ -111,9 +111,8 @@ typedef struct tagPendingMovement
     double xTarg;			// Target board co-ordinates.
     double yTarg;
     int lTarg;
-    MOVEMENT_QUEUE queue;	// The pending movements of the player/item.
+	std::deque<int> queue;	// The pending movements of the player/item.
 } PENDING_MOVEMENT;
-typedef std::vector<PENDING_MOVEMENT> PENDING_MOVEMENTS;
 
 /*
  * Determine how many frames to move at a time.
@@ -136,8 +135,7 @@ inline int framesPerMove(void)
  */
 inline int round(const double num)
 {
-	const int whole = int(num);
-	return (((num - whole) >= 0.5) ? (whole + 1) : whole);
+	return int(num + 0.5);
 }
 
 #endif
