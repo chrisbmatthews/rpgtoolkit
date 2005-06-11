@@ -25,7 +25,7 @@ typedef struct tagTileAnim
 	int animTileCurrentFrame;				// Current frame for insertion/animation.
 	int timerFrame;							// This number will be 0 to 29 to indicate how many times the timer has clicked.
 	int currentAnmFrame;					// Currently animating frame.
-	void open(const std::string fileName);
+	bool open(const std::string fileName);
 } TILEANIM;
 
 #endif

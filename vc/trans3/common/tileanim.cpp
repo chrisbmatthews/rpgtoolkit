@@ -15,8 +15,9 @@
  * Open a tile animtion.
  *
  * fileName (in) - file to open
+ * bool (out) - open success
  */
-void tagTileAnim::open(const std::string fileName)
+bool tagTileAnim::open(const std::string fileName)
 {
 
 	CFile file(fileName);
@@ -26,7 +27,7 @@ void tagTileAnim::open(const std::string fileName)
 	if (fileHeader != "RPGTLKIT TILEANIM")
 	{
 		MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Animated Tile", 0);
-		return;
+		return false;
 	}
 
 	short majorVer, minorVer;
@@ -42,5 +43,5 @@ void tagTileAnim::open(const std::string fileName)
 		file >> frame;
 		animTileFrame.push_back(frame);
 	}
-
+	return true;
 }
