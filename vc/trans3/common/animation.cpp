@@ -99,6 +99,18 @@ bool tagAnimation::open(const std::string fileName)
 }
 
 /*
+ * Clear the animation cache.
+ */
+void clearAnmCache(void)
+{
+	for (std::vector<ANIMATION_FRAME>::iterator i = g_anmCache.begin(); i != g_anmCache.end(); ++i)
+	{
+		delete i->cnv;
+	}
+	g_anmCache.clear();
+}
+
+/*
  * Save an animation.
  *
  * fileName (in) - file to save to
@@ -132,10 +144,10 @@ void tagAnimation::save(const std::string fileName) const
  * Checks through the animation cache for previous renderings of this frame,
  * if not found, it is rendered here and copied to the animation cache.
  */
-bool renderAnimationFrame(CGDICanvas* cnv,
-						  std::string file, 
-						  int frame, 
-						  const int x, 
+bool renderAnimationFrame(CGDICanvas *cnv,
+						  std::string file,
+						  int frame,
+						  const int x,
 						  const int y)
 {
 	extern std::string g_projectPath;
@@ -160,7 +172,7 @@ bool renderAnimationFrame(CGDICanvas* cnv,
 		{
 			// All files in cache are capitalised.
 
-            frame = frame % (i->maxFrames + 1);
+            frame %= (i->maxFrames + 1);
 
             if (i->frame == frame)
 			{
@@ -177,7 +189,7 @@ bool renderAnimationFrame(CGDICanvas* cnv,
 				i->cnv->Blt(cnv, x, y, SRCCOPY);
 
                 // Play the frame's sound.
-//                Call sndPlaySound(anmCache(t).strSound, SND_ASYNC Or SND_NODEFAULT)
+				// sndPlaySound((g_projectPath + MEDIA_PATH + i->strSound).c_str(), SND_ASYNC | SND_NODEFAULT);
 
                 // All done!
                 return true;
@@ -264,7 +276,7 @@ bool renderAnimationFrame(CGDICanvas* cnv,
     } // if (ext == TBM)
 
     // Play the frame's sound.
-//        Call sndPlaySound(g_projectPath + MEDIA_PATH + anm.animSound[frame], SND_ASYNC Or SND_NODEFAULT)
+	// sndPlaySound((g_projectPath + MEDIA_PATH + anm.animSound[frame]).c_str(), SND_ASYNC | SND_NODEFAULT);
 
     // Now place this frame in the sprite cache.
 	ANIMATION_FRAME anmFr;
@@ -284,8 +296,9 @@ bool renderAnimationFrame(CGDICanvas* cnv,
 /*
  * CommonCanvas canvasMaskBltStretchTransparent
  * *** This function is looking for a home! ***
+ * Colin: CCanvas?
  */
-bool canvasMaskBltStretchTransparent (const CGDICanvas *cnvSource,
+bool canvasMaskBltStretchTransparent(const CGDICanvas *cnvSource,
 									  const CGDICanvas *cnvMask,
 									  const int destX,
 									  const int destY,
@@ -294,40 +307,38 @@ bool canvasMaskBltStretchTransparent (const CGDICanvas *cnvSource,
 									  const CGDICanvas *cnvTarget,
 									  const int crTranspColor)
 {
-
-//    if (!canvasOccupied(cnvSource)) return false;
 	
 	const int w = cnvSource->GetWidth(), h = cnvSource->GetHeight();
 
 	// Create an intermediate canvas
 	CGDICanvas *cnvInt = new CGDICanvas();
 	cnvInt->CreateBlank(NULL, newWidth, newHeight, true);
-	cnvInt->ClearScreen (crTranspColor);
+	cnvInt->ClearScreen(crTranspColor);
 
 	if (true)
 	{
 		// Use GDI BitBlt and StretchBlt.
 		// Stretch the image onto the intermediate canvas.
 
-        HDC hdcInt = cnvInt->OpenDC();
-	    HDC hdcSource = cnvSource->OpenDC();
-        HDC hdcMask = cnvMask->OpenDC();
+        const HDC hdcInt = cnvInt->OpenDC();
+	    const HDC hdcSource = cnvSource->OpenDC();
+        const HDC hdcMask = cnvMask->OpenDC();
 
 		if (w == newWidth && h == newHeight)
 		{
 			// Image is not stretched - no need to use StretchBlt.
-            BitBlt (hdcInt, 0, 0, w, h, hdcMask, 0, 0, SRCAND);
-            BitBlt (hdcInt, 0, 0, w, h, hdcSource, 0, 0, SRCPAINT);
+            BitBlt(hdcInt, 0, 0, w, h, hdcMask, 0, 0, SRCAND);
+            BitBlt(hdcInt, 0, 0, w, h, hdcSource, 0, 0, SRCPAINT);
 		}
         else
 		{
 			// Need to use StretchBlt.
-            StretchBlt (hdcInt, 
+            StretchBlt(hdcInt, 
 					   0, 0, newWidth, newHeight,
 					   hdcMask, 
 					   0, 0, w, h, 
 					   SRCAND);
-            StretchBlt (hdcInt, 
+            StretchBlt(hdcInt, 
 					   0, 0, newWidth, newHeight,
 					   hdcSource,
                        0, 0, w, h, 
@@ -352,6 +363,7 @@ bool canvasMaskBltStretchTransparent (const CGDICanvas *cnvSource,
 
 	// Destroy the intermediate canvas.
 	cnvInt->Destroy();
+	delete cnvInt;
 
 	return true;
 }

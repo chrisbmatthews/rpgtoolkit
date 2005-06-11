@@ -44,7 +44,7 @@ typedef struct tagSpriteAttr
 	std::vector<std::string> standingGfx;		// Filenames of the standing animations/graphics.
 	std::vector<std::string> customGfx;			// Customized animations.
 	std::vector<std::string> customGfxNames;	// Customized animations (handles).
-	double idleTime;							// Seconds to wait proir to switching toSTAND_ graphics.
+	double idleTime;							// Seconds to wait proir to switching to STAND_ graphics.
 	double speed;								// Seconds between each frame increase.
 //	int loopSpeed;	// Not needed here			// .speed converted to loops.
 

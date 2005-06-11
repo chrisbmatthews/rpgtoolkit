@@ -14,7 +14,6 @@
 /*
  * Definitions.
  */
-/*
 #define PLYR_WALK_S 0
 #define PLYR_WALK_N 1
 #define PLYR_WALK_E 2
@@ -28,7 +27,7 @@
 #define PLYR_SPC 10
 #define PLYR_DIE 11
 #define PLYR_REST 12
-*/
+
 /*
  * Open a player.
  *

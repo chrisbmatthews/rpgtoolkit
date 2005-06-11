@@ -620,11 +620,12 @@ void initGraphics(void)
  */
 void clearTileCache(void)
 {
-	for (std::vector<CTile *>::iterator i = g_tiles.begin(); i != g_tiles.end(); i++)
+	for (std::vector<CTile *>::iterator i = g_tiles.begin(); i != g_tiles.end(); ++i)
 	{
 		delete (*i);
 	}
 	g_tiles.clear();
+	clearAnmCache();
 }
 
 /*

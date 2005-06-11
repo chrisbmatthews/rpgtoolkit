@@ -50,7 +50,7 @@ CPlayer& CPlayer::operator=(const CPlayer &rhs)
 /*
  * Destructor
  */
-CPlayer::~CPlayer() {}
+CPlayer::~CPlayer() { }
 
 /*
  * Set the player's target and current locations.

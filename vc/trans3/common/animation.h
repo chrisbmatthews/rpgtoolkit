@@ -42,7 +42,8 @@ typedef struct tagAnimation
  */
 typedef struct tagAnimationFrame
 {
-	CGDICanvas* cnv;					// Canvas of frame.
+	tagAnimationFrame(void): cnv(NULL) { }
+	CGDICanvas *cnv;					// Canvas of frame.
 	std::string file;					// Animation filename.
 	int frame;							// Frame number.
 	int maxFrames;						// Max frames in this anim.
@@ -60,7 +61,12 @@ bool renderAnimationFrame(CGDICanvas* cnv,
 						  const int x, 
 						  const int y);
 
-bool canvasMaskBltStretchTransparent (const CGDICanvas *cnvSource,
+/*
+ * Clear the animation cache.
+ */
+void clearAnmCache(void);
+
+bool canvasMaskBltStretchTransparent(const CGDICanvas *cnvSource,
 									  const CGDICanvas *cnvMask,
 									  const int destX,
 									  const int destY,
