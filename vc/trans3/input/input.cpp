@@ -14,6 +14,8 @@
 #define DIRECTINPUT_VERSION DIRECTINPUT_HEADER_VERSION
 #include <dinput.h>
 #include "input.h"
+#include "../movement/movement.h"
+#include "../movement/CPlayer/CPlayer.h"
 
 /*
  * Globals.
@@ -126,37 +128,48 @@ void scanKeys(void)
 	g_lpdiKeyboard->GetDeviceState(256, keys);
 	#define SCAN_KEY_DOWN(x) (keys[DIK_##x] & 0x80)
 
+	int queue = MV_IDLE;
+	extern std::vector<CPlayer *> g_players;
+	extern int g_gameState, g_selectedPlayer;
+
 	if (SCAN_KEY_DOWN(RIGHT) && SCAN_KEY_DOWN(UP))
 	{
-		// Northeast.
+		queue = MV_NE;			// Northeast.
 	}
 	else if (SCAN_KEY_DOWN(LEFT) && SCAN_KEY_DOWN(UP))
 	{
-		// Northwest.
+		queue = MV_NW;			// Northwest.
 	}
 	else if (SCAN_KEY_DOWN(RIGHT) && SCAN_KEY_DOWN(DOWN))
 	{
-		// Southeast.
+		queue = MV_SE;			// Southeast.
 	}
 	else if (SCAN_KEY_DOWN(LEFT) && SCAN_KEY_DOWN(DOWN))
 	{
-		// Southwest.
+		queue = MV_SW;			// Southwest.
 	}
 	else if (SCAN_KEY_DOWN(UP))
 	{
-		// North.
+		queue = MV_NORTH;		// North.
 	}
 	else if (SCAN_KEY_DOWN(DOWN))
 	{
-		// South.
+		queue = MV_SOUTH;		// South.
 	}
 	else if (SCAN_KEY_DOWN(RIGHT))
 	{
-		// East.
+		queue = MV_EAST;		// East.
 	}
 	else if (SCAN_KEY_DOWN(LEFT))
 	{
-		// West.
+		queue = MV_WEST;		// West.
+	}
+
+	if (queue)
+	{
+		// Queue up the movement, and clear any currently queued movements.
+		g_players[g_selectedPlayer]->setQueuedMovements(queue, true);
+		g_gameState = GS_MOVEMENT;
 	}
 }
 
