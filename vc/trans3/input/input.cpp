@@ -125,8 +125,7 @@ void freeInput(void)
 void scanKeys(void)
 {
 	BYTE keys[256];
-	memset(keys, 0, sizeof(keys));
-	g_lpdiKeyboard->GetDeviceState(256, keys);
+	if (FAILED(g_lpdiKeyboard->GetDeviceState(256, keys))) return;
 	#define SCAN_KEY_DOWN(x) (keys[DIK_##x] & 0x80)
 
 	int queue = MV_IDLE;
