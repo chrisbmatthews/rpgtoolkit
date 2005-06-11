@@ -189,7 +189,7 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 				i->cnv->Blt(cnv, x, y, SRCCOPY);
 
                 // Play the frame's sound.
-				// sndPlaySound((g_projectPath + MEDIA_PATH + i->strSound).c_str(), SND_ASYNC | SND_NODEFAULT);
+				sndPlaySound((g_projectPath + MEDIA_PATH + i->strSound).c_str(), SND_ASYNC | SND_NODEFAULT);
 
                 // All done!
                 return true;
@@ -224,13 +224,14 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 
     cnv->ClearScreen(TRANSP_COLOR);
 
-	TILE_BITMAP tbm;
 	const std::string ext = parser::uppercase(getExtension(frameFile));
     if (ext == "TBM" || ext.substr(0, 3) == "TST" || ext == "GPH")
 	{
         // You *must* load a tile bitmap before opening an hdc
         // because it'll lock up on windows 98 if you don't.
-        
+
+		TILE_BITMAP tbm;
+
 		if (ext == "TBM")
 		{
 			if (!tbm.open(g_projectPath + BMP_PATH + frameFile)) return false;
@@ -247,8 +248,8 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 		CGDICanvas *cnvMaskTbm = new CGDICanvas();
 		cnvTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, true);
 		cnvMaskTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, true);
-		
-		if(tbm.draw(cnvTbm, cnvMaskTbm, 0, 0))
+
+		if (tbm.draw(cnvTbm, cnvMaskTbm, 0, 0))
 		{
 			//Stretch the tbm canvas to the required size and draw it to the canvas.
 			canvasMaskBltStretchTransparent(cnvTbm,
@@ -261,9 +262,9 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 		}
 
 		// Clean up.
-        cnvTbm->Destroy();
-        cnvMaskTbm->Destroy();
-	}        
+        delete cnvTbm;
+        delete cnvMaskTbm;
+	}
 	else
 	{
 		// Image file.
@@ -271,12 +272,12 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 		c2->CreateBlank(NULL, anm.animSizeX, anm.animSizeY, true);
 //			Call canvasLoadSizedPicture(c2, projectPath & bmpPath & frameFile)
 		cnv->BltTransparent(c2, x, y, anm.animTransp[frame]);
-		c2->Destroy();
+		delete c2;
 
     } // if (ext == TBM)
 
     // Play the frame's sound.
-	// sndPlaySound((g_projectPath + MEDIA_PATH + anm.animSound[frame]).c_str(), SND_ASYNC | SND_NODEFAULT);
+	sndPlaySound((g_projectPath + MEDIA_PATH + anm.animSound[frame]).c_str(), SND_ASYNC | SND_NODEFAULT);
 
     // Now place this frame in the sprite cache.
 	ANIMATION_FRAME anmFr;
@@ -362,7 +363,6 @@ bool canvasMaskBltStretchTransparent(const CGDICanvas *cnvSource,
 	cnvInt->BltTransparent(cnvTarget, destX, destY, crTranspColor);
 
 	// Destroy the intermediate canvas.
-	cnvInt->Destroy();
 	delete cnvInt;
 
 	return true;
