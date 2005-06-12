@@ -1196,5 +1196,54 @@ SOURCE=.\Callbacks.rgs
 # End Source File
 # End Group
 # End Group
+# Begin Group "audio"
+
+# PROP Default_Filter ""
+# Begin Group "audio - source"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\audio\CAudioSegment.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "audio - headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\audio\audiere.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\audio\CAudioSegment.h
+# End Source File
+# End Group
+# Begin Group "audio - libraries"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\audio\audiere.lib
+# End Source File
+# End Group
+# End Group
 # End Target
 # End Project

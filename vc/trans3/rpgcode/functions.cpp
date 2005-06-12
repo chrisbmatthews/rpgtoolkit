@@ -167,12 +167,22 @@ CVariant change(CProgram::PARAMETERS params)
 }
 
 /*
- * clear(...)
+ * clear([cnv!])
  * 
- * Description.
+ * Clears a surface.
  */
 CVariant clear(CProgram::PARAMETERS params)
 {
+	/**if (params.size() != 0)
+	{
+		CGDICanvas *cnv = (CGDICanvas *)(int)params[0].getNum();
+		cnv->ClearScreen(0);
+	}
+	else**/
+	{
+		g_cnvRpgCode->ClearScreen(0);
+		renderRpgCodeScreen();
+	}
 	return CVariant();
 }
 
@@ -187,7 +197,7 @@ CVariant done(CProgram::PARAMETERS params)
 }
 
 /*
- * dos(...)
+ * dos()
  * 
  * Exit to windows.
  */
@@ -229,9 +239,9 @@ CVariant end(CProgram::PARAMETERS params)
 }
 
 /*
- * font(...)
+ * font(font$)
  * 
- * Description.
+ * Load a font, either true type or TK2.
  */
 CVariant font(CProgram::PARAMETERS params)
 {
@@ -240,9 +250,9 @@ CVariant font(CProgram::PARAMETERS params)
 }
 
 /*
- * fontsize(...)
+ * fontsize(size!)
  * 
- * Description.
+ * Set the font size.
  */
 CVariant fontsize(CProgram::PARAMETERS params)
 {
@@ -313,7 +323,7 @@ CVariant viewbrd(CProgram::PARAMETERS params)
 /*
  * bold(on/off)
  * 
- * Description.
+ * Toggle emboldening of text.
  */
 CVariant bold(CProgram::PARAMETERS params)
 {
@@ -322,9 +332,9 @@ CVariant bold(CProgram::PARAMETERS params)
 }
 
 /*
- * italics(...)
+ * italics(on/off)
  * 
- * Description.
+ * Toggle italicizing of text.
  */
 CVariant italics(CProgram::PARAMETERS params)
 {
@@ -333,9 +343,9 @@ CVariant italics(CProgram::PARAMETERS params)
 }
 
 /*
- * underline(...)
+ * underline(on/off)
  * 
- * Description.
+ * Toggle underlining of text.
  */
 CVariant underline(CProgram::PARAMETERS params)
 {
@@ -384,13 +394,20 @@ CVariant color(CProgram::PARAMETERS params)
 }
 
 /*
- * colorrgb(...)
+ * colorrgb(r!, g!, b!)
  * 
- * Description.
+ * Change the active colour to a RGB value.
  */
 CVariant colorrgb(CProgram::PARAMETERS params)
 {
-	g_color = RGB(params[0].getNum(), params[1].getNum(), params[2].getNum());
+	if (params.size() != 3)
+	{
+		CProgram::debugger("ColorRGB() requires three parameters.");
+	}
+	else
+	{
+		g_color = RGB(params[0].getNum(), params[1].getNum(), params[2].getNum());
+	}
 	return CVariant();
 }
 
@@ -445,12 +462,21 @@ CVariant prompt(CProgram::PARAMETERS params)
 }
 
 /*
- * put(...)
+ * put(x!, y!, tile$)
  * 
- * Description.
+ * Put tile$ at x!, y! on the board.
  */
 CVariant put(CProgram::PARAMETERS params)
 {
+	if (params.size() != 3)
+	{
+		CProgram::debugger("Put() requires three parameters.");
+	}
+	else
+	{
+		// getAmbientLevel();
+		drawTileCnv(g_cnvRpgCode, params[2].getLit(), params[0].getNum(), params[1].getNum(), 0, 0, 0, false, true, false, false);
+	}
 	return CVariant();
 }
 
@@ -475,32 +501,34 @@ CVariant run(CProgram::PARAMETERS params)
 }
 
 /*
- * show(...)
+ * show(x)
  * 
- * Description.
+ * Alias of mwin().
  */
 CVariant show(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	return mwin(params);
 }
 
 /*
- * sound(...)
+ * sound()
  * 
- * Description.
+ * Depreciated TK1 function.
  */
 CVariant sound(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("Please use TK3's media functions, rather than this TK1 function!");
 	return CVariant();
 }
 
 /*
- * win(...)
+ * win()
  * 
- * Description.
+ * Wins the game.
  */
 CVariant win(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("Win() is obsolete.");
 	return CVariant();
 }
 
@@ -645,20 +673,27 @@ CVariant wav(CProgram::PARAMETERS params)
 }
 
 /*
- * delay(...)
+ * delay(time!)
  * 
- * Description.
+ * Delay for a certain number of seconds.
  */
 CVariant delay(CProgram::PARAMETERS params)
 {
-	Sleep(params[0].getNum());
+	if (params.size() != 1)
+	{
+		CProgram::debugger("Delay() requires one data element.");
+	}
+	else
+	{
+		Sleep(params[0].getNum() * 1000);
+	}
 	return CVariant();
 }
 
 /*
- * random(...)
+ * ret! = random(range![, ret!])
  * 
- * Description.
+ * Generate a random number.
  */
 CVariant random(CProgram::PARAMETERS params)
 {
@@ -746,12 +781,13 @@ CVariant midirest(CProgram::PARAMETERS params)
 }
 
 /*
- * godos(...)
+ * godos(command$)
  * 
- * Description.
+ * Call into DOS.
  */
 CVariant godos(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("GoDos() is obsolete.");
 	return CVariant();
 }
 
@@ -776,14 +812,25 @@ CVariant removeplayer(CProgram::PARAMETERS params)
 }
 
 /*
- * setpixel(...)
+ * setpixel(x!, y![, cnv!])
  * 
- * Description.
+ * Set a pixel in the current colour.
  */
 CVariant setpixel(CProgram::PARAMETERS params)
 {
-	g_cnvRpgCode->SetPixel(params[0].getNum(), params[1].getNum(), g_color);
-	renderRpgCodeScreen();
+	if (params.size() == 2)
+	{
+		g_cnvRpgCode->SetPixel(params[0].getNum(), params[1].getNum(), g_color);
+		renderRpgCodeScreen();
+	}
+	else if (params.size() == 3)
+	{
+		((CGDICanvas *)(int)params[2].getNum())->SetPixel(params[0].getNum(), params[1].getNum(), g_color);
+	}
+	else
+	{
+		CProgram::debugger("SetPixel() requires two or three parameters.");
+	}
 	return CVariant();
 }
 
@@ -828,32 +875,47 @@ CVariant debug(CProgram::PARAMETERS params)
 }
 
 /*
- * castnum(...)
+ * castnum(x)
  * 
- * Description.
+ * Return x cast to a number. Pointless now.
  */
 CVariant castnum(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		return params[0].getNum();
+	}
+	CProgram::debugger("CastNum() requires one parameter.");
 	return CVariant();
 }
 
 /*
- * castlit(...)
+ * castlit(x)
  * 
- * Description.
+ * Return x cast to a string. Pointless now.
  */
 CVariant castlit(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		return params[0].getLit();
+	}
+	CProgram::debugger("CastLit() requires one parameter.");
 	return CVariant();
 }
 
 /*
- * castint(...)
+ * castint(x)
  * 
- * Description.
+ * Return x cast to an integer (i.e., sans fractional pieces).
  */
 CVariant castint(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		return (int)params[0].getNum();
+	}
+	CProgram::debugger("CastInt() requires one parameter.");
 	return CVariant();
 }
 
@@ -2768,10 +2830,11 @@ CVariant setmwintranslucency(CProgram::PARAMETERS params)
 }
 
 /*
- * Initialize the functions.
+ * Initialize RPGCode.
  */
 void initRpgCode(void)
 {
+	// List of functions.
 	CProgram::addFunction("mwin", mwin);
 	CProgram::addFunction("wait", wait);
 	CProgram::addFunction("mwincls", mwincls);

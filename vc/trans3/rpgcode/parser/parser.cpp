@@ -62,8 +62,8 @@ static inline bool isDelimiter(const std::string str)
 		str == "||" ||
 		str == "&&" ||
 		str == "==" ||
-		str == "!=" ||
-		str == "~=" || 
+		// str == "!=" ||
+		str == "~=" ||
 		str == "++" ||
 		str == "--" ||
 		str == "+=" ||
@@ -74,8 +74,7 @@ static inline bool isDelimiter(const std::string str)
 		str == "^=" ||
 		str == "`=" ||
 		str == "|=" ||
-		str == "&=" ||
-		str == "->"
+		str == "&="
 	);
 }
 
@@ -154,21 +153,18 @@ void parser::getTokenList(const std::string str, std::vector<std::string> &pToke
 			if (isDelimiter(part))
 			{
 				i++;
-				const std::string strPush = trim(str.substr(lastToken, size - 1));
+				const std::string strPush = trim(str.substr(lastToken, size));
 				if (strPush != "")
 				{
-					if (part != "->")
-					{
-						/*
-						 * Push everything twice.
-						 */
-						pTokens.push_back(strPush);
-						pTokens.push_back(strPush);
-						pDelimiters += part;
-						pPositions.push_back(i);
-						pPositions.push_back(i);
-					}
-					lastToken = i + 2;
+					/*
+					 * Push everything twice.
+					 */
+					pTokens.push_back(strPush);
+					pTokens.push_back(strPush);
+					pDelimiters += part;
+					pPositions.push_back(i);
+					pPositions.push_back(i);
+					lastToken = i + 1;
 					size = 0;
 				}
 			}
@@ -177,7 +173,7 @@ void parser::getTokenList(const std::string str, std::vector<std::string> &pToke
 				/*
 				 * Token here!
 				 */
-				const std::string strPush = trim(str.substr(lastToken, size - 1));
+				const std::string strPush = trim(str.substr(lastToken, size));
 				if (strPush != "" || chr == '(' || chr == ')')
 				{
 					pTokens.push_back(strPush);

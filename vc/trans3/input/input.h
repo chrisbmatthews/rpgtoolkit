@@ -10,6 +10,8 @@
 /*
  * Inclusions.
  */
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <string>
 
 /*
@@ -32,5 +34,10 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
  * Scan for keys.
  */
 void scanKeys(void);
+
+/*
+ * Process an event from the message queue.
+ */
+void processEvent(void);
 
 #endif

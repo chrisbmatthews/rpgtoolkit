@@ -565,7 +565,7 @@ bool renderNow(CGDICanvas * /*cnv*/, const bool bForce)
 
 	extern BOARD g_activeBoard;
 	drawBoard(g_activeBoard, &cnv, 0, 0, 0, g_tilesX, g_tilesY, 0, 0, 0, false);
-	
+
 	extern std::vector<CPlayer *> g_players;
 	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); i++)
 	{

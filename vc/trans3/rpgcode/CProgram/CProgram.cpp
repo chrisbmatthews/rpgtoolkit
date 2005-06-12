@@ -26,6 +26,7 @@
  * Static member initialization.
  */
 std::map<std::string, CProgram::INTERNAL_FUNCTION> CProgram::m_functions;
+CProgram *CProgram::m_currentProgram = NULL;
 const int CProgram::tagClass::PUBLIC = 0;
 const int CProgram::tagClass::PRIVATE = 1;
 
@@ -333,7 +334,9 @@ void CProgram::open(const std::string file)
 				{
 					const int start = pos;
 					pos = centerStr.find(',', pos + 1);
-					method.params.push_back(parser::uppercase(parser::trim(centerStr.substr(start, ((pos != std::string::npos) ? pos : centerLen) - start))));
+					const std::string push = parser::uppercase(parser::trim(centerStr.substr(start, ((pos != std::string::npos) ? pos : centerLen) - start)));
+					if ((method.params.size() == 0) && parser::trim(push).empty()) break;
+					method.params.push_back(push);
 				} while (pos++ != std::string::npos);
 				stream = &method.lines;
 			}
@@ -445,6 +448,7 @@ void CProgram::runBlock(const bool bRun)
 		}
 		else if (bRun)
 		{
+			processEvent();
 			evaluate(str);
 		}
 	}
@@ -593,6 +597,7 @@ CVariant CProgram::callFunction(const std::string funcName, PARAMETERS params)
 		/*
 		 * Call this function.
 		 */
+		m_currentProgram = this;
 		return m_functions[ucase](params);
 	}
 	/*
@@ -697,6 +702,7 @@ CVariant CProgram::evaluate(const std::string str)
 				const int start = pos;
 				pos = centerStr.find(',', pos + 1);
 				const std::string push = centerStr.substr(start, ((pos != std::string::npos) ? pos : centerLen) - start);
+				if ((params.size() == 0) && parser::trim(push).empty()) break;
 				if (bIsConstruct)
 				{
 					params.push_back(push);
@@ -740,14 +746,51 @@ CVariant CProgram::evaluate(const std::string str)
 	 * Now there's just a simple expression with numbers
 	 * and/or variables remaining of this line.
 	 */
-	const std::string operators[] = {"&&", "||", "<<", ">>", "<=", ">=", "==", "!=", "~=", "^=", "^", "*=", "*", "/=", "/", "%=", "%", "+=", "+", "-=", "-", "&=", "&", "|=", "|", "`=", "`", "<", ">", "="};
-	for (int j = 0; j < 30; j++)
+	const std::string operators[] = {
+		"^",
+		"*",
+		"/",
+		"%",
+		"+",
+		"-",
+		"<<",
+		">>",
+		"<",
+		">",
+		"<=",
+		">=",
+		"==",
+		"~=",
+		"&",
+		"`",
+		"|",
+		"&&",
+		"||",
+		"=",
+		"^=",
+		"*=",
+		"/=",
+		"%=",
+		"+=",
+		"~=",
+		// "<<=",
+		// ">>=",
+		"&=",
+		"|=",
+		"`="
+	};
+	for (int j = 0; j < 28; j++)
 	{
 		const std::string &op = operators[j];
 		const int opLen = op.length();
 		const int pos = delimiterStr.find(op);
 		if (pos != std::string::npos)
 		{
+			if ((pos != len) && (opLen == 1) && (delimiterStr[pos] == delimiterStr[pos + 1]))
+			{
+				// This is actually part of a larger operator.
+				continue;
+			}
 			const std::string tokenA = parser::trim(tokens[pos]);
 			const std::string tokenB = parser::trim(tokens[pos + opLen]);
 			const CVariant right = constructVariant(tokenB);
@@ -803,8 +846,8 @@ CVariant CProgram::evaluate(const std::string str)
 			}
 			else
 			{
-				STACK_FRAME &frame = m_stack.back();
 				const std::string ucase = parser::uppercase(tokenA);
+				STACK_FRAME &frame = m_stack.back().count(ucase) ? m_stack.back() : m_stack.front();
 				if (op == "=") frame[ucase] = right;
 				else if (op == "+=")
 				{

@@ -19,9 +19,7 @@
 #include <string>
 #include <sstream>
 #include "../CVariant/CVariant.h"
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "../../input/input.h"
 
 /*
  * A loaded program.
@@ -155,6 +153,11 @@ public:
 	 */
 	static void addFunction(const std::string str, const INTERNAL_FUNCTION func);
 
+	/*
+	 * Get the current program.
+	 */
+	CProgram *getCurrentProgram(void) { return m_currentProgram; }
+
 /*
  * Private visibility.
  */
@@ -184,6 +187,7 @@ private:
 			/*
 			 * Evaluate this line.
 			 */
+			processEvent();
 			evaluate(lines[m_currentLine]);
 		}
 		m_currentLine = i;
@@ -257,6 +261,11 @@ private:
 	 * Internal functions.
 	 */
 	static std::map<std::string, INTERNAL_FUNCTION> m_functions;
+
+	/*
+	 * The current program.
+	 */
+	static CProgram *m_currentProgram;
 
 };
 

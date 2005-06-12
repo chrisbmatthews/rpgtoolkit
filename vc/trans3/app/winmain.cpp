@@ -166,7 +166,7 @@ VOID setUpGame(VOID)
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())
 	{
-		// CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg).run();
+		CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg).run();
 	}
 
 	if (!g_mainFile.initBoard.empty())

@@ -7,10 +7,7 @@
 /*
  * Inclusions.
  */
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <vector>
-#include <string>
 #define DIRECTINPUT_VERSION DIRECTINPUT_HEADER_VERSION
 #include <dinput.h>
 #include "input.h"

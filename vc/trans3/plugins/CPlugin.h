@@ -28,8 +28,6 @@ public:
 	~CPlugin(void);
 	bool load(const std::wstring cls);
 	void unload(void);
-	static void initCallbacks(void);
-	static void freeCallbacks(void);
 
 	void initialize(void);
 	void terminate(void);
