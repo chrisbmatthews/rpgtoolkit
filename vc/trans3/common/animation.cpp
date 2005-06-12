@@ -189,7 +189,7 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 				i->cnv->Blt(cnv, x, y, SRCCOPY);
 
                 // Play the frame's sound.
-				sndPlaySound((g_projectPath + MEDIA_PATH + i->strSound).c_str(), SND_ASYNC | SND_NODEFAULT);
+				sndPlaySound(i->strSound.c_str(), SND_ASYNC | SND_NODEFAULT);
 
                 // All done!
                 return true;
