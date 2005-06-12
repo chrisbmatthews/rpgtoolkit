@@ -627,6 +627,16 @@ CVariant CProgram::callFunction(const std::string funcName, PARAMETERS params)
 }
 
 /*
+ * Set a variable.
+ */
+void CProgram::setVariable(const std::string name, const CVariant value)
+{
+	const std::string ucase = parser::uppercase(name);
+	STACK_FRAME &frame = m_stack.back().count(ucase) ? m_stack.back() : m_stack.front();
+	frame[ucase] = value;
+}
+
+/*
  * Evaluate a string.
  *
  * str (in) - string to evaluate
@@ -786,7 +796,7 @@ CVariant CProgram::evaluate(const std::string str)
 		const int pos = delimiterStr.find(op);
 		if (pos != std::string::npos)
 		{
-			if ((pos != len) && (opLen == 1) && (delimiterStr[pos] == delimiterStr[pos + 1]))
+			if ((pos != len) && (opLen == 1) && (str[positions[pos]] == str[positions[pos + 1]]))
 			{
 				// This is actually part of a larger operator.
 				continue;

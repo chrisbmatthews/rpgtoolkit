@@ -17,7 +17,7 @@
 /*
  * Globals.
  */
-static std::vector<char> g_keys;
+std::vector<char> g_keys;
 static IDirectInput8A *g_lpdi = NULL;
 static IDirectInputDevice8A *g_lpdiKeyboard = NULL;
 

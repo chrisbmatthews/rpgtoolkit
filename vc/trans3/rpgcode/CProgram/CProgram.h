@@ -100,15 +100,16 @@ public:
 	 */
 	static void debugger(const std::string str)
 	{
-		/* std::stringstream ss;
+		CProgram *prg = getCurrentProgram();
+		std::stringstream ss;
 		ss	<< "Line "
-			<< m_currentLine + 1
+			<< prg->m_currentLine + 1
 			<< "; "
-			<< (*m_process)[m_currentLine]
+			<< (*prg->m_process)[prg->m_currentLine]
 			<< std::endl
 			<< str
-			<< std::endl; */
-		MessageBox(NULL, /*ss.str()*/ str.c_str(), "RPGCode Error!", 0);
+			<< std::endl;
+		MessageBox(NULL, ss.str().c_str(), "RPGCode Error", 0);
 	}
 
 	/*
@@ -156,7 +157,21 @@ public:
 	/*
 	 * Get the current program.
 	 */
-	CProgram *getCurrentProgram(void) { return m_currentProgram; }
+	static CProgram *getCurrentProgram(void) { return m_currentProgram; }
+
+	/*
+	* Set a variable.
+	*/
+	void setVariable(const std::string name, const CVariant value);
+
+	/*
+	 * End the program.
+	 */
+	void end(void)
+	{
+		m_process = &m_lines;
+		m_currentLine = m_process->size() + 1;
+	}
 
 /*
  * Private visibility.

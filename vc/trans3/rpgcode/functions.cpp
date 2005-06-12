@@ -16,6 +16,8 @@
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../input/input.h"
 #include "../render/render.h"
+#include "../audio/CAudioSegment.h"
+#include <math.h>
 
 /*
  * Externals.
@@ -49,7 +51,12 @@ CVariant mwin(CProgram::PARAMETERS params)
  */
 CVariant wait(CProgram::PARAMETERS params)
 {
-	return waitForKey();
+	if (params.size() == 0)
+	{
+		return waitForKey();
+	}
+	CProgram::getCurrentProgram()->setVariable(params[0].getLit(), waitForKey());
+	return CVariant();
 }
 
 /*
@@ -187,12 +194,13 @@ CVariant clear(CProgram::PARAMETERS params)
 }
 
 /*
- * done(...)
+ * done()
  * 
- * Description.
+ * End the program.
  */
 CVariant done(CProgram::PARAMETERS params)
 {
+	CProgram::getCurrentProgram()->end();
 	return CVariant();
 }
 
@@ -229,12 +237,13 @@ CVariant empty(CProgram::PARAMETERS params)
 }
 
 /*
- * end(...)
+ * end()
  * 
- * Description.
+ * End the program.
  */
 CVariant end(CProgram::PARAMETERS params)
 {
+	CProgram::getCurrentProgram()->end();
 	return CVariant();
 }
 
@@ -291,13 +300,34 @@ CVariant fight(CProgram::PARAMETERS params)
 }
 
 /*
- * get(...)
+ * key$ = get([key$])
  * 
- * Description.
+ * Get a key from the queue.
  */
 CVariant get(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	extern std::vector<char> g_keys;
+	if (g_keys.size() == 0)
+	{
+		return "";
+	}
+	const char chr = g_keys.front();
+	g_keys.erase(g_keys.begin());
+	switch (chr)
+	{
+		case 13: return "ENTER";
+		case 38: return "UP";
+		case 40: return "DOWN";
+		case 37: return "RIGHT";
+		case 39: return "LEFT";
+	}
+	const char str[] = {chr, '\0'};
+	const std::string toRet = str;
+	if (params.size() == 1)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[0].getLit(), toRet);
+	}
+	return toRet;
 }
 
 /*
@@ -697,7 +727,12 @@ CVariant delay(CProgram::PARAMETERS params)
  */
 CVariant random(CProgram::PARAMETERS params)
 {
-	return (1 + (rand() % int(params[0].getNum() + 1)));
+	const CVariant toRet = (1 + (rand() % int(params[0].getNum() + 1)));
+	if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), toRet);
+	}
+	return toRet;
 }
 
 /*
@@ -721,63 +756,75 @@ CVariant tiletype(CProgram::PARAMETERS params)
 }
 
 /*
- * midiplay(...)
+ * mediaplay(file$)
  * 
- * Description.
- */
-CVariant midiplay(CProgram::PARAMETERS params)
-{
-	return CVariant();
-}
-
-/*
- * playmidi(...)
- * 
- * Description.
- */
-CVariant playmidi(CProgram::PARAMETERS params)
-{
-	return CVariant();
-}
-
-/*
- * mediaplay(...)
- * 
- * Description.
+ * Set file$ as the background music.
  */
 CVariant mediaplay(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		extern CAudioSegment *g_bkgMusic;
+		g_bkgMusic->open(params[0].getLit());
+		g_bkgMusic->play(true);
+	}
+	else
+	{
+		CProgram::debugger("MediaPlay() requires one parameter.");
+	}
 	return CVariant();
 }
 
 /*
- * mediastop(...)
+ * midiplay(file$)
  * 
- * Description.
+ * Alias of MediaPlay().
+ */
+CVariant midiplay(CProgram::PARAMETERS params)
+{
+	return mediaplay(params);
+}
+
+/*
+ * playmidi(file$)
+ * 
+ * Alias of MediaPlay().
+ */
+CVariant playmidi(CProgram::PARAMETERS params)
+{
+	return mediaplay(params);
+}
+
+/*
+ * mediastop()
+ * 
+ * Stop the background music.
  */
 CVariant mediastop(CProgram::PARAMETERS params)
 {
+	extern CAudioSegment *g_bkgMusic;
+	g_bkgMusic->stop();
 	return CVariant();
 }
 
 /*
- * mediarest(...)
+ * mediarest()
  * 
- * Description.
+ * Alias of MediaStop().
  */
 CVariant mediarest(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	return mediastop(params);
 }
 
 /*
- * midirest(...)
+ * midirest()
  * 
- * Description.
+ * Alias of MediaStop().
  */
 CVariant midirest(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	return mediastop(params);
 }
 
 /*
@@ -1020,12 +1067,20 @@ CVariant print(CProgram::PARAMETERS params)
 }
 
 /*
- * rpgcode(...)
+ * rpgcode(line$)
  * 
- * Description.
+ * Independently run a line of RPGCode.
  */
 CVariant rpgcode(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		CProgram::getCurrentProgram()->runLine(params[0].getLit());
+	}
+	else
+	{
+		CProgram::debugger("RPGCode() requires one parameter.");
+	}
 	return CVariant();
 }
 
@@ -1140,12 +1195,13 @@ CVariant wavstop(CProgram::PARAMETERS params)
 }
 
 /*
- * bordercolor(...)
+ * bordercolor(r!, g!, b!)
  * 
- * Description.
+ * Obsolete.
  */
 CVariant bordercolor(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("BorderColor() is obsolete.");
 	return CVariant();
 }
 
@@ -1270,22 +1326,24 @@ CVariant destroyitem(CProgram::PARAMETERS params)
 }
 
 /*
- * walkspeed(...)
+ * walkspeed(fast/slow)
  * 
- * Description.
+ * Obsolete.
  */
 CVariant walkspeed(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("WalkSpeed() is obsolete.");
 	return CVariant();
 }
 
 /*
- * itemwalkspeed(...)
+ * itemwalkspeed(fast/slow)
  * 
- * Description.
+ * Obsolete.
  */
 CVariant itemwalkspeed(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("ItemWalkSpeed() is obsolete.");
 	return CVariant();
 }
 
@@ -1480,12 +1538,13 @@ CVariant fightmenugraphic(CProgram::PARAMETERS params)
 }
 
 /*
- * fightstyle(...)
+ * fightstyle(0/1)
  * 
- * Description.
+ * Obsolete.
  */
 CVariant fightstyle(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("FightStyle() is obsolete.");
 	return CVariant();
 }
 
@@ -1500,32 +1559,24 @@ CVariant stance(CProgram::PARAMETERS params)
 }
 
 /*
- * battlespeed(...)
+ * battlespeed(speed!)
  * 
- * Description.
+ * Obsolete.
  */
 CVariant battlespeed(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("BattleSpeed() is obsolete.");
 	return CVariant();
 }
 
 /*
- * textspeed(...)
+ * textspeed(speed!)
  * 
- * Description.
+ * Obsolete.
  */
 CVariant textspeed(CProgram::PARAMETERS params)
 {
-	return CVariant();
-}
-
-/*
- * characterspeed(...)
- * 
- * Description.
- */
-CVariant characterspeed(CProgram::PARAMETERS params)
-{
+	CProgram::debugger("TextSpeed() is obsolete.");
 	return CVariant();
 }
 
@@ -2030,6 +2081,17 @@ CVariant gamespeed(CProgram::PARAMETERS params)
 }
 
 /*
+ * characterspeed(speed!)
+ * 
+ * Obsolete.
+ */
+CVariant characterspeed(CProgram::PARAMETERS params)
+{
+	CProgram::debugger("CharacterSpeed() has depreciated into GameSpeed().");
+	return gamespeed(params);
+}
+
+/*
  * thread(...)
  * 
  * Description.
@@ -2120,12 +2182,13 @@ CVariant global(CProgram::PARAMETERS params)
 }
 
 /*
- * autocommand(...)
+ * autocommand()
  * 
- * Description.
+ * Obsolete.
  */
 CVariant autocommand(CProgram::PARAMETERS params)
 {
+	// Does nothing, but don't bother showing an error.
 	return CVariant();
 }
 
@@ -2380,12 +2443,13 @@ CVariant with(CProgram::PARAMETERS params)
 }
 
 /*
- * stop(...)
+ * stop()
  * 
- * Description.
+ * End the program.
  */
 CVariant stop(CProgram::PARAMETERS params)
 {
+	CProgram::getCurrentProgram()->end();
 	return CVariant();
 }
 
@@ -2430,32 +2494,59 @@ CVariant split(CProgram::PARAMETERS params)
 }
 
 /*
- * asc(...)
+ * ret! = asc(chr$[, ret!])
  * 
- * Description.
+ * Get the ASCII value of chr$
  */
 CVariant asc(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	const double ret = (double)params[0].getLit()[0];
+	if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), ret);
+	}
+	return ret;
 }
 
 /*
- * chr(...)
+ * chr$ = chr(asc![, chr$])
  * 
- * Description.
+ * Get the character represented by the ASCII code passed in.
  */
 CVariant chr(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	std::string ret;
+	ret += (char)params[0].getNum();
+	if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), ret);
+	}
+	return ret;
 }
 
 /*
- * trim(...)
+ * ret$ = trim(str$[, ret$})
  * 
- * Description.
+ * Trim whitespace from a string.
  */
 CVariant trim(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1 || params.size() == 2)
+	{
+		const std::string toRet = parser::trim(params[0].getLit());
+		if (params.size() == 1)
+		{
+			return toRet;
+		}
+		else
+		{
+			CProgram::getCurrentProgram()->setVariable(params[1].getLit(), toRet);
+		}
+	}
+	else
+	{
+		CProgram::debugger("Trim() requires one or two parameters.");
+	}
 	return CVariant();
 }
 
@@ -2490,12 +2581,20 @@ CVariant cursormaphand(CProgram::PARAMETERS params)
 }
 
 /*
- * debugger(...)
+ * debugger(message!)
  * 
- * Description.
+ * Show a debug message.
  */
 CVariant debugger(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		CProgram::debugger(params[0].getLit());
+	}
+	else
+	{
+		CProgram::debugger("Debugger() requires one parameter.");
+	}
 	return CVariant();
 }
 
@@ -2540,23 +2639,18 @@ CVariant setconstants(CProgram::PARAMETERS params)
 }
 
 /*
- * endcausesstop(...)
+ * ret! = log(x![, ret!])
  * 
- * Description.
- */
-CVariant endcausesstop(CProgram::PARAMETERS params)
-{
-	return CVariant();
-}
-
-/*
- * log(...)
- * 
- * Description.
+ * Get the natural log of x!
  */
 CVariant log(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	const double toRet = log(params[0].getNum());
+	if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), toRet);
+	}
+	return toRet;
 }
 
 /*
@@ -2780,13 +2874,13 @@ CVariant drawcanvastransparent(CProgram::PARAMETERS params)
 }
 
 /*
- * gettickcount(...)
+ * gettickcount()
  * 
- * Description.
+ * Get the number of milliseconds since Windows started.
  */
 CVariant gettickcount(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	return GetTickCount();
 }
 
 /*
@@ -3075,7 +3169,6 @@ void initRpgCode(void)
 	CProgram::addFunction("resumenext", resumenext);
 	CProgram::addFunction("msgbox", msgbox);
 	CProgram::addFunction("setconstants", setconstants);
-	CProgram::addFunction("endcausesstop", endcausesstop);
 	CProgram::addFunction("log", log);
 	CProgram::addFunction("onboard", onboard);
 	CProgram::addFunction("autolocal", autolocal);
