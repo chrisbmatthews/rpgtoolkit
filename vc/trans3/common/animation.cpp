@@ -246,8 +246,8 @@ bool renderAnimationFrame(CGDICanvas *cnv,
         // Draw the tilebitmap and mask to new canvases.
 		CGDICanvas *cnvTbm = new CGDICanvas();
 		CGDICanvas *cnvMaskTbm = new CGDICanvas();
-		cnvTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, true);
-		cnvMaskTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, true);
+		cnvTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, TRUE);
+		cnvMaskTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, TRUE);
 
 		if (tbm.draw(cnvTbm, cnvMaskTbm, 0, 0))
 		{
@@ -269,7 +269,7 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 	{
 		// Image file.
         CGDICanvas *c2 = new CGDICanvas();
-		c2->CreateBlank(NULL, anm.animSizeX, anm.animSizeY, true);
+		c2->CreateBlank(NULL, anm.animSizeX, anm.animSizeY, TRUE);
 //			Call canvasLoadSizedPicture(c2, projectPath & bmpPath & frameFile)
 		cnv->BltTransparent(c2, x, y, anm.animTransp[frame]);
 		delete c2;
@@ -313,7 +313,7 @@ bool canvasMaskBltStretchTransparent(const CGDICanvas *cnvSource,
 
 	// Create an intermediate canvas
 	CGDICanvas *cnvInt = new CGDICanvas();
-	cnvInt->CreateBlank(NULL, newWidth, newHeight, true);
+	cnvInt->CreateBlank(NULL, newWidth, newHeight, TRUE);
 	cnvInt->ClearScreen(crTranspColor);
 
 	if (true)
