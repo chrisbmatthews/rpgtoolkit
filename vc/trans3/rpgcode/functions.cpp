@@ -173,12 +173,12 @@ CVariant change(CProgram::PARAMETERS params)
  */
 CVariant clear(CProgram::PARAMETERS params)
 {
-	/**if (params.size() != 0)
+	if (params.size() != 0)
 	{
 		CGDICanvas *cnv = (CGDICanvas *)(int)params[0].getNum();
 		cnv->ClearScreen(0);
 	}
-	else**/
+	else
 	{
 		g_cnvRpgCode->ClearScreen(0);
 		renderRpgCodeScreen();
