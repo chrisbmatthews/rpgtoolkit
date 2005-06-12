@@ -172,8 +172,11 @@ VOID setUpGame(VOID)
 	if (!g_mainFile.initBoard.empty())
 	{
 		g_activeBoard.open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
-		g_bkgMusic->open(g_activeBoard.boardMusic);
-		g_bkgMusic->play(true);
+		if (!g_activeBoard.boardMusic.empty())
+		{
+			g_bkgMusic->open(g_activeBoard.boardMusic);
+			g_bkgMusic->play(true);
+		}
 		if (!g_activeBoard.enterPrg.empty())
 		{
 			CProgram(g_projectPath + PRG_PATH + g_activeBoard.enterPrg).run();
