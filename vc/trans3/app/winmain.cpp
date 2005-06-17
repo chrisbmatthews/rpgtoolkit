@@ -51,8 +51,8 @@ std::vector<CItem *> g_items;		// Loaded items.
 CSprite *g_pSelectedPlayer = NULL;	// Pointer to selected player?
 
 HINSTANCE g_hInstance = NULL;		// Handle to application.
-int g_renderCount = 0;				// Count of GS_MOVEMENT state loops.
-double g_renderTime = 0.0;			// Cumulative GS_MOVEMENT state loop time.
+unsigned int g_renderCount = 0;		// Count of GS_MOVEMENT state loops.
+unsigned int g_renderTime = 0;		// Millisecond cumulative GS_MOVEMENT state loop time.
 
 /*
  * Show a main file dialogue.
@@ -115,19 +115,20 @@ VOID setUpGame(VOID)
 	g_movementSize = g_mainFile.pixelMovement ? 0.25 : 1.0;
 	g_selectedPlayer = 0;
 
-    // Get the last gAvgTime from the registry
+    // Get the last gAvgTime from the registry.
+	double avgTime = -1;
     if (!g_mainFile.extendToFullScreen)
 	{
 		switch (g_mainFile.mainResolution)
 		{
 			case 0: // 640 * 480
-				getSetting("gAvgTime_640_Win", g_renderTime);
+				getSetting("gAvgTime_640_Win", avgTime);
 				break;
 			case 1: // 1024 * 768
-				getSetting("gAvgTime_1024_Win", g_renderTime);
+				getSetting("gAvgTime_1024_Win", avgTime);
 				break;
 			default: // Custom -- use 800 * 600
-				getSetting("gAvgTime_800_Win", g_renderTime);
+				getSetting("gAvgTime_800_Win", avgTime);
 				break;
 		}
 	}
@@ -136,21 +137,20 @@ VOID setUpGame(VOID)
 		switch (g_mainFile.mainResolution)
 		{
 			case 0: // 640 * 480
-				getSetting("gAvgTime_640_Full", g_renderTime);
+				getSetting("gAvgTime_640_Full", avgTime);
 				break;
 			case 1: // 1024 * 768
-				getSetting("gAvgTime_1024_Full", g_renderTime);
+				getSetting("gAvgTime_1024_Full", avgTime);
 				break;
 			default: // Custom -- use 800 * 600
-				getSetting("gAvgTime_800_Full", g_renderTime);
+				getSetting("gAvgTime_800_Full", avgTime);
 				break;
 		}
 	}
-	if (g_renderTime == -1)
-	{
-		// Do an fps estimate.
-		g_renderTime = 0.1;
-	}	
+	// Do an fps estimate.
+	if (avgTime == -1) avgTime = 0.1; 
+
+	g_renderTime = avgTime * MILLISECONDS;
 	g_renderCount = 100;
 	g_renderTime *= g_renderCount;
 
@@ -163,6 +163,9 @@ VOID setUpGame(VOID)
 		g_pSelectedPlayer = g_players.front();
 	}
 
+// Testing!
+	g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true));
+
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())
 	{
@@ -172,6 +175,7 @@ VOID setUpGame(VOID)
 	if (!g_mainFile.initBoard.empty())
 	{
 		g_activeBoard.open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
+		
 		if (!g_activeBoard.boardMusic.empty())
 		{
 			g_bkgMusic->open(g_activeBoard.boardMusic);
@@ -184,6 +188,9 @@ VOID setUpGame(VOID)
 		g_players[g_selectedPlayer]->setPosition(g_activeBoard.playerX ? g_activeBoard.playerX : 1,
 												g_activeBoard.playerY ? g_activeBoard.playerY : 1,
 												g_activeBoard.playerLayer ? g_activeBoard.playerLayer : 1);
+// Testing!
+		g_players[1]->setPosition(10, 5, 1);
+
 	}
 
 }
@@ -219,10 +226,14 @@ INT gameLogic(VOID)
 			// Timer stuff.
 			// Input.
 			scanKeys();
+
+// Testing!
+			g_players[1]->setQueuedMovements(rand() % 9, true);
+
 			// Movement.
 			for (; i != g_players.end(); i++)
 			{
-				(*i)->move();
+				(*i)->move(g_pSelectedPlayer);
 			}
 			//for (i = g_items.begin(); i != g_items.end(); i++) i->move();
 
@@ -288,12 +299,10 @@ INT mainEventLoop(VOID)
 			dwTimeNow = GetTickCount() - dwTimeNow;
 
 			// Add the time for this loop and increment the counter.
-			// Add only if this is a short loop.
+			// Add only if this is a "short" loop.
 			if (dwTimeNow < 200)
 			{
-				// Colin: Using GetTickCount() everywhere now, so we don't 
-				//		  want to divide here, right?
-				g_renderTime += double(dwTimeNow) /*/ 1000.0*/;
+				g_renderTime += dwTimeNow;
 				g_renderCount++;
 			}
 		}
