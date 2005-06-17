@@ -11,7 +11,7 @@
 #define DIRECTINPUT_VERSION DIRECTINPUT_HEADER_VERSION
 #include <dinput.h>
 #include "input.h"
-#include "../movement/movement.h"
+#include "../common/sprite.h"
 #include "../movement/CPlayer/CPlayer.h"
 
 /*
@@ -125,7 +125,7 @@ void scanKeys(void)
 	if (FAILED(g_lpdiKeyboard->GetDeviceState(256, keys))) return;
 	#define SCAN_KEY_DOWN(x) (keys[DIK_##x] & 0x80)
 
-	int queue = MV_IDLE;
+	MV_ENUM queue = MV_IDLE;
 	extern std::vector<CPlayer *> g_players;
 	extern int g_gameState, g_selectedPlayer;
 
@@ -147,22 +147,22 @@ void scanKeys(void)
 	}
 	else if (SCAN_KEY_DOWN(UP))
 	{
-		queue = MV_NORTH;		// North.
+		queue = MV_N;			// North.
 	}
 	else if (SCAN_KEY_DOWN(DOWN))
 	{
-		queue = MV_SOUTH;		// South.
+		queue = MV_S;			// South.
 	}
 	else if (SCAN_KEY_DOWN(RIGHT))
 	{
-		queue = MV_EAST;		// East.
+		queue = MV_E;			// East.
 	}
 	else if (SCAN_KEY_DOWN(LEFT))
 	{
-		queue = MV_WEST;		// West.
+		queue = MV_W;			// West.
 	}
 
-	if (queue)
+	if (queue != MV_IDLE)
 	{
 		// Queue up the movement, and clear any currently queued movements.
 		g_players[g_selectedPlayer]->setQueuedMovements(queue, true);

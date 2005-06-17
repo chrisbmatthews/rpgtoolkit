@@ -13,53 +13,26 @@
 /*
  * Constructor
  */
-CPlayer::CPlayer(const std::string file, const bool show): 
+CPlayer::CPlayer(const std::string file, const bool show):
 CSprite(show)				// Is the player visible?
 {
 	// createCharacter().
-	m_playerMem.open(file);
+	m_playerMem.open(file, m_attr);
 	/* Variable stuff */
 	
-	// Set the base class pointer to point to the player's attributes,
-	// so that we can use them in the base class.
-	m_pAttr = &m_playerMem.spriteAttr;
-
-	// Or could put the SPRITE_ATTRIBUTES in CSprite and pass them into
-	// player.open().
+	// Get these into milliseconds!
+	m_attr.speed *= MILLISECONDS;
+	m_attr.idleTime *= MILLISECONDS;
 }
-
-/*
- * Copy constructor
- */
-CPlayer::CPlayer(const CPlayer &rhs):
-CSprite(rhs.m_bActive)
-{
-	// Stuff.
-}
-
-/*
- * Copy constructor
- */
-CPlayer& CPlayer::operator=(const CPlayer &rhs)
-{
-	// Stuff.
-	std::string str = " ";
-	return CPlayer(str, true);
-}
-
-/*
- * Destructor
- */
-CPlayer::~CPlayer() { }
 
 /*
  * Set the player's target and current locations.
  */
 void CPlayer::setPosition(const int x, const int y, const int l)
 {
-	m_pend.xOrig = m_pos.x = x;
-	m_pend.yOrig = m_pos.y = y;
-	m_pend.lOrig = m_pos.l = l;
+	m_pend.xOrig = m_pend.xTarg = m_pos.x = x;
+	m_pend.yOrig = m_pend.yTarg = m_pos.y = y;
+	m_pend.lOrig = m_pend.lTarg = m_pos.l = l;
 }
 
 

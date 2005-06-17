@@ -152,11 +152,12 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 {
 	extern std::string g_projectPath;
 
+// Pop a debugger error?
+    if (file.empty()) return false;
+
     // Whatever the case, clear the canvas in case the character has no graphics,
     // or the animation can't be loaded.
     cnv->ClearScreen(TRANSP_COLOR);
-
-    if (file.empty()) return false;
 
     // Get canvas width and height.
     const int w = cnv->GetWidth(), h = cnv->GetHeight();

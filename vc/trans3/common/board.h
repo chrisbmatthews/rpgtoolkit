@@ -11,6 +11,7 @@
 /*
  * Inclusions.
  */
+#include "../movement/CVector/CVector.h"
 #include "tileanim.h"
 #include <string>
 #include <vector>
@@ -96,6 +97,9 @@ typedef struct tagBoard
 	std::vector<int> anmTileLUTIndices;				// Indices into LUT of animated tiles.
 	int anmTileLUTInsertIdx;						// Index of LUT table insertion.
 	std::string strFilename;						// Filename of the board.
+
+	std::vector<CVector *> vectors;					// No layers (yet).
+
 	void open(const std::string fileName);
 	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);

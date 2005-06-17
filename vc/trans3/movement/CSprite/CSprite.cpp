@@ -20,24 +20,28 @@
 
 #include "CSprite.h"
 #include "../CPlayer/CPlayer.h"
+#include "../CItem/CItem.h"
+#include "../../common/animation.h"
+#include "../../common/board.h"
+#include "../../common/paths.h"
+#include "../locate.h"
+#include <math.h>
+#include <vector>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 /*
  * Constructor
  */
 CSprite::CSprite(const bool show):
+m_attr(),
 m_bActive(show),
-m_staticTileType(NORMAL)
+m_lastRender(),
+m_pend(),
+m_pos(),
+m_tileType(TT_NORMAL)
 {
-	// Better way to do this?
-	m_pos.frame = 0;
-	m_pos.idle.frameDelay = 0;
-	m_pos.idle.frameTime = 0;
-	m_pos.idle.time = 0;
-	m_pos.loopFrame = -1;
-	m_pos.loopSpeed = 1;
-	m_pos.stance = WALK_S;
-	m_pos.x = 0;
-	m_pos.y = 0;
+	m_v.x = m_v.y = 0;
 
 	// Create canvas.
 	m_pCanvas = new CGDICanvas();
@@ -58,8 +62,8 @@ CSprite::CSprite(const CSprite &rhs)
  */
 CSprite &CSprite::operator=(const CSprite &rhs)
 {
-	// Copy canvas.
 	return CSprite(true);
+	// Copy canvas.
 }
 
 /*
@@ -79,21 +83,18 @@ CSprite::~CSprite()
  * Evaluate the current movement state.
  * Returns: true if movement occurred.
  */ 
-bool CSprite::move() 
+bool CSprite::move(const CSprite *selectedPlayer) 
 {
-	extern std::vector<CPlayer *> g_players;
-	extern int g_selectedPlayer;
-	extern CSprite *g_pSelectedPlayer;
 	extern int g_gameState;
 	extern int g_loopOffset;
 	extern double g_movementSize;
-	extern int g_renderCount;
-	extern double g_renderTime;
-	extern int g_selectedPlayer;
+	extern unsigned int g_renderCount;
+	extern unsigned int g_renderTime;
 
+	// Is the sprite active (visible).
 	if (!m_bActive) return false;
 
-	// Negative value indicates idle status.
+	// Negative value indicates idle status (LOOP_WAIT or LOOP_IDLE)
 	if (m_pos.loopFrame < 0)
 	{
 		// Parse the movement queue.
@@ -102,13 +103,29 @@ bool CSprite::move()
 		if (m_pend.direction != MV_IDLE)
 		{
 			// Insert target co-ordinates.
-			insertTarget(m_pend);
+			insertTarget();
 
-			m_pos.loopFrame = 0;
+			// If we're in pixel movement, increment the animation frame
+			// at the start of movement (for the case where the frame might
+			// not be incremented again before the player stops.
+//			if (g_movementSize != 1) m_pos.frame++;
 
-			// obtainTileType();
-			// checkObstruction();
-			// checkBoardEdges();
+			// Set the player to face the direction of movement (direction
+			// may change if we slide.
+			m_pos.facing = m_pend.direction;
+
+			// Get the tiletype at the target.
+			m_tileType = CVECTOR_TYPE(boardCollisions() | spriteCollisions());
+
+			// obtainTileType(); - boardCollisions().
+			// checkObstruction(); - spriteCollisions().
+			// checkBoardEdges(); - to do.
+
+			if (!(m_tileType & TT_SOLID) || (this == selectedPlayer))
+			{
+				// Start the render frame counter.
+				m_pos.loopFrame = 0;
+			}
 
 			/*
 			 * Determine the number of frames we need to draw to make
@@ -116,10 +133,11 @@ bool CSprite::move()
 			 * Scale the offset (GameSpeed() setting) to correspond to an
 			 * increment of 10%.
 			 */
-			double avgTime = g_renderTime / g_renderCount; // transMain?
-			m_pos.loopSpeed = round(m_pAttr->speed / avgTime) + (g_loopOffset * round(1 / (avgTime * 10)));
+			const double avgTimeInverse = g_renderCount / g_renderTime; // transMain?
+			m_pos.loopSpeed = round(m_attr.speed * avgTimeInverse) + (g_loopOffset * round(avgTimeInverse / 10));
 			
-			// Minimum possible frames = 1.
+			// The number of renders (main loops) to run in between animation
+			// frame updates.
 			if (m_pos.loopSpeed < 1)
 			{
 				m_pos.loopSpeed = 1;
@@ -128,27 +146,35 @@ bool CSprite::move()
 		else
 		{
 			// Set g_gamestate to GS_IDLE to accept user input for the selected player.
-			// if (this == g_pSelectedPlayer) 
-			g_gameState = GS_IDLE;
+			if (this == selectedPlayer) g_gameState = GS_IDLE;
 
 		} // if (.direction != MV_IDLE)
 	} // if (.loopFrame < 0)
 
-	if (m_pend.direction != MV_IDLE)
+	if (m_pos.loopFrame >= 0)
 	{
-		if (push()) // || staticTileType == SOLID
+		// Movement is occurring.
+		if (push() || ((m_tileType & TT_SOLID) && (this == selectedPlayer)))
 		{
 			if (m_pos.loopFrame % int(m_pos.loopSpeed / g_movementSize) == 0)
 			{
-				// Only increment the frame if we're on a multiple of .speed.
+				// Increment the animation frame when we're on a multiple of
+				// loopSpeed (the number of renders to make between animation
+				// frame increments).
 				m_pos.frame++;
 			}
+
+			// Always increment the render count.
 			m_pos.loopFrame++;
 
+			// Frames per move is the number of animation frames to
+			// draw per move - a move being 1 tile or 1/4 tile.
 			if (m_pos.loopFrame == framesPerMove() * m_pos.loopSpeed)
 			{
-				// Movement has ended, update origin, reset counter.
-				if (m_staticTileType != SOLID)
+				// The number of renders is equal to the animation frames
+				// per move times the renders between animation frames
+				// - i.e. we have finished movement.
+				if (!(m_tileType & TT_SOLID))
 				{
 					m_pend.xOrig = m_pend.xTarg;
 					m_pend.yOrig = m_pend.yTarg;
@@ -156,16 +182,17 @@ bool CSprite::move()
 					m_pos.x = m_pend.xTarg;
 					m_pos.y = m_pend.yTarg;
 				}
+				// else restore xTarg -> xOrig?
 
 				// Start the idle timer.
 				m_pos.idle.time = GetTickCount();
 
-				// Set to -1 temporarily to flag next loop.
-				m_pos.loopFrame = -1;
+				// Set the state to be able to start idle animations.
+				// ("Wait" until the idle time is completed).
+				m_pos.loopFrame = LOOP_WAIT;
 
 				// Finish the move for the selected player.
-//				if (this == g_pSelectedPlayer) 
-				playerDoneMove();
+				if (this == selectedPlayer) playerDoneMove();
 
 				// Do this only after playerDoneMove().
 				m_pend.direction = MV_IDLE;
@@ -175,8 +202,16 @@ bool CSprite::move()
 			return true;
 
 		} // if (push)
+
+		// If push() returned false, that means we've stopped moving
+		// during a move (because direction is not MV_IDLE).
+		// Hopefully it's due a sprite that's moving and will move out
+		// of the way!
+		/* Possibly end up merging push() since it's so small */
+
 	} // if (direction != MV_IDLE)
 
+	return false;
 }
 
 /*
@@ -186,60 +221,41 @@ bool CSprite::move()
 bool CSprite::push(void) 
 {
 	extern double g_movementSize;
-	
-	// Set the stance.
-	switch(m_pend.direction)
-	{
-		case MV_NORTH: 
-			m_pos.stance = WALK_N; break;
-		case MV_SOUTH: 
-			m_pos.stance = WALK_S; break;
-		case MV_EAST: 
-			m_pos.stance = WALK_E; break;
-		case MV_WEST: 
-			m_pos.stance = WALK_W; break;
-		case MV_NE: 
-			m_pos.stance = WALK_NE; break;
-		case MV_NW: 
-			m_pos.stance = WALK_NW; break;
-		case MV_SE: 
-			m_pos.stance = WALK_SE; break;
-		case MV_SW: 
-			m_pos.stance = WALK_SW; break;
-		default:
-			m_pos.stance = WALK_S;
-	}
 
 	SPRITE_POSITION testPosition = m_pos;
-	PENDING_MOVEMENT testPending = m_pend;
     const double moveFraction = g_movementSize / (framesPerMove() * m_pos.loopSpeed);
 	
-	incrementPosition(testPosition, m_pend, moveFraction);
+	incrementPosition(m_pos, m_pend, moveFraction);
 
-	//	if (checkObstruction() = SOLID) return false;
+//	if (spriteCollisions())
+	if (m_tileType & TT_SOLID)
+	{
+		// May check collisions every frame.
+		m_pos = testPosition;
+		return false;	// Except for selected player.
+	}
 
 	// Scroll the board for players. Either set for all players, or only selected player
 	// and create a Scroll RPGCode function so that scrolling can be achieved without having
 	// to use invisible players.
-/*	Scroll() */
-
-	m_pos = testPosition;
+	/*	Scroll() */
+	
 	return true;
 }
 
 /*
  * Get the next queued movement and remove it from the queue.
  */
-int CSprite::getQueuedMovements(void) 
+MV_ENUM CSprite::getQueuedMovements(void) 
 {
 	// Check that we have queued movements before popping!
 	if (m_pend.queue.size())
 	{
 		// Peek.
-		int peek = m_pend.queue.front();
+		const int peek = m_pend.queue.front();
 		// Pop.
 		m_pend.queue.pop_front();
-		return peek;
+		return MV_ENUM(peek);
 	}
 	return MV_IDLE;
 }
@@ -267,8 +283,8 @@ void CSprite::runQueuedMovements(void) {}
 void CSprite::playerDoneMove(void) 
 {
 	extern double g_movementSize;
-	extern int g_gameState, g_stepsTaken;
-	int facing = 0;
+	extern int g_gameState;
+	extern unsigned int g_stepsTaken;
 	/*
 	 * Used to track number of times fighting
 	 * *would* have been checked for if not
@@ -299,24 +315,250 @@ void CSprite::playerDoneMove(void)
 
 	// Update the step count (doesn't take pixel movement into account yet).
 	g_stepsTaken++;
-/*
-	// Convert *STUPID* string positions to numerical
-	if(m_pos.stance == WALK_N) facing = NORTH;
-	else if(m_pos.stance == WALK_E) facing = EAST;
-	else if(m_pos.stance == WALK_W) facing = WEST;
-	else facing = SOUTH;
-*/
+
 	// Back to idle state (accepting input)
 	g_gameState = GS_IDLE;
 
 }
 
 /*
+ * Collision detection.
+ */
+
+/*
+ * Check against each board vector and build up a set of flags 
+ * describing all tiletypes at this point. Evaluate one-way vectors
+ * and sprite sliding (angled movement along solid boundaries). 
+ */
+CVECTOR_TYPE CSprite::boardCollisions(const bool recursing)
+{
+	// To do - stairs, layers.
+	extern BOARD g_activeBoard;
+
+	CVECTOR_TYPE tileTypes = TT_NORMAL;
+
+	// Create the sprite's vector base at the *target* location.
+	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	CVector sprBase = m_attr.vBase + p;
+
+	// Loop over the board CVectors and check for intersections.
+	for (std::vector<CVector *>::iterator i = g_activeBoard.vectors.begin(); i != g_activeBoard.vectors.end(); i++)
+	{
+		// Check that the board vector contains the player,
+		// *not* the other way round!
+		CVECTOR_TYPE tt = (*i)->contains(sprBase, p);
+
+		/*
+		 * If an intersection was found, p now holds a position vector
+		 * parallel to the board subvector that was hit. Use this to 
+		 * evaluate the vector's type for one-way and sliding movement.
+		 */
+
+		// Problem: corners on UNIDIRECTIONALs - more distant vector is
+		// sometimes detected, and if the corner angle is <= 90, the wrong
+		// result will be given.
+
+		if (tt & TT_UNIDIRECTIONAL)
+		{
+			// Use the returned point to determine the direction of approach 
+			// by crossing it with the sprite's movement vector. 
+			if (p.x * m_v.y - p.y * m_v.x >= 0)
+			{
+				// Crossing boundary from the "solid" side.
+				tt = TT_SOLID;
+			}
+			else
+			{
+				tt = TT_NORMAL;
+			}
+		}
+
+		if ((tt & TT_SOLID) && (!recursing))
+		{
+			/*
+			 * Compute the angle between the movement vector and
+			 * the subvector to determine if we should "slide".
+			 * If the angle is greater than 45 (or chosen other),
+			 * try rotating the movement direction and evalutate
+			 * the board vectors again at the new target.
+			 * The facing direction is maintained to indicate the player
+			 * is sliding.
+			 */
+
+// Could just miss all this angle stuff (also then p)? Since the potential targets
+// are tested, the incident angle is largely irrelevant, unless we want
+// movement to specifically occur for > 45 degrees (otherwise sliding in
+// all circumstances.
+// Depends upon resultant action in true pixel movement.
+
+			// Using the scalar (dot) product: a.b = |a||b|cos(c).
+			// |a| is the magnitude of a.
+			// a.b = a.x * b.x + a.y * b.y.
+			// c = arccos(a.b / |a||b|), in the range 0 to 180 degrees.
+			double angle = (180 / PI) * 
+							acos(
+								(p.x * m_v.x + p.y * m_v.y) / 
+								sqrt(
+										(p.x * p.x + p.y * p.y) * 
+										(m_v.x * m_v.x + m_v.y * m_v.y)
+									)
+								);
+			
+			// However this doesn't give us enough information to 
+			// identify the angle we've measured, so we need to use 
+			// the cross product too (see below).
+
+			// Round. Slide if angle <= 45 or >= 135 degrees.
+			angle  = int(angle + 0.5) - 90.0;
+			
+			if ((abs(angle) >= 45.0))
+			{
+				// Work out which direction to rotate to.
+
+				// Vector (cross) product returns a vector in the z-plane.
+				// a x b = |a||b|sin(c) = (a.x * b.y - a.y * b.x)
+
+				const double normal = (p.x * m_v.y - p.y * m_v.x);
+
+				// If angle and normal are both positive or negative,
+				// p is to the "right" of m_v (negative being the flipped case).
+				// Otherwise, p is to the "left" of m_v.
+
+				if ((angle > 0) == (normal > 0))
+					// Rotate right.
+					m_pend.direction++;
+				else
+					// Rotate left.
+					m_pend.direction--;
+
+				// Reinsert the target and test again.
+				insertTarget();
+
+				// Recurse on the new target - evaluate all vectors and
+				// return, rather than pausing as it has here.
+				tt = boardCollisions(true);
+				if(tt & TT_SOLID) 
+				{
+					// Target blocked.
+
+					// Recurse once more in the opposite direction.
+					m_pend.direction = m_pos.facing;
+					if ((angle > 0) == (normal > 0))
+						m_pend.direction--;
+					else
+						m_pend.direction++;
+
+					insertTarget();
+					tt = boardCollisions(true);
+					if(tt & TT_SOLID) 
+					{
+						// Restore.
+						m_pend.direction = m_pos.facing;
+						tt = TT_SOLID;
+					}
+					else return tt;
+				}
+				else return tt;
+			} // if (abs(angle) <= 45.0)
+		} // if (intersect)
+
+		// Add this result, retaining previous vectors.
+		tileTypes = CVECTOR_TYPE(tileTypes | tt);
+
+	} // for (i)
+
+	return tileTypes;
+}
+
+CVECTOR_TYPE CSprite::spriteCollisions(void)
+{
+	extern std::vector<CPlayer *> g_players;
+	extern std::vector<CItem *> g_items;
+
+	// Create the sprite's vector base at the *target* location.
+	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	CVector sprBase = m_attr.vBase + p;
+
+	for(std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); i++)
+	{
+		if (this == *i) continue;
+
+		// Compare target bases.
+		DB_POINT pt = {((*i)->m_pend.xTarg - 1.0) * 32.0, ((*i)->m_pend.yTarg - 1.0) * 32.0};
+		CVector tarBase = (*i)->m_attr.vBase + pt;
+
+		if (tarBase.contains(sprBase, p) != TT_NORMAL)
+		{
+			// Hit another player.
+			return TT_SOLID;
+		}
+
+// Compare origins? Merge origins and targets? (how?)
+	}
+
+	// Items. Possible to put in one loop with players?
+	for(std::vector<CItem *>::iterator j = g_items.begin(); j != g_items.end(); j++)
+	{
+		if (this == *j) continue;
+
+		// Compare target bases.
+		DB_POINT pt = {((*j)->m_pend.xTarg - 1.0) * 32.0, ((*j)->m_pend.yTarg - 1.0) * 32.0};
+		CVector tarBase = (*j)->m_attr.vBase + pt;
+
+		if (tarBase.contains(sprBase, p) != TT_NORMAL)
+		{
+			// Hit an item.
+			return TT_SOLID;
+		}
+	}
+	return TT_NORMAL;
+}
+
+// Debug function - draw vector onto screen.
+// Might be worth keeping in some form, but drawing to canvas rather than
+// directly to the device!
+void CSprite::drawVector(void)
+{
+	// Draw the target base one colour.
+	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	CVector sprBase = m_attr.vBase + p;
+	sprBase.draw(65535, false);
+
+	// Draw the current position base another.
+	p.x = (m_pos.x - 1.0) * 32.0; p.y = (m_pos.y - 1.0) * 32.0;
+	sprBase = m_attr.vBase + p;
+	sprBase.draw(16777215, false);
+}
+
+/*
  * Location functions.
  */
 
-// CSprite::insertTarget() {}
-// CSprite::incrementPosition() {}
+/*
+ * Insert the target co-ordinates (the position at the end of the move).
+ */
+void CSprite::insertTarget() 
+{
+	extern BOARD g_activeBoard;
+	extern double g_movementSize;
+	extern const int g_directions[2][9][2];
+
+	/* Isometric conversions */
+
+	const int nIso = int(g_activeBoard.isIsometric);
+
+	// g_directions[isIsometric][MV_CODE][x OR y].
+	m_pend.xTarg = m_pend.xOrig + g_directions[nIso][m_pend.direction][0] * g_movementSize;
+	m_pend.yTarg = m_pend.yOrig + g_directions[nIso][m_pend.direction][1] * g_movementSize;
+	m_pend.lTarg = m_pend.lOrig;
+
+	// The "movement vector".
+	m_v.x = g_directions[nIso][m_pend.direction][0];
+	m_v.y = g_directions[nIso][m_pend.direction][1];
+
+}
+
+// CSprite::incrementPosition() {} To do.
 
 /*
  * Render functions.
@@ -333,59 +575,37 @@ bool CSprite::render(const CGDICanvas* cnv)
 	extern std::string g_projectPath;
 
 	// Check idleness.
-	if ((false) && (m_pend.direction == MV_IDLE) && (g_gameState != GS_MOVEMENT))
+	if ((m_pos.loopFrame < 0) && (!m_pend.queue.size()))
 	{
-		int direction = 0;
 		// We're idle, and we're not about to start moving.
-/*
-		Dim direction As Long
-		Select Case LCase$(.stance)
-		Case "walk_n", "stand_n": direction = 1        'See CommonPlayer
-		Case "walk_s", "stand_s": direction = 0
-		Case "walk_e", "stand_e": direction = 3
-		Case "walk_w", "stand_w": direction = 2
-		Case "walk_nw", "stand_nw": direction = 4
-		Case "walk_ne", "stand_ne": direction = 5
-		Case "walk_sw", "stand_sw": direction = 6
-		Case "walk_se", "stand_se": direction = 7
-		Case Else: direction = -1
-		End Select
 
-		Dim bIdleGfx As Boolean
-		bIdleGfx = (LeftB$(LCase$(.stance), 10) = "stand")
-*/
-		bool bIdleGfx = false;
-
-		if ((GetTickCount() - m_pos.idle.time >= m_pAttr->idleTime) && (!bIdleGfx))
+		if ((m_pos.loopFrame == LOOP_WAIT) && (GetTickCount() - m_pos.idle.time >= m_attr.idleTime))
 		{
 			// Push into idle graphics if not already.
 
 			// Check that a standing graphic for this direction exists.
-			if (direction != -1)
+			// m_pend.facing will *always* be a direction, although
+			// m_pend.direction might not be.
+			if (!m_attr.mapGfx[GFX_IDLE][m_pos.facing].empty())
 			{
-				if (!m_pAttr->standingGfx[direction].empty())
-				{
-					// If so, change the stance to STANDing.
-					m_pos.stance = "stand" + m_pos.stance.substr(m_pos.stance.length() - 4, 4);
-					bIdleGfx = true;
-					
-					// Set the loop counter and timer for idleness.
-					m_pos.loopFrame = -1;
-					m_pos.idle.frameTime = GetTickCount();
+				// Put the loop counter into idling status.
+				m_pos.loopFrame = LOOP_IDLE;
+//				m_pos.frame = 0;
+
+				// Set the timer for idleness.
+				m_pos.idle.frameTime = GetTickCount();
 
 // Must be better way to do this!
-					// Load the frame delay for the idle animation.
-					ANIMATION idleAnim;
-					idleAnim.open(g_projectPath + MISC_PATH + m_pAttr->standingGfx[direction]);
-					m_pos.idle.frameDelay = idleAnim.animPause;
-				}
+				// Load the frame delay for the idle animation.
+				ANIMATION idleAnim;
+				idleAnim.open(g_projectPath + MISC_PATH + m_attr.mapGfx[GFX_IDLE][m_pos.facing]);
+				// Get into milliseconds.
+				m_pos.idle.frameDelay = idleAnim.animPause * MILLISECONDS;
 			}
 		} // if (time player has been idle > idle time)
 
-		if ((bIdleGfx) && (!m_pAttr->standingGfx[direction].empty()))
+		if (m_pos.loopFrame == LOOP_IDLE)
 		{
-			// We're standing!
-
 			if (GetTickCount() - m_pos.idle.frameTime >= m_pos.idle.frameDelay)
 			{
 				// Increment the animation frame when the delay is up.
@@ -395,11 +615,71 @@ bool CSprite::render(const CGDICanvas* cnv)
 				m_pos.idle.frameTime = GetTickCount();
 			}
 		}
+
+/* To do.
+		// Also deal with custom stances here!
+		// Use the idle frameTime and frameDelay properties to time
+		// frames for the custom stance only.
+		// NOTE: Custom animation delay cannot currently be loaded here
+		// by this setup - must be done through the RPGCode call.
+		if (m_pos.loopFrame == LOOP_CUSTOM_STANCE)
+		{
+			if (GetTickCount() - m_pos.idle.frameTime >= m_pos.idle.frameDelay)
+			{
+				// if(m_pos.frame > m_pos.idle.frames)
+				//	m_pos.loopFrame = LOOP_WAIT;
+
+				// Increment the animation frame when the delay is up.
+				m_pos.frame++;
+
+				// Start the timer for this frame.
+				m_pos.idle.frameTime = GetTickCount();
+			}
+		}
+*/
+
 	} // if (player is not moving)
+
+	std::string strAnm;
+	std::map<std::string, std::string>::iterator i = NULL;
+//	GFX_MAP::iterator j = NULL;
+
+	// Get the animation filename to use.
+	switch (m_pos.loopFrame)
+	{
+		case LOOP_CUSTOM_STANCE:
+			// Custom stance. RPGCode call has inserted m_pos.stance.
+			i = m_attr.mapCustomGfx.find(m_pos.stance);
+
+			if (i != m_attr.mapCustomGfx.end())
+			{
+				// Iterator moves to end() if not found.
+				strAnm = i->second;
+			}
+			break;
+
+		case LOOP_IDLE:
+			// Idle. Use the idle animation of the facing direction.
+//			j = m_attr.mapGfx[GFX_IDLE].find(m_pos.facing);
+//			if (j != m_attr.mapGfx[GFX_IDLE].end())
+//				strAnm = i->second;
+
+			strAnm = m_attr.mapGfx[GFX_IDLE][m_pos.facing];
+			break;
+
+		default:
+			// Walking graphics.
+//			j = m_attr.mapGfx[GFX_MOVE].find(m_pos.facing);
+//			if (j != m_attr.mapGfx[GFX_MOVE].end())
+//				strAnm = i->second;
+
+			strAnm = m_attr.mapGfx[GFX_MOVE][m_pos.facing];
+	}
+
 
 	if (m_lastRender.canvas == m_pCanvas 
 		&& m_lastRender.frame == m_pos.frame 
-		&& m_lastRender.stance == m_pos.stance 
+		&& m_lastRender.stance == strAnm 
 		&& m_lastRender.x == m_pos.x 
 		&& m_lastRender.y == m_pos.y)
 	{
@@ -410,21 +690,21 @@ bool CSprite::render(const CGDICanvas* cnv)
 	// Update the last render.
 	m_lastRender.canvas = m_pCanvas;
 	m_lastRender.frame = m_pos.frame;
-	m_lastRender.stance = m_pos.stance;
+	m_lastRender.stance = strAnm;
 	m_lastRender.x = m_pos.x;
 	m_lastRender.y = m_pos.y;
 
-	// Render the frame.
-	renderAnimationFrame(m_pCanvas, m_pAttr->getStanceAnm(m_pos.stance), m_pos.frame, 0, 0);
+	// Render the frame to the sprite's canvas, at location (0, 0).
+	renderAnimationFrame(m_pCanvas, strAnm, m_pos.frame, 0, 0);
 
 	return true;
 }
 
 /*
  * Calculate sprite location and place on destination canvas.
+ * To be cleaned!
  */
-void CSprite::putSpriteAt(const CGDICanvas *cnvTarget, 
-						  const bool bAccountForUnderTiles)
+void CSprite::putSpriteAt(const CGDICanvas *cnvTarget)
 {    
 	extern BOARD g_activeBoard;
 	extern int g_resX, g_resY;
@@ -443,7 +723,8 @@ void CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
     
     const BYTE targetTile = g_activeBoard.tiletype[round(xTarg)][-int(-yTarg)][int(m_pos.l)];
     const BYTE originTile = g_activeBoard.tiletype[round(xOrig)][-int(-yOrig)][int(m_pos.l)];
-       
+
+
 	/*    
 	 * If [tiles on layers above]
 	 * OR [Moving *to* "under" tile (target)]
@@ -470,11 +751,9 @@ void CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
                 bDrawTranslucently = true;
 	}
 
-// To do.
     // Determine the centrepoint of the tile in pixels.
-//    int centreX = getBottomCentreX(m_pos.x, m_pos.y);
-//    int centreY = getBottomCentreY(m_pos.x, m_pos.y);
-	int centreX = m_pos.x * 32, centreY = m_pos.y * 32;
+    const int centreX = getBottomCentreX(m_pos.x, m_pos.y);
+    int centreY = getBottomCentreY(m_pos.x, m_pos.y);
 
     // + 8 offsets the sprite 3/4 of way down tile rather than 1/2 for isometrics.
     if (g_activeBoard.isIsometric) centreY += 8;
@@ -503,7 +782,7 @@ void CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 	{
         offsetX = -cornerX;
         if (cornerX + spriteWidth > g_resX)
-            renderWidth = g_resX;					// Both
+            renderWidth = g_resX;					// Both edges off board.
         else
             renderWidth = spriteWidth - offsetX;	// Left.
         cornerX = 0;
@@ -536,7 +815,8 @@ void CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
     // We now have the position and area of the sprite to draw.
     // Check if we need to draw the sprite transluscently:
     
-    if (bDrawTranslucently && bAccountForUnderTiles)
+//    if (bDrawTranslucently)
+	if(m_tileType & TT_UNDER)
 	{
         // If on "under" tiles, make sprite translucent.
         
@@ -598,5 +878,5 @@ void CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 										renderHeight,
 										TRANSP_COLOR);
 		}
-	} // if (bDrawTranslucently And bAccountForUnderTiles)
+	} // if (bDrawTranslucently)
 }

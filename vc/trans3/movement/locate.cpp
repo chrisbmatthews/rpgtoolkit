@@ -148,7 +148,7 @@ void incrementPosition(SPRITE_POSITION &pos, PENDING_MOVEMENT &pend, const doubl
 				if (pos.y > yTarg) pos.y = yTarg;
 				break;
 
-			case MV_NORTH:
+			case MV_N:
 				pos.x -= moveFraction;
 				pos.y -= moveFraction;
 
@@ -156,7 +156,7 @@ void incrementPosition(SPRITE_POSITION &pos, PENDING_MOVEMENT &pend, const doubl
 				if (pos.y < yTarg) pos.y = yTarg;
 				break;
 
-			case MV_SOUTH:
+			case MV_S:
 				pos.x += moveFraction;
 				pos.y += moveFraction;
 					
@@ -164,7 +164,7 @@ void incrementPosition(SPRITE_POSITION &pos, PENDING_MOVEMENT &pend, const doubl
 				if (pos.y > yTarg) pos.y = yTarg;
 				break;
 
-			case MV_EAST:
+			case MV_E:
 				pos.x += moveFraction;
 				pos.y -= moveFraction;
 
@@ -172,7 +172,7 @@ void incrementPosition(SPRITE_POSITION &pos, PENDING_MOVEMENT &pend, const doubl
 				if (pos.y < yTarg) pos.y = yTarg;
 				break;
 
-			case MV_WEST:
+			case MV_W:
 				pos.x -= moveFraction;
 				pos.y += moveFraction;
 
@@ -224,22 +224,22 @@ void incrementPosition(SPRITE_POSITION &pos, PENDING_MOVEMENT &pend, const doubl
 				if (pos.y > pend.yTarg) pos.y = pend.yTarg;
 				break;
 
-			case MV_NORTH:
+			case MV_N:
 				pos.y -= moveFraction;
 				if (pos.y < pend.yTarg) pos.y = pend.yTarg;
 				break;
 
-			case MV_SOUTH:
+			case MV_S:
 				pos.y += moveFraction;
 				if (pos.y > pend.yTarg) pos.y = pend.yTarg;
 				break;
 
-			case MV_EAST:
+			case MV_E:
 				pos.x += moveFraction;
 				if (pos.x > pend.xTarg) pos.x = pend.xTarg;
 				break;
 
-			case MV_WEST:
+			case MV_W:
 				pos.x -= moveFraction;
 				if (pos.x < pend.xTarg) pos.x = pend.xTarg;
 				break;
@@ -288,22 +288,22 @@ void insertTarget(PENDING_MOVEMENT &pend)
 				pend.yTarg = pend.yOrig + g_movementSize;
 				break;
 
-			case MV_NORTH:
+			case MV_N:
 				pend.xTarg = pend.xOrig - g_movementSize;
 				pend.yTarg = pend.yOrig - g_movementSize;
 				break;
 
-			case MV_SOUTH:
+			case MV_S:
 				pend.xTarg = pend.xOrig + g_movementSize;
 				pend.yTarg = pend.yOrig + g_movementSize;
 				break;
 
-			case MV_EAST:
+			case MV_E:
 				pend.xTarg = pend.xOrig + g_movementSize;
 				pend.yTarg = pend.yOrig - g_movementSize;
 				break;
 
-			case MV_WEST:
+			case MV_W:
 				pend.xTarg = pend.xOrig - g_movementSize;
 				pend.yTarg = pend.yOrig + g_movementSize;
 				break;
@@ -346,22 +346,22 @@ void insertTarget(PENDING_MOVEMENT &pend)
 				pend.yTarg = pend.yOrig + g_movementSize;
 				break;
 
-			case MV_NORTH:
+			case MV_N:
 				pend.xTarg = pend.xOrig;
 				pend.yTarg = pend.yOrig - g_movementSize;
 				break;
 
-			case MV_SOUTH:
+			case MV_S:
 				pend.xTarg = pend.xOrig;
 				pend.yTarg = pend.yOrig + g_movementSize;
 				break;
 
-			case MV_EAST:
+			case MV_E:
 				pend.xTarg = pend.xOrig + g_movementSize;
 				pend.yTarg = pend.yOrig;
 				break;
 
-			case MV_WEST:
+			case MV_W:
 				pend.xTarg = pend.xOrig - g_movementSize;
 				pend.yTarg = pend.yOrig;
 				break;
@@ -432,9 +432,9 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 			 * First, check technical East-West. Directions have rotated, so North is now
 			 * NorthEast, SouthEast is now South etc.
 			 */
-			case MV_EAST:
+			case MV_E:
 			case MV_SE:
-			case MV_SOUTH:
+			case MV_S:
 
 				if ((toRet.x - int(toRet.x)) == (1 - g_movementSize))
 				{
@@ -446,9 +446,9 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 				}
 				break;
 
-			case MV_NORTH:
+			case MV_N:
 			case MV_NW:
-			case MV_WEST:
+			case MV_W:
 
 				if ((toRet.x - int(toRet.x)) == g_movementSize)
 				{	
@@ -466,9 +466,9 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 		{
 
 			// Now check technical North-South. Overwrite rx for diagonals if found.
-			case MV_NORTH:
+			case MV_N:
 			case MV_NE:
-			case MV_EAST:
+			case MV_E:
 
 				if ((toRet.y - int(toRet.y)) == g_movementSize)
 				{
@@ -480,9 +480,9 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 				}
 				break;
 
-			case MV_WEST:
+			case MV_W:
 			case MV_SW:
-			case MV_SOUTH:
+			case MV_S:
 
 				if ((toRet.y - int(toRet.y)) == (1 - g_movementSize))
 				{
@@ -527,7 +527,7 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 		{
 			
 			// First, check East-West.
-			case MV_EAST:
+			case MV_E:
 			case MV_NE:
 			case MV_SE:
 
@@ -537,7 +537,7 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 				}
 				break;
 
-			case MV_WEST:
+			case MV_W:
 			case MV_NW:
 			case MV_SW:
 
@@ -553,7 +553,7 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 		{
 
 			// Now check North-South. Overwrite rx for diagonals if found.
-			case MV_NORTH:
+			case MV_N:
 			case MV_NE:
 			case MV_NW:
 
@@ -563,7 +563,7 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 				}
 				break;
 
-			case MV_SOUTH:
+			case MV_S:
 			case MV_SE:
 			case MV_SW:
 				if ((toRet.y - int(toRet.y)) == g_movementSize)
@@ -572,8 +572,8 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 				}
 				break;
 
-			case MV_EAST:
-			case MV_WEST:
+			case MV_E:
+			case MV_W:
 				// Prevent "Case Else"
 				break;
 

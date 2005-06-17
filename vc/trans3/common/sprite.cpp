@@ -9,8 +9,28 @@
  */
 
 #include "sprite.h"
+#include "../rpgcode/parser/parser.h"
 
 /*
+ * Fill out unoccupied stances with occupied stances.
+ * *Much* more efficient than ::getStanceAnm!
+ */
+void tagSpriteAttr::completeStances(GFX_MAP &gfx)
+{
+	// Complete diagonal movements with EAST / WEST.
+	// Note EAST / WEST may also be empty, but this is checked when using.
+	if (gfx[MV_NW].empty())	gfx[MV_NW] = gfx[MV_W];
+	if (gfx[MV_SW].empty())	gfx[MV_SW] = gfx[MV_W];
+	if (gfx[MV_NE].empty())	gfx[MV_NE] = gfx[MV_E];
+	if (gfx[MV_SE].empty())	gfx[MV_SE] = gfx[MV_E];
+
+	// Initialise the MV_IDLE entry too for safety, 
+	// although it should never be called.
+	gfx[MV_IDLE] = gfx[MV_S];
+}
+
+/*
+ * Redundant in movement animations - to be modified for battle plugin.
  * Get a stance animation filename
  * (CommonPlayer playerGetStanceAnm and (CommonItem itemGetStanceAnm))
  */

@@ -32,9 +32,16 @@
  * Open a player.
  *
  * fileName (in) - file to open
+ * spriteAttr (in) - common attributes that feed into CSprite.
  */
-void tagPlayer::open(const std::string fileName)
+void tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 {
+	spriteAttr.vBase.push_back(1, 31);
+	spriteAttr.vBase.push_back(31, 31);
+	spriteAttr.vBase.push_back(31, 1);
+	spriteAttr.vBase.close(4, true, 0);
+
+	spriteAttr.vAction = spriteAttr.vBase;
 
 	CFile file(fileName);
 
@@ -151,9 +158,10 @@ void tagPlayer::open(const std::string fileName)
 		file >> charLevelUpType;
 		file >> charSizeType;
         
+/*
 		if (minorVer >= 5)
 		{
-
+			spriteAttr.gfx.clear();
 			// gfx.clear();
 			for (i = 0; i <= UBOUND_GFX; i++)
 			{
@@ -166,6 +174,7 @@ void tagPlayer::open(const std::string fileName)
 
 			if (minorVer >= 6)
 			{
+				spriteAttr.standingGfx.clear();
 				// standingGfx.clear();
 				for (i = 0; i <= UBOUND_STANDING_GFX; i++)
 				{
@@ -176,31 +185,79 @@ void tagPlayer::open(const std::string fileName)
 					spriteAttr.standingGfx.push_back(str);
 				}
 			}
+*/
+		if (minorVer >= 5)
+		{			
+			// Load standard graphics - saved in a different order!
+			GFX_MAP gfx;
+			gfx.clear();
+			file >> gfx[MV_S];
+			file >> gfx[MV_N];
+			file >> gfx[MV_E];
+			file >> gfx[MV_W];
+			file >> gfx[MV_NW];
+			file >> gfx[MV_NE];
+			file >> gfx[MV_SW];
+			file >> gfx[MV_SE];
+
+			// Complete diagonal directions with east/west graphics.
+			spriteAttr.completeStances(gfx);
+
+			// Push graphics onto the gfx vector.
+			spriteAttr.mapGfx.clear();
+			spriteAttr.mapGfx.push_back(gfx);
+
+			// Store battle animations in the custom map with
+			// pre-defined keys.
+			spriteAttr.mapCustomGfx.clear();
+			file >> spriteAttr.mapCustomGfx[GFX_FIGHT];
+			file >> spriteAttr.mapCustomGfx[GFX_DEFEND];
+			file >> spriteAttr.mapCustomGfx[GFX_SPC];
+			file >> spriteAttr.mapCustomGfx[GFX_DIE];
+			file >> spriteAttr.mapCustomGfx[GFX_REST];
+
+			std::string strUnused;
+			file >> strUnused;
+
+			if (minorVer >= 6)
+			{
+				// Idle graphics - saved in a different order!
+				gfx.clear();
+				file >> gfx[MV_S];
+				file >> gfx[MV_N];
+				file >> gfx[MV_E];
+				file >> gfx[MV_W];
+				file >> gfx[MV_NW];
+				file >> gfx[MV_NE];
+				file >> gfx[MV_SW];
+				file >> gfx[MV_SE];
+
+				// Push idle graphics onto vector.
+				spriteAttr.completeStances(gfx);
+				spriteAttr.mapGfx.push_back(gfx);
+			}
 
 			if (minorVer >= 7)
 			{
 				file >> spriteAttr.idleTime;	// file >> idleTime;
 				file >> spriteAttr.speed;		// file >> speed;
 			}
-			else
-			{
-				spriteAttr.idleTime = 3.0;		// idleTime = 3.0;
-				spriteAttr.speed = 0.05;		// speed = 0.05;
-			}
 
-			int cnt;
-			file >> cnt;
-			spriteAttr.customGfx.clear();		// customGfx.clear();
-			spriteAttr.customGfxNames.clear();	// customGfxNames.clear();
-			for (i = 0; i <= cnt; i++)
+			// Custom stances - place in a map with handles as keys.
+			int count;
+			file >> count;
+//			spriteAttr.customGfx.clear();		// customGfx.clear();
+//			spriteAttr.customGfxNames.clear();	// customGfxNames.clear();
+			for (i = 0; i <= count; i++)
 			{
 				std::string anim, handle;
 				file >> anim;
 				file >> handle;
-				if (!handle.empty())
+				if (!handle.empty() && !anim.empty())
 				{
-					spriteAttr.customGfx.push_back(anim);			// customGfx.push_back(anim);
-					spriteAttr.customGfxNames.push_back(handle);	// customGfxNames.push_back(handle);
+//					spriteAttr.customGfx.push_back(anim);			// customGfx.push_back(anim);
+//					spriteAttr.customGfxNames.push_back(handle);	// customGfxNames.push_back(handle);
+					spriteAttr.mapCustomGfx[handle] = anim;
 				}
 			}
 			return;

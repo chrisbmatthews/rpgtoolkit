@@ -825,6 +825,27 @@ SOURCE=.\movement\CSprite\CSprite.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\movement\CVector\CVector.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\movement\locate.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -880,6 +901,10 @@ SOURCE=.\movement\CPlayer\CPlayer.h
 # Begin Source File
 
 SOURCE=.\movement\CSprite\CSprite.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\movement\CVector\CVector.h
 # End Source File
 # Begin Source File
 

@@ -22,7 +22,14 @@ typedef struct tagSpriteRender
     unsigned int frame;		// Frame of this stance.
     double x;				// X position the render occured in.
     double y;				// Y position the render occured in.
-} SPRITE_RENDER, *LPSPRITE_RENDER;
+
+	tagSpriteRender(void):
+		canvas(NULL),
+		stance(std::string()),
+		frame(0),
+		x(0), y(0) {};
+
+} SPRITE_RENDER;
 
 /*
  * Constants.

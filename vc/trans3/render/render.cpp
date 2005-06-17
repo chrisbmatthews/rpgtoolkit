@@ -8,8 +8,11 @@
  * Inclusions.
  */
 #include "render.h"
+#include "../rpgcode/parser/parser.h"
 #include "../../tkCommon/tkGfx/CTile.h"
 #include "../movement/CPlayer/CPlayer.h"
+#include "../movement/CVector/CVector.h"
+#include "../common/animation.h"
 #include "../common/mainfile.h"
 #include "../common/board.h"
 #include "../common/paths.h"
@@ -38,8 +41,7 @@ int scTilesX = 0;							// Maximum scroll cache capacity, on width
 int scTilesY = 0;							// Maximum scroll cache capacity, on height
 std::vector<CTile *> g_tiles;				// Cache of tiles.
 CGDICanvas *g_cnvRpgCode;					// RPGCode canvas.
-std::vector<bool> g_showPlayer;				// Show these players?
-double g_translucentOpacity = 0.25;			// Opacity to draw translucent sprites at.
+double g_translucentOpacity = 0.50;			// Opacity to draw translucent sprites at.
 
 /*
  * Render the RPGCode screen.
@@ -575,6 +577,14 @@ bool renderNow(CGDICanvas * /*cnv*/, const bool bForce)
 	}
 
 	g_pDirectDraw->DrawCanvas(&cnv, 0, 0);
+
+	// Temporary: draw vectors for debugging.
+	for (std::vector<CVector *>::iterator j = g_activeBoard.vectors.begin(); j != g_activeBoard.vectors.end(); j++)
+		(*j)->draw(16777215, true);
+
+	for (i = g_players.begin(); i != g_players.end(); i++)
+		(*i)->drawVector();
+
 	g_pDirectDraw->Refresh();
 	cnv.Destroy();
 	return true;

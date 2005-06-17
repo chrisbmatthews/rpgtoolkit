@@ -19,6 +19,48 @@
  */
 void tagBoard::open(const std::string fileName)
 {
+	// Set up some test vectors.
+	vectors.clear();
+
+	vectors.push_back(new CVector(32, 32, 4, TT_UNDER));
+	vectors.back()->push_back(192, 32);
+	vectors.back()->push_back(192, 224);
+	vectors.back()->push_back(32, 224);
+	vectors.back()->close(4, true, 0);
+
+
+	vectors.push_back(new CVector(96, 64, 4, TT_SOLID));
+	vectors.back()->push_back(32, 128);
+	vectors.back()->push_back(96, 192);
+	vectors.back()->push_back(160, 128);
+	vectors.back()->close(4, true, 0);
+
+	vectors.push_back(new CVector(480, 192, 4, TT_SOLID));
+	vectors.back()->push_back(352, 64);
+	vectors.back()->push_back(512, 128);
+	vectors.back()->push_back(480, 64);
+	vectors.back()->close(4, false, 0);
+
+	vectors.push_back(new CVector(576, 320, 6, TT_SOLID));
+	vectors.back()->push_back(576, 416);
+	vectors.back()->push_back(448, 416);
+	vectors.back()->push_back(448, 352);
+	vectors.back()->push_back(512, 352);
+	vectors.back()->push_back(512, 320);
+	vectors.back()->close(6, true, 0);
+
+
+	vectors.push_back(new CVector(96, 320, 10, TT_SOLID));
+	vectors.back()->push_back(192, 256);
+	vectors.back()->push_back(288, 384);
+	vectors.back()->push_back(320, 224);
+	vectors.back()->push_back(416, 320);
+	vectors.back()->push_back(320, 288);
+	vectors.back()->push_back(288, 416);
+	vectors.back()->push_back(128, 320);
+	vectors.back()->push_back(160, 448);
+	vectors.back()->push_back(32, 288);
+	vectors.back()->close(10, true, 0);
 
 	CFile file(fileName);
 
