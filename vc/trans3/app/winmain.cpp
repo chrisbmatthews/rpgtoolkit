@@ -217,12 +217,18 @@ VOID openSystems(VOID)
  */
 INT gameLogic(VOID)
 {
-	std::vector<CPlayer *>::const_iterator i = g_players.begin();
 
 	switch (g_gameState)
 	{
 		case GS_IDLE:
 		case GS_MOVEMENT:
+		{
+
+			extern HWND g_hHostWnd;
+			std::stringstream ss;
+			ss << g_mainFile.gameTitle.c_str() << " — " << (g_renderTime / g_renderCount) << " FPS";
+			SetWindowText(g_hHostWnd, ss.str().c_str());
+
 			// Timer stuff.
 			// Input.
 			scanKeys();
@@ -231,7 +237,7 @@ INT gameLogic(VOID)
 			g_players[1]->setQueuedMovements(rand() % 9, true);
 
 			// Movement.
-			for (; i != g_players.end(); i++)
+			for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); i++)
 			{
 				(*i)->move(g_pSelectedPlayer);
 			}
@@ -239,7 +245,7 @@ INT gameLogic(VOID)
 
 			// Render.
 			renderNow();
-			break;
+		} break;
 
 		case GS_QUIT:
 		default:
