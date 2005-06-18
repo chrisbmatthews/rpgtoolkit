@@ -590,7 +590,7 @@ void tagBoard::vectorize(void)
 		// Create the vector and add it the board's list.
 		// - Note that different math is required here for isometrics, but
 		//   all isometrics are currently broken, so it is difficult to implement.
-		CVector *const pVector = new CVector((origX - 1) * 32, (origY - 1) * 32, 10, type);
+		CVector *const pVector = new CVector((origX - 1) * 32, (origY - 1) * 32, 4, type);
 		pVector->push_back((origX - 1) * 32, y * 32);
 		pVector->push_back(x * 32, y * 32);
 		pVector->push_back(x * 32, (origY - 1) * 32);
