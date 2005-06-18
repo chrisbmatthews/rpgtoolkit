@@ -157,7 +157,7 @@ public:
 	/*
 	 * Get the current program.
 	 */
-	static CProgram *getCurrentProgram(void) { return m_currentProgram; }
+	static CProgram *const getCurrentProgram(void) { return m_currentProgram; }
 
 	/*
 	 * Set a variable.
