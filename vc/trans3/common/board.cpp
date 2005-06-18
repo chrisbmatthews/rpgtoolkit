@@ -19,48 +19,6 @@
  */
 void tagBoard::open(const std::string fileName)
 {
-	// Set up some test vectors.
-	vectors.clear();
-
-	vectors.push_back(new CVector(32, 32, 4, TT_UNDER));
-	vectors.back()->push_back(192, 32);
-	vectors.back()->push_back(192, 224);
-	vectors.back()->push_back(32, 224);
-	vectors.back()->close(4, true, 0);
-
-
-	vectors.push_back(new CVector(96, 64, 4, TT_SOLID));
-	vectors.back()->push_back(32, 128);
-	vectors.back()->push_back(96, 192);
-	vectors.back()->push_back(160, 128);
-	vectors.back()->close(4, true, 0);
-
-	vectors.push_back(new CVector(480, 192, 4, TT_SOLID));
-	vectors.back()->push_back(352, 64);
-	vectors.back()->push_back(512, 128);
-	vectors.back()->push_back(480, 64);
-	vectors.back()->close(4, false, 0);
-
-	vectors.push_back(new CVector(576, 320, 6, TT_SOLID));
-	vectors.back()->push_back(576, 416);
-	vectors.back()->push_back(448, 416);
-	vectors.back()->push_back(448, 352);
-	vectors.back()->push_back(512, 352);
-	vectors.back()->push_back(512, 320);
-	vectors.back()->close(6, true, 0);
-
-
-	vectors.push_back(new CVector(96, 320, 10, TT_SOLID));
-	vectors.back()->push_back(192, 256);
-	vectors.back()->push_back(288, 384);
-	vectors.back()->push_back(320, 224);
-	vectors.back()->push_back(416, 320);
-	vectors.back()->push_back(320, 288);
-	vectors.back()->push_back(288, 416);
-	vectors.back()->push_back(128, 320);
-	vectors.back()->push_back(160, 448);
-	vectors.back()->push_back(32, 288);
-	vectors.back()->close(10, true, 0);
 
 	CFile file(fileName);
 
@@ -530,8 +488,129 @@ ver1:
 	 * Do we need version one support?
 	 */
 
-	return;
+	// Finally, vectorize the board.
+	const DWORD dw = GetTickCount();
+	vectorize();
+	const DWORD time = GetTickCount() - dw;
+	char timeStr[255], vectorStr[255];
+	itoa(time, timeStr, 10);
+	itoa(vectors.size(), vectorStr, 10);
+	const std::string message =
+		"File: " + strFilename + "\n"
+		"Milliseconds: " + std::string(timeStr) + "\n"
+		"Vectors: " + vectorStr;
+	MessageBox(NULL, message.c_str(), "Vectorization", 0);
 
+}
+
+/*
+ * Convert the tiletype array to vectors.
+ */
+void tagBoard::vectorize(void)
+{
+
+	// Free old vectors.
+	freeVectors();
+
+	/*
+	 * Initialize a vector to store whether each tile is
+	 * included within a vector.
+	 */
+	typedef std::vector<bool> VECTOR_BOOL;
+	std::vector<VECTOR_BOOL> finished;
+	{
+		VECTOR_BOOL row;
+		unsigned int i;
+		for (i = 0; i < bSizeY; i++) row.push_back(false);
+		for (i = 0; i < bSizeX; i++) finished.push_back(row);
+	}
+
+	while (true)
+	{
+		/*
+		 * Working southeast from the top-left corner, locate
+		 * the first tile that is neither "normal" nor included
+		 * in any vector.
+		 */
+		unsigned int x = 0, y, i, j;
+		for (i = 0; i < bSizeX; i++)
+		{
+			for (j = 0; j < bSizeY; j++)
+			{
+				if (!finished[i][j] && tiletype[i + 1][j + 1][1])
+				{
+					// More effective method?
+					x = i + 1;
+					y = j + 1;
+					i = bSizeX + 1;
+					break;
+				}
+			}
+		}
+		// If there are none left, exit.
+		if (x == 0) break;
+
+		// Store current x and y, and the tile type as this position.
+		const unsigned int type = tiletype[x][y][1], origX = x, origY = y;
+
+		// Find the lowest point where this type stops.
+		while ((y < bSizeY) && (tiletype[x][y + 1][1] == type)) y++;
+
+		while (x < bSizeX)
+		{
+			/*
+			 * Check whether this column, to the height of the first
+			 * one found, contains the type of the current vector.
+			 */
+			bool column = true;
+			for (i = origY; i <= y; i++)
+			{
+				if (tiletype[x + 1][i][1] != type)
+				{
+					// It doesn't; stop here.
+					column = false;
+					break;
+				}
+			}
+			if (!column) break;
+			// Move onto the next column.
+			x++;
+		}
+
+		// Mark off the tiles in this rectangle as in a vector.
+		for (i = origX - 1; i < x; i++)
+		{
+			for (j = origY - 1; j < y; j++)
+			{
+				// Better way?
+				finished[i][j] = true;
+			}
+		}
+
+		// Create the vector and add it the board's list.
+		// - Note that different math is required here for isometrics, but
+		//   all isometrics are currently broken, so it is difficult to implement.
+		CVector *const pVector = new CVector((origX - 1) * 32, (origY - 1) * 32, 10, type);
+		pVector->push_back((origX - 1) * 32, y * 32);
+		pVector->push_back(x * 32, y * 32);
+		pVector->push_back(x * 32, (origY - 1) * 32);
+		pVector->close(pVector->size(), true, 0);
+		vectors.push_back(pVector);
+
+	}
+
+}
+
+/*
+ * Free vectors.
+ */
+void tagBoard::freeVectors(void)
+{
+	for (std::vector<CVector *>::iterator i = vectors.begin(); i != vectors.end(); ++i)
+	{
+		delete *i;
+	}
+	vectors.clear();
 }
 
 /*
