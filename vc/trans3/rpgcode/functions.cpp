@@ -55,7 +55,14 @@ CVariant wait(CProgram::PARAMETERS params)
 	{
 		return waitForKey();
 	}
-	CProgram::getCurrentProgram()->setVariable(params[0].getLit(), waitForKey());
+	else if (params.size() == 1)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[0].getLit(), waitForKey());
+	}
+	else
+	{
+		CProgram::debugger("Wait() requires zero or one parameters.");
+	}
 	return CVariant();
 }
 
@@ -1721,33 +1728,64 @@ CVariant tan(CProgram::PARAMETERS params)
 }
 
 /*
- * getpixel(...)
+ * getpixel(x!, y!, r!, g!, b![, cnv])
  * 
- * Description.
+ * Get the colour of the pixel at x, y.
  */
 CVariant getpixel(CProgram::PARAMETERS params)
 {
+	if (params.size() == 6)
+	{
+		extern CDirectDraw *g_pDirectDraw;
+		const COLORREF color = g_pDirectDraw->GetPixelColor(params[0].getNum(), params[1].getNum());
+		CProgram *const prg = CProgram::getCurrentProgram();
+		prg->setVariable(params[2].getLit(), GetRValue(color));
+		prg->setVariable(params[3].getLit(), GetGValue(color));
+		prg->setVariable(params[4].getLit(), GetBValue(color));
+	}
+	else if (params.size() == 7)
+	{
+	}
+	else
+	{
+		CProgram::debugger("GetPixel() requires six or seven parameters.");
+	}
 	return CVariant();
 }
 
 /*
- * getcolor(...)
+ * getcolor(r!, g!, b!)
  * 
- * Description.
+ * Get the current colour.
  */
 CVariant getcolor(CProgram::PARAMETERS params)
 {
+	if (params.size() == 3)
+	{
+		CProgram *const prg = CProgram::getCurrentProgram();
+		prg->setVariable(params[0].getLit(), GetRValue(g_color));
+		prg->setVariable(params[1].getLit(), GetGValue(g_color));
+		prg->setVariable(params[2].getLit(), GetBValue(g_color));
+	}
+	else
+	{
+		CProgram::debugger("GetColor() requires three parameters.");
+	}
 	return CVariant();
 }
 
 /*
- * getfontsize(...)
+ * size! = getfontsize([size!])
  * 
- * Description.
+ * Get the current font size.
  */
 CVariant getfontsize(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	if (params.size() == 1)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[0].getLit(), g_fontSize);
+	}
+	return g_fontSize;
 }
 
 /*
@@ -1771,13 +1809,13 @@ CVariant setimagetranslucent(CProgram::PARAMETERS params)
 }
 
 /*
- * mp3(...)
+ * mp3(file$)
  * 
- * Description.
+ * Alias of Wav().
  */
 CVariant mp3(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	return wav(params);
 }
 
 /*
@@ -1951,22 +1989,25 @@ CVariant getres(CProgram::PARAMETERS params)
 }
 
 /*
- * xyzzy(...)
+ * xyzzy()
  * 
- * Description.
+ * Tribute to ZZT.
  */
-CVariant xyzzy(CProgram::PARAMETERS params)
+CVariant xyzzy(CProgram::PARAMETERS)
 {
-	return CVariant();
+	std::vector<CVariant> params;
+	params.push_back(CVariant("Nothing happens..."));
+	return mwin(params);
 }
 
 /*
- * statictext(...)
+ * statictext()
  * 
- * Description.
+ * Toggle antialiasing.
  */
 CVariant statictext(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("StaticText() is obsolete.");
 	return CVariant();
 }
 
@@ -2051,12 +2092,13 @@ CVariant giveexp(CProgram::PARAMETERS params)
 }
 
 /*
- * animatedtiles(...)
+ * AnimatedTiles()
  * 
- * Description.
+ * Toggle animated tiles.
  */
 CVariant animatedtiles(CProgram::PARAMETERS params)
 {
+	CProgram::debugger("AnimatedTiles() is obsolete.");
 	return CVariant();
 }
 
@@ -2081,7 +2123,7 @@ CVariant gamespeed(CProgram::PARAMETERS params)
 }
 
 /*
- * characterspeed(speed!)
+ * CharacterSpeed(speed!)
  * 
  * Obsolete.
  */
@@ -2363,23 +2405,35 @@ CVariant fileeof(CProgram::PARAMETERS params)
 }
 
 /*
- * length(...)
+ * len! = len(str$[, length!)
  * 
- * Description.
+ * Get the length of a string.
  */
-CVariant length(CProgram::PARAMETERS params)
+CVariant len(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		return params[0].getLit().length();
+	}
+	else if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), params[0].getLit().length());
+	}
+	else
+	{
+		CProgram::debugger("Len() requires one or two parameters.");
+	}
 	return CVariant();
 }
 
 /*
- * len(...)
+ * length! = length(str$[, length!)
  * 
- * Description.
+ * Alias of len().
  */
-CVariant len(CProgram::PARAMETERS params)
+CVariant length(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	return len(params);
 }
 
 /*
@@ -2500,12 +2554,19 @@ CVariant split(CProgram::PARAMETERS params)
  */
 CVariant asc(CProgram::PARAMETERS params)
 {
-	const double ret = (double)params[0].getLit()[0];
-	if (params.size() == 2)
+	if (params.size() == 1)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), ret);
+		return (double)params[0].getLit()[0];
 	}
-	return ret;
+	else if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), (double)params[0].getLit()[0]);
+	}
+	else
+	{
+		CProgram::debugger("Asc() requires one or two parameters.");
+	}
+	return CVariant();
 }
 
 /*
