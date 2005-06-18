@@ -39,9 +39,9 @@ void tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 	spriteAttr.vBase.push_back(1, 31);
 	spriteAttr.vBase.push_back(31, 31);
 	spriteAttr.vBase.push_back(31, 1);
-	spriteAttr.vBase.close(4, true, 0);
+	spriteAttr.vBase.close(true, 0);
 
-	spriteAttr.vAction = spriteAttr.vBase;
+	spriteAttr.vActivate = spriteAttr.vBase;
 
 	CFile file(fileName);
 

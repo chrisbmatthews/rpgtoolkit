@@ -19,7 +19,6 @@
  */
 void tagBoard::open(const std::string fileName)
 {
-
 	CFile file(fileName);
 
 	bSizeX = 50;
@@ -207,55 +206,35 @@ lutEnd:
 		short numPrg;
 		file >> numPrg;
 
-		programName.clear();
-		progX.clear();
-		progY.clear();
-		progLayer.clear();
-		progGraphic.clear();
-		progActivate.clear();
-		progVarActivate.clear();
-		progDoneVarActivate.clear();
-		activateInitNum.clear();
-		activateDoneNum.clear();
-		activationType.clear();
+		programs.clear();
 
 		for (i = 0; i <= numPrg; i++)
 		{
-			std::string strUnused;
-			short sUnused;
-			//
-			file >> strUnused;
-			programName.push_back(strUnused);
-			//
-			file >> sUnused;
-			progX.push_back(sUnused);
-			//
-			file >> sUnused;
-			progY.push_back(sUnused);
-			//
-			file >> sUnused;
-			progLayer.push_back(sUnused);
-			//
-			file >> strUnused;
-			progGraphic.push_back(strUnused);
-			//
-			file >> sUnused;
-			progActivate.push_back(sUnused);
-			//
-			file >> strUnused;
-			progVarActivate.push_back(strUnused);
-			//
-			file >> strUnused;
-			progDoneVarActivate.push_back(strUnused);
-			//
-			file >> strUnused;
-			activateInitNum.push_back(strUnused);
-			//
-			file >> strUnused;
-			activateDoneNum.push_back(strUnused);
-			//
-			file >> sUnused;
-			activationType.push_back(sUnused);
+			BRD_PROGRAM prg;
+
+			file >> prg.fileName;
+			file >> prg.x;
+			file >> prg.y;
+			file >> prg.layer;
+			file >> prg.graphic;
+			file >> prg.activate;
+			file >> prg.initialVar;
+			file >> prg.finalVar;
+			file >> prg.initialValue;
+			file >> prg.finalValue;
+			file >> prg.activationType;
+
+			// Create a 32x32 vector at the location.
+			prg.vBase.push_back((prg.x - 1.0) * 32.0, prg.y * 32.0);
+			prg.vBase.push_back(prg.x * 32.0, prg.y * 32.0);
+			prg.vBase.push_back(prg.x * 32.0, (prg.y - 1.0) * 32.0);
+			prg.vBase.push_back((prg.x - 1.0) * 32.0, (prg.y - 1.0) * 32.0);
+			prg.vBase.close(true, 0);
+
+			if (!prg.fileName.empty())
+			{
+				programs.push_back(prg);
+			}
 		}
 
 		file >> enterPrg;
@@ -596,7 +575,7 @@ void tagBoard::vectorize(const unsigned int layer)
 		pVector->push_back((origX - 1) * 32, y * 32);
 		pVector->push_back(x * 32, y * 32);
 		pVector->push_back(x * 32, (origY - 1) * 32);
-		pVector->close(pVector->size(), true, 0);
+		pVector->close(true, 0);
 		vectors.push_back(pVector);
 
 	}

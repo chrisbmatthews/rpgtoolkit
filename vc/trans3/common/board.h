@@ -16,6 +16,47 @@
 #include <string>
 #include <vector>
 
+#define PRG_STEP		0				// Triggers once until player leaves area.
+#define PRG_KEYPRESS	1				// Player must hit activation key.
+#define PRG_REPEAT		2				// Triggers repeatedly after a certain distance or
+										// can only be triggered after a certain distance.
+
+#define PRG_ACTIVE		0
+#define PRG_CONDITIONAL	1
+
+typedef struct tagBoardProgram
+{
+	std::string fileName;				// Board program filename.
+	short x;							// x - co-ordinate. To be depreciated.
+	short y;							// y - co-ordinate. To be depreciated.
+	short layer;						// Layer.
+	std::string graphic;				// Associated graphic.
+	short activate;						// PRG_ACTIVE - always active.
+										// PRG_CONDITIONAL - conditional activation.
+	std::string initialVar;				// Activation variable.
+	std::string finalVar;				// Activation variable at end of prg.
+	std::string initialValue;			// Initial value of activation variable.
+	std::string finalValue;				// Value of variable after program runs.
+	short activationType;				// Activation type: (flags)
+										// PRG_STEP - walk in vector.
+										// PRG_KEYPRESS - hit general activation key inside vector.
+										// PRG_REPEAT - Whether player must leave vector to before
+										//				program can retrigger or not.
+
+	CVector vBase;						// The activation area.
+	double distanceRepeat;				// Distance to travel between activations within the vector.
+	double distance;					// Distance travelled within vector since last run.
+
+	tagBoardProgram():
+		activate(PRG_ACTIVE),			// Always active.
+		activationType(PRG_STEP),		// Step on (once).
+		distanceRepeat(0),
+		distance(0),
+		x(1), y(1), layer(1),
+		vBase() {};						// Do not define any points yet.
+
+} BRD_PROGRAM;
+
 /*
  * A board's tile animation.
  */
@@ -61,6 +102,9 @@ typedef struct tagBoard
 	std::vector<short> brdConst;					// Board Constants (1-10).
 	std::string boardMusic;							// Background music file.
 	std::vector<std::string> boardTitle;			// Board title (layer).
+
+	std::vector<BRD_PROGRAM> programs;
+/* To be removed */
 	std::vector<std::string> programName;			// Board program filenames.
 	std::vector<short> progX;						// Program x.
 	std::vector<short> progY;						// Program y.
@@ -72,8 +116,10 @@ typedef struct tagBoard
 	std::vector<std::string> activateInitNum;		// Initial number of activation.
 	std::vector<std::string> activateDoneNum;		// What to make variable at end of activation.
 	std::vector<short> activationType;				// Activation type- 0-step on, 1- conditional (activation key).
+
 	std::string enterPrg;							// Program to run on entrance.
 	std::string bgPrg;								// Background program.
+
 	std::vector<std::string> itmName;				// Filenames of items.
 	std::vector<short> itmX;						// X coord.
 	std::vector<short> itmY;						// Y coord.
@@ -86,9 +132,12 @@ typedef struct tagBoard
 	std::vector<short> itmActivationType;			// Activation type- 0-step on, 1- conditional (activation key).
 	std::vector<std::string> itemProgram;			// Program to run when item is touched.
 	std::vector<std::string> itemMulti;				// Multitask program for item.
+
+	/* These should be in the player's file */
 	short playerX;									// Player x ccord.
 	short playerY;									// Player y coord.
 	short playerLayer;								// Player layer coord.
+
 	short brdSavingYN;								// Can player save on board? 0-yes, 1-no.
 	char isIsometric;								// Is it an isometric board? (0- no, 1-yes).
 	std::vector<std::string> threads;				// Filenames of threads on board.

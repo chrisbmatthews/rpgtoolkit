@@ -17,9 +17,6 @@ public:
 	// Constructor
 	CPlayer(const std::string file, const bool show);
 
-	// Set the player's target and current locations.
-	void setPosition(const int x, const int y, const int l);
-
 private:
 	PLAYER m_playerMem;			// Player-specific data.
 

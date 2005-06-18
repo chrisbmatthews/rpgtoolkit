@@ -22,8 +22,10 @@
 #include "../CPlayer/CPlayer.h"
 #include "../CItem/CItem.h"
 #include "../../common/animation.h"
+#include "../../common/mainFile.h"
 #include "../../common/board.h"
 #include "../../common/paths.h"
+#include "../../rpgcode/CProgram/CProgram.h"
 #include "../locate.h"
 #include <math.h>
 #include <vector>
@@ -292,18 +294,8 @@ void CSprite::playerDoneMove(void)
 	 * only check every four steps (one tile).
 	 */
 	static int checkfight;
-		
-	/*
-	 * Create a temporary player position which is based on
-	 * the target location for that players' movement.
-	 * lets us test solid tiles, etc.
-	 */
-	SPRITE_POSITION tempPosition;
-	tempPosition.x = m_pend.xTarg;
-	tempPosition.y = m_pend.yTarg;
-	tempPosition.l = m_pend.lTarg;
 
-//	programTest(tempPosition);
+	programTest();
 
 	// Test for a fight.
 	checkfight++;
@@ -319,6 +311,16 @@ void CSprite::playerDoneMove(void)
 	// Back to idle state (accepting input)
 	g_gameState = GS_IDLE;
 
+}
+
+/*
+ * Set the sprite's target and current locations.
+ */
+void CSprite::setPosition(const int x, const int y, const int l)
+{
+	m_pend.xOrig = m_pend.xTarg = m_pos.x = x;
+	m_pend.yOrig = m_pend.yTarg = m_pos.y = y;
+	m_pend.lOrig = m_pend.lTarg = m_pos.l = l;
 }
 
 /*
@@ -342,7 +344,7 @@ CVECTOR_TYPE CSprite::boardCollisions(const bool recursing)
 	CVector sprBase = m_attr.vBase + p;
 
 	// Loop over the board CVectors and check for intersections.
-	for (std::vector<CVector *>::iterator i = g_activeBoard.vectors.begin(); i != g_activeBoard.vectors.end(); i++)
+	for (std::vector<CVector *>::iterator i = g_activeBoard.vectors.begin(); i != g_activeBoard.vectors.end(); ++i)
 	{
 		// Check that the board vector contains the player,
 		// *not* the other way round!
@@ -470,6 +472,10 @@ CVECTOR_TYPE CSprite::boardCollisions(const bool recursing)
 	return tileTypes;
 }
 
+/*
+ * Check for collisions with other sprite base vectors. Currently only
+ * returns TT_SOLID or TT_NORMAL, as all sprites default to solid.
+ */
 CVECTOR_TYPE CSprite::spriteCollisions(void)
 {
 	extern std::vector<CPlayer *> g_players;
@@ -512,6 +518,128 @@ CVECTOR_TYPE CSprite::spriteCollisions(void)
 		}
 	}
 	return TT_NORMAL;
+}
+
+/*
+ * For the player (or potentially any other sprite), check for program
+ * vectors or sprite active bases. Sprites have a second vector that is
+ * the area the player must be in to trigger the program.
+ * Players take precedence over items, over programs (could be altered).
+ */
+bool CSprite::programTest(void)
+{
+	extern std::vector<CPlayer *> g_players;
+	extern std::vector<CItem *> g_items;
+	extern double g_movementSize;
+	extern MAIN_FILE g_mainFile;
+	extern BOARD g_activeBoard;
+	extern std::string g_projectPath;
+
+	// Create the sprite's vector base at the *target* location (for the
+	// case of pressing against an item, etc.)
+	// We want to use the player's *solid* base (not any active vector it may have).
+	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	CVector sprBase = m_attr.vBase + p;
+
+	// Construct merged origin / target?
+
+	// Players 
+	for(std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
+	{
+		if (this == *i) continue;
+
+		DB_POINT pt = {((*i)->m_pos.x - 1.0) * 32.0, ((*i)->m_pos.x - 1.0) * 32.0};
+		CVector tarActivate = (*i)->m_attr.vActivate + pt;
+
+		if (tarActivate.contains(sprBase, p) != TT_NORMAL)
+		{
+			// Standing in another player's area.
+		}
+	}
+
+	// Items
+	for(std::vector<CItem *>::iterator j = g_items.begin(); j != g_items.end(); ++j)
+	{
+		if (this == *j) continue;
+
+		DB_POINT pt = {((*j)->m_pos.x - 1.0) * 32.0, ((*j)->m_pos.y - 1.0) * 32.0};
+		CVector tarActivate = (*j)->m_attr.vActivate + pt;
+
+		if (tarActivate.contains(sprBase, p) != TT_NORMAL)
+		{
+			// Standing in an item's area.
+		}
+	}
+
+	std::vector<BRD_PROGRAM>::iterator prg = NULL, k = g_activeBoard.programs.begin();
+
+	// Programs
+	for (; k != g_activeBoard.programs.end(); ++k)
+	{
+		// Check that the board vector contains the player.
+		// We check *every* vector, in order to reset the 
+		// distance of those we have left.
+		if (k->vBase.contains(sprBase, p) == TT_NORMAL)
+		{
+			// Not inside this vector. Set the distance to the 
+			// value to trigger program when we re-enter.
+			if (k->activationType & PRG_REPEAT) 
+			{
+				k->distance = k->distanceRepeat;
+			}
+			else
+			{
+				k->distance = 0;
+			}
+		}
+		else
+		{
+			// Standing in a program activation area.
+
+			// Increase distance travelled within the vector.
+			k->distance += g_movementSize * 32;
+
+			// Check activation conditions.
+			if (k->activationType & PRG_REPEAT)
+			{
+				// Repeat triggers - check player has moved
+				// the required distance.
+				if (k->distance < k->distanceRepeat) continue;
+			}
+			else
+			{
+				// Single trigger - check the player has moved at all.
+				if (k->distance != g_movementSize * 32) continue;
+			}
+
+			if (k->activationType & PRG_KEYPRESS)
+			{
+				// General activation key - if not pressed, continue.
+//				if (lastKeyPressed() != g_mainFile.key)
+					continue;
+			}
+
+			// Check activation conditions.
+//			if (!runPrgYN) continue;
+
+			// Conditions have been satisfied - save this iterator,
+			// continue looping.
+			prg = k;
+		}
+	}
+
+	if (prg)
+	{
+		if (prg->activationType & PRG_REPEAT) 
+		{
+			// Reset the distance for repeat activations - single activations
+			// are cleared at the top of this loop.
+			prg->distance = 0;
+		}
+		CProgram(g_projectPath + PRG_PATH + prg->fileName).run();
+		return true;
+	}
+	return false;
 }
 
 // Debug function - draw vector onto screen.
@@ -721,8 +849,8 @@ void CSprite::putSpriteAt(const CGDICanvas *cnvTarget)
     if (xTarg > g_activeBoard.bSizeX || xTarg < 0) xTarg = round(m_pos.x);
     if (yTarg > g_activeBoard.bSizeY || yTarg < 0) yTarg = round(m_pos.y);
     
-    const BYTE targetTile = g_activeBoard.tiletype[round(xTarg)][-int(-yTarg)][int(m_pos.l)];
-    const BYTE originTile = g_activeBoard.tiletype[round(xOrig)][-int(-yOrig)][int(m_pos.l)];
+    const BYTE targetTile = 0; // g_activeBoard.tiletype[round(xTarg)][-int(-yTarg)][int(m_pos.l)];
+    const BYTE originTile = 0; // g_activeBoard.tiletype[round(xOrig)][-int(-yOrig)][int(m_pos.l)];
 
 
 	/*    

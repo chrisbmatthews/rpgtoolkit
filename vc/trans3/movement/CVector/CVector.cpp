@@ -19,14 +19,14 @@ m_type(TT_SOLID),
 m_closed(false),
 m_curl(CURL_NDEF)
 {
-	// Create an empty vector of one point.
+	// Create an void vector of no points.
 	RECT bounds = {0, 0, 0, 0}; 
 	m_bounds = bounds;
-	push_back(0, 0);
+	m_p.clear();
 }
 
 /*
- * Point constructor.
+ * Point constructor. Note reserve need not be the exact number of points.
  */
 CVector::CVector(const double x, const double y, const int reserve, const int tileType):
 m_type(CVECTOR_TYPE(tileType)),
@@ -47,17 +47,7 @@ CVector CVector::operator+ (const DB_POINT p)
 {
 	// Offset each point by the passed values.
 	CVector vector(*this);
-	for (DB_ITR i = vector.m_p.begin(); i != vector.m_p.end(); i++)	
-	{
-		i->x += p.x;
-		i->y += p.y;
-	}
-
-	// Offset the bounding box.
-	vector.m_bounds.right += p.x;
-	vector.m_bounds.left += p.x;
-	vector.m_bounds.top += p.y;
-	vector.m_bounds.bottom += p.y;
+	vector += p;
 	return vector;
 }
 
@@ -122,10 +112,8 @@ void CVector::boundingBox(RECT &rect)
  * Seal the vector: create a polygon and prevent 
  * further points from being added.
  */
-bool CVector::close(const int n, const bool isClosed, const int curl)
+bool CVector::close(const bool isClosed, const int curl)
 {
-	if (size() != n) return false;	// Error check.
-
 	boundingBox(m_bounds);			// Make the bounding box.
 
 	if ((size() > 1) && (isClosed))
@@ -167,7 +155,7 @@ CVECTOR_TYPE CVector::contains(CVector &rhs, DB_POINT &ref)
 
 	/* BOARD VECTOR */
 	// Loop over the subvectors in this vector (to size() - 1).
-	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; i++)	
+	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
 		if (intersect(i, rhs))
 		{
@@ -194,7 +182,7 @@ CVECTOR_TYPE CVector::contains(CVector &rhs, DB_POINT &ref)
 	{
 		/* SPRITE VECTOR */
 		// Loop over the points of the rhs vector.
-		for (i = rhs.m_p.begin(); i != rhs.m_p.end(); i++)
+		for (i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
 		{
 			// Determine if this point is contained in the polygon.
 			if (containsPoint(*i)) return m_type;

@@ -13,6 +13,7 @@
  */
 #include <vector>
 #include <string>
+#include "sprite.h"
 
 /*
  * An item.
@@ -48,6 +49,9 @@ typedef struct tagItem
 	std::string itmPrgOnBoard;					// Program to run while item is on board.
 	std::string itmPrgPickUp;					// Program to run when picked up.
 	char itmSizeType;							// Graphics size type 0=32x32, 1=64x32.
+
+	SPRITE_ATTR spriteAttributes;
+
 //	std::vector<std::string> gfx;
 	std::string gfx[10];						// common // Filenames of standard animations for graphics.
 	std::vector<std::string> customGfx;			// common // Customized animations.
@@ -56,8 +60,10 @@ typedef struct tagItem
 	std::string standingGfx[8];					// common // Filenames of the standing animations/graphics.
 	double idleTime;							// common // Seconds to wait proir to switching to STAND_ graphics.
 	double speed;								// common // Speed of this item.
-//	int loopSpeed;								// common // .speed converted to loops (3.0.5).
+	int loopSpeed;								// common // .speed converted to loops (3.0.5).
+
 	short bIsActive;							// Is item active?
+
 	void open(const std::string fileName);
 } ITEM;
 

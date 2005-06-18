@@ -25,14 +25,4 @@ CSprite(show)				// Is the player visible?
 	m_attr.idleTime *= MILLISECONDS;
 }
 
-/*
- * Set the player's target and current locations.
- */
-void CPlayer::setPosition(const int x, const int y, const int l)
-{
-	m_pend.xOrig = m_pend.xTarg = m_pos.x = x;
-	m_pend.yOrig = m_pend.yTarg = m_pos.y = y;
-	m_pend.lOrig = m_pend.lTarg = m_pos.l = l;
-}
-
 

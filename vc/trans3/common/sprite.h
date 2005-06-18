@@ -125,13 +125,13 @@ typedef struct tagSpriteAttr
 
 	double idleTime;							// Seconds to wait prior to switching to idle graphics.
 	double speed;								// Seconds between each frame increase.
-	CVector vAction;							// Sprite's interaction area.
+	CVector vActivate;							// Sprite's interaction area.
 	CVector vBase;								// Sprite's contact area on board.
 
 	tagSpriteAttr (void): 
 		idleTime(3.0),
 		speed(0.05), 
-		vAction (1, 1, 4, TT_SOLID),
+		vActivate (1, 1, 4, TT_SOLID),
 		vBase (1, 1, 4, TT_SOLID) {};
 
 	// Get the animation filename corresponding to stance.

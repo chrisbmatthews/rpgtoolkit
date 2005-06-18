@@ -52,11 +52,17 @@ public:
 	// Increment the target co-ordinates based on the move direction.
 	void insertTarget(void);
 
+	// Set the sprite's target and current locations.
+	void setPosition(const int x, const int y, const int l);
+
 	// Evaluate board vectors.
 	CVECTOR_TYPE boardCollisions(const bool recursing = false);
 	
 	// Evaluate sprites (players and items).
 	CVECTOR_TYPE spriteCollisions(void);
+
+	// Test for program activations (by programs, items, players).
+	bool programTest(void);
 
 	// Debug: draw the sprite's base vector.
 	void drawVector(void);

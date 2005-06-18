@@ -76,7 +76,7 @@ public:
 	void push_back(const double x, const double y);
 
 	// Seal the vector to create a polygon.
-	bool close(const int n, const bool isClosed, const int curl);
+	bool close(const bool isClosed, const int curl);
 
 	// Determine if a vector intersects or contains another vector.
 	CVECTOR_TYPE contains(CVector &rhs, DB_POINT &ref);
