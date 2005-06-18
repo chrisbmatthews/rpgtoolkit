@@ -489,9 +489,9 @@ ver1:
 	 */
 
 	// Finally, vectorize the board.
-	const DWORD dw = GetTickCount();
-	vectorize();
-	const DWORD time = GetTickCount() - dw;
+	// const DWORD dw = GetTickCount();
+	vectorize(1);
+	/** const DWORD time = GetTickCount() - dw;
 	char timeStr[255], vectorStr[255];
 	itoa(time, timeStr, 10);
 	itoa(vectors.size(), vectorStr, 10);
@@ -499,14 +499,16 @@ ver1:
 		"File: " + strFilename + "\n"
 		"Milliseconds: " + std::string(timeStr) + "\n"
 		"Vectors: " + vectorStr;
-	MessageBox(NULL, message.c_str(), "Vectorization", 0);
+	MessageBox(NULL, message.c_str(), "Vectorization", 0); **/
 
 }
 
 /*
  * Convert the tiletype array to vectors.
+ *
+ * layer (in) - layer to vectorize
  */
-void tagBoard::vectorize(void)
+void tagBoard::vectorize(const unsigned int layer)
 {
 
 	// Free old vectors.
@@ -537,7 +539,7 @@ void tagBoard::vectorize(void)
 		{
 			for (j = 0; j < bSizeY; j++)
 			{
-				if (!finished[i][j] && tiletype[i + 1][j + 1][1])
+				if (!finished[i][j] && tiletype[i + 1][j + 1][layer])
 				{
 					// More effective method?
 					x = i + 1;
@@ -551,10 +553,10 @@ void tagBoard::vectorize(void)
 		if (x == 0) break;
 
 		// Store current x and y, and the tile type as this position.
-		const unsigned int type = tiletype[x][y][1], origX = x, origY = y;
+		const unsigned int type = tiletype[x][y][layer], origX = x, origY = y;
 
 		// Find the lowest point where this type stops.
-		while ((y < bSizeY) && (tiletype[x][y + 1][1] == type)) y++;
+		while ((y < bSizeY) && (tiletype[x][y + 1][layer] == type)) y++;
 
 		while (x < bSizeX)
 		{
@@ -565,7 +567,7 @@ void tagBoard::vectorize(void)
 			bool column = true;
 			for (i = origY; i <= y; i++)
 			{
-				if (tiletype[x + 1][i][1] != type)
+				if (tiletype[x + 1][i][layer] != type)
 				{
 					// It doesn't; stop here.
 					column = false;

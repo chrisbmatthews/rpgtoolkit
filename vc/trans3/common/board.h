@@ -101,7 +101,7 @@ typedef struct tagBoard
 	std::vector<CVector *> vectors;					// No layers (yet).
 
 	void open(const std::string fileName);
-	void vectorize(void);
+	void vectorize(const unsigned int layer);
 	void freeVectors(void);
 	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);

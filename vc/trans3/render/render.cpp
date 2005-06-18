@@ -566,7 +566,7 @@ bool renderNow(CGDICanvas * /*cnv*/, const bool bForce)
 	cnv.ClearScreen(0);
 
 	extern BOARD g_activeBoard;
-	drawBoard(g_activeBoard, &cnv, 0, 0, 0, g_tilesX, g_tilesY, 0, 0, 0, false);
+	drawBoard(g_activeBoard, &cnv, 0, 0, 0, g_tilesX, g_tilesY, 0, 0, 0, g_activeBoard.isIsometric);
 
 	extern std::vector<CPlayer *> g_players;
 	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); i++)
@@ -579,11 +579,11 @@ bool renderNow(CGDICanvas * /*cnv*/, const bool bForce)
 	g_pDirectDraw->DrawCanvas(&cnv, 0, 0);
 
 	// Temporary: draw vectors for debugging.
-	for (std::vector<CVector *>::iterator j = g_activeBoard.vectors.begin(); j != g_activeBoard.vectors.end(); j++)
+	/** for (std::vector<CVector *>::iterator j = g_activeBoard.vectors.begin(); j != g_activeBoard.vectors.end(); j++)
 		(*j)->draw(16777215, true);
 
 	for (i = g_players.begin(); i != g_players.end(); i++)
-		(*i)->drawVector();
+		(*i)->drawVector(); **/
 
 	g_pDirectDraw->Refresh();
 	cnv.Destroy();
