@@ -160,9 +160,15 @@ public:
 	static CProgram *getCurrentProgram(void) { return m_currentProgram; }
 
 	/*
-	* Set a variable.
-	*/
+	 * Set a variable.
+	 */
 	void setVariable(const std::string name, const CVariant value);
+	static void setGlobal(const std::string name, const CVariant value);
+
+	/*
+	 * Get a global.
+	 */
+	static CVariant getGlobal(const std::string name);
 
 	/*
 	 * End the program.
@@ -268,6 +274,7 @@ private:
 	 */
 	typedef std::map<std::string, CVariant> STACK_FRAME;
 	std::vector<STACK_FRAME> m_stack;
+	static STACK_FRAME m_global;
 	const VECTOR_STR *m_process;
 	std::vector<CLASS *> m_objects;
 	std::stack<CLASS *> m_this;

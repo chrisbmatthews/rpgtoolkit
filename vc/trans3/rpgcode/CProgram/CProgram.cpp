@@ -26,6 +26,7 @@
  * Static member initialization.
  */
 std::map<std::string, CProgram::INTERNAL_FUNCTION> CProgram::m_functions;
+CProgram::STACK_FRAME CProgram::m_global;
 CProgram *CProgram::m_currentProgram = NULL;
 const int CProgram::tagClass::PUBLIC = 0;
 const int CProgram::tagClass::PRIVATE = 1;
@@ -125,7 +126,7 @@ CVariant CProgram::constructVariant(const std::string str, bool *bFromVar)
 		const std::string strPost = (postStart > 0) ? str.substr(postStart, 2) : "";
 		const bool bPost = (strPost == "++" || strPost == "--");
 		const int start = (bUnary ? 1 : 0) + (bPre ? 2 : 0);
-		const std::string var = parser::uppercase(/*parser::t rim(*/str.substr(start, len - start - (bPost ? 2 : 0))/*)*/);
+		const std::string var = parser::uppercase(str.substr(start, len - start - (bPost ? 2 : 0)));
 		/*
 		 * Check if it's a variable.
 		 */
@@ -149,39 +150,35 @@ CVariant CProgram::constructVariant(const std::string str, bool *bFromVar)
 			if (bFromVar && !bUnary) *bFromVar = true;
 			return toRet;
 		}
+		else if (m_global.count(var))
+		{
+			/*
+			 * Found it in the global scope.
+			 */
+			if (bPre)
+			{
+				if (strPre == "++") m_global[var] = m_global[var].getNum() + 1;
+				else if (strPre == "--") m_global[var] = m_global[var].getNum() - 1;
+			}
+			const CVariant toRet = (bNegate ? -m_global[var].getNum() : (bComplement ? ~int(m_global[var].getNum()) : (bInvert ? !m_global[var].getNum() : m_global[var])));
+			if (bPost)
+			{
+				if (strPost == "++") m_global[var] = m_global[var].getNum() + 1;
+				else if (strPost == "--") m_global[var] = m_global[var].getNum() - 1;
+			}
+			if (bFromVar && !bUnary) *bFromVar = true;
+			return toRet;
+		}
 		else
 		{
-			STACK_FRAME &global = m_stack.front();
-			if (global.count(var))
+			/*
+			 * It's a string.
+			 */
+			if (str[0] == '"')
 			{
-				/*
-				 * Found it in the global scope.
-				 */
-				if (bPre)
-				{
-					if (strPre == "++") global[var] = global[var].getNum() + 1;
-					else if (strPre == "--") global[var] = global[var].getNum() - 1;
-				}
-				const CVariant toRet = (bNegate ? -global[var].getNum() : (bComplement ? ~int(global[var].getNum()) : (bInvert ? !global[var].getNum() : global[var])));
-				if (bPost)
-				{
-					if (strPost == "++") global[var] = global[var].getNum() + 1;
-					else if (strPost == "--") global[var] = global[var].getNum() - 1;
-				}
-				if (bFromVar && !bUnary) *bFromVar = true;
-				return toRet;
+				return str.substr(1, len - 2);
 			}
-			else
-			{
-				/*
-				 * It's a string.
-				 */
-				if (str[0] == '"')
-				{
-					return str.substr(1, len - 2);
-				}
-				return str;
-			}
+			return str;
 		}
 	}
 	/*
@@ -632,8 +629,25 @@ CVariant CProgram::callFunction(const std::string funcName, PARAMETERS params)
 void CProgram::setVariable(const std::string name, const CVariant value)
 {
 	const std::string ucase = parser::uppercase(name);
-	STACK_FRAME &frame = m_stack.back().count(ucase) ? m_stack.back() : m_stack.front();
+	STACK_FRAME &frame = m_stack.back().count(ucase) ? m_stack.back() : m_global;
 	frame[ucase] = value;
+}
+
+/*
+ * Set a global.
+ */
+void CProgram::setGlobal(const std::string name, const CVariant value)
+{
+	m_global[parser::uppercase(name)] = value;
+}
+
+/*
+ * Get a global.
+ */
+CVariant CProgram::getGlobal(const std::string name)
+{
+	const std::string ucase = parser::uppercase(name);
+	return (m_global.count(ucase) ? m_global[name] : CVariant());
 }
 
 /*
@@ -857,7 +871,7 @@ CVariant CProgram::evaluate(const std::string str)
 			else
 			{
 				const std::string ucase = parser::uppercase(tokenA);
-				STACK_FRAME &frame = m_stack.back().count(ucase) ? m_stack.back() : m_stack.front();
+				STACK_FRAME &frame = m_stack.back().count(ucase) ? m_stack.back() : m_global;
 				if (op == "=") frame[ucase] = right;
 				else if (op == "+=")
 				{
