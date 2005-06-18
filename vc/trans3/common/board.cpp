@@ -206,32 +206,32 @@ lutEnd:
 		short numPrg;
 		file >> numPrg;
 
-		programs.clear();
+		freePrograms();
 
 		for (i = 0; i <= numPrg; i++)
 		{
-			BRD_PROGRAM prg;
+			LPBRD_PROGRAM prg = new BRD_PROGRAM();
 
-			file >> prg.fileName;
-			file >> prg.x;
-			file >> prg.y;
-			file >> prg.layer;
-			file >> prg.graphic;
-			file >> prg.activate;
-			file >> prg.initialVar;
-			file >> prg.finalVar;
-			file >> prg.initialValue;
-			file >> prg.finalValue;
-			file >> prg.activationType;
+			file >> prg->fileName;
+			file >> prg->x;
+			file >> prg->y;
+			file >> prg->layer;
+			file >> prg->graphic;
+			file >> prg->activate;
+			file >> prg->initialVar;
+			file >> prg->finalVar;
+			file >> prg->initialValue;
+			file >> prg->finalValue;
+			file >> prg->activationType;
 
 			// Create a 32x32 vector at the location.
-			prg.vBase.push_back((prg.x - 1.0) * 32.0, prg.y * 32.0);
-			prg.vBase.push_back(prg.x * 32.0, prg.y * 32.0);
-			prg.vBase.push_back(prg.x * 32.0, (prg.y - 1.0) * 32.0);
-			prg.vBase.push_back((prg.x - 1.0) * 32.0, (prg.y - 1.0) * 32.0);
-			prg.vBase.close(true, 0);
+			prg->vBase.push_back((prg->x - 1.0) * 32.0, prg->y * 32.0);
+			prg->vBase.push_back(prg->x * 32.0, prg->y * 32.0);
+			prg->vBase.push_back(prg->x * 32.0, (prg->y - 1.0) * 32.0);
+			prg->vBase.push_back((prg->x - 1.0) * 32.0, (prg->y - 1.0) * 32.0);
+			prg->vBase.close(true, 0);
 
-			if (!prg.fileName.empty())
+			if (!prg->fileName.empty())
 			{
 				programs.push_back(prg);
 			}
@@ -592,6 +592,18 @@ void tagBoard::freeVectors(void)
 		delete *i;
 	}
 	vectors.clear();
+}
+
+/*
+ * Free programs.
+ */
+void tagBoard::freePrograms(void)
+{
+	for (std::vector<BRD_PROGRAM *>::iterator i = programs.begin(); i != programs.end(); ++i)
+	{
+		delete *i;
+	}
+	programs.clear();
 }
 
 /*

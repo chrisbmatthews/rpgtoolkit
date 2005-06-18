@@ -55,7 +55,7 @@ typedef struct tagBoardProgram
 		x(1), y(1), layer(1),
 		vBase() {};						// Do not define any points yet.
 
-} BRD_PROGRAM;
+} BRD_PROGRAM, *LPBRD_PROGRAM;
 
 /*
  * A board's tile animation.
@@ -103,7 +103,7 @@ typedef struct tagBoard
 	std::string boardMusic;							// Background music file.
 	std::vector<std::string> boardTitle;			// Board title (layer).
 
-	std::vector<BRD_PROGRAM> programs;
+	std::vector<LPBRD_PROGRAM> programs;
 /* To be removed */
 	std::vector<std::string> programName;			// Board program filenames.
 	std::vector<short> progX;						// Program x.
@@ -152,10 +152,11 @@ typedef struct tagBoard
 	void open(const std::string fileName);
 	void vectorize(const unsigned int layer);
 	void freeVectors(void);
+	void freePrograms(void);
 	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
 
-	~tagBoard(void) { freeVectors(); }
+	~tagBoard(void) { freeVectors(); freePrograms(); }
 } BOARD;
 
 #endif

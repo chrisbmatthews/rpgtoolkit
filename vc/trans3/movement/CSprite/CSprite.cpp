@@ -571,7 +571,7 @@ bool CSprite::programTest(void)
 		}
 	}
 
-	std::vector<BRD_PROGRAM>::iterator prg = NULL, k = g_activeBoard.programs.begin();
+	std::vector<LPBRD_PROGRAM>::iterator prg = NULL, k = g_activeBoard.programs.begin();
 
 	// Programs
 	for (; k != g_activeBoard.programs.end(); ++k)
@@ -579,17 +579,17 @@ bool CSprite::programTest(void)
 		// Check that the board vector contains the player.
 		// We check *every* vector, in order to reset the 
 		// distance of those we have left.
-		if (k->vBase.contains(sprBase, p) == TT_NORMAL)
+		if ((*k)->vBase.contains(sprBase, p) == TT_NORMAL)
 		{
 			// Not inside this vector. Set the distance to the 
 			// value to trigger program when we re-enter.
-			if (k->activationType & PRG_REPEAT) 
+			if ((*k)->activationType & PRG_REPEAT) 
 			{
-				k->distance = k->distanceRepeat;
+				(*k)->distance = (*k)->distanceRepeat;
 			}
 			else
 			{
-				k->distance = 0;
+				(*k)->distance = 0;
 			}
 		}
 		else
@@ -597,22 +597,22 @@ bool CSprite::programTest(void)
 			// Standing in a program activation area.
 
 			// Increase distance travelled within the vector.
-			k->distance += g_movementSize * 32;
+			(*k)->distance += g_movementSize * 32;
 
 			// Check activation conditions.
-			if (k->activationType & PRG_REPEAT)
+			if ((*k)->activationType & PRG_REPEAT)
 			{
 				// Repeat triggers - check player has moved
 				// the required distance.
-				if (k->distance < k->distanceRepeat) continue;
+				if ((*k)->distance < (*k)->distanceRepeat) continue;
 			}
 			else
 			{
 				// Single trigger - check the player has moved at all.
-				if (k->distance != g_movementSize * 32) continue;
+				if ((*k)->distance != g_movementSize * 32) continue;
 			}
 
-			if (k->activationType & PRG_KEYPRESS)
+			if ((*k)->activationType & PRG_KEYPRESS)
 			{
 				// General activation key - if not pressed, continue.
 //				if (lastKeyPressed() != g_mainFile.key)
@@ -630,13 +630,13 @@ bool CSprite::programTest(void)
 
 	if (prg)
 	{
-		if (prg->activationType & PRG_REPEAT) 
+		if ((*prg)->activationType & PRG_REPEAT) 
 		{
 			// Reset the distance for repeat activations - single activations
 			// are cleared at the top of this loop.
-			prg->distance = 0;
+			(*prg)->distance = 0;
 		}
-		CProgram(g_projectPath + PRG_PATH + prg->fileName).run();
+		CProgram(g_projectPath + PRG_PATH + (*prg)->fileName).run();
 		return true;
 	}
 	return false;
