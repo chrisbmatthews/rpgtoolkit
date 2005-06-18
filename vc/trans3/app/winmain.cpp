@@ -226,7 +226,7 @@ INT gameLogic(VOID)
 
 			extern HWND g_hHostWnd;
 			std::stringstream ss;
-			ss << g_mainFile.gameTitle.c_str() << " — " << (g_renderTime / g_renderCount) << " FPS";
+			ss << g_mainFile.gameTitle.c_str() << " — " << ((g_renderCount * MILLISECONDS) / g_renderTime) << " FPS";
 			SetWindowText(g_hHostWnd, ss.str().c_str());
 
 			// Timer stuff.
