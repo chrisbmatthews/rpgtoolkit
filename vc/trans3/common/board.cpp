@@ -224,16 +224,20 @@ lutEnd:
 			file >> prg->finalValue;
 			file >> prg->activationType;
 
-			// Create a 32x32 vector at the location.
-			prg->vBase.push_back((prg->x - 1.0) * 32.0, prg->y * 32.0);
-			prg->vBase.push_back(prg->x * 32.0, prg->y * 32.0);
-			prg->vBase.push_back(prg->x * 32.0, (prg->y - 1.0) * 32.0);
-			prg->vBase.push_back((prg->x - 1.0) * 32.0, (prg->y - 1.0) * 32.0);
-			prg->vBase.close(true, 0);
-
 			if (!prg->fileName.empty())
 			{
+				// Create a 32x32 vector at the location.
+				prg->vBase.push_back((prg->x - 1.0) * 32.0, prg->y * 32.0);
+				prg->vBase.push_back(prg->x * 32.0, prg->y * 32.0);
+				prg->vBase.push_back(prg->x * 32.0, (prg->y - 1.0) * 32.0);
+				prg->vBase.push_back((prg->x - 1.0) * 32.0, (prg->y - 1.0) * 32.0);
+				prg->vBase.close(true, 0);
+				// Add the program to the list.
 				programs.push_back(prg);
+			}
+			else
+			{
+				delete prg;
 			}
 		}
 
