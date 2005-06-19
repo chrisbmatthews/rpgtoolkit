@@ -23,23 +23,55 @@ class CVariant
 {
 public:
 	/*
+	 * The data type of a value.
+	 */
+	typedef enum tagDataType
+	{
+		DT_NULL,	// Unset
+		DT_NUM,		// Numerical (including floating points)
+		DT_LIT,		// Literal (i.e., a string)
+		DT_OBJ		// Object
+	} DATA_TYPE;
+	/*
 	 * An object that can be stored as DT_OBJ.
 	 */
 	class CObject
 	{
 	public:
-		virtual double getNum(void) = 0;
-		virtual std::string getLit(void) = 0;
-	};
-	/*
-	 * The data type of a value.
-	 */
-	enum DATA_TYPE
-	{
-		DT_NULL,	// Unset
-		DT_NUM,		// Numerical (including floating points)
-		DT_LIT,		// Literal (i.e., a string)
-		DT_OBJ		// Object (instance of a class)
+		CObject(void)
+		{
+			m_refs = 0;
+			m_bCopyObject = true;
+		}
+		void addRef(void) { m_refs++; }
+		unsigned long release(void)
+		{
+			if (--m_refs == 0)
+			{
+				delete this;
+			}
+			return m_refs;
+		}
+		virtual double getNum(void)
+		{
+			return atof(getLit().c_str());
+		}
+		virtual std::string getLit(void)
+		{
+			std::stringstream ss;
+			ss << getNum();
+			return ss.str();
+		}
+		virtual DATA_TYPE getType(void) = 0;
+		virtual ~CObject(void) { }
+		void setCopyObject(const bool val)
+		{
+			m_bCopyObject = val;
+		}
+	private:
+		unsigned long m_refs;
+		bool m_bCopyObject;
+		friend class CVariant;
 	};
 	/*
 	 * Default construct--initialize the object.
@@ -74,7 +106,8 @@ public:
 	}
 	CVariant(CObject *rhs)
 	{
-		m_pData = new CObject*(rhs);
+		rhs->addRef();
+		m_pData = rhs;
 		m_type = DT_OBJ;
 	}
 	/*
@@ -83,17 +116,34 @@ public:
 	CVariant &operator=(const CVariant &rhs)
 	{
 		freeData();
-		switch (m_type = rhs.m_type)
+		m_type = rhs.m_type;
+		if (m_type == DT_OBJ && !((CObject *)rhs.m_pData)->m_bCopyObject)
 		{
-			case DT_NUM:
-				m_pData = new double(*(double *)rhs.m_pData);
-				break;
-			case DT_LIT:
-				m_pData = new std::string(*(std::string *)rhs.m_pData);
-				break;
-			case DT_OBJ:
-				m_pData = rhs.m_pData;
-				break;
+			if ((m_type = ((CObject *)rhs.m_pData)->getType()) == DT_NUM)
+			{
+				m_pData = new double(((CObject *)rhs.m_pData)->getNum());
+			}
+			else
+			{
+				m_pData = new std::string(((CObject *)rhs.m_pData)->getLit());
+			}
+			// No objects returning objects...
+		}
+		else
+		{
+			switch (m_type)
+			{
+				case DT_NUM:
+					m_pData = new double(*(double *)rhs.m_pData);
+					break;
+				case DT_LIT:
+					m_pData = new std::string(*(std::string *)rhs.m_pData);
+					break;
+				case DT_OBJ:
+					m_pData = rhs.m_pData;
+					((CObject *)m_pData)->addRef();
+					break;
+			}
 		}
 		return *this;
 	}
@@ -157,7 +207,7 @@ public:
 		}
 		else if (m_type == DT_OBJ)
 		{
-			// if (m_pData) return (*(CObject **)m_pData)->getNum();
+			if (m_pData) return ((CObject *)m_pData)->getNum();
 		}
 		return 0.0;
 	}
@@ -175,19 +225,22 @@ public:
 		}
 		else if (m_type == DT_OBJ)
 		{
-			// if (m_pData) return (*(CObject **)m_pData)->getLit();
+			if (m_pData) return ((CObject *)m_pData)->getLit();
 		}
 		return "";
 	}
-	const CObject *getObject(void) const
+	CObject *const getObject(void) const
 	{
 		if (m_type == DT_OBJ)
 		{
-			if (m_pData) return (*(CObject **)m_pData);
+			return (CObject *)m_pData;
 		}
 		return NULL;
 	}
-	DATA_TYPE getType(void) const { return m_type; }
+	DATA_TYPE getType(void) const
+	{
+		return ((m_type != DT_OBJ) ? m_type : ((CObject *)m_pData)->getType());
+	}
 	/*
 	 * Deconstructor.
 	 */
@@ -202,7 +255,7 @@ public:
 	{
 		if (m_type == DT_NUM) delete ((double *)m_pData);
 		else if (m_type == DT_LIT) delete ((std::string *)m_pData);
-		else if (m_type == DT_OBJ) delete ((CObject **)m_pData);
+		else if (m_type == DT_OBJ) ((CObject *)m_pData)->release();
 		m_pData = NULL;
 	}
 private:

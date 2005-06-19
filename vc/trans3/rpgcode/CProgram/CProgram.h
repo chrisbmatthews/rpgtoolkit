@@ -255,6 +255,7 @@ private:
 		SCOPE scopes[2];
 		double getNum(void) { return 0.0; }
 		std::string getLit(void) { return ""; }
+		CVariant::DATA_TYPE getType(void) { return CVariant::DT_NUM; }
 	} CLASS;
 
 	/*
