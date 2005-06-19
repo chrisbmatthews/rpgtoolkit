@@ -64,6 +64,9 @@ public:
 	// Test for program activations (by programs, items, players).
 	bool programTest(void);
 
+	// Override repeat values for programs the player is standing on.
+	void deactivatePrograms(void);
+
 	// Debug: draw the sprite's base vector.
 	void drawVector(void);
 

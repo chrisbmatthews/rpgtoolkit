@@ -485,7 +485,7 @@ CVECTOR_TYPE CSprite::spriteCollisions(void)
 
 	for(std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); i++)
 	{
-		if (this == *i) continue;
+		if (this == *i || m_pos.l != (*i)->m_pos.l) continue;
 
 		// Compare target bases.
 		DB_POINT pt = {((*i)->m_pend.xTarg - 1.0) * 32.0, ((*i)->m_pend.yTarg - 1.0) * 32.0};
@@ -503,7 +503,7 @@ CVECTOR_TYPE CSprite::spriteCollisions(void)
 	// Items. Possible to put in one loop with players?
 	for(std::vector<CItem *>::iterator j = g_items.begin(); j != g_items.end(); j++)
 	{
-		if (this == *j) continue;
+		if (this == *j || m_pos.l != (*j)->m_pos.l) continue;
 
 		// Compare target bases.
 		DB_POINT pt = {((*j)->m_pend.xTarg - 1.0) * 32.0, ((*j)->m_pend.yTarg - 1.0) * 32.0};
@@ -544,7 +544,7 @@ bool CSprite::programTest(void)
 	// Players 
 	for(std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
-		if (this == *i) continue;
+		if (this == *i || m_pos.l != (*i)->m_pos.l) continue;
 
 		DB_POINT pt = {((*i)->m_pos.x - 1.0) * 32.0, ((*i)->m_pos.x - 1.0) * 32.0};
 		CVector tarActivate = (*i)->m_attr.vActivate + pt;
@@ -558,7 +558,7 @@ bool CSprite::programTest(void)
 	// Items
 	for(std::vector<CItem *>::iterator j = g_items.begin(); j != g_items.end(); ++j)
 	{
-		if (this == *j) continue;
+		if (this == *j || m_pos.l != (*j)->m_pos.l) continue;
 
 		DB_POINT pt = {((*j)->m_pos.x - 1.0) * 32.0, ((*j)->m_pos.y - 1.0) * 32.0};
 		CVector tarActivate = (*j)->m_attr.vActivate + pt;
@@ -575,6 +575,7 @@ bool CSprite::programTest(void)
 	// Programs
 	for (; k != g_activeBoard.programs.end(); ++k)
 	{
+		if ((*k)->layer != m_pos.l) continue;
 		// Check that the board vector contains the player.
 		// We check *every* vector, in order to reset the 
 		// distance of those we have left.
@@ -657,6 +658,45 @@ bool CSprite::programTest(void)
 		return true;
 	}
 	return false;
+}
+
+/*
+ * Deactivate any programs the player is standing on.
+ * Specifically designed for moving to a new board and arriving on a
+ * warp tile / other program. If users need to run programs when boards
+ * load, they can use the "program to run on entering board".
+ */
+void CSprite::deactivatePrograms(void)
+{
+	extern double g_movementSize;
+	extern BOARD g_activeBoard;
+
+	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	CVector sprBase = m_attr.vBase + p;
+
+	std::vector<LPBRD_PROGRAM>::iterator i = g_activeBoard.programs.begin();
+
+	for (; i != g_activeBoard.programs.end(); ++i)
+	{
+		if (((*i)->layer == m_pos.l) && ((*i)->vBase.contains(sprBase, p) != TT_NORMAL))
+		{
+			// Standing in a program activation area.
+			if ((*i)->activationType & PRG_REPEAT)
+			{
+				// Repeat triggers - set to minimum value.
+				(*i)->distance = 0;
+			}
+			else
+			{
+				if (!((*i)->activationType & PRG_KEYPRESS))
+				{
+					// Single triggers - prevent from running until
+					// player leaves area.
+					(*i)->distance = g_movementSize * 32;
+				}
+			}
+		}
+	} // for (programs)
 }
 
 // Debug function - draw vector onto screen.
