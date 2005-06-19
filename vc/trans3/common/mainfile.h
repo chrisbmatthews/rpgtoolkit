@@ -30,7 +30,7 @@ typedef struct tagMainFile
     std::string runTime;				// Run time program.
     short runKey;						// Ascii code of run time key.
     short menuKey;						// Ascii code of menu key.
-    std::string key;					// Ascii code of general run key.
+	short key;							// Ascii code of general run key.
     std::vector<short> runTimeKeys;		// 50 extended run time keys.
     std::vector<std::string> runTimePrg;// 50 extended run time programs.
     std::string menuPlugin;				// The main menu plugin.
