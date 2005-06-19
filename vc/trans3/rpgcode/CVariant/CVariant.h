@@ -49,6 +49,7 @@ public:
 			if (--m_refs == 0)
 			{
 				delete this;
+				return 0;
 			}
 			return m_refs;
 		}

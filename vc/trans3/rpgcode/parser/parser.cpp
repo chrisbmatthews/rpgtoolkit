@@ -139,7 +139,7 @@ std::string parser::trim(const std::string str)
  */
 void parser::getTokenList(const std::string str, std::vector<std::string> &pTokens, std::string &pDelimiters, std::vector<int> &pPositions)
 {
-	int lastToken = 0, size = 0;
+	int lastToken = -1, size = 0;
 	bool bIgnore = false;
 	const int end = str.length();
 	const int len = end + 1;
@@ -153,7 +153,12 @@ void parser::getTokenList(const std::string str, std::vector<std::string> &pToke
 			if (isDelimiter(part))
 			{
 				i++;
-				const std::string strPush = trim(str.substr(lastToken, size));
+				if (lastToken == -1)
+				{
+					size++;
+					lastToken++;
+				}
+				const std::string strPush = trim(str.substr(lastToken, size - 1));
 				if (strPush != "")
 				{
 					/*
@@ -173,7 +178,12 @@ void parser::getTokenList(const std::string str, std::vector<std::string> &pToke
 				/*
 				 * Token here!
 				 */
-				const std::string strPush = trim(str.substr(lastToken, size));
+				if (lastToken == -1)
+				{
+					size++;
+					lastToken++;
+				}
+				const std::string strPush = trim(str.substr(lastToken, size - 1));
 				if (strPush != "" || chr == '(' || chr == ')')
 				{
 					pTokens.push_back(strPush);
