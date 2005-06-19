@@ -17,6 +17,10 @@
 #include "../input/input.h"
 #include "../render/render.h"
 #include "../audio/CAudioSegment.h"
+#include "../common/board.h"
+#include "../common/paths.h"
+#include "../common/animation.h"
+#include "../movement/CSprite/CSprite.h"
 #include <math.h>
 
 /*
@@ -77,12 +81,63 @@ CVariant mwincls(CProgram::PARAMETERS params)
 }
 
 /*
- * send(...)
+ * send(file$, x!, y![, z!])
  * 
- * Description.
+ * Send the player to a new board.
  */
 CVariant send(CProgram::PARAMETERS params)
 {
+	unsigned int layer = 1;
+	if (params.size() != 3)
+	{
+		if (params.size() != 4)
+		{
+			CProgram::debugger("Send() requires three or four parameters.");
+			return CVariant();
+		}
+		else
+		{
+			layer = params[3].getNum();
+		}
+	}
+	BOARD board;
+	extern std::string g_projectPath;
+	board.open(g_projectPath + BRD_PATH + params[0].getLit());
+	unsigned int x = params[1].getNum(), y = params[2].getNum();
+	if (x > board.bSizeX)
+	{
+		CProgram::debugger("Send() location exceeds target board x-dimension.");
+		x = board.bSizeX;
+	}
+	if (x < 1)
+	{
+		CProgram::debugger("Send() x location exceeds is less than one.");
+		x = 1;
+	}
+	if (y > board.bSizeY)
+	{
+		CProgram::debugger("Send() location exceeds target board y-dimension.");
+		y = board.bSizeY;
+	}
+	if (y < 1)
+	{
+		CProgram::debugger("Send() y location exceeds is less than one.");
+		y = 1;
+	}
+	extern BOARD g_activeBoard;
+	g_activeBoard.open(g_projectPath + BRD_PATH + params[0].getLit());
+	clearAnmCache();
+	extern CSprite *g_pSelectedPlayer;
+	g_pSelectedPlayer->setPosition(x, y, layer);
+	renderNow(g_cnvRpgCode, true);
+	renderRpgCodeScreen();
+	extern CAudioSegment *g_bkgMusic;
+	g_bkgMusic->open(g_projectPath + MEDIA_PATH + g_activeBoard.boardMusic);
+	g_bkgMusic->play(true);
+	if (!g_activeBoard.enterPrg.empty())
+	{
+		CProgram(g_projectPath + PRG_PATH + g_activeBoard.enterPrg).run();
+	}
 	return CVariant();
 }
 
