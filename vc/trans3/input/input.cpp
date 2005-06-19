@@ -129,6 +129,13 @@ void scanKeys(void)
 	extern std::vector<CPlayer *> g_players;
 	extern int g_gameState, g_selectedPlayer;
 
+	// Temporary - KeyDownEvent?
+	if (SCAN_KEY_DOWN(SPACE))
+	{
+		g_players[g_selectedPlayer]->programTest();
+		return;
+	}
+
 	if (SCAN_KEY_DOWN(RIGHT) && SCAN_KEY_DOWN(UP))
 	{
 		queue = MV_NE;			// Northeast.
