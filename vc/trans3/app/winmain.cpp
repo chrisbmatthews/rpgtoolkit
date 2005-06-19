@@ -29,17 +29,6 @@
 #include <vector>
 
 /*
- * Definitions.
- */
-
-/* Header?
-#define GS_IDLE 0					// Just re-renders the screen
-#define GS_MOVEMENT 1				// Movement is occurring (players or items)
-#define GS_PAUSE 2					// Pause game (do nothing)
-#define GS_QUIT 3					// Shutdown sequence
-*/
-
-/*
  * Globals.
  */
 int g_gameState;					// The current gamestate.
@@ -54,6 +43,28 @@ CSprite *g_pSelectedPlayer = NULL;	// Pointer to selected player?
 HINSTANCE g_hInstance = NULL;		// Handle to application.
 unsigned int g_renderCount = 0;		// Count of GS_MOVEMENT state loops.
 unsigned int g_renderTime = 0;		// Millisecond cumulative GS_MOVEMENT state loop time.
+
+#ifdef _DEBUG
+
+unsigned long g_allocated = 0;
+
+void *operator new(size_t size)
+{
+	void *p = malloc(sizeof(size_t) + size);
+	*(size_t *)p = size;
+	g_allocated += size;
+	return ((size_t *)p + 1);
+}
+
+void operator delete(void *p)
+{
+	if (!p) return;
+	p = (size_t *)p - 1;
+	g_allocated -= *(size_t *)p;
+	free(p);
+}
+
+#endif
 
 /*
  * Show a main file dialogue.
@@ -228,7 +239,10 @@ INT gameLogic(VOID)
 
 			extern HWND g_hHostWnd;
 			std::stringstream ss;
-			ss << g_mainFile.gameTitle.c_str() << " — " << ((g_renderCount * MILLISECONDS) / g_renderTime) << " FPS";
+			ss << g_mainFile.gameTitle.c_str() << " — " << g_activeBoard.vectors.size() << " vectors, " << ((g_renderCount * MILLISECONDS) / g_renderTime) << " FPS";
+#if _DEBUG
+			ss << ", " << g_allocated << " bytes";
+#endif
 			SetWindowText(g_hHostWnd, ss.str().c_str());
 
 			// Timer stuff.
