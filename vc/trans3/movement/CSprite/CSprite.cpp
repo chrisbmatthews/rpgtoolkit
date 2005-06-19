@@ -178,11 +178,9 @@ bool CSprite::move(const CSprite *selectedPlayer)
 				// - i.e. we have finished movement.
 				if (!(m_tileType & TT_SOLID))
 				{
-					m_pend.xOrig = m_pend.xTarg;
-					m_pend.yOrig = m_pend.yTarg;
+					m_pend.xOrig = m_pos.x = m_pend.xTarg;
+					m_pend.yOrig = m_pos.y = m_pend.yTarg;
 					m_pend.lOrig = m_pos.l;
-					m_pos.x = m_pend.xTarg;
-					m_pos.y = m_pend.yTarg;
 				}
 				// else restore xTarg -> xOrig?
 
@@ -609,14 +607,19 @@ bool CSprite::programTest(void)
 			}
 			else
 			{
-				// Single trigger - check the player has moved at all.
-				if ((*k)->distance != g_movementSize * 32) continue;
+				// Single trigger - check the player has moved at all,
+				// but only in the case of step-activations (key-press
+				// without the PRG_REPEAT can always trigger).
+				if (!((*k)->activationType & PRG_KEYPRESS))
+				{
+					if ((*k)->distance != g_movementSize * 32) continue;
+				}
 			}
 
 			if ((*k)->activationType & PRG_KEYPRESS)
 			{
 				// General activation key - if not pressed, continue.
-				if (GetAsyncKeyState(g_mainFile.key[0]) >= 0) continue;
+				if (GetAsyncKeyState(g_mainFile.key) >= 0) continue;
 			}
 
 			// Check activation conditions.
@@ -644,6 +647,8 @@ bool CSprite::programTest(void)
 			prg->distance = 0;
 		}
 		CProgram(g_projectPath + PRG_PATH + prg->fileName).run();
+
+		// Set the requested variable after the program is complete.
 		if (prg->activate == PRG_CONDITIONAL)
 		{
 			const double num = atof(prg->finalValue.c_str());
