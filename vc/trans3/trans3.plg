@@ -6,131 +6,67 @@
 --------------------Configuration: trans3 - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP25F.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPE5D.tmp" with contents
 [
 /nologo /MLd /w /W0 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\CVS\tk3Source\vc\trans3\app\winmain.cpp"
-"C:\CVS\tk3Source\vc\trans3\common\board.cpp"
-"C:\CVS\tk3Source\vc\trans3\common\player.cpp"
-"C:\CVS\tk3Source\vc\trans3\common\sprite.cpp"
-"C:\CVS\tk3Source\vc\trans3\input\input.cpp"
-"C:\CVS\tk3Source\vc\trans3\movement\CItem\CItem.cpp"
-"C:\CVS\tk3Source\vc\trans3\movement\CPlayer\CPlayer.cpp"
-"C:\CVS\tk3Source\vc\trans3\movement\CSprite\CSprite.cpp"
-"C:\CVS\tk3Source\vc\trans3\movement\locate.cpp"
-"C:\CVS\tk3Source\vc\trans3\movement\movement.cpp"
-"C:\CVS\tk3Source\vc\trans3\render\render.cpp"
-"C:\CVS\tk3Source\vc\trans3\misc\misc.cpp"
+"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\rpgcode\CProgram\CProgram.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP25F.tmp" 
-Creating temporary file "C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP260.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPE5D.tmp" 
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPE5E.tmp" with contents
 [
 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/trans3.pdb" /debug /machine:I386 /out:"Debug/trans3.exe" /pdbtype:sept 
-.\Debug\StdAfx.obj
-.\Debug\trans3.obj
-.\Debug\winmain.obj
-.\Debug\CProgram.obj
-.\Debug\functions.obj
-.\Debug\parser.obj
-.\Debug\animation.obj
-.\Debug\background.obj
-.\Debug\board.obj
-.\Debug\CFile.obj
-.\Debug\item.obj
-.\Debug\mainfile.obj
-.\Debug\paths.obj
-.\Debug\player.obj
-.\Debug\sprite.obj
-.\Debug\tileanim.obj
-.\Debug\tilebitmap.obj
-.\Debug\input.obj
-.\Debug\CItem.obj
-.\Debug\CPlayer.obj
-.\Debug\CSprite.obj
-.\Debug\CVector.obj
-.\Debug\locate.obj
-.\Debug\movement.obj
-.\Debug\render.obj
-.\Debug\misc.obj
-.\Debug\platform.obj
-.\Debug\CCanvasPool.obj
-.\Debug\GDICanvas.obj
-.\Debug\CTile.obj
-.\Debug\CUtil.obj
-.\Debug\Callbacks.obj
-.\Debug\CPlugin.obj
-.\Debug\CAudioSegment.obj
-.\Debug\trans3.res
-.\audio\audiere.lib
+".\Debug\StdAfx.obj"
+".\Debug\trans3.obj"
+".\Debug\winmain.obj"
+".\Debug\CProgram.obj"
+".\Debug\functions.obj"
+".\Debug\parser.obj"
+".\Debug\animation.obj"
+".\Debug\background.obj"
+".\Debug\board.obj"
+".\Debug\CFile.obj"
+".\Debug\item.obj"
+".\Debug\mainfile.obj"
+".\Debug\paths.obj"
+".\Debug\player.obj"
+".\Debug\sprite.obj"
+".\Debug\tileanim.obj"
+".\Debug\tilebitmap.obj"
+".\Debug\input.obj"
+".\Debug\CItem.obj"
+".\Debug\CPlayer.obj"
+".\Debug\CSprite.obj"
+".\Debug\CVector.obj"
+".\Debug\locate.obj"
+".\Debug\movement.obj"
+".\Debug\render.obj"
+".\Debug\misc.obj"
+".\Debug\platform.obj"
+".\Debug\CCanvasPool.obj"
+".\Debug\GDICanvas.obj"
+".\Debug\CTile.obj"
+".\Debug\CUtil.obj"
+".\Debug\Callbacks.obj"
+".\Debug\CPlugin.obj"
+".\Debug\CAudioSegment.obj"
+".\Debug\trans3.res"
+".\audio\audiere.lib"
 ]
-Creating command line "link.exe @C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP260.tmp"
-Creating temporary file "C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP261.bat" with contents
+Creating command line "link.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPE5E.tmp"
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPE5F.bat" with contents
 [
 @echo off
 ".\Debug\trans3.exe" /RegServer
 echo regsvr32 exec. time > ".\Debug\regsvr32.trg"
 echo Server registration done!
 ]
-Creating command line "C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP261.bat"
+Creating command line "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPE5F.bat"
 Compiling...
-board.cpp
-sprite.cpp
-CSprite.cpp
-movement.cpp
-Generating Code...
-Skipping... (no relevant changes detected)
-winmain.cpp
-player.cpp
-input.cpp
-CItem.cpp
-CPlayer.cpp
-locate.cpp
-render.cpp
-misc.cpp
+CProgram.cpp
 Linking...
 <h3>Output Window</h3>
 Performing registration
 Server registration done!
-Creating temporary file "C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP262.tmp" with contents
-[
-/nologo /o"Debug/trans3.bsc" 
-.\Debug\StdAfx.sbr
-.\Debug\trans3.sbr
-.\Debug\winmain.sbr
-.\Debug\CProgram.sbr
-.\Debug\functions.sbr
-.\Debug\parser.sbr
-.\Debug\animation.sbr
-.\Debug\background.sbr
-.\Debug\board.sbr
-.\Debug\CFile.sbr
-.\Debug\item.sbr
-.\Debug\mainfile.sbr
-.\Debug\paths.sbr
-.\Debug\player.sbr
-.\Debug\sprite.sbr
-.\Debug\tileanim.sbr
-.\Debug\tilebitmap.sbr
-.\Debug\input.sbr
-.\Debug\CItem.sbr
-.\Debug\CPlayer.sbr
-.\Debug\CSprite.sbr
-.\Debug\CVector.sbr
-.\Debug\locate.sbr
-.\Debug\movement.sbr
-.\Debug\render.sbr
-.\Debug\misc.sbr
-.\Debug\platform.sbr
-.\Debug\CCanvasPool.sbr
-.\Debug\GDICanvas.sbr
-.\Debug\CTile.sbr
-.\Debug\CUtil.sbr
-.\Debug\Callbacks.sbr
-.\Debug\CPlugin.sbr
-.\Debug\CAudioSegment.sbr]
-Creating command line "bscmake.exe @C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP262.tmp"
-Creating browse info file...
-<h3>Output Window</h3>
 
 
 

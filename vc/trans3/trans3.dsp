@@ -426,6 +426,10 @@ SOURCE=.\rpgcode\CVariant\CVariant.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\rpgcode\globals.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\rpgcode\parser\parser.h
 # End Source File
 # End Group

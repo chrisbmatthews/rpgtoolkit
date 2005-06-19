@@ -559,34 +559,45 @@ void showScreen(const int width, const int height)
  * bForce (in) - force the render?
  * return (out) - did a render occur?
  */
-bool renderNow(CGDICanvas * /*cnv*/, const bool bForce)
+bool renderNow(CGDICanvas *cnv, const bool bForce)
 {
-	CGDICanvas cnv;
-	cnv.CreateBlank(NULL, g_resX, g_resY, TRUE);
-	cnv.ClearScreen(0);
+
+	const bool bScreen = (cnv == NULL);
+
+	if (!cnv)
+	{
+		cnv = new CGDICanvas();
+		cnv->CreateBlank(NULL, g_resX, g_resY, TRUE);
+	}
 
 	extern BOARD g_activeBoard;
-	drawBoard(g_activeBoard, &cnv, 0, 0, 0, g_tilesX, g_tilesY, 0, 0, 0, g_activeBoard.isIsometric);
+	cnv->ClearScreen(g_activeBoard.brdColor);
+	drawBoard(g_activeBoard, cnv, 0, 0, 0, g_tilesX, g_tilesY, 0, 0, 0, g_activeBoard.isIsometric);
 
 	extern std::vector<CPlayer *> g_players;
 	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); i++)
 	{
 		// Render the player's current frame.
-		(*i)->render(&cnv);
-		(*i)->putSpriteAt(&cnv);	// Not here!
+		(*i)->render(cnv);
+		(*i)->putSpriteAt(cnv);	// Not here!
 	}
 
-	g_pDirectDraw->DrawCanvas(&cnv, 0, 0);
+	if (bScreen)
+	{
 
-	// Temporary: draw vectors for debugging.
-	/** for (std::vector<CVector *>::iterator j = g_activeBoard.vectors.begin(); j != g_activeBoard.vectors.end(); j++)
-		(*j)->draw(16777215, true);
+		g_pDirectDraw->DrawCanvas(cnv, 0, 0);
 
-	for (i = g_players.begin(); i != g_players.end(); i++)
-		(*i)->drawVector(); **/
+		// Temporary: draw vectors for debugging.
+		/** for (std::vector<CVector *>::iterator j = g_activeBoard.vectors.begin(); j != g_activeBoard.vectors.end(); j++)
+			(*j)->draw(16777215, true);
 
-	g_pDirectDraw->Refresh();
-	cnv.Destroy();
+		for (i = g_players.begin(); i != g_players.end(); i++)
+			(*i)->drawVector(); **/
+
+		g_pDirectDraw->Refresh();
+		delete cnv;
+	}
+
 	return true;
 }
 

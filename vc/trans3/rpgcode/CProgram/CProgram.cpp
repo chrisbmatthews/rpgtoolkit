@@ -131,7 +131,7 @@ CVariant CProgram::constructVariant(const std::string str, bool *bFromVar)
 		 * Check if it's a variable.
 		 */
 		STACK_FRAME &frame = m_stack.back();
-		if (frame.count(var))
+		if (m_stack.size() && frame.count(var))
 		{
 			/*
 			 * Return the variable's value.
@@ -185,6 +185,39 @@ CVariant CProgram::constructVariant(const std::string str, bool *bFromVar)
 	 * It's a number.
 	 */
 	return atof(str.c_str());
+}
+
+/*
+ * Parse an array.
+ */
+std::string CProgram::parseArray(const std::string str)
+{
+	const int pos = str.find('[');
+	if (pos == std::string::npos) return str;
+	std::string toRet = str.substr(0, pos);
+	bool ignore = false;
+	int open = 0, close = 0;
+	for (unsigned int i = pos; i < str.length(); i++)
+	{
+		if (str[i] == '"') ignore = !ignore;
+		else if (!ignore)
+		{
+			if (str[i] == '[')
+			{
+				open = i;
+			}
+			else if (str[i] == ']')
+			{
+				toRet += '[' + constructVariant(parseArray(str.substr(open + 1, i - open - 1))).getLit() + ']';
+				close = i;
+			}
+		}
+	}
+	if (close != str.length())
+	{
+		toRet += str.substr(close + 1);
+	}
+	return toRet;
 }
 
 /*
@@ -628,7 +661,7 @@ CVariant CProgram::callFunction(const std::string funcName, PARAMETERS params)
  */
 void CProgram::setVariable(const std::string name, const CVariant value)
 {
-	const std::string ucase = parser::uppercase(name);
+	const std::string ucase = parseArray(parser::uppercase(name));
 	STACK_FRAME &frame = m_stack.back().count(ucase) ? m_stack.back() : m_global;
 	frame[ucase] = value;
 }
@@ -638,7 +671,7 @@ void CProgram::setVariable(const std::string name, const CVariant value)
  */
 void CProgram::setGlobal(const std::string name, const CVariant value)
 {
-	m_global[parser::uppercase(name)] = value;
+	m_global[CProgram().parseArray(parser::uppercase(name))] = value;
 }
 
 /*
@@ -646,7 +679,7 @@ void CProgram::setGlobal(const std::string name, const CVariant value)
  */
 CVariant CProgram::getGlobal(const std::string name)
 {
-	const std::string ucase = parser::uppercase(name);
+	const std::string ucase = CProgram().parseArray(parser::uppercase(name));
 	return (m_global.count(ucase) ? m_global[name] : CVariant());
 }
 
@@ -817,12 +850,12 @@ CVariant CProgram::evaluate(const std::string str)
 			}
 			const std::string tokenA = parser::trim(tokens[pos]);
 			const std::string tokenB = parser::trim(tokens[pos + opLen]);
-			const CVariant right = constructVariant(tokenB);
+			const CVariant right = constructVariant(parseArray(tokenB));
 			std::string strVal = "";
 			if ((op[opLen - 1] != '=') || (op == "=="))
 			{
 				bool bFromVar = false;
-				const CVariant left = constructVariant(tokenA, &bFromVar);
+				const CVariant left = constructVariant(parseArray(tokenA), &bFromVar);
 				if ((op != "+") || (left.getType() == CVariant::DT_NUM && right.getType() == CVariant::DT_NUM))
 				{
 					/*
@@ -870,7 +903,7 @@ CVariant CProgram::evaluate(const std::string str)
 			}
 			else
 			{
-				const std::string ucase = parser::uppercase(tokenA);
+				const std::string ucase = parseArray(parser::uppercase(tokenA));
 				STACK_FRAME &frame = m_stack.back().count(ucase) ? m_stack.back() : m_global;
 				if (op == "=") frame[ucase] = right;
 				else if (op == "+=")
@@ -898,5 +931,5 @@ CVariant CProgram::evaluate(const std::string str)
 			return evaluate(((pos != 0) ? (str.substr(0, positions[pos - 1] + 1)) : "") + strVal + str.substr((((pos + 1) != len) ? (positions[pos + 1] - 1) : strLen) + 1));
 		}
 	}
-	return constructVariant(parser::trim(str));
+	return constructVariant(parseArray(parser::trim(str)));
 }

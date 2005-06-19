@@ -8,6 +8,7 @@
  * Inclusions.
  */
 #include "../rpgcode/CProgram/CProgram.h"
+#include "../rpgcode/globals.h"
 #include "../common/paths.h"
 #include "../common/mainfile.h"
 #include "../common/item.h"
@@ -207,6 +208,7 @@ VOID openSystems(VOID)
 	initRpgCode();
 	CAudioSegment::initLoader();
 	g_bkgMusic = new CAudioSegment();
+	createRpgCodeGlobals();
 	setUpGame();
 }
 

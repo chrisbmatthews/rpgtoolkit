@@ -75,14 +75,14 @@ void tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		file >> smVar;
 		file >> smMaxVar;
 		file >> leVar;
-		file >> initExperience;
-		file >> initHealth;
-		file >> initMaxHealth;
-		file >> initDefense;
-		file >> initFight;
-		file >> initSm;
-		file >> initSmMax;
-		file >> initLevel;
+		file >> experience;
+		file >> health;
+		file >> maxHealth;
+		file >> defense;
+		file >> fight;
+		file >> sm;
+		file >> smMax;
+		file >> level;
 		file >> profilePic;
 
 		unsigned int i;

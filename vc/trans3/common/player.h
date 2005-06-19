@@ -34,14 +34,14 @@ typedef struct tagPlayer
 	std::string smVar;							// Special Move power variable.
 	std::string smMaxVar;						// Special Move maximum variable.
 	std::string leVar;							// Level variable.
-	int initExperience;							// Initial Experience Level.
-	int initHealth;								// Initial health level.
-	int initMaxHealth;							// Initial maximum health level.
-	int initDefense;							// Initial DP.
-	int initFight;								// Initial FP.
-	int initSm;									// Initial SM power.
-	int initSmMax;								// Initial Max SM power.
-	int initLevel;								// Initial level.
+	int experience;								// Initial Experience Level.
+	int health;									// Initial health level.
+	int maxHealth;								// Initial maximum health level.
+	int defense;								// Initial DP.
+	int fight;									// Initial FP.
+	int sm;										// Initial SM power.
+	int smMax;									// Initial Max SM power.
+	int level;									// Initial level.
 	std::string profilePic;						// Profile picture.
 	std::vector<std::string> smlist;			// Special Move list (200 in total!).
 	std::vector<int> spcMinExp;					// Minimum experience for each move.

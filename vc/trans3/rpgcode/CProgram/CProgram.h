@@ -185,6 +185,11 @@ public:
 private:
 
 	/*
+	 * Parse an array.
+	 */
+	std::string parseArray(const std::string str);
+
+	/*
 	 * Evaluate a string.
 	 *
 	 * str (in) - string to evaluate

@@ -64,10 +64,10 @@ public:
 		}
 		virtual DATA_TYPE getType(void) = 0;
 		virtual ~CObject(void) { }
-		void setCopyObject(const bool val)
-		{
-			m_bCopyObject = val;
-		}
+		virtual bool canSet(void) { return false; }
+		virtual void set(const std::string str) { }
+		virtual void set(const double num) { }
+		void setCopyObject(const bool val) { m_bCopyObject = val; }
 	private:
 		unsigned long m_refs;
 		bool m_bCopyObject;
@@ -115,50 +115,72 @@ public:
 	 */
 	CVariant &operator=(const CVariant &rhs)
 	{
-		freeData();
-		m_type = rhs.m_type;
-		if (m_type == DT_OBJ && !((CObject *)rhs.m_pData)->m_bCopyObject)
+		if ((m_type == DT_OBJ) && ((CObject *)m_pData)->canSet())
 		{
-			if ((m_type = ((CObject *)rhs.m_pData)->getType()) == DT_NUM)
-			{
-				m_pData = new double(((CObject *)rhs.m_pData)->getNum());
-			}
-			else
-			{
-				m_pData = new std::string(((CObject *)rhs.m_pData)->getLit());
-			}
-			// No objects returning objects...
+			if (rhs.m_type == DT_NUM) ((CObject *)m_pData)->set(rhs.getNum());
+			else if (rhs.m_type == DT_LIT) ((CObject *)m_pData)->set(rhs.getLit());
 		}
 		else
 		{
-			switch (m_type)
+			freeData();
+			m_type = rhs.m_type;
+			if (m_type == DT_OBJ && !((CObject *)rhs.m_pData)->m_bCopyObject)
 			{
-				case DT_NUM:
-					m_pData = new double(*(double *)rhs.m_pData);
-					break;
-				case DT_LIT:
-					m_pData = new std::string(*(std::string *)rhs.m_pData);
-					break;
-				case DT_OBJ:
-					m_pData = rhs.m_pData;
-					((CObject *)m_pData)->addRef();
-					break;
+				if ((m_type = ((CObject *)rhs.m_pData)->getType()) == DT_NUM)
+				{
+					m_pData = new double(((CObject *)rhs.m_pData)->getNum());
+				}
+				else
+				{
+					m_pData = new std::string(((CObject *)rhs.m_pData)->getLit());
+				}
+				// No objects returning objects...
+			}
+			else
+			{
+				switch (m_type)
+				{
+					case DT_NUM:
+						m_pData = new double(*(double *)rhs.m_pData);
+						break;
+					case DT_LIT:
+						m_pData = new std::string(*(std::string *)rhs.m_pData);
+						break;
+					case DT_OBJ:
+						m_pData = rhs.m_pData;
+						((CObject *)m_pData)->addRef();
+						break;
+				}
 			}
 		}
 		return *this;
 	}
 	CVariant &operator=(const double rhs)
 	{
-		freeData();
-		m_pData = new double(rhs);
-		m_type = DT_NUM;
+		if ((m_type == DT_OBJ) && ((CObject *)m_pData)->canSet())
+		{
+			((CObject *)m_pData)->set(rhs);
+		}
+		else
+		{
+			freeData();
+			m_pData = new double(rhs);
+			m_type = DT_NUM;
+		}
 		return *this;
 	}
 	CVariant &operator=(const std::string rhs)
 	{
-		freeData();
-		m_pData = new std::string(rhs);
-		m_type = DT_LIT;
+		if ((m_type == DT_OBJ) && ((CObject *)m_pData)->canSet())
+		{
+			((CObject *)m_pData)->set(rhs);
+		}
+		else
+		{
+			freeData();
+			m_pData = new std::string(rhs);
+			m_type = DT_LIT;
+		}
 		return *this;
 	}
 	/*
