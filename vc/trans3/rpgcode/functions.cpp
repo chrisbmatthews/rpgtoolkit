@@ -135,13 +135,12 @@ CVariant send(CProgram::PARAMETERS params)
 
 	renderNow(g_cnvRpgCode, true);
 	renderRpgCodeScreen();
-	extern CAudioSegment *g_bkgMusic;
 
-	if (!g_activeBoard.boardMusic.empty())
-	{
-		g_bkgMusic->open(g_projectPath + MEDIA_PATH + g_activeBoard.boardMusic);
-		g_bkgMusic->play(true);
-	}
+	extern CAudioSegment *g_bkgMusic;
+	// Open file regardless of existence.
+	g_bkgMusic->open(g_projectPath + MEDIA_PATH + g_activeBoard.boardMusic);
+	g_bkgMusic->play(true);
+
 	if (!g_activeBoard.enterPrg.empty())
 	{
 		CProgram(g_projectPath + PRG_PATH + g_activeBoard.enterPrg).run();
