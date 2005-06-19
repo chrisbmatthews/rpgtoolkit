@@ -129,11 +129,19 @@ CVariant send(CProgram::PARAMETERS params)
 	clearAnmCache();
 	extern CSprite *g_pSelectedPlayer;
 	g_pSelectedPlayer->setPosition(x, y, layer);
+
+	// Ensure that programs the player is standing on don't run immediately.
+	g_pSelectedPlayer->deactivatePrograms();
+
 	renderNow(g_cnvRpgCode, true);
 	renderRpgCodeScreen();
 	extern CAudioSegment *g_bkgMusic;
-	g_bkgMusic->open(g_projectPath + MEDIA_PATH + g_activeBoard.boardMusic);
-	g_bkgMusic->play(true);
+
+	if (!g_activeBoard.boardMusic.empty())
+	{
+		g_bkgMusic->open(g_projectPath + MEDIA_PATH + g_activeBoard.boardMusic);
+		g_bkgMusic->play(true);
+	}
 	if (!g_activeBoard.enterPrg.empty())
 	{
 		CProgram(g_projectPath + PRG_PATH + g_activeBoard.enterPrg).run();
