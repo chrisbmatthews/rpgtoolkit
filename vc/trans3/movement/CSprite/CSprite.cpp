@@ -571,7 +571,8 @@ bool CSprite::programTest(void)
 		}
 	}
 
-	std::vector<LPBRD_PROGRAM>::iterator prg = NULL, k = g_activeBoard.programs.begin();
+	std::vector<LPBRD_PROGRAM>::iterator k = g_activeBoard.programs.begin();
+	LPBRD_PROGRAM prg = NULL;
 
 	// Programs
 	for (; k != g_activeBoard.programs.end(); ++k)
@@ -615,28 +616,39 @@ bool CSprite::programTest(void)
 			if ((*k)->activationType & PRG_KEYPRESS)
 			{
 				// General activation key - if not pressed, continue.
-//				if (lastKeyPressed() != g_mainFile.key)
-					continue;
+				if (GetAsyncKeyState(g_mainFile.key[0]) >= 0) continue;
 			}
 
 			// Check activation conditions.
-//			if (!runPrgYN) continue;
+			if ((*k)->activate == PRG_CONDITIONAL)
+			{
+				if (CProgram::getGlobal((*k)->initialVar).getLit() != (*k)->initialValue)
+				{
+					// Activation conditions not met.
+					continue;
+				}
+			}
 
 			// Conditions have been satisfied - save this iterator,
 			// continue looping.
-			prg = k;
+			prg = *k;
 		}
 	}
 
 	if (prg)
 	{
-		if ((*prg)->activationType & PRG_REPEAT) 
+		if (prg->activationType & PRG_REPEAT) 
 		{
 			// Reset the distance for repeat activations - single activations
 			// are cleared at the top of this loop.
-			(*prg)->distance = 0;
+			prg->distance = 0;
 		}
-		CProgram(g_projectPath + PRG_PATH + (*prg)->fileName).run();
+		CProgram(g_projectPath + PRG_PATH + prg->fileName).run();
+		if (prg->activate == PRG_CONDITIONAL)
+		{
+			const double num = atof(prg->finalValue.c_str());
+			CProgram::setGlobal(prg->finalVar, (num == 0.0) ? prg->finalValue : CVariant(num));
+		}
 		return true;
 	}
 	return false;

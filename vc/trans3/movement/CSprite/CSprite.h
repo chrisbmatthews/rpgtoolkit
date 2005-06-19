@@ -68,10 +68,10 @@ public:
 	void drawVector(void);
 
 	// Render if the current frame requires updating.
-	bool render(const CGDICanvas* cnv = NULL);
+	bool render(const CGDICanvas *cnv = NULL);
 
 	// Calculate sprite location and place on destination canvas.
-	void CSprite::putSpriteAt(const CGDICanvas *cnvTarget);
+	void putSpriteAt(const CGDICanvas *cnvTarget);
 
 protected:
 	SPRITE_ATTR m_attr;				// Sprite attributes (common file data).
