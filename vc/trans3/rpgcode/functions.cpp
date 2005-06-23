@@ -43,6 +43,24 @@ std::string g_mwinBkg;						// MWin() background image.
 COLORREF g_mwinColor = 0;					// Mwin() background colour.
 CAllocationHeap<CGDICanvas> g_canvases;		// Allocated canvases.
 CAllocationHeap<CCursorMap> g_cursorMaps;	// Cursor maps.
+// CAllocationHeap<CThread> g_threads;		// Threads.
+
+/*
+ * Get a player by name.
+ */
+CPlayer *getPlayer(const std::string name)
+{
+	extern std::vector<CPlayer *> g_players;
+	std::vector<CPlayer *>::iterator i = g_players.begin();
+	for (; i != g_players.end(); ++i)
+	{
+		if (_strcmpi((*i)->name().c_str(), name.c_str()) == 0)
+		{
+			return *i;
+		}
+	}
+	return NULL;
+}
 
 /*
  * mwin(str$)
@@ -713,9 +731,9 @@ CVariant win(CProgram::PARAMETERS params, CProgram *const)
 }
 
 /*
- * hp(...)
+ * hp(handle$, value!)
  * 
- * Description.
+ * Set a fighter's hp.
  */
 CVariant hp(CProgram::PARAMETERS params, CProgram *const)
 {
@@ -2403,19 +2421,36 @@ CVariant characterspeed(CProgram::PARAMETERS params, CProgram *const prg)
 }
 
 /*
- * thread(...)
+ * thread(file$, presist![, id!])
  * 
- * Description.
+ * Start a thread.
  */
-CVariant thread(CProgram::PARAMETERS params, CProgram *const)
+CVariant thread(CProgram::PARAMETERS params, CProgram *const prg)
 {
+	/**extern std::string g_projectPath;
+	if (params.size() == 2)
+	{
+		CThread *p = g_threads.allocate();
+		p->start(g_projectPath + PRG_PATH + params[0].getLit());
+		return int(p);
+	}
+	else if (params.size() == 3)
+	{
+		CThread *p = g_threads.allocate();
+		p->start(g_projectPath + PRG_PATH + params[0].getLit());		
+		prg->setVariable(params[2].getLit(), int(p));
+	}
+	else
+	{
+		CProgram::debugger("Thread() requires two or three parameters.");
+	}**/
 	return CVariant();
 }
 
 /*
- * killthread(...)
+ * killthread(id!)
  * 
- * Description.
+ * Kill a thread.
  */
 CVariant killthread(CProgram::PARAMETERS params, CProgram *const)
 {
