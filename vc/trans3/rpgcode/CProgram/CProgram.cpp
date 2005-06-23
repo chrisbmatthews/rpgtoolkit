@@ -93,11 +93,9 @@ CVariant CProgram::constructVariant(const std::string str, bool *bFromVar)
 	/*
 	 * Check if it's a number.
 	 */
+	if (str == "0") return 0.0;
 	const double num = atof(str.c_str());
-	if (num != 0)
-	{
-		return num;
-	}
+	if (num) return num;
 	/*
 	 * Strip off negative sign and pre/post decrement and increment operators.
 	 */
@@ -770,6 +768,8 @@ CVariant CProgram::evaluate(const std::string str)
 		{
 			char conv[255];
 			gcvt(bNegate ? -var.getNum() : var.getNum(), 255, conv);
+			char &chr = conv[strlen(conv) - 1];
+			if (chr == '.') chr = '\0';
 			content = conv;
 		}
 		else
@@ -829,9 +829,6 @@ CVariant CProgram::evaluate(const std::string str)
 			}
 			const std::string tokenA = parser::trim(tokens[pos]);
 			const std::string tokenB = parser::trim(tokens[pos + opLen]);
-			if ( op == "==" ) {
-				int x = 0;
-			}
 			const CVariant right = constructVariant(parseArray(tokenB));
 			std::string strVal = "";
 			if ((op[opLen - 1] != '=') || (op == "=="))

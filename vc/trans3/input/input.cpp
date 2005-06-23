@@ -198,7 +198,8 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			BeginPaint(hwnd, &ps);
 
 			// Force a render of the screen
-			/* ... */
+			extern CDirectDraw *g_pDirectDraw;
+			g_pDirectDraw->Refresh();
 
 			// End of painting of the window
 			EndPaint(hwnd, &ps);

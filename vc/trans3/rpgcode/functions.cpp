@@ -76,8 +76,27 @@ public:
 		DeleteDC(compat);
 		//
 		int toRet = 0, pos = -1;
+		MSG message;
 		while (true)
 		{
+			const DWORD time = GetTickCount();
+			while ((GetTickCount() - time) < 100)
+			{
+				if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
+				{
+					if (message.message == WM_QUIT)
+					{
+						extern void closeSystems(void);
+						closeSystems();
+						exit(message.wParam);
+					}
+					else
+					{
+						TranslateMessage(&message);
+						DispatchMessage(&message);
+					}
+				}
+			}
 			BYTE keys[256];
 			extern IDirectInputDevice8A *g_lpdiKeyboard;
 			if (FAILED(g_lpdiKeyboard->GetDeviceState(256, keys)))
@@ -107,11 +126,10 @@ public:
 			if (toRet != pos)
 			{
 				g_pDirectDraw->DrawCanvas(&cnv, 0, 0);
-				g_pDirectDraw->DrawCanvasTransparent(&cnvCursor, m_points[toRet].x - 12, m_points[toRet].y + 12, RGB(255, 0, 0));
+				g_pDirectDraw->DrawCanvasTransparent(&cnvCursor, m_points[toRet].x - 40, m_points[toRet].y - 10, RGB(255, 0, 0));
 				g_pDirectDraw->Refresh();
 			}
 			pos = toRet;
-			Sleep(100);
 		}
 		return toRet;
 	}
