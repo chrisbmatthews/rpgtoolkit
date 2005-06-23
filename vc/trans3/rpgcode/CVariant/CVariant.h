@@ -14,7 +14,6 @@
  * Inclusions.
  */
 #include <string>
-#include <sstream>
 
 /*
  * A value of varying type.
@@ -59,9 +58,9 @@ public:
 		}
 		virtual std::string getLit(void)
 		{
-			std::stringstream ss;
-			ss << getNum();
-			return ss.str();
+			char conv[255];
+			gcvt(getNum(), 255, conv);
+			return conv;
 		}
 		virtual DATA_TYPE getType(void) = 0;
 		virtual ~CObject(void) { }
@@ -206,9 +205,9 @@ public:
 		{
 			case DT_NUM:
 			{
-				std::stringstream ss;
-				ss << *(double *)m_pData;
-				return (ss.str() + rhs);
+				char conv[255];
+				gcvt(*(double *)m_pData, 255, conv);
+				return (conv + rhs);
 			}
 			case DT_LIT:
 				return ((*(std::string *)m_pData) + rhs);
@@ -242,9 +241,14 @@ public:
 		}
 		else if (m_type == DT_NUM)
 		{
-			std::stringstream ss;
-			ss << *(double *)m_pData;
-			return ss.str();
+			char conv[255];
+			gcvt(*(double *)m_pData, 255, conv);
+			char &chr = conv[strlen(conv) - 1];
+			if (chr == '.')
+			{
+				chr = '\0';
+			}
+			return conv;
 		}
 		else if (m_type == DT_OBJ)
 		{

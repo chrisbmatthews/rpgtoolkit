@@ -21,6 +21,7 @@
 #include "../input/input.h"
 #include "../misc/misc.h"
 #include "../audio/CAudioSegment.h"
+#include "../images/FreeImage.h"
 #include "winmain.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -214,6 +215,7 @@ VOID openSystems(VOID)
 {
 	extern VOID initRpgCode(VOID);
 
+	FreeImage_Initialise();
 	srand(GetTickCount());
 	initGraphics();
 	initRpgCode();
@@ -355,6 +357,8 @@ VOID closeSystems(VOID)
 
 	delete g_bkgMusic;
 	CAudioSegment::freeLoader();
+
+	FreeImage_DeInitialise();
 
 }
 

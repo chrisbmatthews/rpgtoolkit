@@ -12,6 +12,8 @@
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#define DIRECTINPUT_VERSION DIRECTINPUT_HEADER_VERSION
+#include <dinput.h>
 #include <string>
 
 /*

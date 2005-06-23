@@ -689,6 +689,10 @@ SOURCE=.\common\board.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\CAllocationHeap.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\CFile.h
 # End Source File
 # Begin Source File
@@ -718,6 +722,10 @@ SOURCE=.\common\tileanim.h
 # Begin Source File
 
 SOURCE=.\common\tilebitmap.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\trace.h
 # End Source File
 # End Group
 # End Group
@@ -1273,6 +1281,18 @@ SOURCE=.\audio\CAudioSegment.h
 SOURCE=.\audio\audiere.lib
 # End Source File
 # End Group
+# End Group
+# Begin Group "images"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\images\FreeImage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\images\FreeImage.lib
+# End Source File
 # End Group
 # End Target
 # End Project

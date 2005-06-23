@@ -706,7 +706,7 @@ INT FAST_CALL CGDICanvas::BltStretch(
 {
 
 	// If using DirectX
-	if	(
+	/**if	(
 			lpddsSurface &&
 			usingDX() &&
 			g_pDirectDraw->supportsRop(lRasterOp, m_bInRam, bInRam)
@@ -740,7 +740,7 @@ INT FAST_CALL CGDICanvas::BltStretch(
 		return TRUE;
 
 	}
-	else if (lpddsSurface)
+	else if (lpddsSurface)**/
 	{
 		// Use GDI
 		HDC hdc = NULL;

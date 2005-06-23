@@ -13,7 +13,6 @@
  */
 #include "CProgram.h"
 #include "../parser/parser.h"
-#include <sstream>
 #include <fstream>
 #include <math.h>
 
@@ -94,97 +93,77 @@ CVariant CProgram::constructVariant(const std::string str, bool *bFromVar)
 	/*
 	 * Check if it's a number.
 	 */
-	const int len = str.length();
-	bool bDecimal = false, bNumerical = true;
-	for (int i = 0; i < len; i++)
+	const double num = atof(str.c_str());
+	if (num != 0)
 	{
-		const char chr = str[i];
-		const bool bIsDecimal = (!bDecimal && chr == '.');
-		if (!((chr >= '0' && chr <= '9') || (i == 0 && chr == '-') || bIsDecimal))
-		{
-			bNumerical = false;
-			break;
-		}
-		else if (bIsDecimal)
-		{
-			bDecimal = true;
-		}
-	}
-	if (!bNumerical)
-	{
-		/*
-		 * Strip off negative sign and pre/post decrement and increment operators.
-		 */
-		const char cUnary = str[0];
-		const bool bNegate = (cUnary == '-');
-		const bool bComplement = (cUnary == '~');
-		const bool bInvert = (cUnary == '!');
-		const bool bUnary = (bNegate || bComplement || bInvert);
-		const std::string strPre = str.substr(bUnary ? 1 : 0, 2);
-		const bool bPre = (strPre == "++" || strPre == "--");
-		const int postStart = len - 2;
-		const std::string strPost = (postStart > 0) ? str.substr(postStart, 2) : "";
-		const bool bPost = (strPost == "++" || strPost == "--");
-		const int start = (bUnary ? 1 : 0) + (bPre ? 2 : 0);
-		const std::string var = parser::uppercase(str.substr(start, len - start - (bPost ? 2 : 0)));
-		/*
-		 * Check if it's a variable.
-		 */
-		STACK_FRAME &frame = m_stack.back();
-		if (m_stack.size() && frame.count(var))
-		{
-			/*
-			 * Return the variable's value.
-			 */
-			if (bPre)
-			{
-				if (strPre == "++") frame[var] = frame[var].getNum() + 1;
-				else if (strPre == "--") frame[var] = frame[var].getNum() - 1;
-			}
-			const CVariant toRet = (bNegate ? -frame[var].getNum() : (bComplement ? ~int(frame[var].getNum()) : (bInvert ? !frame[var].getNum() : frame[var])));
-			if (bPost)
-			{
-				if (strPost == "++") frame[var] = frame[var].getNum() + 1;
-				else if (strPost == "--") frame[var] = frame[var].getNum() - 1;
-			}
-			if (bFromVar && !bUnary) *bFromVar = true;
-			return toRet;
-		}
-		else if (m_global.count(var))
-		{
-			/*
-			 * Found it in the global scope.
-			 */
-			if (bPre)
-			{
-				if (strPre == "++") m_global[var] = m_global[var].getNum() + 1;
-				else if (strPre == "--") m_global[var] = m_global[var].getNum() - 1;
-			}
-			const CVariant toRet = (bNegate ? -m_global[var].getNum() : (bComplement ? ~int(m_global[var].getNum()) : (bInvert ? !m_global[var].getNum() : m_global[var])));
-			if (bPost)
-			{
-				if (strPost == "++") m_global[var] = m_global[var].getNum() + 1;
-				else if (strPost == "--") m_global[var] = m_global[var].getNum() - 1;
-			}
-			if (bFromVar && !bUnary) *bFromVar = true;
-			return toRet;
-		}
-		else
-		{
-			/*
-			 * It's a string.
-			 */
-			if (str[0] == '"')
-			{
-				return str.substr(1, len - 2);
-			}
-			return str;
-		}
+		return num;
 	}
 	/*
-	 * It's a number.
+	 * Strip off negative sign and pre/post decrement and increment operators.
 	 */
-	return atof(str.c_str());
+	const int len = str.length();
+	const char cUnary = str[0];
+	const bool bNegate = (cUnary == '-');
+	const bool bComplement = (cUnary == '~');
+	const bool bInvert = (cUnary == '!');
+	const bool bUnary = (bNegate || bComplement || bInvert);
+	const std::string strPre = str.substr(bUnary ? 1 : 0, 2);
+	const bool bPre = (strPre == "++" || strPre == "--");
+	const int postStart = len - 2;
+	const std::string strPost = (postStart > 0) ? str.substr(postStart, 2) : "";
+	const bool bPost = (strPost == "++" || strPost == "--");
+	const int start = (bUnary ? 1 : 0) + (bPre ? 2 : 0);
+	const std::string var = parser::uppercase(str.substr(start, len - start - (bPost ? 2 : 0)));
+	/*
+	 * Check if it's a variable.
+	 */
+	STACK_FRAME &frame = m_stack.back();
+	if (m_stack.size() && frame.count(var))
+	{
+		/*
+		 * Return the variable's value.
+		 */
+		if (bPre)
+		{
+			if (strPre == "++") frame[var] = frame[var].getNum() + 1;
+			else if (strPre == "--") frame[var] = frame[var].getNum() - 1;
+		}
+		const CVariant toRet = (bNegate ? -frame[var].getNum() : (bComplement ? ~int(frame[var].getNum()) : (bInvert ? !frame[var].getNum() : frame[var])));
+		if (bPost)
+		{
+			if (strPost == "++") frame[var] = frame[var].getNum() + 1;
+			else if (strPost == "--") frame[var] = frame[var].getNum() - 1;
+		}
+		if (bFromVar && !bUnary) *bFromVar = true;
+		return toRet;
+	}
+	else if (m_global.count(var))
+	{
+		/*
+		 * Found it in the global scope.
+		 */
+		if (bPre)
+		{
+			if (strPre == "++") m_global[var] = m_global[var].getNum() + 1;
+			else if (strPre == "--") m_global[var] = m_global[var].getNum() - 1;
+		}
+		const CVariant toRet = (bNegate ? -m_global[var].getNum() : (bComplement ? ~int(m_global[var].getNum()) : (bInvert ? !m_global[var].getNum() : m_global[var])));
+		if (bPost)
+		{
+			if (strPost == "++") m_global[var] = m_global[var].getNum() + 1;
+			else if (strPost == "--") m_global[var] = m_global[var].getNum() - 1;
+		}
+		if (bFromVar && !bUnary) *bFromVar = true;
+		return toRet;
+	}
+	/*
+	 * It's a string.
+	 */
+	if (str[0] == '"')
+	{
+		return str.substr(1, len - 2);
+	}
+	return str;
 }
 
 /*
@@ -700,36 +679,36 @@ CVariant CProgram::evaluate(const std::string str)
 	parser::getTokenList(str, tokens, delimiterStr, positions);
 	const int strLen = str.length();
 	/*
-	 * Look for the opening bracket of a function.
+	 * Look for the closing bracket of a function.
 	 */
 	const int len = delimiterStr.length();
-	const int bracketPos = delimiterStr.find('(');
+	const int bracketPos = delimiterStr.find(')');
 	if (bracketPos != std::string::npos)
 	{
 		/*
-		 * Get the function's name.
+		 * Find the opening bracket.
 		 */
-		const int startPos = ((bracketPos != 0) ? (positions[bracketPos - 1] + 1) : 0);
-		const int endPos = positions[bracketPos];
-		const std::string funcName = parser::trim(str.substr(startPos, endPos - startPos));
-		/*
-		 * Find the closing bracket.
-		 */
-		int depth = 0, closing = std::string::npos, closingIdx = std::string::npos;
-		for (int i = bracketPos + 1; i < len; i++)
+		int depth = 0, opening = std::string::npos, openingIdx = std::string::npos;
+		for (int i = bracketPos - 1; i >= 0; i--)
 		{
 			const char chr = delimiterStr[i];
-			if (chr == '(') depth++;
-			else if (chr == ')' && depth-- == 0)
+			if (chr == ')') depth++;
+			else if (chr == '(' && depth-- == 0)
 			{
 				/*
 				 * This is it!
 				 */
-				closing = positions[closingIdx = i];
+				opening = positions[openingIdx = i];
 				break;
 			}
 		}
-		if (closing == std::string::npos)
+		/*
+		 * Get the function's name.
+		 */
+		const int startPos = ((openingIdx != 0) ? (positions[openingIdx - 1] + 1) : 0);
+		const int endPos = positions[openingIdx];
+		const std::string funcName = parser::trim(str.substr(startPos, endPos - startPos));
+		if (bracketPos == std::string::npos)
 		{
 			/*
 			 * Syntax error.
@@ -743,7 +722,7 @@ CVariant CProgram::evaluate(const std::string str)
 		const bool bNegate = (funcName[0] == '-');
 		const bool bFunction = (funcName != "");
 		const int centerBegin = startPos + (bFunction ? 1 : 2) + (bNegate ? 1 : 0);
-		const std::string centerStr = str.substr(centerBegin, closing - centerBegin);
+		const std::string centerStr = str.substr(centerBegin, positions[bracketPos] - centerBegin);
 		CVariant var;
 		if (bFunction)
 		{
@@ -789,15 +768,15 @@ CVariant CProgram::evaluate(const std::string str)
 		std::string content = "";
 		if (var.getType() == CVariant::DT_NUM)
 		{
-			std::stringstream ss;
-			ss << (bNegate ? -var.getNum() : var.getNum());
-			content = ss.str();
+			char conv[255];
+			gcvt(bNegate ? -var.getNum() : var.getNum(), 255, conv);
+			content = conv;
 		}
 		else
 		{
 			content = var.getLit();
 		}
-		return evaluate(str.substr(0, startPos) + content + ((closing != strLen) ? str.substr(closing + 1) : ""));
+		return evaluate(str.substr(0, startPos) + content + ((positions[bracketPos] != strLen) ? str.substr(positions[bracketPos] + 1) : ""));
 	}
 	/*
 	 * Now there's just a simple expression with numbers
@@ -850,6 +829,9 @@ CVariant CProgram::evaluate(const std::string str)
 			}
 			const std::string tokenA = parser::trim(tokens[pos]);
 			const std::string tokenB = parser::trim(tokens[pos + opLen]);
+			if ( op == "==" ) {
+				int x = 0;
+			}
 			const CVariant right = constructVariant(parseArray(tokenB));
 			std::string strVal = "";
 			if ((op[opLen - 1] != '=') || (op == "=="))

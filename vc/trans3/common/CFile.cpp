@@ -57,8 +57,8 @@ CFile &CFile::operator<<(CONST double data)
 }
 CFile &CFile::operator<<(CONST std::string data)
 {
-	CONST INT len = data.length() + 1;
 	DWORD write = 0;
+	CONST INT len = data.length() + 1;
 	WriteFile(HANDLE(m_hFile), data.c_str(), len, &write, &m_ptr);
 	m_ptr.Offset += len;
 	return *this;

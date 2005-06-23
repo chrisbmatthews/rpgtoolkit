@@ -17,6 +17,7 @@
 #include "../common/board.h"
 #include "../common/paths.h"
 #include "../input/input.h"
+#include "../resource.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <vector>
@@ -41,6 +42,8 @@ int scTilesX = 0;							// Maximum scroll cache capacity, on width
 int scTilesY = 0;							// Maximum scroll cache capacity, on height
 std::vector<CTile *> g_tiles;				// Cache of tiles.
 CGDICanvas *g_cnvRpgCode;					// RPGCode canvas.
+CGDICanvas *g_cnvMessageWindow;				// RPGCode message window.
+bool g_bShowMessageWindow = false;			// Show the message window?
 double g_translucentOpacity = 0.50;			// Opacity to draw translucent sprites at.
 
 /*
@@ -49,7 +52,11 @@ double g_translucentOpacity = 0.50;			// Opacity to draw translucent sprites at.
 void renderRpgCodeScreen(void)
 {
 	g_pDirectDraw->DrawCanvas(g_cnvRpgCode, 0, 0);
-	/* ... draw message window ... */
+	if (g_bShowMessageWindow)
+	{
+		extern COLORREF g_color;
+		g_pDirectDraw->DrawCanvasTranslucent(g_cnvMessageWindow, (g_tilesX * 32.0 - 600.0) * 0.5, 0, 0.5, g_color, -1);
+	}
 	g_pDirectDraw->Refresh();
 }
 
@@ -452,6 +459,9 @@ void createCanvases(void)
 	g_cnvRpgCode->CreateBlank(NULL, g_resX, g_resY, TRUE);
 	g_cnvRpgCode->ClearScreen(0);
 
+	g_cnvMessageWindow = new CGDICanvas();
+	g_cnvMessageWindow->CreateBlank(NULL, 600, 100, TRUE);
+
 	// Create sprite cache.
 	extern std::vector<ANIMATION_FRAME> g_anmCache;
 	g_anmCache.clear();
@@ -464,6 +474,7 @@ void createCanvases(void)
 void destroyCanvases(void)
 {
 	delete g_cnvRpgCode;
+	delete g_cnvMessageWindow;
 }
 
 /*
@@ -588,11 +599,17 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 		g_pDirectDraw->DrawCanvas(cnv, 0, 0);
 
 		// Temporary: draw vectors for debugging.
-		/** for (std::vector<CVector *>::iterator j = g_activeBoard.vectors.begin(); j != g_activeBoard.vectors.end(); j++)
+		/**g_pDirectDraw->LockScreen();
+		for (std::vector<CVector *>::iterator j = g_activeBoard.vectors.begin(); j != g_activeBoard.vectors.end(); j++)
+		{
 			(*j)->draw(16777215, true);
+		}
 
 		for (i = g_players.begin(); i != g_players.end(); i++)
-			(*i)->drawVector(); **/
+		{
+			(*i)->drawVector();
+		}
+		g_pDirectDraw->UnlockScreen();**/
 
 		g_pDirectDraw->Refresh();
 		delete cnv;

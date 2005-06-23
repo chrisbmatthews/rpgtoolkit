@@ -14,37 +14,149 @@
 #include "CProgram/CProgram.h"
 #include "parser/parser.h"
 #include "../../tkCommon/tkDirectX/platform.h"
+#include "../../tkCommon/tkGfx/CTile.h"
 #include "../input/input.h"
 #include "../render/render.h"
 #include "../audio/CAudioSegment.h"
 #include "../common/board.h"
 #include "../common/paths.h"
 #include "../common/animation.h"
+#include "../common/CAllocationHeap.h"
 #include "../movement/CSprite/CSprite.h"
+#include "../movement/CPlayer/CPlayer.h"
+#include "../images/FreeImage.h"
+#include "../resource.h"
 #include <math.h>
-
-/*
- * Externals.
- */
-extern CGDICanvas *g_cnvRpgCode;
 
 /*
  * Globals.
  */
-std::string g_fontFace = "Arial";		// Font face.
-int g_fontSize = 20;					// Font size.
-COLORREF g_color = RGB(255, 255, 255);	// Current colour.
-BOOL g_bold = FALSE;					// Bold enabled?
-BOOL g_italic = FALSE;					// Italics enabled?
-BOOL g_underline = FALSE;				// Underline enabled?
+extern CGDICanvas *g_cnvRpgCode;
+std::string g_fontFace = "Arial";			// Font face.
+int g_fontSize = 20;						// Font size.
+COLORREF g_color = RGB(255, 255, 255);		// Current colour.
+BOOL g_bold = FALSE;						// Bold enabled?
+BOOL g_italic = FALSE;						// Italics enabled?
+BOOL g_underline = FALSE;					// Underline enabled?
+CAllocationHeap<CGDICanvas> g_canvases;		// Allocated canvases.
+unsigned long g_mwinY = 0;					// MWin() y position.
+std::string g_mwinBkg;						// MWin() background image.
+COLORREF g_mwinColor = 0;					// Mwin() background colour.
+
+// A cursor map.
+/////////////////////////////////////////
+class CCursorMap
+{
+public:
+	void add(const int x, const int y)
+	{
+		POINT pt = {x, y};
+		m_points.push_back(pt);
+	}
+	int run(void)
+	{
+		CGDICanvas cnv;
+		extern int g_resX, g_resY;
+		cnv.CreateBlank(NULL, g_resX, g_resY, TRUE);
+		extern CDirectDraw *g_pDirectDraw;
+		g_pDirectDraw->CopyScreenToCanvas(&cnv);
+		// Temp.
+		///////////////////////////////////////////////////
+		CGDICanvas cnvCursor;
+		cnvCursor.CreateBlank(NULL, 32, 32, TRUE);
+		const HDC hdc = cnvCursor.OpenDC();
+		const HDC compat = CreateCompatibleDC(hdc);
+		extern HINSTANCE g_hInstance;
+		HBITMAP bmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP1));
+		HGDIOBJ obj = SelectObject(compat, bmp);
+		BitBlt(hdc, 0, 0, 32, 32, compat, 0, 0, SRCCOPY);
+		cnvCursor.CloseDC(hdc);
+		SelectObject(compat, obj);
+		DeleteObject(bmp);
+		DeleteDC(compat);
+		//
+		int toRet = 0, pos = -1;
+		while (true)
+		{
+			BYTE keys[256];
+			extern IDirectInputDevice8A *g_lpdiKeyboard;
+			if (FAILED(g_lpdiKeyboard->GetDeviceState(256, keys)))
+			{
+				continue;
+			}
+			if (keys[DIK_UP] & 0x80)
+			{
+				if (toRet) toRet--;
+			}
+			else if (keys[DIK_LEFT] & 0x80)
+			{
+				if (toRet) toRet--;
+			}
+			else if (keys[DIK_DOWN] & 0x80)
+			{
+				if (toRet != (m_points.size() - 1)) toRet++;
+			}
+			else if (keys[DIK_RIGHT] & 0x80)
+			{
+				if (toRet != (m_points.size() - 1)) toRet++;
+			}
+			else if ((keys[DIK_RETURN] & 0x80) || (keys[DIK_SPACE] & 0x80))
+			{
+				break;
+			}
+			if (toRet != pos)
+			{
+				g_pDirectDraw->DrawCanvas(&cnv, 0, 0);
+				g_pDirectDraw->DrawCanvasTransparent(&cnvCursor, m_points[toRet].x - 12, m_points[toRet].y + 12, RGB(255, 0, 0));
+				g_pDirectDraw->Refresh();
+			}
+			pos = toRet;
+			Sleep(100);
+		}
+		return toRet;
+	}
+private:
+	std::vector<POINT> m_points;
+};
+
+CAllocationHeap<CCursorMap> g_cursorMaps;
 
 /*
- * mwin(...)
+ * mwin(str$)
  * 
- * Description.
+ * Show the message window.
  */
 CVariant mwin(CProgram::PARAMETERS params)
 {
+	if (params.size() != 1)
+	{
+		CProgram::debugger("MWin() requires one parameter.");
+		return CVariant();
+	}
+	extern CGDICanvas *g_cnvMessageWindow;
+	// If this is the first line, draw the background.
+	if (g_mwinY == 0)
+	{
+		if (!g_mwinBkg.empty())
+		{
+			FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(g_mwinBkg.c_str(), 16), g_mwinBkg.c_str());
+			const HDC hdc = g_cnvMessageWindow->OpenDC();
+			StretchDIBits(hdc, 0, 0, 600, 100, 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+			g_cnvMessageWindow->CloseDC(hdc);
+			FreeImage_Unload(bmp);
+		}
+		else
+		{
+			g_cnvMessageWindow->ClearScreen(g_mwinColor);
+		}
+		extern bool g_bShowMessageWindow;
+		g_bShowMessageWindow = true;
+	}
+	// Write the text.
+	g_cnvMessageWindow->DrawText(0, g_mwinY, params[0].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+	g_mwinY += g_fontSize;
+	// Draw the window.
+	renderRpgCodeScreen();
 	return CVariant();
 }
 
@@ -71,12 +183,16 @@ CVariant wait(CProgram::PARAMETERS params)
 }
 
 /*
- * mwincls(...)
+ * mwincls()
  * 
- * Description.
+ * Clear and hide the message window.
  */
 CVariant mwincls(CProgram::PARAMETERS params)
 {
+	extern bool g_bShowMessageWindow;
+	g_bShowMessageWindow = false;
+	g_mwinY = 0;
+	renderRpgCodeScreen();
 	return CVariant();
 }
 
@@ -111,7 +227,7 @@ CVariant send(CProgram::PARAMETERS params)
 	}
 	if (x < 1)
 	{
-		CProgram::debugger("Send() x location exceeds is less than one.");
+		CProgram::debugger("Send() x location is less than one.");
 		x = 1;
 	}
 	if (y > board.bSizeY)
@@ -121,7 +237,7 @@ CVariant send(CProgram::PARAMETERS params)
 	}
 	if (y < 1)
 	{
-		CProgram::debugger("Send() y location exceeds is less than one.");
+		CProgram::debugger("Send() y location is less than one.");
 		y = 1;
 	}
 	extern BOARD g_activeBoard;
@@ -138,7 +254,7 @@ CVariant send(CProgram::PARAMETERS params)
 
 	extern CAudioSegment *g_bkgMusic;
 	// Open file regardless of existence.
-	g_bkgMusic->open(g_projectPath + MEDIA_PATH + g_activeBoard.boardMusic);
+	g_bkgMusic->open(g_activeBoard.boardMusic);
 	g_bkgMusic->play(true);
 
 	if (!g_activeBoard.enterPrg.empty())
@@ -152,22 +268,20 @@ CVariant send(CProgram::PARAMETERS params)
  * text(x, y, str[, cnv])
  *
  * Displays text on the screen.
- *
- * x (in) - x position for text
- * y (in) - y position for text
- * str (in) - string to display
- * cnv (in) - canvas to draw to
  */
 CVariant text(CProgram::PARAMETERS params)
 {
 	const int count = params.size();
 	if (count != 3 && count != 4)
 	{
-		CProgram::debugger("text() requires 3 or 4 parameters!");
+		CProgram::debugger("Text() requires 3 or 4 parameters!");
 		return CVariant();
 	}
-	CGDICanvas *cnv = (count == 3) ? g_cnvRpgCode : reinterpret_cast<CGDICanvas *>(int(params[3].getNum()));
-	cnv->DrawText(params[0].getNum() * g_fontSize - g_fontSize, params[1].getNum() * g_fontSize - g_fontSize, params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+	CGDICanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
+	if (cnv)
+	{
+		cnv->DrawText(params[0].getNum() * g_fontSize - g_fontSize, params[1].getNum() * g_fontSize - g_fontSize, params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+	}
 	if (count == 3)
 	{
 		renderRpgCodeScreen();
@@ -179,22 +293,20 @@ CVariant text(CProgram::PARAMETERS params)
  * pixelText(x, y, str[, cnv])
  *
  * Displays text on the screen using pixel coordinates.
- *
- * x (in) - x position for text
- * y (in) - y position for text
- * str (in) - string to display
- * cnv (in) - canvas to draw to
  */
 CVariant pixeltext(CProgram::PARAMETERS params)
 {
 	const int count = params.size();
 	if (count != 3 && count != 4)
 	{
-		CProgram::debugger("pixelText() requires 3 or 4 parameters!");
+		CProgram::debugger("PixelText() requires 3 or 4 parameters!");
 		return CVariant();
 	}
-	CGDICanvas *cnv = (count == 3) ? g_cnvRpgCode : reinterpret_cast<CGDICanvas *>(int(params[3].getNum()));
-	cnv->DrawText(params[0].getNum(), params[1].getNum(), params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+	CGDICanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
+	if (cnv)
+	{
+		cnv->DrawText(params[0].getNum(), params[1].getNum(), params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+	}
 	if (count == 3)
 	{
 		renderRpgCodeScreen();
@@ -208,16 +320,6 @@ CVariant pixeltext(CProgram::PARAMETERS params)
  * Description.
  */
 CVariant label(CProgram::PARAMETERS params)
-{
-	return CVariant();
-}
-
-/*
- * mbox(...)
- * 
- * Description.
- */
-CVariant mbox(CProgram::PARAMETERS params)
 {
 	return CVariant();
 }
@@ -251,8 +353,11 @@ CVariant clear(CProgram::PARAMETERS params)
 {
 	if (params.size() != 0)
 	{
-		CGDICanvas *cnv = (CGDICanvas *)(int)params[0].getNum();
-		cnv->ClearScreen(0);
+		CGDICanvas *cnv = g_canvases.cast((int)params[0].getNum());
+		if (cnv)
+		{
+			cnv->ClearScreen(0);
+		}
 	}
 	else
 	{
@@ -270,17 +375,6 @@ CVariant clear(CProgram::PARAMETERS params)
 CVariant done(CProgram::PARAMETERS params)
 {
 	CProgram::getCurrentProgram()->end();
-	return CVariant();
-}
-
-/*
- * dos()
- * 
- * Exit to windows.
- */
-CVariant dos(CProgram::PARAMETERS params)
-{
-	PostQuitMessage(0);
 	return CVariant();
 }
 
@@ -426,7 +520,14 @@ CVariant viewbrd(CProgram::PARAMETERS params)
  */
 CVariant bold(CProgram::PARAMETERS params)
 {
-	g_bold = (parser::uppercase(params[0].getLit()) == "ON");
+	if (params.size() == 1)
+	{
+		g_bold = (parser::uppercase(params[0].getLit()) == "ON");
+	}
+	else
+	{
+		CProgram::debugger("Bold() requires one parameter.");
+	}
 	return CVariant();
 }
 
@@ -437,7 +538,14 @@ CVariant bold(CProgram::PARAMETERS params)
  */
 CVariant italics(CProgram::PARAMETERS params)
 {
-	g_italic = (parser::uppercase(params[0].getLit()) == "ON");
+	if (params.size() == 1)
+	{
+		g_italic = (parser::uppercase(params[0].getLit()) == "ON");
+	}
+	else
+	{
+		CProgram::debugger("Italics() requires one parameter.");
+	}
 	return CVariant();
 }
 
@@ -448,54 +556,103 @@ CVariant italics(CProgram::PARAMETERS params)
  */
 CVariant underline(CProgram::PARAMETERS params)
 {
-	g_underline = (parser::uppercase(params[0].getLit()) == "ON");
+	if (params.size() == 1)
+	{
+		g_underline = (parser::uppercase(params[0].getLit()) == "ON");
+	}
+	else
+	{
+		CProgram::debugger("Underline() requires one parameter.");
+	}
 	return CVariant();
 }
 
 /*
- * wingraphic(...)
+ * wingraphic(file$)
  * 
- * Description.
+ * Set the message window background image.
  */
 CVariant wingraphic(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		extern std::string g_projectPath;
+		g_mwinBkg = g_projectPath + BMP_PATH + params[0].getLit();
+		g_mwinColor = 0;
+	}
+	else
+	{
+		CProgram::debugger("WinGraphic() requires one parameter.");
+	}
 	return CVariant();
 }
 
 /*
- * wincolor(...)
+ * wincolor(dos!)
  * 
- * Description.
+ * Set the message window's colour using a DOS code.
  */
 CVariant wincolor(CProgram::PARAMETERS params)
 {
+	if (params.size() != 1)
+	{
+		CProgram::debugger("WinColor() requires one parameter.");
+	}
+	else
+	{
+		g_mwinBkg = "";
+		int color = params[0].getNum();
+		if (color < 0) color = 0;
+		else if (color > 255) color = 255;
+		g_mwinColor = CTile::getDOSColor(color);
+	}
 	return CVariant();
 }
 
 /*
- * wincolorrgb(...)
+ * wincolorrgb(r!, g!, b!)
  * 
- * Description.
+ * Set the message window's colour.
  */
 CVariant wincolorrgb(CProgram::PARAMETERS params)
 {
+	if (params.size() != 3)
+	{
+		CProgram::debugger("WinColorRGB() requires three parameters.");
+	}
+	else
+	{
+		g_mwinBkg = "";
+		g_mwinColor = RGB(params[0].getNum(), params[1].getNum(), params[2].getNum());
+	}
 	return CVariant();
 }
 
 /*
- * color(...)
+ * color(dos!)
  * 
- * Description.
+ * Change to a DOS colour.
  */
 CVariant color(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		int color = params[0].getNum();
+		if (color < 0) color = 0;
+		else if (color > 255) color = 255;
+		g_color = CTile::getDOSColor(color);
+	}
+	else
+	{
+		CProgram::debugger("Color() requires one parameter.");
+	}
 	return CVariant();
 }
 
 /*
  * colorrgb(r!, g!, b!)
  * 
- * Change the active colour to a RGB value.
+ * Change the active colour to an RGB value.
  */
 CVariant colorrgb(CProgram::PARAMETERS params)
 {
@@ -597,16 +754,6 @@ CVariant reset(CProgram::PARAMETERS params)
 CVariant run(CProgram::PARAMETERS params)
 {
 	return CVariant();
-}
-
-/*
- * show(x)
- * 
- * Alias of mwin().
- */
-CVariant show(CProgram::PARAMETERS params)
-{
-	return mwin(params);
 }
 
 /*
@@ -845,26 +992,6 @@ CVariant mediaplay(CProgram::PARAMETERS params)
 }
 
 /*
- * midiplay(file$)
- * 
- * Alias of MediaPlay().
- */
-CVariant midiplay(CProgram::PARAMETERS params)
-{
-	return mediaplay(params);
-}
-
-/*
- * playmidi(file$)
- * 
- * Alias of MediaPlay().
- */
-CVariant playmidi(CProgram::PARAMETERS params)
-{
-	return mediaplay(params);
-}
-
-/*
  * mediastop()
  * 
  * Stop the background music.
@@ -874,26 +1001,6 @@ CVariant mediastop(CProgram::PARAMETERS params)
 	extern CAudioSegment *g_bkgMusic;
 	g_bkgMusic->stop();
 	return CVariant();
-}
-
-/*
- * mediarest()
- * 
- * Alias of MediaStop().
- */
-CVariant mediarest(CProgram::PARAMETERS params)
-{
-	return mediastop(params);
-}
-
-/*
- * midirest()
- * 
- * Alias of MediaStop().
- */
-CVariant midirest(CProgram::PARAMETERS params)
-{
-	return mediastop(params);
 }
 
 /*
@@ -908,12 +1015,22 @@ CVariant godos(CProgram::PARAMETERS params)
 }
 
 /*
- * addplayer(...)
+ * addplayer(file$)
  * 
- * Description.
+ * Add a player to the party.
  */
 CVariant addplayer(CProgram::PARAMETERS params)
 {
+	if (params.size() != 1)
+	{
+		CProgram::debugger("AddPlayer() requires one parameter.");
+	}
+	else
+	{
+		extern std::vector<CPlayer *> g_players;
+		extern std::string g_projectPath;
+		g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + params[0].getLit(), false));
+	}
 	return CVariant();
 }
 
@@ -941,7 +1058,11 @@ CVariant setpixel(CProgram::PARAMETERS params)
 	}
 	else if (params.size() == 3)
 	{
-		((CGDICanvas *)(int)params[2].getNum())->SetPixel(params[0].getNum(), params[1].getNum(), g_color);
+		CGDICanvas *cnv = g_canvases.cast((int)params[2].getNum());
+		if (cnv)
+		{
+			cnv->SetPixel(params[0].getNum(), params[1].getNum(), g_color);
+		}
 	}
 	else
 	{
@@ -1056,12 +1177,40 @@ CVariant wander(CProgram::PARAMETERS params)
 }
 
 /*
- * bitmap(...)
+ * bitmap(file$[, cnv!])
  * 
- * Description.
+ * Fill a surface with an image.
  */
 CVariant bitmap(CProgram::PARAMETERS params)
 {
+	CGDICanvas *cnv = NULL;
+	if (params.size() == 1)
+	{
+		cnv = g_cnvRpgCode;
+	}
+	else if (params.size() == 2)
+	{
+		cnv = g_canvases.cast(int(params[1].getNum()));
+	}
+	else
+	{
+		CProgram::debugger("Bitmap() requires one or two parameters.");
+	}
+	if (cnv)
+	{
+		extern std::string g_projectPath;
+		const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
+		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
+		const HDC hdc = cnv->OpenDC();
+		extern int g_resX, g_resY;
+		StretchDIBits(hdc, 0, 0, g_resX, g_resY, 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+		cnv->CloseDC(hdc);
+		FreeImage_Unload(bmp);
+		if (cnv == g_cnvRpgCode)
+		{
+			renderRpgCodeScreen();
+		}
+	}
 	return CVariant();
 }
 
@@ -1710,12 +1859,39 @@ CVariant removestatus(CProgram::PARAMETERS params)
 }
 
 /*
- * setimage(...)
+ * SetImage(str$, x!, y!, width!, height![, cnv!])
  * 
- * Description.
+ * Sets an image.
  */
 CVariant setimage(CProgram::PARAMETERS params)
 {
+	CGDICanvas *cnv = NULL;
+	if (params.size() == 5)
+	{
+		cnv = g_cnvRpgCode;
+	}
+	else if (params.size() == 6)
+	{
+		cnv = g_canvases.cast(int(params[5].getNum()));
+	}
+	else
+	{
+		CProgram::debugger("SetImage() requires five or six parameters.");
+	}
+	if (cnv)
+	{
+		extern std::string g_projectPath;
+		const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
+		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
+		const HDC hdc = cnv->OpenDC();
+		StretchDIBits(hdc, params[1].getNum(), params[2].getNum(), params[3].getNum(), params[4].getNum(), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+		cnv->CloseDC(hdc);
+		FreeImage_Unload(bmp);
+		if (cnv == g_cnvRpgCode)
+		{
+			renderRpgCodeScreen();
+		}
+	}
 	return CVariant();
 }
 
@@ -1760,32 +1936,56 @@ CVariant restorescreen(CProgram::PARAMETERS params)
 }
 
 /*
- * sin(...)
+ * sin(x![, ret!])
  * 
- * Description.
+ * Calculate sine x.
  */
 CVariant sin(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		return sin(params[0].getNum() / 180 * PI);
+	}
+	else if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), sin(params[0].getNum() / 180 * PI));
+	}
 	return CVariant();
 }
 
 /*
- * cos(...)
+ * cos(x![, ret!])
  * 
- * Description.
+ * Calculate cosine x.
  */
 CVariant cos(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		return cos(params[0].getNum() / 180 * PI);
+	}
+	else if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), cos(params[0].getNum() / 180 * PI));
+	}
 	return CVariant();
 }
 
 /*
- * tan(...)
+ * tan(x![, ret!])
  * 
- * Description.
+ * Calculate tangent x.
  */
 CVariant tan(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		return tan(params[0].getNum() / 180 * PI);
+	}
+	else if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), tan(params[0].getNum() / 180 * PI));
+	}
 	return CVariant();
 }
 
@@ -1796,22 +1996,27 @@ CVariant tan(CProgram::PARAMETERS params)
  */
 CVariant getpixel(CProgram::PARAMETERS params)
 {
-	if (params.size() == 6)
+	COLORREF color = 0;
+	if (params.size() == 5)
 	{
-		extern CDirectDraw *g_pDirectDraw;
-		const COLORREF color = g_pDirectDraw->GetPixelColor(params[0].getNum(), params[1].getNum());
-		CProgram *const prg = CProgram::getCurrentProgram();
-		prg->setVariable(params[2].getLit(), GetRValue(color));
-		prg->setVariable(params[3].getLit(), GetGValue(color));
-		prg->setVariable(params[4].getLit(), GetBValue(color));
+		color = g_cnvRpgCode->GetPixel(params[0].getNum(), params[1].getNum());
 	}
-	else if (params.size() == 7)
+	else if (params.size() == 6)
 	{
+		CGDICanvas *cnv = g_canvases.cast(int(params[5].getNum()));
+		if (cnv)
+		{
+			color = cnv->GetPixel(params[0].getNum(), params[1].getNum());
+		}
 	}
 	else
 	{
-		CProgram::debugger("GetPixel() requires six or seven parameters.");
+		CProgram::debugger("GetPixel() requires five or six parameters.");
 	}
+	CProgram *const prg = CProgram::getCurrentProgram();
+	prg->setVariable(params[2].getLit(), GetRValue(color));
+	prg->setVariable(params[3].getLit(), GetGValue(color));
+	prg->setVariable(params[4].getLit(), GetBValue(color));
 	return CVariant();
 }
 
@@ -1868,16 +2073,6 @@ CVariant setimagetransparent(CProgram::PARAMETERS params)
 CVariant setimagetranslucent(CProgram::PARAMETERS params)
 {
 	return CVariant();
-}
-
-/*
- * mp3(file$)
- * 
- * Alias of Wav().
- */
-CVariant mp3(CProgram::PARAMETERS params)
-{
-	return wav(params);
 }
 
 /*
@@ -1961,12 +2156,20 @@ CVariant boardgettile(CProgram::PARAMETERS params)
 }
 
 /*
- * sqrt(...)
+ * sqrt(x![, ret!])
  * 
- * Description.
+ * Calculate the square root of x.
  */
 CVariant sqrt(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		return sqrt(params[0].getNum());
+	}
+	else if (params.size() == 2)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), sqrt(params[0].getNum()));
+	}
 	return CVariant();
 }
 
@@ -2041,12 +2244,23 @@ CVariant wipe(CProgram::PARAMETERS params)
 }
 
 /*
- * getres(...)
+ * getres(x!, y!)
  * 
- * Description.
+ * Get the screen's resolution.
  */
 CVariant getres(CProgram::PARAMETERS params)
 {
+	if (params.size() != 2)
+	{
+		CProgram::debugger("GetRes() requires two parameters.");
+	}
+	else
+	{
+		CProgram *const prg = CProgram::getCurrentProgram();
+		extern int g_resX, g_resY;
+		prg->setVariable(params[0].getLit(), g_resX);
+		prg->setVariable(params[1].getLit(), g_resY);
+	}
 	return CVariant();
 }
 
@@ -2297,72 +2511,182 @@ CVariant autocommand(CProgram::PARAMETERS params)
 }
 
 /*
- * createcursormap(...)
+ * createcursormap([map!])
  * 
- * Description.
+ * Create a cursor map.
  */
 CVariant createcursormap(CProgram::PARAMETERS params)
 {
+	if (params.size() == 0)
+	{
+		return int(g_cursorMaps.allocate());
+	}
+	else if (params.size() == 1)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[0].getLit(), int(g_cursorMaps.allocate()));
+	}
+	else
+	{
+		CProgram::debugger("CreateCursorMap() requires zero or one parameters.");
+	}
 	return CVariant();
 }
 
 /*
- * killcursormap(...)
+ * killcursormap(map!)
  * 
- * Description.
+ * Kill a cursor map.
  */
 CVariant killcursormap(CProgram::PARAMETERS params)
 {
+	if (params.size() != 1)
+	{
+		CProgram::debugger("KillCursorMap() requires one parameter.");
+	}
+	else
+	{
+		g_cursorMaps.free((CCursorMap *)(int)params[0].getNum());
+	}
 	return CVariant();
 }
 
 /*
- * cursormapadd(...)
+ * cursormapadd(x!, y!, map!)
  * 
- * Description.
+ * Add a point to a cursor map.
  */
 CVariant cursormapadd(CProgram::PARAMETERS params)
 {
+	if (params.size() != 3)
+	{
+		CProgram::debugger("CursorMapAdd() requires three parameters.");
+	}
+	else
+	{
+		CCursorMap *p = g_cursorMaps.cast((int)params[2].getNum());
+		if (p)
+		{
+			p->add(params[0].getNum(), params[1].getNum());
+		}
+	}
 	return CVariant();
 }
 
 /*
- * cursormaprun(...)
+ * cursormaprun(map![, ret!])
  * 
- * Description.
+ * Run a cursor map.
  */
 CVariant cursormaprun(CProgram::PARAMETERS params)
 {
+	if (params.size() == 1)
+	{
+		CCursorMap *p = g_cursorMaps.cast((int)params[0].getNum());
+		if (p)
+		{
+			const int toRet = p->run();
+			renderRpgCodeScreen();
+			return toRet;
+		}
+	}
+	else if (params.size() == 2)
+	{
+		CCursorMap *p = g_cursorMaps.cast((int)params[0].getNum());
+		if (p)
+		{
+			CProgram::getCurrentProgram()->setVariable(params[1].getLit(), p->run());
+			renderRpgCodeScreen();
+		}
+	}
+	else
+	{
+		CProgram::debugger("CursorMapRun() requires one or two parameters.");
+	}
 	return CVariant();
 }
 
 /*
- * createcanvas(...)
+ * createcanvas(width!, height![, cnv!])
  * 
- * Description.
+ * Create a canvas.
  */
 CVariant createcanvas(CProgram::PARAMETERS params)
 {
-	return CVariant();
+	if (params.size() != 2 && params.size() != 3)
+	{
+		CProgram::debugger("CreateCanvas() requires two or three parameters.");
+		return CVariant();
+	}
+	CGDICanvas *p = g_canvases.allocate();
+	p->CreateBlank(NULL, params[0].getNum(), params[1].getNum(), TRUE);
+	p->ClearScreen(0);
+	if (params.size() == 3)
+	{
+		CProgram::getCurrentProgram()->setVariable(params[2].getLit(), int(p));
+	}
+	return int(p);
 }
 
 /*
- * killcanvas(...)
+ * killcanvas(cnv!)
  * 
- * Description.
+ * Kill a canvas.
  */
 CVariant killcanvas(CProgram::PARAMETERS params)
 {
+	if (params.size() != 1)
+	{
+		CProgram::debugger("KillCanvas() requires one parameter.");
+	}
+	else
+	{
+		CGDICanvas *p = (CGDICanvas *)(int)params[0].getNum();
+		g_canvases.free(p);
+	}
 	return CVariant();
 }
 
 /*
- * drawcanvas(...)
+ * drawcanvas(cnv!, x!, y![, width!, height![, dest!]])
  * 
- * Description.
+ * Blit a canvas forward.
  */
 CVariant drawcanvas(CProgram::PARAMETERS params)
 {
+	if (params.size() == 3)
+	{
+		CGDICanvas *p = g_canvases.cast((int)params[0].getNum());
+		if (p)
+		{
+			p->Blt(g_cnvRpgCode, params[1].getNum(), params[2].getNum());
+			renderRpgCodeScreen();
+		}
+	}
+	else if (params.size() == 5)
+	{
+		CGDICanvas *p = g_canvases.cast((int)params[0].getNum());
+		if (p)
+		{
+			p->BltStretch(g_cnvRpgCode, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
+			renderRpgCodeScreen();
+		}
+	}
+	else if (params.size() == 6)
+	{
+		CGDICanvas *p = g_canvases.cast((int)params[0].getNum());
+		if (p)
+		{
+			CGDICanvas *pDest = g_canvases.cast((int)params[5].getNum());
+			if (pDest)
+			{
+				p->BltStretch(pDest, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
+			}
+		}
+	}
+	else
+	{
+		CProgram::debugger("DrawCanvas() requires three, five, or six parameters.");
+	}
 	return CVariant();
 }
 
@@ -2489,16 +2813,6 @@ CVariant len(CProgram::PARAMETERS params)
 }
 
 /*
- * length! = length(str$[, length!)
- * 
- * Alias of len().
- */
-CVariant length(CProgram::PARAMETERS params)
-{
-	return len(params);
-}
-
-/*
  * instr(...)
  * 
  * Description.
@@ -2555,17 +2869,6 @@ CVariant getitemsellprice(CProgram::PARAMETERS params)
  */
 CVariant with(CProgram::PARAMETERS params)
 {
-	return CVariant();
-}
-
-/*
- * stop()
- * 
- * End the program.
- */
-CVariant stop(CProgram::PARAMETERS params)
-{
-	CProgram::getCurrentProgram()->end();
 	return CVariant();
 }
 
@@ -3059,12 +3362,12 @@ void initRpgCode(void)
 	CProgram::addFunction("text", text);
 	CProgram::addFunction("pixeltext", pixeltext);
 	CProgram::addFunction("label", label);
-	CProgram::addFunction("mbox", mbox);
+	CProgram::addFunction("mbox", mwin);
 	CProgram::addFunction("branch", branch);
 	CProgram::addFunction("change", change);
 	CProgram::addFunction("clear", clear);
 	CProgram::addFunction("done", done);
-	CProgram::addFunction("dos", dos);
+	CProgram::addFunction("dos", windows);
 	CProgram::addFunction("windows", windows);
 	CProgram::addFunction("empty", empty);
 	CProgram::addFunction("end", end);
@@ -3092,7 +3395,7 @@ void initRpgCode(void)
 	CProgram::addFunction("put", put);
 	CProgram::addFunction("reset", reset);
 	CProgram::addFunction("run", run);
-	CProgram::addFunction("show", show);
+	CProgram::addFunction("show", mwin);
 	CProgram::addFunction("sound", sound);
 	CProgram::addFunction("win", win);
 	CProgram::addFunction("hp", hp);
@@ -3113,12 +3416,12 @@ void initRpgCode(void)
 	CProgram::addFunction("random", random);
 	CProgram::addFunction("push", push);
 	CProgram::addFunction("tiletype", tiletype);
-	CProgram::addFunction("midiplay", midiplay);
-	CProgram::addFunction("playmidi", playmidi);
+	CProgram::addFunction("midiplay", mediaplay);
+	CProgram::addFunction("playmidi", mediaplay);
 	CProgram::addFunction("mediaplay", mediaplay);
 	CProgram::addFunction("mediastop", mediastop);
-	CProgram::addFunction("mediarest", mediarest);
-	CProgram::addFunction("midirest", midirest);
+	CProgram::addFunction("mediarest", mediastop);
+	CProgram::addFunction("midirest", mediastop);
 	CProgram::addFunction("godos", godos);
 	CProgram::addFunction("addplayer", addplayer);
 	CProgram::addFunction("removeplayer", removeplayer);
@@ -3210,7 +3513,7 @@ void initRpgCode(void)
 	CProgram::addFunction("getfontsize", getfontsize);
 	CProgram::addFunction("setimagetransparent", setimagetransparent);
 	CProgram::addFunction("setimagetranslucent", setimagetranslucent);
-	CProgram::addFunction("mp3", mp3);
+	CProgram::addFunction("mp3", wav);
 	CProgram::addFunction("sourcelocation", sourcelocation);
 	CProgram::addFunction("targethandle", targethandle);
 	CProgram::addFunction("sourcehandle", sourcehandle);
@@ -3268,7 +3571,7 @@ void initRpgCode(void)
 	CProgram::addFunction("fileget", fileget);
 	CProgram::addFunction("fileput", fileput);
 	CProgram::addFunction("fileeof", fileeof);
-	CProgram::addFunction("length", length);
+	CProgram::addFunction("length", len);
 	CProgram::addFunction("len", len);
 	CProgram::addFunction("instr", instr);
 	CProgram::addFunction("getitemname", getitemname);
@@ -3276,7 +3579,7 @@ void initRpgCode(void)
 	CProgram::addFunction("getitemcost", getitemcost);
 	CProgram::addFunction("getitemsellprice", getitemsellprice);
 	CProgram::addFunction("with", with);
-	CProgram::addFunction("stop", stop);
+	CProgram::addFunction("stop", end);
 	CProgram::addFunction("restorescreenarray", restorescreenarray);
 	CProgram::addFunction("restorearrayscreen", restorearrayscreen);
 	CProgram::addFunction("splicevariables", splicevariables);

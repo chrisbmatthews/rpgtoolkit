@@ -8,8 +8,6 @@
  * Inclusions.
  */
 #include <vector>
-#define DIRECTINPUT_VERSION DIRECTINPUT_HEADER_VERSION
-#include <dinput.h>
 #include "input.h"
 #include "../common/sprite.h"
 #include "../movement/CPlayer/CPlayer.h"
@@ -18,8 +16,8 @@
  * Globals.
  */
 std::vector<char> g_keys;
-static IDirectInput8A *g_lpdi = NULL;
-static IDirectInputDevice8A *g_lpdiKeyboard = NULL;
+IDirectInput8A *g_lpdi = NULL;
+IDirectInputDevice8A *g_lpdiKeyboard = NULL;
 
 /*
  * Process an event from the message queue.
