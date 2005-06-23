@@ -351,6 +351,27 @@ SOURCE=.\trans3.rgs
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\rpgcode\CCursorMap.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\rpgcode\CProgram\CProgram.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -416,6 +437,10 @@ SOURCE=.\rpgcode\parser\parser.cpp
 # Begin Group "rpgcode - headers"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\rpgcode\CCursorMap.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\rpgcode\CProgram\CProgram.h
