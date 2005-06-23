@@ -475,7 +475,7 @@ CVariant CProgram::callFunction(const METHOD &method, PARAMETERS params)
 		/*
 		 * Call this internal function.
 		 */
-		return method.func(params);
+		return method.func(params, this);
 	}
 	/*
 	 * Push the parameters onto the stack.
@@ -605,7 +605,7 @@ CVariant CProgram::callFunction(const std::string funcName, PARAMETERS params)
 		 * Call this function.
 		 */
 		m_currentProgram = this;
-		return m_functions[ucase](params);
+		return m_functions[ucase](params, this);
 	}
 	/*
 	 * Check for a class.

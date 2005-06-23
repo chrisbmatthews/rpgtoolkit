@@ -41,7 +41,7 @@ public:
 	 * An internal function.
 	 */
 	typedef const std::vector<CVariant> &PARAMETERS;
-	typedef CVariant(*INTERNAL_FUNCTION)(PARAMETERS);
+	typedef CVariant(*INTERNAL_FUNCTION)(PARAMETERS, CProgram *const);
 
 	/*
 	 * A method.

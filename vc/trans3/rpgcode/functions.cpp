@@ -144,7 +144,7 @@ CAllocationHeap<CCursorMap> g_cursorMaps;
  * 
  * Show the message window.
  */
-CVariant mwin(CProgram::PARAMETERS params)
+CVariant mwin(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 1)
 	{
@@ -183,7 +183,7 @@ CVariant mwin(CProgram::PARAMETERS params)
  * 
  * Waits for a key to be pressed, and returns the key that was.
  */
-CVariant wait(CProgram::PARAMETERS params)
+CVariant wait(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 0)
 	{
@@ -191,7 +191,7 @@ CVariant wait(CProgram::PARAMETERS params)
 	}
 	else if (params.size() == 1)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[0].getLit(), waitForKey());
+		prg->setVariable(params[0].getLit(), waitForKey());
 	}
 	else
 	{
@@ -205,7 +205,7 @@ CVariant wait(CProgram::PARAMETERS params)
  * 
  * Clear and hide the message window.
  */
-CVariant mwincls(CProgram::PARAMETERS params)
+CVariant mwincls(CProgram::PARAMETERS params, CProgram *const)
 {
 	extern bool g_bShowMessageWindow;
 	g_bShowMessageWindow = false;
@@ -219,7 +219,7 @@ CVariant mwincls(CProgram::PARAMETERS params)
  * 
  * Send the player to a new board.
  */
-CVariant send(CProgram::PARAMETERS params)
+CVariant send(CProgram::PARAMETERS params, CProgram *const)
 {
 	unsigned int layer = 1;
 	if (params.size() != 3)
@@ -287,7 +287,7 @@ CVariant send(CProgram::PARAMETERS params)
  *
  * Displays text on the screen.
  */
-CVariant text(CProgram::PARAMETERS params)
+CVariant text(CProgram::PARAMETERS params, CProgram *const)
 {
 	const int count = params.size();
 	if (count != 3 && count != 4)
@@ -312,7 +312,7 @@ CVariant text(CProgram::PARAMETERS params)
  *
  * Displays text on the screen using pixel coordinates.
  */
-CVariant pixeltext(CProgram::PARAMETERS params)
+CVariant pixeltext(CProgram::PARAMETERS params, CProgram *const)
 {
 	const int count = params.size();
 	if (count != 3 && count != 4)
@@ -337,7 +337,7 @@ CVariant pixeltext(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant label(CProgram::PARAMETERS params)
+CVariant label(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -347,7 +347,7 @@ CVariant label(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant branch(CProgram::PARAMETERS params)
+CVariant branch(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -357,7 +357,7 @@ CVariant branch(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant change(CProgram::PARAMETERS params)
+CVariant change(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -367,7 +367,7 @@ CVariant change(CProgram::PARAMETERS params)
  * 
  * Clears a surface.
  */
-CVariant clear(CProgram::PARAMETERS params)
+CVariant clear(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 0)
 	{
@@ -390,9 +390,9 @@ CVariant clear(CProgram::PARAMETERS params)
  * 
  * End the program.
  */
-CVariant done(CProgram::PARAMETERS params)
+CVariant done(CProgram::PARAMETERS params, CProgram *const prg)
 {
-	CProgram::getCurrentProgram()->end();
+	prg->end();
 	return CVariant();
 }
 
@@ -401,7 +401,7 @@ CVariant done(CProgram::PARAMETERS params)
  * 
  * Exit to windows.
  */
-CVariant windows(CProgram::PARAMETERS params)
+CVariant windows(CProgram::PARAMETERS params, CProgram *const)
 {
 	PostQuitMessage(0);
 	return CVariant();
@@ -412,7 +412,7 @@ CVariant windows(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant empty(CProgram::PARAMETERS params)
+CVariant empty(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -422,9 +422,9 @@ CVariant empty(CProgram::PARAMETERS params)
  * 
  * End the program.
  */
-CVariant end(CProgram::PARAMETERS params)
+CVariant end(CProgram::PARAMETERS params, CProgram *const prg)
 {
-	CProgram::getCurrentProgram()->end();
+	prg->end();
 	return CVariant();
 }
 
@@ -433,7 +433,7 @@ CVariant end(CProgram::PARAMETERS params)
  * 
  * Load a font, either true type or TK2.
  */
-CVariant font(CProgram::PARAMETERS params)
+CVariant font(CProgram::PARAMETERS params, CProgram *const)
 {
 	g_fontFace = params[0].getLit();
 	return CVariant();
@@ -444,7 +444,7 @@ CVariant font(CProgram::PARAMETERS params)
  * 
  * Set the font size.
  */
-CVariant fontsize(CProgram::PARAMETERS params)
+CVariant fontsize(CProgram::PARAMETERS params, CProgram *const)
 {
 	g_fontSize = params[0].getNum();
 	return CVariant();
@@ -455,7 +455,7 @@ CVariant fontsize(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fade(CProgram::PARAMETERS params)
+CVariant fade(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -465,7 +465,7 @@ CVariant fade(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fbranch(CProgram::PARAMETERS params)
+CVariant fbranch(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -475,7 +475,7 @@ CVariant fbranch(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fight(CProgram::PARAMETERS params)
+CVariant fight(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -485,7 +485,7 @@ CVariant fight(CProgram::PARAMETERS params)
  * 
  * Get a key from the queue.
  */
-CVariant get(CProgram::PARAMETERS params)
+CVariant get(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	extern std::vector<char> g_keys;
 	if (g_keys.size() == 0)
@@ -506,7 +506,7 @@ CVariant get(CProgram::PARAMETERS params)
 	const std::string toRet = str;
 	if (params.size() == 1)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[0].getLit(), toRet);
+		prg->setVariable(params[0].getLit(), toRet);
 	}
 	return toRet;
 }
@@ -516,7 +516,7 @@ CVariant get(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant gone(CProgram::PARAMETERS params)
+CVariant gone(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -526,7 +526,7 @@ CVariant gone(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant viewbrd(CProgram::PARAMETERS params)
+CVariant viewbrd(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -536,7 +536,7 @@ CVariant viewbrd(CProgram::PARAMETERS params)
  * 
  * Toggle emboldening of text.
  */
-CVariant bold(CProgram::PARAMETERS params)
+CVariant bold(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -554,7 +554,7 @@ CVariant bold(CProgram::PARAMETERS params)
  * 
  * Toggle italicizing of text.
  */
-CVariant italics(CProgram::PARAMETERS params)
+CVariant italics(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -572,7 +572,7 @@ CVariant italics(CProgram::PARAMETERS params)
  * 
  * Toggle underlining of text.
  */
-CVariant underline(CProgram::PARAMETERS params)
+CVariant underline(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -590,7 +590,7 @@ CVariant underline(CProgram::PARAMETERS params)
  * 
  * Set the message window background image.
  */
-CVariant wingraphic(CProgram::PARAMETERS params)
+CVariant wingraphic(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -610,7 +610,7 @@ CVariant wingraphic(CProgram::PARAMETERS params)
  * 
  * Set the message window's colour using a DOS code.
  */
-CVariant wincolor(CProgram::PARAMETERS params)
+CVariant wincolor(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 1)
 	{
@@ -632,7 +632,7 @@ CVariant wincolor(CProgram::PARAMETERS params)
  * 
  * Set the message window's colour.
  */
-CVariant wincolorrgb(CProgram::PARAMETERS params)
+CVariant wincolorrgb(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 3)
 	{
@@ -651,7 +651,7 @@ CVariant wincolorrgb(CProgram::PARAMETERS params)
  * 
  * Change to a DOS colour.
  */
-CVariant color(CProgram::PARAMETERS params)
+CVariant color(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -672,7 +672,7 @@ CVariant color(CProgram::PARAMETERS params)
  * 
  * Change the active colour to an RGB value.
  */
-CVariant colorrgb(CProgram::PARAMETERS params)
+CVariant colorrgb(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 3)
 	{
@@ -690,7 +690,7 @@ CVariant colorrgb(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant move(CProgram::PARAMETERS params)
+CVariant move(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -700,7 +700,7 @@ CVariant move(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant newplyr(CProgram::PARAMETERS params)
+CVariant newplyr(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -710,7 +710,7 @@ CVariant newplyr(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant over(CProgram::PARAMETERS params)
+CVariant over(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -720,7 +720,7 @@ CVariant over(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant prg(CProgram::PARAMETERS params)
+CVariant prg(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -730,7 +730,7 @@ CVariant prg(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant prompt(CProgram::PARAMETERS params)
+CVariant prompt(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -740,7 +740,7 @@ CVariant prompt(CProgram::PARAMETERS params)
  * 
  * Put tile$ at x!, y! on the board.
  */
-CVariant put(CProgram::PARAMETERS params)
+CVariant put(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 3)
 	{
@@ -750,6 +750,7 @@ CVariant put(CProgram::PARAMETERS params)
 	{
 		// getAmbientLevel();
 		drawTileCnv(g_cnvRpgCode, params[2].getLit(), params[0].getNum(), params[1].getNum(), 0, 0, 0, false, true, false, false);
+		renderRpgCodeScreen();
 	}
 	return CVariant();
 }
@@ -759,18 +760,28 @@ CVariant put(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant reset(CProgram::PARAMETERS params)
+CVariant reset(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
 
 /*
- * run(...)
+ * run(str$)
  * 
- * Description.
+ * Transfer control to a different program.
  */
-CVariant run(CProgram::PARAMETERS params)
+CVariant run(CProgram::PARAMETERS params, CProgram *const prg)
 {
+	if (params.size() == 1)
+	{
+		prg->end();
+		extern std::string g_projectPath;
+		CProgram(g_projectPath + PRG_PATH + params[0].getLit()).run();
+	}
+	else
+	{
+		CProgram::debugger("Run() requires one data element.");
+	}
 	return CVariant();
 }
 
@@ -779,7 +790,7 @@ CVariant run(CProgram::PARAMETERS params)
  * 
  * Depreciated TK1 function.
  */
-CVariant sound(CProgram::PARAMETERS params)
+CVariant sound(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("Please use TK3's media functions, rather than this TK1 function!");
 	return CVariant();
@@ -790,7 +801,7 @@ CVariant sound(CProgram::PARAMETERS params)
  * 
  * Wins the game.
  */
-CVariant win(CProgram::PARAMETERS params)
+CVariant win(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("Win() is obsolete.");
 	return CVariant();
@@ -801,7 +812,7 @@ CVariant win(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant hp(CProgram::PARAMETERS params)
+CVariant hp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -811,7 +822,7 @@ CVariant hp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant givehp(CProgram::PARAMETERS params)
+CVariant givehp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -821,7 +832,7 @@ CVariant givehp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant gethp(CProgram::PARAMETERS params)
+CVariant gethp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -831,7 +842,7 @@ CVariant gethp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant maxhp(CProgram::PARAMETERS params)
+CVariant maxhp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -841,7 +852,7 @@ CVariant maxhp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getmaxhp(CProgram::PARAMETERS params)
+CVariant getmaxhp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -851,7 +862,7 @@ CVariant getmaxhp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant smp(CProgram::PARAMETERS params)
+CVariant smp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -861,7 +872,7 @@ CVariant smp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant givesmp(CProgram::PARAMETERS params)
+CVariant givesmp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -871,7 +882,7 @@ CVariant givesmp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getsmp(CProgram::PARAMETERS params)
+CVariant getsmp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -881,7 +892,7 @@ CVariant getsmp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant maxsmp(CProgram::PARAMETERS params)
+CVariant maxsmp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -891,7 +902,7 @@ CVariant maxsmp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getmaxsmp(CProgram::PARAMETERS params)
+CVariant getmaxsmp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -901,7 +912,7 @@ CVariant getmaxsmp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant start(CProgram::PARAMETERS params)
+CVariant start(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -911,7 +922,7 @@ CVariant start(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant giveitem(CProgram::PARAMETERS params)
+CVariant giveitem(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -921,7 +932,7 @@ CVariant giveitem(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant takeitem(CProgram::PARAMETERS params)
+CVariant takeitem(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -931,7 +942,7 @@ CVariant takeitem(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant wav(CProgram::PARAMETERS params)
+CVariant wav(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -941,7 +952,7 @@ CVariant wav(CProgram::PARAMETERS params)
  * 
  * Delay for a certain number of seconds.
  */
-CVariant delay(CProgram::PARAMETERS params)
+CVariant delay(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 1)
 	{
@@ -959,12 +970,12 @@ CVariant delay(CProgram::PARAMETERS params)
  * 
  * Generate a random number.
  */
-CVariant random(CProgram::PARAMETERS params)
+CVariant random(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	const CVariant toRet = (1 + (rand() % int(params[0].getNum() + 1)));
 	if (params.size() == 2)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), toRet);
+		prg->setVariable(params[1].getLit(), toRet);
 	}
 	return toRet;
 }
@@ -974,7 +985,7 @@ CVariant random(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant push(CProgram::PARAMETERS params)
+CVariant push(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -984,7 +995,7 @@ CVariant push(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant tiletype(CProgram::PARAMETERS params)
+CVariant tiletype(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -994,7 +1005,7 @@ CVariant tiletype(CProgram::PARAMETERS params)
  * 
  * Set file$ as the background music.
  */
-CVariant mediaplay(CProgram::PARAMETERS params)
+CVariant mediaplay(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -1014,7 +1025,7 @@ CVariant mediaplay(CProgram::PARAMETERS params)
  * 
  * Stop the background music.
  */
-CVariant mediastop(CProgram::PARAMETERS params)
+CVariant mediastop(CProgram::PARAMETERS params, CProgram *const)
 {
 	extern CAudioSegment *g_bkgMusic;
 	g_bkgMusic->stop();
@@ -1026,7 +1037,7 @@ CVariant mediastop(CProgram::PARAMETERS params)
  * 
  * Call into DOS.
  */
-CVariant godos(CProgram::PARAMETERS params)
+CVariant godos(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("GoDos() is obsolete.");
 	return CVariant();
@@ -1037,7 +1048,7 @@ CVariant godos(CProgram::PARAMETERS params)
  * 
  * Add a player to the party.
  */
-CVariant addplayer(CProgram::PARAMETERS params)
+CVariant addplayer(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 1)
 	{
@@ -1057,7 +1068,7 @@ CVariant addplayer(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant removeplayer(CProgram::PARAMETERS params)
+CVariant removeplayer(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1067,7 +1078,7 @@ CVariant removeplayer(CProgram::PARAMETERS params)
  * 
  * Set a pixel in the current colour.
  */
-CVariant setpixel(CProgram::PARAMETERS params)
+CVariant setpixel(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 2)
 	{
@@ -1094,7 +1105,7 @@ CVariant setpixel(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant drawline(CProgram::PARAMETERS params)
+CVariant drawline(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1104,7 +1115,7 @@ CVariant drawline(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant drawrect(CProgram::PARAMETERS params)
+CVariant drawrect(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1114,7 +1125,7 @@ CVariant drawrect(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fillrect(CProgram::PARAMETERS params)
+CVariant fillrect(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1124,7 +1135,7 @@ CVariant fillrect(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant debug(CProgram::PARAMETERS params)
+CVariant debug(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1134,7 +1145,7 @@ CVariant debug(CProgram::PARAMETERS params)
  * 
  * Return x cast to a number. Pointless now.
  */
-CVariant castnum(CProgram::PARAMETERS params)
+CVariant castnum(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -1149,7 +1160,7 @@ CVariant castnum(CProgram::PARAMETERS params)
  * 
  * Return x cast to a string. Pointless now.
  */
-CVariant castlit(CProgram::PARAMETERS params)
+CVariant castlit(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -1164,7 +1175,7 @@ CVariant castlit(CProgram::PARAMETERS params)
  * 
  * Return x cast to an integer (i.e., sans fractional pieces).
  */
-CVariant castint(CProgram::PARAMETERS params)
+CVariant castint(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -1179,7 +1190,7 @@ CVariant castint(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant pushitem(CProgram::PARAMETERS params)
+CVariant pushitem(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1189,7 +1200,7 @@ CVariant pushitem(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant wander(CProgram::PARAMETERS params)
+CVariant wander(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1199,7 +1210,7 @@ CVariant wander(CProgram::PARAMETERS params)
  * 
  * Fill a surface with an image.
  */
-CVariant bitmap(CProgram::PARAMETERS params)
+CVariant bitmap(CProgram::PARAMETERS params, CProgram *const)
 {
 	CGDICanvas *cnv = NULL;
 	if (params.size() == 1)
@@ -1237,7 +1248,7 @@ CVariant bitmap(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant mainfile(CProgram::PARAMETERS params)
+CVariant mainfile(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1247,7 +1258,7 @@ CVariant mainfile(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant dirsav(CProgram::PARAMETERS params)
+CVariant dirsav(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1257,7 +1268,7 @@ CVariant dirsav(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant save(CProgram::PARAMETERS params)
+CVariant save(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1267,7 +1278,7 @@ CVariant save(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant load(CProgram::PARAMETERS params)
+CVariant load(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1277,7 +1288,7 @@ CVariant load(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant scan(CProgram::PARAMETERS params)
+CVariant scan(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1287,7 +1298,7 @@ CVariant scan(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant mem(CProgram::PARAMETERS params)
+CVariant mem(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1297,7 +1308,7 @@ CVariant mem(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant print(CProgram::PARAMETERS params)
+CVariant print(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1307,11 +1318,11 @@ CVariant print(CProgram::PARAMETERS params)
  * 
  * Independently run a line of RPGCode.
  */
-CVariant rpgcode(CProgram::PARAMETERS params)
+CVariant rpgcode(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1)
 	{
-		CProgram::getCurrentProgram()->runLine(params[0].getLit());
+		prg->runLine(params[0].getLit());
 	}
 	else
 	{
@@ -1325,7 +1336,7 @@ CVariant rpgcode(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant charat(CProgram::PARAMETERS params)
+CVariant charat(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1335,7 +1346,7 @@ CVariant charat(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant equip(CProgram::PARAMETERS params)
+CVariant equip(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1345,7 +1356,7 @@ CVariant equip(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant remove(CProgram::PARAMETERS params)
+CVariant remove(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1355,7 +1366,7 @@ CVariant remove(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant putplayer(CProgram::PARAMETERS params)
+CVariant putplayer(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1365,7 +1376,7 @@ CVariant putplayer(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant eraseplayer(CProgram::PARAMETERS params)
+CVariant eraseplayer(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1375,7 +1386,7 @@ CVariant eraseplayer(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant include(CProgram::PARAMETERS params)
+CVariant include(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1385,7 +1396,7 @@ CVariant include(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant kill(CProgram::PARAMETERS params)
+CVariant kill(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1395,7 +1406,7 @@ CVariant kill(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant givegp(CProgram::PARAMETERS params)
+CVariant givegp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1405,7 +1416,7 @@ CVariant givegp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant takegp(CProgram::PARAMETERS params)
+CVariant takegp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1415,7 +1426,7 @@ CVariant takegp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getgp(CProgram::PARAMETERS params)
+CVariant getgp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1425,7 +1436,7 @@ CVariant getgp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant wavstop(CProgram::PARAMETERS params)
+CVariant wavstop(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1435,7 +1446,7 @@ CVariant wavstop(CProgram::PARAMETERS params)
  * 
  * Obsolete.
  */
-CVariant bordercolor(CProgram::PARAMETERS params)
+CVariant bordercolor(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("BorderColor() is obsolete.");
 	return CVariant();
@@ -1446,7 +1457,7 @@ CVariant bordercolor(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fightenemy(CProgram::PARAMETERS params)
+CVariant fightenemy(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1456,7 +1467,7 @@ CVariant fightenemy(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant restoreplayer(CProgram::PARAMETERS params)
+CVariant restoreplayer(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1466,7 +1477,7 @@ CVariant restoreplayer(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant callshop(CProgram::PARAMETERS params)
+CVariant callshop(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1476,7 +1487,7 @@ CVariant callshop(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant clearbuffer(CProgram::PARAMETERS params)
+CVariant clearbuffer(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1486,7 +1497,7 @@ CVariant clearbuffer(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant attackall(CProgram::PARAMETERS params)
+CVariant attackall(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1496,7 +1507,7 @@ CVariant attackall(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant drainall(CProgram::PARAMETERS params)
+CVariant drainall(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1506,7 +1517,7 @@ CVariant drainall(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant inn(CProgram::PARAMETERS params)
+CVariant inn(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1516,7 +1527,7 @@ CVariant inn(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant targetlocation(CProgram::PARAMETERS params)
+CVariant targetlocation(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1526,7 +1537,7 @@ CVariant targetlocation(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant eraseitem(CProgram::PARAMETERS params)
+CVariant eraseitem(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1536,7 +1547,7 @@ CVariant eraseitem(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant putitem(CProgram::PARAMETERS params)
+CVariant putitem(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1546,7 +1557,7 @@ CVariant putitem(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant createitem(CProgram::PARAMETERS params)
+CVariant createitem(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1556,7 +1567,7 @@ CVariant createitem(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant destroyitem(CProgram::PARAMETERS params)
+CVariant destroyitem(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1566,7 +1577,7 @@ CVariant destroyitem(CProgram::PARAMETERS params)
  * 
  * Obsolete.
  */
-CVariant walkspeed(CProgram::PARAMETERS params)
+CVariant walkspeed(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("WalkSpeed() is obsolete.");
 	return CVariant();
@@ -1577,7 +1588,7 @@ CVariant walkspeed(CProgram::PARAMETERS params)
  * 
  * Obsolete.
  */
-CVariant itemwalkspeed(CProgram::PARAMETERS params)
+CVariant itemwalkspeed(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("ItemWalkSpeed() is obsolete.");
 	return CVariant();
@@ -1588,7 +1599,7 @@ CVariant itemwalkspeed(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant posture(CProgram::PARAMETERS params)
+CVariant posture(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1598,7 +1609,7 @@ CVariant posture(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant setbutton(CProgram::PARAMETERS params)
+CVariant setbutton(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1608,7 +1619,7 @@ CVariant setbutton(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant checkbutton(CProgram::PARAMETERS params)
+CVariant checkbutton(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1618,7 +1629,7 @@ CVariant checkbutton(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant clearbuttons(CProgram::PARAMETERS params)
+CVariant clearbuttons(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1628,7 +1639,7 @@ CVariant clearbuttons(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant mouseclick(CProgram::PARAMETERS params)
+CVariant mouseclick(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1638,7 +1649,7 @@ CVariant mouseclick(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant mousemove(CProgram::PARAMETERS params)
+CVariant mousemove(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1648,7 +1659,7 @@ CVariant mousemove(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant zoom(CProgram::PARAMETERS params)
+CVariant zoom(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1658,7 +1669,7 @@ CVariant zoom(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant earthquake(CProgram::PARAMETERS params)
+CVariant earthquake(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1668,7 +1679,7 @@ CVariant earthquake(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant itemcount(CProgram::PARAMETERS params)
+CVariant itemcount(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1678,7 +1689,7 @@ CVariant itemcount(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant destroyplayer(CProgram::PARAMETERS params)
+CVariant destroyplayer(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1688,7 +1699,7 @@ CVariant destroyplayer(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant callplayerswap(CProgram::PARAMETERS params)
+CVariant callplayerswap(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1698,7 +1709,7 @@ CVariant callplayerswap(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant playavi(CProgram::PARAMETERS params)
+CVariant playavi(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1708,7 +1719,7 @@ CVariant playavi(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant playavismall(CProgram::PARAMETERS params)
+CVariant playavismall(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1718,7 +1729,7 @@ CVariant playavismall(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getcorner(CProgram::PARAMETERS params)
+CVariant getcorner(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1728,7 +1739,7 @@ CVariant getcorner(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant underarrow(CProgram::PARAMETERS params)
+CVariant underarrow(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1738,7 +1749,7 @@ CVariant underarrow(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getlevel(CProgram::PARAMETERS params)
+CVariant getlevel(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1748,7 +1759,7 @@ CVariant getlevel(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant ai(CProgram::PARAMETERS params)
+CVariant ai(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1758,7 +1769,7 @@ CVariant ai(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant menugraphic(CProgram::PARAMETERS params)
+CVariant menugraphic(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1768,7 +1779,7 @@ CVariant menugraphic(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fightmenugraphic(CProgram::PARAMETERS params)
+CVariant fightmenugraphic(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1778,7 +1789,7 @@ CVariant fightmenugraphic(CProgram::PARAMETERS params)
  * 
  * Obsolete.
  */
-CVariant fightstyle(CProgram::PARAMETERS params)
+CVariant fightstyle(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("FightStyle() is obsolete.");
 	return CVariant();
@@ -1789,7 +1800,7 @@ CVariant fightstyle(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant stance(CProgram::PARAMETERS params)
+CVariant stance(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1799,7 +1810,7 @@ CVariant stance(CProgram::PARAMETERS params)
  * 
  * Obsolete.
  */
-CVariant battlespeed(CProgram::PARAMETERS params)
+CVariant battlespeed(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("BattleSpeed() is obsolete.");
 	return CVariant();
@@ -1810,7 +1821,7 @@ CVariant battlespeed(CProgram::PARAMETERS params)
  * 
  * Obsolete.
  */
-CVariant textspeed(CProgram::PARAMETERS params)
+CVariant textspeed(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("TextSpeed() is obsolete.");
 	return CVariant();
@@ -1821,7 +1832,7 @@ CVariant textspeed(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant mwinsize(CProgram::PARAMETERS params)
+CVariant mwinsize(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1831,7 +1842,7 @@ CVariant mwinsize(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getdp(CProgram::PARAMETERS params)
+CVariant getdp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1841,7 +1852,7 @@ CVariant getdp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getfp(CProgram::PARAMETERS params)
+CVariant getfp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1851,7 +1862,7 @@ CVariant getfp(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant internalmenu(CProgram::PARAMETERS params)
+CVariant internalmenu(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1861,7 +1872,7 @@ CVariant internalmenu(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant applystatus(CProgram::PARAMETERS params)
+CVariant applystatus(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1871,7 +1882,7 @@ CVariant applystatus(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant removestatus(CProgram::PARAMETERS params)
+CVariant removestatus(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1881,7 +1892,7 @@ CVariant removestatus(CProgram::PARAMETERS params)
  * 
  * Sets an image.
  */
-CVariant setimage(CProgram::PARAMETERS params)
+CVariant setimage(CProgram::PARAMETERS params, CProgram *const)
 {
 	CGDICanvas *cnv = NULL;
 	if (params.size() == 5)
@@ -1918,7 +1929,7 @@ CVariant setimage(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant drawcircle(CProgram::PARAMETERS params)
+CVariant drawcircle(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1928,7 +1939,7 @@ CVariant drawcircle(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fillcircle(CProgram::PARAMETERS params)
+CVariant fillcircle(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1938,7 +1949,7 @@ CVariant fillcircle(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant savescreen(CProgram::PARAMETERS params)
+CVariant savescreen(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1948,7 +1959,7 @@ CVariant savescreen(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant restorescreen(CProgram::PARAMETERS params)
+CVariant restorescreen(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -1958,7 +1969,7 @@ CVariant restorescreen(CProgram::PARAMETERS params)
  * 
  * Calculate sine x.
  */
-CVariant sin(CProgram::PARAMETERS params)
+CVariant sin(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1)
 	{
@@ -1966,7 +1977,7 @@ CVariant sin(CProgram::PARAMETERS params)
 	}
 	else if (params.size() == 2)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), sin(params[0].getNum() / 180 * PI));
+		prg->setVariable(params[1].getLit(), sin(params[0].getNum() / 180 * PI));
 	}
 	return CVariant();
 }
@@ -1976,7 +1987,7 @@ CVariant sin(CProgram::PARAMETERS params)
  * 
  * Calculate cosine x.
  */
-CVariant cos(CProgram::PARAMETERS params)
+CVariant cos(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1)
 	{
@@ -1984,7 +1995,7 @@ CVariant cos(CProgram::PARAMETERS params)
 	}
 	else if (params.size() == 2)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), cos(params[0].getNum() / 180 * PI));
+		prg->setVariable(params[1].getLit(), cos(params[0].getNum() / 180 * PI));
 	}
 	return CVariant();
 }
@@ -1994,7 +2005,7 @@ CVariant cos(CProgram::PARAMETERS params)
  * 
  * Calculate tangent x.
  */
-CVariant tan(CProgram::PARAMETERS params)
+CVariant tan(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1)
 	{
@@ -2002,7 +2013,7 @@ CVariant tan(CProgram::PARAMETERS params)
 	}
 	else if (params.size() == 2)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), tan(params[0].getNum() / 180 * PI));
+		prg->setVariable(params[1].getLit(), tan(params[0].getNum() / 180 * PI));
 	}
 	return CVariant();
 }
@@ -2012,7 +2023,7 @@ CVariant tan(CProgram::PARAMETERS params)
  * 
  * Get the colour of the pixel at x, y.
  */
-CVariant getpixel(CProgram::PARAMETERS params)
+CVariant getpixel(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	COLORREF color = 0;
 	if (params.size() == 5)
@@ -2031,7 +2042,6 @@ CVariant getpixel(CProgram::PARAMETERS params)
 	{
 		CProgram::debugger("GetPixel() requires five or six parameters.");
 	}
-	CProgram *const prg = CProgram::getCurrentProgram();
 	prg->setVariable(params[2].getLit(), GetRValue(color));
 	prg->setVariable(params[3].getLit(), GetGValue(color));
 	prg->setVariable(params[4].getLit(), GetBValue(color));
@@ -2043,11 +2053,10 @@ CVariant getpixel(CProgram::PARAMETERS params)
  * 
  * Get the current colour.
  */
-CVariant getcolor(CProgram::PARAMETERS params)
+CVariant getcolor(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 3)
 	{
-		CProgram *const prg = CProgram::getCurrentProgram();
 		prg->setVariable(params[0].getLit(), GetRValue(g_color));
 		prg->setVariable(params[1].getLit(), GetGValue(g_color));
 		prg->setVariable(params[2].getLit(), GetBValue(g_color));
@@ -2064,32 +2073,92 @@ CVariant getcolor(CProgram::PARAMETERS params)
  * 
  * Get the current font size.
  */
-CVariant getfontsize(CProgram::PARAMETERS params)
+CVariant getfontsize(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[0].getLit(), g_fontSize);
+		prg->setVariable(params[0].getLit(), g_fontSize);
 	}
 	return g_fontSize;
 }
 
 /*
- * setimagetransparent(...)
+ * SetImageTransparent(file$, x!, y!, width!, height!, r!, g!, b![, cnv!])
  * 
- * Description.
+ * Set an image with a transparent colour.
  */
-CVariant setimagetransparent(CProgram::PARAMETERS params)
+CVariant setimagetransparent(CProgram::PARAMETERS params, CProgram *const)
 {
+	CGDICanvas *cnv = NULL;
+	if (params.size() == 8)
+	{
+		cnv = g_cnvRpgCode;
+	}
+	else if (params.size() == 9)
+	{
+		cnv = g_canvases.cast(int(params[8].getNum()));
+	}
+	else
+	{
+		CProgram::debugger("SetImageTransparent() requires eight or nine parameters.");
+	}
+	if (cnv)
+	{
+		extern std::string g_projectPath;
+		const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
+		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
+		CGDICanvas intermidate;
+		intermidate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
+		const HDC hdc = intermidate.OpenDC();
+		StretchDIBits(hdc, 0, 0, params[3].getNum(), params[4].getNum(), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+		intermidate.CloseDC(hdc);
+		FreeImage_Unload(bmp);
+		intermidate.BltTransparent(cnv, params[1].getNum(), params[2].getNum(), RGB(params[5].getNum(), params[6].getNum(), params[7].getNum()));
+		if (cnv == g_cnvRpgCode)
+		{
+			renderRpgCodeScreen();
+		}
+	}
 	return CVariant();
 }
 
 /*
- * setimagetranslucent(...)
+ * SetImageTranslucent(file$, x!, y!, width!, height![, cnv!])
  * 
- * Description.
+ * Set an image translucently.
  */
-CVariant setimagetranslucent(CProgram::PARAMETERS params)
+CVariant setimagetranslucent(CProgram::PARAMETERS params, CProgram *const)
 {
+	CGDICanvas *cnv = NULL;
+	if (params.size() == 5)
+	{
+		cnv = g_cnvRpgCode;
+	}
+	else if (params.size() == 6)
+	{
+		cnv = g_canvases.cast(int(params[5].getNum()));
+	}
+	else
+	{
+		CProgram::debugger("SetImageTransparent() requires five or six parameters.");
+	}
+	if (cnv)
+	{
+		extern std::string g_projectPath;
+		const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
+		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
+		CGDICanvas intermidate;
+		intermidate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
+		const HDC hdc = intermidate.OpenDC();
+		StretchDIBits(hdc, 0, 0, params[3].getNum(), params[4].getNum(), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+		intermidate.CloseDC(hdc);
+		FreeImage_Unload(bmp);
+		intermidate.BltTranslucent(cnv, params[1].getNum(), params[2].getNum(), 0.5, -1, -1);
+		if (cnv == g_cnvRpgCode)
+		{
+			renderRpgCodeScreen();
+		}
+	}
 	return CVariant();
 }
 
@@ -2098,7 +2167,7 @@ CVariant setimagetranslucent(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant sourcelocation(CProgram::PARAMETERS params)
+CVariant sourcelocation(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2108,7 +2177,7 @@ CVariant sourcelocation(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant targethandle(CProgram::PARAMETERS params)
+CVariant targethandle(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2118,7 +2187,7 @@ CVariant targethandle(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant sourcehandle(CProgram::PARAMETERS params)
+CVariant sourcehandle(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2128,7 +2197,7 @@ CVariant sourcehandle(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant drawenemy(CProgram::PARAMETERS params)
+CVariant drawenemy(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2138,7 +2207,7 @@ CVariant drawenemy(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant mp3pause(CProgram::PARAMETERS params)
+CVariant mp3pause(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2148,7 +2217,7 @@ CVariant mp3pause(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant layerput(CProgram::PARAMETERS params)
+CVariant layerput(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2158,7 +2227,7 @@ CVariant layerput(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getboardtile(CProgram::PARAMETERS params)
+CVariant getboardtile(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2168,7 +2237,7 @@ CVariant getboardtile(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant boardgettile(CProgram::PARAMETERS params)
+CVariant boardgettile(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2178,7 +2247,7 @@ CVariant boardgettile(CProgram::PARAMETERS params)
  * 
  * Calculate the square root of x.
  */
-CVariant sqrt(CProgram::PARAMETERS params)
+CVariant sqrt(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1)
 	{
@@ -2186,7 +2255,7 @@ CVariant sqrt(CProgram::PARAMETERS params)
 	}
 	else if (params.size() == 2)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), sqrt(params[0].getNum()));
+		prg->setVariable(params[1].getLit(), sqrt(params[0].getNum()));
 	}
 	return CVariant();
 }
@@ -2196,7 +2265,7 @@ CVariant sqrt(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getboardtiletype(CProgram::PARAMETERS params)
+CVariant getboardtiletype(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2206,7 +2275,7 @@ CVariant getboardtiletype(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant setimageadditive(CProgram::PARAMETERS params)
+CVariant setimageadditive(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2216,7 +2285,7 @@ CVariant setimageadditive(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant animation(CProgram::PARAMETERS params)
+CVariant animation(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2226,18 +2295,20 @@ CVariant animation(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant sizedanimation(CProgram::PARAMETERS params)
+CVariant sizedanimation(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
 
 /*
- * forceredraw(...)
+ * forceredraw()
  * 
- * Description.
+ * Force a redrawing of the screen.
  */
-CVariant forceredraw(CProgram::PARAMETERS params)
+CVariant forceredraw(CProgram::PARAMETERS params, CProgram *const)
 {
+	renderNow(g_cnvRpgCode, true);
+	renderRpgCodeScreen();
 	return CVariant();
 }
 
@@ -2246,7 +2317,7 @@ CVariant forceredraw(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant itemlocation(CProgram::PARAMETERS params)
+CVariant itemlocation(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2256,7 +2327,7 @@ CVariant itemlocation(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant wipe(CProgram::PARAMETERS params)
+CVariant wipe(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2266,7 +2337,7 @@ CVariant wipe(CProgram::PARAMETERS params)
  * 
  * Get the screen's resolution.
  */
-CVariant getres(CProgram::PARAMETERS params)
+CVariant getres(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() != 2)
 	{
@@ -2274,7 +2345,6 @@ CVariant getres(CProgram::PARAMETERS params)
 	}
 	else
 	{
-		CProgram *const prg = CProgram::getCurrentProgram();
 		extern int g_resX, g_resY;
 		prg->setVariable(params[0].getLit(), g_resX);
 		prg->setVariable(params[1].getLit(), g_resY);
@@ -2287,11 +2357,11 @@ CVariant getres(CProgram::PARAMETERS params)
  * 
  * Tribute to ZZT.
  */
-CVariant xyzzy(CProgram::PARAMETERS)
+CVariant xyzzy(CProgram::PARAMETERS, CProgram *const prg)
 {
 	std::vector<CVariant> params;
 	params.push_back(CVariant("Nothing happens..."));
-	return mwin(params);
+	return mwin(params, prg);
 }
 
 /*
@@ -2299,7 +2369,7 @@ CVariant xyzzy(CProgram::PARAMETERS)
  * 
  * Toggle antialiasing.
  */
-CVariant statictext(CProgram::PARAMETERS params)
+CVariant statictext(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("StaticText() is obsolete.");
 	return CVariant();
@@ -2310,7 +2380,7 @@ CVariant statictext(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant pathfind(CProgram::PARAMETERS params)
+CVariant pathfind(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2320,7 +2390,7 @@ CVariant pathfind(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant itemstep(CProgram::PARAMETERS params)
+CVariant itemstep(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2330,7 +2400,7 @@ CVariant itemstep(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant playerstep(CProgram::PARAMETERS params)
+CVariant playerstep(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2340,7 +2410,7 @@ CVariant playerstep(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant redirect(CProgram::PARAMETERS params)
+CVariant redirect(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2350,7 +2420,7 @@ CVariant redirect(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant killredirect(CProgram::PARAMETERS params)
+CVariant killredirect(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2360,7 +2430,7 @@ CVariant killredirect(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant killallredirects(CProgram::PARAMETERS params)
+CVariant killallredirects(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2370,7 +2440,7 @@ CVariant killallredirects(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant parallax(CProgram::PARAMETERS params)
+CVariant parallax(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2380,7 +2450,7 @@ CVariant parallax(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant giveexp(CProgram::PARAMETERS params)
+CVariant giveexp(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2390,7 +2460,7 @@ CVariant giveexp(CProgram::PARAMETERS params)
  * 
  * Toggle animated tiles.
  */
-CVariant animatedtiles(CProgram::PARAMETERS params)
+CVariant animatedtiles(CProgram::PARAMETERS params, CProgram *const)
 {
 	CProgram::debugger("AnimatedTiles() is obsolete.");
 	return CVariant();
@@ -2401,7 +2471,7 @@ CVariant animatedtiles(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant smartstep(CProgram::PARAMETERS params)
+CVariant smartstep(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2411,7 +2481,7 @@ CVariant smartstep(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant gamespeed(CProgram::PARAMETERS params)
+CVariant gamespeed(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2421,10 +2491,10 @@ CVariant gamespeed(CProgram::PARAMETERS params)
  * 
  * Obsolete.
  */
-CVariant characterspeed(CProgram::PARAMETERS params)
+CVariant characterspeed(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	CProgram::debugger("CharacterSpeed() has depreciated into GameSpeed().");
-	return gamespeed(params);
+	return gamespeed(params, prg);
 }
 
 /*
@@ -2432,7 +2502,7 @@ CVariant characterspeed(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant thread(CProgram::PARAMETERS params)
+CVariant thread(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2442,7 +2512,7 @@ CVariant thread(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant killthread(CProgram::PARAMETERS params)
+CVariant killthread(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2452,7 +2522,7 @@ CVariant killthread(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getthreadid(CProgram::PARAMETERS params)
+CVariant getthreadid(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2462,7 +2532,7 @@ CVariant getthreadid(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant threadsleep(CProgram::PARAMETERS params)
+CVariant threadsleep(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2472,7 +2542,7 @@ CVariant threadsleep(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant tellthread(CProgram::PARAMETERS params)
+CVariant tellthread(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2482,7 +2552,7 @@ CVariant tellthread(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant threadwake(CProgram::PARAMETERS params)
+CVariant threadwake(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2492,7 +2562,7 @@ CVariant threadwake(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant threadsleepremaining(CProgram::PARAMETERS params)
+CVariant threadsleepremaining(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2502,7 +2572,7 @@ CVariant threadsleepremaining(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant local(CProgram::PARAMETERS params)
+CVariant local(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2512,7 +2582,7 @@ CVariant local(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant global(CProgram::PARAMETERS params)
+CVariant global(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2522,7 +2592,7 @@ CVariant global(CProgram::PARAMETERS params)
  * 
  * Obsolete.
  */
-CVariant autocommand(CProgram::PARAMETERS params)
+CVariant autocommand(CProgram::PARAMETERS params, CProgram *const)
 {
 	// Does nothing, but don't bother showing an error.
 	return CVariant();
@@ -2533,7 +2603,7 @@ CVariant autocommand(CProgram::PARAMETERS params)
  * 
  * Create a cursor map.
  */
-CVariant createcursormap(CProgram::PARAMETERS params)
+CVariant createcursormap(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 0)
 	{
@@ -2541,7 +2611,7 @@ CVariant createcursormap(CProgram::PARAMETERS params)
 	}
 	else if (params.size() == 1)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[0].getLit(), int(g_cursorMaps.allocate()));
+		prg->setVariable(params[0].getLit(), int(g_cursorMaps.allocate()));
 	}
 	else
 	{
@@ -2555,7 +2625,7 @@ CVariant createcursormap(CProgram::PARAMETERS params)
  * 
  * Kill a cursor map.
  */
-CVariant killcursormap(CProgram::PARAMETERS params)
+CVariant killcursormap(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 1)
 	{
@@ -2573,7 +2643,7 @@ CVariant killcursormap(CProgram::PARAMETERS params)
  * 
  * Add a point to a cursor map.
  */
-CVariant cursormapadd(CProgram::PARAMETERS params)
+CVariant cursormapadd(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 3)
 	{
@@ -2595,7 +2665,7 @@ CVariant cursormapadd(CProgram::PARAMETERS params)
  * 
  * Run a cursor map.
  */
-CVariant cursormaprun(CProgram::PARAMETERS params)
+CVariant cursormaprun(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1)
 	{
@@ -2612,7 +2682,7 @@ CVariant cursormaprun(CProgram::PARAMETERS params)
 		CCursorMap *p = g_cursorMaps.cast((int)params[0].getNum());
 		if (p)
 		{
-			CProgram::getCurrentProgram()->setVariable(params[1].getLit(), p->run());
+			prg->setVariable(params[1].getLit(), p->run());
 			renderRpgCodeScreen();
 		}
 	}
@@ -2628,7 +2698,7 @@ CVariant cursormaprun(CProgram::PARAMETERS params)
  * 
  * Create a canvas.
  */
-CVariant createcanvas(CProgram::PARAMETERS params)
+CVariant createcanvas(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() != 2 && params.size() != 3)
 	{
@@ -2640,7 +2710,7 @@ CVariant createcanvas(CProgram::PARAMETERS params)
 	p->ClearScreen(0);
 	if (params.size() == 3)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[2].getLit(), int(p));
+		prg->setVariable(params[2].getLit(), int(p));
 	}
 	return int(p);
 }
@@ -2650,7 +2720,7 @@ CVariant createcanvas(CProgram::PARAMETERS params)
  * 
  * Kill a canvas.
  */
-CVariant killcanvas(CProgram::PARAMETERS params)
+CVariant killcanvas(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() != 1)
 	{
@@ -2669,7 +2739,7 @@ CVariant killcanvas(CProgram::PARAMETERS params)
  * 
  * Blit a canvas forward.
  */
-CVariant drawcanvas(CProgram::PARAMETERS params)
+CVariant drawcanvas(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 3)
 	{
@@ -2713,7 +2783,7 @@ CVariant drawcanvas(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant openfileinput(CProgram::PARAMETERS params)
+CVariant openfileinput(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2723,7 +2793,7 @@ CVariant openfileinput(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant openfileoutput(CProgram::PARAMETERS params)
+CVariant openfileoutput(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2733,7 +2803,7 @@ CVariant openfileoutput(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant openfileappend(CProgram::PARAMETERS params)
+CVariant openfileappend(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2743,7 +2813,7 @@ CVariant openfileappend(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant openfilebinary(CProgram::PARAMETERS params)
+CVariant openfilebinary(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2753,7 +2823,7 @@ CVariant openfilebinary(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant closefile(CProgram::PARAMETERS params)
+CVariant closefile(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2763,7 +2833,7 @@ CVariant closefile(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fileinput(CProgram::PARAMETERS params)
+CVariant fileinput(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2773,7 +2843,7 @@ CVariant fileinput(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fileprint(CProgram::PARAMETERS params)
+CVariant fileprint(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2783,7 +2853,7 @@ CVariant fileprint(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fileget(CProgram::PARAMETERS params)
+CVariant fileget(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2793,7 +2863,7 @@ CVariant fileget(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fileput(CProgram::PARAMETERS params)
+CVariant fileput(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2803,7 +2873,7 @@ CVariant fileput(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant fileeof(CProgram::PARAMETERS params)
+CVariant fileeof(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2813,7 +2883,7 @@ CVariant fileeof(CProgram::PARAMETERS params)
  * 
  * Get the length of a string.
  */
-CVariant len(CProgram::PARAMETERS params)
+CVariant len(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1)
 	{
@@ -2821,7 +2891,7 @@ CVariant len(CProgram::PARAMETERS params)
 	}
 	else if (params.size() == 2)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), params[0].getLit().length());
+		prg->setVariable(params[1].getLit(), params[0].getLit().length());
 	}
 	else
 	{
@@ -2835,7 +2905,7 @@ CVariant len(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant instr(CProgram::PARAMETERS params)
+CVariant instr(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2845,7 +2915,7 @@ CVariant instr(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getitemname(CProgram::PARAMETERS params)
+CVariant getitemname(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2855,7 +2925,7 @@ CVariant getitemname(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getitemdesc(CProgram::PARAMETERS params)
+CVariant getitemdesc(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2865,7 +2935,7 @@ CVariant getitemdesc(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getitemcost(CProgram::PARAMETERS params)
+CVariant getitemcost(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2875,7 +2945,7 @@ CVariant getitemcost(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getitemsellprice(CProgram::PARAMETERS params)
+CVariant getitemsellprice(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2885,7 +2955,7 @@ CVariant getitemsellprice(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant with(CProgram::PARAMETERS params)
+CVariant with(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2895,7 +2965,7 @@ CVariant with(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant restorescreenarray(CProgram::PARAMETERS params)
+CVariant restorescreenarray(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2905,7 +2975,7 @@ CVariant restorescreenarray(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant restorearrayscreen(CProgram::PARAMETERS params)
+CVariant restorearrayscreen(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2915,7 +2985,7 @@ CVariant restorearrayscreen(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant splicevariables(CProgram::PARAMETERS params)
+CVariant splicevariables(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2925,7 +2995,7 @@ CVariant splicevariables(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant split(CProgram::PARAMETERS params)
+CVariant split(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -2935,7 +3005,7 @@ CVariant split(CProgram::PARAMETERS params)
  * 
  * Get the ASCII value of chr$
  */
-CVariant asc(CProgram::PARAMETERS params)
+CVariant asc(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1)
 	{
@@ -2943,7 +3013,7 @@ CVariant asc(CProgram::PARAMETERS params)
 	}
 	else if (params.size() == 2)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), (double)params[0].getLit()[0]);
+		prg->setVariable(params[1].getLit(), (double)params[0].getLit()[0]);
 	}
 	else
 	{
@@ -2957,13 +3027,13 @@ CVariant asc(CProgram::PARAMETERS params)
  * 
  * Get the character represented by the ASCII code passed in.
  */
-CVariant chr(CProgram::PARAMETERS params)
+CVariant chr(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	std::string ret;
 	ret += (char)params[0].getNum();
 	if (params.size() == 2)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), ret);
+		prg->setVariable(params[1].getLit(), ret);
 	}
 	return ret;
 }
@@ -2973,7 +3043,7 @@ CVariant chr(CProgram::PARAMETERS params)
  * 
  * Trim whitespace from a string.
  */
-CVariant trim(CProgram::PARAMETERS params)
+CVariant trim(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	if (params.size() == 1 || params.size() == 2)
 	{
@@ -2984,7 +3054,7 @@ CVariant trim(CProgram::PARAMETERS params)
 		}
 		else
 		{
-			CProgram::getCurrentProgram()->setVariable(params[1].getLit(), toRet);
+			prg->setVariable(params[1].getLit(), toRet);
 		}
 	}
 	else
@@ -2999,7 +3069,7 @@ CVariant trim(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant right(CProgram::PARAMETERS params)
+CVariant right(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3009,7 +3079,7 @@ CVariant right(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant left(CProgram::PARAMETERS params)
+CVariant left(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3019,7 +3089,7 @@ CVariant left(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant cursormaphand(CProgram::PARAMETERS params)
+CVariant cursormaphand(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3029,7 +3099,7 @@ CVariant cursormaphand(CProgram::PARAMETERS params)
  * 
  * Show a debug message.
  */
-CVariant debugger(CProgram::PARAMETERS params)
+CVariant debugger(CProgram::PARAMETERS params, CProgram *const)
 {
 	if (params.size() == 1)
 	{
@@ -3047,7 +3117,7 @@ CVariant debugger(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant onerror(CProgram::PARAMETERS params)
+CVariant onerror(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3057,7 +3127,7 @@ CVariant onerror(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant resumenext(CProgram::PARAMETERS params)
+CVariant resumenext(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3067,7 +3137,7 @@ CVariant resumenext(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant msgbox(CProgram::PARAMETERS params)
+CVariant msgbox(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3077,7 +3147,7 @@ CVariant msgbox(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant setconstants(CProgram::PARAMETERS params)
+CVariant setconstants(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3087,12 +3157,12 @@ CVariant setconstants(CProgram::PARAMETERS params)
  * 
  * Get the natural log of x!
  */
-CVariant log(CProgram::PARAMETERS params)
+CVariant log(CProgram::PARAMETERS params, CProgram *const prg)
 {
 	const double toRet = log(params[0].getNum());
 	if (params.size() == 2)
 	{
-		CProgram::getCurrentProgram()->setVariable(params[1].getLit(), toRet);
+		prg->setVariable(params[1].getLit(), toRet);
 	}
 	return toRet;
 }
@@ -3102,7 +3172,7 @@ CVariant log(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant onboard(CProgram::PARAMETERS params)
+CVariant onboard(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3112,7 +3182,7 @@ CVariant onboard(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant autolocal(CProgram::PARAMETERS params)
+CVariant autolocal(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3122,7 +3192,7 @@ CVariant autolocal(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant getboardname(CProgram::PARAMETERS params)
+CVariant getboardname(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3132,7 +3202,7 @@ CVariant getboardname(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant pixelmovement(CProgram::PARAMETERS params)
+CVariant pixelmovement(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3142,7 +3212,7 @@ CVariant pixelmovement(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant lcase(CProgram::PARAMETERS params)
+CVariant lcase(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3152,7 +3222,7 @@ CVariant lcase(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant ucase(CProgram::PARAMETERS params)
+CVariant ucase(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3162,7 +3232,7 @@ CVariant ucase(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant apppath(CProgram::PARAMETERS params)
+CVariant apppath(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3172,7 +3242,7 @@ CVariant apppath(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant mid(CProgram::PARAMETERS params)
+CVariant mid(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3182,7 +3252,7 @@ CVariant mid(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant replace(CProgram::PARAMETERS params)
+CVariant replace(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3192,7 +3262,7 @@ CVariant replace(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant endanimation(CProgram::PARAMETERS params)
+CVariant endanimation(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3202,7 +3272,7 @@ CVariant endanimation(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant rendernow(CProgram::PARAMETERS params)
+CVariant rendernow(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3212,7 +3282,7 @@ CVariant rendernow(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant multirun(CProgram::PARAMETERS params)
+CVariant multirun(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3222,7 +3292,7 @@ CVariant multirun(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant shopcolors(CProgram::PARAMETERS params)
+CVariant shopcolors(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3232,7 +3302,7 @@ CVariant shopcolors(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant itemspeed(CProgram::PARAMETERS params)
+CVariant itemspeed(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3242,7 +3312,7 @@ CVariant itemspeed(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant playerspeed(CProgram::PARAMETERS params)
+CVariant playerspeed(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3252,7 +3322,7 @@ CVariant playerspeed(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant mousecursor(CProgram::PARAMETERS params)
+CVariant mousecursor(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3262,7 +3332,7 @@ CVariant mousecursor(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant gettextwidth(CProgram::PARAMETERS params)
+CVariant gettextwidth(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3272,7 +3342,7 @@ CVariant gettextwidth(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant gettextheight(CProgram::PARAMETERS params)
+CVariant gettextheight(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3282,7 +3352,7 @@ CVariant gettextheight(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant iif(CProgram::PARAMETERS params)
+CVariant iif(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3292,7 +3362,7 @@ CVariant iif(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant itemstance(CProgram::PARAMETERS params)
+CVariant itemstance(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3302,7 +3372,7 @@ CVariant itemstance(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant playerstance(CProgram::PARAMETERS params)
+CVariant playerstance(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3312,7 +3382,7 @@ CVariant playerstance(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant drawcanvastransparent(CProgram::PARAMETERS params)
+CVariant drawcanvastransparent(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3322,7 +3392,7 @@ CVariant drawcanvastransparent(CProgram::PARAMETERS params)
  * 
  * Get the number of milliseconds since Windows started.
  */
-CVariant gettickcount(CProgram::PARAMETERS params)
+CVariant gettickcount(CProgram::PARAMETERS params, CProgram *const)
 {
 	return GetTickCount();
 }
@@ -3332,7 +3402,7 @@ CVariant gettickcount(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant setvolume(CProgram::PARAMETERS params)
+CVariant setvolume(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3342,7 +3412,7 @@ CVariant setvolume(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant createtimer(CProgram::PARAMETERS params)
+CVariant createtimer(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3352,7 +3422,7 @@ CVariant createtimer(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant killtimer(CProgram::PARAMETERS params)
+CVariant killtimer(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3362,7 +3432,7 @@ CVariant killtimer(CProgram::PARAMETERS params)
  * 
  * Description.
  */
-CVariant setmwintranslucency(CProgram::PARAMETERS params)
+CVariant setmwintranslucency(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
