@@ -7,10 +7,11 @@
 #ifndef _CPLAYER_H_
 #define _CPLAYER_H_
 
+#include "../../fight/IFighter.h"
 #include "../../common/player.h";
 #include "../CSprite/CSprite.h"
 
-class CPlayer : public CSprite
+class CPlayer : public CSprite, public IFighter
 {
 public:
 

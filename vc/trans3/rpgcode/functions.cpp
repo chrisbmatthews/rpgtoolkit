@@ -24,6 +24,7 @@
 #include "../common/CAllocationHeap.h"
 #include "../movement/CSprite/CSprite.h"
 #include "../movement/CPlayer/CPlayer.h"
+#include "../movement/CItem/CItem.h"
 #include "../images/FreeImage.h"
 #include "CCursorMap.h"
 #include <math.h>
@@ -44,12 +45,48 @@ COLORREF g_mwinColor = 0;					// Mwin() background colour.
 CAllocationHeap<CGDICanvas> g_canvases;		// Allocated canvases.
 CAllocationHeap<CCursorMap> g_cursorMaps;	// Cursor maps.
 // CAllocationHeap<CThread> g_threads;		// Threads.
+typedef enum tagTargetType
+{
+	TI_EMPTY,		// Empty!
+	TT_PLAYER,		// Player is targetted.
+	TT_ITEM,		// Item is targetted.
+	TT_ENEMY		// Enemy is targetted.
+} TARGET_TYPE;
+void *g_pTarget = NULL;						// Targetted entity.
+TARGET_TYPE g_targetType = TI_EMPTY;		// Type of target entity.
+void *g_pSource = NULL;						// Source entity.
+TARGET_TYPE g_sourceType = TI_EMPTY;		// Type of source entity.
 
 /*
  * Get a player by name.
  */
-CPlayer *getPlayer(const std::string name)
+IFighter *getFighter(const std::string name)
 {
+	// Check for "target".
+	if (_strcmpi("target", name.c_str()) == 0)
+	{
+		if (g_targetType == TT_PLAYER || g_targetType == TT_ENEMY)
+		{
+			return (IFighter *)g_pTarget;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	// Check for "source".
+	if (_strcmpi("source", name.c_str()) == 0)
+	{
+		if (g_sourceType == TT_PLAYER || g_sourceType == TT_ENEMY)
+		{
+			return (IFighter *)g_pSource;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	// Check names of party members.
 	extern std::vector<CPlayer *> g_players;
 	std::vector<CPlayer *>::iterator i = g_players.begin();
 	for (; i != g_players.end(); ++i)
@@ -59,6 +96,7 @@ CPlayer *getPlayer(const std::string name)
 			return *i;
 		}
 	}
+	// Doesn't exist.
 	return NULL;
 }
 
@@ -737,96 +775,258 @@ CVariant win(CProgram::PARAMETERS params, CProgram *const)
  */
 CVariant hp(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() != 2)
+	{
+		CProgram::debugger("HP() requires two parameters.");
+	}
+	else
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			p->health((params[0].getNum() <= p->maxHealth()) ? params[0].getNum() : p->maxHealth());
+		}
+	}
 	return CVariant();
 }
 
 /*
- * givehp(...)
+ * givehp(handle$, add!)
  * 
- * Description.
+ * Increase a fighter's current hp.
  */
 CVariant givehp(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() != 2)
+	{
+		CProgram::debugger("GiveHP() requires two parameters.");
+	}
+	else
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			const int hp = p->health() + params[0].getNum();
+			p->health((hp <= p->maxHealth()) ? hp : p->maxHealth());
+			// if (fighting)
+			// {
+			//		...
+			// }
+		}
+	}
 	return CVariant();
 }
 
 /*
- * gethp(...)
+ * gethp(handle$[, ret!])
  * 
- * Description.
+ * Get a fighter's hp.
  */
-CVariant gethp(CProgram::PARAMETERS params, CProgram *const)
+CVariant gethp(CProgram::PARAMETERS params, CProgram *const prg)
 {
+	if (params.size() == 1)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			return p->health();
+		}
+	}
+	else if (params.size() == 2)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			prg->setVariable(params[1].getLit(), p->health());
+		}
+	}
+	else
+	{
+		CProgram::debugger("GetHP() requires one or two parameters.");
+	}
 	return CVariant();
 }
 
 /*
- * maxhp(...)
+ * maxhp(handle$, value!)
  * 
- * Description.
+ * Set a fighter's max hp.
  */
 CVariant maxhp(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() != 2)
+	{
+		CProgram::debugger("MaxHP() requires two parameters.");
+	}
+	else
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			p->maxHealth(params[1].getNum());
+		}
+	}
 	return CVariant();
 }
 
 /*
- * getmaxhp(...)
+ * getmaxhp(handle$[, ret!])
  * 
- * Description.
+ * Get a fighter's max hp.
  */
-CVariant getmaxhp(CProgram::PARAMETERS params, CProgram *const)
+CVariant getmaxhp(CProgram::PARAMETERS params, CProgram *const prg)
 {
+	if (params.size() == 1)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			return p->maxHealth();
+		}
+	}
+	else if (params.size() == 2)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			prg->setVariable(params[1].getLit(), p->maxHealth());
+		}
+	}
+	else
+	{
+		CProgram::debugger("GetMaxHP() requires one or two parameters.");
+	}
 	return CVariant();
 }
 
 /*
- * smp(...)
+ * smp(handle$, value!)
  * 
- * Description.
+ * Set a fighter's smp.
  */
 CVariant smp(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() != 2)
+	{
+		CProgram::debugger("SMP() requires two parameters.");
+	}
+	else
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			p->smp((params[0].getNum() <= p->maxSmp()) ? params[0].getNum() : p->maxSmp());
+		}
+	}
 	return CVariant();
 }
 
 /*
- * givesmp(...)
+ * givesmp(handle$, value!)
  * 
- * Description.
+ * Increase a fighter's smp.
  */
 CVariant givesmp(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() != 2)
+	{
+		CProgram::debugger("GiveSMP() requires two parameters.");
+	}
+	else
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			const int hp = p->smp() + params[0].getNum();
+			p->smp((hp <= p->maxSmp()) ? hp : p->maxSmp());
+			// if (fighting)
+			// {
+			//		...
+			// }
+		}
+	}
 	return CVariant();
 }
 
 /*
- * getsmp(...)
+ * getsmp(handle$[, ret!])
  * 
- * Description.
+ * Get a fighter's smp.
  */
-CVariant getsmp(CProgram::PARAMETERS params, CProgram *const)
+CVariant getsmp(CProgram::PARAMETERS params, CProgram *const prg)
 {
+	if (params.size() == 1)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			return p->smp();
+		}
+	}
+	else if (params.size() == 2)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			prg->setVariable(params[1].getLit(), p->smp());
+		}
+	}
+	else
+	{
+		CProgram::debugger("GetSMP() requires one or two parameters.");
+	}
 	return CVariant();
 }
 
 /*
- * maxsmp(...)
+ * maxsmp(handle$, value!)
  * 
- * Description.
+ * Set a fighter's max smp.
  */
 CVariant maxsmp(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() != 2)
+	{
+		CProgram::debugger("MaxSMP() requires two parameters.");
+	}
+	else
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			p->maxSmp(params[1].getNum());
+		}
+	}
 	return CVariant();
 }
 
 /*
- * getmaxsmp(...)
+ * getmaxsmp(handle$[, ret!])
  * 
- * Description.
+ * Get a fighter's max smp.
  */
-CVariant getmaxsmp(CProgram::PARAMETERS params, CProgram *const)
+CVariant getmaxsmp(CProgram::PARAMETERS params, CProgram *const prg)
 {
+	if (params.size() == 1)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			return p->maxSmp();
+		}
+	}
+	else if (params.size() == 2)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			prg->setVariable(params[1].getLit(), p->maxSmp());
+		}
+	}
+	else
+	{
+		CProgram::debugger("GetMaxSMP() requires one or two parameters.");
+	}
 	return CVariant();
 }
 
@@ -1436,12 +1636,19 @@ CVariant drainall(CProgram::PARAMETERS params, CProgram *const)
 }
 
 /*
- * inn(...)
+ * inn()
  * 
- * Description.
+ * Fully heal the player party.
  */
 CVariant inn(CProgram::PARAMETERS params, CProgram *const)
 {
+	extern std::vector<CPlayer *> g_players;
+	std::vector<CPlayer *>::iterator i = g_players.begin();
+	for (; i != g_players.end(); ++i)
+	{
+		(*i)->health((*i)->maxHealth());
+		(*i)->smp((*i)->maxSmp());
+	}
 	return CVariant();
 }
 
@@ -2151,16 +2358,6 @@ CVariant layerput(CProgram::PARAMETERS params, CProgram *const)
  * Description.
  */
 CVariant getboardtile(CProgram::PARAMETERS params, CProgram *const)
-{
-	return CVariant();
-}
-
-/*
- * boardgettile(...)
- * 
- * Description.
- */
-CVariant boardgettile(CProgram::PARAMETERS params, CProgram *const)
 {
 	return CVariant();
 }
@@ -3546,7 +3743,7 @@ void initRpgCode(void)
 	CProgram::addFunction("mp3pause", mp3pause);
 	CProgram::addFunction("layerput", layerput);
 	CProgram::addFunction("getboardtile", getboardtile);
-	CProgram::addFunction("boardgettile", boardgettile);
+	CProgram::addFunction("boardgettile", getboardtile);
 	CProgram::addFunction("sqrt", sqrt);
 	CProgram::addFunction("getboardtiletype", getboardtiletype);
 	CProgram::addFunction("setimageadditive", setimageadditive);
