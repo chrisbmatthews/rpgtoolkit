@@ -58,6 +58,27 @@ void *g_pSource = NULL;						// Source entity.
 TARGET_TYPE g_sourceType = TI_EMPTY;		// Type of source entity.
 
 /*
+ * Become ready to run a program.
+ */
+void programInit(void)
+{
+	extern CDirectDraw *g_pDirectDraw;
+	g_pDirectDraw->CopyScreenToCanvas(g_cnvRpgCode);
+	g_mwinY = 0;
+	extern bool g_bShowMessageWindow;
+	g_bShowMessageWindow = false;
+}
+
+/*
+ * Finish running a program.
+ */
+void programFinish(void)
+{
+	extern bool g_bShowMessageWindow;
+	g_bShowMessageWindow = false;
+}
+
+/*
  * Get a player by name.
  */
 IFighter *getFighter(const std::string name)

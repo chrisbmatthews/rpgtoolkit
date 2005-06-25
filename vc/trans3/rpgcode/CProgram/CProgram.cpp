@@ -61,23 +61,15 @@ void CProgram::addFunction(const std::string str, const INTERNAL_FUNCTION func)
  */
 CVariant CProgram::run(void)
 {
-	/*
-	 * Push a new frame onto the stack.
-	 */
+	extern void programInit(void);
+	programInit();
 	m_stack.push_back(STACK_FRAME());
-	/*
-	 * Run the program.
-	 */
 	run(m_lines);
 	STACK_FRAME &frame = m_stack.back();
 	const CVariant toRet = (frame.count(STACK_RETURN) ? frame[STACK_RETURN] : 0.0);
-	/*
-	 * Pop our frame from the stack.
-	 */
 	m_stack.pop_back();
-	/*
-	 * Return the result.
-	 */
+	extern void programFinish(void);
+	programFinish();
 	return toRet;
 }
 
