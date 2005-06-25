@@ -75,6 +75,9 @@ public:
 	// Push a point onto the back of the vector.
 	void push_back(const double x, const double y);
 
+	// Push an array of points onto the end of the vector.
+	void push_back(const DB_POINT pts[], const short size);
+
 	// Seal the vector to create a polygon.
 	bool close(const bool isClosed, const int curl);
 

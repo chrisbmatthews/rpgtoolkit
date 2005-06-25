@@ -91,6 +91,17 @@ void CVector::push_back(const double x, const double y)
 }	
 
 /*
+ * Push an array of points onto the end of the vector.
+ */
+void CVector::push_back(const DB_POINT pts[], const short size)
+{
+	for (int i = 0; i != size; ++i)
+	{
+		this->push_back(pts[i].x, pts[i].y);
+	}
+}
+
+/*
  * Create the bounding box of the vector.
  */
 void CVector::boundingBox(RECT &rect)

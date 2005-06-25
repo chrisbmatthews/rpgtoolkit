@@ -31,19 +31,20 @@
 /*
  * Open a player.
  *
- * fileName (in) - file to open
- * spriteAttr (in) - common attributes that feed into CSprite.
+ * fileName (in)	- file to open.
+ * spriteAttr (in)	- common attributes that feed into CSprite.
+ * short (out)		- minor version.
  */
-void tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
+short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 {
-	spriteAttr.vBase.push_back(1, 31);
-	spriteAttr.vBase.push_back(31, 31);
-	spriteAttr.vBase.push_back(31, 1);
-	spriteAttr.vBase.close(true, 0);
-
-	spriteAttr.vActivate = spriteAttr.vBase;
-
 	CFile file(fileName);
+
+	if (!file.isOpen())
+	{
+		// FileExists check.
+		MessageBox(NULL, ("File not found: " + fileName).c_str(), "Open Character", 0);
+		return 0;
+	}
 
 	file.seek(13);
 	char cVersion;
@@ -58,7 +59,7 @@ void tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		if (fileHeader != "RPGTLKIT CHAR")
 		{
 			MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Character", 0);
-			return;
+			return 0;
 		}
 
 		short majorVer, minorVer;
@@ -158,34 +159,6 @@ void tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		file >> charLevelUpType;
 		file >> charSizeType;
         
-/*
-		if (minorVer >= 5)
-		{
-			spriteAttr.gfx.clear();
-			// gfx.clear();
-			for (i = 0; i <= UBOUND_GFX; i++)
-			{
-				// file >> gfx[i];
-				std::string str;
-				file >> str;
-				// gfx.push_back(str);
-				spriteAttr.gfx.push_back(str);
-			}
-
-			if (minorVer >= 6)
-			{
-				spriteAttr.standingGfx.clear();
-				// standingGfx.clear();
-				for (i = 0; i <= UBOUND_STANDING_GFX; i++)
-				{
-					// file >> standingGfx[i];
-					std::string str;
-					file >> str;
-					// standingGfx.push_back(str);
-					spriteAttr.standingGfx.push_back(str);
-				}
-			}
-*/
 		if (minorVer >= 5)
 		{			
 			// Load standard graphics - saved in a different order!
@@ -219,10 +192,11 @@ void tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 			std::string strUnused;
 			file >> strUnused;
 
+			gfx.clear();
+
 			if (minorVer >= 6)
 			{
 				// Idle graphics - saved in a different order!
-				gfx.clear();
 				file >> gfx[MV_S];
 				file >> gfx[MV_N];
 				file >> gfx[MV_E];
@@ -231,23 +205,23 @@ void tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 				file >> gfx[MV_NE];
 				file >> gfx[MV_SW];
 				file >> gfx[MV_SE];
-
-				// Push idle graphics onto vector.
-				spriteAttr.completeStances(gfx);
-				spriteAttr.mapGfx.push_back(gfx);
 			}
+
+			// Push idle graphics onto vector. In the case minorVer = 5
+			// push a set of blank strings onto the gfx vector.
+			spriteAttr.completeStances(gfx);
+			spriteAttr.mapGfx.push_back(gfx);
 
 			if (minorVer >= 7)
 			{
-				file >> spriteAttr.idleTime;	// file >> idleTime;
-				file >> spriteAttr.speed;		// file >> speed;
+				file >> spriteAttr.idleTime;
+				file >> spriteAttr.speed;
 			}
+			// Defaults set in constructor.
 
 			// Custom stances - place in a map with handles as keys.
 			int count;
 			file >> count;
-//			spriteAttr.customGfx.clear();		// customGfx.clear();
-//			spriteAttr.customGfxNames.clear();	// customGfxNames.clear();
 			for (i = 0; i <= count; i++)
 			{
 				std::string anim, handle;
@@ -255,15 +229,14 @@ void tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 				file >> handle;
 				if (!handle.empty() && !anim.empty())
 				{
-//					spriteAttr.customGfx.push_back(anim);			// customGfx.push_back(anim);
-//					spriteAttr.customGfxNames.push_back(handle);	// customGfxNames.push_back(handle);
 					spriteAttr.mapCustomGfx[handle] = anim;
 				}
 			}
-			return;
+			return minorVer;
 		}
 	}
 	// Definitely don't need this.
 	MessageBox(NULL, ("Please save " + fileName + " in the editor!").c_str(), NULL, 0);
+	return 0;
 }
 

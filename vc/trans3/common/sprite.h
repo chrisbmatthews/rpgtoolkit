@@ -131,8 +131,8 @@ typedef struct tagSpriteAttr
 	tagSpriteAttr (void): 
 		idleTime(3.0),
 		speed(0.05), 
-		vActivate (1, 1, 4, TT_SOLID),
-		vBase (1, 1, 4, TT_SOLID) {};
+		vActivate (),
+		vBase () {};
 
 	// Get the animation filename corresponding to stance.
 	std::string getStanceAnm(std::string stance);
@@ -140,6 +140,48 @@ typedef struct tagSpriteAttr
 	// Fill out diagonal movement entries with axial entries.
 	void completeStances(GFX_MAP &gfx);
 
+	// Create some default vectors for old versions of players, items.
+	void createVectors(const int activationType);
+
 } SPRITE_ATTR;
+
+/*
+ * A board-set sprite.
+ */
+
+#define SPR_STEP		0				// Triggers once until player leaves area.
+#define SPR_KEYPRESS	1				// Player must hit activation key.
+#define SPR_REPEAT		2				// Triggers repeatedly after a certain distance or
+										// can only be triggered after a certain distance.
+
+#define SPR_ACTIVE		0				// Program is always active.
+#define SPR_CONDITIONAL	1				// Program's running depends on RPGCode variables.
+
+typedef struct tagBoardSprite
+{
+//	std::string fileName;				// Filename of item.
+//	short x;
+//	short y;
+//	short layer;						// Layer co-ordinate.
+	short activate;						// SPR_ACTIVE - always active.
+										// SPR_CONDITIONAL - conditional activation.
+	std::string initialVar;				// Activation variable.
+	std::string finalVar;				// Activation variable at end of sprite prg.
+	std::string initialValue;			// Initial value of activation variable.
+	std::string finalValue;				// Value of variable after sprite prg runs.
+	short activationType;				// Activation type: (flags)
+										// SPR_STEP - walk in vector.
+										// SPR_KEYPRESS - hit general activation key inside vector.
+										// SPR_REPEAT - Whether sprite must leave vector to before
+										//				program can retrigger or not.
+	std::string prgActivate;			// Program to run when sprite is activated.
+	std::string prgMultitask;			// Multitask program for sprite.
+
+	// The item will have its own vectors.
+	tagBoardSprite(void): 
+		activate(SPR_ACTIVE),
+		activationType(SPR_STEP) {};
+
+} BRD_SPRITE;
 
 #endif

@@ -9,19 +9,65 @@
  */
 
 #include "CItem.h"
+#include "../../rpgcode/CProgram/CProgram.h"
 
 /*
- * Constructor
+ * Default constructor.
  */
-CItem::CItem():
-CSprite(false)				// Default to invisible.
+CItem::CItem(const std::string file, const bool show):
+CSprite(false)				
 {
-	// Open item
+	this->open(file);
+	m_bActive = show;				// Overwrite open() result.
 }
 
 /*
- * Destructor
+ * Constructor - load an item directly from the board.
  */
-CItem::~CItem() {}
+CItem::CItem(const std::string file, const BRD_SPRITE spr):
+CSprite(false)
+{
+	m_brdData = spr;
+	this->open(file);
+}
+
+/*
+ * Common opening procedure.
+ */
+void CItem::open(const std::string file)
+{
+
+	if (m_itemMem.open(file, m_attr) <= PRE_VECTOR_ITEM)
+	{
+		// Create standard vectors for old items.
+		m_attr.createVectors(m_brdData.activationType);
+	}
+
+	/* Variable stuff ? */
+
+	// Get these into milliseconds!
+	m_attr.speed *= MILLISECONDS;
+	m_attr.idleTime *= MILLISECONDS;
+
+	// Override the item's programs for the board's, and
+	// make them accessible to CSprite.
+	if (m_brdData.prgMultitask.empty()) m_brdData.prgMultitask = m_itemMem.itmPrgOnBoard;
+	if (m_brdData.prgActivate.empty()) m_brdData.prgActivate = m_itemMem.itmPrgPickUp;
+
+	// Check activation conditions.
+	m_bActive = true;
+
+	if (m_brdData.activate == SPR_CONDITIONAL)
+	{
+		if (CProgram::getGlobal(m_brdData.initialVar).getLit() != m_brdData.initialValue)
+		{
+			m_bActive = false;
+		}
+	}
+
+	// Create thread. (prgActivate).
+
+
+}
 
 

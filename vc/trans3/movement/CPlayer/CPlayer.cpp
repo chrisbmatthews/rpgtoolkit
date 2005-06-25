@@ -17,8 +17,11 @@
 CPlayer::CPlayer(const std::string file, const bool show):
 CSprite(show)				// Is the player visible?
 {
-	// createCharacter().
-	m_playerMem.open(file, m_attr);
+	if (m_playerMem.open(file, m_attr) <= PRE_VECTOR_PLAYER)
+	{
+		// Create standard vectors for old items.
+		m_attr.createVectors(SPR_STEP);
+	}
 
 	createNumGlobal(m_playerMem.defenseVar, m_playerMem.defense);
 	createNumGlobal(m_playerMem.fightVar, m_playerMem.fight);

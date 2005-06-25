@@ -135,7 +135,7 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			 * Scale the offset (GameSpeed() setting) to correspond to an
 			 * increment of 10%.
 			 */
-			const double avgTimeInverse = g_renderCount / g_renderTime; // transMain?
+			const double avgTimeInverse = double(g_renderCount) / double(g_renderTime); // transMain?
 			m_pos.loopSpeed = round(m_attr.speed * avgTimeInverse) + (g_loopOffset * round(avgTimeInverse / 10));
 			
 			// The number of renders (main loops) to run in between animation
@@ -555,24 +555,80 @@ bool CSprite::programTest(void)
 		}
 	}
 
+
+	CItem *itm = NULL; DB_POINT f = {0, 0}; double fs = -1;
+
 	// Items
 	for(std::vector<CItem *>::iterator j = g_items.begin(); j != g_items.end(); ++j)
 	{
 		if (this == *j || m_pos.l != (*j)->m_pos.l) continue;
 
 		DB_POINT pt = {((*j)->m_pos.x - 1.0) * 32.0, ((*j)->m_pos.y - 1.0) * 32.0};
+
 		CVector tarActivate = (*j)->m_attr.vActivate + pt;
 
 		if (tarActivate.contains(sprBase, p) != TT_NORMAL)
 		{
 			// Standing in an item's area.
+			// Are we facing this item?
+			// Are there any other items that are closer?
+
+			// The separation of the two sprites (should use centre-points of m_bounds).
+			DB_POINT s = {(*j)->m_pos.x - m_pos.x, (*j)->m_pos.y - m_pos.y};
+			
+			// Is the target in the facing direction?
+			DB_POINT d = {double(sgn(s.x) == m_v.x), double(sgn(s.y) == m_v.y)};
+
+			// This item is less directly in front of the player.
+			if (d.x + d.y < f.x + f.y) continue;
+
+			double ds = s.x * s.x + s.y * s.y; 
+			if (d.x + d.y == f.x + f.y)
+			{
+				// Check the separation when we 
+				// can't determine on direction alone.
+				if (ds > fs && fs != -1) continue;
+			}
+
+			if ((*j)->m_brdData.activationType & SPR_KEYPRESS)
+			{
+				// General activation key - if not pressed, continue.
+				if (GetAsyncKeyState(g_mainFile.key) >= 0) continue;
+			}
+
+			// Check activation conditions.
+			if ((*j)->m_brdData.activate == SPR_CONDITIONAL)
+			{
+				if (CProgram::getGlobal((*j)->m_brdData.initialVar).getLit() != (*j)->m_brdData.initialValue)
+				{
+					// Activation conditions not met.
+					continue;
+				}
+			}
+
+			// Hold on to these results.
+			f = d; itm = *j; fs = ds;
 		}
 	}
+
+	if (itm)
+	{
+		CProgram(g_projectPath + PRG_PATH + itm->m_brdData.prgActivate).run();
+
+		// Set the requested variable after the program is complete.
+		if (itm->m_brdData.activate == SPR_CONDITIONAL)
+		{
+			const double num = atof(itm->m_brdData.finalValue.c_str());
+			CProgram::setGlobal(itm->m_brdData.finalVar, (num == 0.0) ? itm->m_brdData.finalValue : CVariant(num));
+		}
+		return true;
+	}
+
+	// Programs
 
 	std::vector<LPBRD_PROGRAM>::iterator k = g_activeBoard.programs.begin();
 	LPBRD_PROGRAM prg = NULL;
 
-	// Programs
 	for (; k != g_activeBoard.programs.end(); ++k)
 	{
 		if ((*k)->layer != m_pos.l) continue;
@@ -713,6 +769,10 @@ void CSprite::drawVector(void)
 	p.x = (m_pos.x - 1.0) * 32.0; p.y = (m_pos.y - 1.0) * 32.0;
 	sprBase = m_attr.vBase + p;
 	sprBase.draw(16777215, false);
+
+	// Draw the activation area.
+	sprBase = m_attr.vActivate + p;
+	sprBase.draw(16777215, false);
 }
 
 /*
@@ -826,15 +886,15 @@ bool CSprite::render(const CGDICanvas* cnv)
 	} // if (player is not moving)
 
 	std::string strAnm;
-	std::map<std::string, std::string>::iterator i = NULL;
 //	GFX_MAP::iterator j = NULL;
 
 	// Get the animation filename to use.
 	switch (m_pos.loopFrame)
 	{
 		case LOOP_CUSTOM_STANCE:
+		{
 			// Custom stance. RPGCode call has inserted m_pos.stance.
-			i = m_attr.mapCustomGfx.find(m_pos.stance);
+			std::map<std::string, std::string>::iterator i = m_attr.mapCustomGfx.find(m_pos.stance);
 
 			if (i != m_attr.mapCustomGfx.end())
 			{
@@ -842,6 +902,7 @@ bool CSprite::render(const CGDICanvas* cnv)
 				strAnm = i->second;
 			}
 			break;
+		}
 
 		case LOOP_IDLE:
 			// Idle. Use the idle animation of the facing direction.

@@ -13,8 +13,12 @@
 class CItem : public CSprite
 {
 public:
-	CItem();
-	~CItem();
+
+	CItem(const std::string file, const bool show);
+
+	CItem(const std::string file, const BRD_SPRITE spr);
+
+	void open(const std::string file);
 
 private:
 	ITEM m_itemMem;

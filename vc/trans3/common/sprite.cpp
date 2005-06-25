@@ -9,6 +9,7 @@
  */
 
 #include "sprite.h"
+#include "board.h"
 #include "../rpgcode/parser/parser.h"
 
 /*
@@ -165,3 +166,61 @@ std::string tagSpriteAttr::getStanceAnm(std::string stance)
 	}
     return toRet;
 }
+
+/*
+ * Create some default vectors for *old* versions of players, items.
+ */
+void tagSpriteAttr::createVectors(const int activationType)
+{
+	extern double g_movementSize;
+	extern BOARD g_activeBoard;
+	// Activation vector depends on activation method.
+	// For keypress, the activation vector must extend outside the base.
+	// For step, the activation will be the base.
+
+	if (g_activeBoard.isIsometric == 1)
+	{
+
+	}
+	else
+	{
+		if (g_movementSize != 1)
+		{
+			// 1/2 height base for pixel movement (or other?).
+			DB_POINT pts[] = {{1, 17}, {1, 31}, {31, 31}, {31, 17}};
+			vBase.push_back(pts, 4);
+			vBase.close(true, 0);
+
+			if (activationType & SPR_KEYPRESS)
+			{
+				DB_POINT pts[] = {{-8, 8}, {-8, 39}, {39, 39}, {39, 8}};
+				vActivate.push_back(pts, 4);
+				vActivate.close(true, 0);
+			}
+			else
+			{
+				vActivate = vBase;
+			}
+		}
+		else
+		{
+
+			DB_POINT pts[] = {{1, 1}, {1, 31}, {31, 31}, {31, 1}};
+			vBase.push_back(pts, 4);
+			vBase.close(true, 0);
+
+			if (activationType & SPR_KEYPRESS)
+			{
+				// Create a one tile-wide ring around player.
+				DB_POINT pts[] = {{-32,-32}, {-32, 63}, {63, 63}, {63,-32}};
+				vActivate.push_back(pts, 4);
+				vActivate.close(true, 0);
+			}
+			else
+			{
+				vActivate = vBase;
+			}
+		} // if (g_movementSize != 1)
+	} // if (g_activeBoard.isIsometric == 1)
+}
+

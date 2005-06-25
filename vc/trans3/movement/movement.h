@@ -179,4 +179,13 @@ inline int round(const double num)
 	return int(num + 0.5);
 }
 
+/*
+ * Return the sign of a number.
+ */
+inline int sgn(const double num)
+{
+	if (!num) return 0;
+	return (num > 0 ? 1 : -1);
+}
+
 #endif

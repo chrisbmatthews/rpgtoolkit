@@ -9,6 +9,8 @@
  * Inclusions.
  */
 #include "board.h"
+#include "sprite.h"
+#include "../movement/CItem/CItem.h"
 #include "paths.h"
 #include "CFile.h"
 
@@ -19,6 +21,10 @@
  */
 void tagBoard::open(const std::string fileName)
 {
+	extern std::string g_projectPath;
+	extern std::vector<CItem *> g_items;
+	extern BOARD g_activeBoard;
+
 	CFile file(fileName);
 
 	bSizeX = 50;
@@ -211,10 +217,11 @@ lutEnd:
 		for (i = 0; i <= numPrg; i++)
 		{
 			LPBRD_PROGRAM prg = new BRD_PROGRAM();
+			short x = 0, y = 0;
 
 			file >> prg->fileName;
-			file >> prg->x;
-			file >> prg->y;
+			file >> x;				// Not needed in struct.
+			file >> y;
 			file >> prg->layer;
 			file >> prg->graphic;
 			file >> prg->activate;
@@ -227,10 +234,10 @@ lutEnd:
 			if (!prg->fileName.empty())
 			{
 				// Create a 32x32 vector at the location.
-				prg->vBase.push_back((prg->x - 1.0) * 32.0, prg->y * 32.0);
-				prg->vBase.push_back(prg->x * 32.0, prg->y * 32.0);
-				prg->vBase.push_back(prg->x * 32.0, (prg->y - 1.0) * 32.0);
-				prg->vBase.push_back((prg->x - 1.0) * 32.0, (prg->y - 1.0) * 32.0);
+				prg->vBase.push_back((x - 1.0) * 32.0, y * 32.0);
+				prg->vBase.push_back(x * 32.0, y * 32.0);
+				prg->vBase.push_back(x * 32.0, (y - 1.0) * 32.0);
+				prg->vBase.push_back((x - 1.0) * 32.0, (y - 1.0) * 32.0);
 				prg->vBase.close(true, 0);
 				// Add the program to the list.
 				programs.push_back(prg);
@@ -244,6 +251,46 @@ lutEnd:
 		file >> enterPrg;
 		file >> bgPrg;
 
+		short numSpr;
+		file >> numSpr;
+
+		freeItems();
+
+		for (i = 0; i <= numSpr; ++i)
+		{
+			BRD_SPRITE spr;
+
+			std::string sprFileName;
+			short x, y, layer;
+
+			// Do not need to save these.
+			file >> sprFileName;
+			file >> x;
+			file >> y;
+			file >> layer;
+
+			file >> spr.activate;
+			file >> spr.initialVar;
+			file >> spr.finalVar;
+			file >> spr.initialValue;
+			file >> spr.finalVar;
+			file >> spr.activationType;
+			file >> spr.prgActivate;
+			file >> spr.prgMultitask;
+
+			if (!sprFileName.empty())
+			{
+				// Only load the items if this is the active board
+				// (we may be loading the board for other purposes).
+				if (this == &g_activeBoard)
+				{
+					g_items.push_back(new CItem(g_projectPath + ITM_PATH + sprFileName, spr));
+					g_items.back()->setPosition(x, y, layer);
+				}
+			}
+		}
+
+/* To be removed
 		itmName.clear();
 		itmName.push_back("");
 		itmX.clear();
@@ -304,7 +351,7 @@ lutEnd:
 				pos++;
 			}
 		}
-
+*/
 		threads.clear();
 
 		if (minorVer >= 3)
@@ -603,11 +650,29 @@ void tagBoard::freeVectors(void)
  */
 void tagBoard::freePrograms(void)
 {
-	for (std::vector<BRD_PROGRAM *>::iterator i = programs.begin(); i != programs.end(); ++i)
+	for (std::vector<LPBRD_PROGRAM>::iterator i = programs.begin(); i != programs.end(); ++i)
 	{
 		delete *i;
 	}
 	programs.clear();
+}
+
+/*
+ * Delete all *global* items (in g_items).
+ */
+void tagBoard::freeItems(void)
+{
+	extern BOARD g_activeBoard;
+	extern std::vector<CItem *> g_items;
+
+	// Only delete items if we're changing boards.
+	if (this != &g_activeBoard) return;
+
+	for (std::vector<CItem *>::iterator i = g_items.begin(); i != g_items.end(); ++i)
+	{
+		delete *i;
+	}
+	g_items.clear();
 }
 
 /*

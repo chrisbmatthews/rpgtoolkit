@@ -33,14 +33,21 @@
 #define ITEM_GFX_STANDING_UBOUND 7
 
 /*
- * Open an item.
+ * Open an item. Return the minor version.
  *
  * fileName (in) - file to open
  */
-void tagItem::open(const std::string fileName)
+short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 {
 
 	CFile file(fileName);
+
+	if (!file.isOpen())
+	{
+		// FileExists check.
+		MessageBox(NULL, ("File not found: " + fileName).c_str(), "Open Item", 0);
+		return 0;
+	}
 
 	itmAnimation = "";
 	itmSizeType = 0;
@@ -50,8 +57,8 @@ void tagItem::open(const std::string fileName)
 	file >> cVersion;
 	if (cVersion)
 	{
-		MessageBox(NULL, ("Please save " + fileName + " in the editor!").c_str(), NULL, 0);
-		return;
+		MessageBox(NULL, ("Please save " + fileName + " in the editor!").c_str(), "Open Item", 0);
+		return 0;
 	}
 	file.seek(0);
 
@@ -61,7 +68,7 @@ void tagItem::open(const std::string fileName)
 	if (fileHeader != "RPGTLKIT ITEM")
 	{
 		MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Item", 0);
-		return;
+		return 0;
 	}
 
 	short majorVer, minorVer;
@@ -173,48 +180,90 @@ void tagItem::open(const std::string fileName)
 
 	if (minorVer >= 4)
 	{
-
+/*
 		for (i = 0; i <= ITEM_GFX_UBOUND; i++)
 		{
 			file >> gfx[i];
 		}
+*/
+		// Load standard graphics - saved in a different order!
+		GFX_MAP gfx;
+		gfx.clear();
+		file >> gfx[MV_S];
+		file >> gfx[MV_N];
+		file >> gfx[MV_E];
+		file >> gfx[MV_W];
+		file >> gfx[MV_NW];
+		file >> gfx[MV_NE];
+		file >> gfx[MV_SW];
+		file >> gfx[MV_SE];
+
+		std::string strItemRest, strUnused;
+		file >> strItemRest;				// Hold this for minorVer < 6.
+		file >> strUnused;
+
+		// Complete diagonal directions with east/west graphics.
+		spriteAttr.completeStances(gfx);
+
+		// Push graphics onto the gfx vector.
+		spriteAttr.mapGfx.clear();
+		spriteAttr.mapGfx.push_back(gfx);
+
+		gfx.clear();
 
 		if (minorVer >= 5)
 		{
+/*
 			for (i = 0; i <= ITEM_GFX_STANDING_UBOUND; i++)
 			{
 				file >> standingGfx[i];
 			}
-			file >> speed;
-			file >> idleTime;
+*/
+			// Idle graphics - saved in a different order!
+			file >> gfx[MV_S];
+			file >> gfx[MV_N];
+			file >> gfx[MV_E];
+			file >> gfx[MV_W];
+			file >> gfx[MV_NW];
+			file >> gfx[MV_NE];
+			file >> gfx[MV_SW];
+			file >> gfx[MV_SE];
+
+			file >> spriteAttr.speed;
+			file >> spriteAttr.idleTime;
 		}
+
+		// Push idle graphics onto vector (empty for minorVer = 4).
+		spriteAttr.completeStances(gfx);
+		spriteAttr.mapGfx.push_back(gfx);
 
 		if (minorVer < 6)
 		{
-			standingGfx[ITEM_WALK_S] = gfx[ITEM_REST];
-			gfx[ITEM_REST] = "";
+			spriteAttr.mapGfx[GFX_IDLE][MV_S] = strItemRest;
+//			standingGfx[ITEM_WALK_S] = gfx[ITEM_REST];
+//			gfx[ITEM_REST] = "";
 		}
 
-		customGfx.clear();
-		customGfxNames.clear();
+		// Custom stances - place in a map with handles as keys.
+		int count;
+		file >> count;
 
-		int cnt;
-		file >> cnt;
-		for (i = 0; i <= cnt; i++)
+		for (i = 0; i <= count; i++)
 		{
 			std::string anim, handle;
 			file >> anim;
 			file >> handle;
-			if (!handle.empty())
+			if (!handle.empty() && !anim.empty())
 			{
-				customGfx.push_back(anim);
-				customGfxNames.push_back(handle);
+				spriteAttr.mapCustomGfx[handle] = anim;
 			}
 		}
-
 	}
-	else
+	else // if (minorVer < 4)
 	{
+//		std::string gfx[10];
+		GFX_MAP gfx;
+		gfx.clear();
 
 		unsigned int x, y;
 
@@ -270,27 +319,31 @@ void tagItem::open(const std::string fileName)
 			{
 				walkFix = "E";
 				anm.save(anmName);
-				gfx[ITEM_WALK_S] = removePath(anmName);
+//				gfx[ITEM_WALK_S] = removePath(anmName);
+				gfx[MV_S] = removePath(anmName);
 				xx = -1;
 			}
 			else if (x == 7)
 			{
 				walkFix = "N";
 				anm.save(anmName);
-				gfx[ITEM_WALK_E] = removePath(anmName);
+//				gfx[ITEM_WALK_E] = removePath(anmName);
+				gfx[MV_E] = removePath(anmName);
 				xx = -1;
 			}
 			else if (x == 11)
 			{
 				walkFix = "W";
 				anm.save(anmName);
-				gfx[ITEM_WALK_N] = removePath(anmName);
+//				gfx[ITEM_WALK_N] = removePath(anmName);
+				gfx[MV_N] = removePath(anmName);
 				xx = -1;
 			}
 			else if (x == 15)
 			{
 				anm.save(anmName);
-				gfx[ITEM_WALK_W] = removePath(anmName);
+//				gfx[ITEM_WALK_W] = removePath(anmName);
+				gfx[MV_W] = removePath(anmName);
 				xx = -1;
 			}
 			if (xx++ == -1)
@@ -299,7 +352,16 @@ void tagItem::open(const std::string fileName)
 				anm.animTransp.clear();
 				anm.animSound.clear();
 			}
-		}
+		} // for (x)
+
+		// Complete diagonal directions with east/west graphics.
+		spriteAttr.completeStances(gfx);
+
+		// Push graphics onto the gfx vector.
+		spriteAttr.mapGfx.clear();
+		spriteAttr.mapGfx.push_back(gfx);
+
+		/* Idle frame. */
 
 		anm.animFrame.clear();
 		anm.animTransp.clear();
@@ -321,9 +383,17 @@ void tagItem::open(const std::string fileName)
 		anm.animSound.push_back("");
 		anm.save(anmName);
 
-		standingGfx[ITEM_WALK_S] = removePath(anmName);
+//		standingGfx[ITEM_WALK_S] = removePath(anmName);
+		gfx.clear();
+		gfx[MV_S] = removePath(anmName);
+
+		// Push graphics onto the gfx vector.
+		spriteAttr.completeStances(gfx);
+		spriteAttr.mapGfx.push_back(gfx);
+
 		itmSizeType = 1;
 
-	}
+	} // if (minorVer >= 4)
 
+	return minorVer;
 }

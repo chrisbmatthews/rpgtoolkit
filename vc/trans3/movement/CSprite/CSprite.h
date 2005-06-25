@@ -79,6 +79,7 @@ public:
 protected:
 	SPRITE_ATTR m_attr;				// Sprite attributes (common file data).
 	bool m_bActive;					// Is the sprite visible?
+	BRD_SPRITE m_brdData;			// Board-set sprite data (activation variables).
 	SPRITE_RENDER m_lastRender;		// Last render location / frame of the sprite.
 	CGDICanvas *m_pCanvas;			// Pointer to sprite's frame.
 	SPRITE_POSITION m_pos;			// Current location and frame details.

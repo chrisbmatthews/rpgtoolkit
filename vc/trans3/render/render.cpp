@@ -11,6 +11,7 @@
 #include "../rpgcode/parser/parser.h"
 #include "../../tkCommon/tkGfx/CTile.h"
 #include "../movement/CPlayer/CPlayer.h"
+#include "../movement/CItem/CItem.h"
 #include "../movement/CVector/CVector.h"
 #include "../common/animation.h"
 #include "../common/mainfile.h"
@@ -586,11 +587,19 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 	drawBoard(g_activeBoard, cnv, 0, 0, 0, g_tilesX, g_tilesY, 0, 0, 0, g_activeBoard.isIsometric);
 
 	extern std::vector<CPlayer *> g_players;
-	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); i++)
+	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
 		// Render the player's current frame.
 		(*i)->render(cnv);
 		(*i)->putSpriteAt(cnv);	// Not here!
+	}
+
+	extern std::vector<CItem *> g_items;
+	for (std::vector<CItem *>::const_iterator j = g_items.begin(); j != g_items.end(); ++j)
+	{
+		// Render the player's current frame.
+		(*j)->render(cnv);
+		(*j)->putSpriteAt(cnv);	// Not here!
 	}
 
 	if (bScreen)
@@ -599,18 +608,22 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 		g_pDirectDraw->DrawCanvas(cnv, 0, 0);
 
 		// Temporary: draw vectors for debugging.
-		/**g_pDirectDraw->LockScreen();
-		for (std::vector<CVector *>::iterator j = g_activeBoard.vectors.begin(); j != g_activeBoard.vectors.end(); j++)
-		{
-			(*j)->draw(16777215, true);
-		}
+/*		g_pDirectDraw->LockScreen();
 
-		for (i = g_players.begin(); i != g_players.end(); i++)
-		{
+		for (i = g_players.begin(); i != g_players.end(); ++i)
 			(*i)->drawVector();
-		}
-		g_pDirectDraw->UnlockScreen();**/
 
+		for (j = g_items.begin(); j != g_items.end(); ++j) 
+			(*j)->drawVector();
+
+		for (std::vector<LPBRD_PROGRAM>::iterator k = g_activeBoard.programs.begin(); k != g_activeBoard.programs.end(); k++)
+			(*k)->vBase.draw(16777215, true);
+
+		for (std::vector<CVector *>::iterator l = g_activeBoard.vectors.begin(); l != g_activeBoard.vectors.end(); l++)
+			(*l)->draw(16777215, true);
+
+		g_pDirectDraw->UnlockScreen();
+*/
 		g_pDirectDraw->Refresh();
 		delete cnv;
 	}

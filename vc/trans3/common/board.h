@@ -16,19 +16,22 @@
 #include <string>
 #include <vector>
 
+/*
+ * A board-set program.
+ */
 #define PRG_STEP		0				// Triggers once until player leaves area.
 #define PRG_KEYPRESS	1				// Player must hit activation key.
 #define PRG_REPEAT		2				// Triggers repeatedly after a certain distance or
 										// can only be triggered after a certain distance.
 
-#define PRG_ACTIVE		0
-#define PRG_CONDITIONAL	1
+#define PRG_ACTIVE		0				// Program is always active.
+#define PRG_CONDITIONAL	1				// Program's running depends on RPGCode variables.
 
 typedef struct tagBoardProgram
 {
 	std::string fileName;				// Board program filename.
-	short x;							// x - co-ordinate. To be depreciated.
-	short y;							// y - co-ordinate. To be depreciated.
+//	short x;							// x - co-ordinate. To be depreciated.
+//	short y;							// y - co-ordinate. To be depreciated.
 	short layer;						// Layer.
 	std::string graphic;				// Associated graphic.
 	short activate;						// PRG_ACTIVE - always active.
@@ -52,7 +55,7 @@ typedef struct tagBoardProgram
 		activationType(PRG_STEP),		// Step on (once).
 		distanceRepeat(0),
 		distance(0),
-		x(1), y(1), layer(1),
+		layer(1),
 		vBase() {};						// Do not define any points yet.
 
 } BRD_PROGRAM, *LPBRD_PROGRAM;
@@ -120,6 +123,7 @@ typedef struct tagBoard
 	std::string enterPrg;							// Program to run on entrance.
 	std::string bgPrg;								// Background program.
 
+/* To be removed (no longer stored in BOARD object, but still present in format */
 	std::vector<std::string> itmName;				// Filenames of items.
 	std::vector<short> itmX;						// X coord.
 	std::vector<short> itmY;						// Y coord.
@@ -153,10 +157,11 @@ typedef struct tagBoard
 	void vectorize(const unsigned int layer);
 	void freeVectors(void);
 	void freePrograms(void);
+	void freeItems(void);
 	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
 
-	~tagBoard(void) { freeVectors(); freePrograms(); }
+	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); }
 } BOARD;
 
 #endif

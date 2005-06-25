@@ -9,6 +9,11 @@
 #define _ITEM_H_
 
 /*
+ * Definitions.
+ */
+#define PRE_VECTOR_ITEM 6						// Last file version before vectors.
+
+/*
  * Inclusions.
  */
 #include <vector>
@@ -53,7 +58,7 @@ typedef struct tagItem
 	SPRITE_ATTR spriteAttributes;
 
 //	std::vector<std::string> gfx;
-	std::string gfx[10];						// common // Filenames of standard animations for graphics.
+//	std::string gfx[10];						// common // Filenames of standard animations for graphics.
 	std::vector<std::string> customGfx;			// common // Customized animations.
 	std::vector<std::string> customGfxNames;	// common // Customized animations (handles).
 //	std::vector<std::string> standingGfx;
@@ -64,7 +69,7 @@ typedef struct tagItem
 
 	short bIsActive;							// Is item active?
 
-	void open(const std::string fileName);
+	short open(const std::string fileName, SPRITE_ATTR &spriteAttr);
 } ITEM;
 
 #endif

@@ -177,7 +177,7 @@ VOID setUpGame(VOID)
 	}
 
 // Testing!
-	g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true));
+//	g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true));
 
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())
@@ -202,7 +202,7 @@ VOID setUpGame(VOID)
 												g_activeBoard.playerY ? g_activeBoard.playerY : 1,
 												g_activeBoard.playerLayer ? g_activeBoard.playerLayer : 1);
 // Testing!
-		g_players[1]->setPosition(10, 5, 1);
+//		g_players[1]->setPosition(10, 5, 1);
 
 	}
 
@@ -252,14 +252,17 @@ INT gameLogic(VOID)
 			scanKeys();
 
 // Testing!
-			g_players[1]->setQueuedMovements(rand() % 9, true);
+			g_items[0]->setQueuedMovements(rand() % 9, true);
 
 			// Movement.
-			for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); i++)
+			for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
 			{
 				(*i)->move(g_pSelectedPlayer);
 			}
-			//for (i = g_items.begin(); i != g_items.end(); i++) i->move();
+			for (std::vector<CItem *>::const_iterator j = g_items.begin(); j != g_items.end(); ++j) 
+			{
+				(*j)->move(g_pSelectedPlayer);
+			}
 
 			// Render.
 			renderNow();
@@ -370,8 +373,8 @@ VOID closeSystems(VOID)
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
 
-	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	// #define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	g_hInstance = hInstance;
 

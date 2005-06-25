@@ -16,6 +16,8 @@
 /*
  * Definitions.
  */
+#define PRE_VECTOR_PLAYER	7					// Last version before vectors.		
+
 #define UBOUND_GFX 13
 #define UBOUND_STANDING_GFX 7
 
@@ -70,7 +72,7 @@ typedef struct tagPlayer
 	// File also contains a set of attributes shared with items, stored separately.
 	SPRITE_ATTR spriteAttributes;				// This is a dummy member - variables not stored in it!
 
-	void open(const std::string fileName, SPRITE_ATTR &spriteAttr);
+	short open(const std::string fileName, SPRITE_ATTR &spriteAttr);
 } PLAYER;
 
 #endif
