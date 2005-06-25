@@ -268,6 +268,11 @@ void CProgram::breakString(const std::string str, bool &bComment, VECTOR_STR &li
 					{
 						bSingleLine = true;
 					}
+					if (bComment || bSingleLine)
+					{
+						lines.push_back(parser::trim(push.substr(lastPush, i - lastPush)));
+						lastPush = i + 1;
+					}
 				}
 			}
 			else if (push[i] == '*' && i != chars && push[i + 1] == '/')
