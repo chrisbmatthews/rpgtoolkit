@@ -72,21 +72,15 @@ int CCursorMap::run(void)
 		{
 			continue;
 		}
-		if (keys[DIK_UP] & 0x80)
+		if ((keys[DIK_UP] & 0x80) || (keys[DIK_LEFT] & 0x80))
 		{
 			if (toRet) toRet--;
+			else toRet = m_points.size()  - 1;
 		}
-		else if (keys[DIK_LEFT] & 0x80)
-		{
-			if (toRet) toRet--;
-		}
-		else if (keys[DIK_DOWN] & 0x80)
+		else if ((keys[DIK_DOWN] & 0x80) || (keys[DIK_RIGHT] & 0x80))
 		{
 			if (toRet != (m_points.size() - 1)) toRet++;
-		}
-		else if (keys[DIK_RIGHT] & 0x80)
-		{
-			if (toRet != (m_points.size() - 1)) toRet++;
+			else toRet = 0;
 		}
 		else if ((keys[DIK_RETURN] & 0x80) || (keys[DIK_SPACE] & 0x80))
 		{
