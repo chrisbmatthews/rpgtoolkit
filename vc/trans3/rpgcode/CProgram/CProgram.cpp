@@ -75,19 +75,18 @@ CPlugin *CProgram::addPlugin(const std::string file)
 		return NULL;
 	}
 
+	FreeLibrary(mod);
+
 	CPlugin *p = new CPlugin();
 	if (!p->load(stringCast(name + ".cls" + name)))
 	{
 		MessageBox(NULL, ("A remotable class was not found in " + file + ".").c_str(), "Plugin Error", 0);
 		delete p;
-		FreeLibrary(mod);
 		return NULL;
 	}
 
 	p->initialize();
 	m_plugins.push_back(p);
-
-	FreeLibrary(mod);
 	return p;
 
 }
