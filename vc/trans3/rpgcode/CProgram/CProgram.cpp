@@ -27,6 +27,7 @@
 std::map<std::string, CProgram::INTERNAL_FUNCTION> CProgram::m_functions;
 CProgram::STACK_FRAME CProgram::m_global;
 CProgram *CProgram::m_currentProgram = NULL;
+std::vector<CPlugin *> CProgram::m_plugins;
 const int CProgram::tagClass::PUBLIC = 0;
 const int CProgram::tagClass::PRIVATE = 1;
 
@@ -41,6 +42,68 @@ void CProgram::runLine(const std::string str)
 	bool bComment = false;
 	breakString(str, bComment, lines);
 	run(lines);
+}
+
+/*
+ * Add a plugin.
+ */
+CPlugin *CProgram::addPlugin(const std::string file)
+{
+	const int backslash = file.find_last_of('\\') + 1;
+	const std::string name = file.substr(backslash, file.length() - (4 + backslash));
+	if (name.empty()) return NULL;
+
+	HMODULE mod = LoadLibrary(file.c_str());
+	if (!mod)
+	{
+		MessageBox(NULL, ("The file " + file + " is not a valid dynamically linkable library.").c_str(), "Plugin Error", 0);
+		return NULL;
+	}
+
+	FARPROC pReg = GetProcAddress(mod, "DllRegisterServer");
+	if (!pReg)
+	{
+		MessageBox(NULL, ("The plugin " + file + " has no registration function.").c_str(), "Plugin Error", 0);
+		FreeLibrary(mod);
+		return NULL;
+	}
+
+	if (FAILED(((HRESULT (__stdcall *)(void))pReg)()))
+	{
+		MessageBox(NULL, ("An error occurred while registering " + file + ".").c_str(), "Plugin Error", 0);
+		FreeLibrary(mod);
+		return NULL;
+	}
+
+	CPlugin *p = new CPlugin();
+	if (!p->load(stringCast(name + ".cls" + name)))
+	{
+		MessageBox(NULL, ("A remotable class was not found in " + file + ".").c_str(), "Plugin Error", 0);
+		delete p;
+		FreeLibrary(mod);
+		return NULL;
+	}
+
+	p->initialize();
+	m_plugins.push_back(p);
+
+	FreeLibrary(mod);
+	return p;
+
+}
+
+/*
+ * Free plugins.
+ */
+void CProgram::freePlugins(void)
+{
+	std::vector<CPlugin *>::iterator i = m_plugins.begin();
+	for (; i != m_plugins.end(); ++i)
+	{
+		(*i)->terminate();
+		delete *i;
+	}
+	m_plugins.clear();
 }
 
 /*
@@ -654,7 +717,7 @@ void CProgram::setGlobal(const std::string name, const CVariant value)
 CVariant CProgram::getGlobal(const std::string name)
 {
 	const std::string ucase = CProgram().parseArray(parser::uppercase(name));
-	return (m_global.count(ucase) ? m_global[name] : CVariant());
+	return (m_global.count(ucase) ? m_global[ucase] : CVariant());
 }
 
 /*
@@ -716,7 +779,7 @@ CVariant CProgram::evaluate(const std::string str)
 		 */
 		const bool bNegate = (funcName[0] == '-');
 		const bool bFunction = (funcName != "");
-		const int centerBegin = startPos + (bFunction ? 1 : 2) + (bNegate ? 1 : 0);
+		const int centerBegin = startPos + (bFunction ? 0 : 2) + (bNegate ? 1 : 0);
 		const std::string centerStr = str.substr(centerBegin, positions[bracketPos] - centerBegin);
 		CVariant var;
 		if (bFunction)
@@ -724,30 +787,68 @@ CVariant CProgram::evaluate(const std::string str)
 			/*
 			 * Call this function.
 			 */
-			std::vector<CVariant> params;
-			int pos = centerStr.find('(') + 1;
+			bool bPlugin = false;
 			const bool bIsConstruct = isConstruct(funcName);
-			const int centerLen = centerStr.length();
-			do
+			const std::string sansNeg = bNegate ? funcName.substr(1) : funcName;
+			if (!bIsConstruct)
 			{
-				const int start = pos;
-				pos = centerStr.find(',', pos + 1);
-				const std::string push = centerStr.substr(start, ((pos != std::string::npos) ? pos : centerLen) - start);
-				if ((params.size() == 0) && parser::trim(push).empty()) break;
-				if (bIsConstruct)
+				// Before we do anything complex, see whether we can
+				// find this function in a plugin.
+
+				// Convert the function name to lowercase UNICODE.
+				wchar_t *unicode = _wcslwr(_wcsdup(stringCast(sansNeg).c_str()));
+				const std::wstring lcase = unicode;
+				free(unicode);
+
+				// Iterate over all the plugins.
+				std::vector<CPlugin *>::iterator i = m_plugins.begin();
+				for (; i != m_plugins.end(); ++i)
 				{
-					params.push_back(push);
+					// Query this one.
+					if ((*i)->query(lcase))
+					{
+						// Call it and break.
+						int dt = -1; std::wstring lit; double num = 0.0;
+						(*i)->execute(stringCast(centerStr), dt, lit, num, VARIANT_TRUE);
+						if ((dt == PLUG_DT_LIT) || (dt == PLUG_DT_VOID))
+						{
+							var = '"' + stringCast(lit) + '"';
+						}
+						else
+						{
+							var = num;
+						}
+						bPlugin = true;
+						break;
+					}
 				}
-				else
-				{
-					params.push_back(evaluate(push));
-				}
-			} while (pos++ != std::string::npos);
-			var = callFunction(bNegate ? funcName.substr(1) : funcName, params);
-			const CVariant::DATA_TYPE dt = var.getType();
-			if (dt == CVariant::DT_LIT || dt == CVariant::DT_NULL)
+			}
+			if (!bPlugin)
 			{
-				var = '"' + var.getLit() + '"';
+				std::vector<CVariant> params;
+				int pos = centerStr.find('(') + 1;
+				const int centerLen = centerStr.length();
+				do
+				{
+					const int start = pos;
+					pos = centerStr.find(',', pos + 1);
+					const std::string push = centerStr.substr(start, ((pos != std::string::npos) ? pos : centerLen) - start);
+					if ((params.size() == 0) && parser::trim(push).empty()) break;
+					if (bIsConstruct)
+					{
+						params.push_back(push);
+					}
+					else
+					{
+						params.push_back(evaluate(push));
+					}
+				} while (pos++ != std::string::npos);
+				var = callFunction(sansNeg, params);
+				const CVariant::DATA_TYPE dt = var.getType();
+				if (dt == CVariant::DT_LIT || dt == CVariant::DT_NULL)
+				{
+					var = '"' + var.getLit() + '"';
+				}
 			}
 		}
 		else
@@ -880,7 +981,7 @@ CVariant CProgram::evaluate(const std::string str)
 			else
 			{
 				const std::string ucase = parseArray(parser::uppercase(tokenA));
-				STACK_FRAME &frame = m_stack.back().count(ucase) ? m_stack.back() : m_global;
+				STACK_FRAME &frame = (m_stack.size() && m_stack.back().count(ucase)) ? m_stack.back() : m_global;
 				if (op == "=") frame[ucase] = right;
 				else if (op == "+=")
 				{

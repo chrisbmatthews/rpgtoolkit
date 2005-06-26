@@ -22,7 +22,7 @@ public:
 		m_contents.push_back(toRet);
 		return toRet;
 	}
-	void free(T *const p)
+	bool free(T *const p)
 	{
 		std::vector<T *>::iterator i = m_contents.begin();
 		for (; i != m_contents.end(); ++i) 
@@ -31,9 +31,10 @@ public:
 			{
 				delete *i;
 				m_contents.erase(i);
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 	template <class _T>
 	T *cast(const _T num)

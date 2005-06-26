@@ -16,8 +16,6 @@
 #include <objbase.h>
 #include <string>
 
-class CCallbackInterface;
-
 class CPlugin
 {
 public:

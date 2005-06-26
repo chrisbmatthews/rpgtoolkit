@@ -35,7 +35,7 @@ typedef struct tagAnimation
 	std::string animFile;				// Filename (no path).
 	bool open(const std::string fileName);
 	void save(const std::string fileName) const;
-} ANIMATION;
+} ANIMATION, *LPANIMATION;
 
 /*
  * One frame of an animation.

@@ -123,7 +123,7 @@ bool CPlugin::load(const std::wstring cls)
  * ret (out) - value returned
  * return (out) - whether there was an error
  */
-HRESULT CPlugin::invoke(const std::wstring name, LPVARIANT params, const int paramCount, LPVARIANT ret)
+HRESULT CPlugin::invoke(const std::wstring name, LPVARIANTARG params, const int paramCount, LPVARIANTARG ret)
 {
 	DISPID disp;
 	const wchar_t *const str = name.c_str();
@@ -171,18 +171,29 @@ bool CPlugin::execute(const std::wstring line, int &retValDt, std::wstring &retV
 {
 	if (!m_plugin) return false;
 	VARIANT params[5];
-	CComVariant(line.c_str()).Detach(&params[0]);
+	// This needs to be fixed.
+	//////////////////////////////////////
+	params[0].vt = VT_BSTR;
+	params[0].bstrVal = SysAllocString(line.c_str());
+	//
 	params[1].vt = VT_INT | VT_BYREF;
+	params[1].pintVal = &retValDt;
+	//
 	params[2].vt = VT_BSTR | VT_BYREF;
-	params[2].bstrVal = SysAllocString(L"");
+	BSTR bstr = SysAllocString(L"");
+	params[2].pbstrVal = &bstr;
+	//
 	params[3].vt = VT_R8 | VT_BYREF;
-	CComVariant(usingReturn).Detach(&params[4]);
+	params[3].pdblVal = &retValNum;
+	//
+	params[4].vt = VT_BOOL;
+	params[4].boolVal = usingReturn;
+	//
 	CComVariant ret;
 	invoke(L"RPGCode_Execute", params, 5, &ret);
-	retValDt = params[1].intVal;
-	retValLit = params[2].bstrVal;
-	retValNum = params[3].dblVal;
-	SysFreeString(params[2].bstrVal);
+	retValLit = bstr;
+	SysFreeString(bstr);
+	SysFreeString(params[0].bstrVal);
 	return (ret.boolVal == VARIANT_TRUE);
 }
 

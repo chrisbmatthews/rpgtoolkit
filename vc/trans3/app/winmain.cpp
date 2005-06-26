@@ -125,6 +125,14 @@ VOID setUpGame(VOID)
 	extern int g_selectedPlayer;
 	extern std::string g_projectPath;
 
+	// Load plugins.
+	CProgram::freePlugins();
+	std::vector<std::string>::iterator i = g_mainFile.plugins.begin();
+	for (; i != g_mainFile.plugins.end(); ++i)
+	{
+		CProgram::addPlugin(g_projectPath + PLUG_PATH + *i);
+	}
+
 	g_movementSize = g_mainFile.pixelMovement ? 0.25 : 1.0;
 	g_selectedPlayer = 0;
 
@@ -345,6 +353,11 @@ INT mainEventLoop(VOID)
  */
 VOID closeSystems(VOID)
 {
+
+	// Free plugins first so that they have access to
+	// everything we're about to kill.
+	CProgram::freePlugins();
+
 	closeGraphics();
 	extern void freeInput(void);
 	freeInput();
@@ -373,8 +386,8 @@ VOID closeSystems(VOID)
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
 
-	// #define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	g_hInstance = hInstance;
 

@@ -945,6 +945,10 @@ SOURCE=.\movement\CVector\CVector.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\fight\IFighter.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\movement\locate.h
 # End Source File
 # Begin Source File
@@ -1319,9 +1323,5 @@ SOURCE=.\images\FreeImage.h
 SOURCE=.\images\FreeImage.lib
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\fight\IFighter.h
-# End Source File
 # End Target
 # End Project

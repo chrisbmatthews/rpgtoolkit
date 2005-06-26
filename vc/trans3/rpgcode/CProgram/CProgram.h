@@ -11,6 +11,13 @@
 #define _CPROGRAM_H_
 
 /*
+ * Plugin data types.
+ */
+#define PLUG_DT_VOID -1		// Void data element
+#define PLUG_DT_NUM	0		// Numerical data element
+#define PLUG_DT_LIT	1		// Literal data element
+
+/*
  * Inclusions.
  */
 #include <vector>
@@ -20,6 +27,7 @@
 #include <sstream>
 #include "../CVariant/CVariant.h"
 #include "../../input/input.h"
+#include "../../plugins/CPlugin.h"
 
 /*
  * A loaded program.
@@ -179,6 +187,12 @@ public:
 		m_currentLine = m_process->size() + 1;
 	}
 
+	/*
+	 * Plugins.
+	 */
+	static CPlugin *addPlugin(const std::string file);
+	static void freePlugins(void);
+
 /*
  * Private visibility.
  */
@@ -294,6 +308,11 @@ private:
 	 * The current program.
 	 */
 	static CProgram *m_currentProgram;
+
+	/*
+	 * Plugins.
+	 */
+	static std::vector<CPlugin *> m_plugins;
 
 };
 
