@@ -26,7 +26,7 @@ IPlugin *loadPlugin(const std::string file)
 	HMODULE mod = LoadLibrary(file.c_str());
 	if (!mod)
 	{
-		MessageBox(NULL, ("The file " + file + " is not a valid dynamically linkable library.").c_str(), "Plugin Error", 0);
+		MessageBox(NULL, ("The file " + file + " is not a valid dynamically linkable library.").c_str(), "Plugin Error", MB_ICONWARNING);
 		return NULL;
 	}
 
@@ -40,14 +40,14 @@ IPlugin *loadPlugin(const std::string file)
 			p->initialize();
 			return p;
 		}
-		MessageBox(NULL, ("The file " + file + " is not a valid plugin.").c_str(), "Plugin Error", 0);
+		MessageBox(NULL, ("The file " + file + " is not a valid plugin.").c_str(), "Plugin Error", MB_ICONWARNING);
 		delete p;
 		return NULL;
 	}
 
 	if (FAILED(((HRESULT (__stdcall *)(void))pReg)()))
 	{
-		MessageBox(NULL, ("An error occurred while registering " + file + ".").c_str(), "Plugin Error", 0);
+		MessageBox(NULL, ("An error occurred while registering " + file + ".").c_str(), "Plugin Error", MB_ICONWARNING);
 		FreeLibrary(mod);
 		return NULL;
 	}
@@ -63,7 +63,7 @@ IPlugin *loadPlugin(const std::string file)
 
 	if (!bLoaded)
 	{
-		MessageBox(NULL, ("A remotable class was not found in " + file + ".").c_str(), "Plugin Error", 0);
+		MessageBox(NULL, ("A remotable class was not found in " + file + ".").c_str(), "Plugin Error", MB_ICONWARNING);
 		delete p;
 		return NULL;
 	}
