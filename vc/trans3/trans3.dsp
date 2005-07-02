@@ -1221,7 +1221,7 @@ SOURCE=.\plugins\Callbacks.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\plugins\CPlugin.cpp
+SOURCE=.\plugins\plugins.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
 
@@ -1250,7 +1250,11 @@ SOURCE=.\plugins\Callbacks.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\plugins\CPlugin.h
+SOURCE=.\plugins\oldCallbacks.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\plugins\plugins.h
 # End Source File
 # End Group
 # Begin Group "plugins - resources"

@@ -45,6 +45,10 @@ HINSTANCE g_hInstance = NULL;		// Handle to application.
 unsigned int g_renderCount = 0;		// Count of GS_MOVEMENT state loops.
 unsigned int g_renderTime = 0;		// Millisecond cumulative GS_MOVEMENT state loop time.
 
+// TEMP! These will *not* stay here.
+IPlugin *g_pMenuPlugin = NULL;
+IPlugin *g_pFightPlugin = NULL;
+
 #ifdef _DEBUG
 
 unsigned long g_allocated = 0;
@@ -130,7 +134,42 @@ VOID setUpGame(VOID)
 	std::vector<std::string>::iterator i = g_mainFile.plugins.begin();
 	for (; i != g_mainFile.plugins.end(); ++i)
 	{
-		CProgram::addPlugin(g_projectPath + PLUG_PATH + *i);
+		IPlugin *p = loadPlugin(g_projectPath + PLUG_PATH + *i);
+		if (!p) continue;
+		if (p->plugType(PT_RPGCODE))
+		{
+			CProgram::addPlugin(p);
+		}
+		else
+		{
+			delete p;
+		}
+	}
+	// Menu plugin.
+	{
+		IPlugin *p = loadPlugin(g_projectPath + PLUG_PATH + g_mainFile.menuPlugin);
+		if (p && p->plugType(PT_MENU))
+		{
+			extern IPlugin *g_pMenuPlugin;
+			g_pMenuPlugin = p;
+		}
+		else
+		{
+			delete p;
+		}
+	}
+	// Fight plugin.
+	{
+		IPlugin *p = loadPlugin(g_projectPath + PLUG_PATH + g_mainFile.fightPlugin);
+		if (p && p->plugType(PT_FIGHT))
+		{
+			extern IPlugin *g_pFightPlugin;
+			g_pFightPlugin = p;
+		}
+		else
+		{
+			delete p;
+		}
 	}
 
 	g_movementSize = g_mainFile.pixelMovement ? 0.25 : 1.0;
@@ -223,6 +262,7 @@ VOID openSystems(VOID)
 {
 	extern VOID initRpgCode(VOID);
 
+	initPluginSystem();
 	FreeImage_Initialise();
 	srand(GetTickCount());
 	initGraphics();
@@ -357,6 +397,20 @@ VOID closeSystems(VOID)
 	// Free plugins first so that they have access to
 	// everything we're about to kill.
 	CProgram::freePlugins();
+	extern IPlugin *g_pMenuPlugin, *g_pFightPlugin;
+	if (g_pMenuPlugin)
+	{
+		g_pMenuPlugin->terminate();
+		delete g_pMenuPlugin;
+		g_pMenuPlugin = NULL;
+	}
+	if (g_pFightPlugin)
+	{
+		g_pFightPlugin->terminate();
+		delete g_pFightPlugin;
+		g_pFightPlugin = NULL;
+	}
+	freePluginSystem();
 
 	closeGraphics();
 	extern void freeInput(void);

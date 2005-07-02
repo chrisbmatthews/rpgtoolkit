@@ -314,12 +314,6 @@
 #define FIGHT_WON_MANUAL		3		// Player party won - tell trans that the plugin has already given rewards
 #define FIGHT_LOST				4		// Player party lost
 
-// Plugin types
-/////////////////////////////////////////////////////////////////////////////
-#define PT_RPGCODE				1		// RPGCode plugin
-#define PT_MENU					2		// Menu plugin
-#define PT_FIGHT				4		// Fight plugin
-
 /////////////////////////////////////////////////////////////////////////////
 // CCallbacks
 class ATL_NO_VTABLE CCallbacks : 

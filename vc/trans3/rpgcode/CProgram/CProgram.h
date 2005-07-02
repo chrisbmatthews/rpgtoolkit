@@ -27,7 +27,7 @@
 #include <sstream>
 #include "../CVariant/CVariant.h"
 #include "../../input/input.h"
-#include "../../plugins/CPlugin.h"
+#include "../../plugins/plugins.h"
 
 /*
  * A loaded program.
@@ -190,7 +190,7 @@ public:
 	/*
 	 * Plugins.
 	 */
-	static CPlugin *addPlugin(const std::string file);
+	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
 	static void freePlugins(void);
 
 /*
@@ -312,7 +312,7 @@ private:
 	/*
 	 * Plugins.
 	 */
-	static std::vector<CPlugin *> m_plugins;
+	static std::vector<IPlugin *> m_plugins;
 
 };
 

@@ -23,25 +23,6 @@ extern CDirectDraw *g_pDirectDraw;
 extern std::vector<CPlayer *> g_players;
 CAllocationHeap<ANIMATION> g_animations;
 
-inline std::string getString(const BSTR bstr)
-{
-	const int length = SysStringLen(bstr) + 1;
-	char *const str = new char[length];
-	WideCharToMultiByte(CP_ACP, 0, bstr, -1, str, length, NULL, NULL);
-	const std::string toRet = str;
-	delete [] str;
-	return toRet;
-}
-
-inline BSTR getString(const std::string rhs)
-{
-	wchar_t *str = new wchar_t[rhs.length() + 1];
-	MultiByteToWideChar(CP_ACP, 0, rhs.c_str(), -1, str, rhs.length() + 1);
-	const BSTR toRet = SysAllocString(str);
-	delete [] str;
-	return toRet;
-}
-
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
 	CProgram().runLine(getString(rpgcodeCommand));
