@@ -31,6 +31,20 @@ typedef struct tagSpriteRender
 
 } SPRITE_RENDER;
 
+typedef struct tagScrollCache
+{
+	CGDICanvas *pCnv;		// Canvas for each layer.
+	RECT r;					// Bounds of graphics on this layer (board co-ords).
+
+	tagScrollCache(): 
+		pCnv(NULL)
+		{ r.top = r.bottom = r.left = r.right = 0; };
+
+	void render(const bool bForceRedraw);
+
+} SCROLL_CACHE;
+
+
 /*
  * Constants.
  */
@@ -60,12 +74,13 @@ void renderRpgCodeScreen(void);
  */
 bool renderNow(CGDICanvas *cnv = NULL, const bool bForce = false);
 
- /*** These functions are looking for homes ***/
+/*** These functions are looking for homes ***/
 
 bool drawTile(const std::string fileName, 
 			  const int x, const int y, 
 			  const int r, const int g, const int b, 
 			  CGDICanvas *cnv, 
+			  const int offX, const int offY,
 			  const bool bIsometric, 
 			  const int nIsoEvenOdd);
 

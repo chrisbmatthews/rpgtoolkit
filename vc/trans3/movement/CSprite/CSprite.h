@@ -35,7 +35,7 @@ public:
 	bool move(const CSprite *selectedPlayer);
 
 	// Complete a single frame's movement of the sprite.
-	bool push(void);
+	bool push(const CSprite *selectedPlayer);
 
 	// Get the next queued movement and remove it from the queue.
 	MV_ENUM getQueuedMovements(void);
@@ -71,10 +71,15 @@ public:
 	void drawVector(void);
 
 	// Render if the current frame requires updating.
-	bool render(const CGDICanvas *cnv = NULL);
+	bool render(void);
 
 	// Calculate sprite location and place on destination canvas.
-	void putSpriteAt(const CGDICanvas *cnvTarget);
+	bool putSpriteAt(const CGDICanvas *cnvTarget, 
+					const int layer,
+					RECT &rect);
+
+	// Align a RECT to the sprite's location.
+	void alignBoard(RECT &rect, const bool bAllowNegatives);
 
 protected:
 	SPRITE_ATTR m_attr;				// Sprite attributes (common file data).

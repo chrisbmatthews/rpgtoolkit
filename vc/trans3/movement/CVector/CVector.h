@@ -91,7 +91,7 @@ public:
 	CVECTOR_TYPE intersect(CVector &rhs, DB_POINT &ref);
 
 	// Draw the vector to the screen (testing purposes).
-	void draw(CONST LONG color, const bool drawText);
+	void draw(CONST LONG color, const bool drawText, const int x, const int y);
 
 	// Return number of points in vector.
 	int size(void) const { return m_p.size(); };

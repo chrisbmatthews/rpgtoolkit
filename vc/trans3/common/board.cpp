@@ -15,7 +15,8 @@
 #include "CFile.h"
 
 /*
- * Open a board.
+ * Open a board. Note for old versions, all co-ordinates must be transformed into
+ * pixel co-ordinates. (Isometrics to be done).
  *
  * fileName (in) - file to open
  */
@@ -69,8 +70,9 @@ void tagBoard::open(const std::string fileName)
 		file >> bSizeL;
 		setSize(bSizeX, bSizeY, bSizeL);
 
-		file >> playerX;
-		file >> playerY;
+		// All co-ordinates are PIXEL co-ordinates.
+		file >> playerX; playerX *= 32;
+		file >> playerY; playerY *= 32;
 		file >> playerLayer;
 		file >> brdSavingYN;
     
@@ -285,73 +287,11 @@ lutEnd:
 				if (this == &g_activeBoard)
 				{
 					g_items.push_back(new CItem(g_projectPath + ITM_PATH + sprFileName, spr));
-					g_items.back()->setPosition(x, y, layer);
+					g_items.back()->setPosition(x * 32, y * 32, layer);
 				}
 			}
 		}
 
-/* To be removed
-		itmName.clear();
-		itmName.push_back("");
-		itmX.clear();
-		itmX.push_back(0);
-		itmY.clear();
-		itmY.push_back(0);
-		itmLayer.clear();
-		itmLayer.push_back(0);
-		itmActivate.clear();
-		itmActivate.push_back(0);
-		itmVarActivate.clear();
-		itmVarActivate.push_back("");
-		itmDoneVarActivate.clear();
-		itmDoneVarActivate.push_back("");
-		itmActivateInitNum.clear();
-		itmActivateInitNum.push_back("");
-		itmActivateDoneNum.clear();
-		itmActivateDoneNum.push_back("");
-		itmActivationType.clear();
-		itmActivationType.push_back(0);
-		itemProgram.clear();
-		itemProgram.push_back("");
-		itemMulti.clear();
-		itemMulti.push_back("");
-
-		short numItm;
-		file >> numItm;
-
-		int pos = 0;
-		for (i = 0; i <= numItm; i++)
-		{
-			file >> itmName[pos];
-			file >> itmX[pos];
-			file >> itmY[pos];
-			file >> itmLayer[pos];
-			file >> itmActivate[pos];
-			file >> itmVarActivate[pos];
-			file >> itmDoneVarActivate[pos];
-			file >> itmActivateInitNum[pos];
-			file >> itmActivateDoneNum[pos];
-			file >> itmActivationType[pos];
-			file >> itemProgram[pos];
-			file >> itemMulti[pos];
-			if (!itmName[pos].empty())
-			{
-				itmName.push_back("");
-				itmX.push_back(0);
-				itmY.push_back(0);
-				itmLayer.push_back(0);
-				itmActivate.push_back(0);
-				itmVarActivate.push_back("");
-				itmDoneVarActivate.push_back("");
-				itmActivateInitNum.push_back("");
-				itmActivateDoneNum.push_back("");
-				itmActivationType.push_back(0);
-				itemProgram.push_back("");
-				itemMulti.push_back("");
-				pos++;
-			}
-		}
-*/
 		threads.clear();
 
 		if (minorVer >= 3)
@@ -520,7 +460,7 @@ ver1:
 
 	// Finally, vectorize the board.
 	// const DWORD dw = GetTickCount();
-	vectorize(1);
+	vectorize(playerLayer);
 	/** const DWORD time = GetTickCount() - dw;
 	char timeStr[255], vectorStr[255];
 	itoa(time, timeStr, 10);
@@ -764,3 +704,8 @@ void tagBoard::setSize(const int width, const int height, const int depth)
 		}
 	}
 }
+
+
+
+
+

@@ -111,8 +111,8 @@ typedef struct tagSpritePosition
     std::string stance;		// Current stance.
 	MV_ENUM facing;			// Which direction are we facing? May be different from .direction!
     int frame;				// Animation frame.
-    double x;				// Current board x position (fraction of tiles).
-    double y;				// Current board y position (fraction of tiles).
+    double x;				// Current board x position (PIXEL co-ord).
+    double y;				// Current board y position (PIXEL co-ord).
     int l;					// Current layer.
     int loopFrame;			// Current frame in a movement loop (different from .frame).
 							// Also denotes idle status (when negative):
@@ -139,10 +139,10 @@ typedef struct tagSpritePosition
 typedef struct tagPendingMovement
 {
     MV_ENUM direction;		// MV_ direction code.
-    double xOrig;			// Original board coordinates.
+    double xOrig;			// Origin PIXEL co-ordinates.
     double yOrig;
     int lOrig;				// Integer levels.
-    double xTarg;			// Target board co-ordinates.
+    double xTarg;			// Target PIXEL co-ordinates.
     double yTarg;
     int lTarg;
 	std::deque<int> queue;	// The pending movements of the player/item.
@@ -163,7 +163,7 @@ typedef struct tagPendingMovement
 inline int framesPerMove(void)
 {
 	extern double g_movementSize;
-	const int toRet = int(g_movementSize * 4.0);
+	const int toRet = int(g_movementSize * 0.125);
 	if (toRet < 2) return 2;
 	return toRet;
 }

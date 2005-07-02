@@ -10,6 +10,7 @@
 #include "render.h"
 #include "../rpgcode/parser/parser.h"
 #include "../../tkCommon/tkGfx/CTile.h"
+#include "../movement/CSprite/CSprite.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
 #include "../movement/CVector/CVector.h"
@@ -47,6 +48,9 @@ CGDICanvas *g_cnvMessageWindow;				// RPGCode message window.
 bool g_bShowMessageWindow = false;			// Show the message window?
 double g_translucentOpacity = 0.50;			// Opacity to draw translucent sprites at.
 
+RECT g_screen = {0, 0, 0, 0};				// = {g_topX, g_topY, g_resX + g_topX, g_resY + g_topY}
+SCROLL_CACHE g_scrollCache;					// The scroll cache.
+
 /*
  * Render the RPGCode screen.
  */
@@ -64,20 +68,19 @@ void renderRpgCodeScreen(void)
 /*
  * Draw a tile. (GFXDrawTileCNV)
  *
- * fileName (in) - tile to draw
- * x (in) - board x coordinate to draw at
- * y (in) - board y coordinate to draw at
- * r (in) - red shade
- * g (in) - green shade
- * b (in) - blue shade
- * cnv (in) - destination canvas
- * bIsometric (in) - draw isometrically?
- * nIsoEvenOdd (in) - iso is even or odd?
+ * fileName		- tile to draw.
+ * x, y			- tile co-ordinates to draw.
+ * r, g, b		- shade.
+ * cnv			- destination canvas.
+ * offX, offY	- canvas offset.
+ * bIsometric	- draw isometrically?
+ * nIsoEvenOdd	- iso is even or odd?
  */
 bool drawTile(const std::string fileName, 
 			  const int x, const int y, 
 			  const int r, const int g, const int b, 
 			  CGDICanvas *cnv, 
+			  const int offX, const int offY, 
 			  const bool bIsometric, 
 			  const int nIsoEvenOdd)
 {
@@ -120,6 +123,10 @@ bool drawTile(const std::string fileName,
 			}
 		}
 	}
+
+	xx += offX;
+	yy += offY;
+
 /*
 	// See if we need to clear the tile cache
 	if (gvTiles.size() > TILE_CACHE_SIZE)
@@ -128,23 +135,14 @@ bool drawTile(const std::string fileName,
 	const RGBSHADE rgb = {r, g, b};
 	const std::string strFileName = g_projectPath + TILE_PATH + fileName;
 
-	for (std::vector<CTile *>::iterator i = g_tiles.begin(); i != g_tiles.end(); i++)
+	for (std::vector<CTile *>::iterator i = g_tiles.begin(); i != g_tiles.end(); ++i)
 	{
 		const std::string strVect = (*i)->getFilename();
 		if (strVect.compare(strFileName) == 0)
 		{
 			if ((*i)->isShadedAs(rgb, SHADE_UNIFORM))
 			{
-				if (bIsometric)
-				{
-					if ((*i)->isIsometric())
-					{
-						// Found a match.
-						(*i)->cnvDraw(cnv, xx, yy);
-						return true;
-					}
-				}
-				else if (!(*i)->isIsometric())
+				if (bIsometric == (*i)->isIsometric())
 				{
 					// Found a match.
 					(*i)->cnvDraw(cnv, xx, yy);
@@ -342,7 +340,7 @@ bool drawTileCnv(CGDICanvas *cnv,
         ff = removePath(of);
 		if (!bMask)
 		{
-			drawTile(ff, x, y, r, g, b, cnv, iso, isoEO);
+			drawTile(ff, x, y, r, g, b, cnv, 0, 0, iso, isoEO);
 		}
 		else
 		{
@@ -371,7 +369,7 @@ bool drawTileCnv(CGDICanvas *cnv,
         ff = removePath(file);
         if (!bMask)
 		{
-            drawTile(ff, x, y, r, g, b, cnv, iso, isoEO);
+            drawTile(ff, x, y, r, g, b, cnv, 0, 0, iso, isoEO);
 		}
         else
 		{
@@ -393,19 +391,24 @@ bool drawTileCnv(CGDICanvas *cnv,
 /*
  * Draw a board.
  *
- * brd (in) - board to draw
- * cnv (in) - target surface
- * layer (in) - layer to draw
- * topX (in) - top x coordinate
- * topY (in) - top y coordinate
- * tilesX (in) - number of tiles to draw on x
- * tilesY (in) - number of tiles to draw on y
- * aR (in) - ambient red
- * aG (in) - ambient green
- * aB (in) - ambient blue
- * bIsometric (in) - board is isometric?
+ * brd			- board to draw.
+ * cnv			- target surface.
+ * destX, destY	- destination canvas co-ordinates.
+ * layer		- layer to draw.
+ * topX, topY	- tile co-ordinates to begin drawing at.
+ * tilesX, 
+ * tilesY		- width, height to draw, in tiles.
+ * aR,aG,aB		- ambient rgb.
+ * bIsometric	- is board isometric?
  */
-void drawBoard(CONST BOARD &brd, CGDICanvas *cnv, const int layer, const int topX, const int topY, const int tilesX, const int tilesY, const int aR, const int aG, const int aB, const bool bIsometric)
+void drawBoard(CONST BOARD &brd, 
+			   CGDICanvas *cnv,
+			   const int destX, const int destY,
+			   const int layer, 
+			   const int topX, const int topY, 
+			   const int tilesX, const int tilesY, 
+			   const int aR, const int aG, const int aB, 
+			   const bool bIsometric)
 {
 
 	// Is it an even or odd tile?
@@ -420,28 +423,39 @@ void drawBoard(CONST BOARD &brd, CGDICanvas *cnv, const int layer, const int top
 	const int nHeight = (tilesY + topY > brd.bSizeY) ? brd.bSizeY - topY : tilesY;
 
 	// For each layer
-	for (unsigned int i = nLower; i <= nUpper; i++)
+	for (unsigned int i = nLower; i <= nUpper; ++i)
 	{
 
 		// For the x axis
-		for (unsigned int j = 1; j <= nWidth; j++)
+		for (unsigned int j = 1; j <= nWidth; ++j)
 		{
 
 			// For the y axis
-			for (unsigned int k = 1; k <= nHeight; k++)
+			for (unsigned int k = 1; k <= nHeight; ++k)
 			{
 
-				// Obtain some information.
-				const int x = j + topX;
-				const int y = k + topY;
-				const std::string strTile = brd.tileIndex[brd.board[x][y][i]];
-				if (!strTile.empty())
+				// The tile co-ordinates.
+				const int x = j + topX, y = k + topY;
+				
+				if (brd.board[x][y][i])
 				{
+					const std::string strTile = brd.tileIndex[brd.board[x][y][i]];
+					if (!strTile.empty())
+					{
+						// Tile exists at this location.
+						drawTile(strTile, 
+								 j, k, 
+								 brd.ambientRed[x][y][i] + aR,
+								 brd.ambientGreen[x][y][i] + aG,
+								 brd.ambientBlue[x][y][i] + aB,
+								 cnv, 
+								 destX, destY,
+								 bIsometric, 
+								 nIsoEvenOdd);
 
-					// Tile exists at this location.
-					drawTile(strTile, j, k, brd.ambientRed[x][y][i] + aR, brd.ambientGreen[x][y][i] + aG, brd.ambientBlue[x][y][i] + aB, cnv, bIsometric, nIsoEvenOdd);
+					} // if (!strTile.empty())
 
-				} // if (!strTile.empty())
+				} // if (brd.board[x][y][i])
 
 			} // for k
 
@@ -467,6 +481,12 @@ void createCanvases(void)
 	extern std::vector<ANIMATION_FRAME> g_anmCache;
 	g_anmCache.clear();
 //	g_anmCache.reserve(128);
+
+	RECT rect = {0, 0, g_resX * 2, g_resY * 2};
+	g_scrollCache.pCnv = new CGDICanvas();
+	g_scrollCache.pCnv->CreateBlank(NULL, rect.right, rect.bottom, TRUE);
+	g_scrollCache.pCnv->ClearScreen(0);
+	g_scrollCache.r = rect;
 }
 
 /*
@@ -476,6 +496,7 @@ void destroyCanvases(void)
 {
 	delete g_cnvRpgCode;
 	delete g_cnvMessageWindow;
+	delete g_scrollCache.pCnv;
 }
 
 /*
@@ -489,6 +510,9 @@ void showScreen(const int width, const int height)
 
 	extern MAIN_FILE g_mainFile;
 	extern HINSTANCE g_hInstance;
+
+	g_screen.right = width;
+	g_screen.bottom = height;
 
 	g_resX = width;
 	g_resY = height;
@@ -565,6 +589,43 @@ void showScreen(const int width, const int height)
 }
 
 /*
+ * Check and render the scrollcache.
+ */
+void tagScrollCache::render(const bool bForceRedraw)
+{
+	extern BOARD g_activeBoard;
+	extern CSprite *g_pSelectedPlayer;
+
+	if (g_screen.left < r.left || g_screen.top < r.top ||
+		g_screen.right > r.right ||	g_screen.bottom > r.bottom ||
+		bForceRedraw)
+	{
+		// The screen is off the scrollcache area.
+
+		// Align to player.
+		g_pSelectedPlayer->alignBoard(r, false);
+
+		// Align to the grid.
+		r.left -= r.left % 32;
+		r.top -= r.top % 32;
+		r.right = r.left + g_resX * 2;
+		r.bottom = r.top + g_resY * 2;
+
+		pCnv->ClearScreen(TRANSP_COLOR);
+
+		// Draw all layers to the canvas.
+		drawBoard(g_activeBoard, 
+				  pCnv, 
+				  0, 0, 0,
+				  int(r.left / 32), 
+				  int(r.top / 32), 
+				  int((r.right - r.left) / 32), 
+				  int((r.bottom - r.top) / 32), 
+				  0, 0, 0, FALSE); 
+	}
+}
+
+/*
  * Render the scene now.
  *
  * cnv (in) - canvas to render to (NULL is screen)
@@ -573,7 +634,6 @@ void showScreen(const int width, const int height)
  */
 bool renderNow(CGDICanvas *cnv, const bool bForce)
 {
-
 	const bool bScreen = (cnv == NULL);
 
 	if (!cnv)
@@ -582,49 +642,92 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 		cnv->CreateBlank(NULL, g_resX, g_resY, TRUE);
 	}
 
+	extern std::vector<CPlayer *> g_players;
+	extern std::vector<CItem *> g_items;
+
 	extern BOARD g_activeBoard;
 	cnv->ClearScreen(g_activeBoard.brdColor);
-	drawBoard(g_activeBoard, cnv, 0, 0, 0, g_tilesX, g_tilesY, 0, 0, 0, g_activeBoard.isIsometric);
 
-	extern std::vector<CPlayer *> g_players;
-	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
-	{
-		// Render the player's current frame.
-		(*i)->render(cnv);
-		(*i)->putSpriteAt(cnv);	// Not here!
-	}
+	// Check if we need to re-render the scroll cache.
+	g_scrollCache.render(false);
+	
+	// Set of RECTs covering the sprites.
+	std::vector<RECT> rects;
+	RECT r = {0, 0, 0, 0};
+	rects.push_back(r);
 
-	extern std::vector<CItem *> g_items;
-	for (std::vector<CItem *>::const_iterator j = g_items.begin(); j != g_items.end(); ++j)
+	// Draw flattened layers.
+	g_scrollCache.pCnv->BltTransparentPart(cnv, 
+								g_scrollCache.r.left - g_screen.left,
+								g_scrollCache.r.top - g_screen.top,
+								0, 0, 
+								g_scrollCache.r.right - g_scrollCache.r.left, 
+								g_scrollCache.r.bottom - g_scrollCache.r.top,
+								TRANSP_COLOR);
+
+	for (int layer = 1; layer <= g_activeBoard.bSizeL; ++layer)
 	{
-		// Render the player's current frame.
-		(*j)->render(cnv);
-		(*j)->putSpriteAt(cnv);	// Not here!
-	}
+		for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
+		{
+			if (i->right)
+			{
+				// If this rect is occupied, draw all the tiles on this layer
+				// it totally or partially contains, covering the sprite.
+				drawBoard(g_activeBoard, 
+						  cnv, 
+						  (int(i->left / 32) * 32) - g_screen.left,
+						  (int(i->top / 32) * 32) - g_screen.top,
+						  layer, 
+						  int(i->left / 32), 
+						  int(i->top / 32), 
+						  int((i->right - i->left) / 32 + 1), 
+						  int((i->bottom - i->top) / 32 + 1), 
+						  0, 0, 0, FALSE); 
+			}
+		}
+
+		// To be z-ordered.
+		for (std::vector<CPlayer *>::iterator j = g_players.begin(); j != g_players.end(); ++j)
+		{
+			if ((*j)->putSpriteAt(cnv, layer, rects.back()))
+			{
+				// Sprite is on this layer and has been drawn.
+				// Store this area, and draw the tiles of the next
+				// layer on this one.
+				rects.push_back(r);
+			}
+		}
+
+		for (std::vector<CItem *>::iterator k = g_items.begin(); k != g_items.end(); ++k)
+		{
+			if((*k)->putSpriteAt(cnv, layer, rects.back()))
+			{
+				rects.push_back(r);
+			}
+		}
+	} // for (layer)
 
 	if (bScreen)
 	{
-
 		g_pDirectDraw->DrawCanvas(cnv, 0, 0);
 
 		// Temporary: draw vectors for debugging.
 /*		g_pDirectDraw->LockScreen();
 
-		for (i = g_players.begin(); i != g_players.end(); ++i)
-			(*i)->drawVector();
+		for (std::vector<CPlayer *>::iterator a = g_players.begin(); a != g_players.end(); ++a)
+			(*a)->drawVector();
 
-		for (j = g_items.begin(); j != g_items.end(); ++j) 
-			(*j)->drawVector();
+		for (std::vector<CItem *>::iterator b = g_items.begin(); b != g_items.end(); ++b) 
+			(*b)->drawVector();
 
-		for (std::vector<LPBRD_PROGRAM>::iterator k = g_activeBoard.programs.begin(); k != g_activeBoard.programs.end(); k++)
-			(*k)->vBase.draw(16777215, true);
+		for (std::vector<LPBRD_PROGRAM>::iterator c = g_activeBoard.programs.begin(); c != g_activeBoard.programs.end(); ++c)
+			(*c)->vBase.draw(16777215, true, g_screen.left, g_screen.top);
 
-		for (std::vector<CVector *>::iterator l = g_activeBoard.vectors.begin(); l != g_activeBoard.vectors.end(); l++)
-			(*l)->draw(16777215, true);
+		for (std::vector<CVector *>::iterator d = g_activeBoard.vectors.begin(); d != g_activeBoard.vectors.end(); ++d)
+			(*d)->draw(16777215, true, g_screen.left, g_screen.top);
 
 		g_pDirectDraw->UnlockScreen();
-*/
-		g_pDirectDraw->Refresh();
+*/		g_pDirectDraw->Refresh();
 		delete cnv;
 	}
 

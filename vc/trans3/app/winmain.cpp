@@ -116,6 +116,8 @@ VOID setUpGame(VOID)
 	extern double g_movementSize;
 	extern int g_selectedPlayer;
 	extern std::string g_projectPath;
+	extern RECT g_screen;
+	extern SCROLL_CACHE g_scrollCache;
 
 	// Load plugins.
 	CProgram::freePlugins();
@@ -160,7 +162,8 @@ VOID setUpGame(VOID)
 		}
 	}
 
-	g_movementSize = g_mainFile.pixelMovement ? 0.25 : 1.0;
+	// g_movementSize is in pixels.
+	g_movementSize = g_mainFile.pixelMovement ? 8.0 : 32.0;
 	g_selectedPlayer = 0;
 
     // Get the last gAvgTime from the registry.
@@ -224,6 +227,14 @@ VOID setUpGame(VOID)
 	{
 		g_activeBoard.open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
 		
+		// Set player position before rendering in order to align board.
+		g_pSelectedPlayer->setPosition(g_activeBoard.playerX ? g_activeBoard.playerX : 1,
+												g_activeBoard.playerY ? g_activeBoard.playerY : 1,
+												g_activeBoard.playerLayer ? g_activeBoard.playerLayer : 1);
+		
+		g_pSelectedPlayer->alignBoard(g_screen, true);
+		g_scrollCache.render(true);
+
 		if (!g_activeBoard.boardMusic.empty())
 		{
 			g_bkgMusic->open(g_activeBoard.boardMusic);
@@ -233,11 +244,8 @@ VOID setUpGame(VOID)
 		{
 			CProgram(g_projectPath + PRG_PATH + g_activeBoard.enterPrg).run();
 		}
-		g_players[g_selectedPlayer]->setPosition(g_activeBoard.playerX ? g_activeBoard.playerX : 1,
-												g_activeBoard.playerY ? g_activeBoard.playerY : 1,
-												g_activeBoard.playerLayer ? g_activeBoard.playerLayer : 1);
 // Testing!
-//		g_players[1]->setPosition(10, 5, 1);
+//		g_players[1]->setPosition(10 * 32, 5 * 32, 1);
 
 	}
 
@@ -268,7 +276,6 @@ VOID openSystems(VOID)
  */
 INT gameLogic(VOID)
 {
-
 	switch (g_gameState)
 	{
 		case GS_IDLE:
@@ -288,7 +295,8 @@ INT gameLogic(VOID)
 			scanKeys();
 
 // Testing!
-			g_items[0]->setQueuedMovements(rand() % 9, true);
+			if (g_items.size())
+				g_items[0]->setQueuedMovements(rand() % 9, true);
 
 			// Movement.
 			for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
@@ -405,13 +413,13 @@ VOID closeSystems(VOID)
 	freeInput();
 
 	// Destroy sprites (move to somewhere)
-	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); i++)
+	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
 		delete (*i);
 	}
 	g_players.clear();
 
-	// Items...
+	// Items... currently freed by the board destructor.
 
 	delete g_bkgMusic;
 	CAudioSegment::freeLoader();
@@ -427,9 +435,8 @@ VOID closeSystems(VOID)
  */
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
-
-	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	//#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	g_hInstance = hInstance;
 

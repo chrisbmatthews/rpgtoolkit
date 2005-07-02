@@ -303,17 +303,17 @@ bool CVector::containsPoint(const DB_POINT p)
 }
 
 /*
- * Draw the vector / polygon onto a canvas. Note: currently draws to 
- * the device - need a canvas line-drawing function. 
+ * Draw the vector / polygon onto a canvas, offset by x,y. 
+ * Note: currently draws to the device - need a canvas line-drawing function. 
  */
-void CVector::draw(CONST LONG color, const bool drawText)
+void CVector::draw(CONST LONG color, const bool drawText, const int x, const int y)
 {
 	extern CDirectDraw *g_pDirectDraw;
 
 	for (DB_ITR i = m_p.begin(); i != m_p.end(); i++)
 	{
 		if (i != m_p.end() - 1)
-			g_pDirectDraw->DrawLine(i->x, i->y, (i + 1)->x, (i + 1)->y, color);
+			g_pDirectDraw->DrawLine(i->x - x, i->y - y, (i + 1)->x - x, (i + 1)->y - y, color);
 
 		// Draw the co-ordinates for each corner.
 		if (drawText)
@@ -321,9 +321,9 @@ void CVector::draw(CONST LONG color, const bool drawText)
 			std::string text; 
 			char c [5]; 
 			text = gcvt (i->x, 5, c);
-			g_pDirectDraw->DrawText(i->x, i->y, text, "Arial", 10, color);
+			g_pDirectDraw->DrawText(i->x - x, i->y - y, text, "Arial", 10, color);
 			text = gcvt (i->y, 5, c);
-			g_pDirectDraw->DrawText(i->x, i->y + 8, text, "Arial", 10, color);
+			g_pDirectDraw->DrawText(i->x - x, i->y - y + 8, text, "Arial", 10, color);
 		}
 	}
 }

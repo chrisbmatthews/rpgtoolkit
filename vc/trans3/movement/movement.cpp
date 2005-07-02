@@ -27,7 +27,7 @@ PENDING_MOVEMENTS g_pendingItemMovement;	// Pending item movements.
 
 int g_selectedPlayer = 0;					// Index of current player.
 int g_loopOffset = 0;						// Offset for movement loops.
-double g_movementSize = 1.0;				// Movement size (in fractions of a tile).
+double g_movementSize = 32.0;				// Movement size (in pixels).
 unsigned int g_stepsTaken = 0;				// Number of steps the player has taken.
 
 /*

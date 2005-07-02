@@ -242,9 +242,16 @@ CVariant send(CProgram::PARAMETERS params, CProgram *const)
 	}
 	extern BOARD g_activeBoard;
 	g_activeBoard.open(g_projectPath + BRD_PATH + params[0].getLit());
+	
 	clearAnmCache();
 	extern CSprite *g_pSelectedPlayer;
-	g_pSelectedPlayer->setPosition(x, y, layer);
+	g_pSelectedPlayer->setPosition(x * 32, y * 32, layer);
+
+	// After setPosition().
+	extern RECT g_screen;
+	extern SCROLL_CACHE g_scrollCache;
+	g_pSelectedPlayer->alignBoard(g_screen, true);
+	g_scrollCache.render(true);
 
 	// Ensure that programs the player is standing on don't run immediately.
 	g_pSelectedPlayer->deactivatePrograms();

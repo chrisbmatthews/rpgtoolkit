@@ -156,9 +156,14 @@ bool CSprite::move(const CSprite *selectedPlayer)
 	if (m_pos.loopFrame >= 0)
 	{
 		// Movement is occurring.
-		if (push() || ((m_tileType & TT_SOLID) && (this == selectedPlayer)))
+		if (push(selectedPlayer))
 		{
-			if (m_pos.loopFrame % int(m_pos.loopSpeed / g_movementSize) == 0)
+
+			// Increment the frame count in fractions, the fraction being one over
+			// the number of pixels per move. Then, the frame changes on
+			// integral values.
+
+			if (m_pos.loopFrame % int(m_pos.loopSpeed * 32.0 / g_movementSize) == 0)
 			{
 				// Increment the animation frame when we're on a multiple of
 				// loopSpeed (the number of renders to make between animation
@@ -218,7 +223,7 @@ bool CSprite::move(const CSprite *selectedPlayer)
  * Complete a single frame's movement of the sprite.
  * Return: true if movement occurred.
  */
-bool CSprite::push(void) 
+bool CSprite::push(const CSprite *selectedPlayer) 
 {
 	extern double g_movementSize;
 
@@ -227,18 +232,62 @@ bool CSprite::push(void)
 	
 	incrementPosition(m_pos, m_pend, moveFraction);
 
-//	if (spriteCollisions())
 	if (m_tileType & TT_SOLID)
 	{
 		// May check collisions every frame.
 		m_pos = testPosition;
-		return false;	// Except for selected player.
+
+		// Cause the player to walk on spot.
+		if (this == selectedPlayer) return true;
+		// Other sprites don't animate.
+		return false;
 	}
 
 	// Scroll the board for players. Either set for all players, or only selected player
 	// and create a Scroll RPGCode function so that scrolling can be achieved without having
 	// to use invisible players.
-	/*	Scroll() */
+	extern RECT g_screen;
+	extern BOARD g_activeBoard;
+
+	if (this == selectedPlayer)
+	{
+		if (m_v.y == -1)
+		{
+			// North. Scroll if in upper half of *screen*.
+			if (m_pos.y < (g_screen.top + g_screen.bottom) * 0.5 && g_screen.top > 0) 
+			{
+				g_screen.top -= moveFraction;
+				g_screen.bottom -= moveFraction;
+			}
+		}
+		else if (m_v.y == 1)
+		{
+			// South. Scroll if in lower half of screen.
+			if (m_pos.y > (g_screen.top + g_screen.bottom) * 0.5 && g_screen.bottom < g_activeBoard.bSizeY * 32)
+			{
+				g_screen.top += moveFraction;
+				g_screen.bottom += moveFraction;
+			}
+		}
+		if (m_v.x == -1)
+		{
+			// West. Scroll if in left half of screen.
+			if (m_pos.x  < (g_screen.left + g_screen.right) * 0.5 && g_screen.left > 0)
+			{
+				g_screen.left -= moveFraction;
+				g_screen.right -= moveFraction;
+			}
+		}
+		else if (m_v.x == 1)
+		{
+			// East. Scroll if in right half of screen.
+			if (m_pos.x > (g_screen.left + g_screen.right) * 0.5 && g_screen.right < g_activeBoard.bSizeX * 32)
+			{
+				g_screen.left += moveFraction;
+				g_screen.right += moveFraction;
+			}
+		}
+	} // if (this == selectedPlayer)
 	
 	return true;
 }
@@ -338,7 +387,7 @@ CVECTOR_TYPE CSprite::boardCollisions(const bool recursing)
 	CVECTOR_TYPE tileTypes = TT_NORMAL;
 
 	// Create the sprite's vector base at the *target* location.
-	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
 	CVector sprBase = m_attr.vBase + p;
 
 	// Loop over the board CVectors and check for intersections.
@@ -480,7 +529,7 @@ CVECTOR_TYPE CSprite::spriteCollisions(void)
 	extern std::vector<CItem *> g_items;
 
 	// Create the sprite's vector base at the *target* location.
-	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
 	CVector sprBase = m_attr.vBase + p;
 
 	for(std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); i++)
@@ -488,7 +537,7 @@ CVECTOR_TYPE CSprite::spriteCollisions(void)
 		if (this == *i || m_pos.l != (*i)->m_pos.l) continue;
 
 		// Compare target bases.
-		DB_POINT pt = {((*i)->m_pend.xTarg - 1.0) * 32.0, ((*i)->m_pend.yTarg - 1.0) * 32.0};
+		DB_POINT pt = {(*i)->m_pend.xTarg - 32.0, (*i)->m_pend.yTarg - 32.0};
 		CVector tarBase = (*i)->m_attr.vBase + pt;
 
 		if (tarBase.contains(sprBase, p) != TT_NORMAL)
@@ -506,7 +555,7 @@ CVECTOR_TYPE CSprite::spriteCollisions(void)
 		if (this == *j || m_pos.l != (*j)->m_pos.l) continue;
 
 		// Compare target bases.
-		DB_POINT pt = {((*j)->m_pend.xTarg - 1.0) * 32.0, ((*j)->m_pend.yTarg - 1.0) * 32.0};
+		DB_POINT pt = {(*j)->m_pend.xTarg - 32.0, (*j)->m_pend.yTarg - 32.0};
 		CVector tarBase = (*j)->m_attr.vBase + pt;
 
 		if (tarBase.contains(sprBase, p) != TT_NORMAL)
@@ -536,7 +585,7 @@ bool CSprite::programTest(void)
 	// Create the sprite's vector base at the *target* location (for the
 	// case of pressing against an item, etc.)
 	// We want to use the player's *solid* base (not any active vector it may have).
-	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
 	CVector sprBase = m_attr.vBase + p;
 
 	// Construct merged origin / target?
@@ -546,7 +595,7 @@ bool CSprite::programTest(void)
 	{
 		if (this == *i || m_pos.l != (*i)->m_pos.l) continue;
 
-		DB_POINT pt = {((*i)->m_pos.x - 1.0) * 32.0, ((*i)->m_pos.x - 1.0) * 32.0};
+		DB_POINT pt = {(*i)->m_pos.x - 32.0, (*i)->m_pos.x - 32.0};
 		CVector tarActivate = (*i)->m_attr.vActivate + pt;
 
 		if (tarActivate.contains(sprBase, p) != TT_NORMAL)
@@ -563,7 +612,7 @@ bool CSprite::programTest(void)
 	{
 		if (this == *j || m_pos.l != (*j)->m_pos.l) continue;
 
-		DB_POINT pt = {((*j)->m_pos.x - 1.0) * 32.0, ((*j)->m_pos.y - 1.0) * 32.0};
+		DB_POINT pt = {(*j)->m_pos.x - 32.0, (*j)->m_pos.y - 32.0};
 
 		CVector tarActivate = (*j)->m_attr.vActivate + pt;
 
@@ -653,7 +702,7 @@ bool CSprite::programTest(void)
 			// Standing in a program activation area.
 
 			// Increase distance travelled within the vector.
-			(*k)->distance += g_movementSize * 32;
+			(*k)->distance += g_movementSize;
 
 			// Check activation conditions.
 			if ((*k)->activationType & PRG_REPEAT)
@@ -669,7 +718,7 @@ bool CSprite::programTest(void)
 				// without the PRG_REPEAT can always trigger).
 				if (!((*k)->activationType & PRG_KEYPRESS))
 				{
-					if ((*k)->distance != g_movementSize * 32) continue;
+					if ((*k)->distance != g_movementSize) continue;
 				}
 			}
 
@@ -727,7 +776,7 @@ void CSprite::deactivatePrograms(void)
 	extern double g_movementSize;
 	extern BOARD g_activeBoard;
 
-	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
 	CVector sprBase = m_attr.vBase + p;
 
 	std::vector<LPBRD_PROGRAM>::iterator i = g_activeBoard.programs.begin();
@@ -748,7 +797,7 @@ void CSprite::deactivatePrograms(void)
 				{
 					// Single triggers - prevent from running until
 					// player leaves area.
-					(*i)->distance = g_movementSize * 32;
+					(*i)->distance = g_movementSize;
 				}
 			}
 		}
@@ -760,19 +809,21 @@ void CSprite::deactivatePrograms(void)
 // directly to the device!
 void CSprite::drawVector(void)
 {
+	extern RECT g_screen;
+
 	// Draw the target base one colour.
-	DB_POINT p = {(m_pend.xTarg - 1.0) * 32.0, (m_pend.yTarg - 1.0) * 32.0};
+	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
 	CVector sprBase = m_attr.vBase + p;
-	sprBase.draw(65535, false);
+	sprBase.draw(65535, false, g_screen.left, g_screen.top);
 
 	// Draw the current position base another.
-	p.x = (m_pos.x - 1.0) * 32.0; p.y = (m_pos.y - 1.0) * 32.0;
+	p.x = m_pos.x - 32.0; p.y = m_pos.y - 32.0;
 	sprBase = m_attr.vBase + p;
-	sprBase.draw(16777215, false);
+	sprBase.draw(16777215, false, g_screen.left, g_screen.top);
 
 	// Draw the activation area.
 	sprBase = m_attr.vActivate + p;
-	sprBase.draw(16777215, false);
+	sprBase.draw(16777215, false, g_screen.left, g_screen.top);
 }
 
 /*
@@ -805,6 +856,72 @@ void CSprite::insertTarget()
 
 // CSprite::incrementPosition() {} To do.
 
+
+/*
+ * Align a RECT to the sprite's location.
+ */
+void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
+{
+	extern BOARD g_activeBoard;
+	const int width = rect.right - rect.left;
+	const int height = rect.bottom - rect.top;
+
+	if (g_activeBoard.bSizeX * 32 < width)
+	{
+		// Board smaller than screen.
+		if (bAllowNegatives)
+		{
+			rect.left = (g_activeBoard.bSizeX * 32 - width) * 0.5;
+		}
+		else
+		{
+			rect.left = 0;
+		}
+	}
+	else
+	{
+		// Centre around the player.
+		rect.left = m_pos.x - width * 0.5;
+		if (rect.left < 0)
+		{
+			// Align to left of board.
+			rect.left = 0;
+		}
+		if (rect.left + width > g_activeBoard.bSizeX * 32)
+		{
+			// Align to right of board.
+			rect.left = g_activeBoard.bSizeX * 32 - width;
+		}
+	}
+
+	if (g_activeBoard.bSizeY * 32 < height)
+	{
+		if (bAllowNegatives)
+		{
+			rect.top = (g_activeBoard.bSizeY * 32 - height) * 0.5;
+		}
+		else
+		{
+			rect.top = 0;
+		}
+	}
+	else
+	{
+		rect.top = m_pos.y - height * 0.5;
+		if (rect.top < 0)
+		{
+			rect.top = 0;
+		}
+		if (rect.top + height > g_activeBoard.bSizeY * 32)
+		{
+			rect.top = g_activeBoard.bSizeY * 32 - height;
+		}
+	}
+
+	rect.right = rect.left + width;
+	rect.bottom = rect.top + height;
+}
+
 /*
  * Render functions.
  */
@@ -814,7 +931,7 @@ void CSprite::insertTarget()
  * frame requires updating.
  * Returns: true if frame requires redrawing.
  */
-bool CSprite::render(const CGDICanvas* cnv) 
+bool CSprite::render(void) 
 {
 	extern int g_gameState;
 	extern std::string g_projectPath;
@@ -948,181 +1065,87 @@ bool CSprite::render(const CGDICanvas* cnv)
 
 /*
  * Calculate sprite location and place on destination canvas.
- * To be cleaned!
  */
-void CSprite::putSpriteAt(const CGDICanvas *cnvTarget)
-{    
+bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget, 
+						  const int layer,
+						  RECT &rect)
+{
 	extern BOARD g_activeBoard;
-	extern int g_resX, g_resY;
+
+	// If we're rendering the top layer, draw the translucent sprite.
+	if (m_pos.l != layer && layer != g_activeBoard.bSizeL) return false;
+
+	// Render the frame here.
+	this->render();
+
+	// Screen location on board.
+	extern RECT g_screen;
 	extern CDirectDraw *g_pDirectDraw;
 	extern double g_translucentOpacity;
+	extern std::vector<SCROLL_CACHE> g_scrollCache;
 
-    double xOrig = m_pend.xOrig;
-    double yOrig = m_pend.yOrig;
-    double xTarg = m_pend.xTarg;
-    double yTarg = m_pend.yTarg;
-    
-    if (xOrig > g_activeBoard.bSizeX || xOrig < 0) xOrig = round(m_pos.x);
-    if (yOrig > g_activeBoard.bSizeY || yOrig < 0) yOrig = round(m_pos.y);
-    if (xTarg > g_activeBoard.bSizeX || xTarg < 0) xTarg = round(m_pos.x);
-    if (yTarg > g_activeBoard.bSizeY || yTarg < 0) yTarg = round(m_pos.y);
-    
-    const BYTE targetTile = 0; // g_activeBoard.tiletype[round(xTarg)][-int(-yTarg)][int(m_pos.l)];
-    const BYTE originTile = 0; // g_activeBoard.tiletype[round(xOrig)][-int(-yOrig)][int(m_pos.l)];
+/* Referencing with m_pos at the bottom-left corner of the tile. */
 
+	const int centreX = m_pos.x - 16.0;
+	const int centreY = m_pos.y;
 
-	/*    
-	 * If [tiles on layers above]
-	 * OR [Moving *to* "under" tile (target)]
-	 * OR [Moving *from* "under" tile (origin)]
-	 * OR [Moving between "under" tiles]
-	 */ 
-    bool bDrawTranslucently = false;
-    if (g_activeBoard.isIsometric)
-	{
-        if (
-/*            checkAbove(m_pos.x, m_pos.y, m_pos.l) == 1
-            || */ (targetTile == UNDER && round(m_pos.x) == xTarg && round(m_pos.y) == yTarg)
-            || (originTile == UNDER && round(m_pos.x) == xOrig && round(m_pos.y) == yOrig)
-            || (targetTile == UNDER && originTile == UNDER))
-                bDrawTranslucently = true;
-	}
-    else
-	{
-        if (
-/*            checkAbove(m_pos.x, m_pos.y, m_pos.l) == 1
-            || */ (targetTile == UNDER && round(m_pos.x) == round(xTarg) && -int(-m_pos.y) == -int(-yTarg))
-            || (originTile == UNDER && round(m_pos.x) == round(xOrig) && -int(-m_pos.y) == -int(-yOrig))
-            || (targetTile == UNDER && originTile == UNDER))
-                bDrawTranslucently = true;
-	}
-
-    // Determine the centrepoint of the tile in pixels.
-    const int centreX = getBottomCentreX(m_pos.x, m_pos.y);
-    int centreY = getBottomCentreY(m_pos.x, m_pos.y);
+	// Determine the centrepoint of the tile *on the screen* in pixels.
+//    const int centreX = getBottomCentreX(m_pos.x, m_pos.y);
+//    int centreY = getBottomCentreY(m_pos.x, m_pos.y);
 
     // + 8 offsets the sprite 3/4 of way down tile rather than 1/2 for isometrics.
-    if (g_activeBoard.isIsometric) centreY += 8;
+//    if (g_activeBoard.isIsometric) centreY += 8;
        
     // The dimensions of the sprite frame, in pixels.
     const int spriteWidth = m_pCanvas->GetWidth();
     const int spriteHeight = m_pCanvas->GetHeight();
 
-    // Will place the top left corner of the sprite frame at cornerX, cornerY:
-    int cornerX = centreX - int(spriteWidth / 2);
-    int cornerY = centreY - spriteHeight;
-           
-    // Exit if sprite is off the board.
-    if (cornerX > g_resX || 
-		cornerY > g_resY ||
-        cornerX + spriteWidth < 0 || 
-		cornerY + spriteHeight < 0) return;
-       
-    // Offset on the sprite's frame from the top left corner (cornerX, cornerY)
-    int offsetX = 0, offsetY = 0;
-    // Portion of frame to be drawn, after offset considerations.
-    int renderWidth = 0, renderHeight = 0;
-       
-    // Calculate locations and areas to draw.
-    if (cornerX < 0)
+	// Sprite location on screen and board.
+	RECT screen = {0, 0, 0, 0},
+		 board = { centreX - int(spriteWidth / 2), centreY - spriteHeight,
+				   centreX + int(spriteWidth / 2), centreY };
+	
+
+	if (!IntersectRect(&screen, &board, &g_screen))
 	{
-        offsetX = -cornerX;
-        if (cornerX + spriteWidth > g_resX)
-            renderWidth = g_resX;					// Both edges off board.
-        else
-            renderWidth = spriteWidth - offsetX;	// Left.
-        cornerX = 0;
+		// Off the screen!
+		return false;
 	}
-    else
+
+	// screen holds the portion of the frame we need to draw.
+	// Put the board co-ordinates into rect.
+	rect = screen;
+
+	// Blt the player to the target.
+	if (m_pos.l == layer)
 	{
-        if (cornerX + spriteWidth > g_resX)
-            renderWidth = g_resX - cornerX;			// Right.
-        else
-            renderWidth = spriteWidth;				// None.
+		m_pCanvas->BltTransparentPart(cnvTarget,
+								screen.left - g_screen.left,	// destination coord
+								screen.top - g_screen.top,
+								screen.left - board.left,		// source coord
+								screen.top - board.top,
+								screen.right - screen.left,		// width / height
+								screen.bottom - screen.top,
+								TRANSP_COLOR);
+		return true;
 	}
-    
-    if (cornerY < 0)
+
+	// Blt the translucent player, unless they're on the top layer.
+	// (Should really do this separately right before flipping).
+	if (layer == g_activeBoard.bSizeL && m_pos.l != layer)
 	{
-        offsetY = -cornerY;
-        if (cornerY + spriteHeight > g_resY)
-            renderHeight = g_resY;					// Both.
-        else
-            renderHeight = spriteHeight - offsetY;	// Left.
-        cornerY = 0;
+		m_pCanvas->BltTranslucentPart(cnvTarget,
+								screen.left - g_screen.left,	// destination coord
+								screen.top - g_screen.top,
+								screen.left - board.left,		// source coord
+								screen.top - board.top,
+								screen.right - screen.left,		// width / height
+								screen.bottom - screen.top,
+								g_translucentOpacity,
+								-1,
+								TRANSP_COLOR);
 	}
-    else
-	{
-        if (cornerY + spriteHeight > g_resY)
-            renderHeight = g_resY - cornerY;		// Right.
-        else
-            renderHeight = spriteHeight;			// None.
-	}
-    
-    // We now have the position and area of the sprite to draw.
-    // Check if we need to draw the sprite transluscently:
-    
-//    if (bDrawTranslucently)
-	if(m_tileType & TT_UNDER)
-	{
-        // If on "under" tiles, make sprite translucent.
-        
-        if (!cnvTarget)
-		{
-			// Draw to screen.
-			g_pDirectDraw->DrawCanvasTranslucentPartial(m_pCanvas,
-														cornerX,
-														cornerY,
-														offsetX,
-														offsetY,
-														renderWidth,
-														renderHeight,
-														g_translucentOpacity,
-														-1,
-														TRANSP_COLOR);
-		}
-        else 
-		{
-			// Draw to canvas.
-			/* Canvas checks */
-			m_pCanvas->BltTranslucentPart(cnvTarget,
-										cornerX,
-										cornerY,
-										offsetX,
-										offsetY,
-										renderWidth,
-										renderHeight,
-										g_translucentOpacity,
-										-1,
-										TRANSP_COLOR);
-		}
-	}
-    else
-	{
-        // Draw solid. Transparent refers to the transparent colour (alpha) on the frame.
-        if (!cnvTarget)
-		{
-			// Draw to screen.
-			g_pDirectDraw->DrawCanvasTransparentPartial(m_pCanvas,
-														cornerX,
-														cornerY,
-														offsetX,
-														offsetY,
-														renderWidth,
-														renderHeight,
-														TRANSP_COLOR);
-		}
-        else 
-		{
-			// Draw to canvas.
-			/* Canvas checks */
-			m_pCanvas->BltTransparentPart(cnvTarget,
-										cornerX,
-										cornerY,
-										offsetX,
-										offsetY,
-										renderWidth,
-										renderHeight,
-										TRANSP_COLOR);
-		}
-	} // if (bDrawTranslucently)
+	// Return false on translucentBlt to prevent excessive queuing in renderNow().
+	return false;
 }
+
