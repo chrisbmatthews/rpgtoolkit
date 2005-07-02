@@ -335,7 +335,7 @@ void CProgram::open(const std::string file)
 		{
 			const std::string push = parts[i];
 			const std::string ucase = parser::uppercase(push);
-			if (ucase.compare(0, 6, "METHOD") == 0)
+			if (ucase.compare(0, 7, "METHOD ") == 0)
 			{
 				/*
 				 * Save this method.
@@ -359,7 +359,7 @@ void CProgram::open(const std::string file)
 				} while (pos++ != std::string::npos);
 				stream = &method.lines;
 			}
-			else if (ucase.compare(0, 5, "CLASS") == 0)
+			else if (ucase.compare(0, 6, "CLASS ") == 0)
 			{
 				const std::string chunk = push.substr(6);
 				const int colon = chunk.find(':');

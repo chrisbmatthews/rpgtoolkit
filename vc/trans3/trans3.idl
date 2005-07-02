@@ -34,7 +34,7 @@ import "ocidl.idl";
 		HRESULT CBGetMwinDC([out, retval] int *pRet);
 		HRESULT CBPopupMwin([out, retval] int *pRet);
 		HRESULT CBHideMwin([out, retval] int *pRet);
-		HRESULT CBLoadEnemy([string] BSTR *file, int *eneSlot);
+		HRESULT CBLoadEnemy([string] BSTR file, int eneSlot);
 		HRESULT CBGetEnemyNum(int infoCode, int eneSlot, [out, retval] int *pRet);
 		HRESULT CBGetEnemyString(int infoCode, int eneSlot, [out, retval, string] BSTR *pRet);
 		HRESULT CBSetEnemyNum(int infoCode, int newValue, int eneSlot);

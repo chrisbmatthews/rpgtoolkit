@@ -2,7 +2,7 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Sun Jun 26 01:45:46 2005
+/* at Fri Jul 01 21:04:31 2005
  */
 /* Compiler settings for C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\trans3.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
@@ -115,8 +115,8 @@ EXTERN_C const IID IID_ICallbacks;
             /* [retval][out] */ int __RPC_FAR *pRet) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CBLoadEnemy( 
-            /* [string] */ BSTR __RPC_FAR *file,
-            int __RPC_FAR *eneSlot) = 0;
+            /* [string] */ BSTR file,
+            int eneSlot) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CBGetEnemyNum( 
             int infoCode,
@@ -896,8 +896,8 @@ EXTERN_C const IID IID_ICallbacks;
         
         HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBLoadEnemy )( 
             ICallbacks __RPC_FAR * This,
-            /* [string] */ BSTR __RPC_FAR *file,
-            int __RPC_FAR *eneSlot);
+            /* [string] */ BSTR file,
+            int eneSlot);
         
         HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBGetEnemyNum )( 
             ICallbacks __RPC_FAR * This,
@@ -2308,8 +2308,8 @@ void __RPC_STUB ICallbacks_CBHideMwin_Stub(
 
 HRESULT STDMETHODCALLTYPE ICallbacks_CBLoadEnemy_Proxy( 
     ICallbacks __RPC_FAR * This,
-    /* [string] */ BSTR __RPC_FAR *file,
-    int __RPC_FAR *eneSlot);
+    /* [string] */ BSTR file,
+    int eneSlot);
 
 
 void __RPC_STUB ICallbacks_CBLoadEnemy_Stub(

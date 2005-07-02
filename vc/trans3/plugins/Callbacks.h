@@ -343,7 +343,7 @@ public:
 	STDMETHOD(CBGetMwinDC) (int *pRet);
 	STDMETHOD(CBPopupMwin) (int *pRet);
 	STDMETHOD(CBHideMwin) (int *pRet);
-	STDMETHOD(CBLoadEnemy) (BSTR *file, int *eneSlot);
+	STDMETHOD(CBLoadEnemy) (BSTR file, int eneSlot);
 	STDMETHOD(CBGetEnemyNum) (int infoCode, int eneSlot, int *pRet);
 	STDMETHOD(CBGetEnemyString) (int infoCode, int eneSlot, BSTR *pRet);
 	STDMETHOD(CBSetEnemyNum) (int infoCode, int newValue, int eneSlot);

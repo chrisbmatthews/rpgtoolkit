@@ -22,6 +22,7 @@ extern CAllocationHeap<CGDICanvas> g_canvases;
 extern CDirectDraw *g_pDirectDraw;
 extern std::vector<CPlayer *> g_players;
 CAllocationHeap<ANIMATION> g_animations;
+static HDC g_hScreenDc = NULL;
 
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
@@ -31,7 +32,9 @@ STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 
 STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 {
-	SysReAllocString(pRet, getString(CProgram::getGlobal(getString(varname)).getLit()));
+	BSTR bstr = getString(CProgram::getGlobal(getString(varname)).getLit());
+	SysReAllocString(pRet, bstr);
+	SysFreeString(bstr);
 	return S_OK;
 }
 
@@ -56,7 +59,7 @@ STDMETHODIMP CCallbacks::CBSetNumerical(BSTR varname, double newValue)
 STDMETHODIMP CCallbacks::CBGetScreenDC(int *pRet)
 {
 	extern HWND g_hHostWnd;
-	*pRet = (int)GetDC(g_hHostWnd);
+	*pRet = int(g_hScreenDc = GetDC(g_hHostWnd));
 	return S_OK;
 }
 
@@ -94,7 +97,7 @@ STDMETHODIMP CCallbacks::CBHideMwin(int *pRet)
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBLoadEnemy(BSTR *file, int *eneSlot)
+STDMETHODIMP CCallbacks::CBLoadEnemy(BSTR file, int eneSlot)
 {
 	return S_OK;
 }
@@ -786,7 +789,9 @@ STDMETHODIMP CCallbacks::CBGetPlayerName(int playerIdx, BSTR *pRet)
 {
 	if (g_players.size() > playerIdx)
 	{
-		SysReAllocString(pRet, getString(g_players[playerIdx]->name()));
+		BSTR bstr = getString(g_players[playerIdx]->name());
+		SysReAllocString(pRet, bstr);
+		SysFreeString(bstr);
 	}
 	else
 	{
@@ -961,7 +966,9 @@ STDMETHODIMP CCallbacks::CBAnimationFrameImage(int idx, int frame, BSTR *pRet)
 	LPANIMATION p = g_animations.cast(idx);
 	if (p && (p->animFrames > frame))
 	{
-		SysReAllocString(pRet, getString(p->animFrame[frame]));
+		BSTR bstr = getString(p->animFrame[frame]);
+		SysReAllocString(pRet, bstr);
+		SysFreeString(bstr);
 	}
 	else
 	{
@@ -1076,6 +1083,9 @@ STDMETHODIMP CCallbacks::CBCheckMusic(void)
 
 STDMETHODIMP CCallbacks::CBReleaseScreenDC(void)
 {
+	extern HWND g_hHostWnd;
+	ReleaseDC(g_hHostWnd, g_hScreenDc);
+	g_hScreenDc = NULL;
 	return S_OK;
 }
 

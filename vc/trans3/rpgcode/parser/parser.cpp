@@ -205,11 +205,8 @@ void parser::getTokenList(const std::string str, std::vector<std::string> &pToke
  */
 std::string parser::uppercase(const std::string str)
 {
-	std::string toRet = "";
-	const int len = str.length();
-	for (int i = 0; i < len; i++)
-	{
-		toRet += toupper(str[i]);
-	}
+	char *pstr = _strupr(_strdup(str.c_str()));
+	const std::string toRet = pstr;
+	free(pstr);
 	return toRet;
 }

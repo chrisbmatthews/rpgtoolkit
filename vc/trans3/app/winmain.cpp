@@ -72,11 +72,9 @@ void operator delete(void *p)
 #endif
 
 /*
- * Show a main file dialogue.
- *
- * return (out) - file chosen.
+ * Get a main file name.
  */
-std::string mainFileDialog(void)
+std::string getMainFileName(void)
 {
 
 	TCHAR strFileName[MAX_PATH] = "";
@@ -95,17 +93,7 @@ std::string mainFileDialog(void)
 		0, NULL, NULL
 	};
 
-	return (GetOpenFileName(&ofn) ? strFileName : "");
-
-}
-
-/*
- * Get a main file name.
- */
-std::string getMainFileName(void)
-{
-
-	const std::string fileName = mainFileDialog();
+	const std::string fileName = (GetOpenFileName(&ofn) ? strFileName : "");
 
 	if (_stricmp(getExtension(fileName).c_str(), "TPK") == 0)
 	{

@@ -748,10 +748,6 @@ SOURCE=.\common\tileanim.h
 
 SOURCE=.\common\tilebitmap.h
 # End Source File
-# Begin Source File
-
-SOURCE=.\common\trace.h
-# End Source File
 # End Group
 # End Group
 # Begin Group "input"

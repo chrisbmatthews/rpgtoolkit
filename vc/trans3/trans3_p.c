@@ -2,7 +2,7 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Sun Jun 26 01:45:46 2005
+/* at Fri Jul 01 21:04:31 2005
  */
 /* Compiler settings for C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\trans3.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
@@ -27,7 +27,7 @@
 
 #include "trans3.h"
 
-#define TYPE_FORMAT_STRING_SIZE   75                                
+#define TYPE_FORMAT_STRING_SIZE   67                                
 #define PROC_FORMAT_STRING_SIZE   5727                              
 
 typedef struct _MIDL_TYPE_FORMAT_STRING
@@ -5513,7 +5513,7 @@ static const MIDL_PROC_FORMAT_STRING __MIDL_ProcFormatString =
 
 	/* Parameter file */
 
-/* 348 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 348 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 #ifndef _ALPHA_
 /* 350 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
 #else
@@ -5523,7 +5523,7 @@ static const MIDL_PROC_FORMAT_STRING __MIDL_ProcFormatString =
 
 	/* Parameter eneSlot */
 
-/* 354 */	NdrFcShort( 0x148 ),	/* Flags:  in, base type, simple ref, */
+/* 354 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 #ifndef _ALPHA_
 /* 356 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
 #else
@@ -13727,15 +13727,8 @@ static const MIDL_TYPE_FORMAT_STRING __MIDL_TypeFormatString =
 /* 60 */	0x8,		/* FC_LONG */
 			0x5c,		/* FC_PAD */
 /* 62 */	
-			0x11, 0x0,	/* FC_RP */
-/* 64 */	NdrFcShort( 0xffffffda ),	/* Offset= -38 (26) */
-/* 66 */	
-			0x11, 0x8,	/* FC_RP [simple_pointer] */
-/* 68 */	0x8,		/* FC_LONG */
-			0x5c,		/* FC_PAD */
-/* 70 */	
 			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
-/* 72 */	0x6,		/* FC_SHORT */
+/* 64 */	0x6,		/* FC_SHORT */
 			0x5c,		/* FC_PAD */
 
 			0x0

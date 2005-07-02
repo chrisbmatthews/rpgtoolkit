@@ -78,7 +78,7 @@ int __stdcall CBHideMwin(void)
 	return toRet;
 }
 
-void __stdcall CBLoadEnemy(BSTR *file, int *eneSlot)
+void __stdcall CBLoadEnemy(BSTR file, int eneSlot)
 {
 	g_pCallbacks->CBLoadEnemy(file, eneSlot);
 }
