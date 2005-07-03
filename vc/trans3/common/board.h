@@ -69,6 +69,22 @@ typedef struct tagBoardTileAnim
 	int x, y, z;
 } BOARD_TILEANIM;
 
+
+typedef struct tagBoardVector
+{
+	int layer;
+	CGDICanvas *pCnv;
+	CVector *pV;
+	CVECTOR_TYPE type;
+
+	tagBoardVector():
+		layer(0),
+		pCnv(NULL),
+		pV(),
+		type(TT_SOLID) {};
+
+} BRD_VECTOR;
+
 /*
  * A board.
  */
@@ -151,10 +167,12 @@ typedef struct tagBoard
 	int anmTileLUTInsertIdx;						// Index of LUT table insertion.
 	std::string strFilename;						// Filename of the board.
 
-	std::vector<CVector *> vectors;					// No layers (yet).
+//	std::vector<CVector *> vectors;					// No layers (yet).
+	std::vector<BRD_VECTOR> vectors;
 
 	void open(const std::string fileName);
 	void vectorize(const unsigned int layer);
+	void createVectorCanvases(void);
 	void freeVectors(void);
 	void freePrograms(void);
 	void freeItems(void);

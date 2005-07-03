@@ -457,10 +457,12 @@ ver1:
 	/*
 	 * Do we need version one support?
 	 */
+	if (this != &g_activeBoard) return;
 
 	// Finally, vectorize the board.
 	// const DWORD dw = GetTickCount();
 	vectorize(playerLayer);
+	createVectorCanvases();
 	/** const DWORD time = GetTickCount() - dw;
 	char timeStr[255], vectorStr[255];
 	itoa(time, timeStr, 10);
@@ -562,20 +564,120 @@ void tagBoard::vectorize(const unsigned int layer)
 		// Create the vector and add it the board's list.
 		// - Note that different math is required here for isometrics, but
 		//   all isometrics are currently broken, so it is difficult to implement.
-		CVector *const pVector = new CVector((origX - 1) * 32, (origY - 1) * 32, 4, type);
+/*		CVector *const pVector = new CVector((origX - 1) * 32, (origY - 1) * 32, 4, type);
 		pVector->push_back((origX - 1) * 32, y * 32);
 		pVector->push_back(x * 32, y * 32);
 		pVector->push_back(x * 32, (origY - 1) * 32);
 		pVector->close(true, 0);
 		vectors.push_back(pVector);
-
+*/		
+		BRD_VECTOR vector;
+		vector.pV = new CVector((origX - 1) * 32, (origY - 1) * 32, 4, type);
+		vector.pV->push_back((origX - 1) * 32, y * 32);
+		vector.pV->push_back(x * 32, y * 32);
+		vector.pV->push_back(x * 32, (origY - 1) * 32);
+		vector.pV->close(true, 0);
+		vector.layer = layer;
+		vector.type = CVECTOR_TYPE(type);
+		vectors.push_back(vector);
 	}
 
 }
 
 /*
+ *
+ */
+void tagBoard::createVectorCanvases(void)
+{
+	// After vectorize() on old formats.
+
+	CONST LONG SOLID_COLOR = 0;
+
+	for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
+	{
+		// Only need to do this for under tiles.
+		// Tile type doesn't need to be in CVector!
+		if (!(i->type & TT_UNDER)) continue;
+
+		// Get the bounding box of the vector.
+		const RECT r = i->pV->getBounds();
+
+		i->pCnv = new CGDICanvas();
+		i->pCnv->CreateBlank(NULL, r.right - r.left, r.bottom - r.top, TRUE);
+		i->pCnv->ClearScreen(TRANSP_COLOR);
+
+		// Inflate to align to the grid.
+		const RECT rAlign = {r.left - r.left % 32,
+							r.top - r.top % 32,
+							r.right - r.right % 32 + 32,
+							r.bottom - r.bottom % 32 + 32};
+
+		// Create an intermediate canvas that is aligned to the grid.
+		CGDICanvas *cnv = new CGDICanvas();
+		cnv->CreateBlank(NULL, rAlign.right - rAlign.left, rAlign.bottom - rAlign.top, TRUE);
+		cnv->ClearScreen(TRANSP_COLOR);
+
+		// Create a mask from the vector on the vector's canvas.
+		if (i->pV->createMask(i->pCnv, r.left, r.top, SOLID_COLOR))
+		{
+			// Was drawn if vector was closed.
+
+			// Draw the board layer within the bounds to the intermediate canvas.
+			drawBoard(*this, cnv, 
+					  0, 0, 
+					  i->layer, 
+					  rAlign.left / 32, rAlign.top / 32, 
+					  (rAlign.right - rAlign.left) / 32, 
+					  (rAlign.bottom - rAlign.top) / 32,
+					  0, 0, 0, false);
+
+			// Blt the mask onto the canvas. In this case we want
+			// the *solid* colour on the mask to be transparent.
+			i->pCnv->BltTransparentPart(cnv, 
+										r.left % 32, r.top % 32, 
+										0, 0, 
+										r.right - r.left, 
+										r.bottom - r.top, 
+										SOLID_COLOR);
+
+			// Blt the vector area back to the vector's canvas.
+			// (Note: it may seem easier to put the mask on the intermediate
+			// canvas, but this results in a larger vector canvas that
+			// is harder to manipulate.)
+			cnv->BltPart(i->pCnv, 
+						0, 0, 
+						r.left % 32, r.top % 32, 
+						r.right - r.left, 
+						r.bottom - r.top, 
+						SRCCOPY);
+		}
+		else
+		{
+			// No need to keep this canvas.
+			delete i->pCnv;
+			i->pCnv = NULL;
+		}
+
+		delete cnv;
+
+	}
+}
+
+
+/*
  * Free vectors.
  */
+
+void tagBoard::freeVectors(void)
+{
+	for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
+	{
+		if (i->pCnv) delete i->pCnv;
+		delete i->pV;
+	}
+	vectors.clear();
+}
+/*
 void tagBoard::freeVectors(void)
 {
 	for (std::vector<CVector *>::iterator i = vectors.begin(); i != vectors.end(); ++i)
@@ -584,6 +686,7 @@ void tagBoard::freeVectors(void)
 	}
 	vectors.clear();
 }
+*/
 
 /*
  * Free programs.

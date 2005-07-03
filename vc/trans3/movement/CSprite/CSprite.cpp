@@ -391,11 +391,15 @@ CVECTOR_TYPE CSprite::boardCollisions(const bool recursing)
 	CVector sprBase = m_attr.vBase + p;
 
 	// Loop over the board CVectors and check for intersections.
-	for (std::vector<CVector *>::iterator i = g_activeBoard.vectors.begin(); i != g_activeBoard.vectors.end(); ++i)
+//	for (std::vector<CVector *>::iterator i = g_activeBoard.vectors.begin(); i != g_activeBoard.vectors.end(); ++i)
+	for (std::vector<BRD_VECTOR>::iterator i = g_activeBoard.vectors.begin(); i != g_activeBoard.vectors.end(); ++i)
 	{
+		if (i->layer != m_pos.l) continue;
+
 		// Check that the board vector contains the player,
 		// *not* the other way round!
-		CVECTOR_TYPE tt = (*i)->contains(sprBase, p);
+//		CVECTOR_TYPE tt = (*i)->contains(sprBase, p);
+		CVECTOR_TYPE tt = i->pV->contains(sprBase, p);
 
 		/*
 		 * If an intersection was found, p now holds a position vector
