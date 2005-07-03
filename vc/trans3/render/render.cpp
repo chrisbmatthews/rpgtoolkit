@@ -16,7 +16,6 @@
 #include "../movement/CVector/CVector.h"
 #include "../common/animation.h"
 #include "../common/mainfile.h"
-#include "../common/board.h"
 #include "../common/paths.h"
 #include "../input/input.h"
 #include "../resource.h"
@@ -46,7 +45,7 @@ std::vector<CTile *> g_tiles;				// Cache of tiles.
 CGDICanvas *g_cnvRpgCode;					// RPGCode canvas.
 CGDICanvas *g_cnvMessageWindow;				// RPGCode message window.
 bool g_bShowMessageWindow = false;			// Show the message window?
-double g_translucentOpacity = 0.50;			// Opacity to draw translucent sprites at.
+double g_translucentOpacity = 0.30;			// Opacity to draw translucent sprites at.
 
 RECT g_screen = {0, 0, 0, 0};				// = {g_topX, g_topY, g_resX + g_topX, g_resY + g_topY}
 SCROLL_CACHE g_scrollCache;					// The scroll cache.
@@ -651,9 +650,9 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 	// Check if we need to re-render the scroll cache.
 	g_scrollCache.render(false);
 	
-	// Set of RECTs covering the sprites.
-	std::vector<RECT> rects;
-	RECT r = {0, 0, 0, 0};
+	
+	std::vector<RECT> rects;		// Set of RECTs covering the sprites.
+	RECT r = {0, 0, 0, 0};			// Multipurpose RECT.
 	rects.push_back(r);
 
 	// Draw flattened layers.
@@ -675,8 +674,8 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 				// it totally or partially contains, covering the sprite.
 				drawBoard(g_activeBoard, 
 						  cnv, 
-						  (int(i->left / 32) * 32) - g_screen.left,
-						  (int(i->top / 32) * 32) - g_screen.top,
+						  i->left - (i->left % 32) - g_screen.left,
+						  i->top - (i->top % 32) - g_screen.top,
 						  layer, 
 						  int(i->left / 32), 
 						  int(i->top / 32), 
@@ -705,6 +704,36 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 				rects.push_back(r);
 			}
 		}
+
+		// Draw the "under" tiles for this layer over any sprites below.
+		for (std::vector<BRD_VECTOR>::iterator m = g_activeBoard.vectors.begin(); m != g_activeBoard.vectors.end(); ++m)
+		{
+			// Check if this is an "under" vector, is on the same layer and has a canvas.
+			if (!m->pCnv || m->layer != layer || !(m->type & TT_UNDER)) 
+				continue;
+
+			// Loop over the rects (the areas occupied by sprites) and
+			// draw the vector's canvas over any intersecting areas.
+			for (i = rects.begin(); i != rects.end(); ++i)
+			{
+				RECT rBounds = m->pV->getBounds();
+
+				// Place the intersection in r.
+				if (IntersectRect(&r, i, &rBounds))
+				{
+					m->pCnv->BltTransparentPart(cnv, 
+								r.left - g_screen.left,
+								r.top - g_screen.top,
+								r.left - rBounds.left, 
+								r.top - rBounds.top, 
+								r.right - r.left, 
+								r.bottom - r.top,
+								TRANSP_COLOR);
+				}
+			}
+		}
+
+
 	} // for (layer)
 
 	if (bScreen)
@@ -723,11 +752,12 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 		for (std::vector<LPBRD_PROGRAM>::iterator c = g_activeBoard.programs.begin(); c != g_activeBoard.programs.end(); ++c)
 			(*c)->vBase.draw(16777215, true, g_screen.left, g_screen.top);
 
-		for (std::vector<CVector *>::iterator d = g_activeBoard.vectors.begin(); d != g_activeBoard.vectors.end(); ++d)
-			(*d)->draw(16777215, true, g_screen.left, g_screen.top);
+		for (std::vector<BRD_VECTOR>::iterator d = g_activeBoard.vectors.begin(); d != g_activeBoard.vectors.end(); ++d)
+			d->pV->draw(16777215, true, g_screen.left, g_screen.top);
 
 		g_pDirectDraw->UnlockScreen();
-*/		g_pDirectDraw->Refresh();
+*/
+		g_pDirectDraw->Refresh();
 		delete cnv;
 	}
 

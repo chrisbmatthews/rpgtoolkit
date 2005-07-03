@@ -87,6 +87,11 @@ public:
 	// Determine if a polygon contains a point.
 	bool containsPoint(DB_POINT p);
 
+	bool createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG color);
+
+	// Get the bounding box.
+	RECT getBounds(void) const { return m_bounds; };
+
 	// Determine if a vector intersects another vector.
 	CVECTOR_TYPE intersect(CVector &rhs, DB_POINT &ref);
 

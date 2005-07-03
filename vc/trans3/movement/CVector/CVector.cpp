@@ -292,6 +292,64 @@ bool CVector::containsPoint(const DB_POINT p)
 }
 
 /*
+ * Create a mask by drawing a closed area and flooding.
+ * (Currently using the GDI).
+ */
+bool CVector::createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG color)
+{
+	// Can't create a mask from an open vector (or a null canvas).
+	if (!m_closed || !cnv) return false;
+
+	// Could end up drawing lines off the canvas.
+	if (x > m_bounds.left || y > m_bounds.top) return false;
+
+	// Set up to draw using GDI.
+	CONST HDC hdc = cnv->OpenDC();
+	POINT point;
+	HPEN pen = CreatePen(0, 1, color);
+	HGDIOBJ m = SelectObject(hdc, pen);
+
+	// Draw the bounding box.
+	for (DB_ITR i = m_p.begin(); i != m_p.end(); i++)
+	{
+		if (i != m_p.end() - 1)
+		{
+			MoveToEx(hdc, i->x - x, i->y - y, &point);
+			LineTo(hdc, (i + 1)->x - x, (i + 1)->y - y);
+		}
+	}
+	SelectObject(hdc, m);
+	DeleteObject(pen);
+
+	// Flood the created area.
+    HBRUSH brush = CreateSolidBrush(color);
+    m = SelectObject(hdc, brush);
+
+	// Find a point that is contained in the vector.
+	// Work down a vertical line along the centre of the vector
+	// and check if the point is both contained in the vector and
+	// is not on the outline (if GetPixel returns the same colour as
+	// we're flooding with, the flood won't work.
+
+	DB_POINT p = {(m_bounds.left + m_bounds.right) / 2, m_bounds.top};
+	for (; p.y != m_bounds.bottom; ++p.y)
+	{
+		if (containsPoint(p) && GetPixel(hdc, p.x - x, p.y - y) != color)
+		{
+			ExtFloodFill(hdc, p.x - x, p.y - y, color, FLOODFILLBORDER);
+			break;
+		}
+	}
+
+	SelectObject(hdc, m);
+	DeleteObject(brush);
+
+	cnv->CloseDC(hdc);
+
+	return true;
+}
+
+/*
  * Draw the vector / polygon onto a canvas, offset by x,y. 
  * Note: currently draws to the device - need a canvas line-drawing function. 
  */
