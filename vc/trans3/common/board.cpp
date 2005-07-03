@@ -454,24 +454,11 @@ ver2:
 
 ver1:
 
-	/*
-	 * Do we need version one support?
-	 */
 	if (this != &g_activeBoard) return;
 
 	// Finally, vectorize the board.
-	// const DWORD dw = GetTickCount();
 	vectorize(playerLayer);
 	createVectorCanvases();
-	/** const DWORD time = GetTickCount() - dw;
-	char timeStr[255], vectorStr[255];
-	itoa(time, timeStr, 10);
-	itoa(vectors.size(), vectorStr, 10);
-	const std::string message =
-		"File: " + strFilename + "\n"
-		"Milliseconds: " + std::string(timeStr) + "\n"
-		"Vectors: " + vectorStr;
-	MessageBox(NULL, message.c_str(), "Vectorization", 0); **/
 
 }
 
@@ -564,13 +551,6 @@ void tagBoard::vectorize(const unsigned int layer)
 		// Create the vector and add it the board's list.
 		// - Note that different math is required here for isometrics, but
 		//   all isometrics are currently broken, so it is difficult to implement.
-/*		CVector *const pVector = new CVector((origX - 1) * 32, (origY - 1) * 32, 4, type);
-		pVector->push_back((origX - 1) * 32, y * 32);
-		pVector->push_back(x * 32, y * 32);
-		pVector->push_back(x * 32, (origY - 1) * 32);
-		pVector->close(true, 0);
-		vectors.push_back(pVector);
-*/		
 		BRD_VECTOR vector;
 		vector.pV = new CVector((origX - 1) * 32, (origY - 1) * 32, 4, type);
 		vector.pV->push_back((origX - 1) * 32, y * 32);
@@ -672,21 +652,11 @@ void tagBoard::freeVectors(void)
 {
 	for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
 	{
-		if (i->pCnv) delete i->pCnv;
+		delete i->pCnv;
 		delete i->pV;
 	}
 	vectors.clear();
 }
-/*
-void tagBoard::freeVectors(void)
-{
-	for (std::vector<CVector *>::iterator i = vectors.begin(); i != vectors.end(); ++i)
-	{
-		delete *i;
-	}
-	vectors.clear();
-}
-*/
 
 /*
  * Free programs.
@@ -756,59 +726,23 @@ void tagBoard::setSize(const int width, const int height, const int depth)
 	bSizeX = width;
 	bSizeY = height;
 	bSizeL = depth;
-	//
-	board.clear();
-	ambientRed.clear();
-	ambientBlue.clear();
-	ambientGreen.clear();
-	tiletype.clear();
-	//
-	for (unsigned int x = 0; x <= bSizeX; x++)
 	{
-		board.push_back(VECTOR_SHORT2D());
-		VECTOR_SHORT2D &back2d = board.back();
-		//
-		ambientRed.push_back(VECTOR_SHORT2D());
-		VECTOR_SHORT2D &back2dR = ambientRed.back();
-		//
-		ambientGreen.push_back(VECTOR_SHORT2D());
-		VECTOR_SHORT2D &back2dG = ambientGreen.back();
-		//
-		ambientBlue.push_back(VECTOR_SHORT2D());
-		VECTOR_SHORT2D &back2dB = ambientBlue.back();
-		//
-		tiletype.push_back(VECTOR_CHAR2D());
-		VECTOR_CHAR2D &back2dT = tiletype.back();
-		for (unsigned int y = 0; y <= bSizeY; y++)
-		{
-			back2d.push_back(VECTOR_SHORT());
-			VECTOR_SHORT &back = back2d.back();
-			//
-			back2dR.push_back(VECTOR_SHORT());
-			VECTOR_SHORT &backR = back2dR.back();
-			//
-			back2dG.push_back(VECTOR_SHORT());
-			VECTOR_SHORT &backG = back2dG.back();
-			//
-			back2dB.push_back(VECTOR_SHORT());
-			VECTOR_SHORT &backB = back2dB.back();
-			//
-			back2dT.push_back(VECTOR_CHAR());
-			VECTOR_CHAR &backT = back2dT.back();
-			//
-			for (unsigned int l = 0; l <= bSizeL; l++)
-			{
-				back.push_back(short());
-				backR.push_back(short());
-				backG.push_back(short());
-				backB.push_back(short());
-				backT.push_back(char());
-			}
-		}
+		VECTOR_SHORT row;
+		VECTOR_SHORT2D face;
+		unsigned int i;
+		for (i = 0; i <= bSizeL; i++) row.push_back(0);
+		for (i = 0; i <= bSizeY; i++) face.push_back(row);
+		ambientBlue.clear();
+		for (i = 0; i <= bSizeX; i++) ambientBlue.push_back(face);
+		board = ambientRed = ambientGreen = ambientBlue;
+	}
+	{
+		VECTOR_CHAR row;
+		VECTOR_CHAR2D face;
+		unsigned int i;
+		for (i = 0; i <= bSizeL; i++) row.push_back('\0');
+		for (i = 0; i <= bSizeY; i++) face.push_back(row);
+		tiletype.clear();
+		for (i = 0; i <= bSizeX; i++) tiletype.push_back(face);
 	}
 }
-
-
-
-
-

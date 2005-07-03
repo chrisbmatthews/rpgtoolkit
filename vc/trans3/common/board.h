@@ -96,10 +96,11 @@ typedef struct tagBoard
 	std::vector<std::string> tileIndex;				// Lookup table for tiles.
 	typedef std::vector<short> VECTOR_SHORT;
 	typedef std::vector<VECTOR_SHORT> VECTOR_SHORT2D;
-	std::vector<VECTOR_SHORT2D> board;				// Board tiles -- codes indicating where the tiles are on the board.
-	std::vector<VECTOR_SHORT2D> ambientRed;			// Ambient tile red.
-	std::vector<VECTOR_SHORT2D> ambientGreen;		// Ambient tile green.
-	std::vector<VECTOR_SHORT2D> ambientBlue;		// Ambient tile blue.
+	typedef std::vector<VECTOR_SHORT2D> VECTOR_SHORT3D;
+	VECTOR_SHORT3D board;							// Board tiles -- codes indicating where the tiles are on the board.
+	VECTOR_SHORT3D ambientRed;						// Ambient tile red.
+	VECTOR_SHORT3D ambientGreen;					// Ambient tile green.
+	VECTOR_SHORT3D ambientBlue;						// Ambient tile blue.
 	typedef std::vector<char> VECTOR_CHAR;
 	typedef std::vector<VECTOR_CHAR> VECTOR_CHAR2D;
 	std::vector<VECTOR_CHAR2D> tiletype;			// Tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8.
