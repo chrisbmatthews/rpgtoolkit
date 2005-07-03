@@ -55,7 +55,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 ddraw.lib dxguid.lib msimg32.lib dinput8.lib winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # Begin Custom Build - Performing registration
 OutDir=.\Debug
 TargetPath=.\Debug\trans3.exe
@@ -80,6 +80,7 @@ SOURCE="$(InputPath)"
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "DebugU"
 # PROP Intermediate_Dir "DebugU"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_UNICODE" /Yu"stdafx.h" /FD /GZ /c
 # ADD CPP /nologo /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_UNICODE" /Yu"stdafx.h" /FD /GZ /c
@@ -90,7 +91,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # Begin Custom Build - Performing registration
 OutDir=.\DebugU
 TargetPath=.\DebugU\trans3.exe
@@ -121,6 +122,7 @@ SOURCE="$(InputPath)"
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "ReleaseMinSize"
 # PROP Intermediate_Dir "ReleaseMinSize"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
 # ADD CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
@@ -131,7 +133,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib /nologo /subsystem:windows /machine:I386
 # Begin Custom Build - Performing registration
 OutDir=.\ReleaseMinSize
 TargetPath=.\ReleaseMinSize\trans3.exe
@@ -156,6 +158,7 @@ SOURCE="$(InputPath)"
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "ReleaseMinDependency"
 # PROP Intermediate_Dir "ReleaseMinDependency"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
 # ADD CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
@@ -166,7 +169,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib /nologo /subsystem:windows /machine:I386
 # Begin Custom Build - Performing registration
 OutDir=.\ReleaseMinDependency
 TargetPath=.\ReleaseMinDependency\trans3.exe
@@ -191,6 +194,7 @@ SOURCE="$(InputPath)"
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "ReleaseUMinSize"
 # PROP Intermediate_Dir "ReleaseUMinSize"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
 # ADD CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
@@ -201,7 +205,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib /nologo /subsystem:windows /machine:I386
 # Begin Custom Build - Performing registration
 OutDir=.\ReleaseUMinSize
 TargetPath=.\ReleaseUMinSize\trans3.exe
@@ -232,6 +236,7 @@ SOURCE="$(InputPath)"
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "ReleaseUMinDependency"
 # PROP Intermediate_Dir "ReleaseUMinDependency"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
 # ADD CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
@@ -242,7 +247,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib /nologo /subsystem:windows /machine:I386
 # Begin Custom Build - Performing registration
 OutDir=.\ReleaseUMinDependency
 TargetPath=.\ReleaseUMinDependency\trans3.exe
@@ -308,6 +313,8 @@ SOURCE=.\app\winmain.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -361,6 +368,8 @@ SOURCE=.\rpgcode\CCursorMap.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -381,6 +390,8 @@ SOURCE=.\rpgcode\CProgram\CProgram.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -403,6 +414,8 @@ SOURCE=.\rpgcode\functions.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -423,6 +436,8 @@ SOURCE=.\rpgcode\parser\parser.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -477,6 +492,8 @@ SOURCE=.\common\animation.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -497,6 +514,8 @@ SOURCE=.\common\background.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -519,6 +538,8 @@ SOURCE=.\common\board.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -539,6 +560,8 @@ SOURCE=.\common\CFile.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -561,6 +584,8 @@ SOURCE=.\common\item.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -581,6 +606,8 @@ SOURCE=.\common\mainfile.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -603,6 +630,8 @@ SOURCE=.\common\paths.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -623,6 +652,8 @@ SOURCE=.\common\player.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -645,6 +676,8 @@ SOURCE=.\common\sprite.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -666,6 +699,8 @@ SOURCE=.\common\tileanim.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -686,6 +721,8 @@ SOURCE=.\common\tilebitmap.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -768,6 +805,8 @@ SOURCE=.\input\input.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -805,6 +844,8 @@ SOURCE=.\movement\CItem\CItem.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -825,6 +866,8 @@ SOURCE=.\movement\CPlayer\CPlayer.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -847,6 +890,8 @@ SOURCE=.\movement\CSprite\CSprite.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -867,6 +912,8 @@ SOURCE=.\movement\CVector\CVector.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -889,6 +936,8 @@ SOURCE=.\movement\locate.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -909,6 +958,8 @@ SOURCE=.\movement\movement.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -971,6 +1022,8 @@ SOURCE=.\render\render.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -1007,6 +1060,8 @@ SOURCE=.\misc\misc.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -1045,6 +1100,8 @@ SOURCE=..\tkCommon\tkDirectX\platform.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -1082,6 +1139,8 @@ SOURCE=..\tkCommon\tkCanvas\CCanvasPool.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -1102,6 +1161,8 @@ SOURCE=..\tkCommon\tkCanvas\GDICanvas.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -1144,6 +1205,8 @@ SOURCE=..\tkCommon\tkGfx\CTile.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -1164,6 +1227,8 @@ SOURCE=..\tkCommon\tkGfx\CUtil.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -1206,6 +1271,8 @@ SOURCE=.\plugins\Callbacks.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
+# SUBTRACT CPP /YX /Yc /Yu
+
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
@@ -1226,6 +1293,8 @@ SOURCE=.\plugins\plugins.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
@@ -1279,6 +1348,8 @@ SOURCE=.\audio\CAudioSegment.cpp
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 

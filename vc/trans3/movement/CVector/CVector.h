@@ -67,7 +67,7 @@ public:
 	CVector(const double x, const double y, const int reserve, const int tileType);
 
 	// Addition operator (moves entire vector).
-	CVector operator+ (const DB_POINT p);
+	CVector operator+ (const DB_POINT p) { return (CVector(*this) += p); }
 
 	// Addition assignment operator (moves entire vector).
 	CVector &operator+= (const DB_POINT p);

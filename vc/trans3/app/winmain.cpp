@@ -435,8 +435,8 @@ VOID closeSystems(VOID)
  */
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
-	//#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	g_hInstance = hInstance;
 

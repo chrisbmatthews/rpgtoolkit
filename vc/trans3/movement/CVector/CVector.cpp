@@ -41,17 +41,6 @@ m_curl(CURL_NDEF)
 }
 
 /*
- * Addition operator - moves the entire vector.
- */
-CVector CVector::operator+ (const DB_POINT p)
-{
-	// Offset each point by the passed values.
-	CVector vector(*this);
-	vector += p;
-	return vector;
-}
-
-/*
  * Addition assignment operator - moves the entire vector.
  */
 CVector &CVector::operator+= (const DB_POINT p)
