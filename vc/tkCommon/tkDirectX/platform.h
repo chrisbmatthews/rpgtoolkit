@@ -247,6 +247,8 @@ public:
 		CONST HDC hdc
 	) CONST;
 
+	CGDICanvas *getBackBuffer(VOID) { return m_pBackBuffer; }
+
 	// Deconstructor
 	~CDirectDraw(
 		VOID
@@ -288,7 +290,7 @@ private:
 	HWND m_hWndMain;					// Handle to host window
 	HINSTANCE m_hInstance;				// Handle of instance to app
 	HDC m_hDCLocked;					// HDC of locked surface
-	CGDICanvas *m_pBackBuffer;			// Non-DirectX backbuffer
+	CGDICanvas *m_pBackBuffer;			// Backbuffer
 	BOOL m_bSrcAnd[4];					// SRCAND support?
 	BOOL m_bSrcPaint[4];				// SRCPAINT support?
 	BOOL (FAST_CALL CDirectDraw::*m_pRefresh) (VOID);

@@ -222,6 +222,11 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 			// Not enough video memory - use RAM
 			ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
 			if (FAILED(m_lpdd->CreateSurface(&ddsd, &m_lpddsSecond, NULL))) return;
+			m_pBackBuffer = new CGDICanvas(m_lpddsSecond, nWidth, nHeight, TRUE);
+		}
+		else
+		{
+			m_pBackBuffer = new CGDICanvas(m_lpddsSecond, nWidth, nHeight, FALSE);
 		}
 
 	}
@@ -269,13 +274,9 @@ BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 		}
 
 	}
-	else
-	{
 
-		// Kill back buffer
-		delete m_pBackBuffer;
-
-	}
+	// Kill back buffer
+	delete m_pBackBuffer;
 
 	return TRUE;
 

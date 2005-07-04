@@ -620,7 +620,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 				  int(r.top / 32), 
 				  int((r.right - r.left) / 32), 
 				  int((r.bottom - r.top) / 32), 
-				  0, 0, 0, FALSE); 
+				  0, 0, 0, false); 
 	}
 }
 
@@ -634,12 +634,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 bool renderNow(CGDICanvas *cnv, const bool bForce)
 {
 	const bool bScreen = (cnv == NULL);
-
-	if (!cnv)
-	{
-		cnv = new CGDICanvas();
-		cnv->CreateBlank(NULL, g_resX, g_resY, TRUE);
-	}
+	if (!cnv) cnv = g_pDirectDraw->getBackBuffer();
 
 	extern std::vector<CPlayer *> g_players;
 	extern std::vector<CItem *> g_items;
@@ -649,7 +644,6 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 
 	// Check if we need to re-render the scroll cache.
 	g_scrollCache.render(false);
-	
 	
 	std::vector<RECT> rects;		// Set of RECTs covering the sprites.
 	RECT r = {0, 0, 0, 0};			// Multipurpose RECT.
@@ -672,16 +666,16 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 			{
 				// If this rect is occupied, draw all the tiles on this layer
 				// it totally or partially contains, covering the sprite.
-				drawBoard(g_activeBoard, 
-						  cnv, 
+				drawBoard(g_activeBoard,
+						  cnv,
 						  i->left - (i->left % 32) - g_screen.left,
 						  i->top - (i->top % 32) - g_screen.top,
-						  layer, 
-						  int(i->left / 32), 
-						  int(i->top / 32), 
-						  int((i->right - i->left) / 32 + 1), 
-						  int((i->bottom - i->top) / 32 + 1), 
-						  0, 0, 0, FALSE); 
+						  layer,
+						  int(i->left / 32),
+						  int(i->top / 32),
+						  int((i->right - i->left) / 32 + 1),
+						  int((i->bottom - i->top) / 32 + 1),
+						  0, 0, 0, false);
 			}
 		}
 
@@ -699,7 +693,7 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 
 		for (std::vector<CItem *>::iterator k = g_items.begin(); k != g_items.end(); ++k)
 		{
-			if((*k)->putSpriteAt(cnv, layer, rects.back()))
+			if ((*k)->putSpriteAt(cnv, layer, rects.back()))
 			{
 				rects.push_back(r);
 			}
@@ -738,7 +732,6 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 
 	if (bScreen)
 	{
-		g_pDirectDraw->DrawCanvas(cnv, 0, 0);
 
 		// Temporary: draw vectors for debugging.
 /*		g_pDirectDraw->LockScreen();
@@ -758,7 +751,7 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 		g_pDirectDraw->UnlockScreen();
 */
 		g_pDirectDraw->Refresh();
-		delete cnv;
+
 	}
 
 	return true;

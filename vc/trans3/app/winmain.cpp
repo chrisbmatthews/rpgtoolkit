@@ -32,7 +32,7 @@
 /*
  * Globals.
  */
-int g_gameState;					// The current gamestate.
+int g_gameState = GS_IDLE;			// The current gamestate.
 MAIN_FILE g_mainFile;				// The loaded main file.
 BOARD g_activeBoard;				// The active board.
 CAudioSegment *g_bkgMusic = NULL;	// Playing background music.
@@ -402,7 +402,8 @@ VOID closeSystems(VOID)
 	}
 	if (g_pFightPlugin)
 	{
-		g_pFightPlugin->terminate();
+		// The following line is commented only to stop the bloody crashing:
+		// g_pFightPlugin->terminate();
 		delete g_pFightPlugin;
 		g_pFightPlugin = NULL;
 	}

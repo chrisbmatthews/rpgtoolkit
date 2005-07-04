@@ -117,6 +117,23 @@ CGDICanvas &CGDICanvas::operator=(
 }
 
 //--------------------------------------------------------------------------
+// Use an existing surface for this canvas.
+//   Note that this surface will *not* be freed by this canvas, so its
+//   destruction must be handled by whoever created it.
+//--------------------------------------------------------------------------
+CGDICanvas::CGDICanvas(LPDIRECTDRAWSURFACE7 surface, INT width, INT height, BOOL bRam)
+{
+	surface->AddRef();
+	m_lpddsSurface = surface;
+	m_nWidth = width;
+	m_nHeight = height;
+	m_bUseDX = TRUE;
+	m_hdcLocked = m_hdcMem = NULL;
+	m_hBitmap = m_hOldBitmap = NULL;
+	m_bInRam = bRam;
+}
+
+//--------------------------------------------------------------------------
 // Deconstructor
 //--------------------------------------------------------------------------
 INLINE CGDICanvas::~CGDICanvas(VOID)
@@ -237,6 +254,31 @@ BOOL FAST_CALL CGDICanvas::DrawText(
 	// All's good
 	return TRUE;
 
+}
+
+//------------------------------------------------------------------------
+// Draw a line on the canvas.
+//------------------------------------------------------------------------
+BOOL FAST_CALL CGDICanvas::DrawLine(
+	CONST INT x1,
+	CONST INT y1,
+	CONST INT x2,
+	CONST INT y2,
+	CONST LONG clr
+		)
+{
+	CONST HDC hdc = OpenDC();
+
+	POINT point;
+	HPEN brush = CreatePen(0, 1, clr);
+	HGDIOBJ m = SelectObject(hdc, brush);
+	MoveToEx(hdc, x1, y1, &point);
+	LineTo(hdc, x2, y2);
+	SelectObject(hdc, m);
+	DeleteObject(brush);
+
+	CloseDC(hdc);
+	return TRUE;
 }
 
 //------------------------------------------------------------------------

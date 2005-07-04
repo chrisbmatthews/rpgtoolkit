@@ -62,6 +62,13 @@ public:
 		CONST CGDICanvas &rhs
 	);
 
+	CGDICanvas(
+		LPDIRECTDRAWSURFACE7 surface,
+		INT width,
+		INT height,
+		BOOL bRam
+	);
+
 	~CGDICanvas(
 		VOID
 	);
@@ -364,6 +371,14 @@ public:
 		CONST BOOL underline = FALSE,
 		CONST BOOL centred = FALSE,
 		CONST BOOL outlined = FALSE
+	);
+
+	BOOL FAST_CALL DrawLine(
+		CONST INT x1,
+		CONST INT y1,
+		CONST INT x2,
+		CONST INT y2,
+		CONST LONG clr
 	);
 
 	INT FAST_CALL ShiftLeft(
