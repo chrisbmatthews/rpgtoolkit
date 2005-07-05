@@ -574,6 +574,27 @@ SOURCE=.\common\CFile.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\enemy.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\item.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -756,6 +777,10 @@ SOURCE=.\common\CAllocationHeap.h
 # Begin Source File
 
 SOURCE=.\common\CFile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\enemy.h
 # End Source File
 # Begin Source File
 
@@ -989,10 +1014,6 @@ SOURCE=.\movement\CSprite\CSprite.h
 # Begin Source File
 
 SOURCE=.\movement\CVector\CVector.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\fight\IFighter.h
 # End Source File
 # Begin Source File
 
@@ -1393,6 +1414,47 @@ SOURCE=.\images\FreeImage.h
 
 SOURCE=.\images\FreeImage.lib
 # End Source File
+# End Group
+# Begin Group "fight"
+
+# PROP Default_Filter ""
+# Begin Group "fight - source"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\fight\fight.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "fight - headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\fight\fight.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\fight\IFighter.h
+# End Source File
+# End Group
 # End Group
 # End Target
 # End Project

@@ -1,10 +1,3 @@
-//////////////////////////////////////////////////////////////////
-// This is ATL generated code.
-//
-// Do not modify this file directly. If you need to change its
-// contents, use ATL's wizards.
-//////////////////////////////////////////////////////////////////
-
 // trans3.idl : IDL source for trans3.dll
 //
 
@@ -130,7 +123,7 @@ import "ocidl.idl";
 		HRESULT CBCanvasDrawBackground(int canvasID, [string] BSTR bkgFile, int x, int y, int width, int height);
 		HRESULT CBCreateAnimation([string] BSTR file, [out, retval] int *pRet);
 		HRESULT CBDestroyAnimation(int idx);
-		HRESULT CBCanvasDrawAnimation(int canvasID, int idx, int x, int y, int forceDraw);
+		HRESULT CBCanvasDrawAnimation(int canvasID, int idx, int x, int y, int forceDraw, int forceTransp);
 		HRESULT CBCanvasDrawAnimationFrame(int canvasID, int idx, int frame, int x, int y, int forceTranspFill);
 		HRESULT CBAnimationCurrentFrame(int idx, [out, retval] int *pRet);
 		HRESULT CBAnimationMaxFrames(int idx, [out, retval] int *pRet);
@@ -158,8 +151,6 @@ import "ocidl.idl";
 		HRESULT CBFighterRemoveStatusEffect(int partyIdx, int fightIdx, [string] BSTR statusFile);
 		HRESULT CBCheckMusic(void);
 		HRESULT CBReleaseScreenDC(void);
-		HRESULT CBDrawImageHDC([string] BSTR file, int x, int y, int hdc);
-		HRESULT CBDrawSizedImageHDC([string] BSTR file, int x, int y, int width, int height, int hdc);
 		HRESULT CBCanvasOpenHdc(int cnv, [out, retval] int *pRet);
 		HRESULT CBCanvasCloseHdc(int cnv, int hdc);
 		HRESULT CBFileExists([string] BSTR strFile, [out, retval] short *pRet);

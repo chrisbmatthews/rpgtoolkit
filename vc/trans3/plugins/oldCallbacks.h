@@ -696,9 +696,9 @@ void __stdcall CBDestroyAnimation(int idx)
 	g_pCallbacks->CBDestroyAnimation(idx);
 }
 
-void __stdcall CBCanvasDrawAnimation(int canvasID, int idx, int x, int y, int forceDraw)
+void __stdcall CBCanvasDrawAnimation(int canvasID, int idx, int x, int y, int forceDraw, int forceTransp)
 {
-	g_pCallbacks->CBCanvasDrawAnimation(canvasID, idx, x, y, forceDraw);
+	g_pCallbacks->CBCanvasDrawAnimation(canvasID, idx, x, y, forceDraw, forceTransp);
 }
 
 void __stdcall CBCanvasDrawAnimationFrame(int canvasID, int idx, int frame, int x, int y, int forceTranspFill)

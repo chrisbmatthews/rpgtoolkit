@@ -12,6 +12,7 @@
 #include "paths.h"
 #include "CFile.h"
 #include "../rpgcode/parser/parser.h"
+#include "../images/FreeImage.h"
 
 /*
  * Globals
@@ -95,6 +96,7 @@ bool tagAnimation::open(const std::string fileName)
 	}
 
 	animFile = removePath(fileName);
+	currentAnmFrame = -1;
 	return true;
 }
 
@@ -152,7 +154,8 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 {
 	extern std::string g_projectPath;
 
-// Pop a debugger error?
+	// Pop a debugger error?
+	// Colin: No.
     if (file.empty()) return false;
 
     // Whatever the case, clear the canvas in case the character has no graphics,
@@ -271,8 +274,13 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 		// Image file.
         CGDICanvas *c2 = new CGDICanvas();
 		c2->CreateBlank(NULL, anm.animSizeX, anm.animSizeY, TRUE);
-//			Call canvasLoadSizedPicture(c2, projectPath & bmpPath & frameFile)
-		cnv->BltTransparent(c2, x, y, anm.animTransp[frame]);
+		const std::string strFile = g_projectPath + BMP_PATH + frameFile;
+		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(strFile.c_str(), 16), strFile.c_str());
+		const HDC hdc = c2->OpenDC();
+		StretchDIBits(hdc, 0, 0, anm.animSizeX, anm.animSizeY, 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+		c2->CloseDC(hdc);
+		FreeImage_Unload(bmp);
+		c2->BltTransparent(cnv, x, y, anm.animTransp[frame]);
 		delete c2;
 
     } // if (ext == TBM)
@@ -293,6 +301,37 @@ bool renderAnimationFrame(CGDICanvas *cnv,
     cnv->Blt(anmFr.cnv, 0, 0, SRCCOPY);
 
 	g_anmCache.push_back(anmFr);
+}
+
+/*
+ * Draw a picture.
+ */
+void drawImage(const std::string strFile, CGDICanvas *const cnv, const int x, const int y, const int width, const int height)
+{
+	if (_strcmpi(getExtension(strFile).c_str(), "TBM") == 0)
+	{
+		TILE_BITMAP tbm;
+		if (!tbm.open(strFile)) return;
+		CGDICanvas cnvInt, cnvMask;
+		const int fullWidth = tbm.width * 32, fullHeight = tbm.height * 32;
+		cnvInt.CreateBlank(NULL, fullWidth, fullHeight, TRUE);
+		cnvMask.CreateBlank(NULL, fullWidth, fullHeight, TRUE);
+		tbm.draw(&cnvInt, &cnvMask, 0, 0);
+		const HDC hdcMask = cnvMask.OpenDC();
+		const HDC hdcSource = cnvInt.OpenDC();
+		const HDC hdc = cnv->OpenDC();
+		StretchBlt(hdc, x, y, width, height, hdcMask, 0, 0, fullWidth, fullHeight, SRCAND);
+		StretchBlt(hdc, x, y, width, height, hdcSource, 0, 0, fullWidth, fullHeight, SRCPAINT);
+		cnv->CloseDC(hdc);
+		cnvInt.CloseDC(hdcSource);
+		cnvMask.CloseDC(hdcMask);
+		return;
+	}
+	FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(strFile.c_str(), 16), strFile.c_str());
+	const HDC hdc = cnv->OpenDC();
+	StretchDIBits(hdc, x, y, (width != -1) ? width : FreeImage_GetWidth(bmp), (height != -1) ? height : FreeImage_GetHeight(bmp), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+	cnv->CloseDC(hdc);
+	FreeImage_Unload(bmp);
 }
 
 /*

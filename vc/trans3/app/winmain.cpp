@@ -45,9 +45,7 @@ HINSTANCE g_hInstance = NULL;		// Handle to application.
 unsigned int g_renderCount = 0;		// Count of GS_MOVEMENT state loops.
 unsigned int g_renderTime = 0;		// Millisecond cumulative GS_MOVEMENT state loop time.
 
-// TEMP! These will *not* stay here.
-IPlugin *g_pMenuPlugin = NULL;
-IPlugin *g_pFightPlugin = NULL;
+IPlugin *g_pMenuPlugin = NULL;		// The menu plugin.
 
 #ifdef _DEBUG
 

@@ -283,36 +283,12 @@
 #define TYPE_ITEM				1		// Target type item
 #define TYPE_ENEMY				2		// Target type enemy
 
-// Party definitions
-/////////////////////////////////////////////////////////////////////////////
-#define ENEMY_PARTY				0		// The enemy party index
-#define PLAYER_PARTY			1		// The player party index
-
 // Menu types
 /////////////////////////////////////////////////////////////////////////////
 #define MNU_MAIN				1		// Main menu requested
 #define MNU_INVENTORY			2		// Inventory menu requested
 #define MNU_EQUIP				4		// Equip menu requested
 #define MNU_ABILITIES			8		// Abilities menu requested
-
-// For use with fightInform()
-/////////////////////////////////////////////////////////////////////////////
-#define INFORM_REMOVE_HP		0		// HP was removed
-#define INFORM_REMOVE_SMP		1		// SMP was removed
-#define INFORM_SOURCE_ATTACK	2		// Source attacks
-#define INFORM_SOURCE_SMP		3		// Source does special move
-#define INFORM_SOURCE_ITEM		4		// Source uses item
-#define INFORM_SOURCE_CHARGED	5		// Source is charged
-#define INFORM_SOURCE_DEAD		6		// Source *fighter* is dead
-#define INFORM_SOURCE_DEFEATED	7		// Source *party* is all dead
-
-// Possible fight outcomes
-/////////////////////////////////////////////////////////////////////////////
-#define FIGHT_RUN_AUTO			0		// Player party ran - have trans apply the running progrma for us
-#define FIGHT_RUN_MANUAL		1		// Player party ran - tell trans that the plugin has already executed the run prg
-#define FIGHT_WON_AUTO			2		// Player party won - have trans apply the rewards for us
-#define FIGHT_WON_MANUAL		3		// Player party won - tell trans that the plugin has already given rewards
-#define FIGHT_LOST				4		// Player party lost
 
 /////////////////////////////////////////////////////////////////////////////
 // CCallbacks
@@ -439,7 +415,7 @@ public:
 	STDMETHOD(CBCanvasDrawBackground) (int canvasID, BSTR bkgFile, int x, int y, int width, int height);
 	STDMETHOD(CBCreateAnimation) (BSTR file, int *pRet);
 	STDMETHOD(CBDestroyAnimation) (int idx);
-	STDMETHOD(CBCanvasDrawAnimation) (int canvasID, int idx, int x, int y, int forceDraw);
+	STDMETHOD(CBCanvasDrawAnimation) (int canvasID, int idx, int x, int y, int forceDraw, int forceTransp);
 	STDMETHOD(CBCanvasDrawAnimationFrame) (int canvasID, int idx, int frame, int x, int y, int forceTranspFill);
 	STDMETHOD(CBAnimationCurrentFrame) (int idx, int *pRet);
 	STDMETHOD(CBAnimationMaxFrames) (int idx, int *pRet);
@@ -467,8 +443,6 @@ public:
 	STDMETHOD(CBFighterRemoveStatusEffect) (int partyIdx, int fightIdx, BSTR statusFile);
 	STDMETHOD(CBCheckMusic) (void);
 	STDMETHOD(CBReleaseScreenDC) (void);
-	STDMETHOD(CBDrawImageHDC) (BSTR file, int x, int y, int hdc);
-	STDMETHOD(CBDrawSizedImageHDC) (BSTR file, int x, int y, int width, int height, int hdc);
 	STDMETHOD(CBCanvasOpenHdc) (int cnv, int *pRet);
 	STDMETHOD(CBCanvasCloseHdc) (int cnv, int hdc);
 	STDMETHOD(CBFileExists) (BSTR strFile, short *pRet);

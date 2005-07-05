@@ -28,7 +28,6 @@ typedef struct tagAnimation
 	std::vector<int> animTransp;		// Transparent color for frame.
 	std::vector<std::string> animSound;	// Sounds for each frame.
 	double animPause;					// Pause length (sec) between each frame.
-	int animCurrentFrame;				// Current frame we are editing.
 	short animGetTransp;				// Currently getting transparent color?
 	int timerFrame;						// This number will be 0 to 29 to indicate how many times the timer has clicked.
 	int currentAnmFrame;				// Currently animating frame.
@@ -74,4 +73,7 @@ bool canvasMaskBltStretchTransparent(const CGDICanvas *cnvSource,
 									  const int newHeight, 
 									  const CGDICanvas *cnvTarget,
 									  const int crTranspColor);
+
+void drawImage(const std::string strFile, CGDICanvas *const cnv, const int x, const int y, const int width, const int height);
+
 #endif

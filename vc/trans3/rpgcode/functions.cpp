@@ -139,11 +139,7 @@ CVariant mwin(CProgram::PARAMETERS params, CProgram *const)
 	{
 		if (!g_mwinBkg.empty())
 		{
-			FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(g_mwinBkg.c_str(), 16), g_mwinBkg.c_str());
-			const HDC hdc = g_cnvMessageWindow->OpenDC();
-			StretchDIBits(hdc, 0, 0, 600, 100, 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
-			g_cnvMessageWindow->CloseDC(hdc);
-			FreeImage_Unload(bmp);
+			drawImage(g_mwinBkg, g_cnvMessageWindow, 0, 0, 600, 100);
 		}
 		else
 		{
@@ -2067,13 +2063,14 @@ CVariant setimage(CProgram::PARAMETERS params, CProgram *const)
 	}
 	if (cnv)
 	{
-		extern std::string g_projectPath;
-		const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
+		/**const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
 		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
 		const HDC hdc = cnv->OpenDC();
 		StretchDIBits(hdc, params[1].getNum(), params[2].getNum(), params[3].getNum(), params[4].getNum(), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
 		cnv->CloseDC(hdc);
-		FreeImage_Unload(bmp);
+		FreeImage_Unload(bmp);**/
+		extern std::string g_projectPath;
+		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), cnv, params[1].getNum(), params[2].getNum(), params[3].getNum(), params[4].getNum());
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -2263,15 +2260,10 @@ CVariant setimagetransparent(CProgram::PARAMETERS params, CProgram *const)
 	if (cnv)
 	{
 		extern std::string g_projectPath;
-		const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
-		CGDICanvas intermidate;
-		intermidate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
-		const HDC hdc = intermidate.OpenDC();
-		StretchDIBits(hdc, 0, 0, params[3].getNum(), params[4].getNum(), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
-		intermidate.CloseDC(hdc);
-		FreeImage_Unload(bmp);
-		intermidate.BltTransparent(cnv, params[1].getNum(), params[2].getNum(), RGB(params[5].getNum(), params[6].getNum(), params[7].getNum()));
+		CGDICanvas intermediate;
+		intermediate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
+		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, params[3].getNum(), params[4].getNum());
+		intermediate.BltTransparent(cnv, params[1].getNum(), params[2].getNum(), RGB(params[5].getNum(), params[6].getNum(), params[7].getNum()));
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -2303,15 +2295,10 @@ CVariant setimagetranslucent(CProgram::PARAMETERS params, CProgram *const)
 	if (cnv)
 	{
 		extern std::string g_projectPath;
-		const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
-		CGDICanvas intermidate;
-		intermidate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
-		const HDC hdc = intermidate.OpenDC();
-		StretchDIBits(hdc, 0, 0, params[3].getNum(), params[4].getNum(), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
-		intermidate.CloseDC(hdc);
-		FreeImage_Unload(bmp);
-		intermidate.BltTranslucent(cnv, params[1].getNum(), params[2].getNum(), 0.5, -1, -1);
+		CGDICanvas intermediate;
+		intermediate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
+		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, params[3].getNum(), params[4].getNum());
+		intermediate.BltTranslucent(cnv, params[1].getNum(), params[2].getNum(), 0.5, -1, -1);
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();

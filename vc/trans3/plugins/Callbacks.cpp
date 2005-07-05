@@ -13,16 +13,28 @@
 #include "../common/CFile.h"
 #include "../common/animation.h"
 #include "../common/board.h"
+#include "../common/enemy.h"
+#include "../common/background.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../images/FreeImage.h"
+#include "../fight/fight.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
+#include <map>
 
 extern CAllocationHeap<CGDICanvas> g_canvases;
 extern CDirectDraw *g_pDirectDraw;
 extern std::vector<CPlayer *> g_players;
-CAllocationHeap<ANIMATION> g_animations;
+static CAllocationHeap<ANIMATION> g_animations;
 static HDC g_hScreenDc = NULL;
+
+typedef struct tagPluginEnemy
+{
+	ENEMY enemy;
+	std::string fileName;
+} PLUGIN_ENEMY;
+
+static std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
@@ -99,26 +111,185 @@ STDMETHODIMP CCallbacks::CBHideMwin(int *pRet)
 
 STDMETHODIMP CCallbacks::CBLoadEnemy(BSTR file, int eneSlot)
 {
+	extern std::string g_projectPath;
+	const std::string strFile = getString(file);
+	g_enemies[eneSlot].enemy.open(g_projectPath + ENE_PATH + strFile);
+	g_enemies[eneSlot].fileName = strFile;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyNum(int infoCode, int eneSlot, int *pRet)
 {
+	if (!g_enemies.count(eneSlot))
+	{
+		*pRet = 0;
+		return S_OK;
+	}
+	ENEMY &ene = g_enemies[eneSlot].enemy;
+	switch (infoCode)
+	{
+		case ENE_HP:
+			*pRet = ene.iHp;
+			break;
+		case ENE_MAXHP:
+			*pRet = ene.iMaxHp;
+			break;
+		case ENE_SMP:
+			*pRet = ene.iSmp;
+			break;
+		case ENE_MAXSMP:
+			*pRet = ene.iMaxSmp;
+			break;
+		case ENE_FP:
+			*pRet = ene.fp;
+			break;
+		case ENE_DP:
+			*pRet = ene.dp;
+			break;
+		case ENE_RUNYN:
+			*pRet = ene.run;
+			break;
+		case ENE_SNEAKCHANCES:
+			*pRet = ene.takeCrit;
+			break;
+		case ENE_SNEAKUPCHANCES:
+			*pRet = ene.giveCrit;
+			break;
+		case ENE_SIZEX:
+		case ENE_SIZEY:
+			// Obsolete.
+			*pRet = 0;
+			break;
+		case ENE_AI:
+			*pRet = ene.ai;
+			break;
+		case ENE_EXP:
+			*pRet = ene.exp;
+			break;
+		case ENE_GP:
+			*pRet = ene.gp;
+			break;
+		default:
+			*pRet = 0;
+			break;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyString(int infoCode, int eneSlot, BSTR *pRet)
 {
+	if (!g_enemies.count(eneSlot))
+	{
+		SysReAllocString(pRet, L"");
+		return S_OK;
+	}
+	ENEMY &ene = g_enemies[eneSlot].enemy;
+	BSTR bstr = NULL;
+	switch (infoCode)
+	{
+		case ENE_FILENAME:
+			bstr = getString(g_enemies[eneSlot].fileName);
+			SysReAllocString(pRet, bstr);
+			break;
+		case ENE_NAME:
+			bstr = getString(ene.strName);
+			SysReAllocString(pRet, bstr);
+			break;
+		case ENE_RPGCODEPROGRAM:
+			bstr = getString(ene.prg);
+			SysReAllocString(pRet, bstr);
+			break;
+		case ENE_DEFEATPRG:
+			bstr = getString(ene.winPrg);
+			SysReAllocString(pRet, bstr);
+			break;
+		case ENE_RUNPRG:
+			bstr = getString(ene.runPrg);
+			SysReAllocString(pRet, bstr);
+			break;
+		default:
+			SysReAllocString(pRet, L"");
+			break;
+	}
+	if (bstr)
+	{
+		SysFreeString(bstr);
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetEnemyNum(int infoCode, int newValue, int eneSlot)
 {
+	if (!g_enemies.count(eneSlot)) return S_OK;
+	ENEMY &ene = g_enemies[eneSlot].enemy;
+	switch (infoCode)
+	{
+		case ENE_HP:
+			ene.iHp = newValue;
+			break;
+		case ENE_MAXHP:
+			ene.iMaxHp = newValue;
+			break;
+		case ENE_SMP:
+			ene.iSmp = newValue;
+			break;
+		case ENE_MAXSMP:
+			ene.iMaxSmp = newValue;
+			break;
+		case ENE_FP:
+			ene.fp = newValue;
+			break;
+		case ENE_DP:
+			ene.dp = newValue;
+			break;
+		case ENE_RUNYN:
+			ene.run = newValue;
+			break;
+		case ENE_SNEAKCHANCES:
+			ene.takeCrit = newValue;
+			break;
+		case ENE_SNEAKUPCHANCES:
+			ene.giveCrit = newValue;
+			break;
+		case ENE_SIZEX:
+		case ENE_SIZEY:
+			// Obsolete.
+			break;
+		case ENE_AI:
+			ene.ai = newValue;
+			break;
+		case ENE_EXP:
+			ene.exp = newValue;
+			break;
+		case ENE_GP:
+			ene.gp = newValue;
+			break;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetEnemyString(int infoCode, BSTR newValue, int eneSlot)
 {
+	if (!g_enemies.count(eneSlot)) return S_OK;
+	ENEMY &ene = g_enemies[eneSlot].enemy;
+	switch (infoCode)
+	{
+		case ENE_FILENAME:
+			g_enemies[eneSlot].fileName = getString(newValue);
+			break;
+		case ENE_NAME:
+			ene.strName = getString(newValue);
+			break;
+		case ENE_RPGCODEPROGRAM:
+			ene.prg = getString(newValue);
+			break;
+		case ENE_DEFEATPRG:
+			ene.winPrg = getString(newValue);
+			break;
+		case ENE_RUNPRG:
+			ene.runPrg = getString(newValue);
+			break;
+	}
 	return S_OK;
 }
 
@@ -404,12 +575,7 @@ STDMETHODIMP CCallbacks::CBCanvasLoadImage(int canvasID, BSTR filename, int *pRe
 	if (p)
 	{
 		extern std::string g_projectPath;
-		const std::string file = g_projectPath + BMP_PATH + getString(filename);
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
-		const HDC hdc = p->OpenDC();
-		*pRet = StretchDIBits(hdc, 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
-		p->CloseDC(hdc);
-		FreeImage_Unload(bmp);
+		drawImage(g_projectPath + BMP_PATH + getString(filename), p, 0, 0, -1, -1);
 	}
 	else
 	{
@@ -424,12 +590,7 @@ STDMETHODIMP CCallbacks::CBCanvasLoadSizedImage(int canvasID, BSTR filename, int
 	if (p)
 	{
 		extern std::string g_projectPath;
-		const std::string file = g_projectPath + BMP_PATH + getString(filename);
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
-		const HDC hdc = p->OpenDC();
-		*pRet = StretchDIBits(hdc, 0, 0, p->GetWidth(), p->GetHeight(), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
-		p->CloseDC(hdc);
-		FreeImage_Unload(bmp);
+		drawImage(g_projectPath + BMP_PATH + getString(filename), p, 0, 0, p->GetWidth(), p->GetHeight());
 	}
 	else
 	{
@@ -638,6 +799,15 @@ STDMETHODIMP CCallbacks::CBCanvasHeight(int canvasID, int *pRet)
 
 STDMETHODIMP CCallbacks::CBCanvasDrawLine(int canvasID, int x1, int y1, int x2, int y2, int crColor, int *pRet)
 {
+	CGDICanvas *p = g_canvases.cast(canvasID);
+	if (p)
+	{
+		*pRet = p->DrawLine(x1, y1, x2, y2, crColor);
+	}
+	else
+	{
+		*pRet = FALSE;
+	}
 	return S_OK;
 }
 
@@ -856,56 +1026,96 @@ STDMETHODIMP CCallbacks::CBSetPlayerDP(int amount, int playerIdx)
 
 STDMETHODIMP CCallbacks::CBGetEnemyHP(int eneIdx, int *pRet)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	*pRet = g_enemies[eneIdx].enemy.iHp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyMaxHP(int eneIdx, int *pRet)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	*pRet = g_enemies[eneIdx].enemy.iMaxHp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemySMP(int eneIdx, int *pRet)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	*pRet = g_enemies[eneIdx].enemy.iSmp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyMaxSMP(int eneIdx, int *pRet)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	*pRet = g_enemies[eneIdx].enemy.iMaxSmp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyFP(int eneIdx, int *pRet)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	*pRet = g_enemies[eneIdx].enemy.fp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyDP(int eneIdx, int *pRet)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	*pRet = g_enemies[eneIdx].enemy.dp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAddEnemyHP(int amount, int eneIdx)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	g_enemies[eneIdx].enemy.iHp += amount;
+	if (g_enemies[eneIdx].enemy.iHp > g_enemies[eneIdx].enemy.iMaxHp)
+	{
+		g_enemies[eneIdx].enemy.iHp = g_enemies[eneIdx].enemy.iMaxHp;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAddEnemySMP(int amount, int eneIdx)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	g_enemies[eneIdx].enemy.iSmp += amount;
+	if (g_enemies[eneIdx].enemy.iSmp > g_enemies[eneIdx].enemy.iMaxSmp)
+	{
+		g_enemies[eneIdx].enemy.iSmp = g_enemies[eneIdx].enemy.iMaxSmp;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetEnemyHP(int amount, int eneIdx)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (amount < 0) amount = 0;
+	else if (amount > g_enemies[eneIdx].enemy.iMaxHp) amount = g_enemies[eneIdx].enemy.iMaxHp;
+	g_enemies[eneIdx].enemy.iHp = amount;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetEnemySMP(int amount, int eneIdx)
 {
+	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (amount < 0) amount = 0;
+	else if (amount > g_enemies[eneIdx].enemy.iSmp) amount = g_enemies[eneIdx].enemy.iMaxSmp;
+	g_enemies[eneIdx].enemy.iSmp = amount;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int x, int y, int width, int height)
 {
+	CGDICanvas *p = g_canvases.cast(canvasID);
+	if (p)
+	{
+		extern std::string g_projectPath;
+		BACKGROUND bkg;
+		bkg.open(g_projectPath + BKG_PATH + getString(bkgFile));
+		drawImage(bkg.image, p, x, y, width, height);
+	}
 	return S_OK;
 }
 
@@ -923,13 +1133,50 @@ STDMETHODIMP CCallbacks::CBDestroyAnimation(int idx)
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int y, int forceDraw)
+STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int y, int forceDraw, int forceTransp)
 {
+	LPANIMATION p = g_animations.cast(idx);
+	if (p)
+	{
+		CGDICanvas *pCnv = g_canvases.cast(canvasID);
+		if (pCnv)
+		{
+			if ((!(p->timerFrame++ % int(80 * p->animPause))) || (p->currentAnmFrame == -1))
+			{
+				p->currentAnmFrame++;
+				if (p->currentAnmFrame >= p->animFrames) p->currentAnmFrame = 0;
+			}
+			if (forceTransp)
+			{
+				pCnv->ClearScreen(TRANSP_COLOR);
+			}
+			CGDICanvas cnvTemp;
+			renderAnimationFrame(&cnvTemp, p->animFile, p->currentAnmFrame, 0, 0);
+			cnvTemp.BltTransparent(pCnv, x, y, TRANSP_COLOR);
+		}
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int frame, int x, int y, int forceTranspFill)
 {
+	LPANIMATION p = g_animations.cast(idx);
+	if (p)
+	{
+		if (frame >= p->animFrames) frame = 0;
+		p->currentAnmFrame = frame;
+		CGDICanvas *pCnv = g_canvases.cast(canvasID);
+		if (pCnv)
+		{
+			if (forceTranspFill)
+			{
+				pCnv->ClearScreen(TRANSP_COLOR);
+			}
+			CGDICanvas cnvTemp;
+			renderAnimationFrame(&cnvTemp, p->animFile, frame, 0, 0);
+			cnvTemp.BltTransparent(pCnv, x, y, TRANSP_COLOR);
+		}
+	}
 	return S_OK;
 }
 
@@ -943,7 +1190,7 @@ STDMETHODIMP CCallbacks::CBAnimationCurrentFrame(int idx, int *pRet)
 STDMETHODIMP CCallbacks::CBAnimationMaxFrames(int idx, int *pRet)
 {
 	LPANIMATION p = g_animations.cast(idx);
-	*pRet = (p ? p->animFrames : 0);
+	*pRet = (p ? (p->animFrames - 1) : 0);
 	return S_OK;
 }
 
@@ -979,41 +1226,115 @@ STDMETHODIMP CCallbacks::CBAnimationFrameImage(int idx, int frame, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBGetPartySize(int partyIdx, int *pRet)
 {
+	extern std::vector<VECTOR_FIGHTER> g_parties;
+	if (partyIdx < g_parties.size())
+	{
+		*pRet = g_parties[partyIdx].size() - 1;
+	}
+	else
+	{
+		*pRet = -1;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterHP(int partyIdx, int fighterIdx, int *pRet)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		*pRet = p->pFighter->health();
+	}
+	else
+	{
+		*pRet = 0;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterMaxHP(int partyIdx, int fighterIdx, int *pRet)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		*pRet = p->pFighter->maxHealth();
+	}
+	else
+	{
+		*pRet = 0;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterSMP(int partyIdx, int fighterIdx, int *pRet)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		*pRet = p->pFighter->smp();
+	}
+	else
+	{
+		*pRet = 0;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterMaxSMP(int partyIdx, int fighterIdx, int *pRet)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		*pRet = p->pFighter->maxSmp();
+	}
+	else
+	{
+		*pRet = 0;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterFP(int partyIdx, int fighterIdx, int *pRet)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		*pRet = p->pFighter->fight();
+	}
+	else
+	{
+		*pRet = 0;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterDP(int partyIdx, int fighterIdx, int *pRet)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		*pRet = p->pFighter->defence();
+	}
+	else
+	{
+		*pRet = 0;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterName(int partyIdx, int fighterIdx, BSTR *pRet)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		BSTR bstr = getString(p->pFighter->name());
+		SysReAllocString(pRet, bstr);
+		SysFreeString(bstr);
+	}
+	else
+	{
+		SysReAllocString(pRet, L"");
+	}
 	return S_OK;
 }
 
@@ -1024,6 +1345,15 @@ STDMETHODIMP CCallbacks::CBGetFighterAnimation(int partyIdx, int fighterIdx, BST
 
 STDMETHODIMP CCallbacks::CBGetFighterChargePercent(int partyIdx, int fighterIdx, int *pRet)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		*pRet = p->charge / p->chargeMax * 100;
+	}
+	else
+	{
+		*pRet = 0;
+	}
 	return S_OK;
 }
 
@@ -1040,6 +1370,12 @@ STDMETHODIMP CCallbacks::CBDrawTextAbsolute(BSTR text, BSTR font, int size, int 
 
 STDMETHODIMP CCallbacks::CBReleaseFighterCharge(int partyIdx, int fighterIdx)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		p->charge = 0;
+		p->bFrozenCharge = false;
+	}
 	return S_OK;
 }
 
@@ -1086,16 +1422,6 @@ STDMETHODIMP CCallbacks::CBReleaseScreenDC(void)
 	extern HWND g_hHostWnd;
 	ReleaseDC(g_hHostWnd, g_hScreenDc);
 	g_hScreenDc = NULL;
-	return S_OK;
-}
-
-STDMETHODIMP CCallbacks::CBDrawImageHDC(BSTR file, int x, int y, int hdc)
-{
-	return S_OK;
-}
-
-STDMETHODIMP CCallbacks::CBDrawSizedImageHDC(BSTR file, int x, int y, int width, int height, int hdc)
-{
 	return S_OK;
 }
 

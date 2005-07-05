@@ -2,7 +2,7 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Mon Jul 04 11:26:44 2005
+/* at Mon Jul 04 23:07:11 2005
  */
 /* Compiler settings for C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\trans3.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
@@ -633,7 +633,8 @@ EXTERN_C const IID IID_ICallbacks;
             int idx,
             int x,
             int y,
-            int forceDraw) = 0;
+            int forceDraw,
+            int forceTransp) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CBCanvasDrawAnimationFrame( 
             int canvasID,
@@ -771,20 +772,6 @@ EXTERN_C const IID IID_ICallbacks;
         virtual HRESULT STDMETHODCALLTYPE CBCheckMusic( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CBReleaseScreenDC( void) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE CBDrawImageHDC( 
-            /* [string] */ BSTR file,
-            int x,
-            int y,
-            int hdc) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE CBDrawSizedImageHDC( 
-            /* [string] */ BSTR file,
-            int x,
-            int y,
-            int width,
-            int height,
-            int hdc) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CBCanvasOpenHdc( 
             int cnv,
@@ -1510,7 +1497,8 @@ EXTERN_C const IID IID_ICallbacks;
             int idx,
             int x,
             int y,
-            int forceDraw);
+            int forceDraw,
+            int forceTransp);
         
         HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBCanvasDrawAnimationFrame )( 
             ICallbacks __RPC_FAR * This,
@@ -1675,22 +1663,6 @@ EXTERN_C const IID IID_ICallbacks;
         
         HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBReleaseScreenDC )( 
             ICallbacks __RPC_FAR * This);
-        
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBDrawImageHDC )( 
-            ICallbacks __RPC_FAR * This,
-            /* [string] */ BSTR file,
-            int x,
-            int y,
-            int hdc);
-        
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBDrawSizedImageHDC )( 
-            ICallbacks __RPC_FAR * This,
-            /* [string] */ BSTR file,
-            int x,
-            int y,
-            int width,
-            int height,
-            int hdc);
         
         HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBCanvasOpenHdc )( 
             ICallbacks __RPC_FAR * This,
@@ -2064,8 +2036,8 @@ EXTERN_C const IID IID_ICallbacks;
 #define ICallbacks_CBDestroyAnimation(This,idx)	\
     (This)->lpVtbl -> CBDestroyAnimation(This,idx)
 
-#define ICallbacks_CBCanvasDrawAnimation(This,canvasID,idx,x,y,forceDraw)	\
-    (This)->lpVtbl -> CBCanvasDrawAnimation(This,canvasID,idx,x,y,forceDraw)
+#define ICallbacks_CBCanvasDrawAnimation(This,canvasID,idx,x,y,forceDraw,forceTransp)	\
+    (This)->lpVtbl -> CBCanvasDrawAnimation(This,canvasID,idx,x,y,forceDraw,forceTransp)
 
 #define ICallbacks_CBCanvasDrawAnimationFrame(This,canvasID,idx,frame,x,y,forceTranspFill)	\
     (This)->lpVtbl -> CBCanvasDrawAnimationFrame(This,canvasID,idx,frame,x,y,forceTranspFill)
@@ -2147,12 +2119,6 @@ EXTERN_C const IID IID_ICallbacks;
 
 #define ICallbacks_CBReleaseScreenDC(This)	\
     (This)->lpVtbl -> CBReleaseScreenDC(This)
-
-#define ICallbacks_CBDrawImageHDC(This,file,x,y,hdc)	\
-    (This)->lpVtbl -> CBDrawImageHDC(This,file,x,y,hdc)
-
-#define ICallbacks_CBDrawSizedImageHDC(This,file,x,y,width,height,hdc)	\
-    (This)->lpVtbl -> CBDrawSizedImageHDC(This,file,x,y,width,height,hdc)
 
 #define ICallbacks_CBCanvasOpenHdc(This,cnv,pRet)	\
     (This)->lpVtbl -> CBCanvasOpenHdc(This,cnv,pRet)
@@ -3690,7 +3656,8 @@ HRESULT STDMETHODCALLTYPE ICallbacks_CBCanvasDrawAnimation_Proxy(
     int idx,
     int x,
     int y,
-    int forceDraw);
+    int forceDraw,
+    int forceTransp);
 
 
 void __RPC_STUB ICallbacks_CBCanvasDrawAnimation_Stub(
@@ -4074,38 +4041,6 @@ HRESULT STDMETHODCALLTYPE ICallbacks_CBReleaseScreenDC_Proxy(
 
 
 void __RPC_STUB ICallbacks_CBReleaseScreenDC_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE ICallbacks_CBDrawImageHDC_Proxy( 
-    ICallbacks __RPC_FAR * This,
-    /* [string] */ BSTR file,
-    int x,
-    int y,
-    int hdc);
-
-
-void __RPC_STUB ICallbacks_CBDrawImageHDC_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT STDMETHODCALLTYPE ICallbacks_CBDrawSizedImageHDC_Proxy( 
-    ICallbacks __RPC_FAR * This,
-    /* [string] */ BSTR file,
-    int x,
-    int y,
-    int width,
-    int height,
-    int hdc);
-
-
-void __RPC_STUB ICallbacks_CBDrawSizedImageHDC_Stub(
     IRpcStubBuffer *This,
     IRpcChannelBuffer *_pRpcChannelBuffer,
     PRPC_MESSAGE _pRpcMessage,
