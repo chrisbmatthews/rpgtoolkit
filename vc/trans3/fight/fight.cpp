@@ -53,7 +53,7 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 		FIGHTER fighter;
 		fighter.bPlayer = false;
 		g_enemies[pos].fileName = *i;
-		fighter.pEnemy = &g_enemies[pos].enemy;
+		fighter.pFighter = fighter.pEnemy = &g_enemies[pos].enemy;
 		fighter.pEnemy->open(g_projectPath + ENE_PATH + *i);
 		if (!fighter.pEnemy->runPrg.empty())
 		{
@@ -82,7 +82,7 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 		if (!*j) continue;
 		FIGHTER fighter;
 		fighter.bPlayer = true;
-		fighter.pPlayer = *j;
+		fighter.pFighter = fighter.pPlayer = *j;
 		fighter.chargeMax = 80;
 		fighter.charge = rand() % fighter.chargeMax;
 		rPlayers.push_back(fighter);

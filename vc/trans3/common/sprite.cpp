@@ -134,23 +134,23 @@ std::string tagSpriteAttr::getStanceAnm(std::string stance)
 	}
 	else if (stance == "FIGHT" || stance == "ATTACK")
 	{
-		toRet = gfx[PLYR_FIGHT];
+		toRet = mapCustomGfx[GFX_FIGHT];
 	}
 	else if (stance == "DEFEND")
 	{
-		toRet = gfx[PLYR_DEFEND];
+		toRet = mapCustomGfx[GFX_DEFEND];
 	}
 	else if (stance == "SPC" || stance == "SPECIAL MOVE")
 	{
-		toRet = gfx[PLYR_SPC];
+		toRet = mapCustomGfx[GFX_SPC];
 	}
 	else if (stance == "DIE")
 	{
-		toRet = gfx[PLYR_DIE];
+		toRet = mapCustomGfx[GFX_DIE];
 	}
 	else if (stance == "REST")
 	{
-		toRet = gfx[PLYR_REST];
+		toRet = mapCustomGfx[GFX_REST];
 	}
 	else
 	{

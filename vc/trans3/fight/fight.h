@@ -38,10 +38,10 @@ typedef struct tagFighter
 	bool bPlayer;
 	union
 	{
-		IFighter *pFighter;
 		CPlayer *pPlayer;
 		LPENEMY pEnemy;
 	};
+	IFighter *pFighter;
 	int charge;
 	int chargeMax;
 	bool bFrozenCharge;

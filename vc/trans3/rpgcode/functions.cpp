@@ -26,6 +26,7 @@
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
 #include "../images/FreeImage.h"
+#include "../fight/fight.h"
 #include "CCursorMap.h"
 #include <math.h>
 
@@ -1600,12 +1601,23 @@ CVariant bordercolor(CProgram::PARAMETERS params, CProgram *const)
 }
 
 /*
- * fightenemy(...)
+ * fightRnemy(enemy$, enemy$, ... background$)
  * 
- * Description.
+ * Start a fight.
  */
 CVariant fightenemy(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() < 2)
+	{
+		CProgram::debugger("FightEnemy() requires at least two parameters.");
+		return CVariant();
+	}
+	std::vector<std::string> enemies;
+	for (unsigned int i = 0; i < (params.size() - 1); i++)
+	{
+		enemies.push_back(params[0].getLit());
+	}
+	runFight(enemies, params[params.size() - 1].getLit());
 	return CVariant();
 }
 

@@ -401,7 +401,7 @@ VOID closeSystems(VOID)
 	if (g_pFightPlugin)
 	{
 		// The following line is commented only to stop the bloody crashing:
-		// g_pFightPlugin->terminate();
+		g_pFightPlugin->terminate();
 		delete g_pFightPlugin;
 		g_pFightPlugin = NULL;
 	}

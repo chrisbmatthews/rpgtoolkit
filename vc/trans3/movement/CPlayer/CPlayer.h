@@ -15,9 +15,9 @@ class CPlayer : public CSprite, public IFighter
 {
 public:
 
-	// Constructor
-	CPlayer(const std::string file, const bool show);
-
+	// IFighter.
+	// Keep this first in the vtable.
+	//------------------------------------------------------------------
 	void experience(const int val) { m_playerMem.experience = val; }
 	int experience(void) { return m_playerMem.experience; }
 	void health(const int val) { m_playerMem.health = val; }
@@ -35,6 +35,10 @@ public:
 	void name(const std::string str) { m_playerMem.charname = str; }
 	std::string name(void) { return m_playerMem.charname; }
 	std::string getStanceAnimation(const std::string anim) { return m_playerMem.spriteAttributes.getStanceAnm(anim); }
+	//--------------------------------------------------------------------
+
+	// Constructor
+	CPlayer(const std::string file, const bool show);
 
 private:
 	PLAYER m_playerMem;			// Player-specific data.

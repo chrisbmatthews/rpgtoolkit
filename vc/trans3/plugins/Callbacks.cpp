@@ -1116,7 +1116,8 @@ STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int 
 STDMETHODIMP CCallbacks::CBCreateAnimation(BSTR file, int *pRet)
 {
 	LPANIMATION p = g_animations.allocate();
-	p->open(getString(file));
+	extern std::string g_projectPath;
+	p->open(g_projectPath + MISC_PATH + getString(file));
 	*pRet = (int)p;
 	return S_OK;
 }
@@ -1223,11 +1224,11 @@ STDMETHODIMP CCallbacks::CBGetPartySize(int partyIdx, int *pRet)
 	extern std::vector<VECTOR_FIGHTER> g_parties;
 	if (partyIdx < g_parties.size())
 	{
-		*pRet = g_parties[partyIdx].size() - 1;
+		*pRet = g_parties[partyIdx].size();
 	}
 	else
 	{
-		*pRet = -1;
+		*pRet = 0;
 	}
 	return S_OK;
 }
