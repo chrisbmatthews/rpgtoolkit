@@ -29,6 +29,10 @@ Public Sub Plugin_Initialize()
     modMisc.Plugin_Initialize
 End Sub
 
+Public Sub Plugin_Terminate()
+    Call modMisc.Plugin_Terminate
+End Sub
+
 Public Function Plugin_Version() As String
     Plugin_Version = modMisc.Plugin_Version
 End Function
@@ -37,12 +41,20 @@ Public Function Plugin_Description() As String
     Plugin_Description = modMisc.Plugin_Description
 End Function
 
-Public Sub Plugin_Terminate()
-    Call modMisc.Plugin_Terminate
-End Sub
-
 Public Function plugType(ByVal request As Long) As Boolean
     plugType = modMisc.plugType(request)
+End Function
+
+Public Function RPGCode_Query(ByVal commandName As String) As Boolean
+    RPGCode_Query = False
+End Function
+
+Public Function RPGCode_Execute(ByVal commandLine As String, ByRef retValDT As Long, ByRef retValLit As String, ByRef retValNum As Double, ByVal usingReturnData As Boolean) As Boolean
+    RPGCode_Execute = True
+End Function
+
+Public Function Menu(ByVal request As Long) As Long
+    Menu = 0
 End Function
 
 Public Function fight( _
