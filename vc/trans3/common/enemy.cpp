@@ -8,6 +8,7 @@
 #include "CFile.h"
 #include "paths.h"
 #include "../misc/misc.h"
+#include "../rpgcode/parser/parser.h"
 #include "enemy.h"
 #include "tilebitmap.h"
 #include "animation.h"
@@ -169,6 +170,38 @@ void tagEnemy::open(const std::string strFile)
 		gfx.push_back(file.line());
 		gfx.push_back(file.line());
 
+		customAnims.clear();
+
 	}
 
+}
+
+std::string tagEnemy::getStanceAnimation(const std::string anim)
+{
+	const std::string stance = anim.empty() ? "REST" : parser::uppercase(anim);
+	if (stance == "FIGHT" || stance == "ATTACK")
+	{
+		return gfx[EN_FIGHT];
+	}
+	else if (stance == "DEFEND")
+	{
+		return gfx[EN_DEFEND];
+	}
+	else if (stance == "SPC" || stance == "SPECIAL MOVE")
+	{
+		return gfx[EN_SPECIAL];
+	}
+	else if (stance == "DIE")
+	{
+		return gfx[EN_DIE];
+	}
+	else if (stance == "REST")
+	{
+		return gfx[EN_REST];
+	}
+	if (customAnims.count(stance))
+	{
+		return customAnims[stance];
+	}
+	return "";
 }

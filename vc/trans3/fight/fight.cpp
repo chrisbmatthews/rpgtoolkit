@@ -45,12 +45,15 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 	std::string runPrg, rewardPrg;
 	bool bCanRun = true;
 
+	extern std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
+
 	std::vector<std::string>::const_iterator i = enemies.begin();
-	for (; i != enemies.end(); ++i)
+	for (unsigned int pos = 0; i != enemies.end(); ++i, ++pos)
 	{
 		FIGHTER fighter;
 		fighter.bPlayer = false;
-		fighter.pEnemy = new ENEMY();
+		g_enemies[pos].fileName = *i;
+		fighter.pEnemy = &g_enemies[pos].enemy;
 		fighter.pEnemy->open(g_projectPath + ENE_PATH + *i);
 		if (!fighter.pEnemy->runPrg.empty())
 		{
@@ -111,12 +114,6 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 
 	delete g_bkgMusic;
 	(g_bkgMusic = pOldMusic)->play(true);
-
-	VECTOR_FIGHTER::const_iterator k = g_parties[ENEMY_PARTY].begin();
-	for (; k != g_parties[ENEMY_PARTY].end(); ++k)
-	{
-		delete k->pEnemy;
-	}
 
 	renderNow(NULL, true);
 

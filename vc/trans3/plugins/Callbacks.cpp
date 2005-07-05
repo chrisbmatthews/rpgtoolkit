@@ -28,13 +28,7 @@ extern std::vector<CPlayer *> g_players;
 static CAllocationHeap<ANIMATION> g_animations;
 static HDC g_hScreenDc = NULL;
 
-typedef struct tagPluginEnemy
-{
-	ENEMY enemy;
-	std::string fileName;
-} PLUGIN_ENEMY;
-
-static std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
+std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
@@ -1340,6 +1334,17 @@ STDMETHODIMP CCallbacks::CBGetFighterName(int partyIdx, int fighterIdx, BSTR *pR
 
 STDMETHODIMP CCallbacks::CBGetFighterAnimation(int partyIdx, int fighterIdx, BSTR animationName, BSTR *pRet)
 {
+	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+	if (p)
+	{
+		BSTR bstr = getString(p->pFighter->getStanceAnimation(getString(animationName)));
+		SysReAllocString(pRet, bstr);
+		SysFreeString(bstr);
+	}
+	else
+	{
+		SysReAllocString(pRet, L"");
+	}
 	return S_OK;
 }
 

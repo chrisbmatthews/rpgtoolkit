@@ -34,6 +34,7 @@ public:
 	int maxSmp(void) { return m_playerMem.smMax; }
 	void name(const std::string str) { m_playerMem.charname = str; }
 	std::string name(void) { return m_playerMem.charname; }
+	std::string getStanceAnimation(const std::string anim) { return m_playerMem.spriteAttributes.getStanceAnm(anim); }
 
 private:
 	PLAYER m_playerMem;			// Player-specific data.

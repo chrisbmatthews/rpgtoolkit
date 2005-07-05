@@ -9,7 +9,7 @@
 
 #include <string>
 
-// An entitity capable of fighting.
+// An entity capable of fighting.
 /////////////////////////////////////////////////
 class IFighter
 {
@@ -34,6 +34,8 @@ public:
 	//
 	virtual void name(const std::string str) = 0;
 	virtual std::string name(void) = 0;
+	//
+	virtual std::string getStanceAnimation(const std::string anim) = 0;
 };
 
 #endif

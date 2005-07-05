@@ -60,6 +60,7 @@ typedef struct tagEnemy : public IFighter
 	int maxSmp(void) { return iMaxSmp; }
 	void name(const std::string str) { strName = str; }
 	std::string name(void) { return strName; }
+	std::string getStanceAnimation(const std::string anim);
 	//----------------------------------------------------------
 	void open(const std::string strFile);
 } ENEMY, *LPENEMY;

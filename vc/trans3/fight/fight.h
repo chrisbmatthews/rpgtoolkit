@@ -47,6 +47,13 @@ typedef struct tagFighter
 	bool bFrozenCharge;
 } FIGHTER, *LPFIGHTER;
 
+// A plugin enemy.
+typedef struct tagPluginEnemy
+{
+	ENEMY enemy;
+	std::string fileName;
+} PLUGIN_ENEMY;
+
 // A party.
 typedef std::vector<FIGHTER> VECTOR_FIGHTER;
 
