@@ -556,7 +556,7 @@ void showScreen(const int width, const int height)
 
 	int depth = 16 + g_mainFile.colorDepth * 8;
 	g_pDirectDraw = new CDirectDraw();
-	while (!g_pDirectDraw->InitGraphicsMode(g_hHostWnd, width, height, TRUE, depth, g_mainFile.extendToFullScreen))
+	while (!g_pDirectDraw->InitGraphicsMode(g_hHostWnd, width, height, depth, g_mainFile.extendToFullScreen))
 	{
 		if (depth == 16)
 		{

@@ -69,8 +69,10 @@ typedef struct tagPlayer
 	short levelProgression;						// Exp required until level up.
 	std::vector<double> levelStarts;			// Exp values at which all levels start.
 
-	// File also contains a set of attributes shared with items, stored separately.
-	SPRITE_ATTR spriteAttributes;				// This is a dummy member - variables not stored in it!
+	// This member just keeps this structure the correct size.
+	// (i.e., there is nothing in it.) It is a very crappy way
+	// to do this, but do not remove it unless you like crashes.
+	SPRITE_ATTR spriteAttributes;
 
 	short open(const std::string fileName, SPRITE_ATTR &spriteAttr);
 } PLAYER;

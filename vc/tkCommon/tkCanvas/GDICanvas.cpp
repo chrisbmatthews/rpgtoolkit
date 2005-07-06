@@ -7,13 +7,9 @@
 //--------------------------------------------------------------------------
 // Inclusions
 //--------------------------------------------------------------------------
+#include "..\tkDirectX\platform.h"	// DirectX interface
 #include "GDICanvas.h"				// Contains stuff for this file
 #include <map>						// Maps
-
-//--------------------------------------------------------------------------
-// Externs
-//--------------------------------------------------------------------------
-extern CDirectDraw *g_pDirectDraw;	// Main DirectDraw object
 
 //--------------------------------------------------------------------------
 // Default constructor
@@ -257,6 +253,53 @@ BOOL FAST_CALL CGDICanvas::DrawText(
 }
 
 //------------------------------------------------------------------------
+// Draw a rectangle.
+//------------------------------------------------------------------------
+BOOL FAST_CALL CGDICanvas::DrawRect(
+	CONST INT x1,
+	CONST INT y1,
+	CONST INT x2,
+	CONST INT y2,
+	CONST LONG clr
+		)
+{
+	CONST HRGN rgn = CreateRectRgn(x1, y1, x2 + 1, y2 + 1);
+	CONST HBRUSH brush = CreateSolidBrush(clr);
+	CONST HDC hdc = OpenDC();
+	FrameRgn(hdc, rgn, brush, 1, 1);
+	CloseDC(hdc);
+	DeleteObject(rgn);
+	DeleteObject(brush);
+	return TRUE;
+}
+
+//------------------------------------------------------------------------
+// Draw a filled rectangle.
+//------------------------------------------------------------------------
+BOOL FAST_CALL CGDICanvas::DrawFilledRect(
+	CONST INT x1,
+	CONST INT y1,
+	CONST INT x2,
+	CONST INT y2,
+	CONST LONG clr
+		)
+{
+	CONST HDC hdc = OpenDC();
+	CONST RECT r = {x1, y1, x2 + 1, y2 + 1};
+	CONST HPEN pen = CreatePen(0, 1, clr);
+	CONST HGDIOBJ l = SelectObject(hdc, pen);
+	CONST HBRUSH brush = CreateSolidBrush(clr);
+	CONST HGDIOBJ m = SelectObject(hdc, brush);
+	FillRect(hdc, &r, brush);
+	SelectObject(hdc, m);
+	SelectObject(hdc, l);
+	DeleteObject(brush);
+	DeleteObject(pen);
+	CloseDC(hdc);
+	return TRUE;
+}
+
+//------------------------------------------------------------------------
 // Draw a line on the canvas.
 //------------------------------------------------------------------------
 BOOL FAST_CALL CGDICanvas::DrawLine(
@@ -377,11 +420,12 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 	m_nHeight = height;
 
 	// If a DirectDraw object exists
+	extern CDirectDraw *g_pDirectDraw;
 	if (g_pDirectDraw)
 	{
 
 		// If using DirectX
-		if (m_bUseDX = (bDX && g_pDirectDraw->usingDirectX()))
+		if (m_bUseDX = bDX)
 		{
 
 			// Create a DirectDraw surface

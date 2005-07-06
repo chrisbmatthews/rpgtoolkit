@@ -155,7 +155,7 @@ std::string tagSpriteAttr::getStanceAnm(std::string stance)
 	else
 	{
 		//it's a custom stance, search the custom stances.
-		for (int i = 0; i <= customGfxNames.size(); i++)
+		for (unsigned int i = 0; i <= customGfxNames.size(); i++)
 		{
 			if (parser::uppercase(customGfxNames[i]) == stance) 
 			{
@@ -212,7 +212,7 @@ void tagSpriteAttr::createVectors(const int activationType)
 			if (activationType & SPR_KEYPRESS)
 			{
 				// Create a one tile-wide ring around player.
-				DB_POINT pts[] = {{-32,-32}, {-32, 63}, {63, 63}, {63,-32}};
+				DB_POINT pts[] = {{-32, -32}, {-32, 63}, {63, 63}, {63, -32}};
 				vActivate.push_back(pts, 4);
 				vActivate.close(true, 0);
 			}

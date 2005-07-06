@@ -4,6 +4,16 @@
  * Read license.txt for licensing details.
  */
 
+/*
+ * Be very sure this file is all done, especially the
+ * GetGeneralString &c., which are almost certainly
+ * missing something within. 'TBD' is a good string to
+ * check, but its employment is not consistent.
+ *
+ * Colin,
+ * Note to self.
+ */
+
 #include "stdafx.h"
 #include "../trans3.h"
 #include "Callbacks.h"
@@ -314,6 +324,93 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 
 STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerSlot, int *pRet)
 {
+	extern std::vector<CPlayer *> g_players;
+	switch (infoCode)
+	{
+		case GEN_INVENTORY_NUM:
+			// TBD!
+			break;
+		case GEN_EQUIP_HPADD:
+			// TBD!
+			break;
+		case GEN_EQUIP_SMPADD:
+			// TBD!
+			break;
+		case GEN_EQUIP_DPADD:
+			// TBD!
+			break;
+		case GEN_EQUIP_FPADD:
+			// TBD!
+			break;
+		case GEN_CURX:
+			// No way to get it, Jon.
+			break;
+		case GEN_CURY:
+			// No way to get it, Jon.
+			break;
+		case GEN_CURLAYER:
+			// No way to get it, Jon.
+			break;
+		case GEN_CURRENT_PLYR:
+			extern int g_selectedPlayer;
+			*pRet = g_selectedPlayer;
+			break;
+		case GEN_TILESX:
+			extern double g_tilesX;
+			*pRet = int(g_tilesX);
+			break;
+		case GEN_TILESY:
+			extern double g_tilesY;
+			*pRet = int(g_tilesY);
+			break;
+		case GEN_RESX:
+			extern int g_resX;
+			*pRet = g_resX;
+			break;
+		case GEN_RESY:
+			extern int g_resY;
+			*pRet = g_resY;
+			break;
+		case GEN_GP:
+			// TBD!
+			break;
+		case GEN_FONTCOLOR:
+			extern COLORREF g_color;
+			*pRet = g_color;
+			break;
+		case GEN_PREV_TIME:
+			// TBD!
+			break;
+		case GEN_START_TIME:
+			// TBD!
+			break;
+		case GEN_GAME_TIME:
+			// TBD!
+			break;
+		case GEN_STEPS:
+			// TBD!
+			break;
+		case GEN_ENE_RUN:
+			// TBD!
+			break;
+		case GEN_TRANSPARENTCOLOR:
+			*pRet = TRANSP_COLOR;
+			break;
+		case GEN_BATTLESPEED:
+		case GEN_TEXTSPEED:
+		case GEN_CHARACTERSPEED:
+		case GEN_SCROLLINGOFF:
+		case GEN_ENEX:
+		case GEN_ENEY:
+		case GEN_FIGHT_OFFSETX:
+		case GEN_FIGHT_OFFSETY:
+			// Obsolete.
+			*pRet = 0;
+			break;
+		default:
+			*pRet = 0;
+			break;
+	}
 	return S_OK;
 }
 
@@ -807,11 +904,29 @@ STDMETHODIMP CCallbacks::CBCanvasDrawLine(int canvasID, int x1, int y1, int x2, 
 
 STDMETHODIMP CCallbacks::CBCanvasDrawRect(int canvasID, int x1, int y1, int x2, int y2, int crColor, int *pRet)
 {
+	CGDICanvas *p = g_canvases.cast(canvasID);
+	if (p)
+	{
+		*pRet = p->DrawRect(x1, y1, x2, y2, crColor);
+	}
+	else
+	{
+		*pRet = FALSE;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasFillRect(int canvasID, int x1, int y1, int x2, int y2, int crColor, int *pRet)
 {
+	CGDICanvas *p = g_canvases.cast(canvasID);
+	if (p)
+	{
+		*pRet = p->DrawFilledRect(x1, y1, x2, y2, crColor);
+	}
+	else
+	{
+		*pRet = FALSE;
+	}
 	return S_OK;
 }
 
@@ -1108,7 +1223,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int 
 		extern std::string g_projectPath;
 		BACKGROUND bkg;
 		bkg.open(g_projectPath + BKG_PATH + getString(bkgFile));
-		drawImage(bkg.image, p, x, y, width, height);
+		drawImage(g_projectPath + BMP_PATH + bkg.image, p, x, y, width, height);
 	}
 	return S_OK;
 }
@@ -1146,6 +1261,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int
 				pCnv->ClearScreen(TRANSP_COLOR);
 			}
 			CGDICanvas cnvTemp;
+			cnvTemp.CreateBlank(NULL, p->animSizeX, p->animSizeY, TRUE);
 			renderAnimationFrame(&cnvTemp, p->animFile, p->currentAnmFrame, 0, 0);
 			cnvTemp.BltTransparent(pCnv, x, y, TRANSP_COLOR);
 		}
@@ -1168,6 +1284,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int f
 				pCnv->ClearScreen(TRANSP_COLOR);
 			}
 			CGDICanvas cnvTemp;
+			cnvTemp.CreateBlank(NULL, p->animSizeX, p->animSizeY, TRUE);
 			renderAnimationFrame(&cnvTemp, p->animFile, frame, 0, 0);
 			cnvTemp.BltTransparent(pCnv, x, y, TRANSP_COLOR);
 		}

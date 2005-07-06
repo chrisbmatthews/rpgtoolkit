@@ -22,7 +22,7 @@
 //--------------------------------------------------------------------------
 #define WIN32_LEAN_AND_MEAN			// Flag lean version of Windows
 #include <windows.h>				// The Windows API
-#include "..\tkDirectX\platform.h"	// DirectX interface
+#include <ddraw.h>					// For DirectDraw
 
 //--------------------------------------------------------------------------
 // Definitions
@@ -374,6 +374,22 @@ public:
 	);
 
 	BOOL FAST_CALL DrawLine(
+		CONST INT x1,
+		CONST INT y1,
+		CONST INT x2,
+		CONST INT y2,
+		CONST LONG clr
+	);
+
+	BOOL FAST_CALL DrawRect(
+		CONST INT x1,
+		CONST INT y1,
+		CONST INT x2,
+		CONST INT y2,
+		CONST LONG clr
+	);
+
+	BOOL FAST_CALL DrawFilledRect(
 		CONST INT x1,
 		CONST INT y1,
 		CONST INT x2,
