@@ -1471,7 +1471,7 @@ STDMETHODIMP CCallbacks::CBGetFighterChargePercent(int partyIdx, int fighterIdx,
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
 	if (p)
 	{
-		*pRet = p->charge / p->chargeMax * 100;
+		*pRet = int(p->charge / double(p->chargeMax) * 100.0);
 	}
 	else
 	{
