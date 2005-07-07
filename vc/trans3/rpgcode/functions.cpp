@@ -46,13 +46,6 @@ COLORREF g_mwinColor = 0;					// Mwin() background colour.
 CAllocationHeap<CGDICanvas> g_canvases;		// Allocated canvases.
 CAllocationHeap<CCursorMap> g_cursorMaps;	// Cursor maps.
 // CAllocationHeap<CThread> g_threads;		// Threads.
-typedef enum tagTargetType
-{
-	TI_EMPTY,		// Empty!
-	TT_PLAYER,		// Player is targetted.
-	TT_ITEM,		// Item is targetted.
-	TT_ENEMY		// Enemy is targetted.
-} TARGET_TYPE;
 void *g_pTarget = NULL;						// Targetted entity.
 TARGET_TYPE g_targetType = TI_EMPTY;		// Type of target entity.
 void *g_pSource = NULL;						// Source entity.
@@ -457,12 +450,20 @@ CVariant fbranch(CProgram::PARAMETERS params, CProgram *const)
 }
 
 /*
- * fight(...)
+ * fight(skill!, background$)
  * 
- * Description.
+ * Start a skill level fight.
  */
 CVariant fight(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() != 2)
+	{
+		CProgram::debugger("Fight() requires two parameters.");
+	}
+	else
+	{
+		skillFight(params[0].getNum(), params[1].getLit());
+	}
 	return CVariant();
 }
 
@@ -1941,12 +1942,21 @@ CVariant menugraphic(CProgram::PARAMETERS params, CProgram *const)
 }
 
 /*
- * fightmenugraphic(...)
+ * fightmenugraphic(image$)
  * 
- * Description.
+ * Choose an image for the fight menu graphic.
  */
 CVariant fightmenugraphic(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() == 1)
+	{
+		extern std::string g_fightMenuGraphic;
+		g_fightMenuGraphic = params[0].getLit();
+	}
+	else
+	{
+		CProgram::debugger("FightMenuGraphic() requires one parameter.");
+	}
 	return CVariant();
 }
 

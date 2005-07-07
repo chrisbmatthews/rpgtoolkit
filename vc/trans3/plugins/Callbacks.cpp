@@ -18,6 +18,7 @@
 #include "../trans3.h"
 #include "Callbacks.h"
 #include "../rpgcode/CProgram/CProgram.h"
+#include "../rpgcode/parser/parser.h"
 #include "../common/CAllocationHeap.h"
 #include "../common/paths.h"
 #include "../common/CFile.h"
@@ -25,6 +26,7 @@
 #include "../common/board.h"
 #include "../common/enemy.h"
 #include "../common/background.h"
+#include "../common/item.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../images/FreeImage.h"
 #include "../fight/fight.h"
@@ -37,11 +39,13 @@ extern CDirectDraw *g_pDirectDraw;
 extern std::vector<CPlayer *> g_players;
 static CAllocationHeap<ANIMATION> g_animations;
 static HDC g_hScreenDc = NULL;
-
 std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
+std::string g_fightMenuGraphic;
 
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
+	extern CGDICanvas *g_cnvRpgCode;
+	g_pDirectDraw->CopyScreenToCanvas(g_cnvRpgCode);
 	CProgram().runLine(getString(rpgcodeCommand));
 	return S_OK;
 }
@@ -193,23 +197,18 @@ STDMETHODIMP CCallbacks::CBGetEnemyString(int infoCode, int eneSlot, BSTR *pRet)
 	{
 		case ENE_FILENAME:
 			bstr = getString(g_enemies[eneSlot].fileName);
-			SysReAllocString(pRet, bstr);
 			break;
 		case ENE_NAME:
 			bstr = getString(ene.strName);
-			SysReAllocString(pRet, bstr);
 			break;
 		case ENE_RPGCODEPROGRAM:
 			bstr = getString(ene.prg);
-			SysReAllocString(pRet, bstr);
 			break;
 		case ENE_DEFEATPRG:
 			bstr = getString(ene.winPrg);
-			SysReAllocString(pRet, bstr);
 			break;
 		case ENE_RUNPRG:
 			bstr = getString(ene.runPrg);
-			SysReAllocString(pRet, bstr);
 			break;
 		default:
 			SysReAllocString(pRet, L"");
@@ -217,6 +216,7 @@ STDMETHODIMP CCallbacks::CBGetEnemyString(int infoCode, int eneSlot, BSTR *pRet)
 	}
 	if (bstr)
 	{
+		SysReAllocString(pRet, bstr);
 		SysFreeString(bstr);
 	}
 	return S_OK;
@@ -319,12 +319,81 @@ STDMETHODIMP CCallbacks::CBSetPlayerString(int infoCode, int arrayPos, BSTR newV
 
 STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int playerSlot, BSTR *pRet)
 {
+	BSTR bstr = NULL;
+	switch (infoCode)
+	{
+		case GEN_PLAYERHANDLES:
+			if (g_players.size() > playerSlot)
+			{
+				bstr = getString(g_players[playerSlot]->name());
+			}
+			break;
+		case GEN_PLAYERFILES:
+			// No way to get it, Jon.
+			break;
+		case GEN_PLYROTHERHANDLES:
+			break;
+		case GEN_PLYROTHERFILES:
+			break;
+		case GEN_INVENTORY_FILES:
+			break;
+		case GEN_INVENTORY_HANDLES:
+			break;
+		case GEN_EQUIP_FILES:
+			break;
+		case GEN_EQUIP_HANDLES:
+			break;
+		case GEN_MUSICPLAYING:
+			// No way to get it, Colin.
+			break;
+		case GEN_CURRENTBOARD:
+			extern BOARD g_activeBoard;
+			bstr = getString(g_activeBoard.strFilename);
+			break;
+		case GEN_MENUGRAPHIC:
+			break;
+		case GEN_FIGHTMENUGRAPHIC:
+			bstr = getString(g_fightMenuGraphic);
+			break;
+		case GEN_MWIN_PIC_FILE:
+			extern std::string g_mwinBkg;
+			bstr = getString(g_mwinBkg);
+			break;
+		case GEN_FONTFILE:
+			extern std::string g_fontFace;
+			bstr = getString(g_fontFace);
+			break;
+		case GEN_ENE_FILE:
+			bstr = getString(g_enemies[playerSlot].fileName);
+			break;
+		case GEN_ENE_WINPROGRAMS:
+			bstr = getString(g_enemies[playerSlot].enemy.winPrg);
+			break;
+		case GEN_ENE_STATUS:
+			break;
+		case GEN_PLYR_STATUS:
+			break;
+		case GEN_CURSOR_MOVESOUND:
+			break;
+		case GEN_CURSOR_SELSOUND:
+			break;
+		case GEN_CURSOR_CANCELSOUND:
+			break;
+	}
+	if (bstr)
+	{
+		SysReAllocString(pRet, bstr);
+		SysFreeString(bstr);
+	}
+	else
+	{
+		SysReAllocString(pRet, L"");
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerSlot, int *pRet)
 {
-	extern std::vector<CPlayer *> g_players;
 	switch (infoCode)
 	{
 		case GEN_INVENTORY_NUM:
@@ -388,7 +457,8 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			// TBD!
 			break;
 		case GEN_STEPS:
-			// TBD!
+			extern unsigned long g_stepsTaken;
+			*pRet = g_stepsTaken;
 			break;
 		case GEN_ENE_RUN:
 			// TBD!
@@ -846,7 +916,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawText(int canvasID, BSTR text, BSTR font, in
 	CGDICanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		*pRet = p->DrawText(x, y, getString(text), getString(font), size, crColor, isBold, isItalics, isUnderline, isCentred);
+		*pRet = p->DrawText(x * size - size, y * size - size, getString(text), getString(font), size, crColor, isBold, isItalics, isUnderline, isCentred);
 	}
 	else
 	{
@@ -932,16 +1002,47 @@ STDMETHODIMP CCallbacks::CBCanvasFillRect(int canvasID, int x1, int y1, int x2, 
 
 STDMETHODIMP CCallbacks::CBCanvasDrawHand(int canvasID, int pointx, int pointy, int *pRet)
 {
+	extern CGDICanvas *g_cnvCursor;
+	CGDICanvas *p = g_canvases.cast(canvasID);
+	if (p)
+	{
+		*pRet = g_cnvCursor->BltTransparent(p, pointx - 42, pointy - 10, RGB(255, 0, 0));
+	}
+	else
+	{
+		*pRet = NULL;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBDrawHand(int pointx, int pointy, int *pRet)
 {
+	extern CGDICanvas *g_cnvCursor;
+	*pRet = g_pDirectDraw->DrawCanvasTransparent(g_cnvCursor, pointx - 72, pointy - 20, RGB(255, 0, 0));
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCheckKey(BSTR keyPressed, int *pRet)
 {
+	const std::string key = parser::uppercase(getString(keyPressed));
+	if (key == "LEFT") *pRet = (GetAsyncKeyState(VK_LEFT) < 0);
+	else if (key == "RIGHT") *pRet = (GetAsyncKeyState(VK_RIGHT) < 0);
+	else if (key == "UP") *pRet = (GetAsyncKeyState(VK_UP) < 0);
+	else if (key == "DOWN") *pRet = (GetAsyncKeyState(VK_DOWN) < 0);
+	else if (key == "SPACE") *pRet = (GetAsyncKeyState(VK_SPACE) < 0);
+	else if (key == "ESC" || key == "ESCAPE") *pRet = (GetAsyncKeyState(VK_ESCAPE) < 0);
+	else if (key == "ENTER") *pRet = (GetAsyncKeyState(VK_RETURN) < 0);
+	else if (key == "NUMPAD0") *pRet = (GetAsyncKeyState(VK_NUMPAD0) < 0);
+	else if (key == "NUMPAD1") *pRet = (GetAsyncKeyState(VK_NUMPAD1) < 0);
+	else if (key == "NUMPAD2") *pRet = (GetAsyncKeyState(VK_NUMPAD2) < 0);
+	else if (key == "NUMPAD3") *pRet = (GetAsyncKeyState(VK_NUMPAD3) < 0);
+	else if (key == "NUMPAD4") *pRet = (GetAsyncKeyState(VK_NUMPAD4) < 0);
+	else if (key == "NUMPAD5") *pRet = (GetAsyncKeyState(VK_NUMPAD5) < 0);
+	else if (key == "NUMPAD6") *pRet = (GetAsyncKeyState(VK_NUMPAD6) < 0);
+	else if (key == "NUMPAD7") *pRet = (GetAsyncKeyState(VK_NUMPAD7) < 0);
+	else if (key == "NUMPAD8") *pRet = (GetAsyncKeyState(VK_NUMPAD8) < 0);
+	else if (key == "NUMPAD9") *pRet = (GetAsyncKeyState(VK_NUMPAD9) < 0);
+	else *pRet = (GetAsyncKeyState(key[0]) < 0);
 	return S_OK;
 }
 
@@ -1302,7 +1403,7 @@ STDMETHODIMP CCallbacks::CBAnimationCurrentFrame(int idx, int *pRet)
 STDMETHODIMP CCallbacks::CBAnimationMaxFrames(int idx, int *pRet)
 {
 	LPANIMATION p = g_animations.cast(idx);
-	*pRet = (p ? (p->animFrames - 1) : 0);
+	*pRet = (p ? (p->animFrames - 1) : -1);
 	return S_OK;
 }
 
@@ -1482,6 +1583,7 @@ STDMETHODIMP CCallbacks::CBGetFighterChargePercent(int partyIdx, int fighterIdx,
 
 STDMETHODIMP CCallbacks::CBFightTick(void)
 {
+	fightTick();
 	return S_OK;
 }
 
@@ -1502,13 +1604,59 @@ STDMETHODIMP CCallbacks::CBReleaseFighterCharge(int partyIdx, int fighterIdx)
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBFightDoAttack(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, int amount, int toSMP, int *pRet)
+STDMETHODIMP CCallbacks::CBFightDoAttack(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, int amount, int toSmp, int *pRet)
 {
+	*pRet = performAttack(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, amount, toSmp);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, BSTR itemFile)
 {
+	LPFIGHTER pSource = getFighter(sourcePartyIdx, sourceFightIdx);
+	LPFIGHTER pTarget = getFighter(targetPartyIdx, targetFightIdx);
+	if (!pSource || !pTarget || (pSource->pFighter->health() < 1))
+	{
+		return S_OK;
+	}
+	ITEM itm;
+	extern std::string g_projectPath;
+	const std::string strItemFile = getString(itemFile);
+	if (!itm.open(g_projectPath + ITM_PATH + strItemFile, itm.spriteAttributes))
+	{
+		return S_OK;
+	}
+	// HP.
+	pTarget->pFighter->health(pTarget->pFighter->health() + itm.fgtHPup);
+	if (pTarget->pFighter->health() > pTarget->pFighter->maxHealth())
+	{
+		pTarget->pFighter->health(pTarget->pFighter->maxHealth());
+	}
+	if (pTarget->pFighter->health() < 0)
+	{
+		pTarget->pFighter->health(0);
+	}
+	// SMP.
+	pTarget->pFighter->smp(pTarget->pFighter->smp() + itm.fgtSMup);
+	if (pTarget->pFighter->smp() > pTarget->pFighter->maxSmp())
+	{
+		pTarget->pFighter->smp(pTarget->pFighter->maxSmp());
+	}
+	if (pTarget->pFighter->smp() < 0)
+	{
+		pTarget->pFighter->smp(0);
+	}
+	// Set target and source.
+	extern void *g_pTarget, *g_pSource;
+	extern TARGET_TYPE g_targetType, g_sourceType;
+	g_pTarget = pTarget->pFighter;
+	g_pSource = pSource->pFighter;
+	g_targetType = pTarget->bPlayer ? TT_PLAYER : TT_ENEMY;
+	g_sourceType = pSource->bPlayer ? TT_PLAYER : TT_ENEMY;
+	//------------------------------------------------------
+	// TBD: REMOVE ITEM FROM INVENTORY!!
+	//------------------------------------------------------
+	extern IPlugin *g_pFightPlugin;
+	g_pFightPlugin->fightInform(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, 0, 0, -itm.fgtHPup, -itm.fgtSMup, strItemFile, INFORM_SOURCE_ITEM);
 	return S_OK;
 }
 
@@ -1526,11 +1674,56 @@ STDMETHODIMP CCallbacks::CBDoEvents(void)
 
 STDMETHODIMP CCallbacks::CBFighterAddStatusEffect(int partyIdx, int fightIdx, BSTR statusFile)
 {
+	LPFIGHTER p = getFighter(partyIdx, fightIdx);
+	if (p)
+	{
+		const std::string file = getString(statusFile);
+		extern std::string g_projectPath;
+		LPSTATUS_EFFECT pEffect = &p->statuses[parser::uppercase(file)];
+		pEffect->open(g_projectPath + STATUS_PATH + file);
+		if (pEffect->speed)
+		{
+			p->chargeMax -= 20;
+		}
+		if (pEffect->slow)
+		{
+			p->chargeMax += 20;
+		}
+		if (pEffect->disable)
+		{
+			p->freezes++;
+			p->bFrozenCharge = true;
+			if (p->charge >= p->chargeMax)
+			{
+				// Unlikely, but just in case.
+				p->charge = p->chargeMax - 1;
+			}
+		}
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBFighterRemoveStatusEffect(int partyIdx, int fightIdx, BSTR statusFile)
 {
+	LPFIGHTER p = getFighter(partyIdx, fightIdx);
+	if (p)
+	{
+		const std::string file = parser::uppercase(getString(statusFile));
+		LPSTATUS_EFFECT pEffect = &p->statuses[file];
+		if (pEffect->speed)
+		{
+			p->chargeMax += 20;
+		}
+		if (pEffect->slow)
+		{
+			p->chargeMax -= 20;
+		}
+		if (pEffect->disable && !--p->freezes)
+		{
+			p->bFrozenCharge = false;
+		}
+		p->statuses.erase(p->statuses.find(file));
+	}
 	return S_OK;
 }
 

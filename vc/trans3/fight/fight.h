@@ -9,7 +9,8 @@
 
 #include "../movement/CPlayer/CPlayer.h"
 #include "../common/enemy.h"
-#include "../common/paths.h"
+#include "../common/status.h"
+#include <map>
 
 // Party definitions.
 #define ENEMY_PARTY				0
@@ -26,7 +27,7 @@
 #define INFORM_SOURCE_DEFEATED	7		// Source *party* is all dead
 
 // Possible fight outcomes.
-#define FIGHT_RUN_AUTO			0		// Player party ran - have trans apply the running progrma for us
+#define FIGHT_RUN_AUTO			0		// Player party ran - have trans apply the running program for us
 #define FIGHT_RUN_MANUAL		1		// Player party ran - tell trans that the plugin has already executed the run prg
 #define FIGHT_WON_AUTO			2		// Player party won - have trans apply the rewards for us
 #define FIGHT_WON_MANUAL		3		// Player party won - tell trans that the plugin has already given rewards
@@ -45,6 +46,8 @@ typedef struct tagFighter
 	int charge;
 	int chargeMax;
 	bool bFrozenCharge;
+	unsigned int freezes;
+	std::map<std::string, STATUS_EFFECT> statuses;
 } FIGHTER, *LPFIGHTER;
 
 // A plugin enemy.
@@ -62,5 +65,17 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 
 // Get a fighter.
 LPFIGHTER getFighter(const unsigned int party, const unsigned int idx);
+
+// Advance the state of a fight.
+void fightTick(void);
+
+// Cause one fighter to attack another.
+int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int targetPartyIdx, const int targetFightIdx, const int damage, const bool toSmp);
+
+// Start a fight based on skill level.
+void skillFight(const int skill, const std::string bkg);
+
+// Test whether we need to begin a fight.
+void fightTest(void);
 
 #endif

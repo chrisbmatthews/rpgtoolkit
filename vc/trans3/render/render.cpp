@@ -42,8 +42,9 @@ double scTopY = 0.0;						// Vertical offset of the scroll cache
 int scTilesX = 0;							// Maximum scroll cache capacity, on width
 int scTilesY = 0;							// Maximum scroll cache capacity, on height
 std::vector<CTile *> g_tiles;				// Cache of tiles.
-CGDICanvas *g_cnvRpgCode;					// RPGCode canvas.
-CGDICanvas *g_cnvMessageWindow;				// RPGCode message window.
+CGDICanvas *g_cnvRpgCode = NULL;			// RPGCode canvas.
+CGDICanvas *g_cnvMessageWindow = NULL;		// RPGCode message window.
+CGDICanvas *g_cnvCursor = NULL;				// Cursor used on maps &c.
 bool g_bShowMessageWindow = false;			// Show the message window?
 double g_translucentOpacity = 0.30;			// Opacity to draw translucent sprites at.
 
@@ -486,6 +487,7 @@ void createCanvases(void)
 	g_scrollCache.pCnv->CreateBlank(NULL, rect.right, rect.bottom, TRUE);
 	g_scrollCache.pCnv->ClearScreen(0);
 	g_scrollCache.r = rect;
+
 }
 
 /*
@@ -496,6 +498,7 @@ void destroyCanvases(void)
 	delete g_cnvRpgCode;
 	delete g_cnvMessageWindow;
 	delete g_scrollCache.pCnv;
+	delete g_cnvCursor;
 }
 
 /*

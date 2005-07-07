@@ -26,6 +26,7 @@
 #include "../../common/board.h"
 #include "../../common/paths.h"
 #include "../../rpgcode/CProgram/CProgram.h"
+#include "../../fight/fight.h"
 #include "../locate.h"
 #include <math.h>
 #include <vector>
@@ -333,31 +334,16 @@ void CSprite::playerDoneMove(void)
 {
 	extern double g_movementSize;
 	extern int g_gameState;
-	extern unsigned int g_stepsTaken;
-	/*
-	 * Used to track number of times fighting
-	 * *would* have been checked for if not
-	 * in pixel movement. In pixel movement,
-	 * only check every four steps (one tile).
-	 */
-	static int checkfight;
+	extern unsigned long g_stepsTaken;
+
+	// Update the step count.
+	g_stepsTaken += g_movementSize;
 
 	programTest();
-
-	// Test for a fight.
-	checkfight++;
-	if (checkfight == (1 / g_movementSize))
-	{
-//		fightTest();
-		checkfight = 0;
-	}
-
-	// Update the step count (doesn't take pixel movement into account yet).
-	g_stepsTaken++;
+	fightTest();
 
 	// Back to idle state (accepting input)
 	g_gameState = GS_IDLE;
-
 }
 
 /*

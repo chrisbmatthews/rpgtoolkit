@@ -18,6 +18,17 @@
 #define PLUG_DT_LIT	1		// Literal data element
 
 /*
+ * RPGCode target.
+ */
+typedef enum tagTargetType
+{
+	TI_EMPTY,		// Empty!
+	TT_PLAYER,		// Player is targetted.
+	TT_ITEM,		// Item is targetted.
+	TT_ENEMY		// Enemy is targetted.
+} TARGET_TYPE;
+
+/*
  * Inclusions.
  */
 #include <vector>

@@ -22,6 +22,7 @@
 #include "../misc/misc.h"
 #include "../audio/CAudioSegment.h"
 #include "../images/FreeImage.h"
+#include "../resource.h"
 #include "winmain.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -214,6 +215,25 @@ VOID setUpGame(VOID)
 
 // Testing!
 //	g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true));
+
+	// This *must* be done here. I'm not sure why.
+	// But don't move it to render.cpp unless you like seeing
+	// things crash for no real reason.
+	extern CGDICanvas *g_cnvCursor;
+	g_cnvCursor = new CGDICanvas();
+	g_cnvCursor->CreateBlank(NULL, 32, 32, TRUE);
+	{
+		const HDC hdc = g_cnvCursor->OpenDC();
+		const HDC compat = CreateCompatibleDC(hdc);
+		extern HINSTANCE g_hInstance;
+		HBITMAP bmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP1));
+		HGDIOBJ obj = SelectObject(compat, bmp);
+		BitBlt(hdc, 0, 0, 32, 32, compat, 0, 0, SRCCOPY);
+		g_cnvCursor->CloseDC(hdc);
+		SelectObject(compat, obj);
+		DeleteObject(bmp);
+		DeleteDC(compat);
+	}
 
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())

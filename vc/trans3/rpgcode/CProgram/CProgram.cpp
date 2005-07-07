@@ -192,7 +192,7 @@ std::string CProgram::parseArray(const std::string str)
 			}
 			else if (str[i] == ']')
 			{
-				toRet += '[' + evaluate(str.substr(open + 1, i - open)).getLit().c_str() + ']';
+				toRet += '[' + evaluate(str.substr(open + 1, i - open - 1)).getLit().c_str() + ']';
 				close = i;
 			}
 		}
