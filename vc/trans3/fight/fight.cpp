@@ -222,11 +222,25 @@ void fightTest(void)
 	extern MAIN_FILE g_mainFile;
 	extern BOARD g_activeBoard;
 
-	// That there is no ! applied to fightGameYn is not an error.
+	// That no ! is applied to fightGameYn is not an error.
 	// For reasons unknown, this boolean is actually false when
 	// it's true and vice versa.
 	if (g_mainFile.fightGameYn || !g_activeBoard.fightingYN) return;
-	if (g_stepsTaken % 32) return;
+
+	// The goal here is to test for a fight only after walking
+	// a whole tile. The introduction of 'true' pixel movement,
+	// however, allows a user to set the movement size to a
+	// distance that is not a factor of 32, making it impossible
+	// for us to be in this function when the player has walked
+	// a whole tile. Thus we consider a whole tile to be the
+	// first number starting at 32 that has the movement size
+	// as a factor. (This does not work for movement sizes
+	// greater than 32. Shall such sizes be allowed?)
+	//
+	// Should rational movement sizes be allowed, this can
+	// be adapted by changing (a % b) to the slower expression
+	// ((a / b - int(a / b)) * b).
+	if (g_stepsTaken % ((64 + (32 % int(g_movementSize))) / 2)) return;
 
 	if (!(((g_mainFile.fightType == 0) ? rand() : int((32 + g_stepsTaken) / 32.0)) % g_mainFile.chances))
 	{
