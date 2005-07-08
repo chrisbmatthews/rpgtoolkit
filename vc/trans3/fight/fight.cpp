@@ -242,7 +242,7 @@ void fightTest(void)
 	// ((a / b - int(a / b)) * b).
 	if (g_stepsTaken % ((64 + (32 % int(g_movementSize))) / 2)) return;
 
-	if (!(((g_mainFile.fightType == 0) ? rand() : int((32 + g_stepsTaken) / 32.0)) % g_mainFile.chances))
+	if (!(((g_mainFile.fightType == 0) ? rand() : (g_stepsTaken / 32)) % g_mainFile.chances))
 	{
 		// Start a fight.
 		if (g_mainFile.fprgYn)
