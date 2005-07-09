@@ -40,11 +40,12 @@ CAudioSegment *g_bkgMusic = NULL;	// Playing background music.
 
 std::vector<CPlayer *> g_players;	// Loaded players.
 std::vector<CItem *> g_items;		// Loaded items.
+ZO_VECTOR g_sprites;				// z-ordered players and items.
 CSprite *g_pSelectedPlayer = NULL;	// Pointer to selected player?
 
 HINSTANCE g_hInstance = NULL;		// Handle to application.
-unsigned int g_renderCount = 0;		// Count of GS_MOVEMENT state loops.
-unsigned int g_renderTime = 0;		// Millisecond cumulative GS_MOVEMENT state loop time.
+double	g_renderCount = 0;			// Count of GS_MOVEMENT state loops.
+double	g_renderTime = 0;			// Millisecond cumulative GS_MOVEMENT state loop time.
 
 IPlugin *g_pMenuPlugin = NULL;		// The menu plugin.
 
@@ -253,6 +254,9 @@ VOID setUpGame(VOID)
 		g_pSelectedPlayer->alignBoard(g_screen, true);
 		g_scrollCache.render(true);
 
+		// z-order the sprites on board loading.
+		g_sprites.zOrder();
+
 		if (!g_activeBoard.boardMusic.empty())
 		{
 			g_bkgMusic->open(g_activeBoard.boardMusic);
@@ -312,10 +316,6 @@ INT gameLogic(VOID)
 			// Input.
 			scanKeys();
 
-// Testing!
-			if (g_items.size())
-				g_items[0]->setQueuedMovements(rand() % 9, true);
-
 			// Movement.
 			for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
 			{
@@ -323,6 +323,8 @@ INT gameLogic(VOID)
 			}
 			for (std::vector<CItem *>::const_iterator j = g_items.begin(); j != g_items.end(); ++j) 
 			{
+// Testing!
+				(*j)->setQueuedMovements(rand() % 9, true);
 				(*j)->move(g_pSelectedPlayer);
 			}
 
@@ -392,7 +394,7 @@ INT mainEventLoop(VOID)
 			if (dwTimeNow < 200)
 			{
 				g_renderTime += dwTimeNow;
-				g_renderCount++;
+				++g_renderCount;
 			}
 		}
 
@@ -454,8 +456,9 @@ VOID closeSystems(VOID)
  */
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
-	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+
+	// #define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	g_hInstance = hInstance;
 
@@ -464,7 +467,7 @@ INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONS
 	CONST std::string fileName = getMainFileName();
 	if (fileName.empty()) return EXIT_SUCCESS;
 
-	g_mainFile.open(fileName);
+	if (!g_mainFile.open(fileName)) return EXIT_SUCCESS;
 
 	extern std::string g_projectPath;
 	g_projectPath = WORKING_DIRECTORY + g_projectPath;
@@ -478,3 +481,5 @@ INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONS
 	return toRet;
 
 }
+
+

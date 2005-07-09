@@ -15,7 +15,7 @@
  * Default constructor.
  */
 CVector::CVector(void):
-m_type(TT_SOLID),
+// m_type(TT_SOLID),
 m_closed(false),
 m_curl(CURL_NDEF)
 {
@@ -29,7 +29,7 @@ m_curl(CURL_NDEF)
  * Point constructor. Note reserve need not be the exact number of points.
  */
 CVector::CVector(const double x, const double y, const int reserve, const int tileType):
-m_type(CVECTOR_TYPE(tileType)),
+// m_type(CVECTOR_TYPE(tileType)),
 m_closed(false),
 m_curl(CURL_NDEF)
 {
@@ -46,7 +46,7 @@ m_curl(CURL_NDEF)
 CVector &CVector::operator+= (const DB_POINT p)
 {
 	// Offset each point by the passed values.
-	for (DB_ITR i = m_p.begin(); i != m_p.end(); i++)	
+	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)	
 	{
 		i->x += p.x;
 		i->y += p.y;
@@ -99,7 +99,7 @@ void CVector::boundingBox(RECT &rect)
 	rect.bottom = rect.left = rect.right = rect.top = 0;
 
 	// Loop over subvectors and find biggest and smallest points.
-	for (DB_ITR i = m_p.begin(); i != m_p.end(); i++)
+	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
 		if ((i->x < rect.left) || (i == m_p.begin())) rect.left = i->x;
 		if ((i->y < rect.top) || (i == m_p.begin())) rect.top = i->y;
@@ -130,10 +130,10 @@ bool CVector::close(const bool isClosed, const int curl)
 
 /*
  * Determine if a polygon intersects or contains a CVector.
- * If Return a point that represents the intersecting subvector
+ * Return a point that represents the intersecting subvector
  * as a position vector for use in sliding tests, etc.
  */
-CVECTOR_TYPE CVector::contains(CVector &rhs, DB_POINT &ref)
+bool CVector::contains(CVector &rhs, DB_POINT &ref)
 {
 	/*
 	 * The rhs CVector intersects the polygon if any of the rhs's
@@ -142,12 +142,12 @@ CVECTOR_TYPE CVector::contains(CVector &rhs, DB_POINT &ref)
 	 */
 
 	// Check the pointer (for selected player checking).
-	if (&rhs == this) return TT_NORMAL;
+	if (&rhs == this) return false;
 
 	// Do a bounding box test for the entire rhs vector.
 	if ((rhs.m_bounds.right < m_bounds.left) || (rhs.m_bounds.left > m_bounds.right) ||
 		(rhs.m_bounds.bottom < m_bounds.top) || (rhs.m_bounds.top > m_bounds.bottom)) 
-		return TT_NORMAL;
+		return false;
 
 	// Check for boundary collisions first.
 	// CVECTOR_TYPE tt = intersect(rhs, ref);
@@ -172,7 +172,7 @@ CVECTOR_TYPE CVector::contains(CVector &rhs, DB_POINT &ref)
 				}
 			}
 */
-			return m_type;
+			return true;
 		}
 	}
 
@@ -185,10 +185,78 @@ CVECTOR_TYPE CVector::contains(CVector &rhs, DB_POINT &ref)
 		for (i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
 		{
 			// Determine if this point is contained in the polygon.
-			if (containsPoint(*i)) return m_type;
+			if (containsPoint(*i) % 2 == 1) return true;
 		}
 	}
-	return TT_NORMAL;
+	return false;
+}
+
+/*
+ * Determine if a polygon intersects or contains a CVector.
+ * Return z-order flags describing if a collision occurred and
+ * whether the source is above or below the target (based on the
+ * number of times the target's boundaries are crossed.
+ */
+ZO_ENUM CVector::contains(CVector &rhs/*, DB_POINT &ref*/)
+{
+	/*
+	 * The rhs CVector intersects the polygon if any of the rhs's
+	 * points lie within it, or if any of the CVector's lines
+	 * intersect any of the polygon's lines.
+	 */
+
+	// Check the pointer (for selected player checking).
+	if (&rhs == this) return ZO_NONE;
+
+	// Do a bounding box test for the entire rhs vector.
+	if ((rhs.m_bounds.right < m_bounds.left) ||
+		(rhs.m_bounds.left > m_bounds.right) ||
+		(rhs.m_bounds.bottom < m_bounds.top) ||
+		(rhs.m_bounds.top > m_bounds.bottom))
+	{
+		// No overlap - no strict z-order.
+		return ZO_NONE;
+	}
+
+	ZO_ENUM zo = ZO_NONE;
+
+	// Loop over the subvectors in this vector (to size() - 1).
+	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
+	{
+		if (intersect(i, rhs))
+		{
+			zo = ZO_COLLIDE;
+
+//			ref.x = (i + 1)->x - i->x;
+//			ref.y = (i + 1)->y - i->y;
+		}
+	}
+
+	// We may be completely inside the vector.
+	// Check we have a closed object.
+
+	if (m_closed && m_curl)
+	{
+		// Loop over the points of the rhs vector.
+		for (i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
+		{
+			// Determine if this point is contained in the polygon.
+			// Returns the number of times the target vector's borders
+			// were crossed.
+			int count = containsPoint(*i);
+			if (count % 2 == 1) 
+			{
+				// A point is contained.
+				zo = ZO_ENUM (zo | ZO_COLLIDE);
+			}
+			else if (!count)
+			{
+				// Even count > 0.
+				zo = ZO_ENUM (zo | ZO_ABOVE);
+			}
+		}
+	}
+	return zo;
 }
 
 /*
@@ -226,20 +294,30 @@ bool CVector::pointOnLine(const DB_ITR &i, const DB_POINT &p) const
 
 /*
  * Determine if a polygon contains a point (a CVector point, or any other).
+ * Return the number of times the boundary was crossed (for z-ordering).
  */
-bool CVector::containsPoint(const DB_POINT p)
+int CVector::containsPoint(const DB_POINT p)
 {
 	/*
 	 * Determine if a point lies within a polygon by counting the number
-	 * of times a test vector from the point crosses the polygon's boundaries.
-	 * The vector must cross an odd number of boundaries if the point is
-	 * inside the polygon.
+	 * of times a test vector from the point to the top of the board crosses 
+	 * the polygon's boundaries. The vector must cross an odd number of 
+	 * boundaries if the point is inside the polygon.
+	 * We can also use this method to z-order sprites by their bases:
+	 * If the sprite is "above" the vector on the screen, the boundaries
+	 * will not be crossed.
+	 * If the sprite is below the vector, the boundaries will be crossed
+	 * (an even number of times).
 	 */
 
 	// Do a bounding box test for *this* point only.
 	// (As opposed to the whole vector check in contains().)
-	if ((p.x < m_bounds.left) || (p.x > m_bounds.right) ||
-		(p.y < m_bounds.top) || (p.y > m_bounds.bottom)) return false;
+	// Return 0 boundaries crossed for left, right or above.
+	// Return 2 boundaries crossed for below.
+	if ((p.x < m_bounds.left) || 
+		(p.x > m_bounds.right) ||
+		(p.y < m_bounds.top)) return 0;
+	if	(p.y > m_bounds.bottom) return 2;
 
 	/*
 	 * We need to consider the situation where we pass through a
@@ -258,7 +336,7 @@ bool CVector::containsPoint(const DB_POINT p)
 	bool lastDir = ((i + 1)->x > i->x);		// true = right, false = left.
 	double lastY = gradient(i) * p.x + intercept(i);
 
-	for (i = m_p.begin(); i != m_p.end() - 1; i++)	
+	for (i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
 		// Skip this subvector if line is parallel to test vector.
 		if (isVertical(i)) continue;
@@ -279,7 +357,7 @@ bool CVector::containsPoint(const DB_POINT p)
 				// Check that if we are at a corner, we make the correct
 				// number of counts (depending on direction of the two 
 				// vectors making corner).
-				count++;
+				++count;
 			}
 			lastY = y;
 			lastDir = ((i + 1)->x > i->x);
@@ -288,7 +366,7 @@ bool CVector::containsPoint(const DB_POINT p)
 
 	// If the vertical vector has crossed the polygon boundary an odd
 	// number of times, the point is inside the polygon.
-	return (count % 2 == 1);
+	return count;
 }
 
 /*
@@ -310,7 +388,7 @@ bool CVector::createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG c
 	HGDIOBJ m = SelectObject(hdc, pen);
 
 	// Draw the bounding box.
-	for (DB_ITR i = m_p.begin(); i != m_p.end(); i++)
+	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
 		if (i != m_p.end() - 1)
 		{
@@ -357,7 +435,7 @@ void CVector::draw(CONST LONG color, const bool drawText, const int x, const int
 {
 	extern CDirectDraw *g_pDirectDraw;
 
-	for (DB_ITR i = m_p.begin(); i != m_p.end(); i++)
+	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
 		if (i != m_p.end() - 1)
 			g_pDirectDraw->DrawLine(i->x - x, i->y - y, (i + 1)->x - x, (i + 1)->y - y, color);
@@ -398,7 +476,7 @@ int CVector::estimateCurl(void)
 
 	double lAngle = 0, rAngle = 0;
 
-	for (DB_ITR i = m_p.begin(); i != m_p.end() - 2; i++)	
+	for (DB_ITR i = m_p.begin(); i != m_p.end() - 2; ++i)	
 	{
 		/*
 		 * We use the vector and scalar products to determine the angle between
@@ -476,20 +554,20 @@ double CVector::intercept(const DB_ITR &i) const
  * Return a point that represents the intersecting subvector
  * as a position vector for use in sliding tests, etc.
  */
-CVECTOR_TYPE CVector::intersect(CVector &rhs, DB_POINT &ref)
+bool CVector::intersect(CVector &rhs, DB_POINT &ref)
 {
 	// Check the rhs vector.
-	if (&rhs == this) return TT_NORMAL;
+	if (&rhs == this) return false;
 
 	/* BOARD VECTOR */
 	// Loop over the subvectors in this vector (to size() - 1).
-	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; i++)	
+	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
 		const double m1 = gradient(i), c1 = intercept(i);
 
 		/* SPRITE VECTOR */
 		// Loop over the subvectors in the target vector.
-		for (DB_ITR j = rhs.m_p.begin(); j != rhs.m_p.end() - 1; j++)	
+		for (DB_ITR j = rhs.m_p.begin(); j != rhs.m_p.end() - 1; ++j)	
 		{
 			// Calculate gradient, intercept.
 			const double m2 = rhs.gradient(j), c2 = rhs.intercept(j);
@@ -529,12 +607,12 @@ CVECTOR_TYPE CVector::intersect(CVector &rhs, DB_POINT &ref)
 				ref.y = (i + 1)->y - i->y;
 
 				// Return the tile type.
-				return m_type;
+				return true;
 			}
 		} // for (j)
 	} // for (i)
 
-	return TT_NORMAL;
+	return false;
 }
 
 /* Internal function to be contained in a loop over i */
@@ -549,7 +627,7 @@ bool CVector::intersect(DB_ITR &i, CVector &rhs)
 
 	/* SPRITE VECTOR */
 	// Loop over the subvectors in the target vector.
-	for (DB_ITR j = rhs.m_p.begin(); j != rhs.m_p.end() - 1; j++)	
+	for (DB_ITR j = rhs.m_p.begin(); j != rhs.m_p.end() - 1; ++j)	
 	{
 		// Calculate gradient, intercept.
 		const double m2 = rhs.gradient(j), c2 = rhs.intercept(j);

@@ -243,6 +243,9 @@ CVariant send(CProgram::PARAMETERS params, CProgram *const)
 	g_pSelectedPlayer->alignBoard(g_screen, true);
 	g_scrollCache.render(true);
 
+	extern ZO_VECTOR g_sprites;
+	g_sprites.zOrder();
+
 	// Ensure that programs the player is standing on don't run immediately.
 	g_pSelectedPlayer->deactivatePrograms();
 

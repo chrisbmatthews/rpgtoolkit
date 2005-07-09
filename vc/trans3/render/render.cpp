@@ -636,13 +636,12 @@ void tagScrollCache::render(const bool bForceRedraw)
  */
 bool renderNow(CGDICanvas *cnv, const bool bForce)
 {
+	extern ZO_VECTOR g_sprites;
+	extern BOARD g_activeBoard;
+
 	const bool bScreen = (cnv == NULL);
 	if (!cnv) cnv = g_pDirectDraw->getBackBuffer();
 
-	extern std::vector<CPlayer *> g_players;
-	extern std::vector<CItem *> g_items;
-
-	extern BOARD g_activeBoard;
 	cnv->ClearScreen(g_activeBoard.brdColor);
 
 	// Check if we need to re-render the scroll cache.
@@ -682,22 +681,14 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 			}
 		}
 
-		// To be z-ordered.
-		for (std::vector<CPlayer *>::iterator j = g_players.begin(); j != g_players.end(); ++j)
+		// z-ordered players and items.
+		for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
 		{
 			if ((*j)->putSpriteAt(cnv, layer, rects.back()))
 			{
 				// Sprite is on this layer and has been drawn.
 				// Store this area, and draw the tiles of the next
 				// layer on this one.
-				rects.push_back(r);
-			}
-		}
-
-		for (std::vector<CItem *>::iterator k = g_items.begin(); k != g_items.end(); ++k)
-		{
-			if ((*k)->putSpriteAt(cnv, layer, rects.back()))
-			{
 				rects.push_back(r);
 			}
 		}
@@ -713,18 +704,18 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 			// draw the vector's canvas over any intersecting areas.
 			for (i = rects.begin(); i != rects.end(); ++i)
 			{
-				RECT rBounds = m->pV->getBounds();
+				RECT rBounds = m->pV->getBounds(), rect = {0, 0, 0, 0};
 
-				// Place the intersection in r.
-				if (IntersectRect(&r, i, &rBounds))
+				// Place the intersection in rect.
+				if (IntersectRect(&rect, i, &rBounds))
 				{
 					m->pCnv->BltTransparentPart(cnv, 
-								r.left - g_screen.left,
-								r.top - g_screen.top,
-								r.left - rBounds.left, 
-								r.top - rBounds.top, 
-								r.right - r.left, 
-								r.bottom - r.top,
+								rect.left - g_screen.left,
+								rect.top - g_screen.top,
+								rect.left - rBounds.left, 
+								rect.top - rBounds.top, 
+								rect.right - rect.left, 
+								rect.bottom - rect.top,
 								TRANSP_COLOR);
 				}
 			}
@@ -739,11 +730,8 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 		// Temporary: draw vectors for debugging.
 /*		g_pDirectDraw->LockScreen();
 
-		for (std::vector<CPlayer *>::iterator a = g_players.begin(); a != g_players.end(); ++a)
+		for (std::vector<CSprite *>::iterator a = g_sprites.v.begin(); a != g_sprites.v.end(); ++a)
 			(*a)->drawVector();
-
-		for (std::vector<CItem *>::iterator b = g_items.begin(); b != g_items.end(); ++b) 
-			(*b)->drawVector();
 
 		for (std::vector<LPBRD_PROGRAM>::iterator c = g_activeBoard.programs.begin(); c != g_activeBoard.programs.end(); ++c)
 			(*c)->vBase.draw(16777215, true, g_screen.left, g_screen.top);
@@ -824,3 +812,8 @@ void closeGraphics(void)
 	UnregisterClass(CLASS_NAME, g_hInstance);
 
 }
+
+
+
+
+

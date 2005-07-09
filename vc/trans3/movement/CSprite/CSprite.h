@@ -56,10 +56,10 @@ public:
 	void setPosition(const int x, const int y, const int l);
 
 	// Evaluate board vectors.
-	CVECTOR_TYPE boardCollisions(const bool recursing = false);
+	TILE_TYPE boardCollisions(const bool recursing = false);
 	
 	// Evaluate sprites (players and items).
-	CVECTOR_TYPE spriteCollisions(void);
+	TILE_TYPE spriteCollisions(void);
 
 	// Test for program activations (by programs, items, players).
 	bool programTest(void);
@@ -89,8 +89,15 @@ protected:
 	CGDICanvas *m_pCanvas;			// Pointer to sprite's frame.
 	SPRITE_POSITION m_pos;			// Current location and frame details.
 	PENDING_MOVEMENT m_pend;		// Pending movements of the player, including queue.
-	CVECTOR_TYPE m_tileType;		// The tiletypes at the sprite's location.
+	TILE_TYPE m_tileType;			// The tiletypes at the sprite's location (NOT the "tiletype" of the sprite).
 	DB_POINT m_v;					// Position vector in movement direction
+
 };
+
+typedef struct tagZOrderedSprites
+{
+	std::vector<CSprite *> v;
+	void zOrder(void);
+} ZO_VECTOR;
 
 #endif

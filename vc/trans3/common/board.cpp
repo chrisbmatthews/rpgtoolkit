@@ -558,7 +558,7 @@ void tagBoard::vectorize(const unsigned int layer)
 		vector.pV->push_back(x * 32, (origY - 1) * 32);
 		vector.pV->close(true, 0);
 		vector.layer = layer;
-		vector.type = CVECTOR_TYPE(type);
+		vector.type = TILE_TYPE(type);
 		vectors.push_back(vector);
 	}
 

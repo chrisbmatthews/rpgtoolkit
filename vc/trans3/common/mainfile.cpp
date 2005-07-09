@@ -17,17 +17,24 @@
  *
  * fileName (in) - file to open
  */
-void tagMainFile::open(const std::string fileName)
+bool tagMainFile::open(const std::string fileName)
 {
 
 	CFile file(fileName);
+
+	if (!file.isOpen())
+	{
+		// FileExists check.
+		MessageBox(NULL, ("File not found: " + fileName).c_str(), "Main file", 0);
+		return false;
+	}
 
 	std::string fileHeader;
 	file >> fileHeader;
 	if (fileHeader != "RPGTLKIT MAIN")
 	{
 		MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Main File", 0);
-		return;
+		return false;
 	}
 
 	short majorVer, minorVer;
@@ -222,4 +229,5 @@ void tagMainFile::open(const std::string fileName)
 		file >> bFpsInTitleBar;
 	}
 
+	return true;
 }

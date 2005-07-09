@@ -75,7 +75,7 @@ typedef struct tagBoardVector
 	int layer;
 	CGDICanvas *pCnv;
 	CVector *pV;
-	CVECTOR_TYPE type;
+	TILE_TYPE type;
 
 	tagBoardVector():
 		layer(0),

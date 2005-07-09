@@ -42,7 +42,7 @@ m_bActive(show),
 m_lastRender(),
 m_pend(),
 m_pos(),
-m_tileType(TT_NORMAL)
+m_tileType(TT_NORMAL)				// Tiletype at location, NOT sprite's type.
 {
 	m_v.x = m_v.y = 0;
 
@@ -91,8 +91,8 @@ bool CSprite::move(const CSprite *selectedPlayer)
 	extern int g_gameState;
 	extern int g_loopOffset;
 	extern double g_movementSize;
-	extern unsigned int g_renderCount;
-	extern unsigned int g_renderTime;
+	extern double g_renderCount;
+	extern double g_renderTime;
 
 	// Is the sprite active (visible).
 	if (!m_bActive) return false;
@@ -118,8 +118,8 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			m_pos.facing = m_pend.direction;
 
 			// Get the tiletype at the target.
-			m_tileType = CVECTOR_TYPE(boardCollisions() | spriteCollisions());
-
+			m_tileType = TILE_TYPE(boardCollisions() | spriteCollisions());
+				
 			// obtainTileType(); - boardCollisions().
 			// checkObstruction(); - spriteCollisions().
 			// checkBoardEdges(); - to do.
@@ -136,8 +136,8 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			 * Scale the offset (GameSpeed() setting) to correspond to an
 			 * increment of 10%.
 			 */
-			const double avgTimeInverse = double(g_renderCount) / double(g_renderTime); // transMain?
-			m_pos.loopSpeed = round(m_attr.speed * avgTimeInverse) + (g_loopOffset * round(avgTimeInverse / 10));
+			const double fpms = g_renderCount / g_renderTime; // transMain?
+			m_pos.loopSpeed = round(m_attr.speed * fpms) + (g_loopOffset * round(fpms * 100.0));
 			
 			// The number of renders (main loops) to run in between animation
 			// frame updates.
@@ -169,11 +169,11 @@ bool CSprite::move(const CSprite *selectedPlayer)
 				// Increment the animation frame when we're on a multiple of
 				// loopSpeed (the number of renders to make between animation
 				// frame increments).
-				m_pos.frame++;
+				++m_pos.frame;
 			}
 
 			// Always increment the render count.
-			m_pos.loopFrame++;
+			++m_pos.loopFrame;
 
 			// Frames per move is the number of animation frames to
 			// draw per move - a move being 1 tile or 1/4 tile.
@@ -365,27 +365,25 @@ void CSprite::setPosition(const int x, const int y, const int l)
  * describing all tiletypes at this point. Evaluate one-way vectors
  * and sprite sliding (angled movement along solid boundaries). 
  */
-CVECTOR_TYPE CSprite::boardCollisions(const bool recursing)
+TILE_TYPE CSprite::boardCollisions(const bool recursing)
 {
 	// To do - stairs, layers.
 	extern BOARD g_activeBoard;
 
-	CVECTOR_TYPE tileTypes = TT_NORMAL;
+	TILE_TYPE tileTypes = TT_NORMAL;
 
 	// Create the sprite's vector base at the *target* location.
 	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
 	CVector sprBase = m_attr.vBase + p;
 
 	// Loop over the board CVectors and check for intersections.
-//	for (std::vector<CVector *>::iterator i = g_activeBoard.vectors.begin(); i != g_activeBoard.vectors.end(); ++i)
 	for (std::vector<BRD_VECTOR>::iterator i = g_activeBoard.vectors.begin(); i != g_activeBoard.vectors.end(); ++i)
 	{
 		if (i->layer != m_pos.l) continue;
 
 		// Check that the board vector contains the player,
 		// *not* the other way round!
-//		CVECTOR_TYPE tt = (*i)->contains(sprBase, p);
-		CVECTOR_TYPE tt = i->pV->contains(sprBase, p);
+		TILE_TYPE tt = i->pV->contains(sprBase, p) ? i->type : TT_NORMAL;
 
 		/*
 		 * If an intersection was found, p now holds a position vector
@@ -502,7 +500,7 @@ CVECTOR_TYPE CSprite::boardCollisions(const bool recursing)
 		} // if (intersect)
 
 		// Add this result, retaining previous vectors.
-		tileTypes = CVECTOR_TYPE(tileTypes | tt);
+		tileTypes = TILE_TYPE(tileTypes | tt);
 
 	} // for (i)
 
@@ -512,49 +510,118 @@ CVECTOR_TYPE CSprite::boardCollisions(const bool recursing)
 /*
  * Check for collisions with other sprite base vectors. Currently only
  * returns TT_SOLID or TT_NORMAL, as all sprites default to solid.
+ * Also, z-order sprites.
  */
-CVECTOR_TYPE CSprite::spriteCollisions(void)
+TILE_TYPE CSprite::spriteCollisions(void)
 {
-	extern std::vector<CPlayer *> g_players;
-	extern std::vector<CItem *> g_items;
+	extern ZO_VECTOR g_sprites;
+	extern BOARD g_activeBoard;
 
-	// Create the sprite's vector base at the *target* location.
+	/*
+	 * Check for collisions against all sprites and return the tiletype
+	 * (currently only solid or normal, but sprites could be given their
+	 * own tiletypes).
+	 * Also z-order sprites as we search for collisions:
+	 * z-ordered (ZO) sprite pointers are stored in g_zSprites.
+	 * Upon board loading, the initial ZO is calculated for all sprites.
+	 * We only need to alter that order when a sprite moves, and then
+	 * we only need to recalculate that sprite's ZO - the others' are preserved.
+	 * Hence we remove the pointer from g_zSprites, make the checks
+	 * and reinsert at the end.
+	 * The position to insert will be the in front of the first pointer
+	 * we find that is "below" this sprite.
+	 */
+
+	std::vector<CSprite *>::iterator i = g_sprites.v.begin(), pos = NULL;
+
+	// Find this sprite's iterator in the z-ordered vector.
+	for (; i != g_sprites.v.end(); ++i)
+	{
+		if (this == *i) break;
+	}
+
+	// Remove the pointer from the vector if it was found.
+	if (i != g_sprites.v.end()) g_sprites.v.erase(i);
+
+	TILE_TYPE result = TT_NORMAL;			// To return.
+
+	// Create this sprite's vector base at the *target* location.
 	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
 	CVector sprBase = m_attr.vBase + p;
 
-	for(std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); i++)
+	for(i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
 	{
-		if (this == *i || m_pos.l != (*i)->m_pos.l) continue;
+//		if (this == *i) continue;			// Redundant check.
+
+		if (m_pos.l > (*i)->m_pos.l)
+		{
+			// *i is on a lower layer and is drawn before this.
+			// We want to insert this somewhere after *i.
+			// Also, we haven't collided with it.
+			continue;
+		}
+		if (m_pos.l < (*i)->m_pos.l)
+		{
+			// *i is on a higher layer, so we want to insert this somewhere
+			// before *i. If this is the *first* encounter of a sprite
+			// that is due to be drawn after this sprite, then we want
+			// to insert this before *i. pos is the iterator position
+			// we are going to insert this in front of.
+			if (!pos) pos = i;
+
+			// Also, we haven't collided with it.
+			continue;
+		}
 
 		// Compare target bases.
 		DB_POINT pt = {(*i)->m_pend.xTarg - 32.0, (*i)->m_pend.yTarg - 32.0};
 		CVector tarBase = (*i)->m_attr.vBase + pt;
 
-		if (tarBase.contains(sprBase, p) != TT_NORMAL)
+		ZO_ENUM zo = tarBase.contains(sprBase);
+
+		if ((zo & ZO_ABOVE) && !pos)
+		{
+			// If above sprite, and we don't have an insertion point already.
+			pos = i;
+		}
+
+		if (zo & ZO_COLLIDE)
 		{
 			// Hit another player.
-			return TT_SOLID;
+			// Record result and continue, to determine z-ordering
+			// against all sprites.
+			result = TT_SOLID;
+
+			// If we already have an insertion point, no need to continue.
+			if (pos) break;
 		}
 
-// Compare origins? Merge origins and targets? (how?)
-	}
-
-	// Items. Possible to put in one loop with players?
-	for(std::vector<CItem *>::iterator j = g_items.begin(); j != g_items.end(); j++)
-	{
-		if (this == *j || m_pos.l != (*j)->m_pos.l) continue;
-
-		// Compare target bases.
-		DB_POINT pt = {(*j)->m_pend.xTarg - 32.0, (*j)->m_pend.yTarg - 32.0};
-		CVector tarBase = (*j)->m_attr.vBase + pt;
-
-		if (tarBase.contains(sprBase, p) != TT_NORMAL)
+		if (!zo)
 		{
-			// Hit an item.
-			return TT_SOLID;
+			// No rect intersect - compare on bounding box bottom-left
+			// corner position.
+			if (!pos)
+			{
+				double  a = ((m_attr.vBase.getBounds().bottom + m_pend.yTarg) *
+							g_activeBoard.bSizeX * 32 + 
+							m_attr.vBase.getBounds().left + m_pend.xTarg),
+
+						b = (((*i)->m_attr.vBase.getBounds().bottom + (*i)->m_pend.yTarg) *
+							g_activeBoard.bSizeX * 32 + 
+							(*i)->m_attr.vBase.getBounds().left + (*i)->m_pend.xTarg);
+				
+				if (a < b) pos = i;
+			}
 		}
+		// Compare origins? Merge origins and targets? (how?)
 	}
-	return TT_NORMAL;
+
+	if (!pos)
+		g_sprites.v.push_back(this);
+	else
+		g_sprites.v.insert(pos, this);
+
+	return result;
 }
 
 /*
@@ -588,7 +655,7 @@ bool CSprite::programTest(void)
 		DB_POINT pt = {(*i)->m_pos.x - 32.0, (*i)->m_pos.x - 32.0};
 		CVector tarActivate = (*i)->m_attr.vActivate + pt;
 
-		if (tarActivate.contains(sprBase, p) != TT_NORMAL)
+		if (tarActivate.contains(sprBase, p))
 		{
 			// Standing in another player's area.
 		}
@@ -606,7 +673,7 @@ bool CSprite::programTest(void)
 
 		CVector tarActivate = (*j)->m_attr.vActivate + pt;
 
-		if (tarActivate.contains(sprBase, p) != TT_NORMAL)
+		if (tarActivate.contains(sprBase, p))
 		{
 			// Standing in an item's area.
 			// Are we facing this item?
@@ -674,7 +741,7 @@ bool CSprite::programTest(void)
 		// Check that the board vector contains the player.
 		// We check *every* vector, in order to reset the 
 		// distance of those we have left.
-		if ((*k)->vBase.contains(sprBase, p) == TT_NORMAL)
+		if (!(*k)->vBase.contains(sprBase, p))
 		{
 			// Not inside this vector. Set the distance to the 
 			// value to trigger program when we re-enter.
@@ -773,7 +840,7 @@ void CSprite::deactivatePrograms(void)
 
 	for (; i != g_activeBoard.programs.end(); ++i)
 	{
-		if (((*i)->layer == m_pos.l) && ((*i)->vBase.contains(sprBase, p) != TT_NORMAL))
+		if (((*i)->layer == m_pos.l) && (*i)->vBase.contains(sprBase, p))
 		{
 			// Standing in a program activation area.
 			if ((*i)->activationType & PRG_REPEAT)
@@ -814,6 +881,35 @@ void CSprite::drawVector(void)
 	// Draw the activation area.
 	sprBase = m_attr.vActivate + p;
 	sprBase.draw(16777215, false, g_screen.left, g_screen.top);
+}
+
+/*
+ * Form all players and items into a z-ordered vector.
+ */
+void tagZOrderedSprites::zOrder(void)
+{
+	extern std::vector<CPlayer *> g_players;
+	extern std::vector<CItem *> g_items;
+
+	// Clear the current contents and re-insert the players and items.
+	v.clear();
+	// Reserve extra space for possible AddPlayers()/CreateItems().
+	v.reserve(g_players.size() + g_items.size() + 16);
+
+	// Push one sprite onto the vector to start the process.
+	v.push_back(g_players.front());
+
+	// Run spriteCollisions for every player and item, inserting them
+	// into v.
+	for (std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
+	{
+		(*i)->spriteCollisions();
+	}
+
+	for (std::vector<CItem *>::iterator j = g_items.begin(); j != g_items.end(); ++j)
+	{
+		(*j)->spriteCollisions();
+	}
 }
 
 /*
@@ -1065,8 +1161,8 @@ bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 	// If we're rendering the top layer, draw the translucent sprite.
 	if (m_pos.l != layer && layer != g_activeBoard.bSizeL) return false;
 
-	// Render the frame here.
-	this->render();
+	// Render the frame here (but not when rendering translucently).
+	if (m_pos.l == layer) this->render();
 
 	// Screen location on board.
 	extern RECT g_screen;

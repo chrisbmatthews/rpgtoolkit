@@ -38,7 +38,7 @@ typedef enum tagCurl
 #define CURL_LEFT  1
 #define CURL_RIGHT -1
 
-
+/*
 typedef enum tagVectorType
 {
 	TT_NORMAL = 0,
@@ -46,8 +46,25 @@ typedef enum tagVectorType
 	TT_UNDER = 2,
 	TT_UNIDIRECTIONAL = 4,
 	TT_STAIRS = 8
-	/* etc */
 } CVECTOR_TYPE;
+*/
+
+typedef enum tagZOrder
+{
+	ZO_NONE,
+	ZO_COLLIDE,
+	ZO_ABOVE
+} ZO_ENUM;
+
+typedef enum tagTileType
+{
+	TT_NORMAL = 0,
+	TT_SOLID = 1,
+	TT_UNDER = 2,
+	TT_UNIDIRECTIONAL = 4,
+	TT_STAIRS = 8
+
+} TILE_TYPE;
 
 // Double-precision point.
 typedef struct tagDbPoint
@@ -82,18 +99,22 @@ public:
 	bool close(const bool isClosed, const int curl);
 
 	// Determine if a vector intersects or contains another vector.
-	CVECTOR_TYPE contains(CVector &rhs, DB_POINT &ref);
+	bool contains(CVector &rhs, DB_POINT &ref);
+
+	// Determine intersect and z-ordering.
+	ZO_ENUM contains(CVector &rhs/*, DB_POINT &ref*/);
 
 	// Determine if a polygon contains a point.
-	bool containsPoint(DB_POINT p);
+	int containsPoint(DB_POINT p);
 
+	// Create a mask from a closed vector.
 	bool createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG color);
 
 	// Get the bounding box.
 	RECT getBounds(void) const { return m_bounds; };
 
 	// Determine if a vector intersects another vector.
-	CVECTOR_TYPE intersect(CVector &rhs, DB_POINT &ref);
+	bool intersect(CVector &rhs, DB_POINT &ref);
 
 	// Draw the vector to the screen (testing purposes).
 	void draw(CONST LONG color, const bool drawText, const int x, const int y);
@@ -129,7 +150,7 @@ private:
 	RECT m_bounds;				// Bounding box.
 	bool m_closed;				// Closed to form a polygon.
 	int m_curl;					// Clockwise or Anti-clockwise subvector movement.
-	CVECTOR_TYPE m_type;		// What kind of action does this vector have?
+//	CVECTOR_TYPE m_type;		// What kind of action does this vector have?
 
 };
 
