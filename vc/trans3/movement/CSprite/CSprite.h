@@ -68,7 +68,7 @@ public:
 	void deactivatePrograms(void);
 
 	// Debug: draw the sprite's base vector.
-	void drawVector(void);
+	void drawVector(CGDICanvas *const cnv);
 
 	// Render if the current frame requires updating.
 	bool render(void);

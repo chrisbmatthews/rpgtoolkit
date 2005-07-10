@@ -702,7 +702,7 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 
 			// Loop over the rects (the areas occupied by sprites) and
 			// draw the vector's canvas over any intersecting areas.
-			for (i = rects.begin(); i != rects.end(); ++i)
+			for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
 			{
 				RECT rBounds = m->pV->getBounds(), rect = {0, 0, 0, 0};
 
@@ -724,26 +724,23 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 
 	} // for (layer)
 
-	if (bScreen)
+	// Temporary: draw vectors for debugging.
+	/** cnv->Lock();
+	for (std::vector<CSprite *>::iterator a = g_sprites.v.begin(); a != g_sprites.v.end(); ++a)
 	{
-
-		// Temporary: draw vectors for debugging.
-/*		g_pDirectDraw->LockScreen();
-
-		for (std::vector<CSprite *>::iterator a = g_sprites.v.begin(); a != g_sprites.v.end(); ++a)
-			(*a)->drawVector();
-
-		for (std::vector<LPBRD_PROGRAM>::iterator c = g_activeBoard.programs.begin(); c != g_activeBoard.programs.end(); ++c)
-			(*c)->vBase.draw(16777215, true, g_screen.left, g_screen.top);
-
-		for (std::vector<BRD_VECTOR>::iterator d = g_activeBoard.vectors.begin(); d != g_activeBoard.vectors.end(); ++d)
-			d->pV->draw(16777215, true, g_screen.left, g_screen.top);
-
-		g_pDirectDraw->UnlockScreen();
-*/
-		g_pDirectDraw->Refresh();
-
+		(*a)->drawVector(cnv);
 	}
+	for (std::vector<LPBRD_PROGRAM>::iterator c = g_activeBoard.programs.begin(); c != g_activeBoard.programs.end(); ++c)
+	{
+		(*c)->vBase.draw(16777215, true, g_screen.left, g_screen.top, cnv);
+	}
+	for (std::vector<BRD_VECTOR>::iterator d = g_activeBoard.vectors.begin(); d != g_activeBoard.vectors.end(); ++d)
+	{
+		d->pV->draw(16777215, true, g_screen.left, g_screen.top, cnv);
+	}
+	cnv->Unlock(); **/
+
+	if (bScreen) g_pDirectDraw->Refresh();
 
 	return true;
 }
@@ -812,8 +809,3 @@ void closeGraphics(void)
 	UnregisterClass(CLASS_NAME, g_hInstance);
 
 }
-
-
-
-
-

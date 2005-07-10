@@ -383,7 +383,6 @@ bool CVector::createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG c
 
 	// Set up to draw using GDI.
 	CONST HDC hdc = cnv->OpenDC();
-	POINT point;
 	HPEN pen = CreatePen(0, 1, color);
 	HGDIOBJ m = SelectObject(hdc, pen);
 
@@ -392,7 +391,7 @@ bool CVector::createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG c
 	{
 		if (i != m_p.end() - 1)
 		{
-			MoveToEx(hdc, i->x - x, i->y - y, &point);
+			MoveToEx(hdc, i->x - x, i->y - y, NULL);
 			LineTo(hdc, (i + 1)->x - x, (i + 1)->y - y);
 		}
 	}
@@ -429,16 +428,15 @@ bool CVector::createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG c
 
 /*
  * Draw the vector / polygon onto a canvas, offset by x,y. 
- * Note: currently draws to the device - need a canvas line-drawing function. 
  */
-void CVector::draw(CONST LONG color, const bool drawText, const int x, const int y)
+void CVector::draw(CONST LONG color, const bool drawText, const int x, const int y, CGDICanvas *const cnv)
 {
-	extern CDirectDraw *g_pDirectDraw;
-
 	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
 		if (i != m_p.end() - 1)
-			g_pDirectDraw->DrawLine(i->x - x, i->y - y, (i + 1)->x - x, (i + 1)->y - y, color);
+		{
+			cnv->DrawLine(i->x - x, i->y - y, (i + 1)->x - x, (i + 1)->y - y, color);
+		}
 
 		// Draw the co-ordinates for each corner.
 		if (drawText)
@@ -446,9 +444,9 @@ void CVector::draw(CONST LONG color, const bool drawText, const int x, const int
 			std::string text; 
 			char c [5]; 
 			text = gcvt (i->x, 5, c);
-			g_pDirectDraw->DrawText(i->x - x, i->y - y, text, "Arial", 10, color);
+			cnv->DrawText(i->x - x, i->y - y, text, "Arial", 10, color);
 			text = gcvt (i->y, 5, c);
-			g_pDirectDraw->DrawText(i->x - x, i->y - y + 8, text, "Arial", 10, color);
+			cnv->DrawText(i->x - x, i->y - y + 8, text, "Arial", 10, color);
 		}
 	}
 }

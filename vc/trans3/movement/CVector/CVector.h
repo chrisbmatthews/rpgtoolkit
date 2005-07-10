@@ -117,7 +117,7 @@ public:
 	bool intersect(CVector &rhs, DB_POINT &ref);
 
 	// Draw the vector to the screen (testing purposes).
-	void draw(CONST LONG color, const bool drawText, const int x, const int y);
+	void draw(CONST LONG color, const bool drawText, const int x, const int y, CGDICanvas *const cnv);
 
 	// Return number of points in vector.
 	int size(void) const { return m_p.size(); };

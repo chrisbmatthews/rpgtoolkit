@@ -862,25 +862,24 @@ void CSprite::deactivatePrograms(void)
 }
 
 // Debug function - draw vector onto screen.
-// Might be worth keeping in some form, but drawing to canvas rather than
-// directly to the device!
-void CSprite::drawVector(void)
+// Might be worth keeping in some form.
+void CSprite::drawVector(CGDICanvas *const cnv)
 {
 	extern RECT g_screen;
 
 	// Draw the target base one colour.
 	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
 	CVector sprBase = m_attr.vBase + p;
-	sprBase.draw(65535, false, g_screen.left, g_screen.top);
+	sprBase.draw(65535, false, g_screen.left, g_screen.top, cnv);
 
 	// Draw the current position base another.
 	p.x = m_pos.x - 32.0; p.y = m_pos.y - 32.0;
 	sprBase = m_attr.vBase + p;
-	sprBase.draw(16777215, false, g_screen.left, g_screen.top);
+	sprBase.draw(16777215, false, g_screen.left, g_screen.top, cnv);
 
 	// Draw the activation area.
 	sprBase = m_attr.vActivate + p;
-	sprBase.draw(16777215, false, g_screen.left, g_screen.top);
+	sprBase.draw(16777215, false, g_screen.left, g_screen.top, cnv);
 }
 
 /*
