@@ -528,7 +528,7 @@ void tagBoard::vectorize(const unsigned int layer)
 			{
 				if (tiletype[x + 1][i][layer] != type)
 				{
-					// It doesn't; stop here.
+					// It doesn't, so stop here.
 					column = false;
 					break;
 				}
@@ -541,11 +541,7 @@ void tagBoard::vectorize(const unsigned int layer)
 		// Mark off the tiles in this rectangle as in a vector.
 		for (i = origX - 1; i < x; i++)
 		{
-			for (j = origY - 1; j < y; j++)
-			{
-				// Better way?
-				finished[i][j] = true;
-			}
+			memset(&finished[i][origY - 1], 1, y - origY + 1);
 		}
 
 		// Create the vector and add it the board's list.
@@ -565,7 +561,7 @@ void tagBoard::vectorize(const unsigned int layer)
 }
 
 /*
- *
+ * Create canvases from a board's vectors.
  */
 void tagBoard::createVectorCanvases(void)
 {
@@ -647,7 +643,6 @@ void tagBoard::createVectorCanvases(void)
 /*
  * Free vectors.
  */
-
 void tagBoard::freeVectors(void)
 {
 	for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
