@@ -502,6 +502,58 @@ void destroyCanvases(void)
 }
 
 /*
+ * Load a cursor from a file.
+ */
+void changeCursor(const std::string strCursor)
+{
+	if (strCursor.empty()) return;
+	if (!g_hHostWnd) return;
+	extern MAIN_FILE g_mainFile;
+
+	const HDC hHostDc = GetDC(g_hHostWnd);
+	const HDC hColorDc = CreateCompatibleDC(hHostDc);
+
+	HBITMAP hColorBmp = NULL;
+
+	// Draw the cursor.
+	if (strCursor == "TK DEFAULT")
+	{
+		extern HINSTANCE g_hInstance;
+		hColorBmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP2));
+		SelectObject(hColorDc, hColorBmp);
+	}
+	else
+	{
+		hColorBmp = CreateCompatibleBitmap(hHostDc, 32, 32);
+		SelectObject(hColorDc, hColorBmp);
+		SetStretchBltMode(hColorDc, COLORONCOLOR);
+		extern std::string g_projectPath;
+		drawImage(g_projectPath + BMP_PATH + strCursor, hColorDc, 0, 0, 32, 32);
+	}
+
+	const HDC hMaskDc = CreateCompatibleDC(hHostDc);
+	const HBITMAP hMaskBmp = CreateBitmap(32, 32, 1, 1, NULL);
+	SelectObject(hMaskDc, hMaskBmp);
+
+	// Create a mask for the cursor.
+	SetBkColor(hColorDc, g_mainFile.transpColor);
+	BitBlt(hMaskDc, 0, 0, 32, 32, hColorDc, 0, 0, SRCCOPY);
+	BitBlt(hColorDc, 0, 0, 32, 32, hMaskDc, 0, 0, SRCINVERT);
+
+	DeleteDC(hMaskDc);
+	DeleteDC(hColorDc);
+	ReleaseDC(g_hHostWnd, hHostDc);
+
+	ICONINFO cursor = {FALSE, g_mainFile.hotSpotX, g_mainFile.hotSpotY, hMaskBmp, hColorBmp};
+	HCURSOR hCursor = CreateIconIndirect(&cursor);
+	SetClassLong(g_hHostWnd, GCL_HCURSOR, LONG(hCursor));
+	DestroyIcon(hCursor);
+
+	DeleteObject(hColorBmp);
+	DeleteObject(hMaskBmp);
+}
+
+/*
  * Show the host window.
  *
  * width (in) - width of window
@@ -532,7 +584,7 @@ void showScreen(const int width, const int height)
 		NULL,
 		g_hInstance,
 		NULL,
-		/*HICON(hCursor)*/ NULL,
+		NULL,
 		HBRUSH(GetStockObject(BLACK_BRUSH)),
 		NULL,
 		CLASS_NAME,
@@ -556,6 +608,8 @@ void showScreen(const int width, const int height)
 		g_hInstance,
 		NULL
 	);
+
+	changeCursor(g_mainFile.mouseCursor);
 
 	int depth = 16 + g_mainFile.colorDepth * 8;
 	g_pDirectDraw = new CDirectDraw();

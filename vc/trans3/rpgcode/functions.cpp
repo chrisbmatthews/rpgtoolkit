@@ -1380,13 +1380,8 @@ CVariant bitmap(CProgram::PARAMETERS params, CProgram *const)
 	if (cnv)
 	{
 		extern std::string g_projectPath;
-		const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
-		const HDC hdc = cnv->OpenDC();
 		extern int g_resX, g_resY;
-		StretchDIBits(hdc, 0, 0, g_resX, g_resY, 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
-		cnv->CloseDC(hdc);
-		FreeImage_Unload(bmp);
+		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), cnv, 0, 0, g_resX, g_resY);
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -1617,9 +1612,10 @@ CVariant fightenemy(CProgram::PARAMETERS params, CProgram *const)
 		return CVariant();
 	}
 	std::vector<std::string> enemies;
-	for (unsigned int i = 0; i < (params.size() - 1); i++)
+	std::vector<CVariant>::const_iterator i = params.begin();
+	for (; i != (params.end() - 1); ++i)
 	{
-		enemies.push_back(params[0].getLit());
+		enemies.push_back(i->getLit());
 	}
 	runFight(enemies, params[params.size() - 1].getLit());
 	return CVariant();
@@ -1646,12 +1642,14 @@ CVariant callshop(CProgram::PARAMETERS params, CProgram *const)
 }
 
 /*
- * clearbuffer(...)
+ * clearbuffer()
  * 
- * Description.
+ * Clear the keyboard buffer.
  */
 CVariant clearbuffer(CProgram::PARAMETERS params, CProgram *const)
 {
+	extern std::vector<char> g_keys;
+	g_keys.clear();
 	return CVariant();
 }
 

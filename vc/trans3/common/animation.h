@@ -74,6 +74,13 @@ bool canvasMaskBltStretchTransparent(const CGDICanvas *cnvSource,
 									  const CGDICanvas *cnvTarget,
 									  const int crTranspColor);
 
-void drawImage(const std::string strFile, CGDICanvas *const cnv, const int x, const int y, const int width, const int height);
+void drawImage(const std::string strFile, const HDC hdc, const int x, const int y, const int width, const int height);
+
+inline void drawImage(const std::string strFile, CGDICanvas *const cnv, const int x, const int y, const int width, const int height)
+{
+	const HDC hdc = cnv->OpenDC();
+	drawImage(strFile, hdc, x, y, width, height);
+	cnv->CloseDC(hdc);
+}
 
 #endif

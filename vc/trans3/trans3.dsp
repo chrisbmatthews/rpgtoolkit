@@ -1481,5 +1481,13 @@ SOURCE=.\fight\IFighter.h
 # End Source File
 # End Group
 # End Group
+# Begin Source File
+
+SOURCE=.\resources\cursor.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\resources\mouse.bmp
+# End Source File
 # End Target
 # End Project

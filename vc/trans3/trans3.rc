@@ -127,6 +127,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
 //
 
 IDB_BITMAP1             BITMAP  DISCARDABLE     "resources\\cursor.bmp"
+IDB_BITMAP2             BITMAP  DISCARDABLE     "resources\\mouse.bmp"
 #endif    // English (Canada) resources
 /////////////////////////////////////////////////////////////////////////////
 

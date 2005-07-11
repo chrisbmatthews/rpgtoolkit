@@ -306,7 +306,7 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 /*
  * Draw a picture.
  */
-void drawImage(const std::string strFile, CGDICanvas *const cnv, const int x, const int y, const int width, const int height)
+void drawImage(const std::string strFile, const HDC hdc, const int x, const int y, const int width, const int height)
 {
 	if (_strcmpi(getExtension(strFile).c_str(), "TBM") == 0)
 	{
@@ -319,18 +319,14 @@ void drawImage(const std::string strFile, CGDICanvas *const cnv, const int x, co
 		tbm.draw(&cnvInt, &cnvMask, 0, 0);
 		const HDC hdcMask = cnvMask.OpenDC();
 		const HDC hdcSource = cnvInt.OpenDC();
-		const HDC hdc = cnv->OpenDC();
 		StretchBlt(hdc, x, y, width, height, hdcMask, 0, 0, fullWidth, fullHeight, SRCAND);
 		StretchBlt(hdc, x, y, width, height, hdcSource, 0, 0, fullWidth, fullHeight, SRCPAINT);
-		cnv->CloseDC(hdc);
 		cnvInt.CloseDC(hdcSource);
 		cnvMask.CloseDC(hdcMask);
 		return;
 	}
 	FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(strFile.c_str(), 16), strFile.c_str());
-	const HDC hdc = cnv->OpenDC();
 	StretchDIBits(hdc, x, y, (width != -1) ? width : FreeImage_GetWidth(bmp), (height != -1) ? height : FreeImage_GetHeight(bmp), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
-	cnv->CloseDC(hdc);
 	FreeImage_Unload(bmp);
 }
 
