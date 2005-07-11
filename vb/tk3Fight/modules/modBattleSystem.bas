@@ -1,21 +1,19 @@
 Attribute VB_Name = "modBattleSystem"
 '====================================================================================
-'RPGToolkit3 Default Battle System
-'====================================================================================
-'All contents copyright 2004, Colin James Fitzpatrick
-'====================================================================================
-'YOU MAY NOT REMOVE THIS NOTICE!
+' RPGToolkit3 Default Battle System
+' All contents copyright 2004, Colin James Fitzpatrick
+' YOU MAY NOT REMOVE THIS NOTICE!
 '====================================================================================
 
 Option Explicit
 
 '====================================================================================
-'Variable Declarations
+' Declarations
 '====================================================================================
 
 Private inMainMenu As Boolean
 
-Private Type Fighter
+Private Type FIGHTER
     handle As String
     idx As Long
     animations(4) As String
@@ -28,23 +26,23 @@ Private Type Fighter
     isPlayer As Boolean
 End Type
 
-Private Type SpcMove
+Private Type SPCMOVE
     filename As String
     handle As String
     mp As Long
 End Type
 
 'Parties
-Private Players() As Fighter
-Private Enemies() As Fighter
+Private players() As FIGHTER
+Private enemies() As FIGHTER
 
-Private Type Charged
+Private Type CHARGED
     playerCharged(4) As Long
 End Type
 
 'Queues
-Private chargeQueue As Charged
-Private enemyQueue As Charged
+Private chargeQueue As CHARGED
+Private enemyQueue As CHARGED
 
 'Resolution
 Public resX As Long
@@ -70,7 +68,7 @@ Private m_cnvMenu As Long
 Private m_cnvWideMenu As Long
 
 '====================================================================================
-' Fight entry point
+' Fight entry point.
 '====================================================================================
 Public Function fight( _
     ByVal enemyCount As Long, _
@@ -84,14 +82,14 @@ Public Function fight( _
     noNewDeaths = False
 
     ' Setup enemies
-    ReDim Enemies(enemyCount - 1)
+    ReDim enemies(enemyCount - 1)
     ReDim enemyFramesToDelay(enemyCount - 1)
     Call loadEnemySprites
     Call positionEnemies
 
     ' Walking speed
     Dim i As Long
-    For i = 0 To UBound(Enemies)
+    For i = 0 To UBound(enemies)
         enemyFramesToDelay(i) = 1
     Next i
     Dim lngPlayerPartySize As Long
@@ -102,7 +100,7 @@ Public Function fight( _
     Next i
 
     ' Setup players
-    ReDim Players(lngPlayerPartySize - 1)
+    ReDim players(lngPlayerPartySize - 1)
     Call loadPlayerSprites
     Call positionPlayers
 
@@ -118,7 +116,7 @@ Public Function fight( _
     Next i
 
     ' Any dead players?
-    For i = 0 To UBound(Players)
+    For i = 0 To UBound(players)
         If CBGetFighterHP(PLAYER_PARTY, i) <= 0 Then
             chargeQueue.playerCharged(i) = -3
         End If
@@ -160,11 +158,10 @@ Public Function fight( _
 
 End Function
 
+'====================================================================================
+' Main fight execution loop.
+'====================================================================================
 Private Function mainLoop() As Long
-
-    '====================================================================================
-    'Main fight execution loop
-    '====================================================================================
 
     Do
 
@@ -199,16 +196,15 @@ Private Function mainLoop() As Long
 
 End Function
 
+'====================================================================================
+' Check if anyone has been revived.
+'====================================================================================
 Private Sub checkRevivals()
-
-    '====================================================================================
-    'Check if anyone has been revived
-    '====================================================================================
 
     Dim a As Long
 
     'Players
-    For a = 0 To UBound(Players)
+    For a = 0 To UBound(players)
         If chargeQueue.playerCharged(a) = -3 Then
             If CBGetFighterHP(PLAYER_PARTY, a) > 0 Then
                 chargeQueue.playerCharged(a) = 0
@@ -217,7 +213,7 @@ Private Sub checkRevivals()
     Next a
 
     'Enemies
-    For a = 0 To UBound(Enemies)
+    For a = 0 To UBound(enemies)
         If enemyQueue.playerCharged(a) = -3 Then
             If CBGetFighterHP(ENEMY_PARTY, a) > 0 Then
                 enemyQueue.playerCharged(a) = 0
@@ -227,11 +223,10 @@ Private Sub checkRevivals()
 
 End Sub
 
+'====================================================================================
+' Check if a party is dead.
+'====================================================================================
 Private Function fightHasEnded(ByRef endType As Long) As Boolean
-
-    '====================================================================================
-    'Check if a party is dead
-    '====================================================================================
 
     Dim a As Long
     Dim enemyWin As Boolean
@@ -240,14 +235,14 @@ Private Function fightHasEnded(ByRef endType As Long) As Boolean
     enemyWin = True
     playerWin = True
     
-    For a = 0 To UBound(Enemies)
+    For a = 0 To UBound(enemies)
         If CBGetFighterHP(ENEMY_PARTY, a) > 0 Then
             playerWin = False
             Exit For
         End If
     Next a
     
-    For a = 0 To UBound(Players)
+    For a = 0 To UBound(players)
         If CBGetFighterHP(PLAYER_PARTY, a) > 0 Then
             enemyWin = False
             Exit For
@@ -268,11 +263,10 @@ Private Function fightHasEnded(ByRef endType As Long) As Boolean
 
 End Function
 
+'====================================================================================
+' Calculate where to place players.
+'====================================================================================
 Private Sub positionPlayers()
-
-    '====================================================================================
-    'Calculate where to place players
-    '====================================================================================
 
     On Error Resume Next
 
@@ -280,38 +274,37 @@ Private Sub positionPlayers()
     Dim divy As Double
     Dim a As Long
 
-    For a = 0 To UBound(Players)
-        total = total + Players(a).height
+    For a = 0 To UBound(players)
+        total = total + players(a).height
     Next a
 
-    divy = ((resY - 100) - total) / (UBound(Players) + 2)
+    divy = ((resY - 100) - total) / (UBound(players) + 2)
     
     Dim curPos As Long
-    For a = 0 To UBound(Players)
+    For a = 0 To UBound(players)
         curPos = curPos + divy
-        Players(a).y = curPos
-        Players(a).x = resX - 110
-        curPos = curPos + Players(a).height
+        players(a).y = curPos
+        players(a).x = resX - 110
+        curPos = curPos + players(a).height
     Next a
 
 End Sub
 
+'====================================================================================
+' Load the player sprites.
+'====================================================================================
 Private Sub loadPlayerSprites()
-
-    '====================================================================================
-    'Load the player sprites
-    '====================================================================================
 
     'For each player
     Dim a As Long
-    For a = 0 To UBound(Players)
+    For a = 0 To UBound(players)
     
         Dim b As Long
         'For each animation
         For b = 0 To 4
 
             Dim theAnim As String
-      
+
             Select Case b
                 Case 0
                     theAnim = CBGetFighterAnimation(PLAYER_PARTY, a, "REST")
@@ -330,34 +323,33 @@ Private Sub loadPlayerSprites()
                 If b = 0 Then
                     Dim anim As Long
                     anim = CBCreateAnimation(theAnim)
-                    Players(a).width = CBAnimationSizeX(anim)
-                    Players(a).height = CBAnimationSizeY(anim)
-                    Players(a).restMaxFrame = CBAnimationMaxFrames(anim)
+                    players(a).width = CBAnimationSizeX(anim)
+                    players(a).height = CBAnimationSizeY(anim)
+                    players(a).restMaxFrame = CBAnimationMaxFrames(anim)
                     Call CBDestroyAnimation(anim)
                 End If
-                Players(a).animations(b) = theAnim
+                players(a).animations(b) = theAnim
 
             End If
         
         Next b
 
-        Players(a).handle = CBGetPlayerString(PLAYER_NAME, 0, a)
-        Players(a).isPlayer = True
-        Players(a).idx = a
+        players(a).handle = CBGetPlayerString(PLAYER_NAME, 0, a)
+        players(a).isPlayer = True
+        players(a).idx = a
 
     Next a
 
 End Sub
 
+'====================================================================================
+' Load the enemy sprites.
+'====================================================================================
 Private Sub loadEnemySprites()
-
-    '====================================================================================
-    'Load the enemy sprites
-    '====================================================================================
 
     'For each enemy
     Dim a As Long
-    For a = 0 To UBound(Enemies)
+    For a = 0 To UBound(enemies)
     
         Dim b As Long
         'For each animation
@@ -380,13 +372,13 @@ Private Sub loadEnemySprites()
 
             If (LenB(theAnim)) Then
 
-                Enemies(a).animations(b) = theAnim
+                enemies(a).animations(b) = theAnim
                 If b = 0 Then
                     Dim anim As Long
                     anim = CBCreateAnimation(theAnim)
-                    Enemies(a).width = CBAnimationSizeX(anim)
-                    Enemies(a).height = CBAnimationSizeY(anim)
-                    Enemies(a).restMaxFrame = CBAnimationMaxFrames(anim)
+                    enemies(a).width = CBAnimationSizeX(anim)
+                    enemies(a).height = CBAnimationSizeY(anim)
+                    enemies(a).restMaxFrame = CBAnimationMaxFrames(anim)
                     Call CBDestroyAnimation(anim)
                 End If
 
@@ -394,46 +386,44 @@ Private Sub loadEnemySprites()
         
         Next b
 
-        Enemies(a).handle = CBGetEnemyString(ENE_NAME, a)
-        Enemies(a).idx = a
+        enemies(a).handle = CBGetEnemyString(ENE_NAME, a)
+        enemies(a).idx = a
     
     Next a
 
 End Sub
 
+'====================================================================================
+' Calculate where to position the enemies.
+'====================================================================================
 Private Sub positionEnemies()
-
-    '====================================================================================
-    'Calculate where to position the enemies
-    '====================================================================================
 
     On Error Resume Next
 
     Dim a As Long
-    For a = 0 To UBound(Enemies)
+    For a = 0 To UBound(enemies)
         Select Case a
             Case 0
-                Enemies(a).x = 30
-                Enemies(a).y = 30
+                enemies(a).x = 30
+                enemies(a).y = 30
             Case 1
-                Enemies(a).x = 30 + (Enemies(a - 1).width + 30)
-                Enemies(a).y = 30
+                enemies(a).x = 30 + (enemies(a - 1).width + 30)
+                enemies(a).y = 30
             Case 2
-                Enemies(a).x = 30
-                Enemies(a).y = 30 + (Enemies(a - 2).height + 30)
+                enemies(a).x = 30
+                enemies(a).y = 30 + (enemies(a - 2).height + 30)
             Case 3
-                Enemies(a).x = 30 + (Enemies(a - 1).width + 30)
-                Enemies(a).y = 30 + (Enemies(a - 3).height + 30)
+                enemies(a).x = 30 + (enemies(a - 1).width + 30)
+                enemies(a).y = 30 + (enemies(a - 3).height + 30)
         End Select
     Next a
 
 End Sub
 
+'====================================================================================
+' Renders a frame.
+'====================================================================================
 Private Sub renderScene(Optional ByVal pRefreshStats As Long = 0)
-
-    '====================================================================================
-    'Renders a frame
-    '====================================================================================
 
     Dim cnvScene As Long
     Dim cnvFieldState As Long
@@ -474,17 +464,17 @@ Private Sub renderScene(Optional ByVal pRefreshStats As Long = 0)
 
     'Any players dead?
     Dim a As Long
-    For a = 0 To UBound(Players)
+    For a = 0 To UBound(players)
         If chargeQueue.playerCharged(a) = -2 Then
             chargeQueue.playerCharged(a) = -3
-            Call playAnimation(Players(a), 4)
+            Call playAnimation(players(a), 4)
         End If
     Next a
     'Enemies?
-    For a = 0 To UBound(Enemies)
+    For a = 0 To UBound(enemies)
         If enemyQueue.playerCharged(a) = -2 Then
             enemyQueue.playerCharged(a) = -3
-            Call playAnimation(Enemies(a), 4)
+            Call playAnimation(enemies(a), 4)
         End If
     Next a
 
@@ -494,11 +484,10 @@ Private Sub renderScene(Optional ByVal pRefreshStats As Long = 0)
 
 End Sub
 
+'====================================================================================
+' Renders the party stats to the canvas passed in.
+'====================================================================================
 Private Sub renderParty(ByVal cnv As Long)
-
-    '====================================================================================
-    'Renders the party stats to the canvas passed in
-    '====================================================================================
 
     On Error Resume Next
 
@@ -509,7 +498,7 @@ Private Sub renderParty(ByVal cnv As Long)
     Call CBCanvas2CanvasBlt(cnvParty, cnv, 0, 0)
     
     Dim members As Long
-    members = UBound(Players) + 1
+    members = UBound(players) + 1
     
     Dim pixelsUsed As Long
     pixelsUsed = members * PLAYER_WIDTH
@@ -522,7 +511,7 @@ Private Sub renderParty(ByVal cnv As Long)
 
     Dim a As Long
     Dim curX As Long
-    For a = 0 To UBound(Players)
+    For a = 0 To UBound(players)
         If (members <> 5) Or (a <> 0) Then curX = curX + divy _
         Else: curX = 3
         Call CBCanvas2CanvasBltTransparent(g_cnvProfiles(a), cnv, curX, 12.5, 0)
@@ -587,16 +576,15 @@ Private Sub renderParty(ByVal cnv As Long)
 
 End Sub
 
+'====================================================================================
+' Render player sprites on the canvas passed in.
+'====================================================================================
 Private Sub renderPlayers(ByVal retCnv As Long, Optional ByVal a As Long = -1)
-
-    '====================================================================================
-    'Render player sprites on the canvas passed in
-    '====================================================================================
 
     If a = -1 Then
         Dim cnv As Long
         Dim b As Long
-        For b = 0 To UBound(Players)
+        For b = 0 To UBound(players)
             cnv = CBCreateCanvas(resX, resY - 100)
             Call renderPlayers(cnv, b)
             Call CBCanvas2CanvasBltTransparent(cnv, retCnv, 0, 0, g_lngTranspColor)
@@ -615,34 +603,34 @@ Private Sub renderPlayers(ByVal retCnv As Long, Optional ByVal a As Long = -1)
     Dim theAnim As Long
     Dim theFile As String
     If (CBGetFighterHP(PLAYER_PARTY, a) > 0) Or (noNewDeaths And chargeQueue.playerCharged(a) <> -3) Then
-        theFile = Players(a).animations(0)
+        theFile = players(a).animations(0)
         If (LenB(theFile)) Then
             theAnim = CBCreateAnimation(theFile)
 
             Call CBCanvasDrawAnimationFrame( _
                                                retCnv, _
                                                theAnim, _
-                                               Round(Players(a).restCurrentFrame), _
-                                               Players(a).x, _
-                                               Players(a).y, _
+                                               Round(players(a).restCurrentFrame), _
+                                               players(a).x, _
+                                               players(a).y, _
                                                1)
 
-            Players(a).restCurrentFrame = Players(a).restCurrentFrame + playerFramesToDelay(a)
-            If Players(a).restCurrentFrame > Players(a).restMaxFrame Then
-                Players(a).restCurrentFrame = 0
+            players(a).restCurrentFrame = players(a).restCurrentFrame + playerFramesToDelay(a)
+            If players(a).restCurrentFrame > players(a).restMaxFrame Then
+                players(a).restCurrentFrame = 0
             End If
         End If
     ElseIf chargeQueue.playerCharged(a) = -3 Then
         'Long since dead...
-        theFile = Players(a).animations(4)
+        theFile = players(a).animations(4)
         If (LenB(theFile)) Then
             theAnim = CBCreateAnimation(theFile)
             Call CBCanvasDrawAnimationFrame( _
                                                retCnv, _
                                                theAnim, _
                                                CBAnimationMaxFrames(theAnim), _
-                                               Players(a).x, _
-                                               Players(a).y, _
+                                               players(a).x, _
+                                               players(a).y, _
                                                1)
         End If
     Else
@@ -654,16 +642,15 @@ Private Sub renderPlayers(ByVal retCnv As Long, Optional ByVal a As Long = -1)
 
 End Sub
 
+'====================================================================================
+' Render enemy sprites to the canvas passed in.
+'====================================================================================
 Private Sub renderEnemies(ByVal retCnv As Long, Optional ByVal a As Long = -1)
-
-    '====================================================================================
-    'Render enemy sprites to the canvas passed in
-    '====================================================================================
 
     If a = -1 Then
         Dim cnv As Long
         Dim b As Long
-        For b = 0 To UBound(Enemies)
+        For b = 0 To UBound(enemies)
             cnv = CBCreateCanvas(resX, resY - 100)
             Call renderEnemies(cnv, b)
             Call CBCanvas2CanvasBltTransparent(cnv, retCnv, 0, 0, g_lngTranspColor)
@@ -682,35 +669,35 @@ Private Sub renderEnemies(ByVal retCnv As Long, Optional ByVal a As Long = -1)
     Dim theAnim As Long
     Dim theFile As String
     If (CBGetFighterHP(ENEMY_PARTY, a) > 0) Or (noNewDeaths And enemyQueue.playerCharged(a) <> -3) Then
-        theFile = Enemies(a).animations(0)
+        theFile = enemies(a).animations(0)
         If (LenB(theFile)) Then
             theAnim = CBCreateAnimation(theFile)
     
             Call CBCanvasDrawAnimationFrame( _
                                                retCnv, _
                                                theAnim, _
-                                               Round(Enemies(a).restCurrentFrame), _
-                                               Enemies(a).x, _
-                                               Enemies(a).y, _
+                                               Round(enemies(a).restCurrentFrame), _
+                                               enemies(a).x, _
+                                               enemies(a).y, _
                                                1)
 
             Call CBDestroyAnimation(theAnim)
 
-            Enemies(a).restCurrentFrame = Enemies(a).restCurrentFrame + enemyFramesToDelay(a)
-            If Enemies(a).restCurrentFrame > Enemies(a).restMaxFrame Then
-                Enemies(a).restCurrentFrame = 0
+            enemies(a).restCurrentFrame = enemies(a).restCurrentFrame + enemyFramesToDelay(a)
+            If enemies(a).restCurrentFrame > enemies(a).restMaxFrame Then
+                enemies(a).restCurrentFrame = 0
             End If
         End If
     ElseIf enemyQueue.playerCharged(a) = -3 Then
-        theFile = Enemies(a).animations(4)
+        theFile = enemies(a).animations(4)
         If (LenB(theFile)) Then
             theAnim = CBCreateAnimation(theFile)
             Call CBCanvasDrawAnimationFrame( _
                                                retCnv, _
                                                theAnim, _
                                                CBAnimationMaxFrames(theAnim), _
-                                               Enemies(a).x, _
-                                               Enemies(a).y, _
+                                               enemies(a).x, _
+                                               enemies(a).y, _
                                                1)
             Call CBDestroyAnimation(theAnim)
         End If
@@ -721,11 +708,10 @@ Private Sub renderEnemies(ByVal retCnv As Long, Optional ByVal a As Long = -1)
 
 End Sub
 
+'====================================================================================
+' Renders the fighting 'field' to the canvas passed in.
+'====================================================================================
 Private Sub renderState(ByVal cnv As Long)
-
-    '====================================================================================
-    'Renders the fighting 'field' to the canvas passed in
-    '====================================================================================
 
     Dim retCnv As Long
     retCnv = CBCreateCanvas(resX, resY - 100)
@@ -744,6 +730,9 @@ Private Sub renderState(ByVal cnv As Long)
 
 End Sub
 
+'====================================================================================
+' Handles fight events.
+'====================================================================================
 Public Function fightInform( _
                                ByVal sourcePartyIndex As Long, _
                                ByVal sourceFighterIndex As Long, _
@@ -757,30 +746,26 @@ Public Function fightInform( _
                                ByVal attackCode As Long _
                                                           ) As Long
 
-    '====================================================================================
-    'Handles fight events
-    '====================================================================================
-
     On Error Resume Next
 
     If ranAway Then Exit Function
 
     Dim oldCnv As Long
 
-    Dim source As Fighter
-    Dim target As Fighter
+    Dim source As FIGHTER
+    Dim target As FIGHTER
     If sourcePartyIndex <> -1 Then
         If sourcePartyIndex = PLAYER_PARTY Then
-            source = Players(sourceFighterIndex)
+            source = players(sourceFighterIndex)
         Else
-            source = Enemies(sourceFighterIndex)
+            source = enemies(sourceFighterIndex)
         End If
     End If
     If targetPartyIndex <> -1 Then
         If targetPartyIndex = PLAYER_PARTY Then
-            target = Players(targetFighterIndex)
+            target = players(targetFighterIndex)
         Else
-            target = Enemies(targetFighterIndex)
+            target = enemies(targetFighterIndex)
         End If
     End If
 
@@ -860,16 +845,15 @@ Public Function fightInform( _
 
 End Function
 
+'====================================================================================
+' Plays a player animation.
+'====================================================================================
 Private Sub playAnimation( _
-                             ByRef target As Fighter, _
+                             ByRef target As FIGHTER, _
                              Optional ByVal num As Long, _
                              Optional ByVal file As String, _
                              Optional ByVal transparent As Boolean _
                                                                      )
-
-    '====================================================================================
-    'Plays a player animation
-    '====================================================================================
 
     Dim cnvSave As Long
     Dim cnvFrame As Long
@@ -959,11 +943,10 @@ Private Sub playAnimation( _
 
 End Sub
 
-Private Function showDamage(ByVal hp As Long, ByVal mp As Long, ByRef target As Fighter)
-
-    '====================================================================================
-    'Shows the damage that was dealt to the fighter passed in
-    '====================================================================================
+'====================================================================================
+' Shows the damage that was dealt to the fighter passed in.
+'====================================================================================
+Private Function showDamage(ByVal hp As Long, ByVal mp As Long, ByRef target As FIGHTER)
 
     Dim cnv As Long
     Dim work As Long
@@ -1036,6 +1019,9 @@ Private Function showDamage(ByVal hp As Long, ByVal mp As Long, ByRef target As 
 
 End Function
 
+'====================================================================================
+' Draws an image transparently on the canvas passed in.
+'====================================================================================
 Private Sub drawImageTransparent( _
                                     ByVal destCnv As Long, _
                                     ByVal image As String, _
@@ -1049,10 +1035,6 @@ Private Sub drawImageTransparent( _
                                     Optional ByVal lngColor As Long = -1 _
                                                                            )
 
-    '====================================================================================
-    'Draws an image transparently on the canvas passed in
-    '====================================================================================
-
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
     Call CBCanvasLoadSizedImage(cnv, image)
@@ -1065,6 +1047,9 @@ Private Sub drawImageTransparent( _
 
 End Sub
 
+'====================================================================================
+' Draws an image translucently on the canvas passed in.
+'====================================================================================
 Private Sub drawImageTranslucent( _
                                    ByVal destCnv As Long, _
                                    ByVal image As String, _
@@ -1074,10 +1059,6 @@ Private Sub drawImageTranslucent( _
                                    ByVal height As Double _
                                                             )
 
-    '====================================================================================
-    'Draws an image translucently on the canvas passed in
-    '====================================================================================
-
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
     Call CBCanvasLoadSizedImage(cnv, image)
@@ -1086,6 +1067,9 @@ Private Sub drawImageTranslucent( _
 
 End Sub
 
+'====================================================================================
+' Draws an image on the canvas passed in.
+'====================================================================================
 Private Sub drawImage( _
                         ByVal destCnv As Long, _
                         ByVal image As String, _
@@ -1094,10 +1078,6 @@ Private Sub drawImage( _
                         ByVal width As Double, _
                         ByVal height As Double _
                                                  )
-    
-    '====================================================================================
-    'Draws an image on the canvas passed in
-    '====================================================================================
 
     Dim cnv As Long
     cnv = CBCreateCanvas(width, height)
@@ -1107,11 +1087,10 @@ Private Sub drawImage( _
 
 End Sub
 
-Private Sub mainMenuScanKeys(ByRef player As Fighter)
-
-    '====================================================================================
-    'Open the main menu for the player passed in
-    '====================================================================================
+'====================================================================================
+' Open the main menu for the player passed in.
+'====================================================================================
+Private Sub mainMenuScanKeys(ByRef player As FIGHTER)
 
     On Error Resume Next
 
@@ -1290,15 +1269,14 @@ Private Sub mainMenuScanKeys(ByRef player As Fighter)
 
 End Sub
 
+'====================================================================================
+' Allows user to choose a fighter using a cursor.
+'====================================================================================
 Private Sub characterSelect( _
                                ByRef chosenParty As Long, _
                                ByRef chosenFighter As Long, _
                                ByVal startOnParty As Long _
                                                             )
-
-    '====================================================================================
-    'Allows user to choose a fighter using a cursor
-    '====================================================================================
 
     Dim oldCnv As Long
     oldCnv = CBCreateCanvas(resX, resY)
@@ -1331,11 +1309,11 @@ Private Sub characterSelect( _
     Dim done As Boolean
     Do Until done
 
-        Dim target As Fighter
+        Dim target As FIGHTER
         If party = PLAYER_PARTY Then
-            target = Players(pos)
+            target = players(pos)
         Else
-            target = Enemies(pos)
+            target = enemies(pos)
         End If
 
         Dim cursorY As Double
@@ -1358,7 +1336,7 @@ Private Sub characterSelect( _
                     Or (pos = 3 And CBGetFighterHP(ENEMY_PARTY, 2) <= 0) _
                     Or (pos = 2) Then
                     party = PLAYER_PARTY
-                    For a = 0 To UBound(Players)
+                    For a = 0 To UBound(players)
                         If CBGetFighterHP(PLAYER_PARTY, a) > 0 Then
                             pos = a
                             Exit For
@@ -1381,7 +1359,7 @@ Private Sub characterSelect( _
                 End If
             Else
                 party = ENEMY_PARTY
-                For a = 0 To UBound(Enemies)
+                For a = 0 To UBound(enemies)
                     If CBGetFighterHP(ENEMY_PARTY, a) > 0 Then
                         pos = a
                         Exit For
@@ -1397,7 +1375,7 @@ Private Sub characterSelect( _
                     Or (pos = 2 And CBGetFighterHP(ENEMY_PARTY, 3) <= 0) _
                     Or (pos = 3) Then
                     party = PLAYER_PARTY
-                    For a = 0 To UBound(Players)
+                    For a = 0 To UBound(players)
                         If CBGetFighterHP(PLAYER_PARTY, a) > 0 Then
                             pos = a
                             Exit For
@@ -1410,7 +1388,7 @@ Private Sub characterSelect( _
                 End If
             Else
                 party = ENEMY_PARTY
-                For a = 0 To UBound(Enemies)
+                For a = 0 To UBound(enemies)
                     If CBGetFighterHP(ENEMY_PARTY, a) > 0 Then
                         pos = a
                         Exit For
@@ -1451,7 +1429,7 @@ Private Sub characterSelect( _
                         End If
                 End Select
             Else
-                If pos <> UBound(Players) Then
+                If pos <> UBound(players) Then
                     pos = pos + 1
                 End If
             End If
@@ -1479,11 +1457,10 @@ Private Sub characterSelect( _
 
 End Sub
 
-Private Function specialMoveMenuScanKeys(ByRef player As Fighter) As Boolean
-
-    '====================================================================================
-    'Opens the special move menu for the player passed in
-    '====================================================================================
+'====================================================================================
+' Opens the special move menu for the player passed in.
+'====================================================================================
+Private Function specialMoveMenuScanKeys(ByRef player As FIGHTER) As Boolean
 
     On Error Resume Next
 
@@ -1492,7 +1469,7 @@ Private Function specialMoveMenuScanKeys(ByRef player As Fighter) As Boolean
     Dim a As Long, b As Long
 
     'First, build list of special moves
-    Dim moves() As SpcMove
+    Dim moves() As SPCMOVE
     For a = 0 To CBDetermineSpecialMoves(player.handle)
         Dim filename As String
         filename = CBGetSpecialMoveListEntry(a)
@@ -1659,18 +1636,17 @@ Private Function specialMoveMenuScanKeys(ByRef player As Fighter) As Boolean
 
 End Function
 
-Private Function itemMenuScanKeys(ByRef player As Fighter) As Boolean
-
-    '====================================================================================
-    'Opens the item menu for the player passed in
-    '====================================================================================
+'====================================================================================
+' Opens the item menu for the player passed in.
+'====================================================================================
+Private Function itemMenuScanKeys(ByRef player As FIGHTER) As Boolean
 
     On Error Resume Next
 
     Const MOVE_BOX_WIDTH As Single = 250
 
     'First, build a list of items
-    Dim items() As SpcMove
+    Dim items() As SPCMOVE
     Dim a As Long, b As Long
     For a = 0 To 500
         Dim theFile As String
@@ -1829,7 +1805,7 @@ Private Function itemMenuScanKeys(ByRef player As Fighter) As Boolean
 End Function
 
 '====================================================================================
-'Cursor sound effects
+' Cursor sound effects.
 '====================================================================================
 
 Private Sub cursorMoveSound()
@@ -1838,7 +1814,7 @@ Private Sub cursorMoveSound()
     If LenB(theSound) Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
-    Call CBRpgCode("Delay(0.1)")
+    Call CBRpgCode("delay(0.1)")
 End Sub
 
 Private Sub cursorCancelSound()
@@ -1847,7 +1823,7 @@ Private Sub cursorCancelSound()
     If LenB(theSound) Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
-    Call CBRpgCode("Delay(0.1)")
+   Call CBRpgCode("delay(0.1)")
 End Sub
 
 Private Sub cursorSelSound()
@@ -1856,11 +1832,11 @@ Private Sub cursorSelSound()
     If LenB(theSound) Then
         Call CBRpgCode("Wav(""" & theSound & """)")
     End If
-    Call CBRpgCode("Delay(0.1)")
+    Call CBRpgCode("delay(0.1)")
 End Sub
 
 '====================================================================================
-' Check if a key is pressed
+' Check if a key is pressed.
 '====================================================================================
 Private Function isPressed(ParamArray keys() As Variant) As Boolean
     On Error Resume Next
