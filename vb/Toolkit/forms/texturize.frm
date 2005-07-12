@@ -49,6 +49,7 @@ Begin VB.Form tiletexturize
       _ExtentX        =   4471
       _ExtentY        =   873
       _Version        =   393216
+      LargeChange     =   1
       Min             =   1
       Max             =   3
       SelStart        =   1
