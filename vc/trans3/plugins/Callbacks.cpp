@@ -1606,7 +1606,9 @@ STDMETHODIMP CCallbacks::CBReleaseFighterCharge(int partyIdx, int fighterIdx)
 
 STDMETHODIMP CCallbacks::CBFightDoAttack(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, int amount, int toSmp, int *pRet)
 {
+#pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	*pRet = performAttack(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, amount, toSmp);
+#pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	return S_OK;
 }
 

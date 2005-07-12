@@ -65,8 +65,8 @@ CSprite::CSprite(const CSprite &rhs)
  */
 CSprite &CSprite::operator=(const CSprite &rhs)
 {
-	return CSprite(true);
 	// Copy canvas.
+	return *this;
 }
 
 /*

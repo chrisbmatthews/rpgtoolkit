@@ -81,7 +81,7 @@ bool drawTile(const std::string fileName,
 			  const int r, const int g, const int b, 
 			  CGDICanvas *cnv, 
 			  const int offX, const int offY, 
-			  const bool bIsometric, 
+			  const BOOL bIsometric, 
 			  const int nIsoEvenOdd)
 {
 
@@ -184,7 +184,7 @@ bool drawTileMask (const std::string fileName,
 				   const int r, const int g, const int b, 
 				   CGDICanvas *cnv,
 				   const int nDirectBlt,
-				   const bool bIsometric,
+				   const BOOL bIsometric,
 				   const int nIsoEvenOdd) 
 {
 	extern std::string g_projectPath;

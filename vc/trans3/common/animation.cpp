@@ -301,6 +301,7 @@ bool renderAnimationFrame(CGDICanvas *cnv,
     cnv->Blt(anmFr.cnv, 0, 0, SRCCOPY);
 
 	g_anmCache.push_back(anmFr);
+	return true;
 }
 
 /*

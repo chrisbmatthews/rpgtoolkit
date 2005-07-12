@@ -7,7 +7,7 @@
 #ifndef _CITEM_H_
 #define _CITEM_H_
 
-#include "../../common/item.h";
+#include "../../common/item.h"
 #include "../CSprite/CSprite.h"
 
 class CItem : public CSprite

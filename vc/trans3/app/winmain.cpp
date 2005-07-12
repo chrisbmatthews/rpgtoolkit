@@ -44,8 +44,8 @@ ZO_VECTOR g_sprites;				// z-ordered players and items.
 CSprite *g_pSelectedPlayer = NULL;	// Pointer to selected player?
 
 HINSTANCE g_hInstance = NULL;		// Handle to application.
-double	g_renderCount = 0;			// Count of GS_MOVEMENT state loops.
-double	g_renderTime = 0;			// Millisecond cumulative GS_MOVEMENT state loop time.
+double g_renderCount = 0;			// Count of GS_MOVEMENT state loops.
+double g_renderTime = 0;			// Millisecond cumulative GS_MOVEMENT state loop time.
 
 IPlugin *g_pMenuPlugin = NULL;		// The menu plugin.
 
@@ -422,7 +422,6 @@ VOID closeSystems(VOID)
 	}
 	if (g_pFightPlugin)
 	{
-		// The following line is commented only to stop the bloody crashing:
 		g_pFightPlugin->terminate();
 		delete g_pFightPlugin;
 		g_pFightPlugin = NULL;
@@ -481,5 +480,3 @@ INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONS
 	return toRet;
 
 }
-
-

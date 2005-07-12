@@ -8,7 +8,7 @@
 #define _CPLAYER_H_
 
 #include "../../fight/IFighter.h"
-#include "../../common/player.h";
+#include "../../common/player.h"
 #include "../CSprite/CSprite.h"
 
 class CPlayer : public CSprite, public IFighter

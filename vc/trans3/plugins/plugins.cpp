@@ -325,6 +325,7 @@ bool COldPlugin::load(const std::string file)
 	m_plugFightInform = FIGHT_INFORM_PROC(GetProcAddress(m_hModule, "TKPlugFightInform"));
 	m_plugInputRequested = INPUT_REQUESTED_PROC(GetProcAddress(m_hModule, "TKPlugInputRequested"));
 	m_plugEventInform = EVENT_INFORM_PROC(GetProcAddress(m_hModule, "TKPlugEventInform"));
+	return true;
 }
 
 /*
@@ -373,7 +374,9 @@ bool CComPlugin::query(const std::string function)
 bool COldPlugin::query(const std::string function)
 {
 	if (!m_hModule) return false;
+#pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	return m_plugQuery((char *)function.c_str());
+#pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 }
 
 /*
@@ -397,7 +400,9 @@ bool COldPlugin::execute(const std::string line, int &retValDt, std::string &ret
 	if (!m_hModule) return false;
 	retValDt = 0;
 	retValNum = 0.0;
+#pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	return m_plugExecute((char *)line.c_str());
+#pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 }
 
 /*
@@ -469,7 +474,9 @@ bool CComPlugin::plugType(const int request)
 bool COldPlugin::plugType(const int request)
 {
 	if (!m_hModule) return false;
+#pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	return (m_plugType ? m_plugType(request) : (request == PT_RPGCODE));
+#pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 }
 
 /*
