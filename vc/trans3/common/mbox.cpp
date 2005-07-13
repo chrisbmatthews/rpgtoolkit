@@ -56,7 +56,11 @@ void messageBox(const std::string str)
 	g_pDirectDraw->DrawCanvasTranslucent(&box, (g_resX - r.right) / 2, (g_resY - r.bottom) / 2 - 10, 0.45, RGB(255, 255, 255), -1);
 	g_pDirectDraw->Refresh();
 
-	waitForKey();
+	while (true)
+	{
+		const std::string key = waitForKey();
+		if (key != "LEFT" && key != "RIGHT" && key != "UP" && key != "DOWN") break;
+	}
 	g_pDirectDraw->DrawCanvas(&backup, 0, 0);
 	g_pDirectDraw->Refresh();
 }
