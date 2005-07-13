@@ -17,7 +17,7 @@
 CItem::CItem(const std::string file, const bool show):
 CSprite(false)				
 {
-	this->open(file);
+	open(file);
 	m_bActive = show;				// Overwrite open() result.
 }
 
@@ -28,16 +28,21 @@ CItem::CItem(const std::string file, const BRD_SPRITE spr):
 CSprite(false)
 {
 	m_brdData = spr;
-	this->open(file);
+	open(file);
 }
 
 /*
  * Common opening procedure.
  */
-void CItem::open(const std::string file)
+void CItem::open(const std::string file) throw()
 {
 
-	if (m_itemMem.open(file, m_attr) <= PRE_VECTOR_ITEM)
+	const short minorVer = m_itemMem.open(file, m_attr);
+	if (minorVer == 0)
+	{
+		throw CInvalidItem();
+	}
+	else if (minorVer <= PRE_VECTOR_ITEM)
 	{
 		// Create standard vectors for old items.
 		m_attr.createVectors(m_brdData.activationType);

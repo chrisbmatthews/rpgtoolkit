@@ -47,35 +47,8 @@ m_tileType(TT_NORMAL)				// Tiletype at location, NOT sprite's type.
 	m_v.x = m_v.y = 0;
 
 	// Create canvas.
-	m_pCanvas = new CGDICanvas();
-	m_pCanvas->CreateBlank(NULL, 32, 32, TRUE);
-	m_pCanvas->ClearScreen(0);
-}
-
-/*
- * Copy constructor
- */
-CSprite::CSprite(const CSprite &rhs)
-{
-	// Copy canvas.
-}
-
-/*
- * Assignment operator
- */
-CSprite &CSprite::operator=(const CSprite &rhs)
-{
-	// Copy canvas.
-	return *this;
-}
-
-/*
- * Destructor
- */
-CSprite::~CSprite() 
-{
-	m_pCanvas->Destroy();
-	delete m_pCanvas;
+	m_canvas.CreateBlank(NULL, 32, 32, TRUE);
+	m_canvas.ClearScreen(0);
 }
 
 /*
@@ -1129,7 +1102,7 @@ bool CSprite::render(void)
 	}
 
 
-	if (m_lastRender.canvas == m_pCanvas 
+	if (m_lastRender.canvas == &m_canvas 
 		&& m_lastRender.frame == m_pos.frame 
 		&& m_lastRender.stance == strAnm 
 		&& m_lastRender.x == m_pos.x 
@@ -1140,14 +1113,14 @@ bool CSprite::render(void)
 	}
 
 	// Update the last render.
-	m_lastRender.canvas = m_pCanvas;
+	m_lastRender.canvas = &m_canvas;
 	m_lastRender.frame = m_pos.frame;
 	m_lastRender.stance = strAnm;
 	m_lastRender.x = m_pos.x;
 	m_lastRender.y = m_pos.y;
 
 	// Render the frame to the sprite's canvas, at location (0, 0).
-	renderAnimationFrame(m_pCanvas, strAnm, m_pos.frame, 0, 0);
+	renderAnimationFrame(&m_canvas, strAnm, m_pos.frame, 0, 0);
 
 	return true;
 }
@@ -1186,8 +1159,8 @@ bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 //    if (g_activeBoard.isIsometric) centreY += 8;
        
     // The dimensions of the sprite frame, in pixels.
-    const int spriteWidth = m_pCanvas->GetWidth();
-    const int spriteHeight = m_pCanvas->GetHeight();
+    const int spriteWidth = m_canvas.GetWidth();
+    const int spriteHeight = m_canvas.GetHeight();
 
 	// Sprite location on screen and board.
 	RECT screen = {0, 0, 0, 0},
@@ -1208,7 +1181,7 @@ bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 	// Blt the player to the target.
 	if (m_pos.l == layer)
 	{
-		m_pCanvas->BltTransparentPart(cnvTarget,
+		m_canvas.BltTransparentPart(cnvTarget,
 								screen.left - g_screen.left,	// destination coord
 								screen.top - g_screen.top,
 								screen.left - board.left,		// source coord
@@ -1223,7 +1196,7 @@ bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 	// (Should really do this separately right before flipping).
 	if (layer == g_activeBoard.bSizeL && m_pos.l != layer)
 	{
-		m_pCanvas->BltTranslucentPart(cnvTarget,
+		m_canvas.BltTranslucentPart(cnvTarget,
 								screen.left - g_screen.left,	// destination coord
 								screen.top - g_screen.top,
 								screen.left - board.left,		// source coord

@@ -10,6 +10,8 @@
 #include "../../common/item.h"
 #include "../CSprite/CSprite.h"
 
+class CInvalidItem { };
+
 class CItem : public CSprite
 {
 public:
@@ -18,7 +20,7 @@ public:
 
 	CItem(const std::string file, const BRD_SPRITE spr);
 
-	void open(const std::string file);
+	void open(const std::string file) throw();
 
 private:
 	ITEM m_itemMem;

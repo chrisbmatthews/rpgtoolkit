@@ -29,6 +29,7 @@
 #include "../fight/fight.h"
 #include "CCursorMap.h"
 #include <math.h>
+#include <iostream>
 
 /*
  * Globals.
@@ -232,7 +233,7 @@ CVariant send(CProgram::PARAMETERS params, CProgram *const)
 	}
 	extern BOARD g_activeBoard;
 	g_activeBoard.open(g_projectPath + BRD_PATH + params[0].getLit());
-	
+
 	clearAnmCache();
 	extern CSprite *g_pSelectedPlayer;
 	g_pSelectedPlayer->setPosition(x * 32, y * 32, layer);

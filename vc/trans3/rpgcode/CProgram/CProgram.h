@@ -125,11 +125,10 @@ public:
 		ss	<< "RPGCode Error\n\n"
 			<< "Line "
 			<< prg->m_currentLine + 1
-			<< "; "
+			<< ": "
 			<< (*prg->m_process)[prg->m_currentLine]
 			<< std::endl
-			<< str
-			<< std::endl;
+			<< str;
 		messageBox(ss.str());
 	}
 

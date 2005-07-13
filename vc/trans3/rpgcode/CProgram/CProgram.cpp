@@ -498,7 +498,7 @@ CVariant CProgram::callFunction(const METHOD &method, PARAMETERS params)
 		/*
 		 * Incorrect number of paramters.
 		 */
-		debugger("Error: Function " + method.name + "() requires " + CVariant(len).getLit() + " parameters!");
+		debugger("Function " + method.name + "() requires " + CVariant(len).getLit() + " parameters!");
 		return CVariant();
 	}
 	m_this.push(NULL);
@@ -639,7 +639,7 @@ CVariant CProgram::callFunction(const std::string funcName, PARAMETERS params)
 		}
 		else
 		{
-			debugger("Error: Function " + funcName + "() not found!");
+			debugger("Function " + funcName + "() not found!");
 		}
 	}
 	return CVariant();

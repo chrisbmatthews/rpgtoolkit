@@ -30,6 +30,12 @@ bool tagBoard::open(const std::string fileName)
 
 	CFile file(fileName);
 
+	if (!file.isOpen())
+	{
+		messageBox("File not found: " + fileName);
+		return false;
+	}
+
 	strFilename = removePath(fileName);
 
 	file.seek(14);
@@ -283,8 +289,13 @@ lutEnd:
 			// (we may be loading the board for other purposes).
 			if (this == &g_activeBoard)
 			{
-				g_items.push_back(new CItem(g_projectPath + ITM_PATH + sprFileName, spr));
-				g_items.back()->setPosition(x * 32, y * 32, layer);
+				try
+				{
+					CItem *pItem = new CItem(g_projectPath + ITM_PATH + sprFileName, spr);
+					g_items.push_back(pItem);
+					pItem->setPosition(x * 32, y * 32, layer);
+				}
+				catch (CInvalidItem) { }
 			}
 		}
 	}

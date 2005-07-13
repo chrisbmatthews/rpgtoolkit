@@ -22,14 +22,8 @@ public:
 	// Constructor.
 	CSprite(const bool show);
 
-	// Copy constructor.
-	CSprite(const CSprite &rhs);
-
-	// Assignment operator.
-	CSprite &operator=(const CSprite &rhs);
-
 	// Destructor.
-	virtual ~CSprite();
+	virtual ~CSprite() { }
 
 	// Evaluate the current movement state.
 	bool move(const CSprite *selectedPlayer);
@@ -86,7 +80,7 @@ protected:
 	bool m_bActive;					// Is the sprite visible?
 	BRD_SPRITE m_brdData;			// Board-set sprite data (activation variables).
 	SPRITE_RENDER m_lastRender;		// Last render location / frame of the sprite.
-	CGDICanvas *m_pCanvas;			// Pointer to sprite's frame.
+	CGDICanvas m_canvas;			// Pointer to sprite's frame.
 	SPRITE_POSITION m_pos;			// Current location and frame details.
 	PENDING_MOVEMENT m_pend;		// Pending movements of the player, including queue.
 	TILE_TYPE m_tileType;			// The tiletypes at the sprite's location (NOT the "tiletype" of the sprite).
