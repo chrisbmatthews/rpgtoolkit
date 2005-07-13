@@ -40,7 +40,7 @@ public:
 	T *cast(const _T num)
 	{
 		T *toRet = (T *)num;
-		std::vector<T *>::iterator i = m_contents.begin();
+		std::vector<T *>::const_iterator i = m_contents.begin();
 		for (; i != m_contents.end(); ++i) 
 		{
 			if ((*i) == toRet)
@@ -52,7 +52,7 @@ public:
 	}
 	~CAllocationHeap(void)
 	{
-		std::vector<T *>::iterator i = m_contents.begin();
+		std::vector<T *>::const_iterator i = m_contents.begin();
 		for (; i != m_contents.end(); ++i) delete *i;
 	}
 private:
