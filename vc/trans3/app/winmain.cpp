@@ -13,6 +13,7 @@
 #include "../common/mainfile.h"
 #include "../common/item.h"
 #include "../common/player.h"
+#include "../common/mbox.h"
 #include "../render/render.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
@@ -71,6 +72,19 @@ void operator delete(void *p)
 }
 
 #endif
+
+void termFunc(void)
+{
+	messageBox(	"An unhandled exception has occurred. "
+				"Trans3 will now close.\n\n"
+				"We apologize for this inconvenience. "
+				"If this problem persists, please post at www.toolkitzone.com "
+				"on the \"Toolkit Discussion\" forum with an explanation of "
+				"what you were doing when the bug occurred and instructions "
+				"on how to reproduce the bug, and we will attempt to solve "
+				"this problem."	);
+	exit(EXIT_FAILURE);
+}
 
 /*
  * Get a main file name.
@@ -401,7 +415,6 @@ INT mainEventLoop(VOID)
 	}
 
 	return message.wParam;
-
 }
 
 /*
@@ -459,6 +472,8 @@ INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONS
 	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
 	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
+	set_terminate(termFunc);
+
 	g_hInstance = hInstance;
 
 	_chdir(WORKING_DIRECTORY);
@@ -473,12 +488,17 @@ INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONS
 	extern std::string g_projectPath;
 	g_projectPath = WORKING_DIRECTORY + g_projectPath;
 
-	openSystems();
+	try
+	{
+		openSystems();
+		const int toRet = mainEventLoop();
+		closeSystems();
+		return toRet;
+	}
+	catch (...)
+	{
+		terminate();
+	}
 
-	CONST INT toRet = mainEventLoop();
-
-	closeSystems();
-
-	return toRet;
-
+	return EXIT_SUCCESS;
 }
