@@ -11,6 +11,7 @@
 #include "tilebitmap.h"
 #include "CFile.h"
 #include "paths.h"
+#include "mbox.h"
 
 /*
  * Open a tile bitmap.
@@ -28,7 +29,7 @@ bool tagTileBitmap::open(const std::string fileName)
 
 	if (fileHeader != "TK3 TILEBITMAP")
 	{
-		MessageBox(NULL, ("Invalid tile bitmap " + fileName).c_str(), "Open Tile Bitmap", 0);
+		messageBox("Invalid tile bitmap " + fileName);
 		return false;
 	}
 

@@ -10,6 +10,7 @@
  */
 #include "tileanim.h"
 #include "CFile.h"
+#include "mbox.h"
 
 /*
  * Open a tile animtion.
@@ -26,7 +27,7 @@ bool tagTileAnim::open(const std::string fileName)
 	file >> fileHeader;
 	if (fileHeader != "RPGTLKIT TILEANIM")
 	{
-		MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Animated Tile", 0);
+		messageBox("Unrecognised File Format! " + fileName);
 		return false;
 	}
 

@@ -654,6 +654,10 @@ SOURCE=.\common\mainfile.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\mbox.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\paths.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -823,6 +827,10 @@ SOURCE=.\common\item.h
 # Begin Source File
 
 SOURCE=.\common\mainfile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\mbox.h
 # End Source File
 # Begin Source File
 

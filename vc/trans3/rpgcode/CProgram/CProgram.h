@@ -39,6 +39,7 @@ typedef enum tagTargetType
 #include "../CVariant/CVariant.h"
 #include "../../input/input.h"
 #include "../../plugins/plugins.h"
+#include "../../common/mbox.h"
 
 /*
  * A loaded program.
@@ -121,14 +122,15 @@ public:
 	{
 		CProgram *prg = getCurrentProgram();
 		std::stringstream ss;
-		ss	<< "Line "
+		ss	<< "RPGCode Error\n\n"
+			<< "Line "
 			<< prg->m_currentLine + 1
 			<< "; "
 			<< (*prg->m_process)[prg->m_currentLine]
 			<< std::endl
 			<< str
 			<< std::endl;
-		MessageBox(NULL, ss.str().c_str(), "RPGCode Error", 0);
+		messageBox(ss.str());
 	}
 
 	/*

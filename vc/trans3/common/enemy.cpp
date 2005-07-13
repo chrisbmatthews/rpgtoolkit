@@ -12,6 +12,7 @@
 #include "enemy.h"
 #include "tilebitmap.h"
 #include "animation.h"
+#include "mbox.h"
 
 void tagEnemy::open(const std::string strFile)
 {
@@ -27,7 +28,7 @@ void tagEnemy::open(const std::string strFile)
 		file >> header;
 		if (header != "RPGTLKIT ENEMY")
 		{
-			MessageBox(NULL, ("Unrecognised File Format! " + strFile).c_str(), "Open Enemy", 0);
+			messageBox("Unrecognised File Format! " + strFile);
 			return;
 		}
 		short majorVer, minorVer;
@@ -95,7 +96,7 @@ void tagEnemy::open(const std::string strFile)
 
 		if (file.line() != "RPGTLKIT ENEMY")
 		{
-			MessageBox(NULL, ("Unrecognised File Format! " + strFile).c_str(), "Open Enemy", 0);
+			messageBox("Unrecognised File Format! " + strFile);
 			return;
 		}
 

@@ -13,6 +13,7 @@
 #include "../movement/CItem/CItem.h"
 #include "paths.h"
 #include "CFile.h"
+#include "mbox.h"
 #include <malloc.h>
 
 /*
@@ -37,7 +38,7 @@ bool tagBoard::open(const std::string fileName)
 	file.seek(0);
 	if (cUnused)
 	{
-		MessageBox(NULL, ("Please save " + fileName + " in the editor.").c_str(), NULL, 0);
+		messageBox("Please save " + fileName + " in the editor.");
 		return false;
 	}
 
@@ -46,7 +47,7 @@ bool tagBoard::open(const std::string fileName)
 
 	if (fileHeader != "RPGTLKIT BOARD")
 	{
-		MessageBox(NULL, ("Please save " + fileName + " in the editor.").c_str(), NULL, 0);
+		messageBox("Please save " + fileName + " in the editor.");
 		return false;
 	}
 
@@ -56,7 +57,7 @@ bool tagBoard::open(const std::string fileName)
 
 	if (minorVer < 2)
 	{
-		MessageBox(NULL, ("Please save " + fileName + " in the editor.").c_str(), NULL, 0);
+		messageBox("Please save " + fileName + " in the editor.");
 		return false;
 	}
 

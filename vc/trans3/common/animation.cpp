@@ -13,6 +13,7 @@
 #include "CFile.h"
 #include "../rpgcode/parser/parser.h"
 #include "../images/FreeImage.h"
+#include "mbox.h"
 
 /*
  * Globals
@@ -66,7 +67,7 @@ bool tagAnimation::open(const std::string fileName)
 		}
 		else
 		{
-			MessageBox(NULL, ("This is not a valid animaton file. " + fileName).c_str(), NULL, 0);
+			messageBox("This is not a valid animaton file. " + fileName);
 			return false;
 		}
  	}
@@ -75,7 +76,7 @@ bool tagAnimation::open(const std::string fileName)
 		file.seek(0);
 		if (file.line() != "RPGTLKIT ANIM")
 		{
-			MessageBox(NULL, ("This is not a valid animaton file. " + fileName).c_str(), NULL, 0);
+			messageBox("This is not a valid animaton file. " + fileName);
 			return false;
 		}
 		file.line();

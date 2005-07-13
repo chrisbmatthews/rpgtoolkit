@@ -12,6 +12,7 @@
 #include "tilebitmap.h"
 #include "paths.h"
 #include "CFile.h"
+#include "mbox.h"
 
 /*
  * Open a background.
@@ -34,7 +35,7 @@ void tagBackground::open(const std::string fileName)
 		file >> fileHeader;
 		if (fileHeader != "RPGTLKIT BKG")
 		{
-			MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Background", 0);
+			messageBox("Unrecognised File Format! " + fileName);
 			return;
 		}
 
@@ -55,7 +56,7 @@ void tagBackground::open(const std::string fileName)
 
 		if (file.line() != "RPGTLKIT BKG")
 		{
-			MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Background", 0);
+			messageBox("Unrecognised File Format! " + fileName);
 			return;
 		}
 

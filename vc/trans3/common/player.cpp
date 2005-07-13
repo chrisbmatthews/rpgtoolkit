@@ -10,6 +10,7 @@
  */
 #include "player.h"
 #include "CFile.h"
+#include "mbox.h"
 
 /*
  * Definitions.
@@ -42,7 +43,7 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 	if (!file.isOpen())
 	{
 		// FileExists check.
-		MessageBox(NULL, ("File not found: " + fileName).c_str(), "Open Character", 0);
+		messageBox("File not found: " + fileName);
 		return 0;
 	}
 
@@ -58,7 +59,7 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		file >> fileHeader;
 		if (fileHeader != "RPGTLKIT CHAR")
 		{
-			MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Character", 0);
+			messageBox("Unrecognised File Format! " + fileName);
 			return 0;
 		}
 
@@ -236,7 +237,6 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		}
 	}
 	// Definitely don't need this.
-	MessageBox(NULL, ("Please save " + fileName + " in the editor!").c_str(), NULL, 0);
+	messageBox("Please save " + fileName + " in the editor!");
 	return 0;
 }
-

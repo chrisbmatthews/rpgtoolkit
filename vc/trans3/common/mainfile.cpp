@@ -10,6 +10,7 @@
  */
 #include "mainfile.h"
 #include "CFile.h"
+#include "mbox.h"
 #include <sstream>
 
 /*
@@ -25,7 +26,7 @@ bool tagMainFile::open(const std::string fileName)
 	if (!file.isOpen())
 	{
 		// FileExists check.
-		MessageBox(NULL, ("File not found: " + fileName).c_str(), "Main file", 0);
+		messageBox("File not found: " + fileName);
 		return false;
 	}
 
@@ -33,7 +34,7 @@ bool tagMainFile::open(const std::string fileName)
 	file >> fileHeader;
 	if (fileHeader != "RPGTLKIT MAIN")
 	{
-		MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Main File", 0);
+		messageBox("Unrecognised File Format! " + fileName);
 		return false;
 	}
 

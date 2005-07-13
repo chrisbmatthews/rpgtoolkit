@@ -11,6 +11,7 @@ static ICallbacks *g_pCallbacks = NULL;
 #include "oldCallbacks.h"
 #include <atlbase.h>
 #include <vector>
+#include "../common/mbox.h"
 
 static std::vector<int> g_oldCallbacks;
 
@@ -26,7 +27,7 @@ IPlugin *loadPlugin(const std::string file)
 	HMODULE mod = LoadLibrary(file.c_str());
 	if (!mod)
 	{
-		MessageBox(NULL, ("The file " + file + " is not a valid dynamically linkable library.").c_str(), "Plugin Error", MB_ICONWARNING);
+		messageBox("The file " + file + " is not a valid dynamically linkable library.");
 		return NULL;
 	}
 
@@ -40,14 +41,14 @@ IPlugin *loadPlugin(const std::string file)
 			p->initialize();
 			return p;
 		}
-		MessageBox(NULL, ("The file " + file + " is not a valid plugin.").c_str(), "Plugin Error", MB_ICONWARNING);
+		messageBox("The file " + file + " is not a valid plugin.");
 		delete p;
 		return NULL;
 	}
 
 	if (FAILED(((HRESULT (__stdcall *)(void))pReg)()))
 	{
-		MessageBox(NULL, ("An error occurred while registering " + file + ".").c_str(), "Plugin Error", MB_ICONWARNING);
+		messageBox("An error occurred while registering " + file + ".");
 		FreeLibrary(mod);
 		return NULL;
 	}
@@ -63,7 +64,7 @@ IPlugin *loadPlugin(const std::string file)
 
 	if (!bLoaded)
 	{
-		MessageBox(NULL, ("A remotable class was not found in " + file + ".").c_str(), "Plugin Error", MB_ICONWARNING);
+		messageBox("A remotable class was not found in " + file + ".");
 		delete p;
 		return NULL;
 	}

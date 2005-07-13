@@ -6,6 +6,7 @@
 
 #include "status.h"
 #include "CFile.h"
+#include "mbox.h"
 
 void tagStatusEffect::open(const std::string strFile)
 {
@@ -21,7 +22,7 @@ void tagStatusEffect::open(const std::string strFile)
 		file >> header;
 		if (header != "RPGTLKIT STATUSE")
 		{
-			MessageBox(NULL, ("This is not a valid status effect file! " + strFile).c_str(), NULL, 0);
+			messageBox("This is not a valid status effect file! " + strFile);
 			return;
 		}
 		short majorVer, minorVer;
@@ -43,7 +44,7 @@ void tagStatusEffect::open(const std::string strFile)
 	}
 	if (file.line() != "RPGTLKIT STATUSE")
 	{
-		MessageBox(NULL, ("This is not a valid status effect file! " + strFile).c_str(), NULL, 0);
+		messageBox("This is not a valid status effect file! " + strFile);
 		return;
 	}
 	file.line(); // majorVer

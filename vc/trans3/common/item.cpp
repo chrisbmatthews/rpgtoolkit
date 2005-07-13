@@ -14,6 +14,7 @@
 #include "animation.h"
 #include "paths.h"
 #include "CFile.h"
+#include "mbox.h"
 #include <sstream>
 
 /*
@@ -45,7 +46,7 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 	if (!file.isOpen())
 	{
 		// FileExists check.
-		MessageBox(NULL, ("File not found: " + fileName).c_str(), "Open Item", 0);
+		messageBox("File not found: " + fileName);
 		return 0;
 	}
 
@@ -57,7 +58,7 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 	file >> cVersion;
 	if (cVersion)
 	{
-		MessageBox(NULL, ("Please save " + fileName + " in the editor!").c_str(), "Open Item", 0);
+		messageBox("Please save " + fileName + " in the editor!");
 		return 0;
 	}
 	file.seek(0);
@@ -67,7 +68,7 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 
 	if (fileHeader != "RPGTLKIT ITEM")
 	{
-		MessageBox(NULL, ("Unrecognised File Format! " + fileName).c_str(), "Open Item", 0);
+		messageBox("Unrecognised File Format! " + fileName);
 		return 0;
 	}
 
