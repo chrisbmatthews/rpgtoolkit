@@ -207,32 +207,32 @@ CVariant send(CProgram::PARAMETERS params, CProgram *const)
 			layer = params[3].getNum();
 		}
 	}
-	BOARD board;
+
 	extern std::string g_projectPath;
-	board.open(g_projectPath + BRD_PATH + params[0].getLit());
+	extern BOARD g_activeBoard;
+	g_activeBoard.open(g_projectPath + BRD_PATH + params[0].getLit());
+
 	unsigned int x = params[1].getNum(), y = params[2].getNum();
-	if (x > board.bSizeX)
+	if (x > g_activeBoard.bSizeX)
 	{
 		CProgram::debugger("Send() location exceeds target board x-dimension.");
-		x = board.bSizeX;
+		x = g_activeBoard.bSizeX;
 	}
 	if (x < 1)
 	{
 		CProgram::debugger("Send() x location is less than one.");
 		x = 1;
 	}
-	if (y > board.bSizeY)
+	if (y > g_activeBoard.bSizeY)
 	{
 		CProgram::debugger("Send() location exceeds target board y-dimension.");
-		y = board.bSizeY;
+		y = g_activeBoard.bSizeY;
 	}
 	if (y < 1)
 	{
 		CProgram::debugger("Send() y location is less than one.");
 		y = 1;
 	}
-	extern BOARD g_activeBoard;
-	g_activeBoard.open(g_projectPath + BRD_PATH + params[0].getLit());
 
 	clearAnmCache();
 	extern CSprite *g_pSelectedPlayer;
