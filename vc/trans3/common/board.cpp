@@ -13,6 +13,7 @@
 #include "../movement/CItem/CItem.h"
 #include "paths.h"
 #include "CFile.h"
+#include <malloc.h>
 
 /*
  * Open a board. Note for old versions, all co-ordinates must be transformed into
@@ -323,7 +324,7 @@ lutEnd:
 void tagBoard::vectorize(const unsigned int layer)
 {
 
-	bool *const pFinished = new bool[bSizeX * bSizeY];
+	bool *const pFinished = (bool *)_alloca(bSizeX * bSizeY);
 	memset(pFinished, 0, bSizeX * bSizeY);
 
 	while (true)
@@ -397,8 +398,6 @@ void tagBoard::vectorize(const unsigned int layer)
 		vector.type = TILE_TYPE(type);
 		vectors.push_back(vector);
 	}
-
-	delete [] pFinished;
 
 }
 
