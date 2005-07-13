@@ -54,7 +54,13 @@ namespace parser
 	 * str (in) - string to convert
 	 * return (out) - uppercase string
 	 */
-	std::string uppercase(const std::string str);
+	inline std::string uppercase(const std::string str)
+	{
+		char *pstr = _strupr(_strdup(str.c_str()));
+		const std::string toRet = pstr;
+		free(pstr);
+		return toRet;
+	}
 
 }
 

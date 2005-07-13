@@ -8,7 +8,7 @@
 #define _TK_PATHS_H_
 
 /*
- * Inclusions/
+ * Inclusions
  */
 #include <string>
 
@@ -42,7 +42,10 @@
  * str (in) - filename
  * return (out) - pathless filename
  */
-std::string removePath(const std::string str);
+inline std::string removePath(const std::string str)
+{
+	return str.substr(str.find_last_of('\\') + 1);
+}
 
 /*
  * Get the extension of a file.
@@ -50,6 +53,10 @@ std::string removePath(const std::string str);
  * str (in) - file to check
  * return (out) - extension
  */
-std::string getExtension(const std::string str);
+inline std::string getExtension(const std::string str)
+{
+	const int dot = str.find_last_of('.');
+	return (dot == -1) ? "" : str.substr(dot + 1);
+}
 
 #endif

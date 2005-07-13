@@ -196,17 +196,3 @@ void parser::getTokenList(const std::string str, std::vector<std::string> &pToke
 		}
 	}
 }
-
-/*
- * Convert a string to all capitals.
- *
- * str (in) - string to convert
- * return (out) - uppercase string
- */
-std::string parser::uppercase(const std::string str)
-{
-	char *pstr = _strupr(_strdup(str.c_str()));
-	const std::string toRet = pstr;
-	free(pstr);
-	return toRet;
-}

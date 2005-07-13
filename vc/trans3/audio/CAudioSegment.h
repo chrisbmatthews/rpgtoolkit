@@ -22,7 +22,7 @@ public:
 	CAudioSegment(void) { init(); }
 	CAudioSegment(const std::string file);
 	~CAudioSegment(void);
-	void open(const std::string file);
+	bool open(const std::string file);
 	void play(const bool repeat);
 	void stop(void);
 
@@ -37,6 +37,8 @@ private:
 	audiere::AudioDevicePtr m_device;
 	audiere::OutputStreamPtr m_outputStream;
 	bool m_audiere;
+	std::string m_file;
+	bool m_playing;
 };
 
 #endif

@@ -22,8 +22,13 @@ CAudioSegment::CAudioSegment(const std::string file)
 /*
  * Open a file.
  */
-void CAudioSegment::open(const std::string file)
+bool CAudioSegment::open(const std::string file)
 {
+	if (_strcmpi(file.c_str(), m_file.c_str()) == 0)
+	{
+		// Already playing this file.
+		return false;
+	}
 	stop();
 	const std::string ext = parser::uppercase(getExtension(file));
 	if (ext == "MID" || ext == "MIDI" || ext == "RMI" || ext == "MPL" || ext == "WAV")
@@ -39,18 +44,22 @@ void CAudioSegment::open(const std::string file)
 		if (SUCCEEDED(m_pLoader->LoadObjectFromFile(CLSID_DirectMusicSegment, IID_IDirectMusicSegment8, wstrFile, (void **)&m_pSegment)))
 		{
 			m_pSegment->Download(m_pPerformance);
+			m_file = file;
+			return true;
 		}
-		else
-		{
-			m_pSegment = NULL;
-		}
+		m_pSegment = NULL;
+		m_file = "";
+		return false;
 	}
-	else
+	m_audiere = true;
+	extern std::string g_projectPath;
+	if (m_outputStream = audiere::OpenSound(m_device, (g_projectPath + MEDIA_PATH + file).c_str(), true))
 	{
-		m_audiere = true;
-		extern std::string g_projectPath;
-		m_outputStream = audiere::OpenSound(m_device, (g_projectPath + MEDIA_PATH + file).c_str(), true);
+		m_file = file;
+		return true;
 	}
+	m_file = "";
+	return false;
 }
 
 /*
@@ -58,12 +67,14 @@ void CAudioSegment::open(const std::string file)
  */
 void CAudioSegment::play(const bool repeat)
 {
+	if (m_playing) return;
 	if (m_audiere)
 	{
 		if (m_outputStream)
 		{
 			m_outputStream->setRepeat(repeat);
 			m_outputStream->play();
+			m_playing = true;
 		}
 	}
 	else
@@ -72,6 +83,7 @@ void CAudioSegment::play(const bool repeat)
 		{
 			m_pSegment->SetRepeats(repeat ? DMUS_SEG_REPEAT_INFINITE : 0);
 			m_pPerformance->PlaySegmentEx(m_pSegment, NULL, NULL, 0, 0, NULL /* (segment state) */, NULL, NULL);
+			m_playing = true;
 		}
 	}
 }
@@ -93,6 +105,7 @@ void CAudioSegment::stop(void)
 	{
 		m_pPerformance->Stop(NULL, NULL, 0, 0);
 	}
+	m_playing = false;
 }
 
 /*
@@ -106,6 +119,7 @@ void CAudioSegment::init(void)
 	m_pPerformance->InitAudio(NULL, NULL, g_hHostWnd, DMUS_APATH_SHARED_STEREOPLUSREVERB, 64, DMUS_AUDIOF_ALL, NULL);
 	m_pSegment = NULL;
 	m_audiere = false;
+	m_playing = false;
 	// Set up Audiere.
 	m_device = audiere::OpenDevice();
 }
