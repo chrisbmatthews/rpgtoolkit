@@ -69,7 +69,6 @@ typedef struct tagBoardTileAnim
 	int x, y, z;
 } BOARD_TILEANIM;
 
-
 typedef struct tagBoardVector
 {
 	int layer;
@@ -105,7 +104,6 @@ typedef struct tagBoard
 	typedef std::vector<VECTOR_CHAR> VECTOR_CHAR2D;
 	std::vector<VECTOR_CHAR2D> tiletype;			// Tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8.
 	std::string brdBack;							// Board background img (parallax layer).
-	int brdBackCNV;									// Canvas holding the background image.
 	std::string brdFore;							// Board foreground image (parallax).
 	std::string borderBack;							// Border background img.
 	int brdColor;									// Board color.
@@ -115,46 +113,22 @@ typedef struct tagBoard
 	short boardSkill;								// Board skill level.
 	std::string boardBackground;					// Fighting background.
 	short fightingYN;								// Fighting on boardYN (1- yes, 0- no).
-	short BoardDayNight;							// Board is affected by day/night? 0=no, 1=yes.
-	short BoardNightBattleOverride;					// Use custom battle options at night? 0=no, 1=yes.
-	short BoardSkillNight;							// Board skill level at night.
-	std::string BoardBackgroundNight;				// Fighting background at night.
+	short boardDayNight;							// Board is affected by day/night? 0=no, 1=yes.
+	short boardNightBattleOverride;					// Use custom battle options at night? 0=no, 1=yes.
+	short boardSkillNight;							// Board skill level at night.
+	std::string boardBackgroundNight;				// Fighting background at night.
 	std::vector<short> brdConst;					// Board Constants (1-10).
 	std::string boardMusic;							// Background music file.
 	std::vector<std::string> boardTitle;			// Board title (layer).
 
 	std::vector<LPBRD_PROGRAM> programs;
-/* To be removed */
-	std::vector<std::string> programName;			// Board program filenames.
-	std::vector<short> progX;						// Program x.
-	std::vector<short> progY;						// Program y.
-	std::vector<short> progLayer;					// Program layer.
-	std::vector<std::string> progGraphic;			// Program graphic.
-	std::vector<short> progActivate;				// Program activation: 0- always active, 1- conditional activation.
-	std::vector<std::string> progVarActivate;		// Activation variable.
-	std::vector<std::string> progDoneVarActivate;	// Activation variable at end of prg.
-	std::vector<std::string> activateInitNum;		// Initial number of activation.
-	std::vector<std::string> activateDoneNum;		// What to make variable at end of activation.
-	std::vector<short> activationType;				// Activation type- 0-step on, 1- conditional (activation key).
 
 	std::string enterPrg;							// Program to run on entrance.
 	std::string bgPrg;								// Background program.
 
-/* To be removed (no longer stored in BOARD object, but still present in format */
-	std::vector<std::string> itmName;				// Filenames of items.
-	std::vector<short> itmX;						// X coord.
-	std::vector<short> itmY;						// Y coord.
-	std::vector<short> itmLayer;					// Layer coord.
-	std::vector<short> itmActivate;					// Itm activation: 0- always active, 1- conditional activation.
-	std::vector<std::string> itmVarActivate;		// Activation variable.
-	std::vector<std::string> itmDoneVarActivate;	// Activation variable at end of itm.
-	std::vector<std::string> itmActivateInitNum;	// Initial number of activation.
-	std::vector<std::string> itmActivateDoneNum;	// What to make variable at end of activation.
-	std::vector<short> itmActivationType;			// Activation type- 0-step on, 1- conditional (activation key).
-	std::vector<std::string> itemProgram;			// Program to run when item is touched.
-	std::vector<std::string> itemMulti;				// Multitask program for item.
-
-	/* These should be in the player's file */
+	// Delano:	These should be in the player's file.
+	// Colin:	I prefer the main file. You can only
+	//			have one starting position per game.
 	short playerX;									// Player x ccord.
 	short playerY;									// Player y coord.
 	short playerLayer;								// Player layer coord.
@@ -162,16 +136,17 @@ typedef struct tagBoard
 	short brdSavingYN;								// Can player save on board? 0-yes, 1-no.
 	char isIsometric;								// Is it an isometric board? (0- no, 1-yes).
 	std::vector<std::string> threads;				// Filenames of threads on board.
+
+	// Animated tiles.
 	bool hasAnmTiles;								// Does board have anim tiles?
 	std::vector<BOARD_TILEANIM> animatedTile;		// Animated tiles associated with this board.
 	std::vector<int> anmTileLUTIndices;				// Indices into LUT of animated tiles.
-	int anmTileLUTInsertIdx;						// Index of LUT table insertion.
+
 	std::string strFilename;						// Filename of the board.
 
-//	std::vector<CVector *> vectors;					// No layers (yet).
 	std::vector<BRD_VECTOR> vectors;
 
-	void open(const std::string fileName);
+	bool open(const std::string fileName);
 	void vectorize(const unsigned int layer);
 	void createVectorCanvases(void);
 	void freeVectors(void);
@@ -180,7 +155,12 @@ typedef struct tagBoard
 	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
 
+	tagBoard(void) { }
 	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); }
+
+private:
+	tagBoard &operator=(tagBoard &rhs);
+	tagBoard(tagBoard &rhs);
 } BOARD;
 
 #endif

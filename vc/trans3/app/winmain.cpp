@@ -245,12 +245,12 @@ VOID setUpGame(VOID)
 	if (!g_mainFile.initBoard.empty())
 	{
 		g_activeBoard.open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
-		
+
 		// Set player position before rendering in order to align board.
 		g_pSelectedPlayer->setPosition(g_activeBoard.playerX ? g_activeBoard.playerX : 1,
 												g_activeBoard.playerY ? g_activeBoard.playerY : 1,
 												g_activeBoard.playerLayer ? g_activeBoard.playerLayer : 1);
-		
+
 		g_pSelectedPlayer->alignBoard(g_screen, true);
 		g_scrollCache.render(true);
 
