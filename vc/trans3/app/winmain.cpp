@@ -280,7 +280,6 @@ VOID setUpGame(VOID)
 VOID openSystems(VOID)
 {
 	extern VOID initRpgCode(VOID);
-
 	initPluginSystem();
 	FreeImage_Initialise();
 	srand(GetTickCount());
@@ -464,7 +463,7 @@ INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONS
 
 	_chdir(WORKING_DIRECTORY);
 
-	freopen("log.txt", "w", stderr); //  Destination for std::clog.
+	freopen("log.txt", "w", stderr); //  Destination for std::cerr.
 
 	CONST std::string fileName = getMainFileName();
 	if (fileName.empty()) return EXIT_SUCCESS;
