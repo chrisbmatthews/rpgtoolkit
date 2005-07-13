@@ -45,6 +45,12 @@ inline void operator++ (MV_ENUM& rhs, int)
 	rhs = MV_ENUM(rhs + 1);
 };
 
+inline MV_ENUM &operator+=(MV_ENUM &rhs, unsigned int inc)
+{
+	for (unsigned int i = 0; i < inc; ++i) rhs++;
+	return rhs;
+}
+
 // Postfix decrement - rotate the movement "left".
 inline void operator-- (MV_ENUM& rhs, int)
 {

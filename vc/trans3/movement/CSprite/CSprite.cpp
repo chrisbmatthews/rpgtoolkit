@@ -719,6 +719,10 @@ bool CSprite::programTest(void)
 
 	if (itm)
 	{
+		// Make the item look at this sprite.
+		(itm->m_pos.facing = m_pos.facing) += 4;
+		renderNow(NULL, false);
+
 		CProgram(g_projectPath + PRG_PATH + itm->m_brdData.prgActivate).run();
 
 		// Set the requested variable after the program is complete.
