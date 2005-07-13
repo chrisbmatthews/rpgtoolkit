@@ -160,6 +160,7 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 	{
 		ddsd.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
 		if (FAILED(m_lpddsPrime->GetAttachedSurface(&ddsd.ddsCaps, &m_lpddsSecond))) return;
+		m_pBackBuffer = new CGDICanvas(m_lpddsSecond, nWidth, nHeight, TRUE);
 	}
 	else
 	{
