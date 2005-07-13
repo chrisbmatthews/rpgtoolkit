@@ -696,13 +696,19 @@ bool CSprite::programTest(void)
 		(itm->m_pos.facing = m_pos.facing) += 4;
 		renderNow(NULL, false);
 
+		// If we go to a new board in this program, we kill
+		// this pointer, so save the values we need.
+		const short activate = itm->m_brdData.activate;
+		const std::string finalValue = itm->m_brdData.finalValue;
+		const std::string finalVar = itm->m_brdData.finalVar;
+
 		CProgram(g_projectPath + PRG_PATH + itm->m_brdData.prgActivate).run();
 
 		// Set the requested variable after the program is complete.
-		if (itm->m_brdData.activate == SPR_CONDITIONAL)
+		if (activate == SPR_CONDITIONAL)
 		{
-			const double num = atof(itm->m_brdData.finalValue.c_str());
-			CProgram::setGlobal(itm->m_brdData.finalVar, (num == 0.0) ? itm->m_brdData.finalValue : CVariant(num));
+			const double num = atof(finalValue.c_str());
+			CProgram::setGlobal(finalVar, (num == 0.0) ? finalValue : CVariant(num));
 		}
 		return true;
 	}
@@ -786,14 +792,22 @@ bool CSprite::programTest(void)
 			// are cleared at the top of this loop.
 			prg->distance = 0;
 		}
+
+		// If we go to a new board in this program, we kill
+		// this pointer, so save the values we need.
+		const short activate = prg->activate;
+		const std::string finalValue = prg->finalValue;
+		const std::string finalVar = prg->finalVar;
+
 		CProgram(g_projectPath + PRG_PATH + prg->fileName).run();
 
 		// Set the requested variable after the program is complete.
-		if (prg->activate == PRG_CONDITIONAL)
+		if (activate == PRG_CONDITIONAL)
 		{
-			const double num = atof(prg->finalValue.c_str());
-			CProgram::setGlobal(prg->finalVar, (num == 0.0) ? prg->finalValue : CVariant(num));
+			const double num = atof(finalValue.c_str());
+			CProgram::setGlobal(finalVar, (num == 0.0) ? finalValue : CVariant(num));
 		}
+
 		return true;
 	}
 	return false;
