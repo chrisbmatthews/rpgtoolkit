@@ -29,6 +29,7 @@
 #include <commdlg.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 /*
  * Globals.
@@ -462,6 +463,8 @@ INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONS
 	g_hInstance = hInstance;
 
 	_chdir(WORKING_DIRECTORY);
+
+	freopen("log.txt", "w", stderr); //  Destination for std::clog.
 
 	CONST std::string fileName = getMainFileName();
 	if (fileName.empty()) return EXIT_SUCCESS;
