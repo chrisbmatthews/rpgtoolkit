@@ -13,6 +13,7 @@
  */
 #include "CProgram.h"
 #include "../parser/parser.h"
+#include "../../common/paths.h"
 #include <fstream>
 #include <math.h>
 
@@ -315,10 +316,15 @@ void CProgram::open(const std::string file)
 {
 	m_lines.clear();
 	m_methods.clear();
+	include(file, &m_lines);
+}
+
+void CProgram::include(const std::string file, VECTOR_STR *pStream)
+{
 	std::fstream fs;
 	fs.open(file.c_str(), std::ios_base::in);
 	if (!fs.is_open()) return;
-	VECTOR_STR *stream = &m_lines;
+	VECTOR_STR *stream = pStream;
 	std::map<std::string, METHOD> *methodStream = &m_methods;
 	CLASS *cls = NULL;
 	CLASS::SCOPE *clsScope = NULL;
@@ -331,9 +337,9 @@ void CProgram::open(const std::string file)
 		VECTOR_STR parts;
 		breakString(str, bComment, parts);
 		const int size = parts.size();
-		for (int i = 0; i < size; i++)
+		for (unsigned int i = 0; i < size; i++)
 		{
-			const std::string push = parts[i];
+			const std::string &push = parts[i];
 			const std::string ucase = parser::uppercase(push);
 			if (ucase.compare(0, 7, "METHOD ") == 0)
 			{
@@ -371,6 +377,17 @@ void CProgram::open(const std::string file)
 				stream = NULL;
 				continue;
 			}
+			else if (ucase.compare(0, 8, "INCLUDE ") == 0)
+			{
+				std::string includeFile = push.substr(push[8] == '"' ? 9 : 8);
+				char &c = includeFile[includeFile.length() - 1];
+				if (c == '"') c = '\0';
+				extern std::string g_projectPath;
+				// Second parameter *should* be pStream and not NULL,
+				// but that would break backward compatibility.
+				include(g_projectPath + PRG_PATH + includeFile, NULL);
+				continue;
+			}
 			else if (!push.empty())
 			{
 				if (stream) stream->push_back(push);
@@ -394,7 +411,7 @@ void CProgram::open(const std::string file)
 					}
 					else if (depth == 0)
 					{
-						stream = &m_lines;
+						stream = pStream;
 						methodStream = &m_methods;
 						cls = NULL;
 					}
@@ -403,7 +420,7 @@ void CProgram::open(const std::string file)
 				{
 					if (depth == 0)
 					{
-						stream = &m_lines;
+						stream = pStream;
 					}
 				}
 			}
@@ -435,7 +452,7 @@ void CProgram::open(const std::string file)
  * str (in) - string to check
  * return (out) - result
  */
-static inline bool isConstruct(const std::string &str)
+inline bool isConstruct(const std::string &str)
 {
 	const std::string ucase = parser::uppercase(str);
 	return (ucase == "FOR" || ucase == "WHILE" || ucase == "UNTIL");
@@ -504,7 +521,7 @@ CVariant CProgram::callFunction(const METHOD &method, PARAMETERS params)
 	m_this.push(NULL);
 	m_stack.push_back(STACK_FRAME());
 	STACK_FRAME &frame = m_stack.back();
-	for (int i = 0; i < len; i++)
+	for (unsigned int i = 0; i < len; i++)
 	{
 		frame[method.params[i]] = params[i];
 	}
@@ -603,7 +620,7 @@ CVariant CProgram::callFunction(const std::string funcName, PARAMETERS params)
 	{
 		if (params.size() != 1)
 		{
-			debugger("Error: return() requires one parameter!");
+			debugger("return() requires one parameter!");
 			return CVariant();
 		}
 		m_stack.back()[STACK_RETURN] = params[0];
@@ -699,9 +716,9 @@ CVariant CProgram::evaluate(const std::string str)
 		 * Find the opening bracket.
 		 */
 		int depth = 0, opening = std::string::npos, openingIdx = std::string::npos;
-		for (int i = bracketPos - 1; i >= 0; i--)
+		for (unsigned int i = bracketPos - 1; i >= 0; i--)
 		{
-			const char chr = delimiterStr[i];
+			const char &chr = delimiterStr[i];
 			if (chr == ')') depth++;
 			else if (chr == '(' && depth-- == 0)
 			{
@@ -753,7 +770,7 @@ CVariant CProgram::evaluate(const std::string str)
 				free(str);
 
 				// Iterate over all the plugins.
-				std::vector<IPlugin *>::iterator i = m_plugins.begin();
+				std::vector<IPlugin *>::const_iterator i = m_plugins.begin();
 				for (; i != m_plugins.end(); ++i)
 				{
 					// Query this one.
@@ -777,24 +794,14 @@ CVariant CProgram::evaluate(const std::string str)
 			}
 			if (!bPlugin)
 			{
+				VECTOR_STR strParams;
+				parser::getParameters(centerStr, strParams);
+				VECTOR_STR::const_iterator i = strParams.begin();
 				std::vector<CVariant> params;
-				int pos = centerStr.find('(') + 1;
-				const int centerLen = centerStr.length();
-				do
+				for (; i != strParams.end(); ++i)
 				{
-					const int start = pos;
-					pos = centerStr.find(',', pos + 1);
-					const std::string push = centerStr.substr(start, ((pos != std::string::npos) ? pos : centerLen) - start);
-					if ((params.size() == 0) && parser::trim(push).empty()) break;
-					if (bIsConstruct)
-					{
-						params.push_back(push);
-					}
-					else
-					{
-						params.push_back(evaluate(push));
-					}
-				} while (pos++ != std::string::npos);
+					params.push_back(bIsConstruct ? *i : evaluate(*i));
+				}
 				var = callFunction(sansNeg, params);
 				const CVariant::DATA_TYPE dt = var.getType();
 				if (dt == CVariant::DT_LIT || dt == CVariant::DT_NULL)
@@ -805,14 +812,8 @@ CVariant CProgram::evaluate(const std::string str)
 		}
 		else
 		{
-			/*
-			 * Operations given precedence--recurse.
-			 */
 			var = evaluate(centerStr);
 		}
-		/*
-		 * Recurse!
-		 */
 		std::string content = "";
 		if (var.getType() == CVariant::DT_NUM)
 		{
@@ -828,44 +829,8 @@ CVariant CProgram::evaluate(const std::string str)
 		}
 		return evaluate(str.substr(0, startPos) + content + ((positions[bracketPos] != strLen) ? str.substr(positions[bracketPos] + 1) : ""));
 	}
-	/*
-	 * Now there's just a simple expression with numbers
-	 * and/or variables remaining of this line.
-	 */
-	const std::string operators[] = {
-		"^",
-		"*",
-		"/",
-		"%",
-		"+",
-		"-",
-		"<<",
-		">>",
-		"<",
-		">",
-		"<=",
-		">=",
-		"==",
-		"~=",
-		"&",
-		"`",
-		"|",
-		"&&",
-		"||",
-		"=",
-		"^=",
-		"*=",
-		"/=",
-		"%=",
-		"+=",
-		"~=",
-		// "<<=",
-		// ">>=",
-		"&=",
-		"|=",
-		"`="
-	};
-	for (int j = 0; j < 28; j++)
+	const std::string operators[] = {"^", "*", "/", "%", "+", "-", "<<", ">>", "<", ">", "<=", ">=", "==", "~=", "&", "`", "|", "&&", "||", "=", "^=", "*=", "/=", "%=", "+=", "-=", /* "<<=", */ /* ">>=", */ "&=", "|=", "`="};
+	for (unsigned int j = 0; j < 28; j++)
 	{
 		const std::string &op = operators[j];
 		const int opLen = op.length();
@@ -881,15 +846,12 @@ CVariant CProgram::evaluate(const std::string str)
 			const std::string tokenB = parser::trim(tokens[pos + opLen]);
 			const CVariant right = constructVariant(parseArray(tokenB));
 			std::string strVal = "";
-			if ((op[opLen - 1] != '=') || (op == "=="))
+			if ((op[opLen - 1] != '=') || (op == "==") || (op == "~="))
 			{
 				bool bFromVar = false;
 				const CVariant left = constructVariant(parseArray(tokenA), &bFromVar);
 				if ((op != "+") || (left.getType() == CVariant::DT_NUM && right.getType() == CVariant::DT_NUM))
 				{
-					/*
-					 * Both operands are numerical.
-					 */
 					double val = 0.0;
 					if (op == "==")
 					{

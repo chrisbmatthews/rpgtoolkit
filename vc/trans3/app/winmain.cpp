@@ -14,6 +14,7 @@
 #include "../common/item.h"
 #include "../common/player.h"
 #include "../common/mbox.h"
+#include "../common/CAllocationHeap.h"
 #include "../render/render.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
@@ -35,21 +36,22 @@
 /*
  * Globals.
  */
-int g_gameState = GS_IDLE;			// The current gamestate.
-MAIN_FILE g_mainFile;				// The loaded main file.
-BOARD g_activeBoard;				// The active board.
-CAudioSegment *g_bkgMusic = NULL;	// Playing background music.
+int g_gameState = GS_IDLE;				// The current gamestate.
+MAIN_FILE g_mainFile;					// The loaded main file.
+BOARD g_activeBoard;					// The active board.
+CAllocationHeap<CAudioSegment> g_music;	// All music.
+CAudioSegment *g_bkgMusic = NULL;		// Playing background music.
 
-std::vector<CPlayer *> g_players;	// Loaded players.
-std::vector<CItem *> g_items;		// Loaded items.
-ZO_VECTOR g_sprites;				// z-ordered players and items.
-CSprite *g_pSelectedPlayer = NULL;	// Pointer to selected player?
+std::vector<CPlayer *> g_players;		// Loaded players.
+std::vector<CItem *> g_items;			// Loaded items.
+ZO_VECTOR g_sprites;					// z-ordered players and items.
+CSprite *g_pSelectedPlayer = NULL;		// Pointer to selected player?
 
-HINSTANCE g_hInstance = NULL;		// Handle to application.
-double g_renderCount = 0;			// Count of GS_MOVEMENT state loops.
-double g_renderTime = 0;			// Millisecond cumulative GS_MOVEMENT state loop time.
+HINSTANCE g_hInstance = NULL;			// Handle to application.
+double g_renderCount = 0;				// Count of GS_MOVEMENT state loops.
+double g_renderTime = 0;				// Millisecond cumulative GS_MOVEMENT state loop time.
 
-IPlugin *g_pMenuPlugin = NULL;		// The menu plugin.
+IPlugin *g_pMenuPlugin = NULL;			// The menu plugin.
 
 #ifdef _DEBUG
 
@@ -300,7 +302,7 @@ VOID openSystems(VOID)
 	initGraphics();
 	initRpgCode();
 	CAudioSegment::initLoader();
-	g_bkgMusic = new CAudioSegment();
+	g_bkgMusic = g_music.allocate();
 	createRpgCodeGlobals();
 	setUpGame();
 }
@@ -454,7 +456,8 @@ VOID closeSystems(VOID)
 
 	// Items... currently freed by the board destructor.
 
-	delete g_bkgMusic;
+	g_music.free(g_bkgMusic);
+	g_bkgMusic = NULL;
 	CAudioSegment::freeLoader();
 
 	FreeImage_DeInitialise();

@@ -105,6 +105,7 @@ public:
 	 * file (in) - file to open
 	 */
 	void open(const std::string file);
+	void include(const std::string file, VECTOR_STR *pStream);
 
 	/*
 	 * Run the program.
@@ -263,7 +264,7 @@ private:
 	 * bComment (in + out) - whether the line is within a comment
 	 * lines (out) - resulting lines
 	 */
-	void CProgram::breakString(const std::string str, bool &bComment, VECTOR_STR &lines);
+	void breakString(const std::string str, bool &bComment, VECTOR_STR &lines);
 
 	/*
 	 * Run a block of code.

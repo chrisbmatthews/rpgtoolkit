@@ -62,6 +62,11 @@ namespace parser
 		return toRet;
 	}
 
+	/*
+	 * Parse the parameters of a function.
+	 */
+	void getParameters(const std::string str, std::vector<std::string> &ret);
+
 }
 
 #endif

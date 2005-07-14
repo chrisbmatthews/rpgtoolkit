@@ -9,6 +9,7 @@
 #include "../common/paths.h"
 #include "../common/mainfile.h"
 #include "../common/board.h"
+#include "../common/CAllocationHeap.h"
 #include "../plugins/plugins.h"
 #include "../audio/CAudioSegment.h"
 #include "../render/render.h"
@@ -322,11 +323,13 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 	BACKGROUND bkg;
 	bkg.open(g_projectPath + BKG_PATH + background);
 
+	extern CAllocationHeap<CAudioSegment> g_music;
 	extern CAudioSegment *g_bkgMusic;
 	CAudioSegment *pOldMusic = g_bkgMusic;
 	pOldMusic->stop(); // A pause would be better.
 
-	g_bkgMusic = new CAudioSegment(bkg.bkgMusic);
+	g_bkgMusic = g_music.allocate();
+	g_bkgMusic->open(bkg.bkgMusic);
 	g_bkgMusic->play(true);
 
 	const int outcome = g_pFightPlugin->fight(enemies.size(), -1, background, bCanRun);
@@ -344,7 +347,7 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 	}
 
 	g_bkgMusic->stop();
-	delete g_bkgMusic;
+	g_music.free(g_bkgMusic);
 	(g_bkgMusic = pOldMusic)->play(true);
 
 	renderNow(NULL, true);

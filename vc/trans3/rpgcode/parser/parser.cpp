@@ -196,3 +196,33 @@ void parser::getTokenList(const std::string str, std::vector<std::string> &pToke
 		}
 	}
 }
+
+/*
+ * Parse the parameters of a function.
+ */
+void parser::getParameters(const std::string str, std::vector<std::string> &ret)
+{
+	int pos = str.find('(') + 1;
+	const int initPos = pos;
+	bool bQuotes = false;
+	unsigned int i;
+	for (i = pos; i < str.length(); ++i)
+	{
+		const char &c = str[i];
+		if (c == '"') bQuotes = !bQuotes;
+		else if (!bQuotes)
+		{
+			if (c == ',')
+			{
+				ret.push_back(str.substr(pos, i - pos));
+				pos = i + 1;
+			}
+			else if (c == ')') break;
+		}
+	}
+	const std::string push = str.substr(pos, i - pos);
+	if (!push.empty())
+	{
+		ret.push_back(push);
+	}
+}
