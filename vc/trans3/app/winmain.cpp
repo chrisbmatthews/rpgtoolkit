@@ -36,7 +36,7 @@
 /*
  * Globals.
  */
-int g_gameState = GS_IDLE;				// The current gamestate.
+GAME_STATE g_gameState = GS_IDLE;		// The current gamestate.
 MAIN_FILE g_mainFile;					// The loaded main file.
 BOARD g_activeBoard;					// The active board.
 CAllocationHeap<CAudioSegment> g_music;	// All music.
@@ -312,11 +312,14 @@ VOID openSystems(VOID)
  *
  * return (out) - current game state
  */
-INT gameLogic(VOID)
+GAME_STATE gameLogic(VOID)
 {
 	switch (g_gameState)
 	{
 		case GS_IDLE:
+			// Only receive input when the player is idle.
+			scanKeys();
+
 		case GS_MOVEMENT:
 		{
 
@@ -329,8 +332,6 @@ INT gameLogic(VOID)
 			SetWindowText(g_hHostWnd, ss.str().c_str());
 
 			// Timer stuff.
-			// Input.
-			scanKeys();
 
 			// Movement.
 			for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
@@ -472,8 +473,8 @@ VOID closeSystems(VOID)
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
 
-	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	//#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	set_terminate(termFunc);
 
