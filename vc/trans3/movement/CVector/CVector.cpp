@@ -141,6 +141,9 @@ bool CVector::contains(CVector &rhs, DB_POINT &ref)
 	 * intersect any of the polygon's lines.
 	 */
 
+	// Reset ref, but not to zero (div 0 error).
+	ref.x = ref.y = 1;
+
 	// Check the pointer (for selected player checking).
 	if (&rhs == this) return false;
 
@@ -249,7 +252,7 @@ ZO_ENUM CVector::contains(CVector &rhs/*, DB_POINT &ref*/)
 				// A point is contained.
 				zo = ZO_ENUM (zo | ZO_COLLIDE);
 			}
-			else if (!count)
+			else if (count)
 			{
 				// Even count > 0.
 				zo = ZO_ENUM (zo | ZO_ABOVE);
