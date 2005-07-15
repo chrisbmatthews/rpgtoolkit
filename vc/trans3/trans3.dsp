@@ -818,6 +818,10 @@ SOURCE=.\common\CFile.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\CInventory.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\enemy.h
 # End Source File
 # Begin Source File

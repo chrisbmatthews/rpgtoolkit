@@ -51,7 +51,6 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 	}
 
 	itmAnimation = "";
-	itmSizeType = 0;
 
 	file.seek(13);
 	char cVersion;
@@ -78,10 +77,10 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 
 	file >> itemName;
 	file >> itmDescription;
-	file >> EquipYN;
-	file >> MenuYN;
-	file >> BoardYN;
-	file >> FightYN;
+	file >> equipYN;
+	file >> menuYN;
+	file >> boardYN;
+	file >> fightYN;
 	file >> usedBy;
 
 	itmChars.clear();
@@ -176,7 +175,8 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 	file >> itmAnimation;
 	file >> itmPrgOnBoard;
 	file >> itmPrgPickUp;
-		
+
+	char itmSizeType;
 	file >> itmSizeType;
 
 	if (minorVer >= 4)
@@ -391,8 +391,6 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		// Push graphics onto the gfx vector.
 		spriteAttr.completeStances(gfx);
 		spriteAttr.mapGfx.push_back(gfx);
-
-		itmSizeType = 1;
 
 	} // if (minorVer >= 4)
 

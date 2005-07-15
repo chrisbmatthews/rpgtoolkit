@@ -390,7 +390,7 @@ void CProgram::include(const std::string file, VECTOR_STR *pStream)
 			}
 			else if (!push.empty())
 			{
-				if (stream) stream->push_back(push);
+				if (stream) stream->push_back((push[0] == '#') ? push.substr(1) : push);
 			}
 			else
 			{
@@ -434,7 +434,7 @@ void CProgram::include(const std::string file, VECTOR_STR *pStream)
 				clsScope = &cls->scopes[CLASS::PRIVATE];
 				methodStream = &clsScope->m_methods;
 			}
-			else if (!stream)
+			else if (!stream && clsScope)
 			{
 				/*
 				 * Member variable here.

@@ -1623,7 +1623,8 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	ITEM itm;
 	extern std::string g_projectPath;
 	const std::string strItemFile = getString(itemFile);
-	if (!itm.open(g_projectPath + ITM_PATH + strItemFile, itm.spriteAttributes))
+	SPRITE_ATTR attr;
+	if (!itm.open(g_projectPath + ITM_PATH + strItemFile, attr))
 	{
 		return S_OK;
 	}

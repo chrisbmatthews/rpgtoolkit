@@ -53,7 +53,7 @@ typedef struct tagPlayer
 	std::string specialMoveName;				// Name of special move.
 	char smYN;									// Does he do special moves? 0-Y, 1-N.
 	std::vector<std::string> accessoryName;		// Names of 10 accessories.
-	std::vector<char> armorType;				// Is ARMOURTYPE used (0-N,1-Y).  Armour types are: 1-head,2-neck,3-lh,4-rh,5-body,6-legs.
+	std::vector<char> armorType;				// Is ARMORTYPE used (0-N,1-Y).  Armour types are: 1-head,2-neck,3-lh,4-rh,5-body,6-legs.
 	int levelType;								// Initial Level progression.
 	short experienceIncrease;					// Experience increase Factor.
 	int maxLevel;								// Maximum level.
@@ -68,11 +68,6 @@ typedef struct tagPlayer
 	short nextLevel;							// Exp value at which level up occurs.
 	short levelProgression;						// Exp required until level up.
 	std::vector<double> levelStarts;			// Exp values at which all levels start.
-
-	// This member just keeps this structure the correct size.
-	// (i.e., there is nothing in it.) It is a very crappy way
-	// to do this, but do not remove it unless you like crashes.
-	SPRITE_ATTR spriteAttributes;
 
 	short open(const std::string fileName, SPRITE_ATTR &spriteAttr);
 } PLAYER;

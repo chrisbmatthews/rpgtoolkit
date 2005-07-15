@@ -22,6 +22,7 @@
 #include "../common/paths.h"
 #include "../common/animation.h"
 #include "../common/CAllocationHeap.h"
+#include "../common/CInventory.h"
 #include "../movement/CSprite/CSprite.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
@@ -51,6 +52,7 @@ void *g_pTarget = NULL;						// Targetted entity.
 TARGET_TYPE g_targetType = TI_EMPTY;		// Type of target entity.
 void *g_pSource = NULL;						// Source entity.
 TARGET_TYPE g_sourceType = TI_EMPTY;		// Type of source entity.
+CInventory g_inv;							// Inventory.
 
 /*
  * Become ready to run a program.
@@ -1071,22 +1073,40 @@ CVariant start(CProgram::PARAMETERS params, CProgram *const)
 }
 
 /*
- * giveitem(...)
+ * giveitem(itm$)
  * 
- * Description.
+ * Add an item to the inventory.
  */
 CVariant giveitem(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() != 1)
+	{
+		CProgram::debugger("GiveItem() requires one parameter.");
+	}
+	else
+	{
+		extern std::string g_projectPath;
+		g_inv.give(g_projectPath + ITM_PATH + params[0].getLit());
+	}
 	return CVariant();
 }
 
 /*
- * takeitem(...)
+ * takeitem(itm$)
  * 
- * Description.
+ * Remove an item from the inventory.
  */
 CVariant takeitem(CProgram::PARAMETERS params, CProgram *const)
 {
+	if (params.size() != 1)
+	{
+		CProgram::debugger("TakeItem() requires one parameter.");
+	}
+	else
+	{
+		extern std::string g_projectPath;
+		g_inv.take(g_projectPath + ITM_PATH + params[0].getLit());
+	}
 	return CVariant();
 }
 
@@ -1530,12 +1550,21 @@ CVariant eraseplayer(CProgram::PARAMETERS params, CProgram *const)
 }
 
 /*
- * include(...)
+ * include(file$)
  * 
- * Description.
+ * Include a file to use its methods.
  */
-CVariant include(CProgram::PARAMETERS params, CProgram *const)
+CVariant include(CProgram::PARAMETERS params, CProgram *const prg)
 {
+	if (params.size() == 1)
+	{
+		extern std::string g_projectPath;
+		prg->include(g_projectPath + PRG_PATH + params[0].getLit(), NULL);
+	}
+	else
+	{
+		CProgram::debugger("include() requires one parameter.");
+	}
 	return CVariant();
 }
 
@@ -1682,7 +1711,7 @@ CVariant drainall(CProgram::PARAMETERS params, CProgram *const)
 CVariant inn(CProgram::PARAMETERS params, CProgram *const)
 {
 	extern std::vector<CPlayer *> g_players;
-	std::vector<CPlayer *>::iterator i = g_players.begin();
+	std::vector<CPlayer *>::const_iterator i = g_players.begin();
 	for (; i != g_players.end(); ++i)
 	{
 		(*i)->health((*i)->maxHealth());
@@ -2392,12 +2421,39 @@ CVariant layerput(CProgram::PARAMETERS params, CProgram *const)
 }
 
 /*
- * getboardtile(...)
+ * getboardtile(x, y, z[, ret])
  * 
- * Description.
+ * Get the file name of the tile at x, y, z.
  */
-CVariant getboardtile(CProgram::PARAMETERS params, CProgram *const)
+CVariant getboardtile(CProgram::PARAMETERS params, CProgram *const prg)
 {
+	extern BOARD g_activeBoard;
+	if (params.size() == 3)
+	{
+		try
+		{
+			return g_activeBoard.tileIndex[g_activeBoard.board[params[0].getNum()][params[1].getNum()][params[2].getNum()]];
+		}
+		catch (...) // Lazy solution.
+		{
+			CProgram::debugger("Out of bounds.");
+		}
+	}
+	else if (params.size() == 4)
+	{
+		try
+		{
+			prg->setVariable(params[3].getLit(), g_activeBoard.tileIndex[g_activeBoard.board[params[0].getNum()][params[1].getNum()][params[2].getNum()]]);
+		}
+		catch (...)
+		{
+			CProgram::debugger("Out of bounds.");
+		}
+	}
+	else
+	{
+		CProgram::debugger("GetBoardTile() requires three or four parameters.");
+	}
 	return CVariant();
 }
 
