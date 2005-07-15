@@ -50,10 +50,16 @@ public:
 	void setPosition(const int x, const int y, const int l);
 
 	// Evaluate board vectors.
-	TILE_TYPE boardCollisions(const bool recursing = false);
+	TILE_TYPE boardCollisions(BOARD &board, const bool recursing = false);
 	
 	// Evaluate sprites (players and items).
 	TILE_TYPE spriteCollisions(void);
+
+	// Tests for movement at the board edges.
+	TILE_TYPE boardEdges(void);
+
+	// Unconditionally send the sprite to the active board.
+	void send(void);
 
 	// Test for program activations (by programs, items, players).
 	bool programTest(void);
