@@ -236,34 +236,12 @@ CVariant send(CProgram::PARAMETERS params, CProgram *const)
 		y = 1;
 	}
 
-	clearAnmCache();
 	extern CSprite *g_pSelectedPlayer;
+
 	g_pSelectedPlayer->setPosition(x * 32, y * 32, layer);
 
-	// After setPosition().
-	extern RECT g_screen;
-	extern SCROLL_CACHE g_scrollCache;
-	g_pSelectedPlayer->alignBoard(g_screen, true);
-	g_scrollCache.render(true);
+	g_pSelectedPlayer->send();
 
-	extern ZO_VECTOR g_sprites;
-	g_sprites.zOrder();
-
-	// Ensure that programs the player is standing on don't run immediately.
-	g_pSelectedPlayer->deactivatePrograms();
-
-	renderNow(g_cnvRpgCode, true);
-	renderRpgCodeScreen();
-
-	extern CAudioSegment *g_bkgMusic;
-	// Open file regardless of existence.
-	g_bkgMusic->open(g_activeBoard.boardMusic);
-	g_bkgMusic->play(true);
-
-	if (!g_activeBoard.enterPrg.empty())
-	{
-		CProgram(g_projectPath + PRG_PATH + g_activeBoard.enterPrg).run();
-	}
 	return CVariant();
 }
 
