@@ -10,7 +10,7 @@
 #include <vector>
 #include "input.h"
 #include "../common/sprite.h"
-#include "../movement/CPlayer/CPlayer.h"
+#include "../movement/CSprite/CSprite.h"
 
 /*
  * Globals.
@@ -119,18 +119,19 @@ void freeInput(void)
  */
 void scanKeys(void)
 {
+	extern GAME_STATE g_gameState;
+	extern CSprite *g_pSelectedPlayer;
+
 	BYTE keys[256];
 	if (FAILED(g_lpdiKeyboard->GetDeviceState(256, keys))) return;
 	#define SCAN_KEY_DOWN(x) (keys[DIK_##x] & 0x80)
 
 	MV_ENUM queue = MV_IDLE;
-	extern std::vector<CPlayer *> g_players;
-	extern int g_gameState, g_selectedPlayer;
 
 	// Temporary - KeyDownEvent?
 	if (SCAN_KEY_DOWN(SPACE))
 	{
-		g_players[g_selectedPlayer]->programTest();
+		g_pSelectedPlayer->programTest();
 		return;
 	}
 
@@ -170,7 +171,7 @@ void scanKeys(void)
 	if (queue != MV_IDLE)
 	{
 		// Queue up the movement, and clear any currently queued movements.
-		g_players[g_selectedPlayer]->setQueuedMovements(queue, true);
+		g_pSelectedPlayer->setQueuedMovements(queue, true);
 		g_gameState = GS_MOVEMENT;
 	}
 }
