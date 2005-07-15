@@ -323,7 +323,8 @@ lutEnd:
 	{
 		vectorize(i);
 	}
-	createVectorCanvases();
+
+	if (this == &g_activeBoard) createVectorCanvases();
 
 	return true;
 }

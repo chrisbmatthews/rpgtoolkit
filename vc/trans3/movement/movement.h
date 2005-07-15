@@ -19,10 +19,13 @@
  */
 const int MILLISECONDS = 1000;		// Milliseconds in a second.
 
-#define GS_IDLE 0					// Just re-renders the screen
-#define GS_MOVEMENT 1				// Movement is occurring (players or items)
-#define GS_PAUSE 2					// Pause game (do nothing)
-#define GS_QUIT 3					// Shutdown sequence
+enum GAME_STATE
+{
+	GS_IDLE,						// Receiving input.
+	GS_MOVEMENT,					// Player movement is occurring (no input).
+	GS_PAUSE,						// Game is paused (e.g. lost focus).
+	GS_QUIT							// Shutdown sequence.
+};
 
 /*
  * Movement definitions.

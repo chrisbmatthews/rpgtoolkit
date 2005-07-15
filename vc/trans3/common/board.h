@@ -84,6 +84,16 @@ typedef struct tagBoardVector
 
 } BRD_VECTOR;
 
+// Vector indices for .dirLink member (only used in CSprite::send())
+typedef enum tagDirectionalLinks
+{
+	LK_NONE = -1,
+	LK_N,
+	LK_S,
+	LK_E,
+	LK_W
+} LK_ENUM;
+
 /*
  * A board.
  */
