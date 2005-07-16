@@ -20,7 +20,7 @@ public:
 
 	CItem(const std::string file, const BRD_SPRITE spr);
 
-	void open(const std::string file) throw();
+	void open(const std::string file) throw(CInvalidItem);
 
 private:
 	ITEM m_itemMem;

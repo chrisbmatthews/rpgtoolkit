@@ -34,7 +34,7 @@ CSprite(false)
 /*
  * Common opening procedure.
  */
-void CItem::open(const std::string file) throw()
+void CItem::open(const std::string file) throw(CInvalidItem)
 {
 
 	const short minorVer = m_itemMem.open(file, m_attr);
