@@ -291,7 +291,33 @@ SOURCE="$(InputPath)"
 # Begin Source File
 
 SOURCE=.\StdAfx.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# ADD CPP /Yc"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
 # SUBTRACT CPP /YX /Yc
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# SUBTRACT CPP /YX /Yc
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+# SUBTRACT CPP /YX /Yc
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+# SUBTRACT CPP /YX /Yc
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+# SUBTRACT CPP /YX /Yc
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 

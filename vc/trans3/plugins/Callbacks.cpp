@@ -347,8 +347,8 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			// No way to get it, Colin.
 			break;
 		case GEN_CURRENTBOARD:
-			extern BOARD g_activeBoard;
-			bstr = getString(g_activeBoard.strFilename);
+			extern LPBOARD g_pBoard;
+			bstr = getString(g_pBoard->strFilename);
 			break;
 		case GEN_MENUGRAPHIC:
 			break;
@@ -576,38 +576,38 @@ STDMETHODIMP CCallbacks::CBGetItemNum(int infoCode, int arrayPos, int itmSlot, i
 
 STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos2, int arrayPos3, int *pRet)
 {
-	extern BOARD g_activeBoard;
+	extern LPBOARD g_pBoard;
 	switch (infoCode)
 	{
 		case BRD_SIZEX:
-			*pRet = g_activeBoard.bSizeX;
+			*pRet = g_pBoard->bSizeX;
 			break;
 		case BRD_SIZEY:
-			*pRet = g_activeBoard.bSizeY;
+			*pRet = g_pBoard->bSizeY;
 			break;
 		case BRD_AMBIENTRED:
-			*pRet = g_activeBoard.ambientRed[arrayPos1][arrayPos2][arrayPos3];
+			*pRet = g_pBoard->ambientRed[arrayPos1][arrayPos2][arrayPos3];
 			break;
 		case BRD_AMBIENTGREEN:
-			*pRet = g_activeBoard.ambientGreen[arrayPos1][arrayPos2][arrayPos3];
+			*pRet = g_pBoard->ambientGreen[arrayPos1][arrayPos2][arrayPos3];
 			break;
 		case BRD_AMBIENTBLUE:
-			*pRet = g_activeBoard.ambientBlue[arrayPos1][arrayPos2][arrayPos3];
+			*pRet = g_pBoard->ambientBlue[arrayPos1][arrayPos2][arrayPos3];
 			break;
 		case BRD_TILETYPE:
-			*pRet = g_activeBoard.tiletype[arrayPos1][arrayPos2][arrayPos3];
+			*pRet = g_pBoard->tiletype[arrayPos1][arrayPos2][arrayPos3];
 			break;
 		case BRD_BACKCOLOR:
-			*pRet = g_activeBoard.brdColor;
+			*pRet = g_pBoard->brdColor;
 			break;
 		case BRD_BORDERCOLOR:
-			*pRet = g_activeBoard.borderColor;
+			*pRet = g_pBoard->borderColor;
 			break;
 		case BRD_SKILL:
-			*pRet = g_activeBoard.boardSkill;
+			*pRet = g_pBoard->boardSkill;
 			break;
 		case BRD_FIGHTINGYN:
-			*pRet = g_activeBoard.fightingYN;
+			*pRet = g_pBoard->fightingYN;
 			break;
 		case BRD_PRG_X:
 			// [...]

@@ -10,7 +10,6 @@
  */
 #include "board.h"
 #include "sprite.h"
-#include "../movement/CItem/CItem.h"
 #include "paths.h"
 #include "CFile.h"
 #include "mbox.h"
@@ -25,8 +24,7 @@
 bool tagBoard::open(const std::string fileName)
 {
 	extern std::string g_projectPath;
-	extern std::vector<CItem *> g_items;
-	extern BOARD g_activeBoard;
+	extern LPBOARD g_pBoard;
 
 	CFile file(fileName);
 
@@ -283,20 +281,15 @@ lutEnd:
 		file >> spr.prgActivate;
 		file >> spr.prgMultitask;
 
-		if (!sprFileName.empty())
+		if (!sprFileName.empty() && (this == g_pBoard))
 		{
-			// Only load the items if this is the active board
-			// (we may be loading the board for other purposes).
-			if (this == &g_activeBoard)
+			try
 			{
-				try
-				{
-					CItem *pItem = new CItem(g_projectPath + ITM_PATH + sprFileName, spr);
-					g_items.push_back(pItem);
-					pItem->setPosition(x * 32, y * 32, layer);
-				}
-				catch (CInvalidItem) { }
+				CItem *pItem = new CItem(g_projectPath + ITM_PATH + sprFileName, spr);
+				items.push_back(pItem);
+				pItem->setPosition(x * 32, y * 32, layer);
 			}
+			catch (CInvalidItem) { }
 		}
 	}
 
@@ -324,7 +317,7 @@ lutEnd:
 		vectorize(i);
 	}
 
-	if (this == &g_activeBoard) createVectorCanvases();
+	if (this == g_pBoard) createVectorCanvases();
 
 	return true;
 }
@@ -453,7 +446,7 @@ void tagBoard::createVectorCanvases(void)
 			// Was drawn if vector was closed.
 
 			// Draw the board layer within the bounds to the intermediate canvas.
-			drawBoard(*this, cnv, 
+			drawBoard(this, cnv, 
 					  0, 0, 
 					  i->layer, 
 					  rAlign.left / 32, rAlign.top / 32, 
@@ -520,21 +513,15 @@ void tagBoard::freePrograms(void)
 }
 
 /*
- * Delete all *global* items (in g_items).
+ * Delete items.
  */
 void tagBoard::freeItems(void)
 {
-	extern BOARD g_activeBoard;
-	extern std::vector<CItem *> g_items;
-
-	// Only delete items if we're changing boards.
-	if (this != &g_activeBoard) return;
-
-	for (std::vector<CItem *>::iterator i = g_items.begin(); i != g_items.end(); ++i)
+	for (std::vector<CItem *>::iterator i = items.begin(); i != items.end(); ++i)
 	{
 		delete *i;
 	}
-	g_items.clear();
+	items.clear();
 }
 
 /*

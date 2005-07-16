@@ -37,7 +37,7 @@ void tagSpriteAttr::completeStances(GFX_MAP &gfx)
  */
 std::string tagSpriteAttr::getStanceAnm(std::string stance)
 {
-    if (stance.empty())
+	if (stance.empty())
 	{
 		stance = "WALK_S";
 	}
@@ -46,125 +46,79 @@ std::string tagSpriteAttr::getStanceAnm(std::string stance)
 		stance = parser::uppercase(stance);
 	}
 
-	std::string toRet = "";
-
-    if (stance == "STAND_S")
+	if (stance == "STAND_S")
 	{
-		toRet = (standingGfx[PLYR_WALK_S].empty() ? gfx[PLYR_WALK_S] : standingGfx[PLYR_WALK_S]);
-    }
-    else if (stance == "STAND_N")
+		return mapGfx[GFX_IDLE][MV_S];
+	}
+	else if (stance == "STAND_N")
 	{
-		toRet = (standingGfx[PLYR_WALK_N].empty() ? gfx[PLYR_WALK_N] : standingGfx[PLYR_WALK_N]);
-    }
-    else if (stance == "STAND_E")
+		return mapGfx[GFX_IDLE][MV_N];
+	}
+	else if (stance == "STAND_E")
 	{
-		toRet = (standingGfx[PLYR_WALK_E].empty() ? gfx[PLYR_WALK_E] : standingGfx[PLYR_WALK_E]);
-    }
-    else if (stance == "STAND_W")
+		return mapGfx[GFX_IDLE][MV_E];
+	}
+	else if (stance == "STAND_W")
 	{
-		toRet = (standingGfx[PLYR_WALK_W].empty() ? gfx[PLYR_WALK_W] : standingGfx[PLYR_WALK_W]);
-    }
-    else if (stance == "STAND_NW")
+		return mapGfx[GFX_IDLE][MV_W];
+	}
+	else if (stance == "STAND_NW")
 	{
-		// stand_nw > stand_w > walk_nw > walk_w.
-		toRet = (standingGfx[PLYR_WALK_NW].empty() ? standingGfx[PLYR_WALK_W] : standingGfx[PLYR_WALK_NW]);
-		if (toRet.empty())
-		{
-			toRet = (gfx[PLYR_WALK_NW].empty() ? gfx[PLYR_WALK_W] : gfx[PLYR_WALK_NW]);
-		}
-    }
-    else if (stance == "STAND_NE")
+		return mapGfx[GFX_IDLE][MV_NW];
+	}
+	else if (stance == "STAND_NE")
 	{
-		// stand_ne > stand_e > walk_ne > walk_e.
-		toRet = (standingGfx[PLYR_WALK_NE].empty() ? standingGfx[PLYR_WALK_E] : standingGfx[PLYR_WALK_NE]);
-		if (toRet.empty())
-		{
-			toRet = (gfx[PLYR_WALK_NE].empty() ? gfx[PLYR_WALK_E] : gfx[PLYR_WALK_NE]);
-		}
-    }
-    else if (stance == "STAND_SW")
+		return mapGfx[GFX_IDLE][MV_NE];
+	}
+	else if (stance == "STAND_SW")
 	{
-		// stand_sw > stand_w > walk_sw > walk_w.
-		toRet = (standingGfx[PLYR_WALK_SW].empty() ? standingGfx[PLYR_WALK_W] : standingGfx[PLYR_WALK_SW]);
-		if (toRet.empty())
-		{
-			toRet = (gfx[PLYR_WALK_SW].empty() ? gfx[PLYR_WALK_W] : gfx[PLYR_WALK_SW]);
-		}
-    }
-    else if (stance == "STAND_SE")
+		return mapGfx[GFX_IDLE][MV_SW];
+	}
+	else if (stance == "STAND_SE")
 	{
-		// stand_se > stand_e > walk_se > walk_e.
-		toRet = (standingGfx[PLYR_WALK_SE].empty() ? standingGfx[PLYR_WALK_E] : standingGfx[PLYR_WALK_SE]);
-		if (toRet.empty())
-		{
-			toRet = (gfx[PLYR_WALK_SE].empty() ? gfx[PLYR_WALK_E] : gfx[PLYR_WALK_SE]);
-		}
-    }
+		return mapGfx[GFX_IDLE][MV_SE];
+	}
 	else if (stance == "WALK_S")
 	{
-		toRet = gfx[PLYR_WALK_S];
+		return mapGfx[GFX_MOVE][MV_S];
 	}
 	else if (stance == "WALK_N")
 	{
-		toRet = gfx[PLYR_WALK_N];
+		return mapGfx[GFX_MOVE][MV_N];
 	}
 	else if (stance == "WALK_E")
 	{
-		toRet = gfx[PLYR_WALK_E];
+		return mapGfx[GFX_MOVE][MV_E];
 	}
 	else if (stance == "WALK_W")
 	{
-		toRet = gfx[PLYR_WALK_W];
+		return mapGfx[GFX_MOVE][MV_W];
 	}
 	else if (stance == "WALK_NW")
 	{
-		toRet = (gfx[PLYR_WALK_NW].empty() ? gfx[PLYR_WALK_W] : gfx[PLYR_WALK_NW]);
+		return mapGfx[GFX_MOVE][MV_NW];
 	}
 	else if (stance == "WALK_NE")
 	{
-		toRet = (gfx[PLYR_WALK_NE].empty() ? gfx[PLYR_WALK_E] : gfx[PLYR_WALK_NE]);
+		return mapGfx[GFX_MOVE][MV_NE];
 	}
 	else if (stance == "WALK_SW")
 	{
-		toRet = (gfx[PLYR_WALK_SW].empty() ? gfx[PLYR_WALK_W] : gfx[PLYR_WALK_SW]);
+		return mapGfx[GFX_MOVE][MV_SW];
 	}
 	else if (stance == "WALK_SE")
 	{
-		toRet = (gfx[PLYR_WALK_SE].empty() ? gfx[PLYR_WALK_E] : gfx[PLYR_WALK_SE]);
+		return mapGfx[GFX_MOVE][MV_SE];
 	}
 	else if (stance == "FIGHT" || stance == "ATTACK")
 	{
-		toRet = mapCustomGfx[GFX_FIGHT];
-	}
-	else if (stance == "DEFEND")
-	{
-		toRet = mapCustomGfx[GFX_DEFEND];
+		return mapCustomGfx[GFX_FIGHT];
 	}
 	else if (stance == "SPC" || stance == "SPECIAL MOVE")
 	{
-		toRet = mapCustomGfx[GFX_SPC];
+		return mapCustomGfx[GFX_SPC];
 	}
-	else if (stance == "DIE")
-	{
-		toRet = mapCustomGfx[GFX_DIE];
-	}
-	else if (stance == "REST")
-	{
-		toRet = mapCustomGfx[GFX_REST];
-	}
-	else
-	{
-		//it's a custom stance, search the custom stances.
-		for (unsigned int i = 0; i <= customGfxNames.size(); i++)
-		{
-			if (parser::uppercase(customGfxNames[i]) == stance) 
-			{
-				toRet = customGfx[i];
-				break;
-			}
-		}
-	}
-    return toRet;
+	return mapCustomGfx[stance];
 }
 
 /*
@@ -173,12 +127,12 @@ std::string tagSpriteAttr::getStanceAnm(std::string stance)
 void tagSpriteAttr::createVectors(const int activationType)
 {
 	extern double g_movementSize;
-	extern BOARD g_activeBoard;
+	extern LPBOARD g_pBoard;
 	// Activation vector depends on activation method.
 	// For keypress, the activation vector must extend outside the base.
 	// For step, the activation will be the base.
 
-	if (g_activeBoard.isIsometric == 1)
+	if (g_pBoard->isIsometric == 1)
 	{
 
 	}
@@ -221,6 +175,6 @@ void tagSpriteAttr::createVectors(const int activationType)
 				vActivate = vBase;
 			}
 		} // if (g_movementSize != 1)
-	} // if (g_activeBoard.isIsometric == 1)
+	} // if (g_pBoard->isIsometric == 1)
 }
 

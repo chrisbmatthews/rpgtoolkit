@@ -38,12 +38,12 @@
  */
 GAME_STATE g_gameState = GS_IDLE;		// The current gamestate.
 MAIN_FILE g_mainFile;					// The loaded main file.
-BOARD g_activeBoard;					// The active board.
+CAllocationHeap<BOARD> g_boards;		// All boards.
+LPBOARD g_pBoard = NULL;				// The active board.
 CAllocationHeap<CAudioSegment> g_music;	// All music.
 CAudioSegment *g_bkgMusic = NULL;		// Playing background music.
 
 std::vector<CPlayer *> g_players;		// Loaded players.
-std::vector<CItem *> g_items;			// Loaded items.
 ZO_VECTOR g_sprites;					// z-ordered players and items.
 CSprite *g_pSelectedPlayer = NULL;		// Pointer to selected player?
 
@@ -135,6 +135,8 @@ VOID setUpGame(VOID)
 	extern std::string g_projectPath;
 	extern RECT g_screen;
 	extern SCROLL_CACHE g_scrollCache;
+
+	g_pBoard = g_boards.allocate();
 
 	// Load plugins.
 	CProgram::freePlugins();
@@ -261,12 +263,12 @@ VOID setUpGame(VOID)
 
 	if (!g_mainFile.initBoard.empty())
 	{
-		g_activeBoard.open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
+		g_pBoard->open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
 
 		// Set player position before rendering in order to align board.
-		g_pSelectedPlayer->setPosition(g_activeBoard.playerX ? g_activeBoard.playerX : 1,
-												g_activeBoard.playerY ? g_activeBoard.playerY : 1,
-												g_activeBoard.playerLayer ? g_activeBoard.playerLayer : 1);
+		g_pSelectedPlayer->setPosition(g_pBoard->playerX ? g_pBoard->playerX : 1,
+												g_pBoard->playerY ? g_pBoard->playerY : 1,
+												g_pBoard->playerLayer ? g_pBoard->playerLayer : 1);
 
 		g_pSelectedPlayer->alignBoard(g_screen, true);
 		g_scrollCache.render(true);
@@ -274,14 +276,14 @@ VOID setUpGame(VOID)
 		// z-order the sprites on board loading.
 		g_sprites.zOrder();
 
-		if (!g_activeBoard.boardMusic.empty())
+		if (!g_pBoard->boardMusic.empty())
 		{
-			g_bkgMusic->open(g_activeBoard.boardMusic);
+			g_bkgMusic->open(g_pBoard->boardMusic);
 			g_bkgMusic->play(true);
 		}
-		if (!g_activeBoard.enterPrg.empty())
+		if (!g_pBoard->enterPrg.empty())
 		{
-			CProgram(g_projectPath + PRG_PATH + g_activeBoard.enterPrg).run();
+			CProgram(g_projectPath + PRG_PATH + g_pBoard->enterPrg).run();
 		}
 // Testing!
 //		g_players[1]->setPosition(10 * 32, 5 * 32, 1);
@@ -325,7 +327,7 @@ GAME_STATE gameLogic(VOID)
 
 			extern HWND g_hHostWnd;
 			std::stringstream ss;
-			ss << g_mainFile.gameTitle.c_str() << " — " << g_activeBoard.vectors.size() << " vectors, " << ((g_renderCount * MILLISECONDS) / g_renderTime) << " FPS";
+			ss << g_mainFile.gameTitle.c_str() << " — " << g_pBoard->vectors.size() << " vectors, " << ((g_renderCount * MILLISECONDS) / g_renderTime) << " FPS";
 #if _DEBUG
 			ss << ", " << g_allocated << " bytes";
 #endif
@@ -338,7 +340,7 @@ GAME_STATE gameLogic(VOID)
 			{
 				(*i)->move(g_pSelectedPlayer);
 			}
-			for (std::vector<CItem *>::const_iterator j = g_items.begin(); j != g_items.end(); ++j) 
+			for (std::vector<CItem *>::const_iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j) 
 			{
 // Testing!
 				(*j)->setQueuedMovements(rand() % 9, true);
@@ -463,6 +465,9 @@ VOID closeSystems(VOID)
 
 	FreeImage_DeInitialise();
 
+	g_boards.free(g_pBoard);
+	g_pBoard = NULL;
+
 }
 
 #include <direct.h>
@@ -473,8 +478,8 @@ VOID closeSystems(VOID)
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
 
-	//#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	set_terminate(termFunc);
 

@@ -8,11 +8,10 @@
 #ifndef _BOARD_H_
 #define _BOARD_H_
 
-/*
- * Inclusions.
- */
+struct tagBoard;
+typedef struct tagBoard BOARD, *LPBOARD;
+
 #include "../movement/CVector/CVector.h"
-#include "tileanim.h"
 #include <string>
 #include <vector>
 
@@ -60,15 +59,6 @@ typedef struct tagBoardProgram
 
 } BRD_PROGRAM, *LPBRD_PROGRAM;
 
-/*
- * A board's tile animation.
- */
-typedef struct tagBoardTileAnim
-{
-	TILEANIM tile;
-	int x, y, z;
-} BOARD_TILEANIM;
-
 typedef struct tagBoardVector
 {
 	int layer;
@@ -93,6 +83,18 @@ typedef enum tagDirectionalLinks
 	LK_E,
 	LK_W
 } LK_ENUM;
+
+#include "../movement/CItem/CItem.h"
+#include "tileanim.h"
+
+/*
+ * A board's tile animation.
+ */
+typedef struct tagBoardTileAnim
+{
+	TILEANIM tile;
+	int x, y, z;
+} BOARD_TILEANIM;
 
 /*
  * A board.
@@ -153,8 +155,8 @@ typedef struct tagBoard
 	std::vector<int> anmTileLUTIndices;				// Indices into LUT of animated tiles.
 
 	std::string strFilename;						// Filename of the board.
-
-	std::vector<BRD_VECTOR> vectors;
+	std::vector<BRD_VECTOR> vectors;				// Vectors.
+	std::vector<CItem *> items;						// Items.
 
 	bool open(const std::string fileName);
 	void vectorize(const unsigned int layer);
@@ -171,6 +173,6 @@ typedef struct tagBoard
 private:
 	tagBoard &operator=(tagBoard &rhs);
 	tagBoard(tagBoard &rhs);
-} BOARD;
+} BOARD, *LPBOARD;
 
 #endif

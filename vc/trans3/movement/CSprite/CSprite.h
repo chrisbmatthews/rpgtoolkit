@@ -50,7 +50,7 @@ public:
 	void setPosition(const int x, const int y, const int l);
 
 	// Evaluate board vectors.
-	TILE_TYPE boardCollisions(BOARD &board, const bool recursing = false);
+	TILE_TYPE boardCollisions(LPBOARD board, const bool recursing = false);
 	
 	// Evaluate sprites (players and items).
 	TILE_TYPE spriteCollisions(void);

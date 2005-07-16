@@ -10,21 +10,18 @@
 #include "locate.h"
 #include "../common/board.h"
 
-/*
- * Externals.
- */
-extern BOARD g_activeBoard;
+extern LPBOARD g_pBoard;
 
 /*
  * Transform old-type isometric co-ordinates to new-type.
  */
 void isoCoordTransform(const double oldX, const double oldY, double &newX, double &newY)
 {
-	if (g_activeBoard.isIsometric)
+	if (g_pBoard->isIsometric)
 	{
 		newX = oldX + int((oldY - 1.0) / 2.0);
 		newY = int(oldY / 2.0) + 1 - int(oldX) + (oldY - int(oldY));
-		newY += g_activeBoard.bSizeX;
+		newY += g_pBoard->bSizeX;
 	}
 	else
 	{
@@ -38,10 +35,10 @@ void isoCoordTransform(const double oldX, const double oldY, double &newX, doubl
  */
 void invIsoCoordTransform(const double newX, const double newY, double &oldX, double &oldY)
 {
-	if (g_activeBoard.isIsometric)
+	if (g_pBoard->isIsometric)
 	{
 
-		const int y = newY - g_activeBoard.bSizeX;
+		const int y = newY - g_pBoard->bSizeX;
 
 		if (!(int(newX) % 2))
 		{
@@ -71,12 +68,12 @@ int getBottomCentreX(const double boardX, const double boardY)
 
 	extern double g_topX;
 
-	if (g_activeBoard.isIsometric)
+	if (g_pBoard->isIsometric)
 	{
 
 		double newBoardX, newBoardY;
 		isoCoordTransform(boardX, boardY, newBoardX, newBoardY);
-		return int((newBoardX - (newBoardY - g_activeBoard.bSizeX) - g_topX * 2.0) * 32.0);
+		return int((newBoardX - (newBoardY - g_pBoard->bSizeX) - g_topX * 2.0) * 32.0);
 
 	}
 	else
@@ -98,11 +95,11 @@ int getBottomCentreY(const double boardX, const double boardY)
 
 	extern double g_topY;
 
-	if (g_activeBoard.isIsometric)
+	if (g_pBoard->isIsometric)
 	{
 		double newBoardX, newBoardY;
 		isoCoordTransform(boardX, boardY, newBoardX, newBoardY);
-		return int((newBoardX + (newBoardY - g_activeBoard.bSizeX) - (g_topY * 2.0 + 1.0)) * 16.0);
+		return int((newBoardX + (newBoardY - g_pBoard->bSizeX) - (g_topY * 2.0 + 1.0)) * 16.0);
 	}
 	else
 	{
@@ -117,7 +114,7 @@ int getBottomCentreY(const double boardX, const double boardY)
 void incrementPosition(SPRITE_POSITION &pos, PENDING_MOVEMENT &pend, const double moveFraction)
 {
 
-	if (g_activeBoard.isIsometric)
+	if (g_pBoard->isIsometric)
 	{
 
 		// Coordinate transform!
@@ -258,7 +255,7 @@ void insertTarget(PENDING_MOVEMENT &pend)
 
 	extern double g_movementSize;
 
-	if (g_activeBoard.isIsometric)
+	if (g_pBoard->isIsometric)
 	{
 
 		// Coordinate transform!
@@ -414,7 +411,7 @@ SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction)
 
 	SPRITE_POSITION toRet = passPos;
 
-	if (g_activeBoard.isIsometric)
+	if (g_pBoard->isIsometric)
 	{
 
 		/*
@@ -609,7 +606,7 @@ SPRITE_POSITION activationCoords(SPRITE_POSITION &passPos, SPRITE_POSITION &roun
 	double passX, passY;
 	isoCoordTransform(passPos.x, passPos.y, passX, passY);
 
-	if (g_activeBoard.isIsometric)
+	if (g_pBoard->isIsometric)
 	{
 
 		/*

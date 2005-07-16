@@ -211,24 +211,24 @@ CVariant send(CProgram::PARAMETERS params, CProgram *const)
 	}
 
 	extern std::string g_projectPath;
-	extern BOARD g_activeBoard;
-	g_activeBoard.open(g_projectPath + BRD_PATH + params[0].getLit());
+	extern LPBOARD g_pBoard;
+	g_pBoard->open(g_projectPath + BRD_PATH + params[0].getLit());
 
 	unsigned int x = params[1].getNum(), y = params[2].getNum();
-	if (x > g_activeBoard.bSizeX)
+	if (x > g_pBoard->bSizeX)
 	{
 		CProgram::debugger("Send() location exceeds target board x-dimension.");
-		x = g_activeBoard.bSizeX;
+		x = g_pBoard->bSizeX;
 	}
 	if (x < 1)
 	{
 		CProgram::debugger("Send() x location is less than one.");
 		x = 1;
 	}
-	if (y > g_activeBoard.bSizeY)
+	if (y > g_pBoard->bSizeY)
 	{
 		CProgram::debugger("Send() location exceeds target board y-dimension.");
-		y = g_activeBoard.bSizeY;
+		y = g_pBoard->bSizeY;
 	}
 	if (y < 1)
 	{
@@ -2405,12 +2405,12 @@ CVariant layerput(CProgram::PARAMETERS params, CProgram *const)
  */
 CVariant getboardtile(CProgram::PARAMETERS params, CProgram *const prg)
 {
-	extern BOARD g_activeBoard;
+	extern LPBOARD g_pBoard;
 	if (params.size() == 3)
 	{
 		try
 		{
-			return g_activeBoard.tileIndex[g_activeBoard.board[params[0].getNum()][params[1].getNum()][params[2].getNum()]];
+			return g_pBoard->tileIndex[g_pBoard->board[params[0].getNum()][params[1].getNum()][params[2].getNum()]];
 		}
 		catch (...) // Lazy solution.
 		{
@@ -2421,7 +2421,7 @@ CVariant getboardtile(CProgram::PARAMETERS params, CProgram *const prg)
 	{
 		try
 		{
-			prg->setVariable(params[3].getLit(), g_activeBoard.tileIndex[g_activeBoard.board[params[0].getNum()][params[1].getNum()][params[2].getNum()]]);
+			prg->setVariable(params[3].getLit(), g_pBoard->tileIndex[g_pBoard->board[params[0].getNum()][params[1].getNum()][params[2].getNum()]]);
 		}
 		catch (...)
 		{

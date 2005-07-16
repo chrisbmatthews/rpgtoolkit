@@ -38,25 +38,25 @@ typedef enum tagMovementCodes
 } MV_ENUM;
 
 // Postfix increment - rotate the movement "right".
-inline void operator++ (MV_ENUM& rhs, int)
+inline void operator++ (MV_ENUM& lhs, int)
 {
-	if (rhs == MV_NW) { rhs = MV_N; return; }
-	if (rhs == MV_IDLE) return;
-	rhs = MV_ENUM(rhs + 1);
+	if (lhs == MV_NW) { lhs = MV_N; return; }
+	if (lhs == MV_IDLE) return;
+	lhs = MV_ENUM(lhs + 1);
 };
 
-inline MV_ENUM &operator+=(MV_ENUM &rhs, unsigned int inc)
+inline MV_ENUM &operator+=(MV_ENUM &lhs, unsigned int inc)
 {
-	for (unsigned int i = 0; i < inc; ++i) rhs++;
-	return rhs;
+	for (unsigned int i = 0; i < inc; ++i) lhs++;
+	return lhs;
 }
 
 // Postfix decrement - rotate the movement "left".
-inline void operator-- (MV_ENUM& rhs, int)
+inline void operator-- (MV_ENUM& lhs, int)
 {
-	if (rhs == MV_N) { rhs = MV_NW; return; }
-	if (rhs == MV_IDLE) return;
-	rhs = MV_ENUM(rhs - 1);
+	if (lhs == MV_N) { lhs = MV_NW; return; }
+	if (lhs == MV_IDLE) return;
+	lhs = MV_ENUM(lhs - 1);
 };
 
 /*
@@ -82,25 +82,9 @@ const int g_directions[2][9][2] =
 				}
 			};
 
-
-/* Unneeded - to be removed */
-#define PLYR_WALK_S 0
-#define PLYR_WALK_N 1
-#define PLYR_WALK_E 2
-#define PLYR_WALK_W 3
-#define PLYR_WALK_NW 4
-#define PLYR_WALK_NE 5
-#define PLYR_WALK_SW 6
-#define PLYR_WALK_SE 7
-#define PLYR_FIGHT 8
-#define PLYR_DEFEND 9
-#define PLYR_SPC 10
-#define PLYR_DIE 11
-#define PLYR_REST 12
-
 // Vector indices for mapGfx.
-const int GFX_MOVE = 0;	
-const int GFX_IDLE = 1;
+#define GFX_MOVE 0
+#define GFX_IDLE 1
 
 // Custom map keys, mirrored in the battle plugin.
 const std::string GFX_FIGHT		= "FIGHT";
@@ -122,12 +106,6 @@ typedef struct tagSpriteAttr
 
 	// Map of custom animations, indexed by string handles.
 	std::map<std::string, std::string> mapCustomGfx;
-
-/* Unneeded - to be removed.*/
-	std::vector<std::string> gfx;				// Filenames of standard animations for graphics.
-	std::vector<std::string> standingGfx;		// Filenames of the standing animations/graphics.
-	std::vector<std::string> customGfx;			// Customized animations.
-	std::vector<std::string> customGfxNames;	// Customized animations (handles).
 
 	double idleTime;							// Seconds to wait prior to switching to idle graphics.
 	double speed;								// Seconds between each frame increase.

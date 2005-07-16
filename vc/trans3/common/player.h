@@ -64,7 +64,6 @@ typedef struct tagPlayer
 	std::string charLevelUpRPGCode;				// Rpgcode program to run on level up.
 	char charLevelUpType;						// Level up type 0- exponential, 1-linear.
 	char charSizeType;							// Size type: 0- 32x32, 1 - 64x32.
-	// std::vector<FIGHTER_STATUS> status;			// Status effects applied to player.
 	short nextLevel;							// Exp value at which level up occurs.
 	short levelProgression;						// Exp required until level up.
 	std::vector<double> levelStarts;			// Exp values at which all levels start.

@@ -17,6 +17,7 @@
 #include "../common/animation.h"
 #include "../common/mainfile.h"
 #include "../common/paths.h"
+#include "../common/board.h"
 #include "../input/input.h"
 #include "../resource.h"
 #define WIN32_LEAN_AND_MEAN
@@ -401,7 +402,7 @@ bool drawTileCnv(CGDICanvas *cnv,
  * aR,aG,aB		- ambient rgb.
  * bIsometric	- is board isometric?
  */
-void drawBoard(CONST BOARD &brd, 
+void drawBoard(CONST LPBOARD brd, 
 			   CGDICanvas *cnv,
 			   const int destX, const int destY,
 			   const int layer, 
@@ -416,11 +417,11 @@ void drawBoard(CONST BOARD &brd,
 
 	// Record top and bottom layers
 	const int nLower = layer ? layer : 1;
-	const int nUpper = layer ? layer : brd.bSizeL;
+	const int nUpper = layer ? layer : brd->bSizeL;
 
 	// Calculate width and height
-	const int nWidth = (tilesX + topX > brd.bSizeX) ? brd.bSizeX - topX : tilesX;
-	const int nHeight = (tilesY + topY > brd.bSizeY) ? brd.bSizeY - topY : tilesY;
+	const int nWidth = (tilesX + topX > brd->bSizeX) ? brd->bSizeX - topX : tilesX;
+	const int nHeight = (tilesY + topY > brd->bSizeY) ? brd->bSizeY - topY : tilesY;
 
 	// For each layer
 	for (unsigned int i = nLower; i <= nUpper; ++i)
@@ -437,17 +438,17 @@ void drawBoard(CONST BOARD &brd,
 				// The tile co-ordinates.
 				const int x = j + topX, y = k + topY;
 				
-				if (brd.board[x][y][i])
+				if (brd->board[x][y][i])
 				{
-					const std::string strTile = brd.tileIndex[brd.board[x][y][i]];
+					const std::string strTile = brd->tileIndex[brd->board[x][y][i]];
 					if (!strTile.empty())
 					{
 						// Tile exists at this location.
 						drawTile(strTile, 
 								 j, k, 
-								 brd.ambientRed[x][y][i] + aR,
-								 brd.ambientGreen[x][y][i] + aG,
-								 brd.ambientBlue[x][y][i] + aB,
+								 brd->ambientRed[x][y][i] + aR,
+								 brd->ambientGreen[x][y][i] + aG,
+								 brd->ambientBlue[x][y][i] + aB,
 								 cnv, 
 								 destX, destY,
 								 bIsometric, 
@@ -649,7 +650,7 @@ void showScreen(const int width, const int height)
  */
 void tagScrollCache::render(const bool bForceRedraw)
 {
-	extern BOARD g_activeBoard;
+	extern LPBOARD g_pBoard;
 	extern CSprite *g_pSelectedPlayer;
 
 	if (g_screen.left < r.left || g_screen.top < r.top ||
@@ -670,7 +671,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 		pCnv->ClearScreen(TRANSP_COLOR);
 
 		// Draw all layers to the canvas.
-		drawBoard(g_activeBoard, 
+		drawBoard(g_pBoard, 
 				  pCnv, 
 				  0, 0, 0,
 				  int(r.left / 32), 
@@ -691,12 +692,12 @@ void tagScrollCache::render(const bool bForceRedraw)
 bool renderNow(CGDICanvas *cnv, const bool bForce)
 {
 	extern ZO_VECTOR g_sprites;
-	extern BOARD g_activeBoard;
+	extern LPBOARD g_pBoard;
 
 	const bool bScreen = (cnv == NULL);
 	if (!cnv) cnv = g_pDirectDraw->getBackBuffer();
 
-	cnv->ClearScreen(g_activeBoard.brdColor);
+	cnv->ClearScreen(g_pBoard->brdColor);
 
 	// Check if we need to re-render the scroll cache.
 	g_scrollCache.render(false);
@@ -714,7 +715,7 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 								g_scrollCache.r.bottom - g_scrollCache.r.top,
 								TRANSP_COLOR);
 
-	for (int layer = 1; layer <= g_activeBoard.bSizeL; ++layer)
+	for (int layer = 1; layer <= g_pBoard->bSizeL; ++layer)
 	{
 		for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
 		{
@@ -722,7 +723,7 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 			{
 				// If this rect is occupied, draw all the tiles on this layer
 				// it totally or partially contains, covering the sprite.
-				drawBoard(g_activeBoard,
+				drawBoard(g_pBoard,
 						  cnv,
 						  i->left - (i->left % 32) - g_screen.left,
 						  i->top - (i->top % 32) - g_screen.top,
@@ -748,7 +749,7 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 		}
 
 		// Draw the "under" tiles for this layer over any sprites below.
-		for (std::vector<BRD_VECTOR>::iterator m = g_activeBoard.vectors.begin(); m != g_activeBoard.vectors.end(); ++m)
+		for (std::vector<BRD_VECTOR>::iterator m = g_pBoard->vectors.begin(); m != g_pBoard->vectors.end(); ++m)
 		{
 			// Check if this is an "under" vector, is on the same layer and has a canvas.
 			if (!m->pCnv || m->layer != layer || !(m->type & TT_UNDER)) 
@@ -784,11 +785,11 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 	{
 		(*a)->drawVector(cnv);
 	}
-	for (std::vector<LPBRD_PROGRAM>::iterator c = g_activeBoard.programs.begin(); c != g_activeBoard.programs.end(); ++c)
+	for (std::vector<LPBRD_PROGRAM>::iterator c = g_pBoard->programs.begin(); c != g_pBoard->programs.end(); ++c)
 	{
 		(*c)->vBase.draw(16777215, true, g_screen.left, g_screen.top, cnv);
 	}
-	for (std::vector<BRD_VECTOR>::iterator d = g_activeBoard.vectors.begin(); d != g_activeBoard.vectors.end(); ++d)
+	for (std::vector<BRD_VECTOR>::iterator d = g_pBoard->vectors.begin(); d != g_pBoard->vectors.end(); ++d)
 	{
 		d->pV->draw(16777215, true, g_screen.left, g_screen.top, cnv);
 	}

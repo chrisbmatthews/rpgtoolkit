@@ -11,7 +11,6 @@
  * Inclusions.
  */
 #include "../../tkCommon/tkDirectX/platform.h"
-#include "../common/board.h"
 
 /*
  * Typedefs.
@@ -77,6 +76,9 @@ bool renderNow(CGDICanvas *cnv = NULL, const bool bForce = false);
 
 /*** These functions are looking for homes ***/
 
+struct tagBoard;
+typedef struct tagBoard BOARD, *LPBOARD;
+
 bool drawTile(const std::string fileName, 
 			  const int x, const int y, 
 			  const int r, const int g, const int b, 
@@ -105,7 +107,7 @@ bool drawTileCnv(CGDICanvas *cnv,
 				 const bool bIsometric = false, 
 				 const bool isoEvenOdd = false);
 
-void drawBoard(CONST BOARD &brd, 
+void drawBoard(CONST LPBOARD brd, 
 			   CGDICanvas *cnv,
 			   const int destX, const int destY,
 			   const int layer, 
