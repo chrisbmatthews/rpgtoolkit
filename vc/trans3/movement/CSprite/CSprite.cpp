@@ -65,10 +65,7 @@ bool CSprite::move(const CSprite *selectedPlayer)
 {
 	extern LPBOARD g_pBoard;
 	extern GAME_STATE g_gameState;
-	extern int g_loopOffset;
 	extern double g_movementSize;
-	extern double g_renderCount;
-	extern double g_renderTime;
 
 	// Is the sprite active (visible).
 	if (!m_bActive) return false;
@@ -81,6 +78,14 @@ bool CSprite::move(const CSprite *selectedPlayer)
 
 		if (m_pend.direction != MV_IDLE)
 		{
+			/*
+			 * Determine the number of frames we need to draw to make
+			 * the sprite move at the requested speed, considering the fps.
+			 * Scale the offset (GameSpeed() setting) to correspond to an
+			 * increment of 10%.
+			 */
+			m_pos.loopSpeed = calcLoops();
+
 			// Insert target co-ordinates.
 			insertTarget();
 
@@ -90,7 +95,7 @@ bool CSprite::move(const CSprite *selectedPlayer)
 //			if (g_movementSize != 1) m_pos.frame++;
 
 			// Set the player to face the direction of movement (direction
-			// may change if we slide.
+			// may change if we slide).
 			m_pos.facing = m_pend.direction;
 
 			// Get the tiletype at the target.
@@ -102,22 +107,6 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			{
 				// Start the render frame counter.
 				m_pos.loopFrame = 0;
-			}
-
-			/*
-			 * Determine the number of frames we need to draw to make
-			 * the sprite move at the requested speed, considering the fps.
-			 * Scale the offset (GameSpeed() setting) to correspond to an
-			 * increment of 10%.
-			 */
-			const double fpms = g_renderCount / g_renderTime; // transMain?
-			m_pos.loopSpeed = round(m_attr.speed * fpms) + (g_loopOffset * round(fpms * 100.0));
-			
-			// The number of renders (main loops) to run in between animation
-			// frame updates.
-			if (m_pos.loopSpeed < 1)
-			{
-				m_pos.loopSpeed = 1;
 			}
 		}
 		else
@@ -131,62 +120,51 @@ bool CSprite::move(const CSprite *selectedPlayer)
 	if (m_pos.loopFrame >= 0)
 	{
 		// Movement is occurring.
-		if (push(selectedPlayer))
+
+		// Push the sprite only when the tiletype is passable.
+		// Items will not have entered this block if their target is solid.
+		if (!(m_tileType & TT_SOLID)) push(selectedPlayer);
+
+		++m_pos.loopFrame;				// Count of this movement's renders.
+		++m_pos.frame;					// Total frame count (for animation frames).
+
+/*		int loopMax = ( g_movementSize == 32.0 ? 
+						m_pos.loopSpeed * 4 :
+						round(m_pos.loopSpeed / PX_SCALER));
+*/
+		int loopMax = round(m_pos.loopSpeed * g_movementSize / PX_SCALER);
+
+		if (loopMax < 1) loopMax = 1;
+
+		if (m_pos.loopFrame >= loopMax)
 		{
-
-			// Increment the frame count in fractions, the fraction being one over
-			// the number of pixels per move. Then, the frame changes on
-			// integral values.
-
-			if (m_pos.loopFrame % int(m_pos.loopSpeed * 32.0 / g_movementSize) == 0)
+			// The number of renders is equal to the animation frames
+			// per move times the renders between animation frames
+			// - i.e. we have finished movement.
+			if (!(m_tileType & TT_SOLID))
 			{
-				// Increment the animation frame when we're on a multiple of
-				// loopSpeed (the number of renders to make between animation
-				// frame increments).
-				++m_pos.frame;
+				m_pend.xOrig = m_pos.x = m_pend.xTarg;
+				m_pend.yOrig = m_pos.y = m_pend.yTarg;
+				m_pend.lOrig = m_pos.l;
 			}
+			// else restore xTarg -> xOrig?
 
-			// Always increment the render count.
-			++m_pos.loopFrame;
+			// Start the idle timer.
+			m_pos.idle.time = GetTickCount();
 
-			// Frames per move is the number of animation frames to
-			// draw per move - a move being 1 tile or 1/4 tile.
-			if (m_pos.loopFrame == framesPerMove() * m_pos.loopSpeed)
-			{
-				// The number of renders is equal to the animation frames
-				// per move times the renders between animation frames
-				// - i.e. we have finished movement.
-				if (!(m_tileType & TT_SOLID))
-				{
-					m_pend.xOrig = m_pos.x = m_pend.xTarg;
-					m_pend.yOrig = m_pos.y = m_pend.yTarg;
-					m_pend.lOrig = m_pos.l;
-				}
-				// else restore xTarg -> xOrig?
+			// Set the state to be able to start idle animations.
+			// ("Wait" until the idle time is completed).
+			m_pos.loopFrame = LOOP_WAIT;
 
-				// Start the idle timer.
-				m_pos.idle.time = GetTickCount();
+			// Finish the move for the selected player.
+			if (this == selectedPlayer) playerDoneMove();
 
-				// Set the state to be able to start idle animations.
-				// ("Wait" until the idle time is completed).
-				m_pos.loopFrame = LOOP_WAIT;
+			// Do this only after playerDoneMove().
+			m_pend.direction = MV_IDLE;
 
-				// Finish the move for the selected player.
-				if (this == selectedPlayer) playerDoneMove();
+		} // if (movement ended)
 
-				// Do this only after playerDoneMove().
-				m_pend.direction = MV_IDLE;
-
-			} // if (movement ended)
-
-			return true;
-
-		} // if (push)
-
-		// If push() returned false, that means we've stopped moving
-		// during a move (because direction is not MV_IDLE).
-		// Hopefully it's due a sprite that's moving and will move out
-		// of the way!
+		return true;
 
 	} // if (direction != MV_IDLE)
 
@@ -199,29 +177,24 @@ bool CSprite::move(const CSprite *selectedPlayer)
  */
 bool CSprite::push(const CSprite *selectedPlayer) 
 {
-	extern double g_movementSize;
+	extern RECT g_screen;
+	extern LPBOARD g_pBoard;
 
-	SPRITE_POSITION testPosition = m_pos;
-    const double moveFraction = g_movementSize / (framesPerMove() * m_pos.loopSpeed);
+	// The pixel difference between the last frame and this frame.
+	int stepSize = round(PX_SCALER * (m_pos.loopFrame + 1) / m_pos.loopSpeed)
+				 - round(PX_SCALER * m_pos.loopFrame / m_pos.loopSpeed);
 
-	incrementPosition(m_pos, m_pend, moveFraction);
+	m_pos.x += stepSize * m_v.x;
+	m_pos.y += stepSize * m_v.y;
 
-	if (m_tileType & TT_SOLID)
-	{
-		// May check collisions every frame.
-		m_pos = testPosition;
-
-		// Cause the player to walk on spot.
-		if (this == selectedPlayer) return true;
-		// Other sprites don't animate.
-		return false;
-	}
-
+/*
+	int stepSize = round(PX_SCALER * (m_pos.loopFrame + 1) / m_pos.loopSpeed);
+	m_pos.x = m_pend.xOrig + (stepSize * m_v.x);
+	m_pos.y = m_pend.yOrig + (stepSize * m_v.y);
+*/
 	// Scroll the board for players. Either set for all players, or only selected player
 	// and create a Scroll RPGCode function so that scrolling can be achieved without having
 	// to use invisible players.
-	extern RECT g_screen;
-	extern LPBOARD g_pBoard;
 
 	if (this == selectedPlayer)
 	{
@@ -230,8 +203,8 @@ bool CSprite::push(const CSprite *selectedPlayer)
 			// North. Scroll if in upper half of *screen*.
 			if (m_pos.y < (g_screen.top + g_screen.bottom) * 0.5 && g_screen.top > 0) 
 			{
-				g_screen.top -= moveFraction;
-				g_screen.bottom -= moveFraction;
+				g_screen.top -= stepSize;
+				g_screen.bottom -= stepSize;
 			}
 		}
 		else if (m_v.y == 1)
@@ -239,8 +212,8 @@ bool CSprite::push(const CSprite *selectedPlayer)
 			// South. Scroll if in lower half of screen.
 			if (m_pos.y > (g_screen.top + g_screen.bottom) * 0.5 && g_screen.bottom < g_pBoard->bSizeY * 32)
 			{
-				g_screen.top += moveFraction;
-				g_screen.bottom += moveFraction;
+				g_screen.top += stepSize;
+				g_screen.bottom += stepSize;
 			}
 		}
 		if (m_v.x == -1)
@@ -248,8 +221,8 @@ bool CSprite::push(const CSprite *selectedPlayer)
 			// West. Scroll if in left half of screen.
 			if (m_pos.x  < (g_screen.left + g_screen.right) * 0.5 && g_screen.left > 0)
 			{
-				g_screen.left -= moveFraction;
-				g_screen.right -= moveFraction;
+				g_screen.left -= stepSize;
+				g_screen.right -= stepSize;
 			}
 		}
 		else if (m_v.x == 1)
@@ -257,13 +230,38 @@ bool CSprite::push(const CSprite *selectedPlayer)
 			// East. Scroll if in right half of screen.
 			if (m_pos.x > (g_screen.left + g_screen.right) * 0.5 && g_screen.right < g_pBoard->bSizeX * 32)
 			{
-				g_screen.left += moveFraction;
-				g_screen.right += moveFraction;
+				g_screen.left += stepSize;
+				g_screen.right += stepSize;
 			}
 		}
 	} // if (this == selectedPlayer)
 	
 	return true;
+}
+
+/*
+ * Insert the target co-ordinates (the position at the end of the move).
+ */
+void CSprite::insertTarget(void) 
+{
+	extern LPBOARD g_pBoard;
+	extern const int g_directions[2][9][2];
+
+	/* Isometric conversions */
+
+	const int nIso = int(g_pBoard->isIsometric);
+
+	// Pixels travelled this move.
+	int step = moveSize();
+
+	// The "movement vector".
+	m_v.x = g_directions[nIso][m_pend.direction][0];
+	m_v.y = g_directions[nIso][m_pend.direction][1];
+
+	// g_directions[isIsometric][MV_CODE][x OR y].
+	m_pend.xTarg = m_pend.xOrig + m_v.x * step;
+	m_pend.yTarg = m_pend.yOrig + m_v.y * step;
+	m_pend.lTarg = m_pend.lOrig;
 }
 
 /*
@@ -305,15 +303,15 @@ void CSprite::runQueuedMovements(void) {}
  */
 void CSprite::playerDoneMove(void) 
 {
-	extern double g_movementSize;
 	extern GAME_STATE g_gameState;
 	extern unsigned long g_stepsTaken;
 
 	// Update the step count.
-	g_stepsTaken += g_movementSize;
+	const int step = moveSize();
+	g_stepsTaken += step;
 
 	programTest();
-	fightTest();
+	fightTest(step);
 
 	// Back to idle state (accepting input)
 	g_gameState = GS_IDLE;
@@ -354,9 +352,15 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 	{
 		if (i->layer != m_pos.l) continue;
 
+		TILE_TYPE tt = TT_NORMAL;
+
 		// Check that the board vector contains the player,
 		// *not* the other way round!
-		TILE_TYPE tt = i->pV->contains(sprBase, p) ? i->type : TT_NORMAL;
+		// Disregard "under" type, it has no effect in collisions.
+		if(i->type != TT_UNDER && i->pV->contains(sprBase, p))
+		{
+			tt = i->type;
+		}
 
 		/*
 		 * If an intersection was found, p now holds a position vector
@@ -608,7 +612,6 @@ TILE_TYPE CSprite::boardEdges(void)
 {
 	extern std::string g_projectPath;
 	extern LPBOARD g_pBoard;
-	extern double g_movementSize;
 	extern GAME_STATE g_gameState;
 	extern CAllocationHeap<BOARD> g_boards;
 
@@ -653,7 +656,7 @@ TILE_TYPE CSprite::boardEdges(void)
 		case LK_N:
 			// North
 			m_pos.y = pBoard->bSizeY * 32.0;
-			// modifierY = g_movementSize;
+			// modifierY = moveSize();
 
 			if (pBoard->isIsometric)
 			{
@@ -664,7 +667,7 @@ TILE_TYPE CSprite::boardEdges(void)
 		case LK_S:
 			// South
 			m_pos.y = 32.0;
-			// modifierY = -g_movementSize;
+			// modifierY = -moveSize();
 
 			if (pBoard->isIsometric) 
 			{
@@ -675,13 +678,13 @@ TILE_TYPE CSprite::boardEdges(void)
 		case LK_E:
 			// East
 			m_pos.x = 32.0;
-			// modifierX = -g_movementSize;
+			// modifierX = -moveSize();
 			break;
 
 		case LK_W:
 			// West
 			m_pos.x = pBoard->bSizeX * 32.0;
-			// modifierX = g_movementSize;
+			// modifierX = moveSize();
 	}
 
 	// Update the target co-ordinates for boardCollisions().
@@ -707,7 +710,7 @@ TILE_TYPE CSprite::boardEdges(void)
 
 	// This is refusing to work, Delano.
 	//----------------------------------
-	/** g_boards.free(g_pBoard);
+/**	g_boards.free(g_pBoard);
 	g_pBoard = pBoard;
 	g_pBoard->createVectorCanvases(); **/
 
@@ -768,7 +771,6 @@ void CSprite::send(void)
 bool CSprite::programTest(void)
 {
 	extern std::vector<CPlayer *> g_players;
-	extern double g_movementSize;
 	extern MAIN_FILE g_mainFile;
 	extern LPBOARD g_pBoard;
 	extern std::string g_projectPath;
@@ -794,7 +796,6 @@ bool CSprite::programTest(void)
 			// Standing in another player's area.
 		}
 	}
-
 
 	CItem *itm = NULL; DB_POINT f = {0, 0}; double fs = -1;
 
@@ -903,7 +904,7 @@ bool CSprite::programTest(void)
 			// Standing in a program activation area.
 
 			// Increase distance travelled within the vector.
-			(*k)->distance += g_movementSize;
+			(*k)->distance += moveSize();
 
 			// Check activation conditions.
 			if ((*k)->activationType & PRG_REPEAT)
@@ -919,7 +920,7 @@ bool CSprite::programTest(void)
 				// without the PRG_REPEAT can always trigger).
 				if (!((*k)->activationType & PRG_KEYPRESS))
 				{
-					if ((*k)->distance != g_movementSize) continue;
+					if ((*k)->distance != moveSize()) continue;
 				}
 			}
 
@@ -982,7 +983,6 @@ bool CSprite::programTest(void)
  */
 void CSprite::deactivatePrograms(void)
 {
-	extern double g_movementSize;
 	extern LPBOARD g_pBoard;
 
 	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
@@ -1006,7 +1006,7 @@ void CSprite::deactivatePrograms(void)
 				{
 					// Single triggers - prevent from running until
 					// player leaves area.
-					(*i)->distance = g_movementSize;
+					(*i)->distance = moveSize();
 				}
 			}
 		}
@@ -1062,37 +1062,6 @@ void tagZOrderedSprites::zOrder(void)
 		(*j)->spriteCollisions();
 	}
 }
-
-/*
- * Location functions.
- */
-
-/*
- * Insert the target co-ordinates (the position at the end of the move).
- */
-void CSprite::insertTarget() 
-{
-	extern LPBOARD g_pBoard;
-	extern double g_movementSize;
-	extern const int g_directions[2][9][2];
-
-	/* Isometric conversions */
-
-	const int nIso = int(g_pBoard->isIsometric);
-
-	// g_directions[isIsometric][MV_CODE][x OR y].
-	m_pend.xTarg = m_pend.xOrig + g_directions[nIso][m_pend.direction][0] * g_movementSize;
-	m_pend.yTarg = m_pend.yOrig + g_directions[nIso][m_pend.direction][1] * g_movementSize;
-	m_pend.lTarg = m_pend.lOrig;
-
-	// The "movement vector".
-	m_v.x = g_directions[nIso][m_pend.direction][0];
-	m_v.y = g_directions[nIso][m_pend.direction][1];
-
-}
-
-// CSprite::incrementPosition() {} To do.
-
 
 /*
  * Align a RECT to the sprite's location.
@@ -1188,7 +1157,11 @@ bool CSprite::render(void)
 			{
 				// Put the loop counter into idling status.
 				m_pos.loopFrame = LOOP_IDLE;
-//				m_pos.frame = 0;
+
+				// Recalculate loopSpeed.
+				m_pos.loopSpeed = calcLoops();
+
+//				frame = 0;
 
 				// Set the timer for idleness.
 				m_pos.idle.frameTime = GetTickCount();
@@ -1207,7 +1180,7 @@ bool CSprite::render(void)
 			if (GetTickCount() - m_pos.idle.frameTime >= m_pos.idle.frameDelay)
 			{
 				// Increment the animation frame when the delay is up.
-				m_pos.frame++;
+				m_pos.frame += m_pos.loopSpeed;
 
 				// Start the timer for this frame.
 				m_pos.idle.frameTime = GetTickCount();
@@ -1239,7 +1212,6 @@ bool CSprite::render(void)
 	} // if (player is not moving)
 
 	std::string strAnm;
-//	GFX_MAP::iterator j = NULL;
 
 	// Get the animation filename to use.
 	switch (m_pos.loopFrame)
@@ -1259,25 +1231,18 @@ bool CSprite::render(void)
 
 		case LOOP_IDLE:
 			// Idle. Use the idle animation of the facing direction.
-//			j = m_attr.mapGfx[GFX_IDLE].find(m_pos.facing);
-//			if (j != m_attr.mapGfx[GFX_IDLE].end())
-//				strAnm = i->second;
-
 			strAnm = m_attr.mapGfx[GFX_IDLE][m_pos.facing];
 			break;
 
 		default:
 			// Walking graphics.
-//			j = m_attr.mapGfx[GFX_MOVE].find(m_pos.facing);
-//			if (j != m_attr.mapGfx[GFX_MOVE].end())
-//				strAnm = i->second;
-
 			strAnm = m_attr.mapGfx[GFX_MOVE][m_pos.facing];
 	}
 
+	const int frame = int(m_pos.frame / m_pos.loopSpeed); 
 
 	if (m_lastRender.canvas == &m_canvas 
-		&& m_lastRender.frame == m_pos.frame 
+		&& m_lastRender.frame == frame 
 		&& m_lastRender.stance == strAnm 
 		&& m_lastRender.x == m_pos.x 
 		&& m_lastRender.y == m_pos.y)
@@ -1288,13 +1253,13 @@ bool CSprite::render(void)
 
 	// Update the last render.
 	m_lastRender.canvas = &m_canvas;
-	m_lastRender.frame = m_pos.frame;
+	m_lastRender.frame = frame;
 	m_lastRender.stance = strAnm;
 	m_lastRender.x = m_pos.x;
 	m_lastRender.y = m_pos.y;
 
 	// Render the frame to the sprite's canvas, at location (0, 0).
-	renderAnimationFrame(&m_canvas, strAnm, m_pos.frame, 0, 0);
+	renderAnimationFrame(&m_canvas, strAnm, frame, 0, 0);
 
 	return true;
 }

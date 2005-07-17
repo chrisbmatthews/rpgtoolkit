@@ -182,7 +182,7 @@ VOID setUpGame(VOID)
 	}
 
 	// g_movementSize is in pixels.
-	g_movementSize = g_mainFile.pixelMovement ? 8.0 : 32.0;
+	g_movementSize = g_mainFile.pixelMovement ? 1.0 : 32.0;
 	g_selectedPlayer = 0;
 
     // Get the last gAvgTime from the registry.
@@ -478,8 +478,8 @@ VOID closeSystems(VOID)
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
 
-	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	// #define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	set_terminate(termFunc);
 

@@ -138,7 +138,7 @@ void tagSpriteAttr::createVectors(const int activationType)
 	}
 	else
 	{
-		if (g_movementSize != 1)
+		if (g_movementSize != 32.0)
 		{
 			// 1/2 height base for pixel movement (or other?).
 			DB_POINT pts[] = {{1, 17}, {1, 31}, {31, 31}, {31, 17}};
@@ -174,7 +174,7 @@ void tagSpriteAttr::createVectors(const int activationType)
 			{
 				vActivate = vBase;
 			}
-		} // if (g_movementSize != 1)
+		} // if (g_movementSize != 32)
 	} // if (g_pBoard->isIsometric == 1)
 }
 

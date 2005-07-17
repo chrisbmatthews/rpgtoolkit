@@ -141,6 +141,7 @@ typedef struct tagBoard
 	// Delano:	These should be in the player's file.
 	// Colin:	I prefer the main file. You can only
 	//			have one starting position per game.
+	// Delano:  Even better.
 	short playerX;									// Player x ccord.
 	short playerY;									// Player y coord.
 	short playerLayer;								// Player layer coord.

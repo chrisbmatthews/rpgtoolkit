@@ -76,6 +76,6 @@ int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int 
 void skillFight(const int skill, const std::string bkg);
 
 // Test whether we need to begin a fight.
-void fightTest(void);
+void fightTest(const int moveSize);
 
 #endif

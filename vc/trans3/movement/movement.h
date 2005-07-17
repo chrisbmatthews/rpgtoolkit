@@ -17,24 +17,25 @@
 /*
  * Definitions.
  */
-const int MILLISECONDS = 1000;		// Milliseconds in a second.
+const int MILLISECONDS	= 1000;			// Milliseconds in a second.
+const double PX_SCALER	= 8.0;			// Movement scaler factor.
+
+// m_pos.loopFrame idle states. Only condition: must be negative.
+const int LOOP_WAIT				= -1;	// Waiting to begin idle animations.
+const int LOOP_IDLE				= -2;	// Running idle animations.
+const int LOOP_CUSTOM_STANCE	= -3;	// Running a custom stance?
 
 enum GAME_STATE
 {
-	GS_IDLE,						// Receiving input.
-	GS_MOVEMENT,					// Player movement is occurring (no input).
-	GS_PAUSE,						// Game is paused (e.g. lost focus).
-	GS_QUIT							// Shutdown sequence.
+	GS_IDLE,							// Receiving input.
+	GS_MOVEMENT,						// Player movement is occurring (no input).
+	GS_PAUSE,							// Game is paused (e.g. lost focus).
+	GS_QUIT								// Shutdown sequence.
 };
 
 /*
  * Movement definitions.
  */
-
-// m_pos.loopFrame idle states. Only condition: must be negative.
-#define LOOP_WAIT			(-1)	// Waiting to begin idle animations.
-#define LOOP_IDLE			(-2)	// Running idle animations.
-#define LOOP_CUSTOM_STANCE	(-3)	// Running a custom stance?
 
 /* Unneeded - to be removed 
 #define MV_IDLE		0
@@ -130,7 +131,7 @@ typedef struct tagSpritePosition
 		facing(MV_S),
 		frame(0),
 		x(0), y(0), l(1),
-		loopFrame(-1),
+		loopFrame(LOOP_WAIT),
 		loopSpeed(1),
 		idle() {};
 
@@ -157,19 +158,6 @@ typedef struct tagPendingMovement
 		queue() {};
 
 } PENDING_MOVEMENT;
-
-/*
- * Determine how many frames to move at a time.
- *
- * return (out) - number of frames
- */
-inline int framesPerMove(void)
-{
-	extern double g_movementSize;
-	const int toRet = int(g_movementSize * 0.125);
-	if (toRet < 2) return 2;
-	return toRet;
-}
 
 /*
  * Round a floating point.

@@ -216,10 +216,9 @@ void skillFight(const int skill, const std::string bkg)
 /*
  * Test whether we need to begin a fight.
  */
-void fightTest(void)
+void fightTest(const int moveSize)
 {
 	extern unsigned long g_stepsTaken;
-	extern double g_movementSize;
 	extern MAIN_FILE g_mainFile;
 	extern LPBOARD g_pBoard;
 
@@ -241,7 +240,8 @@ void fightTest(void)
 	// Should rational movement sizes be allowed, this can
 	// be adapted by changing (a % b) to the slower expression
 	// ((a / b - int(a / b)) * b).
-	if (g_stepsTaken % ((64 + (32 % int(g_movementSize))) / 2)) return;
+	// moveSize is the number of pixels per move for the player.
+	if (g_stepsTaken % ((64 + (32 % moveSize)) / 2)) return;
 
 	if (!(((g_mainFile.fightType == 0) ? rand() : (g_stepsTaken / 32)) % g_mainFile.chances))
 	{

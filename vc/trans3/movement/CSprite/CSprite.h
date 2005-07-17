@@ -28,8 +28,13 @@ public:
 	// Evaluate the current movement state.
 	bool move(const CSprite *selectedPlayer);
 
-	// Complete a single frame's movement of the sprite.
-	bool push(const CSprite *selectedPlayer);
+	// Return the number of pixels for the whole move (e.g. 32, 1, 2).
+	inline int moveSize(void) const
+	{
+		extern double g_movementSize;
+		const int result = (g_movementSize == 32.0 ? 32 : round(PX_SCALER / m_pos.loopSpeed));
+		return (result < 1 ? 1 : result);
+	};
 
 	// Get the next queued movement and remove it from the queue.
 	MV_ENUM getQueuedMovements(void);
@@ -43,20 +48,11 @@ public:
 	// Complete the selected player's move.
 	void playerDoneMove(void);
 
-	// Increment the target co-ordinates based on the move direction.
-	void insertTarget(void);
-
 	// Set the sprite's target and current locations.
 	void setPosition(const int x, const int y, const int l);
 
-	// Evaluate board vectors.
-	TILE_TYPE boardCollisions(LPBOARD board, const bool recursing = false);
-	
 	// Evaluate sprites (players and items).
 	TILE_TYPE spriteCollisions(void);
-
-	// Tests for movement at the board edges.
-	TILE_TYPE boardEdges(void);
 
 	// Unconditionally send the sprite to the active board.
 	void send(void);
@@ -69,9 +65,6 @@ public:
 
 	// Debug: draw the sprite's base vector.
 	void drawVector(CGDICanvas *const cnv);
-
-	// Render if the current frame requires updating.
-	bool render(void);
 
 	// Calculate sprite location and place on destination canvas.
 	bool putSpriteAt(const CGDICanvas *cnvTarget, 
@@ -91,6 +84,37 @@ protected:
 	PENDING_MOVEMENT m_pend;		// Pending movements of the player, including queue.
 	TILE_TYPE m_tileType;			// The tiletypes at the sprite's location (NOT the "tiletype" of the sprite).
 	DB_POINT m_v;					// Position vector in movement direction
+
+private:
+
+	// Complete a single frame's movement of the sprite.
+	bool push(const CSprite *selectedPlayer);
+
+	// Increment the target co-ordinates based on the move direction.
+	void insertTarget(void);
+
+	// Calculate the loopSpeed - the number of renders that equate to
+	// the sprite's movement speed (and any offsets).
+	inline int calcLoops(void) const
+	{
+		extern int g_loopOffset;
+		extern double g_renderCount, g_renderTime;
+
+		// Frames per millisecond.
+		const double fpms = g_renderCount / g_renderTime;
+		// Possibly out by a factor of 2.
+		const int result = round(m_attr.speed * fpms/* * 2 */) + (g_loopOffset * round(fpms * 100.0));
+		return (result < 1 ? 1 : result);
+	};
+
+	// Evaluate board vectors.
+	TILE_TYPE boardCollisions(LPBOARD board, const bool recursing = false);
+
+	// Tests for movement at the board edges.
+	TILE_TYPE boardEdges(void);
+
+	// Render if the current frame requires updating.
+	bool render(void);
 
 };
 
