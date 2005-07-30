@@ -12,12 +12,14 @@
 
 extern LPBOARD g_pBoard;
 
+/**** Note to self: merge these and use COORD_TYPE. ****/
+
 /*
  * Transform old-type isometric co-ordinates to new-type.
  */
 void isoCoordTransform(const double oldX, const double oldY, double &newX, double &newY)
 {
-	if (g_pBoard->isIsometric)
+	if (g_pBoard->isIsometric())
 	{
 		newX = oldX + int((oldY - 1.0) / 2.0);
 		newY = int(oldY / 2.0) + 1 - int(oldX) + (oldY - int(oldY));
@@ -35,7 +37,7 @@ void isoCoordTransform(const double oldX, const double oldY, double &newX, doubl
  */
 void invIsoCoordTransform(const double newX, const double newY, double &oldX, double &oldY)
 {
-	if (g_pBoard->isIsometric)
+	if (g_pBoard->isIsometric())
 	{
 
 		const int y = newY - g_pBoard->bSizeX;

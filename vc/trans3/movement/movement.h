@@ -18,7 +18,8 @@
  * Definitions.
  */
 const int MILLISECONDS	= 1000;			// Milliseconds in a second.
-const double PX_SCALER	= 8.0;			// Movement scaler factor.
+const double PX_FACTOR	= 8.0;			// Movement scaler factor.
+										// Note: Possibly out by a factor of 2.
 
 // m_pos.loopFrame idle states. Only condition: must be negative.
 const int LOOP_WAIT				= -1;	// Waiting to begin idle animations.
@@ -90,6 +91,16 @@ enum GAME_STATE
 #define STAIRS7 17
 #define STAIRS8 18
 
+/*
+ * Co-ordinate system types (board member).
+ */
+typedef enum tagCoordType
+{
+	TILE_NORMAL = 0,
+	ISO_STACKED = 1,						// (Old) staggered column method.
+	ISO_ROTATED = 2,						// x-y axes rotated by 60 / 30 degrees.
+	PX_ABSOLUTE = 4							// Absolute co-ordinates (iso and 2D).
+} COORD_TYPE;
 
 /*
  * Idle information for sprites.

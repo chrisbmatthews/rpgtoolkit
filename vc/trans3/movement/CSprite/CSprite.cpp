@@ -65,10 +65,11 @@ bool CSprite::move(const CSprite *selectedPlayer)
 {
 	extern LPBOARD g_pBoard;
 	extern GAME_STATE g_gameState;
-	extern double g_movementSize;
 
 	// Is the sprite active (visible).
 	if (!m_bActive) return false;
+	// Is this the selected player?
+	const bool isUser = (this == selectedPlayer);
 
 	// Negative value indicates idle status (LOOP_WAIT or LOOP_IDLE)
 	if (m_pos.loopFrame < 0)
@@ -92,7 +93,7 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			// If we're in pixel movement, increment the animation frame
 			// at the start of movement (for the case where the frame might
 			// not be incremented again before the player stops.
-//			if (g_movementSize != 1) m_pos.frame++;
+//			if (m_bPxMovement) m_pos.frame++;
 
 			// Set the player to face the direction of movement (direction
 			// may change if we slide).
@@ -100,19 +101,21 @@ bool CSprite::move(const CSprite *selectedPlayer)
 
 			// Get the tiletype at the target.
 			m_tileType = TILE_TYPE(boardCollisions(g_pBoard) | 
-								   spriteCollisions() |
-								   boardEdges());
-				
-			if (!(m_tileType & TT_SOLID) || (this == selectedPlayer))
+								   spriteCollisions());
+
+			if (!(m_tileType & TT_SOLID) || isUser)
 			{
 				// Start the render frame counter.
 				m_pos.loopFrame = 0;
 			}
+
+			// Do this after the above if, to prevent walking on the target board.
+			m_tileType = TILE_TYPE(m_tileType | boardEdges(isUser));
 		}
 		else
 		{
 			// Set g_gamestate to GS_IDLE to accept user input for the selected player.
-			if (this == selectedPlayer) g_gameState = GS_IDLE;
+			if (isUser) g_gameState = GS_IDLE;
 
 		} // if (.direction != MV_IDLE)
 	} // if (.loopFrame < 0)
@@ -123,16 +126,14 @@ bool CSprite::move(const CSprite *selectedPlayer)
 
 		// Push the sprite only when the tiletype is passable.
 		// Items will not have entered this block if their target is solid.
-		if (!(m_tileType & TT_SOLID)) push(selectedPlayer);
+		if (!(m_tileType & TT_SOLID)) push(isUser);
 
 		++m_pos.loopFrame;				// Count of this movement's renders.
 		++m_pos.frame;					// Total frame count (for animation frames).
 
-/*		int loopMax = ( g_movementSize == 32.0 ? 
-						m_pos.loopSpeed * 4 :
-						round(m_pos.loopSpeed / PX_SCALER));
-*/
-		int loopMax = round(m_pos.loopSpeed * g_movementSize / PX_SCALER);
+		int loopMax = ( m_bPxMovement ? 
+						round(m_pos.loopSpeed / PX_FACTOR) :
+						m_pos.loopSpeed * 4);
 
 		if (loopMax < 1) loopMax = 1;
 
@@ -175,67 +176,55 @@ bool CSprite::move(const CSprite *selectedPlayer)
  * Complete a single frame's movement of the sprite.
  * Return: true if movement occurred.
  */
-bool CSprite::push(const CSprite *selectedPlayer) 
+bool CSprite::push(const bool bScroll) 
 {
 	extern RECT g_screen;
 	extern LPBOARD g_pBoard;
 
 	// The pixel difference between the last frame and this frame.
-	int stepSize = round(PX_SCALER * (m_pos.loopFrame + 1) / m_pos.loopSpeed)
-				 - round(PX_SCALER * m_pos.loopFrame / m_pos.loopSpeed);
+	const int stepSize = round(PX_FACTOR * (m_pos.loopFrame + 1) / m_pos.loopSpeed)
+					   - round(PX_FACTOR * m_pos.loopFrame / m_pos.loopSpeed);
 
 	m_pos.x += stepSize * m_v.x;
 	m_pos.y += stepSize * m_v.y;
 
-/*
-	int stepSize = round(PX_SCALER * (m_pos.loopFrame + 1) / m_pos.loopSpeed);
-	m_pos.x = m_pend.xOrig + (stepSize * m_v.x);
-	m_pos.y = m_pend.yOrig + (stepSize * m_v.y);
-*/
 	// Scroll the board for players. Either set for all players, or only selected player
 	// and create a Scroll RPGCode function so that scrolling can be achieved without having
 	// to use invisible players.
 
-	if (this == selectedPlayer)
+	if (bScroll)
 	{
-		if (m_v.y == -1)
-		{
-			// North. Scroll if in upper half of *screen*.
-			if (m_pos.y < (g_screen.top + g_screen.bottom) * 0.5 && g_screen.top > 0) 
-			{
-				g_screen.top -= stepSize;
-				g_screen.bottom -= stepSize;
-			}
-		}
-		else if (m_v.y == 1)
-		{
+
+		if ((m_v.y < 0 && m_pos.y < (g_screen.top + g_screen.bottom) * 0.5 && g_screen.top > 0) ||
+			// North. Scroll if in upper half of screen.
+			(m_v.y > 0 && m_pos.y > (g_screen.top + g_screen.bottom) * 0.5 && g_screen.bottom < g_pBoard->pxHeight()))
 			// South. Scroll if in lower half of screen.
-			if (m_pos.y > (g_screen.top + g_screen.bottom) * 0.5 && g_screen.bottom < g_pBoard->bSizeY * 32)
-			{
-				g_screen.top += stepSize;
-				g_screen.bottom += stepSize;
-			}
-		}
-		if (m_v.x == -1)
 		{
+			const int height = g_screen.bottom - g_screen.top;
+			g_screen.top += stepSize * m_v.y;
+
+			// Check bounds.
+			if (g_screen.top < 0) g_screen.top = 0;
+			else if (g_screen.top + height > g_pBoard->pxHeight()) g_screen.top = g_pBoard->pxHeight() - height;
+
+			g_screen.bottom = g_screen.top + height;
+		}
+
+		if ((m_v.x < 0 && m_pos.x < (g_screen.left + g_screen.right) * 0.5 && g_screen.left > 0) ||
 			// West. Scroll if in left half of screen.
-			if (m_pos.x  < (g_screen.left + g_screen.right) * 0.5 && g_screen.left > 0)
-			{
-				g_screen.left -= stepSize;
-				g_screen.right -= stepSize;
-			}
-		}
-		else if (m_v.x == 1)
-		{
+			(m_v.x > 0 && m_pos.x > (g_screen.left + g_screen.right) * 0.5 && g_screen.right < g_pBoard->pxWidth()))
 			// East. Scroll if in right half of screen.
-			if (m_pos.x > (g_screen.left + g_screen.right) * 0.5 && g_screen.right < g_pBoard->bSizeX * 32)
-			{
-				g_screen.left += stepSize;
-				g_screen.right += stepSize;
-			}
+		{
+			const int width = g_screen.right - g_screen.left;
+			g_screen.left += stepSize * m_v.x;
+
+			if (g_screen.left < 0) g_screen.left = 0;
+			else if (g_screen.left + width > g_pBoard->pxWidth()) g_screen.left = g_pBoard->pxWidth() - width;
+
+			g_screen.right = g_screen.left + width;
 		}
-	} // if (this == selectedPlayer)
-	
+	} // if (isUser)
+
 	return true;
 }
 
@@ -245,20 +234,25 @@ bool CSprite::push(const CSprite *selectedPlayer)
 void CSprite::insertTarget(void) 
 {
 	extern LPBOARD g_pBoard;
-	extern const int g_directions[2][9][2];
+	extern const double g_directions[2][9][2];
 
-	/* Isometric conversions */
-
-	const int nIso = int(g_pBoard->isIsometric);
+	const int nIso = int(g_pBoard->isIsometric());
 
 	// Pixels travelled this move.
-	int step = moveSize();
+	const int step = moveSize();
 
 	// The "movement vector".
+	// g_directions[isIsometric()][MV_CODE][x OR y].
 	m_v.x = g_directions[nIso][m_pend.direction][0];
 	m_v.y = g_directions[nIso][m_pend.direction][1];
 
-	// g_directions[isIsometric][MV_CODE][x OR y].
+/*
+	if (nIso == 1 && !m_bPxMovement && m_pend.direction == MV_E || m_pend.direction == MV_W)
+	{
+		// Cause players to move twice as far for East/West in tile movement.
+		m_v.x *= 2;
+	}
+*/
 	m_pend.xTarg = m_pend.xOrig + m_v.x * step;
 	m_pend.yTarg = m_pend.yOrig + m_v.y * step;
 	m_pend.lTarg = m_pend.lOrig;
@@ -318,13 +312,39 @@ void CSprite::playerDoneMove(void)
 }
 
 /*
- * Set the sprite's target and current locations.
+ * Set the sprite's pixel target and current locations, based on
+ * the type of co-ordinate system.
  */
-void CSprite::setPosition(const int x, const int y, const int l)
+void CSprite::setPosition(int x, int y, const int l, const COORD_TYPE coord)
 {
+	extern LPBOARD g_pBoard;
+
+	switch (coord)
+	{
+		case TILE_NORMAL:
+			x = x * 32 - 32;
+			y = y * 32 - 32;
+			break;
+
+		case ISO_STACKED:
+			x *= 64;
+			x -= (y % 2 ? 32 : 64);
+			y = (y * 16) - 16;
+			break;
+
+		case ISO_ROTATED:
+			x = (x - y + g_pBoard->bSizeX) * 32; 
+			y = (x + y - g_pBoard->bSizeX) * 16;	
+
+	}
+	// If we have any combination (## & PX_ABSOLUTE), the position
+	// will be in pixels (PX_ABSOLUTE overrides).
+
+	// default, PX_ABSOLUTE	take directly.
 	m_pend.xOrig = m_pend.xTarg = m_pos.x = x;
 	m_pend.yOrig = m_pend.yTarg = m_pos.y = y;
 	m_pend.lOrig = m_pend.lTarg = m_pos.l = l;
+
 }
 
 /*
@@ -338,14 +358,13 @@ void CSprite::setPosition(const int x, const int y, const int l)
  */
 TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 {
-	// To do - stairs.
-	extern double g_movementSize;
-
 	TILE_TYPE tileTypes = TT_NORMAL;
 
 	// Create the sprite's vector base at the *target* location.
-	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
+	DB_POINT p = {m_pend.xTarg, m_pend.yTarg};
 	CVector sprBase = m_attr.vBase + p;
+	int layer = m_pos.l;				// Destination layer.
+
 
 	// Loop over the board CVectors and check for intersections.
 	for (std::vector<BRD_VECTOR>::iterator i = board->vectors.begin(); i != board->vectors.end(); ++i)
@@ -368,6 +387,12 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 		 * evaluate the vector's type for one-way and sliding movement.
 		 */
 
+		if (tt & TT_STAIRS)
+		{
+			// Hold the target layer, stored in tagBoardVector.attributes.
+			layer = i->attributes;
+		}			
+
 		// Problem: corners on UNIDIRECTIONALs - more distant vector is
 		// sometimes detected, and if the corner angle is <= 90, the wrong
 		// result will be given.
@@ -387,7 +412,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 			}
 		}
 
-		if ((tt & TT_SOLID) && (!recursing) && (g_movementSize != 32))
+		if ((tt & TT_SOLID) && !recursing && m_bPxMovement)
 		{
 			/*
 			 * Compute the angle between the movement vector and
@@ -483,6 +508,9 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 
 	} // for (i)
 
+	// Move the player to the target layer (if stairs were encountered).
+	m_pos.l = layer;
+
 	return tileTypes;
 }
 
@@ -525,13 +553,11 @@ TILE_TYPE CSprite::spriteCollisions(void)
 	TILE_TYPE result = TT_NORMAL;			// To return.
 
 	// Create this sprite's vector base at the *target* location.
-	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
+	DB_POINT p = {m_pend.xTarg, m_pend.yTarg};
 	CVector sprBase = m_attr.vBase + p;
 
 	for(i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
 	{
-//		if (this == *i) continue;			// Redundant check.
-
 		if (m_pos.l > (*i)->m_pos.l)
 		{
 			// *i is on a lower layer and is drawn before this.
@@ -553,7 +579,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
 		}
 
 		// Compare target bases.
-		DB_POINT pt = {(*i)->m_pend.xTarg - 32.0, (*i)->m_pend.yTarg - 32.0};
+		DB_POINT pt = {(*i)->m_pend.xTarg, (*i)->m_pend.yTarg};
 		CVector tarBase = (*i)->m_attr.vBase + pt;
 
 		ZO_ENUM zo = tarBase.contains(sprBase);
@@ -563,11 +589,11 @@ TILE_TYPE CSprite::spriteCollisions(void)
 			// No rect intersect - compare on bounding box bottom-left
 			// corner position.
 			double  a = ((m_attr.vBase.getBounds().bottom + m_pend.yTarg) *
-						g_pBoard->bSizeX * 32 + 
+						g_pBoard->pxWidth() + 
 						m_attr.vBase.getBounds().left + m_pend.xTarg),
 
 					b = (((*i)->m_attr.vBase.getBounds().bottom + (*i)->m_pend.yTarg) *
-						g_pBoard->bSizeX * 32 + 
+						g_pBoard->pxWidth() + 
 						(*i)->m_attr.vBase.getBounds().left + (*i)->m_pend.xTarg);
 			
 			if (a < b) pos = i;
@@ -604,11 +630,12 @@ TILE_TYPE CSprite::spriteCollisions(void)
 /*
  * Tests for movement at the board edges, return evaluated tile type.
  * TT_SOLID if: movement was blocked, either by a solid target tile on next board,
- *				or there was no link, or the link file was a program.
+ *				or there was no link, or the link file was a program,
+ *				or bSend was true (and a link was possible).
  * TT_NORMAL if:movement was allowed, either if the player was not at an edge, or
  *				if the player moved to a new board.
  */
-TILE_TYPE CSprite::boardEdges(void)
+TILE_TYPE CSprite::boardEdges(const bool bSend)
 {
 	extern std::string g_projectPath;
 	extern LPBOARD g_pBoard;
@@ -618,14 +645,17 @@ TILE_TYPE CSprite::boardEdges(void)
 	// This corresponds to the order links are stored in the board format.
 
 	LK_ENUM link = LK_NONE;
-	// Check if any part of the vector base if off an edge.
-	if (m_attr.vBase.getBounds().top + m_pend.yTarg - 32.0 < 0.0) link = LK_N;
-	else if (m_attr.vBase.getBounds().bottom + m_pend.yTarg - 32.0 > g_pBoard->bSizeY * 32.0) link = LK_S;
-	else if (m_attr.vBase.getBounds().right + m_pend.xTarg - 32.0 > g_pBoard->bSizeX * 32.0) link = LK_E;
-	else if (m_attr.vBase.getBounds().left + m_pend.xTarg - 32.0 < 0.0) link = LK_W;
+	const RECT r = m_attr.vBase.getBounds();
+	// Check if any part of the vector base is off an edge.
+	if (r.top + m_pend.yTarg < 0) link = LK_N;
+	else if (r.bottom + m_pend.yTarg > g_pBoard->pxHeight()) link = LK_S;
+	else if (r.right + m_pend.xTarg > g_pBoard->pxWidth()) link = LK_E;
+	else if (r.left + m_pend.xTarg < 0) link = LK_W;
 
 	// Not off an edge.
 	if (link == LK_NONE) return TT_NORMAL;
+	// Off an edge - return solid if we don't want to send.
+	else if (!bSend) return TT_SOLID;
 
 	const std::string &fileName = g_pBoard->dirLink[link];
 
@@ -643,68 +673,68 @@ TILE_TYPE CSprite::boardEdges(void)
 	LPBOARD pBoard = g_boards.allocate();
 	pBoard->open(g_projectPath + BRD_PATH + fileName);
 
-	// Modifiers to offset target position when the player enters:
-	// causes player to walk onto the board from off-screen.
-	// int modifierX = 0, modifierY = 0;
-	const DB_POINT pos = {m_pos.x, m_pos.y};
 
 	// Determine the target co-ordinates from the direction and current location.
 	// Work on m_pos rather than pos so that boardCollisions() operates
 	// with the correct co-ordinates.
+	const DB_POINT pos = {m_pos.x, m_pos.y};
+
+	// Place sprite so base is touching the edge of the board, aligned
+	// to the grid dictated by moveSize() -- possibly should be only
+	// 8px or 32px, to make it uniform for all users.
+	const int mvSize = (m_bPxMovement ? 8.0 : 32.0); // = moveSize();
+	const double width = (r.right - r.left) + (mvSize - (r.right - r.left) % mvSize),
+				height = (r.bottom - r.top) + (mvSize - (r.bottom - r.top) % mvSize),
+				offset = (pBoard->isIsometric() ? 0.0 : 32.0);
+
 	switch (link)
 	{
 		case LK_N:
 			// North
-			m_pos.y = pBoard->bSizeY * 32.0;
-			// modifierY = moveSize();
+			m_pos.y = pBoard->pxHeight();
 
-			if (pBoard->isIsometric)
-			{
-				if (int(pos.y) % 2 != int(m_pos.y) % 2) m_pos.y -= 32.0;
-			}
+            if (!m_bPxMovement && pBoard->isIsometric())
+                m_pos.y -= (int(pos.y) % 32 != int(m_pos.y) % 32 ? 16.0 : 32.0);
+			else
+				m_pos.y -= (pBoard->isIsometric() ? height : 32.0);
+
 			break;
 
 		case LK_S:
 			// South
-			m_pos.y = 32.0;
-			// modifierY = -moveSize();
+            if (!m_bPxMovement && pBoard->isIsometric())
+                m_pos.y = (int(pos.y) % 32 ? 16.0 : 32.0);
+			else
+				m_pos.y = (height - offset < 0 ? 0 : height - offset);
 
-			if (pBoard->isIsometric) 
-			{
-				m_pos.y = (int(pos.y) % 2 == 0 ? 2 * 32.0 : 3 * 32.0);
-			}
 			break;
 
 		case LK_E:
 			// East
-			m_pos.x = 32.0;
-			// modifierX = -moveSize();
+			m_pos.x = (width - offset < 0 ? 0 : width - offset);
 			break;
 
 		case LK_W:
 			// West
-			m_pos.x = pBoard->bSizeX * 32.0;
-			// modifierX = moveSize();
+			m_pos.x = pBoard->pxWidth() - width;
 	}
 
 	// Update the target co-ordinates for boardCollisions().
-	setPosition(m_pos.x, m_pos.y, m_pos.l);
+	setPosition(m_pos.x, m_pos.y, m_pos.l, PX_ABSOLUTE);
 
 	// Check the target board extends to the player's location.
-	if (m_pos.x > pBoard->bSizeX * 32.0 || 
-		m_pos.y > pBoard->bSizeY * 32.0 || 
+	if (m_pos.x > pBoard->pxWidth() || 
+		m_pos.y > pBoard->pxHeight() || 
 		m_pos.l > pBoard->bSizeL ||
 		boardCollisions(pBoard) == TT_SOLID)		// Tiletype at target.
 	{
 		// Restore.
-		setPosition(pos.x, pos.y, m_pos.l);
+		setPosition(pos.x, pos.y, m_pos.l, PX_ABSOLUTE);
 		g_boards.free(pBoard);
 		return TT_SOLID;
 	}
 
-	// m_pos.x = m_pend.xOrig += modifierX; 
-	// m_pos.y = m_pend.yOrig += modifierY; 
-
+	// Prevent the player from moving on the next board.
 	m_pos.loopFrame = -1;
 	m_pend.direction = MV_IDLE;
 
@@ -778,7 +808,7 @@ bool CSprite::programTest(void)
 	// Create the sprite's vector base at the *target* location (for the
 	// case of pressing against an item, etc.)
 	// We want to use the player's *solid* base (not any active vector it may have).
-	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
+	DB_POINT p = {m_pend.xTarg, m_pend.yTarg};
 	CVector sprBase = m_attr.vBase + p;
 
 	// Construct merged origin / target?
@@ -788,7 +818,7 @@ bool CSprite::programTest(void)
 	{
 		if (this == *i || m_pos.l != (*i)->m_pos.l) continue;
 
-		DB_POINT pt = {(*i)->m_pos.x - 32.0, (*i)->m_pos.x - 32.0};
+		DB_POINT pt = {(*i)->m_pos.x, (*i)->m_pos.x};
 		CVector tarActivate = (*i)->m_attr.vActivate + pt;
 
 		if (tarActivate.contains(sprBase, p))
@@ -804,7 +834,7 @@ bool CSprite::programTest(void)
 	{
 		if (this == *j || m_pos.l != (*j)->m_pos.l) continue;
 
-		DB_POINT pt = {(*j)->m_pos.x - 32.0, (*j)->m_pos.y - 32.0};
+		DB_POINT pt = {(*j)->m_pos.x, (*j)->m_pos.y};
 
 		CVector tarActivate = (*j)->m_attr.vActivate + pt;
 
@@ -985,7 +1015,7 @@ void CSprite::deactivatePrograms(void)
 {
 	extern LPBOARD g_pBoard;
 
-	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
+	DB_POINT p = {m_pend.xTarg, m_pend.yTarg};
 	CVector sprBase = m_attr.vBase + p;
 
 	std::vector<LPBRD_PROGRAM>::iterator i = g_pBoard->programs.begin();
@@ -1020,12 +1050,12 @@ void CSprite::drawVector(CGDICanvas *const cnv)
 	extern RECT g_screen;
 
 	// Draw the target base one colour.
-	DB_POINT p = {m_pend.xTarg - 32.0, m_pend.yTarg - 32.0};
+	DB_POINT p = {m_pend.xTarg, m_pend.yTarg};
 	CVector sprBase = m_attr.vBase + p;
 	sprBase.draw(65535, false, g_screen.left, g_screen.top, cnv);
 
 	// Draw the current position base another.
-	p.x = m_pos.x - 32.0; p.y = m_pos.y - 32.0;
+	p.x = m_pos.x; p.y = m_pos.y;
 	sprBase = m_attr.vBase + p;
 	sprBase.draw(16777215, false, g_screen.left, g_screen.top, cnv);
 
@@ -1072,12 +1102,12 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 	const int width = rect.right - rect.left;
 	const int height = rect.bottom - rect.top;
 
-	if (g_pBoard->bSizeX * 32 < width)
+	if (g_pBoard->pxWidth() < width)
 	{
 		// Board smaller than screen.
 		if (bAllowNegatives)
 		{
-			rect.left = (g_pBoard->bSizeX * 32 - width) * 0.5;
+			rect.left = (g_pBoard->pxWidth() - width) * 0.5;
 		}
 		else
 		{
@@ -1093,18 +1123,18 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 			// Align to left of board.
 			rect.left = 0;
 		}
-		if (rect.left + width > g_pBoard->bSizeX * 32)
+		if (rect.left + width > g_pBoard->pxWidth())
 		{
 			// Align to right of board.
-			rect.left = g_pBoard->bSizeX * 32 - width;
+			rect.left = g_pBoard->pxWidth() - width;
 		}
 	}
 
-	if (g_pBoard->bSizeY * 32 < height)
+	if (g_pBoard->pxHeight() < height)
 	{
 		if (bAllowNegatives)
 		{
-			rect.top = (g_pBoard->bSizeY * 32 - height) * 0.5;
+			rect.top = (g_pBoard->pxHeight() - height) * 0.5;
 		}
 		else
 		{
@@ -1118,9 +1148,9 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 		{
 			rect.top = 0;
 		}
-		if (rect.top + height > g_pBoard->bSizeY * 32)
+		if (rect.top + height > g_pBoard->pxHeight())
 		{
-			rect.top = g_pBoard->bSizeY * 32 - height;
+			rect.top = g_pBoard->pxHeight() - height;
 		}
 	}
 
@@ -1285,18 +1315,13 @@ bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 	extern double g_translucentOpacity;
 	extern std::vector<SCROLL_CACHE> g_scrollCache;
 
-/* Referencing with m_pos at the bottom-left corner of the tile. */
+	// Referencing with m_pos at the bottom-left corner of the tile for
+	// 2D, in the centre of the tile for isometric. 
+	// Vertically offset iso sprites.
 
-	const int centreX = m_pos.x - 16.0;
-	const int centreY = m_pos.y;
-
-	// Determine the centrepoint of the tile *on the screen* in pixels.
-//    const int centreX = getBottomCentreX(m_pos.x, m_pos.y);
-//    int centreY = getBottomCentreY(m_pos.x, m_pos.y);
-
-    // + 8 offsets the sprite 3/4 of way down tile rather than 1/2 for isometrics.
-//    if (g_pBoard->isIsometric) centreY += 8;
-       
+	const int centreX = m_pos.x + (g_pBoard->isIsometric() ? 0 : 16);
+	const int centreY = m_pos.y + (g_pBoard->isIsometric() ? 8 : 32);
+  
     // The dimensions of the sprite frame, in pixels.
     const int spriteWidth = m_canvas.GetWidth();
     const int spriteHeight = m_canvas.GetHeight();

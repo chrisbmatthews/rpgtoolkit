@@ -31,8 +31,7 @@ public:
 	// Return the number of pixels for the whole move (e.g. 32, 1, 2).
 	inline int moveSize(void) const
 	{
-		extern double g_movementSize;
-		const int result = (g_movementSize == 32.0 ? 32 : round(PX_SCALER / m_pos.loopSpeed));
+		const int result = (!m_bPxMovement ? 32 : round(PX_FACTOR / m_pos.loopSpeed));
 		return (result < 1 ? 1 : result);
 	};
 
@@ -48,8 +47,8 @@ public:
 	// Complete the selected player's move.
 	void playerDoneMove(void);
 
-	// Set the sprite's target and current locations.
-	void setPosition(const int x, const int y, const int l);
+	// Set the sprite's locations based on a co-ordinate system.
+	void setPosition(int x, int y, const int l, const COORD_TYPE coord);
 
 	// Evaluate sprites (players and items).
 	TILE_TYPE spriteCollisions(void);
@@ -74,6 +73,9 @@ public:
 	// Align a RECT to the sprite's location.
 	void alignBoard(RECT &rect, const bool bAllowNegatives);
 
+	// Using pixel/tile movement (whole engine).
+	static bool m_bPxMovement;		
+
 protected:
 	SPRITE_ATTR m_attr;				// Sprite attributes (common file data).
 	bool m_bActive;					// Is the sprite visible?
@@ -88,7 +90,7 @@ protected:
 private:
 
 	// Complete a single frame's movement of the sprite.
-	bool push(const CSprite *selectedPlayer);
+	bool push(const bool bScroll);
 
 	// Increment the target co-ordinates based on the move direction.
 	void insertTarget(void);
@@ -102,8 +104,7 @@ private:
 
 		// Frames per millisecond.
 		const double fpms = g_renderCount / g_renderTime;
-		// Possibly out by a factor of 2.
-		const int result = round(m_attr.speed * fpms/* * 2 */) + (g_loopOffset * round(fpms * 100.0));
+		const int result = round(m_attr.speed * fpms) + (g_loopOffset * round(fpms * 100.0));
 		return (result < 1 ? 1 : result);
 	};
 
@@ -111,7 +112,7 @@ private:
 	TILE_TYPE boardCollisions(LPBOARD board, const bool recursing = false);
 
 	// Tests for movement at the board edges.
-	TILE_TYPE boardEdges(void);
+	TILE_TYPE boardEdges(const bool bSend);
 
 	// Render if the current frame requires updating.
 	bool render(void);

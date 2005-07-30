@@ -18,7 +18,9 @@ public:
 
 	CItem(const std::string file, const bool show);
 
-	CItem(const std::string file, const BRD_SPRITE spr);
+	CItem(const BRD_SPRITE spr);
+
+	void open(void);
 
 	void open(const std::string file) throw(CInvalidItem);
 

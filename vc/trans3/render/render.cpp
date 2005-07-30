@@ -97,32 +97,8 @@ bool drawTile(const std::string fileName,
 	}
 	else
 	{
-		if (!nIsoEvenOdd)
-		{
-			if (!(y % 2))
-			{
-				xx = x * 64 - 64;
-				yy = y * 16 - 32;
-			}
-			else
-			{
-				xx = x * 64 - 96;
-				yy = y * 16 - 32;
-			}
-		}
-		else
-		{
-			if (!(y % 2))
-			{
-				xx = x * 64 - 96;
-				yy = y * 16 - 32;
-			}
-			else
-			{
-				xx = x * 64 - 64;
-				yy = y * 16 - 32;
-			}
-		}
+		xx = x * 64 - (nIsoEvenOdd == (y % 2) ? 64 : 96);
+		yy = y * 16 - 32;
 	}
 
 	xx += offX;
@@ -659,26 +635,39 @@ void tagScrollCache::render(const bool bForceRedraw)
 	{
 		// The screen is off the scrollcache area.
 
+		const int width = r.right - r.left, height = r.bottom - r.top;
+
 		// Align to player.
 		g_pSelectedPlayer->alignBoard(r, false);
 
-		// Align to the grid.
+		// Align to the grid (always % 32 on r.left).
 		r.left -= r.left % 32;
-		r.top -= r.top % 32;
-		r.right = r.left + g_resX * 2;
-		r.bottom = r.top + g_resY * 2;
+		r.top -= r.top % (g_pBoard->isIsometric() ? 16 : 32);
+		r.right = r.left + width;
+		r.bottom = r.top + height;
 
 		pCnv->ClearScreen(TRANSP_COLOR);
 
-		// Draw all layers to the canvas.
-		drawBoard(g_pBoard, 
-				  pCnv, 
-				  0, 0, 0,
-				  int(r.left / 32), 
-				  int(r.top / 32), 
-				  int((r.right - r.left) / 32), 
-				  int((r.bottom - r.top) / 32), 
-				  0, 0, 0, false); 
+		g_pBoard->render(pCnv, 
+				  0, 0, 
+				  1, g_pBoard->bSizeL,
+				  r.left, 
+				  r.top, 
+				  width, 
+				  height, 
+				  0, 0, 0); 
+
+		// Draw program and tile vectors.
+		pCnv->Lock();
+		for (std::vector<LPBRD_PROGRAM>::iterator b = g_pBoard->programs.begin(); b != g_pBoard->programs.end(); ++b)
+		{
+			(*b)->vBase.draw(RGB(128, 255, 255), true, r.left, r.top, pCnv);
+		}
+		for (std::vector<BRD_VECTOR>::iterator c = g_pBoard->vectors.begin(); c != g_pBoard->vectors.end(); ++c)
+		{
+			c->pV->draw(RGB(255, 255, 255), true, r.left, r.top, pCnv);
+		}
+		pCnv->Unlock();
 	}
 }
 
@@ -717,24 +706,33 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 
 	for (int layer = 1; layer <= g_pBoard->bSizeL; ++layer)
 	{
-		for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
+		// Draw tiles on higher layers over the sprites.
+		if (g_pBoard->bLayerOccupied[layer])
 		{
-			if (i->right)
+			for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
 			{
-				// If this rect is occupied, draw all the tiles on this layer
-				// it totally or partially contains, covering the sprite.
-				drawBoard(g_pBoard,
-						  cnv,
-						  i->left - (i->left % 32) - g_screen.left,
-						  i->top - (i->top % 32) - g_screen.top,
-						  layer,
-						  int(i->left / 32),
-						  int(i->top / 32),
-						  int((i->right - i->left) / 32 + 1),
-						  int((i->bottom - i->top) / 32 + 1),
-						  0, 0, 0, false);
+				// rects is the sprite frames at their locations.
+				if (i->right)
+				{
+					// Inflate to align to the grid (iso or 2D).
+					const RECT rAlign = {i->left - i->left % 32,
+										i->top - i->top % 32,
+										i->right - i->right % 32 + 32,
+										i->bottom - i->bottom % 32 + 32};
+
+					// If this rect is occupied, draw all the tiles on this layer
+					// it totally or partially contains, covering the sprite.
+					g_pBoard->render(cnv,
+									rAlign.left - g_screen.left,
+									rAlign.top - g_screen.top,
+									layer, layer,
+									rAlign.left, rAlign.top, 
+									rAlign.right - rAlign.left, 
+									rAlign.bottom - rAlign.top,
+									0, 0, 0);
+				}
 			}
-		}
+		} // if (g_pBoard->bLayerOccupied[layer])
 
 		// z-ordered players and items.
 		for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
@@ -774,29 +772,20 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 								TRANSP_COLOR);
 				}
 			}
-		}
+		} // for (under tile canvases)
 
 
 	} // for (layer)
 
-	// Temporary: draw vectors for debugging.
-	/** cnv->Lock();
+	// Draw sprite bases for debugging.
+	cnv->Lock();
 	for (std::vector<CSprite *>::iterator a = g_sprites.v.begin(); a != g_sprites.v.end(); ++a)
 	{
 		(*a)->drawVector(cnv);
 	}
-	for (std::vector<LPBRD_PROGRAM>::iterator c = g_pBoard->programs.begin(); c != g_pBoard->programs.end(); ++c)
-	{
-		(*c)->vBase.draw(16777215, true, g_screen.left, g_screen.top, cnv);
-	}
-	for (std::vector<BRD_VECTOR>::iterator d = g_pBoard->vectors.begin(); d != g_pBoard->vectors.end(); ++d)
-	{
-		d->pV->draw(16777215, true, g_screen.left, g_screen.top, cnv);
-	}
-	cnv->Unlock(); **/
+	cnv->Unlock();
 
 	if (bScreen) g_pDirectDraw->Refresh();
-
 	return true;
 }
 

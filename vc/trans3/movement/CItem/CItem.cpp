@@ -10,6 +10,7 @@
 
 #include "CItem.h"
 #include "../../rpgcode/CProgram/CProgram.h"
+#include "../../common/paths.h"
 
 /*
  * Default constructor.
@@ -22,13 +23,30 @@ CSprite(false)
 }
 
 /*
- * Constructor - load an item directly from the board.
+ * Constructor - load from board but do not open.
  */
-CItem::CItem(const std::string file, const BRD_SPRITE spr):
+CItem::CItem(const BRD_SPRITE spr):
 CSprite(false)
 {
 	m_brdData = spr;
-	open(file);
+}
+
+/*
+ * Open item file specified by the m_brdData.fileName file.
+ * Used in old board format: open item only after reading isometric data.
+ */
+void CItem::open(void)
+{
+	extern std::string g_projectPath;
+
+	if (!m_brdData.fileName.empty())
+	{
+		try
+		{
+			open(g_projectPath + ITM_PATH + m_brdData.fileName);
+		}
+		catch (CInvalidItem) { }
+	}
 }
 
 /*

@@ -12,6 +12,7 @@ struct tagBoard;
 typedef struct tagBoard BOARD, *LPBOARD;
 
 #include "../movement/CVector/CVector.h"
+#include "../movement/movement.h"
 #include <string>
 #include <vector>
 
@@ -29,8 +30,8 @@ typedef struct tagBoard BOARD, *LPBOARD;
 typedef struct tagBoardProgram
 {
 	std::string fileName;				// Board program filename.
-//	short x;							// x - co-ordinate. To be depreciated.
-//	short y;							// y - co-ordinate. To be depreciated.
+//	short x;							// Co-ordinates.
+//	short y;							
 	short layer;						// Layer.
 	std::string graphic;				// Associated graphic.
 	short activate;						// PRG_ACTIVE - always active.
@@ -59,12 +60,20 @@ typedef struct tagBoardProgram
 
 } BRD_PROGRAM, *LPBRD_PROGRAM;
 
+// Tile-type attributes.
+#define TA_BRD_BACKGROUND		1		// Under vector uses background image.
+#define TA_ALL_LAYERS_BELOW		2		// Under vector applies to all layers below.
+
 typedef struct tagBoardVector
 {
 	int layer;
 	CGDICanvas *pCnv;
 	CVector *pV;
 	TILE_TYPE type;
+	int attributes;						// Various attributes for each tile type.
+										// TT_STAIRS: layer to move to.
+										// TT_UNDER:  TA_BRD_BACKGROUND
+										//			  TA_ALL_LAYERS_BELOW
 
 	tagBoardVector():
 		layer(0),
@@ -103,7 +112,7 @@ typedef struct tagBoard
 {
 	short bSizeX;									// Board size x.
 	short bSizeY;									// Board size y.
-	short bSizeL;									// Board size layer.
+	short bSizeL;									// Board size layer.	
 	std::vector<std::string> tileIndex;				// Lookup table for tiles.
 	typedef std::vector<short> VECTOR_SHORT;
 	typedef std::vector<VECTOR_SHORT> VECTOR_SHORT2D;
@@ -147,7 +156,7 @@ typedef struct tagBoard
 	short playerLayer;								// Player layer coord.
 
 	short brdSavingYN;								// Can player save on board? 0-yes, 1-no.
-	char isIsometric;								// Is it an isometric board? (0- no, 1-yes).
+//	char isIsometric;								// Superseded by coordType.
 	std::vector<std::string> threads;				// Filenames of threads on board.
 
 	// Animated tiles.
@@ -159,6 +168,9 @@ typedef struct tagBoard
 	std::vector<BRD_VECTOR> vectors;				// Vectors.
 	std::vector<CItem *> items;						// Items.
 
+	COORD_TYPE coordType;							// Co-ordinate system type.
+	std::vector<bool> bLayerOccupied;				// Do layers contain tiles?
+
 	bool open(const std::string fileName);
 	void vectorize(const unsigned int layer);
 	void createVectorCanvases(void);
@@ -168,7 +180,20 @@ typedef struct tagBoard
 	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
 
-	tagBoard(void) { }
+	void render(CGDICanvas *cnv,
+			   const int destX, const int destY,		// canvas destination.
+			   const int lLower, const int lUpper, 
+			   int topX, int topY,						// pixel location on board to start from. 
+			   const int width, const int height,		// pixel dimensions to draw. 
+			   const int aR, const int aG, const int aB);
+
+
+	bool isIsometric(void) { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
+	// Board dimensions in pixels.
+	int pxWidth (void);
+	int pxHeight(void);
+
+	tagBoard(void): coordType(TILE_NORMAL) { }
 	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); }
 
 private:

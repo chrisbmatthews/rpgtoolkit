@@ -215,6 +215,8 @@ CVariant send(CProgram::PARAMETERS params, CProgram *const)
 	g_pBoard->open(g_projectPath + BRD_PATH + params[0].getLit());
 
 	unsigned int x = params[1].getNum(), y = params[2].getNum();
+
+	/* Co-ordinate system stuff... */
 	if (x > g_pBoard->bSizeX)
 	{
 		CProgram::debugger("Send() location exceeds target board x-dimension.");
@@ -238,7 +240,7 @@ CVariant send(CProgram::PARAMETERS params, CProgram *const)
 
 	extern CSprite *g_pSelectedPlayer;
 
-	g_pSelectedPlayer->setPosition(x * 32, y * 32, layer);
+	g_pSelectedPlayer->setPosition(x, y, layer, g_pBoard->coordType);
 
 	g_pSelectedPlayer->send();
 

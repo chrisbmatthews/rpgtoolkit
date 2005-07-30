@@ -68,17 +68,17 @@ inline void operator-- (MV_ENUM& lhs, int)
  *
  *		g_directions[isIsometric][MV_CODE][x or y]
  */
-const int g_directions[2][9][2] = 
+const double g_directions[2][9][2] = 
 			{
 				// Non - isometric.
 				{	{ 0, 0 }, 
 					{ 0,-1 }, { 1,-1 }, { 1, 0 }, { 1, 1 },
 					{ 0, 1 }, {-1, 1 }, {-1, 0 }, {-1,-1 }
 				},
-// To be done.				// Isometric.
+				// Isometric.
 				{	{ 0, 0 }, 
-					{ 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
-					{ 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }
+					{ 0,-1 }, { 1,-0.5 }, { 2, 0 }, { 1, 0.5 },
+					{ 0, 1 }, {-1, 0.5 }, {-2, 0 }, {-1,-0.5 }
 				}
 			};
 
@@ -143,10 +143,11 @@ typedef struct tagSpriteAttr
 
 typedef struct tagBoardSprite
 {
-//	std::string fileName;				// Filename of item.
+	std::string fileName;				// Filename of item.
 //	short x;
 //	short y;
-//	short layer;						// Layer co-ordinate.
+//	short layer;
+
 	short activate;						// SPR_ACTIVE - always active.
 										// SPR_CONDITIONAL - conditional activation.
 	std::string initialVar;				// Activation variable.
