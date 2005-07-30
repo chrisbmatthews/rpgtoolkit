@@ -53,6 +53,8 @@ double g_renderTime = 0;				// Millisecond cumulative GS_MOVEMENT state loop tim
 
 IPlugin *g_pMenuPlugin = NULL;			// The menu plugin.
 
+bool CSprite::m_bPxMovement;			// Using pixel or tile movement.
+
 #ifdef _DEBUG
 
 unsigned long g_allocated = 0;
@@ -130,7 +132,6 @@ std::string getMainFileName(void)
 VOID setUpGame(VOID)
 {
 
-	extern double g_movementSize;
 	extern int g_selectedPlayer;
 	extern std::string g_projectPath;
 	extern RECT g_screen;
@@ -181,8 +182,7 @@ VOID setUpGame(VOID)
 		}
 	}
 
-	// g_movementSize is in pixels.
-	g_movementSize = g_mainFile.pixelMovement ? 1.0 : 32.0;
+	CSprite::m_bPxMovement = g_mainFile.pixelMovement;
 	g_selectedPlayer = 0;
 
     // Get the last gAvgTime from the registry.
@@ -218,7 +218,7 @@ VOID setUpGame(VOID)
 		}
 	}
 	// Do an fps estimate.
-	if (avgTime == -1) avgTime = 0.1; 
+	if (avgTime < 0) avgTime = 0.1; 
 
 	g_renderTime = avgTime * MILLISECONDS;
 	g_renderCount = 100;
@@ -266,9 +266,10 @@ VOID setUpGame(VOID)
 		g_pBoard->open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
 
 		// Set player position before rendering in order to align board.
-		g_pSelectedPlayer->setPosition(g_pBoard->playerX ? g_pBoard->playerX : 1,
-												g_pBoard->playerY ? g_pBoard->playerY : 1,
-												g_pBoard->playerLayer ? g_pBoard->playerLayer : 1);
+		g_pSelectedPlayer->setPosition (g_pBoard->playerX ? g_pBoard->playerX : 1,
+										g_pBoard->playerY ? g_pBoard->playerY : 1,
+										g_pBoard->playerLayer ? g_pBoard->playerLayer : 1,
+										g_pBoard->coordType);
 
 		g_pSelectedPlayer->alignBoard(g_screen, true);
 		g_scrollCache.render(true);
@@ -477,7 +478,6 @@ VOID closeSystems(VOID)
  */
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
-
 	// #define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
 	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
