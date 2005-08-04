@@ -23,47 +23,26 @@ CSprite(false)
 }
 
 /*
- * Constructor - load from board but do not open.
+ * Constructor - load an item directly from the board.
  */
-CItem::CItem(const BRD_SPRITE spr):
+CItem::CItem(const std::string file, const BRD_SPRITE spr, short &version):
 CSprite(false)
 {
 	m_brdData = spr;
+	// Set the version that is passed in.
+	version = open(file);
 }
 
 /*
- * Open item file specified by the m_brdData.fileName file.
- * Used in old board format: open item only after reading isometric data.
+ * Common opening procedure. Return the minor version.
  */
-void CItem::open(void)
-{
-	extern std::string g_projectPath;
-
-	if (!m_brdData.fileName.empty())
-	{
-		try
-		{
-			open(g_projectPath + ITM_PATH + m_brdData.fileName);
-		}
-		catch (CInvalidItem) { }
-	}
-}
-
-/*
- * Common opening procedure.
- */
-void CItem::open(const std::string file) throw(CInvalidItem)
+short CItem::open(const std::string file) throw(CInvalidItem)
 {
 
 	const short minorVer = m_itemMem.open(file, m_attr);
 	if (minorVer == 0)
 	{
 		throw CInvalidItem();
-	}
-	else if (minorVer <= PRE_VECTOR_ITEM)
-	{
-		// Create standard vectors for old items.
-		m_attr.createVectors(m_brdData.activationType);
 	}
 
 	/* Variable stuff ? */
@@ -90,7 +69,7 @@ void CItem::open(const std::string file) throw(CInvalidItem)
 
 	// Create thread. (prgActivate).
 
-
+	return minorVer;
 }
 
 

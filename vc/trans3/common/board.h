@@ -64,6 +64,9 @@ typedef struct tagBoardProgram
 #define TA_BRD_BACKGROUND		1		// Under vector uses background image.
 #define TA_ALL_LAYERS_BELOW		2		// Under vector applies to all layers below.
 
+/*
+ * A board vector collision object.
+ */
 typedef struct tagBoardVector
 {
 	int layer;
@@ -95,6 +98,41 @@ typedef enum tagDirectionalLinks
 
 #include "../movement/CItem/CItem.h"
 #include "tileanim.h"
+
+/*
+ * Possible board image treatments.
+ */
+typedef enum tagBoardImageEnum
+{
+	BI_NORMAL,
+	BI_PARALLAX,
+	BI_STRETCH
+} BI_ENUM;
+
+/*
+ * An image placed on a layer at a location.
+ */
+typedef struct tagBoardImage
+{
+	BI_ENUM type;						// Drawing option.
+	std::string file;
+	int layer;
+	CGDICanvas *pCnv;
+	RECT r;								// Board pixel co-ordinates.
+	DB_POINT scroll;					// Scrolling factors (x,y).
+	CONST LONG transpColor;				// Transparent colour on the image.
+
+	tagBoardImage():
+		type(BI_NORMAL), 
+		file(std::string()), 
+		layer(1), 
+		pCnv(NULL),
+		transpColor(TRANSP_COLOR)
+		{ r.left = r.right = r.top = r.bottom = 0; };
+
+	void createCanvas(BOARD &board);
+
+} BRD_IMAGE, *LPBRD_IMAGE;
 
 /*
  * A board's tile animation.
@@ -171,12 +209,18 @@ typedef struct tagBoard
 	COORD_TYPE coordType;							// Co-ordinate system type.
 	std::vector<bool> bLayerOccupied;				// Do layers contain tiles?
 
+	/* Either keep the background image separate or put it
+	   on the front of images. */
+	LPBRD_IMAGE bkgImage;
+	std::vector<LPBRD_IMAGE> images;
+
 	bool open(const std::string fileName);
 	void vectorize(const unsigned int layer);
 	void createVectorCanvases(void);
 	void freeVectors(void);
 	void freePrograms(void);
 	void freeItems(void);
+	void freeImages(void);
 	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
 
@@ -187,14 +231,15 @@ typedef struct tagBoard
 			   const int width, const int height,		// pixel dimensions to draw. 
 			   const int aR, const int aG, const int aB);
 
+	void renderBackground(CGDICanvas *cnv, RECT bounds);
 
 	bool isIsometric(void) { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	// Board dimensions in pixels.
-	int pxWidth (void);
-	int pxHeight(void);
+	inline int pxWidth (void);
+	inline int pxHeight(void);
 
 	tagBoard(void): coordType(TILE_NORMAL) { }
-	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); }
+	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); freeImages(); }
 
 private:
 	tagBoard &operator=(tagBoard &rhs);

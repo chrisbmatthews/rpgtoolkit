@@ -19,7 +19,7 @@
 // Struct to temporarily hold locations for old items, programs.
 typedef struct OBJ_POSITION
 {
-	short x, y, layer;
+	short x, y, layer, version;
 };
 
 /*
@@ -119,11 +119,9 @@ bool tagBoard::open(const std::string fileName)
 				short test;
 				file >> test;
 
-				// Determine if the layer contains tiles.
-				if (test) bLayerOccupied[l] = true;
-
 				if (test < 0)
 				{
+					// "Compression": stream of identical tiles 'test' long. 
 					test = -test;
 					short bb, rr, gg, bl;
 					char tt;
@@ -132,8 +130,14 @@ bool tagBoard::open(const std::string fileName)
 					file >> gg;
 					file >> bl;
 					file >> tt;
+
+					// Determine if the layer contains tiles.
+					// [0] indicates if the whole board contains tiles.
+					if (bb) bLayerOccupied[l] = bLayerOccupied[0] = true;
+
 					for (unsigned int cnt = 1; cnt <= test; cnt++)
 					{
+
 						board[x][y][l] = bb;
 						ambientRed[x][y][l] = rr;
 						ambientGreen[x][y][l] = gg;
@@ -153,10 +157,14 @@ bool tagBoard::open(const std::string fileName)
 							if (++y > bSizeY)
 							{
 								y = 1;
+
 								if (++l > bSizeL)
 								{
 									goto lutEnd;
 								}
+								// Onto the next layer.
+								if (bb) bLayerOccupied[l] = true;
+
 							}
 						}
 					}
@@ -164,6 +172,8 @@ bool tagBoard::open(const std::string fileName)
 				}
 				else
 				{
+					if (test) bLayerOccupied[l] = bLayerOccupied[0] = true;
+
 					board[x][y][l] = test;
 					file >> ambientRed[x][y][l];
 					file >> ambientGreen[x][y][l];
@@ -278,7 +288,7 @@ lutEnd:
 	for (i = 0; i <= numSpr; ++i)
 	{
 		BRD_SPRITE spr;
-		OBJ_POSITION pos = {0, 0, 0};
+		OBJ_POSITION pos = {0, 0, 0, 0};
 
 		file >> spr.fileName;
 
@@ -298,12 +308,16 @@ lutEnd:
 
 		if (!spr.fileName.empty() && (this == g_pBoard))
 		{
-			// Create new instance but don't load file just yet.
-			CItem *pItem = new CItem(spr);
-			items.push_back(pItem);
+			try
+			{
+				CItem *pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, pos.version);
+				items.push_back(pItem);
 
-			// Hold onto location until isometric byte is read.
-			itemPos.push_back(pos);
+				// Hold onto location until isometric byte is read.
+				itemPos.push_back(pos);
+			}
+			catch (CInvalidItem) { }
+
 		}
 	}
 
@@ -338,6 +352,22 @@ lutEnd:
 	{
 		// Required only for the active board.
 
+		// Setup the background image as an attached image.
+		if (!brdBack.empty())
+		{
+			bkgImage = new BRD_IMAGE();
+			bkgImage->type = BI_STRETCH;
+			bkgImage->file = brdBack;
+			// Layer 0 reserved for the background images. (?)
+			bkgImage->layer = 0;					
+			bkgImage->createCanvas(*this);
+		}
+
+		// Images first, for use with vectors.
+		for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
+		{
+			(*i)->createCanvas(*this);
+		}
 		createVectorCanvases();
 
 		// Create program bases.
@@ -367,13 +397,18 @@ lutEnd:
 			(*p)->vBase.close(true, 0);
 		}
 
-		// Load items (after isometric data is read from board).
+		// Set the positions of and create vectors for old items.
 		std::vector<CItem *>::iterator itm = items.begin();
 		pos = itemPos.begin();
 		for (; itm != items.end(); ++itm, ++pos)
 		{
-			// Open file stored in CItem::m_brdData.fileName and set position.
-			(*itm)->open();
+			if (pos->version <= PRE_VECTOR_ITEM)
+			{
+				// Create standard vectors for old items.
+				(*itm)->createVectors();
+			}
+
+			// Can only do this after reading the isometric bit.
 			(*itm)->setPosition(pos->x, pos->y, pos->layer, coordType);
 		}
 
@@ -570,6 +605,12 @@ void tagBoard::createVectorCanvases(void)
 			// Determine whether all layers below the under vector
 			// are affected, or just the specified layer.
 			const int lLower = (i->attributes & TA_ALL_LAYERS_BELOW ? 1 : i->layer); 
+		
+			if (i->attributes & TA_BRD_BACKGROUND)
+			{
+				// If the under tile applies to the background.
+				renderBackground(cnv, rAlign);
+			}
 
 			// Draw the board layer within the bounds to the intermediate canvas.
 			render (cnv, 
@@ -598,6 +639,7 @@ void tagBoard::createVectorCanvases(void)
 						r.right - r.left, 
 						r.bottom - r.top, 
 						SRCCOPY);
+
 		}
 		else
 		{
@@ -611,6 +653,92 @@ void tagBoard::createVectorCanvases(void)
 	}
 }
 
+#include "../images/FreeImage.h"
+
+/*
+ * Load images attached to layers into separate canvases.
+ */
+void tagBoardImage::createCanvas(BOARD &board)
+{
+	extern std::string g_projectPath;
+	extern RECT g_screen;
+
+	const int resX = g_screen.right - g_screen.left, resY = g_screen.bottom - g_screen.top;
+
+	// Load the image.
+	const std::string path = g_projectPath + BMP_PATH + file;
+	FIBITMAP *bmp = FreeImage_Load (FreeImage_GetFileType(path.c_str(), 16), path.c_str());
+	if (bmp)
+	{
+		// Successfully loaded. Size the canvas to the image size.
+		const DWORD width  = (type == BI_STRETCH) ? board.pxWidth() : FreeImage_GetWidth(bmp),
+					height = (type == BI_STRETCH) ? board.pxHeight() : FreeImage_GetHeight(bmp);
+
+		pCnv = new CGDICanvas();
+		pCnv->CreateBlank(NULL, width, height, TRUE);
+		pCnv->ClearScreen(TRANSP_COLOR);
+
+		// Draw the image to the canvas.
+		const HDC hdc = pCnv->OpenDC();
+/*
+			SetDIBitsToDevice(hdc,
+			0, 0, 
+			width, height, 
+			0, 0, 0,
+			height, FreeImage_GetBits(bmp),
+			FreeImage_GetInfo(bmp), DIB_RGB_COLORS); 
+*/
+		StretchDIBits(hdc,
+			0, 0,
+			width, height,
+			0, 0,
+			FreeImage_GetWidth(bmp),
+			FreeImage_GetHeight(bmp),
+			FreeImage_GetBits(bmp),
+			FreeImage_GetInfo(bmp), 
+			DIB_RGB_COLORS,
+			SRCCOPY);
+
+		// Clean up.
+		pCnv->CloseDC(hdc);
+		FreeImage_Unload(bmp);
+
+		r.right = r.left + width;
+		r.bottom = r.top + height;
+
+		if (type == BI_PARALLAX)
+		{
+			// Scrolling factors.
+			if (board.pxWidth() != resX)
+			{
+				scroll.x = double(width - resX) / (board.pxWidth() - resX);
+			}
+			if (board.pxHeight() != resY)
+			{
+				scroll.y = double(height - resY) / (board.pxHeight() - resY);
+			}
+		}
+
+		if (file == board.brdBack && type != BI_PARALLAX)
+		{
+			// Draw program and tile vectors onto the background image.
+			pCnv->Lock();
+			for (std::vector<LPBRD_PROGRAM>::iterator b = board.programs.begin(); b != board.programs.end(); ++b)
+			{
+				(*b)->vBase.draw(RGB(128, 255, 255), true, 0, 0, pCnv);
+			}
+			for (std::vector<BRD_VECTOR>::iterator c = board.vectors.begin(); c != board.vectors.end(); ++c)
+			{
+				c->pV->draw(RGB(255, 255, 255), true, 0, 0, pCnv);
+			}
+			pCnv->Unlock();
+		}
+	}
+}
+
+/*
+ * Render the board to a canvas.
+ */
 void tagBoard::render(CGDICanvas *cnv,
 			   int destX, const int destY,			// canvas destination.
 			   const int lLower, const int lUpper,	// layer bounds. 
@@ -621,6 +749,7 @@ void tagBoard::render(CGDICanvas *cnv,
 	// Tile dimensions.
 	const int tWidth = (isIsometric() ? 64 : 32),
 			  tHeight = (isIsometric() ? 16 : 32);
+	const RECT bounds = { topX, topY, topX + width, topY + height };
 
 	// Number of tiles to draw in each dimension.
 	int nWidth = (width + topX > pxWidth() ? pxWidth() - topX : width) / tWidth,
@@ -642,7 +771,15 @@ void tagBoard::render(CGDICanvas *cnv,
 	// Tile start co-ordinates.
 	topX /= tWidth;
 	topY /= tHeight;
-	
+
+
+/*	// Render the background.
+	if (bkgImage->type != BI_PARALLAX)
+	{
+		// Render the background (layer 0 specific).
+		renderBackground(cnv, bounds);
+	}
+*/	
 	// For each layer
 	for (unsigned int i = lLower; i <= lUpper; ++i)
 	{
@@ -677,7 +814,99 @@ void tagBoard::render(CGDICanvas *cnv,
 				} // if (brd.board[x][y][i])
 			} // for k
 		} // for j
+
+		// Draw attached images over tiles on their respective layers.
+		// Background image handled separately.
+		for (std::vector<LPBRD_IMAGE>::iterator img = images.begin(); img != images.end(); ++img)
+		{
+			if (((*img)->pCnv) && ((*img)->type != BI_PARALLAX) && (*img)->layer == i)
+			{
+				// Do not blt parallaxed images - unlikely to be
+				// feasible to have parallaxed images between layers.
+				RECT rect = {0, 0, 0, 0};
+				if (IntersectRect(&rect, &(*img)->r, &bounds))
+				{
+					// If the image intersects the scrollcache.
+					(*img)->pCnv->BltTransparentPart(cnv, 
+						rect.left - bounds.left + destX,
+						rect.top - bounds.top + destY,
+						rect.left - (*img)->r.left,
+						rect.top - (*img)->r.top,
+						rect.right - rect.left,
+						rect.bottom - rect.top,
+						(*img)->transpColor);
+				}
+			}
+		}
+
 	} // for i
+
+}
+
+/*
+ * Render the board background (independently of the board).
+ */
+void tagBoard::renderBackground(CGDICanvas *cnv, RECT bounds)
+{
+	extern RECT g_screen;
+	BRD_IMAGE img = *bkgImage;
+
+	if (!img.pCnv) return;
+
+	const int width = img.r.right - img.r.left,
+			  height = img.r.bottom - img.r.top,
+			  resX = g_screen.right - g_screen.left,
+			  resY = g_screen.bottom - g_screen.top;
+	int destX = 0, destY = 0;
+	RECT rect = {0, 0, 0, 0};
+
+	if (img.type == BI_PARALLAX)
+	{
+		// Always use g_screen for parallax.
+		if (img.scroll.x < 0 || width < resX)
+		{
+			// Centre the image if board and/or image smaller than screen.
+			destX = (resX - width) * 0.5;
+		}
+		else
+		{
+			rect.left = img.scroll.x * g_screen.left;
+		}
+
+		if (img.scroll.y < 0 || height < resY)
+		{
+			destY = (resY - height) * 0.5;
+		}
+		else
+		{
+			rect.top = img.scroll.y * g_screen.top;
+		}
+
+		img.pCnv->BltTransparentPart(cnv, 
+			destX, 
+			destY, 
+			rect.left, 
+			rect.top, 
+			width > resX ? resX : width, 
+			height > resY ? resY : height, 
+			img.transpColor);
+	}
+	else
+	{
+		// No parallax - straight blt with the target rect offset.
+		if (IntersectRect(&rect, &img.r, &bounds))
+		{
+			img.pCnv->BltTransparentPart(cnv, 
+				rect.left - bounds.left,
+				rect.top - bounds.top,
+				rect.left - img.r.left, 
+				rect.top - img.r.top, 
+				rect.right - rect.left, 
+				rect.bottom - rect.top,
+				img.transpColor);
+		}
+
+	} // if (parallax)
 
 }
 
@@ -721,7 +950,7 @@ void tagBoard::freePrograms(void)
 }
 
 /*
- * Delete items.
+ * Free items.
  */
 void tagBoard::freeItems(void)
 {
@@ -730,6 +959,19 @@ void tagBoard::freeItems(void)
 		delete *i;
 	}
 	items.clear();
+}
+
+/*
+ * Free images.
+ */
+void tagBoard::freeImages(void)
+{
+	delete bkgImage;
+	for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
+	{
+		delete *i;
+	}
+	images.clear();
 }
 
 /*

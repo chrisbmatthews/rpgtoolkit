@@ -288,6 +288,7 @@ VOID setUpGame(VOID)
 		}
 // Testing!
 //		g_players[1]->setPosition(10 * 32, 5 * 32, 1);
+	g_pSelectedPlayer->createVectors();	// Temporary.
 
 	}
 

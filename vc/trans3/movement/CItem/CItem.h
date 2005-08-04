@@ -16,13 +16,14 @@ class CItem : public CSprite
 {
 public:
 
+	// Default constructor.
 	CItem(const std::string file, const bool show);
 
-	CItem(const BRD_SPRITE spr);
+	// Board constructor.
+	CItem(const std::string file, const BRD_SPRITE spr, short &version);
 
-	void open(void);
-
-	void open(const std::string file) throw(CInvalidItem);
+	// Open the item's file.
+	short open(const std::string file) throw(CInvalidItem);
 
 private:
 	ITEM m_itemMem;

@@ -29,11 +29,22 @@ public:
 	bool move(const CSprite *selectedPlayer);
 
 	// Return the number of pixels for the whole move (e.g. 32, 1, 2).
-	inline int moveSize(void) const
+	int moveSize(void) const
 	{
 		const int result = (!m_bPxMovement ? 32 : round(PX_FACTOR / m_pos.loopSpeed));
 		return (result < 1 ? 1 : result);
 	};
+
+	// Determine if the sprite's base intersects a RECT.
+	CVector getVectorBase(void)
+	{
+		const DB_POINT p = { m_pos.x, m_pos.y };
+		return (m_attr.vBase + p);
+	};
+
+	// Create default vectors, overwriting any user-defined.
+	// Called for PRE_VECTOR_ITEMs.
+	void createVectors(void) { m_attr.createVectors(m_brdData.activationType); };
 
 	// Get the next queued movement and remove it from the queue.
 	MV_ENUM getQueuedMovements(void);

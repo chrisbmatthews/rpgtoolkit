@@ -131,6 +131,9 @@ void tagSpriteAttr::createVectors(const int activationType)
 	// Activation vector depends on activation method.
 	// For keypress, the activation vector must extend outside the base.
 	// For step, the activation will be the base.
+	
+	// Clear the vectors.
+	vBase = vActivate = CVector();
 
 	if (g_pBoard->isIsometric())
 	{

@@ -448,10 +448,10 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 			// identify the angle we've measured, so we need to use 
 			// the cross product too (see below).
 
-			// Round. Slide if angle <= 45 or >= 135 degrees.
+			// Slide if angle <= 45 or >= 135 degrees (2D), <= 63, >= 117 (iso).
 			angle  = int(angle + 0.5) - 90.0;
 			
-			if ((abs(angle) >= 45.0))
+			if (abs(angle) >= (board->isIsometric() ? 27.0 : 45.0))
 			{
 				// Work out which direction to rotate to.
 
@@ -1313,24 +1313,18 @@ bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 	extern RECT g_screen;
 	extern CDirectDraw *g_pDirectDraw;
 	extern double g_translucentOpacity;
-	extern std::vector<SCROLL_CACHE> g_scrollCache;
 
 	// Referencing with m_pos at the bottom-left corner of the tile for
 	// 2D, in the centre of the tile for isometric. 
 	// Vertically offset iso sprites.
 
-	const int centreX = m_pos.x + (g_pBoard->isIsometric() ? 0 : 16);
-	const int centreY = m_pos.y + (g_pBoard->isIsometric() ? 8 : 32);
+	const int centreX = m_pos.x + (g_pBoard->isIsometric() ? 0 : 16),
+			  centreY = m_pos.y + (g_pBoard->isIsometric() ? 8 : 32);
   
-    // The dimensions of the sprite frame, in pixels.
-    const int spriteWidth = m_canvas.GetWidth();
-    const int spriteHeight = m_canvas.GetHeight();
-
 	// Sprite location on screen and board.
 	RECT screen = {0, 0, 0, 0},
-		 board = { centreX - int(spriteWidth / 2), centreY - spriteHeight,
-				   centreX + int(spriteWidth / 2), centreY };
-	
+		 board = { centreX - int(m_canvas.GetWidth() * 0.5), centreY - m_canvas.GetHeight(),
+				   centreX + int(m_canvas.GetWidth() * 0.5), centreY };
 
 	if (!IntersectRect(&screen, &board, &g_screen))
 	{

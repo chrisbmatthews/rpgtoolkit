@@ -688,103 +688,119 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 
 	cnv->ClearScreen(g_pBoard->brdColor);
 
-	// Check if we need to re-render the scroll cache.
-	g_scrollCache.render(false);
-	
-	std::vector<RECT> rects;		// Set of RECTs covering the sprites.
-	RECT r = {0, 0, 0, 0};			// Multipurpose RECT.
-	rects.push_back(r);
+	// Set of RECTs covering the sprites.
+	std::vector<RECT> rects;		
 
-	// Draw flattened layers.
-	g_scrollCache.pCnv->BltTransparentPart(cnv, 
-								g_scrollCache.r.left - g_screen.left,
-								g_scrollCache.r.top - g_screen.top,
-								0, 0, 
-								g_scrollCache.r.right - g_scrollCache.r.left, 
-								g_scrollCache.r.bottom - g_scrollCache.r.top,
-								TRANSP_COLOR);
+	// Draw the background (parallaxed or otherwise).
+	g_pBoard->renderBackground(cnv, g_screen);
 
+	// Render the flattened board if it exists ([0] represents any layer occupied).
+	if (g_pBoard->bLayerOccupied[0])
+	{
+		// Check if we need to re-render the scroll cache.
+		g_scrollCache.render(false);
+
+		// Draw flattened layers.
+		g_scrollCache.pCnv->BltTransparentPart(cnv, 
+									g_scrollCache.r.left - g_screen.left,
+									g_scrollCache.r.top - g_screen.top,
+									0, 0, 
+									g_scrollCache.r.right - g_scrollCache.r.left, 
+									g_scrollCache.r.bottom - g_scrollCache.r.top,
+									TRANSP_COLOR);
+	}
+
+	/*
+	 * Loop over layers. Draw sprites, recording the portion of their
+	 * frame on the screen in a RECT vector. 
+	 * Draw any under vectors over sprites that are standing on them.
+	 * Draw tiles on higher layers over the sprites: draw tiles directly
+	 * rather than using any intermediate canvas.
+	 */
 	for (int layer = 1; layer <= g_pBoard->bSizeL; ++layer)
 	{
 		// Draw tiles on higher layers over the sprites.
 		if (g_pBoard->bLayerOccupied[layer])
 		{
+			// 'rects' are the sprite frames located on the board,
+			// which are only added when the sprite is encountered in the loop.
 			for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
 			{
-				// rects is the sprite frames at their locations.
-				if (i->right)
-				{
-					// Inflate to align to the grid (iso or 2D).
-					const RECT rAlign = {i->left - i->left % 32,
-										i->top - i->top % 32,
-										i->right - i->right % 32 + 32,
-										i->bottom - i->bottom % 32 + 32};
+				// Inflate to align to the grid (iso or 2D).
+				const RECT rAlign = {i->left - i->left % 32,
+									i->top - i->top % 32,
+									i->right - i->right % 32 + 32,
+									i->bottom - i->bottom % 32 + 32};
 
-					// If this rect is occupied, draw all the tiles on this layer
-					// it totally or partially contains, covering the sprite.
-					g_pBoard->render(cnv,
-									rAlign.left - g_screen.left,
-									rAlign.top - g_screen.top,
-									layer, layer,
-									rAlign.left, rAlign.top, 
-									rAlign.right - rAlign.left, 
-									rAlign.bottom - rAlign.top,
-									0, 0, 0);
-				}
+				// If this rect is occupied, draw all the tiles on this layer
+				// it totally or partially contains, covering the sprite.
+				g_pBoard->render(cnv,
+								rAlign.left - g_screen.left,
+								rAlign.top - g_screen.top,
+								layer, layer,
+								rAlign.left, rAlign.top, 
+								rAlign.right - rAlign.left, 
+								rAlign.bottom - rAlign.top,
+								0, 0, 0);
 			}
 		} // if (g_pBoard->bLayerOccupied[layer])
 
 		// z-ordered players and items.
 		for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
 		{
-			if ((*j)->putSpriteAt(cnv, layer, rects.back()))
+			// Check the sprite's layer and draw if match. Pass back
+			// a RECT that is the intersection of the sprite and screen.
+			RECT rect = {0, 0, 0, 0};
+			if ((*j)->putSpriteAt(cnv, layer, rect))
 			{
 				// Sprite is on this layer and has been drawn.
-				// Store this area, and draw the tiles of the next
-				// layer on this one.
-				rects.push_back(r);
+				// Store this area for tiles on higher layers.
+				rects.push_back(rect);
 			}
-		}
+			else continue;
 
-		// Draw the "under" tiles for this layer over any sprites below.
-		for (std::vector<BRD_VECTOR>::iterator m = g_pBoard->vectors.begin(); m != g_pBoard->vectors.end(); ++m)
-		{
-			// Check if this is an "under" vector, is on the same layer and has a canvas.
-			if (!m->pCnv || m->layer != layer || !(m->type & TT_UNDER)) 
-				continue;
-
-			// Loop over the rects (the areas occupied by sprites) and
-			// draw the vector's canvas over any intersecting areas.
-			for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
+			// Draw any "under" vectors this sprite is standing on.
+			for (std::vector<BRD_VECTOR>::iterator k = g_pBoard->vectors.begin(); k != g_pBoard->vectors.end(); ++k)
 			{
-				RECT rBounds = m->pV->getBounds(), rect = {0, 0, 0, 0};
+				// Check if this is an "under" vector, is on the same layer and has a canvas.
+				if (!k->pCnv || k->layer != layer || !(k->type & TT_UNDER)) 
+					continue;
 
-				// Place the intersection in rect.
-				if (IntersectRect(&rect, i, &rBounds))
+				// Get the sprite's vector base to test for collisions with the under vector.
+				CVector v = (*j)->getVectorBase();
+				// Under vector's bounds.
+				const RECT rBounds = k->pV->getBounds();
+
+				RECT r = {0, 0, 0, 0};
+				DB_POINT p = {0, 0};
+
+				// Place the intersection of the sprite's *frame* and the under vector's
+				// bounds in 'r' - this is the area to draw.
+				if (IntersectRect(&r, &rect, &rBounds) && k->pV->contains(v, p))
 				{
-					m->pCnv->BltTransparentPart(cnv, 
-								rect.left - g_screen.left,
-								rect.top - g_screen.top,
-								rect.left - rBounds.left, 
-								rect.top - rBounds.top, 
-								rect.right - rect.left, 
-								rect.bottom - rect.top,
+					k->pCnv->BltTransparentPart(cnv, 
+								r.left - g_screen.left,
+								r.top - g_screen.top,
+								r.left - rBounds.left, 
+								r.top - rBounds.top, 
+								r.right - r.left, 
+								r.bottom - r.top,
 								TRANSP_COLOR);
 				}
-			}
-		} // for (under tile canvases)
+			} // for (under tile canvases)
 
+		} // for (sprites)
 
 	} // for (layer)
 
-	// Draw sprite bases for debugging.
+/*	// Draw sprite bases for debugging.
 	cnv->Lock();
 	for (std::vector<CSprite *>::iterator a = g_sprites.v.begin(); a != g_sprites.v.end(); ++a)
 	{
 		(*a)->drawVector(cnv);
 	}
 	cnv->Unlock();
-
+*/
 	if (bScreen) g_pDirectDraw->Refresh();
 	return true;
 }
