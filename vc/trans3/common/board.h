@@ -238,7 +238,7 @@ typedef struct tagBoard
 	inline int pxWidth (void);
 	inline int pxHeight(void);
 
-	tagBoard(void): coordType(TILE_NORMAL) { }
+	tagBoard(void): coordType(TILE_NORMAL), bkgImage(NULL) { }
 	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); freeImages(); }
 
 private:

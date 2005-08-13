@@ -788,12 +788,16 @@ void tagBoard::render(CGDICanvas *cnv,
 		// For the x axis
 		for (unsigned int j = 1; j <= nWidth; ++j)
 		{
+			const int x = j + topX;
+			if (x < 0) continue;
+
 			// For the y axis
 			for (unsigned int k = 1; k <= nHeight; ++k)
 			{
 				// The tile co-ordinates.
-				const int x = j + topX, y = k + topY;
-				
+				const int  y = k + topY;
+				if (y < 0) continue;
+
 				if (board[x][y][i])
 				{
 					const std::string strTile = tileIndex[board[x][y][i]];
@@ -849,9 +853,9 @@ void tagBoard::render(CGDICanvas *cnv,
 void tagBoard::renderBackground(CGDICanvas *cnv, RECT bounds)
 {
 	extern RECT g_screen;
-	BRD_IMAGE img = *bkgImage;
 
-	if (!img.pCnv) return;
+	if (!bkgImage) return;
+	BRD_IMAGE img = *bkgImage;
 
 	const int width = img.r.right - img.r.left,
 			  height = img.r.bottom - img.r.top,

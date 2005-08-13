@@ -638,7 +638,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 		const int width = r.right - r.left, height = r.bottom - r.top;
 
 		// Align to player.
-		g_pSelectedPlayer->alignBoard(r, false);
+		g_pSelectedPlayer->alignBoard(r, true);
 
 		// Align to the grid (always % 32 on r.left).
 		r.left -= r.left % 32;
