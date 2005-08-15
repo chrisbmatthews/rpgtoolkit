@@ -459,12 +459,6 @@ bool CProgram::open(const std::string fileName)
 			return false;
 		}
 
-		// Ridiculously poor attempt to handle inclusions, but the
-		// damned parser keeps erring when I try other ways. This works
-		// for now unless people employ liberal spacing between 'include'
-		// and the file name (e.g., #include   "file"). There's not
-		// really any reason to do that, but I'm sure someone will.
-		// We'll make a note of it in the readme file.
 		m_inclusions.clear();
 		while (true)
 		{
@@ -473,10 +467,14 @@ bool CProgram::open(const std::string fileName)
 			std::string s = str;
 			s = s.substr(s.substr(s.find_first_not_of(' ')).find_first_not_of('\t'));
 			// Quick and dirty check for TK2 comments.
-			if (s[0] == '*')
-			{
-				continue;
-			}
+			if (s[0] == '*') continue;
+
+			// Ridiculously poor attempt to handle inclusions, but the
+			// damned parser keeps erring when I try other ways. This works
+			// for now unless people employ liberal spacing between 'include'
+			// and the file name (e.g., #include   "file"). There's not
+			// really any reason to do that, but I'm sure someone will.
+			// We'll make a note of it in the readme file.
 			if (s[0] == '#')
 			{
 				if (_strcmpi(s.substr(1, 7).c_str(), "include") == 0)
