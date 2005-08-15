@@ -28,6 +28,36 @@ std::map<unsigned int, std::string> CProgram::m_objects;
 std::vector<unsigned int> *CProgram::m_pLines = NULL;
 std::vector<std::string> CProgram::m_inclusions;
 std::vector<IPlugin *> CProgram::m_plugins;
+std::set<CThread *> CThread::m_threads;
+
+// Create a thread.
+CThread *CThread::create(const std::string str)
+{
+	CThread *p = new CThread(str);
+	m_threads.insert(p);
+	return p;
+}
+
+// Destroy a thread.
+void CThread::destroy(CThread *p)
+{
+	std::set<CThread *>::iterator i = m_threads.find(p);
+	if (i != m_threads.end())
+	{
+		m_threads.erase(i);
+		delete p;
+	}
+}
+
+// Multitask now.
+void CThread::multitask()
+{
+	std::set<CThread *>::iterator i = m_threads.begin();
+	for (; i != m_threads.end(); ++i)
+	{
+		(*i)->execute();
+	}
+}
 
 // Show the debugger.
 void CProgram::debugger(const std::string str)
@@ -434,7 +464,7 @@ bool CProgram::open(const std::string fileName)
 			{
 				fread(&mu.num, sizeof(double), 1, file);
 			}
-			else if ((mu.udt & UDT_LIT) || (mu.udt & UDT_ID))
+			else if ((mu.udt & UDT_LIT) || (mu.udt & UDT_ID) || (mu.udt & UDT_LABEL))
 			{
 				mu.lit = freadString(file);
 			}
@@ -635,6 +665,11 @@ void CProgram::parseFile(FILE *pFile)
 		{
 			--nestled;
 			if (depth && !--depth) pClass = NULL;
+		}
+
+		if ((i->udt & UDT_ID) && (i->lit[0] == ':'))
+		{
+			i->udt = UDT_LABEL;
 		}
 
 		if ((i->udt & UDT_ID) && (i->udt & UDT_LINE) && ((i == m_units.begin()) || ((i - 1)->udt & UDT_LINE)) && ((i == m_units.end()) || ((i + 1)->udt & UDT_LINE)))
@@ -862,6 +897,7 @@ unsigned int CProgram::matchBrace(POS i)
 				if ((i->udt & UDT_LINE) && (++depth == 3)) break;
 			}
 			pLines[1] = i - m_units.begin() + 1;
+			if (i == m_units.begin()) --pLines[1];
 			return pLines[0];
 		}
 		else if (i->udt & UDT_CLOSE) --depth;
@@ -971,7 +1007,7 @@ void CProgram::save(const std::string fileName) const
 		{
 			fwrite(&i->num, sizeof(double), 1, file);
 		}
-		else if ((i->udt & UDT_LIT) || (i->udt & UDT_ID))
+		else if ((i->udt & UDT_LIT) || (i->udt & UDT_ID) || (i->udt & UDT_LABEL))
 		{
 			fwrite(i->lit.c_str(), sizeof(char), i->lit.length() + 1, file);
 		}
@@ -1011,6 +1047,20 @@ bool CProgram::executeUnit()
 		return true;
 	}
 	return false;
+}
+
+// Jump to a label.
+void CProgram::jump(const std::string label)
+{
+	CONST_POS i = m_units.begin();
+	for (; i != m_units.end(); ++i)
+	{
+		if ((i->udt & UDT_LABEL) && (_strcmpi(i->lit.c_str(), label.c_str()) == 0))
+		{
+			m_i = i;
+			return;
+		}
+	}
 }
 
 // Execute an instruction unit.

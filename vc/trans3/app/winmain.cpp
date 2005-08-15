@@ -337,7 +337,8 @@ GAME_STATE gameLogic(VOID)
 #endif
 			SetWindowText(g_hHostWnd, ss.str().c_str());
 
-			// Timer stuff.
+			// Multitask.
+			CThread::multitask();
 
 			// Movement.
 			for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
@@ -346,8 +347,6 @@ GAME_STATE gameLogic(VOID)
 			}
 			for (std::vector<CItem *>::const_iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j) 
 			{
-// Testing!
-				(*j)->setQueuedMovements(rand() % 9, true);
 				(*j)->move(g_pSelectedPlayer);
 			}
 

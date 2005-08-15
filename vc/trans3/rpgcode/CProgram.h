@@ -13,6 +13,7 @@
 
 // Inclusions.
 #include <map>
+#include <set>
 #include <deque>
 #include <vector>
 #include <string>
@@ -29,7 +30,8 @@ typedef enum tagUnitDataType
 	UDT_OPEN = 32,		// Opening brace.
 	UDT_CLOSE = 64,		// Closing brace.
 	UDT_LINE = 128,		// Final unit of a statement.
-	UDT_OBJ = 256		// An object.
+	UDT_OBJ = 256,		// An object.
+	UDT_LABEL = 512		// A label.
 } UNIT_DATA_TYPE;
 
 class CProgram;
@@ -174,6 +176,7 @@ class CProgram
 public:
 	CProgram() { }
 	CProgram(const std::string file) { open(file); }
+	virtual ~CProgram() { }
 
 	bool open(const std::string fileName);
 	bool loadFromString(const std::string str);
@@ -184,6 +187,7 @@ public:
 	void freeObject(unsigned int obj);
 	void freeVar(const std::string var);
 	void end() { m_i = m_units.end() - 1; }
+	void jump(const std::string label);
 
 	virtual LPSTACK_FRAME getVar(const std::string name);
 
@@ -260,9 +264,24 @@ public:
 		if (p) return p;
 		return m_prg.getVar(name);
 	}
-
 private:
 	CProgram &m_prg;
+};
+
+// An RPGCode thread.
+class CThread : public CProgram
+{
+public:
+	static CThread *create(const std::string str);
+	static void destroy(CThread *p);
+	static void multitask();
+	virtual bool execute() { return executeUnit(); }
+	virtual ~CThread() { }
+protected:
+	static void *operator new(size_t size) { return malloc(size); }
+	static void operator delete(void *p) { free(p); }
+	CThread(const std::string str): CProgram(str) { }
+	static std::set<CThread *> m_threads;
 };
 
 // Types of exceptions.

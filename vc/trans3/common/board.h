@@ -11,6 +11,7 @@
 struct tagBoard;
 typedef struct tagBoard BOARD, *LPBOARD;
 
+#include "../rpgcode/CProgram.h"
 #include "../movement/CVector/CVector.h"
 #include "../movement/movement.h"
 #include <string>
@@ -195,7 +196,7 @@ typedef struct tagBoard
 
 	short brdSavingYN;								// Can player save on board? 0-yes, 1-no.
 //	char isIsometric;								// Superseded by coordType.
-	std::vector<std::string> threads;				// Filenames of threads on board.
+	std::vector<CThread *> threads;					// Threads on board.
 
 	// Animated tiles.
 	bool hasAnmTiles;								// Does board have anim tiles?
@@ -221,6 +222,7 @@ typedef struct tagBoard
 	void freePrograms(void);
 	void freeItems(void);
 	void freeImages(void);
+	void freeThreads(void);
 	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
 
@@ -239,7 +241,7 @@ typedef struct tagBoard
 	inline int pxHeight(void);
 
 	tagBoard(void): coordType(TILE_NORMAL), bkgImage(NULL) { }
-	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); freeImages(); }
+	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); }
 
 private:
 	tagBoard &operator=(tagBoard &rhs);

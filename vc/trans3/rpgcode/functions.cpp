@@ -286,23 +286,17 @@ void pixeltext(CALL_DATA &params)
 }
 
 /*
- * label(...)
+ * branch(:label)
  * 
- * Description.
- */
-void label(CALL_DATA &params)
-{
-
-}
-
-/*
- * branch(...)
- * 
- * Description.
+ * Jump to a label.
  */
 void branch(CALL_DATA &params)
 {
-
+	if (params.params != 1)
+	{
+		throw CError("Branch() requires one parameter.");
+	}
+	params.prg->jump(params[0].lit);
 }
 
 /*
@@ -1296,13 +1290,60 @@ void pushitem(CALL_DATA &params)
 }
 
 /*
- * wander(...)
+ * wander(target, restrict)
  * 
- * Description.
+ * Cause an NPC to wander.
  */
 void wander(CALL_DATA &params)
 {
+	extern LPBOARD g_pBoard;
 
+	CSprite *p = NULL;
+
+	if (params[0].getType() & UDT_NUM)
+	{
+		const unsigned int i = (unsigned int)params[0].getNum();
+		if (g_pBoard->items.size() > i)
+		{
+			p = g_pBoard->items[i];
+		}
+		else
+		{
+			throw CError("Item does not exist.");
+		}
+	}
+	else
+	{
+		const std::string str = params[0].getLit();
+		if (_strcmpi(str.c_str(), "target") == 0)
+		{
+			p = (CSprite *)g_pTarget;
+		}
+		else if (_strcmpi(str.c_str(), "souce") == 0)
+		{
+			p = (CSprite *)g_pSource;
+		}
+		else
+		{
+			throw CError("Literal target must be \"target\" or \"source\".");
+		}
+	}
+
+	if (p)
+	{
+		if (CSprite::m_bPxMovement)
+		{
+			const int queue = rand() % 9;
+			for (unsigned int i = 0; i < 16; ++i)
+			{
+				p->setQueuedMovements(queue, false);
+			}
+		}
+		else
+		{
+			p->setQueuedMovements(rand() % 9, false);
+		}
+	}
 }
 
 /*
@@ -3254,13 +3295,12 @@ void debugger(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
-		throw CError(params[0].getLit());
+		CProgram::debugger(params[0].getLit());
 	}
 	else
 	{
 		throw CError("Debugger() requires one parameter.");
 	}
-
 }
 
 /*
@@ -3616,7 +3656,6 @@ void initRpgCode(void)
 	CProgram::addFunction("send", send);
 	CProgram::addFunction("text", text);
 	CProgram::addFunction("pixeltext", pixeltext);
-	CProgram::addFunction("label", label);
 	CProgram::addFunction("mbox", mwin);
 	CProgram::addFunction("branch", branch);
 	CProgram::addFunction("change", change);

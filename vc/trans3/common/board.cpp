@@ -17,10 +17,10 @@
 #include <malloc.h>
 
 // Struct to temporarily hold locations for old items, programs.
-typedef struct OBJ_POSITION
+typedef struct tagObjPosition
 {
 	short x, y, layer, version;
-};
+} OBJ_POSITION;
 
 /*
  * Open a board. Note for old versions, all co-ordinates must be transformed into
@@ -321,7 +321,10 @@ lutEnd:
 		}
 	}
 
-	threads.clear();
+	if (this == g_pBoard) 
+	{
+		freeThreads();
+	}
 	if (minorVer >= 3)
 	{
 		int tCount;
@@ -330,7 +333,14 @@ lutEnd:
 		{
 			std::string thread;
 			file >> thread;
-			threads.push_back(thread);
+			if (this == g_pBoard)
+			{
+				thread = g_projectPath + PRG_PATH + thread;
+				if (CFile::fileExists(thread))
+				{
+					threads.push_back(CThread::create(thread));
+				}
+			}
 		}
 	}
 
@@ -976,6 +986,18 @@ void tagBoard::freeImages(void)
 		delete *i;
 	}
 	images.clear();
+}
+
+/*
+ * Free threads.
+ */
+void tagBoard::freeThreads(void)
+{
+	for (std::vector<CThread *>::iterator i = threads.begin(); i != threads.end(); ++i)
+	{
+		CThread::destroy(*i);
+	}
+	threads.clear();
 }
 
 /*
