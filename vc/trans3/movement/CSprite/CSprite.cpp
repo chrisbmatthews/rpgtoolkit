@@ -26,7 +26,7 @@
 #include "../../common/board.h"
 #include "../../common/paths.h"
 #include "../../common/CAllocationHeap.h"
-#include "../../rpgcode/CProgram/CProgram.h"
+#include "../../rpgcode/CProgram.h"
 #include "../../fight/fight.h"
 #include "../../audio/CAudioSegment.h"
 #include "../locate.h"
@@ -870,7 +870,7 @@ bool CSprite::programTest(void)
 			// Check activation conditions.
 			if ((*j)->m_brdData.activate == SPR_CONDITIONAL)
 			{
-				if (CProgram::getGlobal((*j)->m_brdData.initialVar).getLit() != (*j)->m_brdData.initialValue)
+				if (CProgram::getGlobal((*j)->m_brdData.initialVar)->getLit() != (*j)->m_brdData.initialValue)
 				{
 					// Activation conditions not met.
 					continue;
@@ -899,8 +899,18 @@ bool CSprite::programTest(void)
 		// Set the requested variable after the program is complete.
 		if (activate == SPR_CONDITIONAL)
 		{
+			LPSTACK_FRAME var = CProgram::getGlobal(finalVar);
 			const double num = atof(finalValue.c_str());
-			CProgram::setGlobal(finalVar, (num == 0.0) ? finalValue : CVariant(num));
+			if (num == 0.0)
+			{
+				var->udt = UDT_NUM;
+				var->num = num;
+			}
+			else
+			{
+				var->udt = UDT_LIT;
+				var->lit = finalValue;
+			}
 		}
 		return true;
 	}
@@ -963,7 +973,7 @@ bool CSprite::programTest(void)
 			// Check activation conditions.
 			if ((*k)->activate == PRG_CONDITIONAL)
 			{
-				if (CProgram::getGlobal((*k)->initialVar).getLit() != (*k)->initialValue)
+				if (CProgram::getGlobal((*k)->initialVar)->getLit() != (*k)->initialValue)
 				{
 					// Activation conditions not met.
 					continue;
@@ -996,8 +1006,18 @@ bool CSprite::programTest(void)
 		// Set the requested variable after the program is complete.
 		if (activate == PRG_CONDITIONAL)
 		{
+			LPSTACK_FRAME var = CProgram::getGlobal(finalVar);
 			const double num = atof(finalValue.c_str());
-			CProgram::setGlobal(finalVar, (num == 0.0) ? finalValue : CVariant(num));
+			if (num == 0.0)
+			{
+				var->udt = UDT_NUM;
+				var->num = num;
+			}
+			else
+			{
+				var->udt = UDT_LIT;
+				var->lit = finalValue;
+			}
 		}
 
 		return true;

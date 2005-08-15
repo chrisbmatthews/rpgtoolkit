@@ -17,7 +17,7 @@
 #include "stdafx.h"
 #include "../trans3.h"
 #include "Callbacks.h"
-#include "../rpgcode/CProgram/CProgram.h"
+#include "../rpgcode/CProgram.h"
 #include "../rpgcode/parser/parser.h"
 #include "../common/CAllocationHeap.h"
 #include "../common/paths.h"
@@ -30,6 +30,7 @@
 #include "../movement/CPlayer/CPlayer.h"
 #include "../images/FreeImage.h"
 #include "../fight/fight.h"
+#include "../plugins/plugins.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
 #include <map>
@@ -46,13 +47,15 @@ STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
 	extern CGDICanvas *g_cnvRpgCode;
 	g_pDirectDraw->CopyScreenToCanvas(g_cnvRpgCode);
-	CProgram().runLine(getString(rpgcodeCommand));
+	CProgram prg;
+	prg.loadFromString(getString(rpgcodeCommand));
+	prg.run();
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 {
-	BSTR bstr = getString(CProgram::getGlobal(getString(varname)).getLit());
+	BSTR bstr = getString(CProgram::getGlobal(getString(varname))->getLit());
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
 	return S_OK;
@@ -60,19 +63,23 @@ STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 {
-	*pRet = CProgram::getGlobal(getString(varname)).getNum();
+	*pRet = CProgram::getGlobal(getString(varname))->getNum();
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 {
-	CProgram::setGlobal(getString(varname), getString(newValue));
+	LPSTACK_FRAME var = CProgram::getGlobal(getString(varname));
+	var->udt = UDT_LIT;
+	var->lit = getString(newValue);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetNumerical(BSTR varname, double newValue)
 {
-	CProgram::setGlobal(getString(varname), newValue);
+	LPSTACK_FRAME var = CProgram::getGlobal(getString(varname));
+	var->udt = UDT_NUM;
+	var->num = newValue;
 	return S_OK;
 }
 
@@ -526,10 +533,10 @@ STDMETHODIMP CCallbacks::CBGetNumElementValue(BSTR rpgcodeCommand, double *pRet)
 
 STDMETHODIMP CCallbacks::CBGetElementType(BSTR data, int *pRet)
 {
-	const CVariant::DATA_TYPE dt = CProgram::getCurrentProgram()->constructVariant(getString(data)).getType();
+	/**const CVariant::DATA_TYPE dt = CProgram::getCurrentProgram()->constructVariant(getString(data)).getType();
 	if (dt == CVariant::DT_NUM) *pRet = PLUG_DT_NUM;
 	else if (dt == CVariant::DT_LIT) *pRet = PLUG_DT_LIT;
-	else *pRet = PLUG_DT_VOID; // No object support for plugins.
+	else *pRet = PLUG_DT_VOID; // No object support for plugins.**/
 	return S_OK;
 }
 

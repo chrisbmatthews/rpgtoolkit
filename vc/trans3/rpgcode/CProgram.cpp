@@ -12,6 +12,7 @@
 #include "CVariant.h"
 #include "../plugins/plugins.h"
 #include "../common/mbox.h"
+#include "../common/paths.h"
 #include <malloc.h>
 #include <math.h>
 
@@ -573,9 +574,10 @@ void CProgram::parseFile(FILE *pFile)
 	{
 		std::vector<std::string> inclusions = m_inclusions;
 		std::vector<std::string>::const_iterator i = inclusions.begin();
+		extern std::string g_projectPath;
 		for (; i != inclusions.end(); ++i)
 		{
-			include(*i);
+			include(g_projectPath + PRG_PATH + *i);
 		}
 		m_inclusions.clear();
 	}

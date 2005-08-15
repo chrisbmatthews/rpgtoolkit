@@ -420,26 +420,7 @@ SOURCE=.\rpgcode\CCursorMap.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\rpgcode\CProgram\CProgram.cpp
-
-!IF  "$(CFG)" == "trans3 - Win32 Debug"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
-
-!ENDIF 
-
+SOURCE=.\rpgcode\CProgram.cpp
 # End Source File
 # Begin Source File
 
@@ -467,25 +448,6 @@ SOURCE=.\rpgcode\functions.cpp
 # Begin Source File
 
 SOURCE=.\rpgcode\parser\parser.cpp
-
-!IF  "$(CFG)" == "trans3 - Win32 Debug"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
-
-!ENDIF 
-
 # End Source File
 # End Group
 # Begin Group "rpgcode - headers"
@@ -497,15 +459,7 @@ SOURCE=.\rpgcode\CCursorMap.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\rpgcode\CProgram\CProgram.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\rpgcode\CVariant\CVariant.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\rpgcode\globals.h
+SOURCE=.\rpgcode\CProgram.h
 # End Source File
 # Begin Source File
 

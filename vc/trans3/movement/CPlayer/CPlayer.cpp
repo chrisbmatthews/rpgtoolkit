@@ -9,7 +9,7 @@
  */
 
 #include "CPlayer.h"
-#include "../../rpgcode/globals.h"
+//#include "../../rpgcode/globals.h"
 
 /*
  * Constructor

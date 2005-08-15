@@ -7,8 +7,8 @@
 /*
  * Inclusions.
  */
-#include "../rpgcode/CProgram/CProgram.h"
-#include "../rpgcode/globals.h"
+#include "../rpgcode/CProgram.h"
+#include "../plugins/plugins.h"
 #include "../common/paths.h"
 #include "../common/mainfile.h"
 #include "../common/item.h"
@@ -31,6 +31,7 @@
 #include <commdlg.h>
 #include <string>
 #include <vector>
+#include <sstream>
 #include <iostream>
 
 /*
@@ -53,7 +54,7 @@ double g_renderTime = 0;				// Millisecond cumulative GS_MOVEMENT state loop tim
 
 IPlugin *g_pMenuPlugin = NULL;			// The menu plugin.
 
-bool CSprite::m_bPxMovement;			// Using pixel or tile movement.
+bool CSprite::m_bPxMovement = false;	// Using pixel or tile movement.
 
 #ifdef _DEBUG
 
@@ -299,15 +300,16 @@ VOID setUpGame(VOID)
  */
 VOID openSystems(VOID)
 {
-	extern VOID initRpgCode(VOID);
+	extern void initRpgCode();
 	initPluginSystem();
 	FreeImage_Initialise();
 	srand(GetTickCount());
 	initGraphics();
+	CProgram::initialize();
 	initRpgCode();
 	CAudioSegment::initLoader();
 	g_bkgMusic = g_music.allocate();
-	createRpgCodeGlobals();
+	//createRpgCodeGlobals();
 	setUpGame();
 }
 
@@ -479,8 +481,8 @@ VOID closeSystems(VOID)
  */
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
-	// #define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	set_terminate(termFunc);
 

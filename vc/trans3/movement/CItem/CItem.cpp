@@ -9,7 +9,7 @@
  */
 
 #include "CItem.h"
-#include "../../rpgcode/CProgram/CProgram.h"
+#include "../../rpgcode/CProgram.h"
 #include "../../common/paths.h"
 
 /*
@@ -61,7 +61,7 @@ short CItem::open(const std::string file) throw(CInvalidItem)
 
 	if (m_brdData.activate == SPR_CONDITIONAL)
 	{
-		if (CProgram::getGlobal(m_brdData.initialVar).getLit() != m_brdData.initialValue)
+		if (CProgram::getGlobal(m_brdData.initialVar)->getLit() != m_brdData.initialValue)
 		{
 			m_bActive = false;
 		}

@@ -658,7 +658,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 				  0, 0, 0); 
 
 		// Draw program and tile vectors.
-		pCnv->Lock();
+		/**pCnv->Lock();
 		for (std::vector<LPBRD_PROGRAM>::iterator b = g_pBoard->programs.begin(); b != g_pBoard->programs.end(); ++b)
 		{
 			(*b)->vBase.draw(RGB(128, 255, 255), true, r.left, r.top, pCnv);
@@ -667,7 +667,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 		{
 			c->pV->draw(RGB(255, 255, 255), true, r.left, r.top, pCnv);
 		}
-		pCnv->Unlock();
+		pCnv->Unlock();**/
 	}
 }
 

@@ -33,6 +33,15 @@
 #define FIGHT_WON_MANUAL		3		// Player party won - tell trans that the plugin has already given rewards
 #define FIGHT_LOST				4		// Player party lost
 
+// Target.
+typedef enum tagTargetType
+{
+	TI_EMPTY,		// Empty!
+	TT_PLAYER,		// Player is targetted.
+	TT_ITEM,		// Item is targetted.
+	TT_ENEMY		// Enemy is targetted.
+} TARGET_TYPE;
+
 // A fighter.
 typedef struct tagFighter
 {

@@ -353,9 +353,9 @@ lutEnd:
 		// Required only for the active board.
 
 		// Setup the background image as an attached image.
+		bkgImage = new BRD_IMAGE();
 		if (!brdBack.empty())
 		{
-			bkgImage = new BRD_IMAGE();
 			bkgImage->type = BI_STRETCH;
 			bkgImage->file = brdBack;
 			// Layer 0 reserved for the background images. (?)

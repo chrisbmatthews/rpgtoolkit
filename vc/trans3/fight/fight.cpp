@@ -13,7 +13,7 @@
 #include "../plugins/plugins.h"
 #include "../audio/CAudioSegment.h"
 #include "../render/render.h"
-#include "../rpgcode/CProgram/CProgram.h"
+#include "../rpgcode/CProgram.h"
 #include <vector>
 
 IPlugin *g_pFightPlugin = NULL;			// The fight plugin.
