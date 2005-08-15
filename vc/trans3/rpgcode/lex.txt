@@ -1,0 +1,84 @@
+/*
+ * All contents copyright 2005, Colin James Fitzpatrick.
+ * All rights reserved. You may not remove this notice.
+ * Read license.txt for licensing details.
+ */
+
+%{
+unsigned int g_lines = 0;
+
+#define _END_FILE_LINE ++g_lines; CProgram::m_pLines->push_back(CProgram::m_pyyUnits->size() - 1)
+%}
+
+%%
+
+"=="		{ return EQ; }
+"->"		{ return MEM; }
+"++"		{ return INC; }
+"--"		{ return DEC; }
+"*="		{ return MUL_ASSIGN; }
+"/="		{ return DIV_ASSIGN; }
+"%="		{ return MOD_ASSIGN; }
+"+="		{ return ADD_ASSIGN; }
+"-="		{ return SUB_ASSIGN; }
+"<<="		{ return LS_ASSIGN; }
+">>="		{ return RS_ASSIGN; }
+"&="		{ return AND_ASSIGN; }
+"|="		{ return OR_ASSIGN; }
+"^="		{ return POW_ASSIGN; }
+"`="		{ return XOR_ASSIGN; }
+"*"		{ return MUL; }
+"+"		{ return ADD; }
+"-"		{ return SUB; }
+"!"		{ return NOT; }
+"~"		{ return BNOT; }
+"/"		{ return DIV; }
+"%"		{ return MOD; }
+"<<"		{ return LS; }
+">>"		{ return RS; }
+"<="		{ return LTE; }
+">="		{ return GTE; }
+"<"		{ return LT; }
+">"		{ return GT; }
+"~="		{ return IEQ; }
+"&"		{ return AND; }
+"^"		{ return POW; }
+"`"		{ return XOR; }
+"|"		{ return OR; }
+"&&"		{ return LAND; }
+"||"		{ return LOR; }
+"="		{ return ASSIGN; }
+"("		{ return LPARAN; }
+")"		{ return RPARAN; }
+"["		{ return LARRAY; }
+"]"		{ return RARRAY; }
+"{"		{ return LCURL; }
+"}"		{ return RCURL; }
+","		{ return COMMA; }
+";"		{ return SEMICOLON; }
+"?"		{ return QUESTION; }
+":"		{ return COLON; }
+"$"		{ return LIT; }
+[fF][oO][rR]				{ return FOR; }
+[mM][eE][tT][hH][oO][dD]		{ return METHOD; }
+[rR][eE][tT][uU][rR][nN]		{ return RETURN; }
+[cC][lL][aA][sS][sS]			{ return CLASS; }
+[sS][tT][rR][uU][cC][tT]		{ return STRUCT; }
+[pP][uU][bB][lL][iI][cC]		{ return PUBLIC; }
+[pP][rR][iI][vV][aA][tT][eE]		{ return PRIVATE; }
+[vV][aA][rR]				{ return VAR; }
+
+[A-Za-z_][A-Za-z0-9_]*			{ char *str = _strlwr(_strdup(yytext)); yylval = str; free(str); return IDENTIFIER; }
+([0-9]+(\.[0-9]+)?|([0-9]+)?(\.[0-9]+))	{ yylval = atof(yytext); return NUMBER; }
+\"[^\"]*\"				{ yylval = yytext; return STRING; }
+
+"//".*$					{ return SEMICOLON; }
+[ \t]+					{ }
+"#"					{ }
+\r\n					{ _END_FILE_LINE; return SEMICOLON; }
+\r					{ _END_FILE_LINE; return SEMICOLON; }
+\n					{ _END_FILE_LINE; return SEMICOLON; }
+
+%%
+
+int yywrap(void) { return 1; }

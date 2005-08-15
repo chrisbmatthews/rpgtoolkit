@@ -14,6 +14,7 @@
  * Inclusions.
  */
 #include <string>
+#include <sstream>
 
 /*
  * A value of varying type.
@@ -128,11 +129,11 @@ public:
 			{
 				if ((m_type = ((CObject *)rhs.m_pData)->getType()) == DT_NUM)
 				{
-					m_pData = new double(((CObject *)rhs.m_pData)->getNum());
+					// m_pData = new double(((CObject *)rhs.m_pData)->getNum());
 				}
 				else
 				{
-					m_pData = new std::string(((CObject *)rhs.m_pData)->getLit());
+					// m_pData = new std::string(((CObject *)rhs.m_pData)->getLit());
 				}
 				// No objects returning objects...
 			}
