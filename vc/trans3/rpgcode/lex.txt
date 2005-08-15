@@ -67,6 +67,8 @@ unsigned int g_lines = 0;
 [pP][uU][bB][lL][iI][cC]		{ return PUBLIC; }
 [pP][rR][iI][vV][aA][tT][eE]		{ return PRIVATE; }
 [vV][aA][rR]				{ return VAR; }
+[tT][rR][uU][eE]			{ yylval = 1; return NUMBER; }
+[fF][aA][lL][sS][eE]			{ yylval = 0; return NUMBER; }
 
 [A-Za-z_:][A-Za-z0-9_]*			{ char *str = _strlwr(_strdup(yytext)); yylval = str; free(str); return IDENTIFIER; }
 ([0-9]+(\.[0-9]+)?|([0-9]+)?(\.[0-9]+))	{ yylval = atof(yytext); return NUMBER; }
