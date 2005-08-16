@@ -22,6 +22,7 @@
 #include "../common/animation.h"
 #include "../common/CAllocationHeap.h"
 #include "../common/CInventory.h"
+#include "../common/CFile.h"
 #include "../movement/CSprite/CSprite.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
@@ -46,7 +47,6 @@ std::string g_mwinBkg;						// MWin() background image.
 COLORREF g_mwinColor = 0;					// Mwin() background colour.
 CAllocationHeap<CGDICanvas> g_canvases;		// Allocated canvases.
 CAllocationHeap<CCursorMap> g_cursorMaps;	// Cursor maps.
-// CAllocationHeap<CThread> g_threads;		// Threads.
 void *g_pTarget = NULL;						// Targetted entity.
 TARGET_TYPE g_targetType = TI_EMPTY;		// Type of target entity.
 void *g_pSource = NULL;						// Source entity.
@@ -151,7 +151,7 @@ void mwin(CALL_DATA &params)
 }
 
 /*
- * key$ = wait()
+ * wait([ret])
  * 
  * Waits for a key to be pressed, and returns the key that was.
  */
@@ -424,7 +424,7 @@ void fight(CALL_DATA &params)
 }
 
 /*
- * key$ = get([key$])
+ * get([key$])
  * 
  * Get a key from the queue.
  */
@@ -949,7 +949,7 @@ void maxsmp(CALL_DATA &params)
 }
 
 /*
- * getmaxsmp(handle$[, ret!])
+ * GetMaxSMP(handle$[, ret!])
  * 
  * Get a fighter's max smp.
  */
@@ -991,7 +991,7 @@ void start(CALL_DATA &params)
 }
 
 /*
- * giveitem(itm$)
+ * GiveItem(itm$)
  * 
  * Add an item to the inventory.
  */
@@ -1006,7 +1006,7 @@ void giveitem(CALL_DATA &params)
 }
 
 /*
- * takeitem(itm$)
+ * TakeItem(itm$)
  * 
  * Remove an item from the inventory.
  */
@@ -1045,7 +1045,7 @@ void delay(CALL_DATA &params)
 }
 
 /*
- * ret! = random(range![, ret!])
+ * random(range![, ret!])
  * 
  * Generate a random number.
  */
@@ -1087,7 +1087,7 @@ void tiletype(CALL_DATA &params)
 }
 
 /*
- * mediaplay(file$)
+ * MediaPlay(file$)
  * 
  * Set file$ as the background music.
  */
@@ -1106,7 +1106,7 @@ void mediaplay(CALL_DATA &params)
 }
 
 /*
- * mediastop()
+ * MediaStop()
  * 
  * Stop the background music.
  */
@@ -1117,9 +1117,9 @@ void mediastop(CALL_DATA &params)
 }
 
 /*
- * godos(command$)
+ * GoDOS(command$)
  * 
- * Call into DOS.
+ * Call in to DOS.
  */
 void godos(CALL_DATA &params)
 {
@@ -1127,7 +1127,7 @@ void godos(CALL_DATA &params)
 }
 
 /*
- * addplayer(file$)
+ * AddPlayer(file$)
  * 
  * Add a player to the party.
  */
@@ -1153,7 +1153,7 @@ void removeplayer(CALL_DATA &params)
 }
 
 /*
- * setpixel(x!, y![, cnv!])
+ * SetPixel(x!, y![, cnv!])
  * 
  * Set a pixel in the current colour.
  */
@@ -1179,7 +1179,7 @@ void setpixel(CALL_DATA &params)
 }
 
 /*
- * drawline(x1!, y1!, x2!, y2![, cnv!])
+ * DrawLine(x1!, y1!, x2!, y2![, cnv!])
  * 
  * Draw a line.
  */
@@ -1235,7 +1235,7 @@ void debug(CALL_DATA &params)
 }
 
 /*
- * castnum(x)
+ * CastNum(x)
  * 
  * Return x cast to a number. Pointless now.
  */
@@ -1250,7 +1250,7 @@ void castnum(CALL_DATA &params)
 }
 
 /*
- * castlit(x)
+ * CastLit(x)
  * 
  * Return x cast to a string. Pointless now.
  */
@@ -1265,7 +1265,7 @@ void castlit(CALL_DATA &params)
 }
 
 /*
- * castint(x)
+ * CastInt(x)
  * 
  * Return x cast to an integer (i.e., sans fractional pieces).
  */
@@ -1290,13 +1290,18 @@ void pushitem(CALL_DATA &params)
 }
 
 /*
- * wander(target, restrict)
+ * wander(target[, restrict])
  * 
  * Cause an NPC to wander.
  */
 void wander(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
+
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("Wander() requires one or two parameters.");
+	}
 
 	CSprite *p = NULL;
 
@@ -1329,21 +1334,32 @@ void wander(CALL_DATA &params)
 		}
 	}
 
-	if (p)
+	if (!p) return;
+
+	if (CSprite::m_bPxMovement)
 	{
-		if (CSprite::m_bPxMovement)
+		const int queue = rand() % 9;
+		for (unsigned int i = 0; i < 32; ++i)
 		{
-			const int queue = rand() % 9;
-			for (unsigned int i = 0; i < 16; ++i)
-			{
-				p->setQueuedMovements(queue, false);
-			}
-		}
-		else
-		{
-			p->setQueuedMovements(rand() % 9, false);
+			p->setQueuedMovements(queue, false);
 		}
 	}
+	else
+	{
+		p->setQueuedMovements(rand() % 9, false);
+	}
+
+	if (!params.prg->isThread())
+	{
+		// If not a thread, move now.
+		extern CSprite *g_pSelectedPlayer;
+		while (p->move(g_pSelectedPlayer))
+		{
+			renderNow(g_cnvRpgCode, true);
+			renderRpgCodeScreen();
+		}
+	}
+
 }
 
 /*
@@ -1449,7 +1465,7 @@ void print(CALL_DATA &params)
 }
 
 /*
- * rpgcode(line$)
+ * RPGCode(line$)
  * 
  * Independently run a line of RPGCode.
  */
@@ -1568,7 +1584,7 @@ void wavstop(CALL_DATA &params)
 }
 
 /*
- * bordercolor(r!, g!, b!)
+ * BorderColor(r!, g!, b!)
  * 
  * Obsolete.
  */
@@ -1578,7 +1594,7 @@ void bordercolor(CALL_DATA &params)
 }
 
 /*
- * fightRnemy(enemy$, enemy$, ... background$)
+ * FightRnemy(enemy$, enemy$, ... background$)
  * 
  * Start a fight.
  */
@@ -1617,7 +1633,7 @@ void callshop(CALL_DATA &params)
 }
 
 /*
- * clearbuffer()
+ * ClearBuffer()
  * 
  * Clear the keyboard buffer.
  */
@@ -1714,7 +1730,7 @@ void destroyitem(CALL_DATA &params)
 }
 
 /*
- * walkspeed(fast/slow)
+ * WalkSpeed(fast/slow)
  * 
  * Obsolete.
  */
@@ -1724,7 +1740,7 @@ void walkspeed(CALL_DATA &params)
 }
 
 /*
- * itemwalkspeed(fast/slow)
+ * ItemWalkSpeed(fast/slow)
  * 
  * Obsolete.
  */
@@ -1874,13 +1890,13 @@ void getcorner(CALL_DATA &params)
 }
 
 /*
- * underarrow(...)
+ * UnderArrow(on/off)
  * 
- * Description.
+ * Toggle the under arrow.
  */
 void underarrow(CALL_DATA &params)
 {
-
+	throw CError("UnderArrow() is obsolete.");
 }
 
 /*
@@ -1914,7 +1930,7 @@ void menugraphic(CALL_DATA &params)
 }
 
 /*
- * fightmenugraphic(image$)
+ * FightMenuGraphic(image$)
  * 
  * Choose an image for the fight menu graphic.
  */
@@ -1952,7 +1968,7 @@ void stance(CALL_DATA &params)
 }
 
 /*
- * battlespeed(speed!)
+ * BattleSpeed(speed!)
  * 
  * Obsolete.
  */
@@ -1962,7 +1978,7 @@ void battlespeed(CALL_DATA &params)
 }
 
 /*
- * textspeed(speed!)
+ * TextSpeed(speed!)
  * 
  * Obsolete.
  */
@@ -2053,12 +2069,6 @@ void setimage(CALL_DATA &params)
 	}
 	if (cnv)
 	{
-		/**const std::string file = g_projectPath + BMP_PATH + params[0].getLit();
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 16), file.c_str());
-		const HDC hdc = cnv->OpenDC();
-		StretchDIBits(hdc, params[1].getNum(), params[2].getNum(), params[3].getNum(), params[4].getNum(), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
-		cnv->CloseDC(hdc);
-		FreeImage_Unload(bmp);**/
 		extern std::string g_projectPath;
 		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), cnv, params[1].getNum(), params[2].getNum(), params[3].getNum(), params[4].getNum());
 		if (cnv == g_cnvRpgCode)
@@ -2170,7 +2180,7 @@ void tan(CALL_DATA &params)
 }
 
 /*
- * getpixel(x!, y!, r!, g!, b![, cnv])
+ * GetPixel(x!, y!, r!, g!, b![, cnv])
  * 
  * Get the colour of the pixel at x, y.
  */
@@ -2211,7 +2221,7 @@ void getpixel(CALL_DATA &params)
 }
 
 /*
- * getcolor(r!, g!, b!)
+ * GetColor(r!, g!, b!)
  * 
  * Get the current colour.
  */
@@ -2242,7 +2252,7 @@ void getcolor(CALL_DATA &params)
 }
 
 /*
- * size! = getfontsize([size!])
+ * GetFontSize([size!])
  * 
  * Get the current font size.
  */
@@ -2387,7 +2397,7 @@ void layerput(CALL_DATA &params)
 }
 
 /*
- * getboardtile(x, y, z[, ret])
+ * GetBoardTile(x, y, z[, ret])
  * 
  * Get the file name of the tile at x, y, z.
  */
@@ -2486,7 +2496,7 @@ void sizedanimation(CALL_DATA &params)
 }
 
 /*
- * forceredraw()
+ * ForceRedraw()
  * 
  * Force a redrawing of the screen.
  */
@@ -2517,7 +2527,7 @@ void wipe(CALL_DATA &params)
 }
 
 /*
- * getres(x!, y!)
+ * GetRes(x!, y!)
  * 
  * Get the screen's resolution.
  */
@@ -2541,7 +2551,7 @@ void getres(CALL_DATA &params)
 }
 
 /*
- * statictext()
+ * StaticText()
  * 
  * Toggle antialiasing.
  */
@@ -2641,7 +2651,7 @@ void animatedtiles(CALL_DATA &params)
 }
 
 /*
- * smartstep()
+ * SmartStep()
  * 
  * Toggle "smart" stepping.
  */
@@ -2672,60 +2682,97 @@ void characterspeed(CALL_DATA &params)
 }
 
 /*
- * thread(file$, presist![, id!])
+ * Thread(file, presist[, id])
  * 
  * Start a thread.
  */
 void thread(CALL_DATA &params)
 {
-	/**extern std::string g_projectPath;
-	if (params.params == 2)
-	{
-		CThread *p = g_threads.allocate();
-		p->start(g_projectPath + PRG_PATH + params[0].getLit());
-		return int(p);
-	}
-	else if (params.params == 3)
-	{
-		CThread *p = g_threads.allocate();
-		p->start(g_projectPath + PRG_PATH + params[0].getLit());		
-		prg->setVariable(params[2].getLit(), int(p));
-	}
-	else
+	if ((params.params != 2) && (params.params != 3))
 	{
 		throw CError("Thread() requires two or three parameters.");
-	}**/
-
+	}
+	extern std::string g_projectPath;
+	const std::string file = g_projectPath + PRG_PATH + params[0].getLit();
+	if (!CFile::fileExists(file))
+	{
+		throw CError("Could not find " + params[0].getLit() + " for Thread().");
+	}
+	CThread *p = CThread::create(file);
+	if (params[1].getNum() == 0)
+	{
+		extern LPBOARD g_pBoard;
+		g_pBoard->threads.push_back(p);
+	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(int(p));
+	if (params.params == 3)
+	{
+		*params.prg->getVar(params[2].lit) = params.ret();
+	}
 }
 
 /*
- * killthread(id!)
+ * KillThread(id)
  * 
  * Kill a thread.
  */
 void killthread(CALL_DATA &params)
 {
-
+	if (params.params != 1)
+	{
+		throw CError("KillThread() requires one parameter.");
+	}
+	CThread *p = (CThread *)int(params[0].getNum());
+	if (!CThread::isThread(p))
+	{
+		throw CError("Invalid thread ID for KillThread().");
+	}
+	CThread::destroy(p); // Innocuous.
 }
 
 /*
- * getthreadid(...)
+ * GetThreadID([ret])
  * 
- * Description.
+ * Get the ID of this thread.
  */
 void getthreadid(CALL_DATA &params)
 {
-
+	if (!params.prg->isThread())
+	{
+		throw CError("GetThreadID() is invalid outside of threads.");
+	}
+	if (params.params == 1)
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
+		var->udt = UDT_NUM;
+		var->num = double(int(params.prg));
+	}
+	else if (params.params != 0)
+	{
+		throw CError("GetThreadID() requires zero or one parameters.");
+	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(int(params.prg));
 }
 
 /*
- * threadsleep(...)
+ * ThreadSleep(thread, seconds)
  * 
- * Description.
+ * Put a thread to sleep.
  */
 void threadsleep(CALL_DATA &params)
 {
-
+	if (params.params != 2)
+	{
+		throw CError("ThreadSleep() requires one parameter.");
+	}
+	CThread *p = (CThread *)int(params[0].getNum());
+	if (!CThread::isThread(p))
+	{
+		throw CError("Invalid thread ID for ThreadSleep().");
+	}
+	p->sleep((unsigned long)(params[1].getNum() * 1000.0));
 }
 
 /*
@@ -2739,23 +2786,46 @@ void tellthread(CALL_DATA &params)
 }
 
 /*
- * threadwake(...)
+ * ThreadWake(thread)
  * 
- * Description.
+ * Wake up a thread.
  */
 void threadwake(CALL_DATA &params)
 {
-
+	if (params.params != 1)
+	{
+		throw CError("ThreadWake() requires one parameter.");
+	}
+	CThread *p = (CThread *)int(params[0].getNum());
+	if (!CThread::isThread(p))
+	{
+		throw CError("Invalid thread ID for ThreadWake().");
+	}
+	p->wakeUp();
 }
 
 /*
- * threadsleepremaining(...)
+ * ThreadSleepRemaining(thread[, ret])
  * 
- * Description.
+ * Check how much more sleep remains for a thread.
  */
 void threadsleepremaining(CALL_DATA &params)
 {
-
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("ThreadSleepRemaining() requires one or two parameters.");
+	}
+	CThread *p = (CThread *)int(params[0].getNum());
+	if (!CThread::isThread(p))
+	{
+		throw CError("Invalid thread ID for ThreadSleepRemaining().");
+	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = p->sleepRemaining() / 1000.0;
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
@@ -2779,7 +2849,7 @@ void global(CALL_DATA &params)
 }
 
 /*
- * autocommand()
+ * AutoCommand()
  * 
  * Obsolete.
  */
@@ -2789,7 +2859,7 @@ void autocommand(CALL_DATA &params)
 }
 
 /*
- * createcursormap([map!])
+ * CreateCursorMap([map!])
  * 
  * Create a cursor map.
  */
@@ -2813,7 +2883,7 @@ void createcursormap(CALL_DATA &params)
 }
 
 /*
- * killcursormap(map!)
+ * KillCursorMap(map!)
  * 
  * Kill a cursor map.
  */
@@ -2823,14 +2893,11 @@ void killcursormap(CALL_DATA &params)
 	{
 		throw CError("KillCursorMap() requires one parameter.");
 	}
-	else
-	{
-		g_cursorMaps.free((CCursorMap *)(int)params[0].getNum());
-	}
+	g_cursorMaps.free((CCursorMap *)(int)params[0].getNum());
 }
 
 /*
- * cursormapadd(x!, y!, map!)
+ * CursorMapAdd(x!, y!, map!)
  * 
  * Add a point to a cursor map.
  */
@@ -2840,18 +2907,15 @@ void cursormapadd(CALL_DATA &params)
 	{
 		throw CError("CursorMapAdd() requires three parameters.");
 	}
-	else
+	CCursorMap *p = g_cursorMaps.cast((int)params[2].getNum());
+	if (p)
 	{
-		CCursorMap *p = g_cursorMaps.cast((int)params[2].getNum());
-		if (p)
-		{
-			p->add(params[0].getNum(), params[1].getNum());
-		}
+		p->add(params[0].getNum(), params[1].getNum());
 	}
 }
 
 /*
- * cursormaprun(map![, ret!])
+ * CursorMapRun(map![, ret!])
  * 
  * Run a cursor map.
  */
@@ -2883,7 +2947,7 @@ void cursormaprun(CALL_DATA &params)
 }
 
 /*
- * createcanvas(width!, height![, cnv!])
+ * CreateCanvas(width!, height![, cnv!])
  * 
  * Create a canvas.
  */
@@ -2907,7 +2971,7 @@ void createcanvas(CALL_DATA &params)
 }
 
 /*
- * killcanvas(cnv!)
+ * KillCanvas(cnv!)
  * 
  * Kill a canvas.
  */
@@ -2925,7 +2989,7 @@ void killcanvas(CALL_DATA &params)
 }
 
 /*
- * drawcanvas(cnv!, x!, y![, width!, height![, dest!]])
+ * DrawCanvas(cnv!, x!, y![, width!, height![, dest!]])
  * 
  * Blit a canvas forward.
  */

@@ -182,14 +182,14 @@ public:
 	bool loadFromString(const std::string str);
 	void save(const std::string fileName) const;
 	void run();
-	bool executeUnit();
-	unsigned int getLine(CONST_POS i);
+	unsigned int getLine(CONST_POS i) const;
 	void freeObject(unsigned int obj);
 	void freeVar(const std::string var);
 	void end() { m_i = m_units.end() - 1; }
 	void jump(const std::string label);
 
 	virtual LPSTACK_FRAME getVar(const std::string name);
+	virtual bool isThread() const { return false; }
 
 	static void initialize();
 	static void addFunction(const std::string name, const MACHINE_FUNC func);
@@ -258,12 +258,8 @@ class CProgramChild : public CProgram
 {
 public:
 	CProgramChild(CProgram &prg): m_prg(prg) { }
-	LPSTACK_FRAME getVar(const std::string name)
-	{
-		LPSTACK_FRAME p = CProgram::getVar(name);
-		if (p) return p;
-		return m_prg.getVar(name);
-	}
+	LPSTACK_FRAME getVar(const std::string name) { return m_prg.getVar(name); }
+
 private:
 	CProgram &m_prg;
 };
@@ -275,12 +271,26 @@ public:
 	static CThread *create(const std::string str);
 	static void destroy(CThread *p);
 	static void multitask();
-	virtual bool execute() { return executeUnit(); }
+	static bool isThread(CThread *p) { return (m_threads.find(p) != m_threads.end()); }
+	static void destroyAll();
+
+	bool isThread() const { return true; }
+	void sleep(const unsigned long milliseconds);
+	bool isSleeping() const;
+	unsigned long sleepRemaining() const;
+	void wakeUp() { m_bSleeping = false; }
+
+	virtual bool execute();
 	virtual ~CThread() { }
+
+private:
+	mutable bool m_bSleeping;
+	unsigned long m_sleepBegin, m_sleepDuration;
+
 protected:
 	static void *operator new(size_t size) { return malloc(size); }
 	static void operator delete(void *p) { free(p); }
-	CThread(const std::string str): CProgram(str) { }
+	CThread(const std::string str): CProgram(str), m_bSleeping(false) { }
 	static std::set<CThread *> m_threads;
 };
 
@@ -295,8 +305,8 @@ typedef enum tagExceptionType
 class CException
 {
 public:
-	std::string getMessage() { return m_str; }
-	EXCEPTION_TYPE getType() { return m_type; }
+	std::string getMessage() const { return m_str; }
+	EXCEPTION_TYPE getType() const { return m_type; }
 private:
 	std::string m_str;
 	EXCEPTION_TYPE m_type;

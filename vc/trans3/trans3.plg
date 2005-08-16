@@ -6,13 +6,7 @@
 --------------------Configuration: trans3 - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2B33.tmp" with contents
-[
-/nologo /MLd /w /W0 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\rpgcode\functions.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2B33.tmp" 
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2B34.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2EFC.tmp" with contents
 [
 ddraw.lib dxguid.lib msimg32.lib dinput8.lib winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/trans3.pdb" /debug /machine:I386 /out:"Debug/trans3.exe" /pdbtype:sept 
 ".\Debug\StdAfx.obj"
@@ -58,17 +52,15 @@ ddraw.lib dxguid.lib msimg32.lib dinput8.lib winmm.lib kernel32.lib user32.lib g
 ".\audio\audiere.lib"
 ".\images\FreeImage.lib"
 ]
-Creating command line "link.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2B34.tmp"
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2B35.bat" with contents
+Creating command line "link.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2EFC.tmp"
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2EFD.bat" with contents
 [
 @echo off
 ".\Debug\trans3.exe" /RegServer
 echo regsvr32 exec. time > ".\Debug\regsvr32.trg"
 echo Server registration done!
 ]
-Creating command line "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2B35.bat"
-Compiling...
-functions.cpp
+Creating command line "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2EFD.bat"
 Linking...
 <h3>Output Window</h3>
 Performing registration

@@ -104,7 +104,7 @@ bool CItemThread::execute()
 	extern void *g_pTarget, *g_pSource;
 	extern TARGET_TYPE g_targetType, g_sourceType;
 
-	if (m_i == m_units.end()) return false;
+	if (!m_pItem->isActive() || (m_i == m_units.end())) return false;
 
 	void *const target = g_pTarget, *const source = g_pSource;
 	const TARGET_TYPE tt = g_targetType, st = g_sourceType;

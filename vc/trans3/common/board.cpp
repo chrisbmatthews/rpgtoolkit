@@ -338,7 +338,12 @@ lutEnd:
 				thread = g_projectPath + PRG_PATH + thread;
 				if (CFile::fileExists(thread))
 				{
-					threads.push_back(CThread::create(thread));
+					CThread *p = CThread::create(thread);
+					char str[255]; itoa(i, str, 10);
+					LPSTACK_FRAME var = CProgram::getGlobal(std::string("threads[") + str + "]");
+					var->udt = UDT_NUM;
+					var->num = double(int(p));
+					threads.push_back(p);
 				}
 			}
 		}

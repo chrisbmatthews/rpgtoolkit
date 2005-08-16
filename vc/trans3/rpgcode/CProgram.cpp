@@ -49,14 +49,56 @@ void CThread::destroy(CThread *p)
 	}
 }
 
+// Destroy all threads.
+void CThread::destroyAll()
+{
+	std::set<CThread *>::iterator i = m_threads.begin();
+	for (; i != m_threads.end(); ++i)
+	{
+		delete *i;
+	}
+	m_threads.clear();
+}
+
 // Multitask now.
 void CThread::multitask()
 {
 	std::set<CThread *>::iterator i = m_threads.begin();
 	for (; i != m_threads.end(); ++i)
 	{
-		(*i)->execute();
+		if (!(*i)->isSleeping())
+		{
+			(*i)->execute();
+		}
 	}
+}
+
+// Put a thread to sleep.
+void CThread::sleep(const unsigned long milliseconds)
+{
+	m_bSleeping = true;
+	m_sleepDuration = milliseconds;
+	m_sleepBegin = GetTickCount();
+}
+
+// Is a thread sleeping?
+bool CThread::isSleeping() const
+{
+	if (!m_bSleeping) return false;
+
+	if ((GetTickCount() - m_sleepBegin) >= m_sleepDuration)
+	{
+		m_bSleeping = false;
+		return false;
+	}
+	return true;
+}
+
+// Check how much sleep is remaining.
+unsigned long CThread::sleepRemaining() const
+{
+	if (!isSleeping()) return 0;
+	return (m_sleepDuration - (GetTickCount() - m_sleepBegin));
 }
 
 // Show the debugger.
@@ -93,7 +135,7 @@ int yyerror(const char *)
 // errors with for loops. but an error in the third section
 // of a for loop is so rare that this shouldn't be a big issue.
 // Finally, included files with loose code will not work.
-unsigned int CProgram::getLine(CONST_POS pos)
+unsigned int CProgram::getLine(CONST_POS pos) const
 {
 	unsigned int i = pos - m_units.begin();
 	std::vector<unsigned int>::const_iterator j = m_lines.begin();
@@ -1038,7 +1080,7 @@ void CProgram::run()
 }
 
 // Execute one unit from a program.
-bool CProgram::executeUnit()
+bool CThread::execute()
 {
 	if (m_i != m_units.end())
 	{

@@ -87,6 +87,8 @@ public:
 	// Using pixel/tile movement (whole engine).
 	static bool m_bPxMovement;		
 
+	bool isActive() const { return m_bActive; }
+
 protected:
 	SPRITE_ATTR m_attr;				// Sprite attributes (common file data).
 	bool m_bActive;					// Is the sprite visible?

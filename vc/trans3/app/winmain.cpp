@@ -434,6 +434,7 @@ VOID closeSystems(VOID)
 	// Free plugins first so that they have access to
 	// everything we're about to kill.
 	CProgram::freePlugins();
+	CThread::destroyAll();
 	extern IPlugin *g_pMenuPlugin, *g_pFightPlugin;
 	if (g_pMenuPlugin)
 	{
