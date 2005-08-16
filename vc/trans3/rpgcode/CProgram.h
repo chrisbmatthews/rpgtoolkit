@@ -199,7 +199,7 @@ public:
 	static void freeGlobal(const std::string var) { m_heap.erase(var); }
 	static void freeGlobals() { m_heap.clear(); m_objects.clear(); }
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
-	static void freePlugins(void);
+	static void freePlugins();
 
 private:
 	std::deque<std::deque<STACK_FRAME> > m_stack;
