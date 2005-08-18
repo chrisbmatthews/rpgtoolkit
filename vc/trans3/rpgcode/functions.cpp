@@ -3699,11 +3699,11 @@ void gettextheight(CALL_DATA &params)
 /*
  * iif(condition, true, false)
  * 
- * Description.
+ * Obsolete.
  */
 void iif(CALL_DATA &params)
 {
-
+	throw CError("IIf() is obsolete. Use the ?: operator.");
 }
 
 /*
@@ -3737,7 +3737,7 @@ void drawcanvastransparent(CALL_DATA &params)
 }
 
 /*
- * gettickcount()
+ * GetTickCount()
  * 
  * Get the number of milliseconds since Windows started.
  */
