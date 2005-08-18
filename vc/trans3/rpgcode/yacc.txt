@@ -137,6 +137,7 @@ identifier:
 		}
 |	value MEM var_identifier
 		{ _MACHINE_UNIT(operators::member, 2); }
+|	function
 ;
 
 value:
@@ -145,8 +146,7 @@ value:
 ;
 
 _value:
-	function
-|	LPARAN _value RPARAN
+	LPARAN _value RPARAN
 |	operators
 |	NUMBER
 		{

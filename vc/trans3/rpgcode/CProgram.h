@@ -187,6 +187,7 @@ public:
 	void freeVar(const std::string var);
 	void end() { m_i = m_units.end() - 1; }
 	void jump(const std::string label);
+	LPSTACK_FRAME getLocal(const std::string var) { return &m_locals.back()[var]; }
 
 	virtual LPSTACK_FRAME getVar(const std::string name);
 	virtual bool isThread() const { return false; }

@@ -149,6 +149,10 @@ unsigned int CProgram::getLine(CONST_POS pos) const
 // Get a variable.
 LPSTACK_FRAME CProgram::getVar(const std::string name)
 {
+	if (name[0] == ':')
+	{
+		return &m_heap[name.substr(1)];
+	}
 	if (m_calls.size())
 	{
 		unsigned int obj = m_calls.back().obj;

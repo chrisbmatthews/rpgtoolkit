@@ -981,13 +981,42 @@ void getmaxsmp(CALL_DATA &params)
 }
 
 /*
- * start(...)
+ * start(file)
  * 
- * Description.
+ * Open a file with the shell.
  */
 void start(CALL_DATA &params)
 {
-
+	/*
+	 * [Colin says: -->
+	 *
+	 * This is laughable, but there is no default directory
+	 * for this function, and assuming one will only break
+	 * backward compatibility in some obscure manner.
+	 *
+	 * Note also that I am deviating slightly from the previous
+	 * implementation by waiting for the process to end before
+	 * proceeding. This is wholly logical and simply easier.
+	 *
+	 * Finally, note that previous incarnations prevented the
+	 * launching of executables and shortcuts, but this is
+	 * a nonsensical security measure when plugins no longer
+	 * display a silly warning box, and this function can be
+	 * trivially modified by someone who intends to be malicious.
+	 *
+	 * -->]
+	 */
+	if (params.params != 1)
+	{
+		throw CError("Start() requires one parameter.");
+	}
+	STARTUPINFO start;
+	start.cb = sizeof(STARTUPINFO);
+	PROCESS_INFORMATION proc;
+	CreateProcess(NULL, const_cast<char *>(params[0].getLit().c_str()), NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &start, &proc);
+	WaitForSingleObject(proc.hProcess, INFINITE);
+	CloseHandle(proc.hThread);
+	CloseHandle(proc.hProcess);
 }
 
 /*
@@ -1880,13 +1909,28 @@ void playavismall(CALL_DATA &params)
 }
 
 /*
- * getcorner(...)
+ * GetCorner(topX, topY)
  * 
- * Description.
+ * Get the corner of the currently shown portion of the board.
  */
 void getcorner(CALL_DATA &params)
 {
+	extern double g_topX, g_topY;
 
+	if (params.params != 2)
+	{
+		throw CError("GetCorner() requires two parameters.");
+	}
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
+		var->udt = UDT_NUM;
+		var->num = g_topX;
+	}
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
+		var->udt = UDT_NUM;
+		var->num = g_topY;
+	}
 }
 
 /*
@@ -2807,7 +2851,7 @@ void threadwake(CALL_DATA &params)
 /*
  * ThreadSleepRemaining(thread[, ret])
  * 
- * Check how much more sleep remains for a thread.
+ * Check how much sleep remains for a thread.
  */
 void threadsleepremaining(CALL_DATA &params)
 {
@@ -2829,23 +2873,58 @@ void threadsleepremaining(CALL_DATA &params)
 }
 
 /*
- * local(...)
+ * local(name, [ret])
  * 
- * Description.
+ * Allocate a variable off the stack and returns a reference to it.
  */
 void local(CALL_DATA &params)
 {
-
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("Local() requires one or two parameters.");
+	}
+	params.prg->getLocal(params[0].lit); // Allocates a var if it does not exist.
+	params.ret().udt = UDT_ID;
+	params.ret().lit = params[0].lit;
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
- * global(...)
+ * global(name, [ret])
  * 
- * Description.
+ * Allocates a variable on the heap and returns a reference to it.
  */
 void global(CALL_DATA &params)
 {
-
+	/*
+	 * x = 1;
+	 * method func()
+	 * {
+	 *    local(x) = 2;
+	 *    mwin(global(x));
+	 *    mwin(x);
+	 * }
+	 *
+	 * Given the above code, the values of the message windows,
+	 * should func() be called, would be 1 and 2 respectively
+	 * because variables off the stack are preferred to ones
+	 * on the heap. The call to global() explictly requests
+	 * the variable 'x' from the heap.
+	 */
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("Global() requires one or two parameters.");
+	}
+	CProgram::getGlobal(params[0].lit); // Allocates a var if it does not exist.
+	params.ret().udt = UDT_ID;
+	params.ret().lit = ":" + params[0].lit;
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*

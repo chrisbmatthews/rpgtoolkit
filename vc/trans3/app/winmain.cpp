@@ -92,39 +92,17 @@ void termFunc(void)
 }
 
 /*
- * Get a main file name.
+ * Split a string.
  */
-std::string getMainFileName(void)
+void split(const std::string str, const std::string delim, std::vector<std::string> &parts)
 {
-
-	TCHAR strFileName[MAX_PATH] = "";
-
-	OPENFILENAME ofn = {
-		sizeof(OPENFILENAME),
-		NULL,
-		g_hInstance,
-		"Supported Files\0*.gam;*.tpk\0RPG Toolkit Main File (*.gam)\0*.gam\0RPG Toolkit PakFile (*.tpk)\0*.tpk\0All files(*.*)\0*.*",
-		NULL, 0, 1,
-		strFileName, MAX_PATH,
-		NULL, 0,
-		GAM_PATH, "Open Main File",
-		OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, 0, 0,
-		TEXT(".gam"),
-		0, NULL, NULL
-	};
-
-	const std::string fileName = (GetOpenFileName(&ofn) ? strFileName : "");
-
-	if (_stricmp(getExtension(fileName).c_str(), "TPK") == 0)
+	std::string::size_type pos = std::string::npos, begin = 0;
+	while ((pos = str.find(delim, pos + 1)) != std::string::npos)
 	{
-		/* ... do pakfile stuff ... */
-		return "main.gam";
+		parts.push_back(str.substr(begin, pos - begin));
+		begin = pos + 1;
 	}
-	else
-	{
-		return fileName;
-	}
-
+	parts.push_back(str.substr(begin, pos - begin));
 }
 
 /*
@@ -314,6 +292,112 @@ VOID openSystems(VOID)
 }
 
 /*
+ * Close engine subsystems.
+ */
+VOID closeSystems(VOID)
+{
+
+	// Free plugins first so that they have access to
+	// everything we're about to kill.
+	CProgram::freePlugins();
+	CThread::destroyAll();
+	extern IPlugin *g_pMenuPlugin, *g_pFightPlugin;
+	if (g_pMenuPlugin)
+	{
+		g_pMenuPlugin->terminate();
+		delete g_pMenuPlugin;
+		g_pMenuPlugin = NULL;
+	}
+	if (g_pFightPlugin)
+	{
+		g_pFightPlugin->terminate();
+		delete g_pFightPlugin;
+		g_pFightPlugin = NULL;
+	}
+	freePluginSystem();
+
+	closeGraphics();
+	extern void freeInput(void);
+	freeInput();
+
+	// Destroy sprites (move to somewhere)
+	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
+	{
+		delete (*i);
+	}
+	g_players.clear();
+
+	// Items... currently freed by the board destructor.
+
+	g_music.free(g_bkgMusic);
+	g_bkgMusic = NULL;
+	CAudioSegment::freeLoader();
+
+	FreeImage_DeInitialise();
+
+	g_boards.free(g_pBoard);
+	g_pBoard = NULL;
+
+}
+
+/*
+ * Get a main file name.
+ */
+std::string getMainFileName(const std::string cmdLine)
+{
+
+	std::vector<std::string> parts;
+	split(cmdLine, " ", parts);
+
+	if (parts.size() == 1)
+	{
+		// Main game file passed on command line.
+		return (GAM_PATH + parts[0]);
+	}
+	else if (parts.size() == 2)
+	{
+		// Run program.
+		g_mainFile.open(GAM_PATH + parts[0]);
+		g_mainFile.startupPrg = "";
+		g_mainFile.initBoard = "";
+		openSystems();
+		extern std::string g_projectPath;
+		CProgram(g_projectPath + PRG_PATH + parts[1]).run();
+		closeSystems();
+		return "";
+	}
+
+	TCHAR strFileName[MAX_PATH] = "";
+
+	OPENFILENAME ofn = {
+		sizeof(OPENFILENAME),
+		NULL,
+		g_hInstance,
+		"Supported Files\0*.gam;*.tpk\0RPG Toolkit Main File (*.gam)\0*.gam\0RPG Toolkit PakFile (*.tpk)\0*.tpk\0All files(*.*)\0*.*",
+		NULL, 0, 1,
+		strFileName, MAX_PATH,
+		NULL, 0,
+		GAM_PATH, "Open Main File",
+		OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, 0, 0,
+		TEXT(".gam"),
+		0, NULL, NULL
+	};
+
+	const std::string fileName = (GetOpenFileName(&ofn) ? strFileName : "");
+
+	if (_stricmp(getExtension(fileName).c_str(), "TPK") == 0)
+	{
+		/* ... do pakfile stuff ... */
+		return "main.gam";
+	}
+	else
+	{
+		return fileName;
+	}
+
+}
+
+/*
  * Run a frame of game logic.
  *
  * return (out) - current game state
@@ -425,55 +509,6 @@ INT mainEventLoop(VOID)
 	return message.wParam;
 }
 
-/*
- * Close engine subsystems.
- */
-VOID closeSystems(VOID)
-{
-
-	// Free plugins first so that they have access to
-	// everything we're about to kill.
-	CProgram::freePlugins();
-	CThread::destroyAll();
-	extern IPlugin *g_pMenuPlugin, *g_pFightPlugin;
-	if (g_pMenuPlugin)
-	{
-		g_pMenuPlugin->terminate();
-		delete g_pMenuPlugin;
-		g_pMenuPlugin = NULL;
-	}
-	if (g_pFightPlugin)
-	{
-		g_pFightPlugin->terminate();
-		delete g_pFightPlugin;
-		g_pFightPlugin = NULL;
-	}
-	freePluginSystem();
-
-	closeGraphics();
-	extern void freeInput(void);
-	freeInput();
-
-	// Destroy sprites (move to somewhere)
-	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
-	{
-		delete (*i);
-	}
-	g_players.clear();
-
-	// Items... currently freed by the board destructor.
-
-	g_music.free(g_bkgMusic);
-	g_bkgMusic = NULL;
-	CAudioSegment::freeLoader();
-
-	FreeImage_DeInitialise();
-
-	g_boards.free(g_pBoard);
-	g_pBoard = NULL;
-
-}
-
 #include <direct.h>
 
 /*
@@ -492,13 +527,12 @@ INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONS
 
 	freopen("log.txt", "w", stderr); // Destination for std::cerr.
 
-	CONST std::string fileName = getMainFileName();
+	const std::string fileName = getMainFileName(lpCmdLine);
+	_chdir(WORKING_DIRECTORY);
+
 	if (fileName.empty()) return EXIT_SUCCESS;
 
 	if (!g_mainFile.open(fileName)) return EXIT_SUCCESS;
-
-	extern std::string g_projectPath;
-	g_projectPath = WORKING_DIRECTORY + g_projectPath;
 
 	try
 	{
