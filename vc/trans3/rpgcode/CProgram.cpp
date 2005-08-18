@@ -13,6 +13,7 @@
 #include "../plugins/plugins.h"
 #include "../common/mbox.h"
 #include "../common/paths.h"
+#include "../input/input.h"
 #include <malloc.h>
 #include <math.h>
 
@@ -1072,14 +1073,15 @@ void CProgram::save(const std::string fileName) const
 void CProgram::run()
 {
 	extern void programInit();
+	extern void programFinish();
 	programInit();
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
 		// std::cout << "Number " << (m_i - m_units.begin()) << std::endl;
 		// m_i->show();
 		m_i->execute(this);
+		processEvent();
 	}
-	extern void programFinish();
 	programFinish();
 }
 
