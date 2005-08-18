@@ -1234,23 +1234,55 @@ void drawline(CALL_DATA &params)
 }
 
 /*
- * drawrect(...)
+ * DrawRect(x1!, y1!, x2!, y2![, cnv!])
  * 
- * Description.
+ * Draw a rectangle.
  */
 void drawrect(CALL_DATA &params)
 {
-
+	if (params.params == 4)
+	{
+		g_cnvRpgCode->DrawRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+		renderRpgCodeScreen();
+	}
+	else if (params.params == 5)
+	{
+		CGDICanvas *cnv = g_canvases.cast((int)params[4].getNum());
+		if (cnv)
+		{
+			cnv->DrawRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+		}
+	}
+	else
+	{
+		throw CError("DrawRect() requires four or five parameters.");
+	}
 }
 
 /*
- * fillrect(...)
+ * FillRect(x1!, y1!, x2!, y2![, cnv!])
  * 
- * Description.
+ * Draw a filled rectangle.
  */
 void fillrect(CALL_DATA &params)
 {
-
+	if (params.params == 4)
+	{
+		g_cnvRpgCode->DrawFilledRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+		renderRpgCodeScreen();
+	}
+	else if (params.params == 5)
+	{
+		CGDICanvas *cnv = g_canvases.cast((int)params[4].getNum());
+		if (cnv)
+		{
+			cnv->DrawFilledRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+		}
+	}
+	else
+	{
+		throw CError("FillRect() requires four or five parameters.");
+	}
 }
 
 /*
@@ -1264,7 +1296,7 @@ void debug(CALL_DATA &params)
 }
 
 /*
- * CastNum(x)
+ * CastNum(x, [ret])
  * 
  * Return x cast to a number. Pointless now.
  */
@@ -1275,11 +1307,17 @@ void castnum(CALL_DATA &params)
 		params.ret().udt = UDT_NUM;
 		params.ret().num = params[0].getNum();
 	}
-	throw CError("CastNum() requires one parameter.");
+	else if (params.params == 2)
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
+		var->udt = UDT_NUM;
+		var->num = params[0].getNum();
+	}
+	throw CError("CastNum() requires one or two parameters.");
 }
 
 /*
- * CastLit(x)
+ * CastLit(x, [ret])
  * 
  * Return x cast to a string. Pointless now.
  */
@@ -1290,7 +1328,13 @@ void castlit(CALL_DATA &params)
 		params.ret().udt = UDT_LIT;
 		params.ret().lit = params[0].getLit();
 	}
-	throw CError("CastLit() requires one parameter.");
+	else if (params.params == 2)
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
+		var->udt = UDT_LIT;
+		var->lit = params[0].getLit();
+	}
+	throw CError("CastLit() requires one or two parameters.");
 }
 
 /*
@@ -1305,7 +1349,13 @@ void castint(CALL_DATA &params)
 		params.ret().udt = UDT_NUM;
 		params.ret().num = double(int(params[0].getNum()));
 	}
-	throw CError("CastInt() requires one parameter.");
+	else if (params.params == 2)
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
+		var->udt = UDT_NUM;
+		var->num = double(int(params[0].getNum()));
+	}
+	throw CError("CastInt() requires one or two parameters.");
 }
 
 /*
@@ -1513,13 +1563,22 @@ void rpgcode(CALL_DATA &params)
 }
 
 /*
- * charat(...)
+ * CharAt(string, pos, [ret])
  * 
- * Description.
+ * Get a character from a string. The first character is one.
  */
 void charat(CALL_DATA &params)
 {
-
+	if ((params.params != 2) && (params.params != 3))
+	{
+		throw CError("CharAt() requires two or three parameters.");
+	}
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = params[0].getLit().substr(int(params[1].getNum()) - 1, 1);
+	if (params.params == 3)
+	{
+		*params.prg->getVar(params[2].lit) = params.ret();
+	}
 }
 
 /*
