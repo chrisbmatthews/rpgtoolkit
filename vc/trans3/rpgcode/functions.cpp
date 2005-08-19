@@ -31,6 +31,7 @@
 #include "CCursorMap.h"
 #include <math.h>
 #include <iostream>
+#include <shellapi.h>
 
 /*
  * Globals.
@@ -990,35 +991,21 @@ void getmaxsmp(CALL_DATA &params)
 void start(CALL_DATA &params)
 {
 	/*
-	 * [Colin says: -->
-	 *
 	 * This is laughable, but there is no default directory
 	 * for this function, and assuming one will only break
 	 * backward compatibility in some obscure manner.
 	 *
-	 * Note also that I am deviating slightly from the previous
-	 * implementation by waiting for the process to end before
-	 * proceeding. This is wholly logical and simply easier.
-	 *
-	 * Finally, note that previous incarnations prevented the
+	 * Note also that previous incarnations prevented the
 	 * launching of executables and shortcuts, but this is
 	 * a nonsensical security measure when plugins no longer
 	 * display a silly warning box, and this function can be
 	 * trivially modified by someone who intends to be malicious.
-	 *
-	 * -->]
 	 */
 	if (params.params != 1)
 	{
 		throw CError("Start() requires one parameter.");
 	}
-	STARTUPINFO start;
-	start.cb = sizeof(STARTUPINFO);
-	PROCESS_INFORMATION proc;
-	CreateProcess(NULL, const_cast<char *>(params[0].getLit().c_str()), NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &start, &proc);
-	WaitForSingleObject(proc.hProcess, INFINITE);
-	CloseHandle(proc.hThread);
-	CloseHandle(proc.hProcess);
+	ShellExecute(NULL, "open", params[0].getLit().c_str(), NULL, NULL, 0);
 }
 
 /*
