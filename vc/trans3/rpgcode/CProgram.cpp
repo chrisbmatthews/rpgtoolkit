@@ -528,74 +528,11 @@ bool CProgram::open(const std::string fileName)
 	}
 	else
 	{
-		fseek(file, 0, SEEK_SET);
-
-		FILE *p = tmpfile();
-		if (!p)
-		{
-			fclose(file);
-			return false;
-		}
-
-		m_inclusions.clear();
-		while (true)
-		{
-			char str[512];
-			if (!fgets(str, 512, file)) break;
-			std::string s = str;
-			s = s.substr(s.find_first_not_of(' '));
-			s = s.substr(s.find_first_not_of('\t'));
-			// Quick and dirty check for TK2 comments.
-			if (s[0] == '*') { fputs("\n", p); continue; }
-
-			// Ridiculously poor attempt to handle inclusions, but the
-			// damned parser keeps erring when I try other ways. This works
-			// for now unless people employ liberal spacing between 'include'
-			// and the file name (e.g., #include   "file"). There's not
-			// really any reason to do that, but I'm sure someone will.
-			// We'll make a note of it in the readme file.
-			if (s[0] == '#')
-			{
-				if (_strcmpi(s.substr(1, 7).c_str(), "include") == 0)
-				{
-					if (s[8] == ' ')
-					{
-						m_inclusions.push_back(s.substr(10, s.length() - 13));
-						fputs("\n", p); continue;
-					}
-					else if (s[8] == '(')
-					{
-						m_inclusions.push_back(s.substr(10, s.length() - 14));
-						fputs("\n", p); continue;
-					}
-				}
-			}
-			else
-			{
-				if (_strcmpi(s.substr(0, 7).c_str(), "include") == 0)
-				{
-					if (s[7] == ' ')
-					{
-						m_inclusions.push_back(s.substr(9, s.length() - 12));
-						fputs("\n", p); continue;
-					}
-					else if (s[7] == '(')
-					{
-						m_inclusions.push_back(s.substr(9, s.length() - 13));
-						fputs("\n", p); continue;
-					}
-				}
-			}
-			fputs(str, p);
-		}
-
-		fseek(p, 0, SEEK_SET);
-
 		const std::string parsing = m_parsing;
 		m_parsing = fileName;
-		parseFile(p);
+		fseek(file, 0, SEEK_SET);
+		parseFile(file);
 		m_parsing = parsing;
-		fclose(p);
 	}
 
 	fclose(file);
@@ -624,7 +561,6 @@ bool CProgram::loadFromString(const std::string str)
 
 	fputs(str.c_str(), p);
 	fseek(p, 0, SEEK_SET);
-	m_inclusions.clear();
 	parseFile(p);
 	fclose(p);
 
@@ -638,6 +574,7 @@ void CProgram::parseFile(FILE *pFile)
 	// Phase I:
 	//   - Run the file though the YACC generated parser,
 	//     producing machine units. See yacc.txt.
+	m_inclusions.clear();
 	m_units.clear();
 	NAMED_METHOD::m_methods.clear();
 	m_classes.clear();
