@@ -14,9 +14,10 @@
 #include "animation.h"
 #include "mbox.h"
 
-void tagEnemy::open(const std::string strFile)
+bool tagEnemy::open(const std::string strFile)
 {
 	CFile file(strFile);
+	if (!file.isOpen()) return false;
 
 	file.seek(14);
 	char c;
@@ -29,7 +30,7 @@ void tagEnemy::open(const std::string strFile)
 		if (header != "RPGTLKIT ENEMY")
 		{
 			messageBox("Unrecognised File Format! " + strFile);
-			return;
+			return false;
 		}
 		short majorVer, minorVer;
 		file >> majorVer >> minorVer;
@@ -97,7 +98,7 @@ void tagEnemy::open(const std::string strFile)
 		if (file.line() != "RPGTLKIT ENEMY")
 		{
 			messageBox("Unrecognised File Format! " + strFile);
-			return;
+			return false;
 		}
 
 		const short majorVer = atoi(file.line().c_str());
@@ -175,6 +176,7 @@ void tagEnemy::open(const std::string strFile)
 
 	}
 
+	return true;
 }
 
 std::string tagEnemy::getStanceAnimation(const std::string anim)

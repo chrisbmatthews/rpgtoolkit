@@ -18,6 +18,8 @@ class CFile
 {
 
 public:
+	CFile(): m_hFile(HFILE_ERROR) { }
+	void open(const std::string fileName, CONST UINT mode = OF_READ);
 	CFile(CONST std::string fileName, CONST UINT mode = OF_READ);
 	//
 	// Write.
@@ -42,6 +44,7 @@ public:
 	VOID seek(CONST INT pos) { m_ptr.Offset = pos; }
 	BOOL isEof(VOID) CONST { return m_bEof; }
 	BOOL isOpen(VOID) CONST { return (m_hFile != HFILE_ERROR); }
+	DWORD size(VOID) CONST { return GetFileSize(HANDLE(m_hFile), NULL); }
 	static BOOL fileExists(CONST std::string file) { return CFile(file).isOpen(); }
 	~CFile(VOID);
 

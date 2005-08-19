@@ -52,6 +52,8 @@ TARGET_TYPE g_targetType = TI_EMPTY;		// Type of target entity.
 void *g_pSource = NULL;						// Source entity.
 TARGET_TYPE g_sourceType = TI_EMPTY;		// Type of source entity.
 CInventory g_inv;							// Inventory.
+unsigned long g_gp = 0;						// Amount of gold.
+std::map<std::string, CFile> g_files;		// Files opened using RPGCode.
 
 /*
  * Become ready to run a program.
@@ -767,7 +769,7 @@ void givehp(CALL_DATA &params)
 	if (p)
 	{
 		const int hp = p->health() + params[0].getNum();
-		p->health((hp <= p->maxHealth()) ? hp : p->maxHealth());
+		p->health((hp <= p->maxHealth()) ? ((hp > 0) ? hp : 0) : p->maxHealth());
 		// if (fighting)
 		// {
 		//		...
@@ -890,7 +892,7 @@ void givesmp(CALL_DATA &params)
 	if (p)
 	{
 		const int hp = p->smp() + params[0].getNum();
-		p->smp((hp <= p->maxSmp()) ? hp : p->maxSmp());
+		p->smp((hp <= p->maxSmp()) ? ((hp > 0) ? hp : 0) : p->maxSmp());
 		// if (fighting)
 		// {
 		//		...
@@ -1632,33 +1634,46 @@ void kill(CALL_DATA &params)
 }
 
 /*
- * givegp(...)
+ * GiveGP(gp)
  * 
- * Description.
+ * Give gold pieces.
  */
 void givegp(CALL_DATA &params)
 {
-
+	if (params.params != 1)
+	{
+		throw CError("GiveGP() requires one parameter.");
+	}
+	g_gp += params[0].getNum();
 }
 
 /*
- * takegp(...)
+ * TakeGP(gp)
  * 
- * Description.
+ * Take gold pieces.
  */
 void takegp(CALL_DATA &params)
 {
-
+	if (params.params != 1)
+	{
+		throw CError("TakeGP() requires one parameter.");
+	}
+	g_gp -= params[0].getNum();
 }
 
 /*
- * getgp(...)
+ * GetGP([ret])
  * 
- * Description.
+ * Return the amount of gold pieces held.
  */
 void getgp(CALL_DATA &params)
 {
-
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(g_gp);
+	if (params.params == 1)
+	{
+		*params.prg->getVar(params[0].lit) = params.ret();
+	}
 }
 
 /*
@@ -2101,23 +2116,67 @@ void mwinsize(CALL_DATA &params)
 }
 
 /*
- * getdp(...)
+ * GetDP(handle, [ret])
  * 
- * Description.
+ * Get a fighter's dp.
  */
 void getdp(CALL_DATA &params)
 {
-
+	if (params.params == 1)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			params.ret().udt = UDT_NUM;
+			params.ret().num = p->defence();
+		}
+	}
+	else if (params.params == 2)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
+			var->udt = UDT_NUM;
+			var->num = p->defence();
+		}
+	}
+	else
+	{
+		throw CError("GetDP() requires one or two parameters.");
+	}
 }
 
 /*
- * getfp(...)
+ * GetFP(handle, [ret])
  * 
- * Description.
+ * Get a fighter's fp.
  */
 void getfp(CALL_DATA &params)
 {
-
+	if (params.params == 1)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			params.ret().udt = UDT_NUM;
+			params.ret().num = p->fight();
+		}
+	}
+	else if (params.params == 2)
+	{
+		IFighter *p = getFighter(params[0].getLit());
+		if (p)
+		{
+			LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
+			var->udt = UDT_NUM;
+			var->num = p->fight();
+		}
+	}
+	else
+	{
+		throw CError("GetFP() requires one or two parameters.");
+	}
 }
 
 /*
@@ -2470,13 +2529,35 @@ void sourcehandle(CALL_DATA &params)
 }
 
 /*
- * drawenemy(...)
+ * DrawEnemy(file, x, y, [cnv])
  * 
- * Description.
+ * Draw an enemy.
  */
 void drawenemy(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	CGDICanvas *cnv = NULL;
+	if (params.params == 3)
+	{
+		cnv = g_cnvRpgCode;
+	}
+	else if (params.params == 4)
+	{
+		if (!(cnv = g_canvases.cast(int(params[3].getNum()))))
+		{
+			return;
+		}
+	}
+	else
+	{
+		throw CError("DrawEnemy() requires three or four parameters.");
+	}
+	ENEMY enemy;
+	if (enemy.open(g_projectPath + ENE_PATH + params[0].getLit()))
+	{
+		renderAnimationFrame(cnv, enemy.gfx[EN_REST], 0, int(params[1].getNum()), int(params[2].getNum()));
+	}
 }
 
 /*
@@ -3048,7 +3129,7 @@ void cursormapadd(CALL_DATA &params)
 	CCursorMap *p = g_cursorMaps.cast((int)params[2].getNum());
 	if (p)
 	{
-		p->add(params[0].getNum(), params[1].getNum());
+		p->add(int(params[0].getNum()), int(params[1].getNum()));
 	}
 }
 
@@ -3098,14 +3179,12 @@ void createcanvas(CALL_DATA &params)
 	CGDICanvas *p = g_canvases.allocate();
 	p->CreateBlank(NULL, params[0].getNum(), params[1].getNum(), TRUE);
 	p->ClearScreen(0);
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(int(p));
 	if (params.params == 3)
 	{
-		LPSTACK_FRAME var = params.prg->getVar(params[2].lit);
-		var->udt = UDT_NUM;
-		var->num = (double)(int)p;
+		*params.prg->getVar(params[2].lit) = params.ret();
 	}
-	params.ret().udt = UDT_NUM;
-	params.ret().num = (double)(int)p;
 }
 
 /*
@@ -3119,11 +3198,8 @@ void killcanvas(CALL_DATA &params)
 	{
 		throw CError("KillCanvas() requires one parameter.");
 	}
-	else
-	{
-		CGDICanvas *p = (CGDICanvas *)(int)params[0].getNum();
-		g_canvases.free(p);
-	}
+	CGDICanvas *p = (CGDICanvas *)(int)params[0].getNum();
+	g_canvases.free(p);
 }
 
 /*
@@ -3170,107 +3246,188 @@ void drawcanvas(CALL_DATA &params)
 }
 
 /*
- * openfileinput(...)
+ * OpenFileInput(file, folder)
  * 
- * Description.
+ * Open a file in input mode.
  */
 void openfileinput(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	if (params.params != 2)
+	{
+		throw CError("OpenFileInput() requires two parameters.");
+	}
+	g_files[parser::uppercase(params[0].getLit())].open(g_projectPath + params[1].getLit() + '\\' + params[0].getLit(), OF_READ);
 }
 
 /*
- * openfileoutput(...)
+ * OpenFileOutput(file, folder)
  * 
- * Description.
+ * Open a file in output mode.
  */
 void openfileoutput(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	if (params.params != 2)
+	{
+		throw CError("OpenFileOutput() requires two parameters.");
+	}
+	g_files[parser::uppercase(params[0].getLit())].open(g_projectPath + params[1].getLit() + '\\' + params[0].getLit(), OF_CREATE | OF_WRITE);
 }
 
 /*
- * openfileappend(...)
+ * OpenFileAppend(file, folder)
  * 
- * Description.
+ * Open a file for appending.
  */
 void openfileappend(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	if (params.params != 2)
+	{
+		throw CError("OpenFileOutput() requires two parameters.");
+	}
+	CFile &file = g_files[parser::uppercase(params[0].getLit())];
+	file.open(g_projectPath + params[1].getLit() + '\\' + params[0].getLit(), OF_WRITE);
+	file.seek(file.size());
 }
 
 /*
- * openfilebinary(...)
+ * OpenFileBinary(file, folder)
  * 
- * Description.
+ * Obsolete.
  */
 void openfilebinary(CALL_DATA &params)
 {
-
+	CProgram::debugger("OpenFileBinary() is obsolete. Use OpenFileInput() instead.");
+	openfileinput(params);
 }
 
 /*
- * closefile(...)
+ * CloseFile(file)
  * 
- * Description.
+ * Close a file.
  */
 void closefile(CALL_DATA &params)
 {
-
+	if (params.params != 1)
+	{
+		throw CError("CloseFile() requires one parameter.");
+	}
+	std::map<std::string, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
+	if (i != g_files.end())
+	{
+		g_files.erase(i);
+	}
 }
 
 /*
- * fileinput(...)
+ * FileInput(file, [ret])
  * 
- * Description.
+ * Read a line from a line.
  */
 void fileinput(CALL_DATA &params)
 {
-
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("FileInput() requires one or two parameters.");
+	}
+	std::map<std::string, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
+	if (!((i != g_files.end()) && i->second.isOpen())) return;
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = i->second.line();
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
- * fileprint(...)
+ * FilePrint(file, line)
  * 
- * Description.
+ * Write a line to a file.
  */
 void fileprint(CALL_DATA &params)
 {
-
+	if (params.params != 2)
+	{
+		throw CError("FilePrint() requires two parameters.");
+	}
+	std::map<std::string, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
+	if (!((i != g_files.end()) && i->second.isOpen())) return;
+	const std::string str = params[1].getLit();
+	for (std::string::const_iterator j = str.begin(); j != str.end(); ++j)
+	{
+		i->second << *j;
+	}
+	i->second << '\r' << '\n';
 }
 
 /*
- * fileget(...)
+ * FileGet(file, [ret])
  * 
- * Description.
+ * Get a byte from a file.
  */
 void fileget(CALL_DATA &params)
 {
-
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("FileGet() requires one or two parameters.");
+	}
+	std::map<std::string, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
+	if (!((i != g_files.end()) && i->second.isOpen())) return;
+	params.ret().udt = UDT_LIT;
+	char c;
+	i->second >> c;
+	params.ret().lit = c;
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
- * fileput(...)
+ * FilePut(file, byte)
  * 
- * Description.
+ * Write a byte to a file.
  */
 void fileput(CALL_DATA &params)
 {
-
+	if (params.params != 2)
+	{
+		throw CError("FilePut() requires two parameters.");
+	}
+	std::map<std::string, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
+	if (!((i != g_files.end()) && i->second.isOpen())) return;
+	i->second << params[1].getLit()[0];
 }
 
 /*
- * fileeof(...)
+ * FileEOF(file, [ret])
  * 
- * Description.
+ * Check whether the end of a file has been reached.
  */
 void fileeof(CALL_DATA &params)
 {
-
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("FileEOF() requires one or two parameters.");
+	}
+	std::map<std::string, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
+	if (!((i != g_files.end()) && i->second.isOpen())) return;
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(i->second.isEof());
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
- * len! = len(str$[, length!)
+ * len(str$[, length!)
  * 
  * Get the length of a string.
  */

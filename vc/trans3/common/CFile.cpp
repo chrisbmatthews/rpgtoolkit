@@ -22,6 +22,18 @@ CFile::CFile(CONST std::string fileName, CONST UINT mode)
 	m_bEof = FALSE;
 }
 
+void CFile::open(const std::string fileName, CONST UINT mode)
+{
+	if (m_hFile != HFILE_ERROR)
+	{
+		CloseHandle(HANDLE(m_hFile));
+	}
+	OFSTRUCT ofs;
+	m_hFile = OpenFile(fileName.c_str(), &ofs, mode);
+	memset(&m_ptr, 0, sizeof(m_ptr));
+	m_bEof = FALSE;
+}
+
 /*
  * Stream read operator.
  *

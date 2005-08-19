@@ -62,7 +62,7 @@ typedef struct tagEnemy : public IFighter
 	std::string name(void) { return strName; }
 	std::string getStanceAnimation(const std::string anim);
 	//----------------------------------------------------------
-	void open(const std::string strFile);
+	bool open(const std::string strFile);
 } ENEMY, *LPENEMY;
 
 #endif
