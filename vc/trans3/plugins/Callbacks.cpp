@@ -20,6 +20,7 @@
 #include "../rpgcode/CProgram.h"
 #include "../rpgcode/parser/parser.h"
 #include "../common/CAllocationHeap.h"
+#include "../common/CInventory.h"
 #include "../common/paths.h"
 #include "../common/CFile.h"
 #include "../common/animation.h"
@@ -1080,7 +1081,8 @@ STDMETHODIMP CCallbacks::CBGetSpecialMoveListEntry(int idx, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBRunProgram(BSTR prgFile)
 {
-	CProgram(getString(prgFile)).run();
+	extern std::string g_projectPath;
+	CProgram(g_projectPath + PRG_PATH + getString(prgFile)).run();
 	return S_OK;
 }
 
@@ -1625,16 +1627,17 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	LPFIGHTER pTarget = getFighter(targetPartyIdx, targetFightIdx);
 	if (!pSource || !pTarget || (pSource->pFighter->health() < 1))
 	{
+		// Target or source doesn't exist or source is dead.
 		return S_OK;
 	}
+
 	ITEM itm;
 	extern std::string g_projectPath;
 	const std::string strItemFile = getString(itemFile);
 	SPRITE_ATTR attr;
-	if (!itm.open(g_projectPath + ITM_PATH + strItemFile, attr))
-	{
-		return S_OK;
-	}
+	const std::string fullPath = g_projectPath + ITM_PATH + strItemFile;
+	if (!itm.open(fullPath, attr)) return S_OK;
+
 	// HP.
 	pTarget->pFighter->health(pTarget->pFighter->health() + itm.fgtHPup);
 	if (pTarget->pFighter->health() > pTarget->pFighter->maxHealth())
@@ -1645,6 +1648,7 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	{
 		pTarget->pFighter->health(0);
 	}
+
 	// SMP.
 	pTarget->pFighter->smp(pTarget->pFighter->smp() + itm.fgtSMup);
 	if (pTarget->pFighter->smp() > pTarget->pFighter->maxSmp())
@@ -1655,6 +1659,7 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	{
 		pTarget->pFighter->smp(0);
 	}
+
 	// Set target and source.
 	extern void *g_pTarget, *g_pSource;
 	extern TARGET_TYPE g_targetType, g_sourceType;
@@ -1662,9 +1667,10 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	g_pSource = pSource->pFighter;
 	g_targetType = pTarget->bPlayer ? TT_PLAYER : TT_ENEMY;
 	g_sourceType = pSource->bPlayer ? TT_PLAYER : TT_ENEMY;
-	//------------------------------------------------------
-	// TBD: REMOVE ITEM FROM INVENTORY!!
-	//------------------------------------------------------
+
+	extern CInventory g_inv;
+	g_inv.take(fullPath);
+
 	extern IPlugin *g_pFightPlugin;
 	g_pFightPlugin->fightInform(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, 0, 0, -itm.fgtHPup, -itm.fgtSMup, strItemFile, INFORM_SOURCE_ITEM);
 	return S_OK;
