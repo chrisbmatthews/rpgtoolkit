@@ -15,11 +15,12 @@
 #include "../common/player.h"
 #include "../common/mbox.h"
 #include "../common/CAllocationHeap.h"
+#include "../common/board.h"
+#include "../common/CFile.h"
 #include "../render/render.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
 #include "../movement/movement.h"
-#include "../common/board.h"
 #include "../input/input.h"
 #include "../misc/misc.h"
 #include "../audio/CAudioSegment.h"
@@ -352,19 +353,24 @@ std::string getMainFileName(const std::string cmdLine)
 	if (parts.size() == 2)
 	{
 		// Main game file passed on command line.
-		return (GAM_PATH + parts[1]);
+		const std::string ret = GAM_PATH + parts[1];
+		if (CFile::fileExists(ret)) return ret;
 	}
 	else if (parts.size() == 3)
 	{
 		// Run program.
-		g_mainFile.open(GAM_PATH + parts[1]);
-		g_mainFile.startupPrg = "";
-		g_mainFile.initBoard = "";
-		openSystems();
-		extern std::string g_projectPath;
-		CProgram(g_projectPath + PRG_PATH + parts[2]).run();
-		closeSystems();
-		return "";
+		const std::string main = GAM_PATH + parts[1];
+		if (CFile::fileExists(main))
+		{
+			g_mainFile.open(main);
+			g_mainFile.startupPrg = "";
+			g_mainFile.initBoard = "";
+			openSystems();
+			extern std::string g_projectPath;
+			CProgram(g_projectPath + PRG_PATH + parts[2]).run();
+			closeSystems();
+			return "";
+		}
 	}
 
 	TCHAR strFileName[MAX_PATH] = "";

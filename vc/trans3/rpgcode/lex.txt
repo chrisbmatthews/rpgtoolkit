@@ -59,6 +59,7 @@ unsigned int g_lines = 0;
 "?"		{ return QUESTION; }
 ":"		{ return COLON; }
 "$"		{ return LIT; }
+"."		{ return DOT; }
 [fF][oO][rR]				{ return FOR; }
 [mM][eE][tT][hH][oO][dD]		{ return METHOD; }
 [rR][eE][tT][uU][rR][nN]		{ return RETURN; }

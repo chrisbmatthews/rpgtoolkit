@@ -27,7 +27,7 @@
 %token	SEMICOLON IDENTIFIER NUMBER STRING LPARAN RPARAN
 %token	LARRAY RARRAY LCURL RCURL LIT FOR COMMA
 %token	QUESTION COLON METHOD RETURN HIGHEST
-%token	CLASS STRUCT PUBLIC PRIVATE VAR
+%token	CLASS STRUCT PUBLIC PRIVATE VAR DOT
 
 %right	XOR_ASSIGN
 %right	OR_ASSIGN
@@ -173,8 +173,14 @@ params:
 		{ }
 ;
 
-function:
+function_identifier:
 	IDENTIFIER
+|	IDENTIFIER DOT IDENTIFIER
+		{ CProgram::m_inclusions.push_back($1.getLit() + ".prg"); $$ = $3; }
+;
+
+function:
+	function_identifier
 		{ CProgram::m_params.push_back(0); }
 	LPARAN params RPARAN
 		{
