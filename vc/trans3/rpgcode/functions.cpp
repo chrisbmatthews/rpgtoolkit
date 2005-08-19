@@ -1302,7 +1302,10 @@ void castnum(CALL_DATA &params)
 		var->udt = UDT_NUM;
 		var->num = params[0].getNum();
 	}
-	throw CError("CastNum() requires one or two parameters.");
+	else
+	{
+		throw CError("CastNum() requires one or two parameters.");
+	}
 }
 
 /*
@@ -1323,7 +1326,10 @@ void castlit(CALL_DATA &params)
 		var->udt = UDT_LIT;
 		var->lit = params[0].getLit();
 	}
-	throw CError("CastLit() requires one or two parameters.");
+	else
+	{
+		throw CError("CastLit() requires one or two parameters.");
+	}
 }
 
 /*
@@ -1344,7 +1350,10 @@ void castint(CALL_DATA &params)
 		var->udt = UDT_NUM;
 		var->num = double(int(params[0].getNum()));
 	}
-	throw CError("CastInt() requires one or two parameters.");
+	else
+	{
+		throw CError("CastInt() requires one or two parameters.");
+	}
 }
 
 /*
