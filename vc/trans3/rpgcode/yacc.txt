@@ -103,7 +103,7 @@ tdc:
  */
 
 var_identifier:
-	IDENTIFIER tdc
+	function_identifier tdc
 		{
 			MACHINE_UNIT mu;
 			if (g_methods.size() && g_methods.back().count($1.getLit()))
