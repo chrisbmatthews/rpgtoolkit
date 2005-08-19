@@ -612,6 +612,7 @@ line:
 begin:
 	/* Empty. */
 |	line begin
+|	statement
 ;
 
 %%
