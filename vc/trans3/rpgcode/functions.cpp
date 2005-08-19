@@ -2552,7 +2552,14 @@ void drawenemy(CALL_DATA &params)
 	ENEMY enemy;
 	if (enemy.open(g_projectPath + ENE_PATH + params[0].getLit()))
 	{
-		renderAnimationFrame(cnv, enemy.gfx[EN_REST], 0, int(params[1].getNum()), int(params[2].getNum()));
+		CGDICanvas c;
+		c.CreateBlank(NULL, 1, 1, TRUE);
+		renderAnimationFrame(&c, enemy.gfx[EN_REST], 0, 0, 0);
+		c.BltTransparent(cnv, int(params[1].getNum()), int(params[2].getNum()), TRANSP_COLOR);
+		if (cnv == g_cnvRpgCode)
+		{
+			renderRpgCodeScreen();
+		}
 	}
 }
 
