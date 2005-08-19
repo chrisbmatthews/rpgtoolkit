@@ -3342,6 +3342,7 @@ void fileinput(CALL_DATA &params)
 	if (!((i != g_files.end()) && i->second.isOpen())) return;
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = i->second.line();
+	params.ret().lit = params.ret().lit.substr(0, params.ret().lit.length() - 1);
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
