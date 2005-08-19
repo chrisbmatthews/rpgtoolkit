@@ -426,6 +426,7 @@ void CProgram::returnVal(CALL_DATA &call)
 	call.prg->m_i = call.prg->m_units.begin() + call.prg->m_calls.back().j - 1;
 }
 
+#define YYSTACKSIZE 50000
 #define YYSTYPE CVariant
 #include "y.tab.c"	// Yacc parser.
 
