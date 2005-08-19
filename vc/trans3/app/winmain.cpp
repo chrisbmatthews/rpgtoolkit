@@ -349,20 +349,20 @@ std::string getMainFileName(const std::string cmdLine)
 	std::vector<std::string> parts;
 	split(cmdLine, " ", parts);
 
-	if (parts.size() == 1)
+	if (parts.size() == 2)
 	{
 		// Main game file passed on command line.
-		return (GAM_PATH + parts[0]);
+		return (GAM_PATH + parts[1]);
 	}
-	else if (parts.size() == 2)
+	else if (parts.size() == 3)
 	{
 		// Run program.
-		g_mainFile.open(GAM_PATH + parts[0]);
+		g_mainFile.open(GAM_PATH + parts[1]);
 		g_mainFile.startupPrg = "";
 		g_mainFile.initBoard = "";
 		openSystems();
 		extern std::string g_projectPath;
-		CProgram(g_projectPath + PRG_PATH + parts[1]).run();
+		CProgram(g_projectPath + PRG_PATH + parts[2]).run();
 		closeSystems();
 		return "";
 	}
