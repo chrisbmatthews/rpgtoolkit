@@ -122,12 +122,14 @@ void CProgram::freePlugins()
 }
 
 // Parsing error handler.
-int yyerror(const char *)
+int yyerror(const char *error)
 {
 	extern unsigned int g_lines;
 	char str[255];
 	itoa(g_lines + 1, str, 10);
-	CProgram::debugger(CProgram::m_parsing + "\r\nLine " + str + ": Syntax error.");
+	std::string strError = error;
+	strError[0] = toupper(strError[0]);
+	CProgram::debugger(CProgram::m_parsing + "\r\nLine " + str + ": " + strError + ".");
 	return 0;
 }
 

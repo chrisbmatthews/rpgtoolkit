@@ -402,11 +402,6 @@ finale:
 				}
 			}
 		}
-	statement
-|	line_terminators
-		{ _END_LINE; }
-|	/* Final line, and without a semicolon. */
-		{ _END_LINE; }
 ;
 
 method_param:
@@ -483,7 +478,7 @@ method:
 			CProgram::m_pyyUnits->back().lit = name;
 			CProgram::m_pyyUnits->back().num = g_methods.back().size();
 		}
-	RPARAN finale
+	RPARAN
 ;
 
 for_loop_value:
@@ -518,13 +513,12 @@ for_loop:
 			CProgram::m_pyyUnits = g_yyOldUnits;
 			_MACHINE_UNIT(CProgram::forLoop, 1);
 		}
-	RPARAN finale
+	RPARAN
 ;
 
 return_val:
 	RETURN value
 		{ _MACHINE_UNIT(CProgram::returnVal, 1); }
-	finale
 ;
 
 inherit_class:
@@ -557,7 +551,7 @@ class:
 			_MACHINE_UNIT(CProgram::skipClass, 0);
 			CProgram::m_pyyUnits->back().num = g_vis;
 		}
-	inherits finale
+	inherits
 ;
 
 class_member:
@@ -576,7 +570,7 @@ var_list:
 ;
 
 class_members:
-	VAR var_list finale
+	VAR var_list
 ;
 
 inclusion:
@@ -598,7 +592,6 @@ statement:
 			mu.num = g_vis = CV_PRIVATE;
 			CProgram::m_pyyUnits->push_back(mu);
 		}
-	finale
 |	PUBLIC COLON
 		{
 			MACHINE_UNIT mu;
@@ -606,15 +599,19 @@ statement:
 			mu.num = g_vis = CV_PUBLIC;
 			CProgram::m_pyyUnits->push_back(mu);
 		}
-	finale
-|	inclusion finale
+|	inclusion
 |	for_loop
-|	value finale
+|	value
+;
+
+line:
+	statement finale
+|	line_terminators statement finale
 ;
 
 begin:
-	statement
-|	line_terminators statement
+	/* Empty. */
+|	line begin
 ;
 
 %%
