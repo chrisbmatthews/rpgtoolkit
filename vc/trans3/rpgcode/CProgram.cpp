@@ -714,7 +714,7 @@ void CProgram::parseFile(FILE *pFile)
 			if (depth && !--depth) pClass = NULL;
 		}
 
-		if ((i->udt & UDT_ID) && (i->lit[0] == ':'))
+		if ((i->udt & UDT_ID) && (i->lit[0] == ':') && ((i == m_units.end()) || !(((i + 1)->udt & UDT_LINE))))
 		{
 			i->udt = UDT_LABEL;
 		}
