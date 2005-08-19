@@ -217,6 +217,7 @@ private:
 	static std::deque<int> m_params;
 	static std::vector<unsigned int> *m_pLines;
 	static std::vector<std::string> m_inclusions;
+	static std::string m_parsing;
 
 	// Other globals.
 	static std::map<unsigned int, std::string> m_objects;
@@ -241,6 +242,7 @@ private:
 	friend void tagMachineUnit::execute(CProgram *prg) const;
 	friend int yylex();
 	friend int yyparse();
+	friend int yyerror(const char *);
 
 	CProgram(CProgram &);
 	CProgram operator=(CProgram &);

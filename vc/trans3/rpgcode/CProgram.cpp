@@ -30,6 +30,7 @@ std::vector<unsigned int> *CProgram::m_pLines = NULL;
 std::vector<std::string> CProgram::m_inclusions;
 std::vector<IPlugin *> CProgram::m_plugins;
 std::set<CThread *> CThread::m_threads;
+std::string CProgram::m_parsing;
 
 // Create a thread.
 CThread *CThread::create(const std::string str)
@@ -126,7 +127,7 @@ int yyerror(const char *)
 	extern unsigned int g_lines;
 	char str[255];
 	itoa(g_lines + 1, str, 10);
-	CProgram::debugger(std::string("Line ") + str + ": Syntax error.");
+	CProgram::debugger(CProgram::m_parsing + "\r\nLine " + str + ": Syntax error.");
 	return 0;
 }
 
@@ -542,9 +543,10 @@ bool CProgram::open(const std::string fileName)
 			char str[512];
 			if (!fgets(str, 512, file)) break;
 			std::string s = str;
-			s = s.substr(s.substr(s.find_first_not_of(' ')).find_first_not_of('\t'));
+			s = s.substr(s.find_first_not_of(' '));
+			s = s.substr(s.find_first_not_of('\t'));
 			// Quick and dirty check for TK2 comments.
-			if (s[0] == '*') continue;
+			if (s[0] == '*') { fputs("\n", p); continue; }
 
 			// Ridiculously poor attempt to handle inclusions, but the
 			// damned parser keeps erring when I try other ways. This works
@@ -559,12 +561,12 @@ bool CProgram::open(const std::string fileName)
 					if (s[8] == ' ')
 					{
 						m_inclusions.push_back(s.substr(10, s.length() - 13));
-						continue;
+						fputs("\n", p); continue;
 					}
 					else if (s[8] == '(')
 					{
 						m_inclusions.push_back(s.substr(10, s.length() - 14));
-						continue;
+						fputs("\n", p); continue;
 					}
 				}
 			}
@@ -575,12 +577,12 @@ bool CProgram::open(const std::string fileName)
 					if (s[7] == ' ')
 					{
 						m_inclusions.push_back(s.substr(9, s.length() - 12));
-						continue;
+						fputs("\n", p); continue;
 					}
 					else if (s[7] == '(')
 					{
 						m_inclusions.push_back(s.substr(9, s.length() - 13));
-						continue;
+						fputs("\n", p); continue;
 					}
 				}
 			}
@@ -588,7 +590,11 @@ bool CProgram::open(const std::string fileName)
 		}
 
 		fseek(p, 0, SEEK_SET);
+
+		const std::string parsing = m_parsing;
+		m_parsing = fileName;
 		parseFile(p);
+		m_parsing = parsing;
 		fclose(p);
 	}
 
@@ -972,7 +978,7 @@ void CProgram::include(const std::string file)
 	{
 		methods.push_back(*i);
 		int depth = 0;
-		CONST_POS j = prg.m_units.begin() + i->i - 2;
+		CONST_POS j = prg.m_units.begin() + i->i - 1;
 		do
 		{
 			m_units.push_back(*j);
