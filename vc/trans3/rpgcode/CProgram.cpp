@@ -395,12 +395,18 @@ void CProgram::methodCall(CALL_DATA &call)
 
 	fr.i = call.prg->m_i - call.prg->m_units.begin();
 
-	if ((call.prg->m_i->udt & UDT_LINE) || bNoRet)
+	if (bNoRet)
 	{
+		fr.bReturn = true;
+	}
+	else if (call.prg->m_i->udt & UDT_LINE)
+	{
+		fr.bReturn = false;
 		fr.p = NULL;
 	}
 	else
 	{
+		fr.bReturn = true;
 		fr.p = &call.prg->m_pStack->back();
 		fr.p->udt = UDT_NUM;
 		fr.p->num = 0.0;
@@ -1098,11 +1104,13 @@ void tagMachineUnit::execute(CProgram *prg) const
 			}
 			else if (func == CProgram::skipMethod)
 			{
+				const bool bReturn = prg->m_calls.back().bReturn;
 				prg->m_i = prg->m_units.begin() + prg->m_calls.back().i;
 				prg->m_calls.pop_back();
 				prg->m_stack.pop_back();
 				prg->m_pStack = &prg->m_stack.back();
 				prg->m_locals.pop_back();
+				if (bReturn) return;
 			}
 			else if (((func == CProgram::conditional) || (func == CProgram::elseIf)) && (prg->m_i != prg->m_units.end()))
 			{

@@ -70,6 +70,7 @@ typedef struct tagCallFrame
 	unsigned int i;		// Unit to which to return.
 	unsigned int j;		// Closing brace of the method.
 	LPSTACK_FRAME p;	// Return value.
+	bool bReturn;		// Whether we should return a value.
 	unsigned int obj;	// This pointer.
 } CALL_FRAME;
 
