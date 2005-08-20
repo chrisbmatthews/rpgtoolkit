@@ -808,9 +808,6 @@ void CProgram::parseFile(FILE *pFile)
 	{
 		if ((i->udt & UDT_FUNC) && (i->func == skipMethod))
 		{
-			if (i->lit == "one" || i->lit == "two") {
-				int x = 0; x = 1;
-			}
 			LPNAMED_METHOD p = NAMED_METHOD::locate(i->lit, (unsigned int)i->num, false);
 			if (p)
 			{
