@@ -121,7 +121,7 @@ IFighter *getFighter(const std::string name)
 }
 
 /*
- * mwin(str$)
+ * void mwin(string str)
  * 
  * Show the message window.
  */
@@ -154,9 +154,9 @@ void mwin(CALL_DATA &params)
 }
 
 /*
- * wait([ret])
+ * string wait([string &ret])
  * 
- * Waits for a key to be pressed, and returns the key that was.
+ * Wait for a key to be pressed, and return the key that was.
  */
 void wait(CALL_DATA &params)
 {
@@ -178,11 +178,11 @@ void wait(CALL_DATA &params)
 }
 
 /*
- * mwincls()
+ * void mwinCls()
  * 
  * Clear and hide the message window.
  */
-void mwincls(CALL_DATA &params)
+void mwinCls(CALL_DATA &params)
 {
 	extern bool g_bShowMessageWindow;
 	g_bShowMessageWindow = false;
@@ -191,7 +191,7 @@ void mwincls(CALL_DATA &params)
 }
 
 /*
- * send(file$, x!, y![, z!])
+ * void send(string file, int x, int y, [int z = 1])
  * 
  * Send the player to a new board.
  */
@@ -243,7 +243,7 @@ void send(CALL_DATA &params)
 }
 
 /*
- * text(x, y, str[, cnv])
+ * void text(double x, double y, string str, [canvas cnv])
  *
  * Displays text on the screen.
  */
@@ -266,11 +266,11 @@ void text(CALL_DATA &params)
 }
 
 /*
- * pixelText(x, y, str[, cnv])
+ * void pixelText(int x, int y, string str, [canvas cnv])
  *
  * Displays text on the screen using pixel coordinates.
  */
-void pixeltext(CALL_DATA &params)
+void pixelText(CALL_DATA &params)
 {
 	const int count = params.params;
 	if (count != 3 && count != 4)
@@ -280,7 +280,7 @@ void pixeltext(CALL_DATA &params)
 	CGDICanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
 	if (cnv)
 	{
-		cnv->DrawText(params[0].getNum(), params[1].getNum(), params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+		cnv->DrawText(int(params[0].getNum()), int(params[1].getNum()), params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	}
 	if (count == 3)
 	{
@@ -289,7 +289,7 @@ void pixeltext(CALL_DATA &params)
 }
 
 /*
- * branch(:label)
+ * void branch(label lbl)
  * 
  * Jump to a label.
  */
@@ -299,13 +299,16 @@ void branch(CALL_DATA &params)
 	{
 		throw CError("Branch() requires one parameter.");
 	}
-	params.prg->jump(params[0].lit);
+	params.prg->jump((params[0].lit[0] == ':') ? params[0].lit : params[0].getLit());
 }
 
 /*
- * change(...)
+ * void change(string program)
  * 
- * Description.
+ * Change this program so that next time it is triggered, a
+ * different program runs instead. Change() is active only
+ * while the player remains on the board (i.e., leaving
+ * the board causes programs to return to normal).
  */
 void change(CALL_DATA &params)
 {
@@ -313,9 +316,9 @@ void change(CALL_DATA &params)
 }
 
 /*
- * clear([cnv!])
+ * void clear([canvas cnv])
  * 
- * Clears a surface.
+ * Clear a surface.
  */
 void clear(CALL_DATA &params)
 {
@@ -335,7 +338,7 @@ void clear(CALL_DATA &params)
 }
 
 /*
- * done()
+ * void done()
  * 
  * End the program.
  */
@@ -345,7 +348,7 @@ void done(CALL_DATA &params)
 }
 
 /*
- * windows()
+ * void windows()
  * 
  * Exit to windows.
  */
@@ -355,7 +358,7 @@ void windows(CALL_DATA &params)
 }
 
 /*
- * empty()
+ * void empty()
  * 
  * Clear all globals.
  */
@@ -365,7 +368,7 @@ void empty(CALL_DATA &params)
 }
 
 /*
- * end()
+ * void end()
  * 
  * End the program.
  */
@@ -375,7 +378,7 @@ void end(CALL_DATA &params)
 }
 
 /*
- * font(font$)
+ * void font(string font)
  * 
  * Load a font, either true type or TK2.
  */
@@ -389,23 +392,30 @@ void font(CALL_DATA &params)
 }
 
 /*
- * fontsize(size!)
+ * void fontSize(int size)
  * 
  * Set the font size.
  */
-void fontsize(CALL_DATA &params)
+void fontSize(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
 		throw CError("FontSize() requires one parameter.");
 	}
-	g_fontSize = params[0].getNum();
+	g_fontSize = int(params[0].getNum());
 }
 
 /*
- * fade(...)
+ * void fade(int type)
  * 
- * Description.
+ * Perform a fade using the current colour. There are several
+ * different types of fades.
+ *
+ * 0 - the screen is blotted out by a growing a shrinking box
+ * 1 - blots out with vertical lines
+ * 2 - fades from white to black
+ * 3 - line sweeps across the screen
+ * 4 - black circle swallows the player
  */
 void fade(CALL_DATA &params)
 {
@@ -413,7 +423,7 @@ void fade(CALL_DATA &params)
 }
 
 /*
- * fight(skill!, background$)
+ * void fight(int skill, string background)
  * 
  * Start a skill level fight.
  */
@@ -423,11 +433,11 @@ void fight(CALL_DATA &params)
 	{
 		throw CError("Fight() requires two parameters.");
 	}
-	skillFight(params[0].getNum(), params[1].getLit());
+	skillFight(int(params[0].getNum()), params[1].getLit());
 }
 
 /*
- * get([key$])
+ * string get([string &ret])
  * 
  * Get a key from the queue.
  */
@@ -486,7 +496,7 @@ void viewbrd(CALL_DATA &params)
 }
 
 /*
- * bold(on/off)
+ * void bold(bool enable)
  * 
  * Toggle emboldening of text.
  */
@@ -494,7 +504,7 @@ void bold(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
-		g_bold = (parser::uppercase(params[0].getLit()) == "ON");
+		g_bold = params[0].getBool();
 	}
 	else
 	{
@@ -503,7 +513,7 @@ void bold(CALL_DATA &params)
 }
 
 /*
- * italics(on/off)
+ * void italics(bool enable)
  * 
  * Toggle italicizing of text.
  */
@@ -511,7 +521,7 @@ void italics(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
-		g_italic = (parser::uppercase(params[0].getLit()) == "ON");
+		g_italic = params[0].getBool();
 	}
 	else
 	{
@@ -520,7 +530,7 @@ void italics(CALL_DATA &params)
 }
 
 /*
- * underline(on/off)
+ * void underline(bool enable)
  * 
  * Toggle underlining of text.
  */
@@ -528,7 +538,7 @@ void underline(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
-		g_underline = (parser::uppercase(params[0].getLit()) == "ON");
+		g_underline = params[0].getBool();
 	}
 	else
 	{
@@ -537,59 +547,56 @@ void underline(CALL_DATA &params)
 }
 
 /*
- * wingraphic(file$)
+ * void winGraphic(string file)
  * 
  * Set the message window background image.
  */
-void wingraphic(CALL_DATA &params)
+void winGraphic(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		extern std::string g_projectPath;
-		g_mwinBkg = g_projectPath + BMP_PATH + params[0].getLit();
-		g_mwinColor = 0;
-	}
-	else
+	if (params.params != 1)
 	{
 		throw CError("WinGraphic() requires one parameter.");
 	}
+	extern std::string g_projectPath;
+	g_mwinBkg = g_projectPath + BMP_PATH + params[0].getLit();
+	g_mwinColor = 0;
 }
 
 /*
- * wincolor(dos!)
+ * void winColor(int dos)
  * 
  * Set the message window's colour using a DOS code.
  */
-void wincolor(CALL_DATA &params)
+void winColor(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
 		throw CError("WinColor() requires one parameter.");
 	}
 	g_mwinBkg = "";
-	int color = params[0].getNum();
+	int color = int(params[0].getNum());
 	if (color < 0) color = 0;
 	else if (color > 255) color = 255;
 	g_mwinColor = CTile::getDOSColor(color);
 }
 
 /*
- * wincolorrgb(r!, g!, b!)
+ * void winColorRgb(int r, int g, int b)
  * 
  * Set the message window's colour.
  */
-void wincolorrgb(CALL_DATA &params)
+void winColorRgb(CALL_DATA &params)
 {
 	if (params.params != 3)
 	{
 		throw CError("WinColorRGB() requires three parameters.");
 	}
 	g_mwinBkg = "";
-	g_mwinColor = RGB(params[0].getNum(), params[1].getNum(), params[2].getNum());
+	g_mwinColor = RGB(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()));
 }
 
 /*
- * color(dos!)
+ * void color(int dos)
  * 
  * Change to a DOS colour.
  */
@@ -609,23 +616,24 @@ void color(CALL_DATA &params)
 }
 
 /*
- * colorrgb(r!, g!, b!)
+ * void colorRgb(int r, int g, int b)
  * 
  * Change the active colour to an RGB value.
  */
-void colorrgb(CALL_DATA &params)
+void colorRgb(CALL_DATA &params)
 {
 	if (params.params != 3)
 	{
 		throw CError("ColorRGB() requires three parameters.");
 	}
-	g_color = RGB(params[0].getNum(), params[1].getNum(), params[2].getNum());
+	g_color = RGB(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()));
 }
 
 /*
- * move(...)
+ * void move(int x, int y, [int z = 1])
  * 
- * Description.
+ * Move this board program to a new location on the board. The
+ * effects last until the board has been left.
  */
 void move(CALL_DATA &params)
 {
@@ -633,19 +641,23 @@ void move(CALL_DATA &params)
 }
 
 /*
- * newplyr(...)
+ * void newPlyr(string file)
  * 
- * Description.
+ * Change the graphics of the main player to that of the
+ * file passed in. The file can be a character file (*.tem)
+ * or that of a tile (*.tstxxx, *.gph).
  */
-void newplyr(CALL_DATA &params)
+void newPlyr(CALL_DATA &params)
 {
 
 }
 
 /*
- * over(...)
+ * void over()
  * 
- * Description.
+ * Displays a game over message and resets the game. Because
+ * you can (and should) set a game over program, this function
+ * is pointless.
  */
 void over(CALL_DATA &params)
 {
@@ -653,9 +665,10 @@ void over(CALL_DATA &params)
 }
 
 /*
- * prg(...)
+ * void prg(string program. int x, int y, [int z = 1])
  * 
- * Description.
+ * Move a program on the current board to a new location. This
+ * stays in effect until the board is left.
  */
 void prg(CALL_DATA &params)
 {
@@ -663,9 +676,9 @@ void prg(CALL_DATA &params)
 }
 
 /*
- * prompt(...)
+ * string prompt(string question, [string &ret])
  * 
- * Description.
+ * Ask the player a question, and return the result.
  */
 void prompt(CALL_DATA &params)
 {
@@ -673,9 +686,9 @@ void prompt(CALL_DATA &params)
 }
 
 /*
- * put(x!, y!, tile$)
+ * void put(int x, int y, string tile)
  * 
- * Put tile$ at x!, y! on the board.
+ * Puts a tile at the specified location on the board.
  */
 void put(CALL_DATA &params)
 {
@@ -689,9 +702,9 @@ void put(CALL_DATA &params)
 }
 
 /*
- * reset(...)
+ * void reset()
  * 
- * Description.
+ * Reset the game.
  */
 void reset(CALL_DATA &params)
 {
@@ -699,7 +712,7 @@ void reset(CALL_DATA &params)
 }
 
 /*
- * run(str$)
+ * void run(string program)
  * 
  * Transfer control to a different program.
  */
@@ -718,19 +731,19 @@ void run(CALL_DATA &params)
 }
 
 /*
- * sound()
+ * void sound()
  * 
- * Depreciated TK1 function.
+ * Obsolete.
  */
 void sound(CALL_DATA &params)
 {
-	throw CError("Please use TK3's media functions, rather than this TK1 function!");
+	throw CError("Sound() is obsolete. Please use TK3's media functions.");
 }
 
 /*
- * win()
+ * void win()
  * 
- * Wins the game.
+ * Obsolete.
  */
 void win(CALL_DATA &params)
 {
@@ -738,7 +751,7 @@ void win(CALL_DATA &params)
 }
 
 /*
- * hp(handle$, value!)
+ * void hp(string handle, int value)
  * 
  * Set a fighter's hp.
  */
@@ -756,11 +769,11 @@ void hp(CALL_DATA &params)
 }
 
 /*
- * givehp(handle$, add!)
+ * void giveHp(string handle, int add)
  * 
  * Increase a fighter's current hp.
  */
-void givehp(CALL_DATA &params)
+void giveHp(CALL_DATA &params)
 {
 	if (params.params != 2)
 	{
@@ -779,11 +792,11 @@ void givehp(CALL_DATA &params)
 }
 
 /*
- * gethp(handle$[, ret!])
+ * int getHp(string handle, [int &ret])
  * 
  * Get a fighter's hp.
  */
-void gethp(CALL_DATA &params)
+void getHp(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -811,11 +824,11 @@ void gethp(CALL_DATA &params)
 }
 
 /*
- * maxhp(handle$, value!)
+ * void maxHp(string handle, int value)
  * 
  * Set a fighter's max hp.
  */
-void maxhp(CALL_DATA &params)
+void maxHp(CALL_DATA &params)
 {
 	if (params.params != 2)
 	{
@@ -829,11 +842,11 @@ void maxhp(CALL_DATA &params)
 }
 
 /*
- * getmaxhp(handle$[, ret!])
+ * int getMaxHp(string handle, [int &ret])
  * 
  * Get a fighter's max hp.
  */
-void getmaxhp(CALL_DATA &params)
+void getMaxHp(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -861,7 +874,7 @@ void getmaxhp(CALL_DATA &params)
 }
 
 /*
- * smp(handle$, value!)
+ * void smp(string handle, int value)
  * 
  * Set a fighter's smp.
  */
@@ -879,11 +892,11 @@ void smp(CALL_DATA &params)
 }
 
 /*
- * givesmp(handle$, value!)
+ * void giveSmp(string handle, int value)
  * 
  * Increase a fighter's smp.
  */
-void givesmp(CALL_DATA &params)
+void giveSmp(CALL_DATA &params)
 {
 	if (params.params != 2)
 	{
@@ -902,11 +915,11 @@ void givesmp(CALL_DATA &params)
 }
 
 /*
- * getsmp(handle$[, ret!])
+ * int getSmp(string handle, [int &ret])
  * 
  * Get a fighter's smp.
  */
-void getsmp(CALL_DATA &params)
+void getSmp(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -934,11 +947,11 @@ void getsmp(CALL_DATA &params)
 }
 
 /*
- * maxsmp(handle$, value!)
+ * void maxSmp(string handle, int value)
  * 
  * Set a fighter's max smp.
  */
-void maxsmp(CALL_DATA &params)
+void maxSmp(CALL_DATA &params)
 {
 	if (params.params != 2)
 	{
@@ -952,11 +965,11 @@ void maxsmp(CALL_DATA &params)
 }
 
 /*
- * GetMaxSMP(handle$[, ret!])
+ * int getMaxSmp(string handle, [int &ret])
  * 
  * Get a fighter's max smp.
  */
-void getmaxsmp(CALL_DATA &params)
+void getMaxSmp(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -984,23 +997,22 @@ void getmaxsmp(CALL_DATA &params)
 }
 
 /*
- * start(file)
+ * void start(string file)
  * 
  * Open a file with the shell.
+ *
+ * There is unfortunately no default directory for this
+ * function and assuming one will only break backward
+ * compatibility in some obscure manner.
+ *
+ * Note also that previous incarnations prevented the
+ * launching of executables and shortcuts, but this is
+ * a nonsensical security measure when plugins no longer
+ * display a silly warning box, and this function can be
+ * trivially modified by someone who intends to be malicious.
  */
 void start(CALL_DATA &params)
 {
-	/*
-	 * This is laughable, but there is no default directory
-	 * for this function, and assuming one will only break
-	 * backward compatibility in some obscure manner.
-	 *
-	 * Note also that previous incarnations prevented the
-	 * launching of executables and shortcuts, but this is
-	 * a nonsensical security measure when plugins no longer
-	 * display a silly warning box, and this function can be
-	 * trivially modified by someone who intends to be malicious.
-	 */
 	if (params.params != 1)
 	{
 		throw CError("Start() requires one parameter.");
@@ -1009,11 +1021,11 @@ void start(CALL_DATA &params)
 }
 
 /*
- * GiveItem(itm$)
+ * void giveItem(string itm)
  * 
  * Add an item to the inventory.
  */
-void giveitem(CALL_DATA &params)
+void giveItem(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -1024,11 +1036,11 @@ void giveitem(CALL_DATA &params)
 }
 
 /*
- * TakeItem(itm$)
+ * void takeItem(string itm)
  * 
  * Remove an item from the inventory.
  */
-void takeitem(CALL_DATA &params)
+void takeItem(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -1039,9 +1051,9 @@ void takeitem(CALL_DATA &params)
 }
 
 /*
- * wav(...)
+ * void wav(string file)
  * 
- * Description.
+ * Play a wave file (e.g., a source effect).
  */
 void wav(CALL_DATA &params)
 {
@@ -1049,7 +1061,7 @@ void wav(CALL_DATA &params)
 }
 
 /*
- * delay(time!)
+ * void delay(double time)
  * 
  * Delay for a certain number of seconds.
  */
@@ -1063,9 +1075,9 @@ void delay(CALL_DATA &params)
 }
 
 /*
- * random(range![, ret!])
+ * int random(int max, [int &ret])
  * 
- * Generate a random number.
+ * Generate a random number from one to the supplied maximum, inclusive.
  */
 void random(CALL_DATA &params)
 {
@@ -1073,21 +1085,26 @@ void random(CALL_DATA &params)
 	{
 		throw CError("Random() requires one or two parameters.");
 	}
-	const double toRet = (1 + (rand() % int(params[0].getNum() + 1)));
+	params.ret().udt = UDT_NUM;
+	params.ret().num = (1 + (rand() % int(params[0].getNum() + 1)));
 	if (params.params == 2)
 	{
-		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-		var->udt = UDT_NUM;
-		var->num = toRet;
+		*params.prg->getVar(params[1].lit) = params.ret();
 	}
-	params.ret().udt = UDT_NUM;
-	params.ret().num = toRet;
 }
 
 /*
- * push(...)
+ * void push(string direction, [string handle])
  * 
- * Description.
+ * Push the player with the specified handle, or the default player
+ * if no handle is specified, along the given directions. The direction
+ * should be a comma delimited, but if it is not, it will be delimited
+ * for backward compatibility. These styles are accepted, and can be
+ * mixed even within the same directonal string:
+ *
+ * - N, S, E, W, NE, NW, SE, SW
+ * - NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST
+ * - 1, 2, 3, 4, 5, 6, 7, 8
  */
 void push(CALL_DATA &params)
 {
@@ -1095,21 +1112,22 @@ void push(CALL_DATA &params)
 }
 
 /*
- * tiletype(...)
+ * void tileType(int x, int y, string type, [int z = 1])
  * 
- * Description.
+ * Change a tile's type. Valid types for the string parameter
+ * are "NORMAL", "SOLID", and "UNDER".
  */
-void tiletype(CALL_DATA &params)
+void tileType(CALL_DATA &params)
 {
 
 }
 
 /*
- * MediaPlay(file$)
+ * void mediaPlay(string file)
  * 
- * Set file$ as the background music.
+ * Play the specified file as the background music.
  */
-void mediaplay(CALL_DATA &params)
+void mediaPlay(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -1124,32 +1142,32 @@ void mediaplay(CALL_DATA &params)
 }
 
 /*
- * MediaStop()
+ * void mediaStop()
  * 
  * Stop the background music.
  */
-void mediastop(CALL_DATA &params)
+void mediaStop(CALL_DATA &params)
 {
 	extern CAudioSegment *g_bkgMusic;
 	g_bkgMusic->stop();
 }
 
 /*
- * GoDOS(command$)
+ * void goDos(string command)
  * 
- * Call in to DOS.
+ * Obsolete.
  */
-void godos(CALL_DATA &params)
+void goDos(CALL_DATA &params)
 {
 	throw CError("GoDos() is obsolete.");
 }
 
 /*
- * AddPlayer(file$)
+ * void addPlayer(string file)
  * 
  * Add a player to the party.
  */
-void addplayer(CALL_DATA &params)
+void addPlayer(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -1161,21 +1179,21 @@ void addplayer(CALL_DATA &params)
 }
 
 /*
- * removeplayer(...)
+ * void removePlayer(string handle)
  * 
- * Description.
+ * Remove the player whose handle is specified from the party.
  */
-void removeplayer(CALL_DATA &params)
+void removePlayer(CALL_DATA &params)
 {
 
 }
 
 /*
- * SetPixel(x!, y![, cnv!])
+ * void setPixel(int x, int y, [canvas cnv])
  * 
  * Set a pixel in the current colour.
  */
-void setpixel(CALL_DATA &params)
+void setPixel(CALL_DATA &params)
 {
 	if (params.params == 2)
 	{
@@ -1197,11 +1215,11 @@ void setpixel(CALL_DATA &params)
 }
 
 /*
- * DrawLine(x1!, y1!, x2!, y2![, cnv!])
+ * void drawLine(int x1, int y1, int x2, int y2, [canvas cnv])
  * 
  * Draw a line.
  */
-void drawline(CALL_DATA &params)
+void drawLine(CALL_DATA &params)
 {
 	if (params.params == 4)
 	{
@@ -1223,11 +1241,11 @@ void drawline(CALL_DATA &params)
 }
 
 /*
- * DrawRect(x1!, y1!, x2!, y2![, cnv!])
+ * void drawRect(int x1, int y1, int x2, int y2, [canvas cnv])
  * 
  * Draw a rectangle.
  */
-void drawrect(CALL_DATA &params)
+void drawRect(CALL_DATA &params)
 {
 	if (params.params == 4)
 	{
@@ -1249,11 +1267,11 @@ void drawrect(CALL_DATA &params)
 }
 
 /*
- * FillRect(x1!, y1!, x2!, y2![, cnv!])
+ * void fillRect(int x1, int y1, int x2, int y2, [canvas cnv])
  * 
  * Draw a filled rectangle.
  */
-void fillrect(CALL_DATA &params)
+void fillRect(CALL_DATA &params)
 {
 	if (params.params == 4)
 	{
@@ -1275,9 +1293,9 @@ void fillrect(CALL_DATA &params)
 }
 
 /*
- * debug(...)
+ * void debug(bool enable)
  * 
- * Description.
+ * Toggle debug mode.
  */
 void debug(CALL_DATA &params)
 {
@@ -1285,11 +1303,13 @@ void debug(CALL_DATA &params)
 }
 
 /*
- * CastNum(x, [ret])
+ * double castNum(variant x, [double &ret])
  * 
- * Return x cast to a number. Pointless now.
+ * Cast the specified value to a number (double). There is really no need
+ * to do this ever. RPGCode by itself will cast values passed to functions
+ * to the correct types as required.
  */
-void castnum(CALL_DATA &params)
+void castNum(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -1309,11 +1329,13 @@ void castnum(CALL_DATA &params)
 }
 
 /*
- * CastLit(x, [ret])
+ * string castLit(variant x, [string &ret])
  * 
- * Return x cast to a string. Pointless now.
+ * Cast the specified value to a string. There is really no need
+ * to do this ever. RPGCode by itself will cast values passed to
+ * functions to the correct types as required.
  */
-void castlit(CALL_DATA &params)
+void castLit(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -1333,11 +1355,13 @@ void castlit(CALL_DATA &params)
 }
 
 /*
- * CastInt(x)
+ * int castInt(variant x, [int &ret])
  * 
- * Return x cast to an integer (i.e., sans fractional pieces).
+ * Cast the specified value to an integer (i.e., a number in the sequence
+ * ...-2, -1, 0, 1, 2...). This is useful for removing fractional parts of
+ * numbers. Note that this function does not round.
  */
-void castint(CALL_DATA &params)
+void castInt(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -1357,19 +1381,30 @@ void castint(CALL_DATA &params)
 }
 
 /*
- * pushitem(...)
+ * void pushItem(variant item, string direction)
  * 
- * Description.
+ * The first parameter accepts either a string that can be either
+ * "target" or "source" direction or the number of an item. The
+ * syntax of the directional string is the same as for [[push()]].
  */
-void pushitem(CALL_DATA &params)
+void pushItem(CALL_DATA &params)
 {
 
 }
 
 /*
- * wander(target[, restrict])
+ * void wander(variant target, [int restrict = 0])
  * 
- * Cause an NPC to wander.
+ * The first parameter accepts either a string that can be either
+ * "target" or "source" or the number of an item. The selected item
+ * will take a step in a random direction, or as restricted by the
+ * optional parameter. The allowed values for said parameter are:
+ *
+ * 0 - only north, south, east, and west on normal boards, only
+ *     diagonals on isometric boards (default)
+ * 1 - only north, south, east, and west
+ * 2 - only diagonals
+ * 3 - all directions
  */
 void wander(CALL_DATA &params)
 {
@@ -1440,7 +1475,7 @@ void wander(CALL_DATA &params)
 }
 
 /*
- * bitmap(file$[, cnv!])
+ * void bitmap(string file, [canvas cnv])
  * 
  * Fill a surface with an image.
  */
@@ -1472,29 +1507,31 @@ void bitmap(CALL_DATA &params)
 }
 
 /*
- * mainfile(...)
+ * void mainFile(string gam)
  * 
- * Description.
+ * Load a new main file.
  */
-void mainfile(CALL_DATA &params)
+void mainFile(CALL_DATA &params)
 {
 
 }
 
 /*
- * dirsav(...)
+ * string dirSav([string &ret])
  * 
- * Description.
+ * Allow the user to choose a *.sav file from the "Saved"
+ * directory. For historical reasons, returns "CANCEL" if
+ * no file is chosen, not "".
  */
-void dirsav(CALL_DATA &params)
+void dirSav(CALL_DATA &params)
 {
 
 }
 
 /*
- * save(...)
+ * void save(string file)
  * 
- * Description.
+ * Save the current game state to a file.
  */
 void save(CALL_DATA &params)
 {
@@ -1502,9 +1539,9 @@ void save(CALL_DATA &params)
 }
 
 /*
- * load(...)
+ * void load(string file)
  * 
- * Description.
+ * Load the game state from a file.
  */
 void load(CALL_DATA &params)
 {
@@ -1512,9 +1549,11 @@ void load(CALL_DATA &params)
 }
 
 /*
- * scan(...)
+ * void scan(int x, int y, int pos)
  * 
- * Description.
+ * Save the tile specified to a buffer identified by
+ * pos. There is no particular number to pick for pos;
+ * any will do.
  */
 void scan(CALL_DATA &params)
 {
@@ -1522,9 +1561,9 @@ void scan(CALL_DATA &params)
 }
 
 /*
- * mem(...)
+ * void mem(int x, int y, int pos)
  * 
- * Description.
+ * Lay a scanned tile on the board at the specified position.
  */
 void mem(CALL_DATA &params)
 {
@@ -1532,9 +1571,10 @@ void mem(CALL_DATA &params)
 }
 
 /*
- * print(...)
+ * void print(string text)
  * 
- * Description.
+ * Write the specified string one line down from the last call
+ * to [[text()]].
  */
 void print(CALL_DATA &params)
 {
@@ -1542,11 +1582,11 @@ void print(CALL_DATA &params)
 }
 
 /*
- * RPGCode(line$)
+ * void rpgCode(string line)
  * 
  * Independently run a line of RPGCode.
  */
-void rpgcode(CALL_DATA &params)
+void rpgCode(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -1561,11 +1601,11 @@ void rpgcode(CALL_DATA &params)
 }
 
 /*
- * CharAt(string, pos, [ret])
+ * string charAt(string str, int pos, [string &ret])
  * 
  * Get a character from a string. The first character is one.
  */
-void charat(CALL_DATA &params)
+void charAt(CALL_DATA &params)
 {
 	if ((params.params != 2) && (params.params != 3))
 	{
@@ -1620,21 +1660,25 @@ void eraseplayer(CALL_DATA &params)
 }
 
 /*
- * kill(...)
+ * void kill(variant &var)
  * 
- * Description.
+ * Delete a variable.
  */
 void kill(CALL_DATA &params)
 {
-
+	if (params.params != 1)
+	{
+		throw CError("Kill() requires one parameter.");
+	}
+	params.prg->freeVar(params[0].lit);
 }
 
 /*
- * GiveGP(gp)
+ * void giveGp(int gp)
  * 
  * Give gold pieces.
  */
-void givegp(CALL_DATA &params)
+void giveGp(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -1644,11 +1688,11 @@ void givegp(CALL_DATA &params)
 }
 
 /*
- * TakeGP(gp)
+ * void takeGp(int gp)
  * 
  * Take gold pieces.
  */
-void takegp(CALL_DATA &params)
+void takeGp(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -1658,11 +1702,11 @@ void takegp(CALL_DATA &params)
 }
 
 /*
- * GetGP([ret])
+ * int getGp([int &ret])
  * 
  * Return the amount of gold pieces held.
  */
-void getgp(CALL_DATA &params)
+void getGp(CALL_DATA &params)
 {
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(g_gp);
@@ -1683,21 +1727,21 @@ void wavstop(CALL_DATA &params)
 }
 
 /*
- * BorderColor(r!, g!, b!)
+ * void borderColor(int r, int g, int b)
  * 
  * Obsolete.
  */
-void bordercolor(CALL_DATA &params)
+void borderColor(CALL_DATA &params)
 {
 	throw CError("BorderColor() is obsolete.");
 }
 
 /*
- * FightRnemy(enemy$, enemy$, ... background$)
+ * void fightEnemy(string enemy, string enemy, ... string background)
  * 
  * Start a fight.
  */
-void fightenemy(CALL_DATA &params)
+void fightEnemy(CALL_DATA &params)
 {
 	if (params.params < 2)
 	{
@@ -1732,11 +1776,11 @@ void callshop(CALL_DATA &params)
 }
 
 /*
- * ClearBuffer()
+ * void clearBuffer()
  * 
  * Clear the keyboard buffer.
  */
-void clearbuffer(CALL_DATA &params)
+void clearBuffer(CALL_DATA &params)
 {
 	extern std::vector<char> g_keys;
 	g_keys.clear();
@@ -1829,21 +1873,21 @@ void destroyitem(CALL_DATA &params)
 }
 
 /*
- * WalkSpeed(fast/slow)
+ * void walkSpeed()
  * 
  * Obsolete.
  */
-void walkspeed(CALL_DATA &params)
+void walkSpeed(CALL_DATA &params)
 {
 	throw CError("WalkSpeed() is obsolete.");
 }
 
 /*
- * ItemWalkSpeed(fast/slow)
+ * void itemWalkSpeed()
  * 
  * Obsolete.
  */
-void itemwalkspeed(CALL_DATA &params)
+void itemWalkSpeed(CALL_DATA &params)
 {
 	throw CError("ItemWalkSpeed() is obsolete.");
 }
@@ -1979,11 +2023,11 @@ void playavismall(CALL_DATA &params)
 }
 
 /*
- * GetCorner(topX, topY)
+ * void getCorner(int &topX, int &topY)
  * 
  * Get the corner of the currently shown portion of the board.
  */
-void getcorner(CALL_DATA &params)
+void getCorner(CALL_DATA &params)
 {
 	extern double g_topX, g_topY;
 
@@ -2004,11 +2048,11 @@ void getcorner(CALL_DATA &params)
 }
 
 /*
- * UnderArrow(on/off)
+ * void underArrow()
  * 
  * Toggle the under arrow.
  */
-void underarrow(CALL_DATA &params)
+void underArrow(CALL_DATA &params)
 {
 	throw CError("UnderArrow() is obsolete.");
 }
@@ -2044,11 +2088,11 @@ void menugraphic(CALL_DATA &params)
 }
 
 /*
- * FightMenuGraphic(image$)
+ * void fightMenuGraphic(string image)
  * 
  * Choose an image for the fight menu graphic.
  */
-void fightmenugraphic(CALL_DATA &params)
+void fightMenuGraphic(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -2062,11 +2106,11 @@ void fightmenugraphic(CALL_DATA &params)
 }
 
 /*
- * fightstyle(0/1)
+ * void fightStyle()
  * 
  * Obsolete.
  */
-void fightstyle(CALL_DATA &params)
+void fightStyle(CALL_DATA &params)
 {
 	throw CError("FightStyle() is obsolete.");
 }
@@ -2082,21 +2126,21 @@ void stance(CALL_DATA &params)
 }
 
 /*
- * BattleSpeed(speed!)
+ * void battleSpeed(int speed)
  * 
  * Obsolete.
  */
-void battlespeed(CALL_DATA &params)
+void battleSpeed(CALL_DATA &params)
 {
 	throw CError("BattleSpeed() is obsolete.");
 }
 
 /*
- * TextSpeed(speed!)
+ * void textSpeed(int speed)
  * 
  * Obsolete.
  */
-void textspeed(CALL_DATA &params)
+void textSpeed(CALL_DATA &params)
 {
 	throw CError("TextSpeed() is obsolete.");
 }
@@ -2112,11 +2156,11 @@ void mwinsize(CALL_DATA &params)
 }
 
 /*
- * GetDP(handle, [ret])
+ * int getDp(string handle, [int &ret])
  * 
  * Get a fighter's dp.
  */
-void getdp(CALL_DATA &params)
+void getDp(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -2144,11 +2188,11 @@ void getdp(CALL_DATA &params)
 }
 
 /*
- * GetFP(handle, [ret])
+ * int getFp(string handle, [int &ret])
  * 
  * Get a fighter's fp.
  */
-void getfp(CALL_DATA &params)
+void getFp(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -2206,11 +2250,11 @@ void removestatus(CALL_DATA &params)
 }
 
 /*
- * SetImage(str$, x!, y!, width!, height![, cnv!])
+ * void setImage(string str, int x, int y, int width, int height, [canvas cnv])
  * 
- * Sets an image.
+ * Set an image.
  */
-void setimage(CALL_DATA &params)
+void setImage(CALL_DATA &params)
 {
 	CGDICanvas *cnv = NULL;
 	if (params.params == 5)
@@ -2278,7 +2322,7 @@ void restorescreen(CALL_DATA &params)
 }
 
 /*
- * sin(x![, ret!])
+ * double sin(double x, [double &ret])
  * 
  * Calculate sine x.
  */
@@ -2298,7 +2342,7 @@ void sin(CALL_DATA &params)
 }
 
 /*
- * cos(x![, ret!])
+ * double cos(double x, [double &ret])
  * 
  * Calculate cosine x.
  */
@@ -2318,7 +2362,7 @@ void cos(CALL_DATA &params)
 }
 
 /*
- * tan(x![, ret!])
+ * double tan(double x, [double &ret])
  * 
  * Calculate tangent x.
  */
@@ -2338,11 +2382,11 @@ void tan(CALL_DATA &params)
 }
 
 /*
- * GetPixel(x!, y!, r!, g!, b![, cnv])
+ * void getPixel(int x, int y, int &r, int &g, int &b, [canvas cnv])
  * 
  * Get the colour of the pixel at x, y.
  */
-void getpixel(CALL_DATA &params)
+void getPixel(CALL_DATA &params)
 {
 	COLORREF color = 0;
 	if (params.params == 5)
@@ -2379,11 +2423,11 @@ void getpixel(CALL_DATA &params)
 }
 
 /*
- * GetColor(r!, g!, b!)
+ * void getColor(int &r, int &g, int &b)
  * 
  * Get the current colour.
  */
-void getcolor(CALL_DATA &params)
+void getColor(CALL_DATA &params)
 {
 	if (params.params == 3)
 	{
@@ -2410,28 +2454,26 @@ void getcolor(CALL_DATA &params)
 }
 
 /*
- * GetFontSize([size!])
+ * int getFontSize([int &ret])
  * 
  * Get the current font size.
  */
-void getfontsize(CALL_DATA &params)
+void getFontSize(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
-		var->udt = UDT_NUM;
-		var->num = double(g_fontSize);
-	}
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(g_fontSize);
+	if (params.params == 1)
+	{
+		*params.prg->getVar(params[0].lit) = params.ret();
+	}
 }
 
 /*
- * SetImageTransparent(file$, x!, y!, width!, height!, r!, g!, b![, cnv!])
+ * void setImageTransparent(string file, int x, int y, int width, int height, int r, int g, int b, [canvas cnv])
  * 
  * Set an image with a transparent colour.
  */
-void setimagetransparent(CALL_DATA &params)
+void setImageTransparent(CALL_DATA &params)
 {
 	CGDICanvas *cnv = NULL;
 	if (params.params == 8)
@@ -2461,11 +2503,11 @@ void setimagetransparent(CALL_DATA &params)
 }
 
 /*
- * SetImageTranslucent(file$, x!, y!, width!, height![, cnv!])
+ * void setImageTranslucent(string file, int x, int y, int width, int height, [canvas cnv])
  * 
  * Set an image translucently.
  */
-void setimagetranslucent(CALL_DATA &params)
+void setImageTranslucent(CALL_DATA &params)
 {
 	CGDICanvas *cnv = NULL;
 	if (params.params == 5)
@@ -2525,11 +2567,11 @@ void sourcehandle(CALL_DATA &params)
 }
 
 /*
- * DrawEnemy(file, x, y, [cnv])
+ * void drawEnemy(string file, int x, int y, [canvas cnv])
  * 
  * Draw an enemy.
  */
-void drawenemy(CALL_DATA &params)
+void drawEnemy(CALL_DATA &params)
 {
 	extern std::string g_projectPath;
 
@@ -2584,11 +2626,11 @@ void layerput(CALL_DATA &params)
 }
 
 /*
- * GetBoardTile(x, y, z[, ret])
+ * string getBoardTile(int x, int y, int z, [string &ret])
  * 
  * Get the file name of the tile at x, y, z.
  */
-void getboardtile(CALL_DATA &params)
+void getBoardTile(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
 	if (params.params == 3)
@@ -2623,7 +2665,7 @@ void getboardtile(CALL_DATA &params)
 }
 
 /*
- * sqrt(x![, ret!])
+ * double sqrt(double x, [double &ret])
  * 
  * Calculate the square root of x.
  */
@@ -2643,13 +2685,42 @@ void sqrt(CALL_DATA &params)
 }
 
 /*
- * getboardtiletype(...)
+ * int getBoardTileType(int x, int y, int z, [int &ret])
  * 
- * Description.
+ * Get the type of a tile.
  */
-void getboardtiletype(CALL_DATA &params)
+void getBoardTileType(CALL_DATA &params)
 {
-
+	extern LPBOARD g_pBoard;
+	if (params.params == 3)
+	{
+		try
+		{
+			params.ret().udt = UDT_NUM;
+			params.ret().num = double(g_pBoard->tiletype[params[0].getNum()][params[1].getNum()][params[2].getNum()]);
+		}
+		catch (...) // Lazy solution.
+		{
+			throw CError("Out of bounds.");
+		}
+	}
+	else if (params.params == 4)
+	{
+		try
+		{
+			LPSTACK_FRAME var = params.prg->getVar(params[3].lit);
+			var->udt = UDT_NUM;
+			var->num = double(g_pBoard->tiletype[params[0].getNum()][params[1].getNum()][params[2].getNum()]);
+		}
+		catch (...)
+		{
+			throw CError("Out of bounds.");
+		}
+	}
+	else
+	{
+		throw CError("GetBoardTileType() requires three or four parameters.");
+	}
 }
 
 /*
@@ -2683,11 +2754,11 @@ void sizedanimation(CALL_DATA &params)
 }
 
 /*
- * ForceRedraw()
+ * void forceRedraw()
  * 
  * Force a redrawing of the screen.
  */
-void forceredraw(CALL_DATA &params)
+void forceRedraw(CALL_DATA &params)
 {
 	renderNow(g_cnvRpgCode, true);
 	renderRpgCodeScreen();
@@ -2714,11 +2785,11 @@ void wipe(CALL_DATA &params)
 }
 
 /*
- * GetRes(x!, y!)
+ * void getRes(int &x, int &y)
  * 
  * Get the screen's resolution.
  */
-void getres(CALL_DATA &params)
+void getRes(CALL_DATA &params)
 {
 	if (params.params != 2)
 	{
@@ -2738,11 +2809,11 @@ void getres(CALL_DATA &params)
 }
 
 /*
- * StaticText()
+ * void staticText()
  * 
  * Toggle antialiasing.
  */
-void statictext(CALL_DATA &params)
+void staticText(CALL_DATA &params)
 {
 	throw CError("StaticText() is obsolete.");
 }
@@ -2828,21 +2899,21 @@ void giveexp(CALL_DATA &params)
 }
 
 /*
- * AnimatedTiles()
+ * void animatedTiles()
  * 
  * Toggle animated tiles.
  */
-void animatedtiles(CALL_DATA &params)
+void animatedTiles(CALL_DATA &params)
 {
 	throw CError("AnimatedTiles() is obsolete.");
 }
 
 /*
- * SmartStep()
+ * void smartStep()
  * 
  * Toggle "smart" stepping.
  */
-void smartstep(CALL_DATA &params)
+void smartStep(CALL_DATA &params)
 {
 	throw CError("SmartStep() is obsolete.");
 }
@@ -2858,18 +2929,18 @@ void gamespeed(CALL_DATA &params)
 }
 
 /*
- * CharacterSpeed(speed!)
+ * void characterSpeed()
  * 
  * Obsolete.
  */
-void characterspeed(CALL_DATA &params)
+void characterSpeed(CALL_DATA &params)
 {
 	CProgram::debugger("CharacterSpeed() has depreciated into GameSpeed().");
 	gamespeed(params);
 }
 
 /*
- * Thread(file, presist[, id])
+ * thread thread(string file, bool presist, [thread &ret])
  * 
  * Start a thread.
  */
@@ -2900,11 +2971,11 @@ void thread(CALL_DATA &params)
 }
 
 /*
- * KillThread(id)
+ * void killThread(thread id)
  * 
  * Kill a thread.
  */
-void killthread(CALL_DATA &params)
+void killThread(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -2919,36 +2990,34 @@ void killthread(CALL_DATA &params)
 }
 
 /*
- * GetThreadID([ret])
+ * thread getThreadId([thread &ret])
  * 
  * Get the ID of this thread.
  */
-void getthreadid(CALL_DATA &params)
+void getThreadId(CALL_DATA &params)
 {
 	if (!params.prg->isThread())
 	{
 		throw CError("GetThreadID() is invalid outside of threads.");
 	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(int(params.prg));
 	if (params.params == 1)
 	{
-		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
-		var->udt = UDT_NUM;
-		var->num = double(int(params.prg));
+		*params.prg->getVar(params[0].lit) = params.ret();
 	}
 	else if (params.params != 0)
 	{
 		throw CError("GetThreadID() requires zero or one parameters.");
 	}
-	params.ret().udt = UDT_NUM;
-	params.ret().num = double(int(params.prg));
 }
 
 /*
- * ThreadSleep(thread, seconds)
+ * void threadSleep(thread id, double seconds)
  * 
  * Put a thread to sleep.
  */
-void threadsleep(CALL_DATA &params)
+void threadSleep(CALL_DATA &params)
 {
 	if (params.params != 2)
 	{
@@ -2973,11 +3042,11 @@ void tellthread(CALL_DATA &params)
 }
 
 /*
- * ThreadWake(thread)
+ * void threadWake(thread id)
  * 
  * Wake up a thread.
  */
-void threadwake(CALL_DATA &params)
+void threadWake(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -2992,11 +3061,11 @@ void threadwake(CALL_DATA &params)
 }
 
 /*
- * ThreadSleepRemaining(thread[, ret])
+ * double threadSleepRemaining(thread id, [double &ret])
  * 
  * Check how much sleep remains for a thread.
  */
-void threadsleepremaining(CALL_DATA &params)
+void threadSleepRemaining(CALL_DATA &params)
 {
 	if ((params.params != 1) && (params.params != 2))
 	{
@@ -3016,7 +3085,7 @@ void threadsleepremaining(CALL_DATA &params)
 }
 
 /*
- * local(name, [ret])
+ * variant &local(variant &var, [variant &ret])
  * 
  * Allocate a variable off the stack and returns a reference to it.
  */
@@ -3036,27 +3105,26 @@ void local(CALL_DATA &params)
 }
 
 /*
- * global(name, [ret])
+ * variant &global(variant &var, [variant &ret])
  * 
  * Allocates a variable on the heap and returns a reference to it.
+ *
+ * x = 1;
+ * method func()
+ * {
+ *    local(x) = 2;
+ *    mwin(global(x));
+ *    mwin(x);
+ * }
+ *
+ * Given the above code, the values of the message windows,
+ * should func() be called, would be 1 and 2 respectively
+ * because variables off the stack are preferred to ones
+ * on the heap. The call to global() explictly requests
+ * the variable 'x' from the heap.
  */
 void global(CALL_DATA &params)
 {
-	/*
-	 * x = 1;
-	 * method func()
-	 * {
-	 *    local(x) = 2;
-	 *    mwin(global(x));
-	 *    mwin(x);
-	 * }
-	 *
-	 * Given the above code, the values of the message windows,
-	 * should func() be called, would be 1 and 2 respectively
-	 * because variables off the stack are preferred to ones
-	 * on the heap. The call to global() explictly requests
-	 * the variable 'x' from the heap.
-	 */
 	if ((params.params != 1) && (params.params != 2))
 	{
 		throw CError("Global() requires one or two parameters.");
@@ -3071,21 +3139,21 @@ void global(CALL_DATA &params)
 }
 
 /*
- * AutoCommand()
+ * void autoCommand()
  * 
  * Obsolete.
  */
-void autocommand(CALL_DATA &params)
+void autoCommand(CALL_DATA &params)
 {
 	throw CWarning("AutoCommand() is obsolete.");
 }
 
 /*
- * CreateCursorMap([map!])
+ * cursor_map createCursorMap([cursor_map &ret])
  * 
  * Create a cursor map.
  */
-void createcursormap(CALL_DATA &params)
+void createCursorMap(CALL_DATA &params)
 {
 	if (params.params == 0)
 	{
@@ -3105,11 +3173,11 @@ void createcursormap(CALL_DATA &params)
 }
 
 /*
- * KillCursorMap(map!)
+ * void killCursorMap(cursor_map map)
  * 
  * Kill a cursor map.
  */
-void killcursormap(CALL_DATA &params)
+void killCursorMap(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -3119,11 +3187,11 @@ void killcursormap(CALL_DATA &params)
 }
 
 /*
- * CursorMapAdd(x!, y!, map!)
+ * void cursorMapAdd(int x, int y, cursor_map map)
  * 
  * Add a point to a cursor map.
  */
-void cursormapadd(CALL_DATA &params)
+void cursorMapAdd(CALL_DATA &params)
 {
 	if (params.params != 3)
 	{
@@ -3137,11 +3205,11 @@ void cursormapadd(CALL_DATA &params)
 }
 
 /*
- * CursorMapRun(map![, ret!])
+ * int cursorMapRun(cursor_map map, [int &ret])
  * 
  * Run a cursor map.
  */
-void cursormaprun(CALL_DATA &params)
+void cursorMapRun(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
@@ -3169,11 +3237,11 @@ void cursormaprun(CALL_DATA &params)
 }
 
 /*
- * CreateCanvas(width!, height![, cnv!])
+ * canvas createCanvas(int width, int height, [canvas &cnv])
  * 
  * Create a canvas.
  */
-void createcanvas(CALL_DATA &params)
+void createCanvas(CALL_DATA &params)
 {
 	if (params.params != 2 && params.params != 3)
 	{
@@ -3191,11 +3259,11 @@ void createcanvas(CALL_DATA &params)
 }
 
 /*
- * KillCanvas(cnv!)
+ * void killCanvas(canvas cnv)
  * 
  * Kill a canvas.
  */
-void killcanvas(CALL_DATA &params)
+void killCanvas(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -3206,11 +3274,11 @@ void killcanvas(CALL_DATA &params)
 }
 
 /*
- * DrawCanvas(cnv!, x!, y![, width!, height![, dest!]])
+ * void drawCanvas(canvas cnv, int x, int y, [int width, int height, [canvas dest]])
  * 
  * Blit a canvas forward.
  */
-void drawcanvas(CALL_DATA &params)
+void drawCanvas(CALL_DATA &params)
 {
 	if (params.params == 3)
 	{
@@ -3249,11 +3317,11 @@ void drawcanvas(CALL_DATA &params)
 }
 
 /*
- * OpenFileInput(file, folder)
+ * void openFileInput(string file, string folder)
  * 
  * Open a file in input mode.
  */
-void openfileinput(CALL_DATA &params)
+void openFileInput(CALL_DATA &params)
 {
 	extern std::string g_projectPath;
 
@@ -3265,11 +3333,11 @@ void openfileinput(CALL_DATA &params)
 }
 
 /*
- * OpenFileOutput(file, folder)
+ * void openFileOutput(string file, string folder)
  * 
  * Open a file in output mode.
  */
-void openfileoutput(CALL_DATA &params)
+void openFileOutput(CALL_DATA &params)
 {
 	extern std::string g_projectPath;
 
@@ -3281,11 +3349,11 @@ void openfileoutput(CALL_DATA &params)
 }
 
 /*
- * OpenFileAppend(file, folder)
+ * void openFileAppend(string file, string folder)
  * 
  * Open a file for appending.
  */
-void openfileappend(CALL_DATA &params)
+void openFileAppend(CALL_DATA &params)
 {
 	extern std::string g_projectPath;
 
@@ -3299,22 +3367,22 @@ void openfileappend(CALL_DATA &params)
 }
 
 /*
- * OpenFileBinary(file, folder)
+ * void openFileBinary(string file, string folder)
  * 
  * Obsolete.
  */
-void openfilebinary(CALL_DATA &params)
+void openFileBinary(CALL_DATA &params)
 {
 	CProgram::debugger("OpenFileBinary() is obsolete. Use OpenFileInput() instead.");
-	openfileinput(params);
+	openFileInput(params);
 }
 
 /*
- * CloseFile(file)
+ * void closeFile(string file)
  * 
  * Close a file.
  */
-void closefile(CALL_DATA &params)
+void closeFile(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
@@ -3328,11 +3396,11 @@ void closefile(CALL_DATA &params)
 }
 
 /*
- * FileInput(file, [ret])
+ * string fileInput(string file, [string &ret])
  * 
  * Read a line from a line.
  */
-void fileinput(CALL_DATA &params)
+void fileInput(CALL_DATA &params)
 {
 	if ((params.params != 1) && (params.params != 2))
 	{
@@ -3350,11 +3418,11 @@ void fileinput(CALL_DATA &params)
 }
 
 /*
- * FilePrint(file, line)
+ * void filePrint(string file, string line)
  * 
  * Write a line to a file.
  */
-void fileprint(CALL_DATA &params)
+void filePrint(CALL_DATA &params)
 {
 	if (params.params != 2)
 	{
@@ -3371,11 +3439,11 @@ void fileprint(CALL_DATA &params)
 }
 
 /*
- * FileGet(file, [ret])
+ * string fileGet(string file, [string &ret])
  * 
  * Get a byte from a file.
  */
-void fileget(CALL_DATA &params)
+void fileGet(CALL_DATA &params)
 {
 	if ((params.params != 1) && (params.params != 2))
 	{
@@ -3394,11 +3462,11 @@ void fileget(CALL_DATA &params)
 }
 
 /*
- * FilePut(file, byte)
+ * void filePut(string file, string byte)
  * 
  * Write a byte to a file.
  */
-void fileput(CALL_DATA &params)
+void filePut(CALL_DATA &params)
 {
 	if (params.params != 2)
 	{
@@ -3410,11 +3478,11 @@ void fileput(CALL_DATA &params)
 }
 
 /*
- * FileEOF(file, [ret])
+ * bool fileEof(string file, [bool &ret])
  * 
  * Check whether the end of a file has been reached.
  */
-void fileeof(CALL_DATA &params)
+void fileEof(CALL_DATA &params)
 {
 	if ((params.params != 1) && (params.params != 2))
 	{
@@ -3431,7 +3499,7 @@ void fileeof(CALL_DATA &params)
 }
 
 /*
- * len(str$[, length!)
+ * int len(string str, [int &ret])
  * 
  * Get the length of a string.
  */
@@ -3545,9 +3613,9 @@ void split(CALL_DATA &params)
 }
 
 /*
- * ret! = asc(chr$[, ret!])
+ * int asc(string chr, [int &ret])
  * 
- * Get the ASCII value of chr$
+ * Get the ASCII value of a character.
  */
 void asc(CALL_DATA &params)
 {
@@ -3569,7 +3637,7 @@ void asc(CALL_DATA &params)
 }
 
 /*
- * chr$ = chr(asc![, chr$])
+ * string chr(int asc, [string &ret])
  * 
  * Get the character represented by the ASCII code passed in.
  */
@@ -3579,64 +3647,77 @@ void chr(CALL_DATA &params)
 	{
 		throw CError("Chr() requires one or two parameters.");
 	}
-	std::string ret;
-	ret += (char)params[0].getNum();
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = (char)params[0].getNum();
 	if (params.params == 2)
 	{
-		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-		var->udt = UDT_LIT;
-		var->lit = ret;
+		*params.prg->getVar(params[1].lit) = params.ret();
 	}
-	params.ret().udt = UDT_LIT;
-	params.ret().lit = ret;
 }
 
 /*
- * ret$ = trim(str$[, ret$})
+ * string trim(string str, [string &ret])
  * 
  * Trim whitespace from a string.
  */
 void trim(CALL_DATA &params)
 {
-	if (params.params == 1 || params.params == 2)
-	{
-		const std::string toRet = parser::trim(params[0].getLit());
-		if (params.params == 1)
-		{
-			params.ret().udt = UDT_LIT;
-			params.ret().lit = toRet;
-		}
-		else
-		{
-			LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-			var->udt = UDT_LIT;
-			var->lit = toRet;
-		}
-	}
-	else
+	if ((params.params != 1) && (params.params != 2))
 	{
 		throw CError("Trim() requires one or two parameters.");
 	}
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = parser::trim(params[0].getLit());
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
- * right(...)
+ * string right(string str, int amount, [string &ret])
  * 
- * Description.
+ * Get characters from the right of a string.
  */
 void right(CALL_DATA &params)
 {
-
+	if ((params.params != 2) && (params.params != 3))
+	{
+		throw CError("Right() requires two or three parameters.");
+	}
+	params.ret().udt = UDT_LIT;
+	try
+	{
+		params.ret().lit = params[0].getLit().substr(params[0].getLit().length() - int(params[1].getNum()), int(params[1].getNum()));
+	}
+	catch (...) { }
+	if (params.params == 3)
+	{
+		*params.prg->getVar(params[2].lit) = params.ret();
+	}
 }
 
 /*
- * left(...)
+ * string left(string str, int amount, [string &ret])
  * 
- * Description.
+ * Get characters from the left of a string.
  */
 void left(CALL_DATA &params)
 {
-
+	if ((params.params != 2) && (params.params != 3))
+	{
+		throw CError("Left() requires two or three parameters.");
+	}
+	params.ret().udt = UDT_LIT;
+	try
+	{
+		params.ret().lit = params[0].getLit().substr(0, int(params[1].getNum()));
+	}
+	catch (...) { }
+	if (params.params == 3)
+	{
+		*params.prg->getVar(params[2].lit) = params.ret();
+	}
 }
 
 /*
@@ -3650,40 +3731,37 @@ void cursormaphand(CALL_DATA &params)
 }
 
 /*
- * debugger(message!)
+ * void debugger(string message)
  * 
  * Show a debug message.
  */
 void debugger(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		CProgram::debugger(params[0].getLit());
-	}
-	else
+	if (params.params != 1)
 	{
 		throw CError("Debugger() requires one parameter.");
 	}
+	CProgram::debugger(params[0].getLit());
 }
 
 /*
- * onerror(...)
+ * onError(label lbl)
  * 
- * Description.
+ * Obsolete.
  */
-void onerror(CALL_DATA &params)
+void onError(CALL_DATA &params)
 {
-
+	throw CError("OnError() is obsolete.");
 }
 
 /*
- * resumenext(...)
+ * ResumeNext()
  * 
- * Description.
+ * Obsolete.
  */
-void resumenext(CALL_DATA &params)
+void resumeNext(CALL_DATA &params)
 {
-
+	throw CError("ResumeNext() is obsolete.");
 }
 
 /*
@@ -3707,9 +3785,9 @@ void setconstants(CALL_DATA &params)
 }
 
 /*
- * ret! = log(x![, ret!])
+ * double log(double x, [double &ret])
  * 
- * Get the natural log of x!
+ * Get the natural log of x.
  */
 void log(CALL_DATA &params)
 {
@@ -3717,15 +3795,12 @@ void log(CALL_DATA &params)
 	{
 		throw CError("Log() requires one or two parameters.");
 	}
-	const double toRet = log(params[0].getNum());
+	params.ret().udt = UDT_NUM;
+	params.ret().num = log(params[0].getNum());
 	if (params.params == 2)
 	{
-		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-		var->udt = UDT_NUM;
-		var->num = toRet;
+		*params.prg->getVar(params[1].lit) = params.ret();
 	}
-	params.ret().udt = UDT_NUM;
-	params.ret().num = toRet;
 }
 
 /*
@@ -3749,21 +3824,19 @@ void autolocal(CALL_DATA &params)
 }
 
 /*
- * getboardname([ret$])
+ * string GetBoardName([string ret])
  * 
  * Get the current board's file name.
  */
-void getboardname(CALL_DATA &params)
+void getBoardName(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
-	if (params.params == 1)
-	{
-		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
-		var->udt = UDT_LIT;
-		var->lit = g_pBoard->strFilename;
-	}
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = g_pBoard->strFilename;
+	if (params.params == 1)
+	{
+		*params.prg->getVar(params[0].lit) = params.ret();
+	}
 }
 
 /*
@@ -3777,23 +3850,45 @@ void pixelmovement(CALL_DATA &params)
 }
 
 /*
- * lcase(...)
+ * string lcase(string str, [string &ret])
  * 
- * Description.
+ * Convert a string to lowercase.
  */
 void lcase(CALL_DATA &params)
 {
-
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("LCase() requires one or two parameters.");
+	}
+	char *const str = _strlwr(_strdup(params[0].getLit().c_str()));
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = str;
+	free(str);
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
- * ucase(...)
+ * string ucase(string str, [string &ret])
  * 
- * Description.
+ * Convert a string to uppercase.
  */
 void ucase(CALL_DATA &params)
 {
-
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("UCase() requires one or two parameters.");
+	}
+	char *const str = _strupr(_strdup(params[0].getLit().c_str()));
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = str;
+	free(str);
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
@@ -3917,7 +4012,7 @@ void gettextheight(CALL_DATA &params)
 }
 
 /*
- * iif(condition, true, false)
+ * iif()
  * 
  * Obsolete.
  */
@@ -3957,11 +4052,11 @@ void drawcanvastransparent(CALL_DATA &params)
 }
 
 /*
- * GetTickCount()
+ * int getTickCount()
  * 
  * Get the number of milliseconds since Windows started.
  */
-void gettickcount(CALL_DATA &params)
+void getTickCount(CALL_DATA &params)
 {
 	params.ret().udt = UDT_NUM;
 	params.ret().num = GetTickCount();
@@ -4010,15 +4105,15 @@ void setmwintranslucency(CALL_DATA &params)
 /*
  * Initialize RPGCode.
  */
-void initRpgCode(void)
+void initRpgCode()
 {
 	// List of functions.
 	CProgram::addFunction("mwin", mwin);
 	CProgram::addFunction("wait", wait);
-	CProgram::addFunction("mwincls", mwincls);
+	CProgram::addFunction("mwincls", mwinCls);
 	CProgram::addFunction("send", send);
 	CProgram::addFunction("text", text);
-	CProgram::addFunction("pixeltext", pixeltext);
+	CProgram::addFunction("pixeltext", pixelText);
 	CProgram::addFunction("mbox", mwin);
 	CProgram::addFunction("branch", branch);
 	CProgram::addFunction("change", change);
@@ -4029,7 +4124,7 @@ void initRpgCode(void)
 	CProgram::addFunction("empty", empty);
 	CProgram::addFunction("end", end);
 	CProgram::addFunction("font", font);
-	CProgram::addFunction("fontsize", fontsize);
+	CProgram::addFunction("fontsize", fontSize);
 	CProgram::addFunction("fade", fade);
 	CProgram::addFunction("fbranch", branch);
 	CProgram::addFunction("fight", fight);
@@ -4039,13 +4134,13 @@ void initRpgCode(void)
 	CProgram::addFunction("bold", bold);
 	CProgram::addFunction("italics", italics);
 	CProgram::addFunction("underline", underline);
-	CProgram::addFunction("wingraphic", wingraphic);
-	CProgram::addFunction("wincolor", wincolor);
-	CProgram::addFunction("wincolorrgb", wincolorrgb);
+	CProgram::addFunction("wingraphic", winGraphic);
+	CProgram::addFunction("wincolor", winColor);
+	CProgram::addFunction("wincolorrgb", winColorRgb);
 	CProgram::addFunction("color", color);
-	CProgram::addFunction("colorrgb", colorrgb);
+	CProgram::addFunction("colorrgb", colorRgb);
 	CProgram::addFunction("move", move);
-	CProgram::addFunction("newplyr", newplyr);
+	CProgram::addFunction("newplyr", newPlyr);
 	CProgram::addFunction("over", over);
 	CProgram::addFunction("prg", prg);
 	CProgram::addFunction("prompt", prompt);
@@ -4056,66 +4151,66 @@ void initRpgCode(void)
 	CProgram::addFunction("sound", sound);
 	CProgram::addFunction("win", win);
 	CProgram::addFunction("hp", hp);
-	CProgram::addFunction("givehp", givehp);
-	CProgram::addFunction("gethp", gethp);
-	CProgram::addFunction("maxhp", maxhp);
-	CProgram::addFunction("getmaxhp", getmaxhp);
+	CProgram::addFunction("givehp", giveHp);
+	CProgram::addFunction("gethp", getHp);
+	CProgram::addFunction("maxhp", maxHp);
+	CProgram::addFunction("getmaxhp", getMaxHp);
 	CProgram::addFunction("smp", smp);
-	CProgram::addFunction("givesmp", givesmp);
-	CProgram::addFunction("getsmp", getsmp);
-	CProgram::addFunction("maxsmp", maxsmp);
-	CProgram::addFunction("getmaxsmp", getmaxsmp);
+	CProgram::addFunction("givesmp", giveSmp);
+	CProgram::addFunction("getsmp", getSmp);
+	CProgram::addFunction("maxsmp", maxSmp);
+	CProgram::addFunction("getmaxsmp", getMaxSmp);
 	CProgram::addFunction("start", start);
-	CProgram::addFunction("giveitem", giveitem);
-	CProgram::addFunction("takeitem", takeitem);
+	CProgram::addFunction("giveitem", giveItem);
+	CProgram::addFunction("takeitem", takeItem);
 	CProgram::addFunction("wav", wav);
 	CProgram::addFunction("delay", delay);
 	CProgram::addFunction("random", random);
 	CProgram::addFunction("push", push);
-	CProgram::addFunction("tiletype", tiletype);
-	CProgram::addFunction("midiplay", mediaplay);
-	CProgram::addFunction("playmidi", mediaplay);
-	CProgram::addFunction("mediaplay", mediaplay);
-	CProgram::addFunction("mediastop", mediastop);
-	CProgram::addFunction("mediarest", mediastop);
-	CProgram::addFunction("midirest", mediastop);
-	CProgram::addFunction("godos", godos);
-	CProgram::addFunction("addplayer", addplayer);
-	CProgram::addFunction("removeplayer", removeplayer);
-	CProgram::addFunction("setpixel", setpixel);
-	CProgram::addFunction("drawline", drawline);
-	CProgram::addFunction("drawrect", drawrect);
-	CProgram::addFunction("fillrect", fillrect);
+	CProgram::addFunction("tiletype", tileType);
+	CProgram::addFunction("midiplay", mediaPlay);
+	CProgram::addFunction("playmidi", mediaPlay);
+	CProgram::addFunction("mediaplay", mediaPlay);
+	CProgram::addFunction("mediastop", mediaStop);
+	CProgram::addFunction("mediarest", mediaStop);
+	CProgram::addFunction("midirest", mediaStop);
+	CProgram::addFunction("godos", goDos);
+	CProgram::addFunction("addplayer", addPlayer);
+	CProgram::addFunction("removeplayer", removePlayer);
+	CProgram::addFunction("setpixel", setPixel);
+	CProgram::addFunction("drawline", drawLine);
+	CProgram::addFunction("drawrect", drawRect);
+	CProgram::addFunction("fillrect", fillRect);
 	CProgram::addFunction("debug", debug);
-	CProgram::addFunction("castnum", castnum);
-	CProgram::addFunction("castlit", castlit);
-	CProgram::addFunction("castint", castint);
-	CProgram::addFunction("pushitem", pushitem);
+	CProgram::addFunction("castnum", castNum);
+	CProgram::addFunction("castlit", castLit);
+	CProgram::addFunction("castint", castInt);
+	CProgram::addFunction("pushitem", pushItem);
 	CProgram::addFunction("wander", wander);
 	CProgram::addFunction("bitmap", bitmap);
-	CProgram::addFunction("mainfile", mainfile);
-	CProgram::addFunction("dirsav", dirsav);
+	CProgram::addFunction("mainfile", mainFile);
+	CProgram::addFunction("dirsav", dirSav);
 	CProgram::addFunction("save", save);
 	CProgram::addFunction("load", load);
 	CProgram::addFunction("scan", scan);
 	CProgram::addFunction("mem", mem);
 	CProgram::addFunction("print", print);
-	CProgram::addFunction("rpgcode", rpgcode);
-	CProgram::addFunction("charat", charat);
+	CProgram::addFunction("rpgcode", rpgCode);
+	CProgram::addFunction("charat", charAt);
 	CProgram::addFunction("equip", equip);
 	CProgram::addFunction("remove", remove);
 	CProgram::addFunction("putplayer", putplayer);
 	CProgram::addFunction("eraseplayer", eraseplayer);
 	CProgram::addFunction("kill", kill);
-	CProgram::addFunction("givegp", givegp);
-	CProgram::addFunction("takegp", takegp);
-	CProgram::addFunction("getgp", getgp);
+	CProgram::addFunction("givegp", giveGp);
+	CProgram::addFunction("takegp", takeGp);
+	CProgram::addFunction("getgp", getGp);
 	CProgram::addFunction("wavstop", wavstop);
-	CProgram::addFunction("bordercolor", bordercolor);
-	CProgram::addFunction("fightenemy", fightenemy);
+	CProgram::addFunction("bordercolor", borderColor);
+	CProgram::addFunction("fightenemy", fightEnemy);
 	CProgram::addFunction("restoreplayer", restoreplayer);
 	CProgram::addFunction("callshop", callshop);
-	CProgram::addFunction("clearbuffer", clearbuffer);
+	CProgram::addFunction("clearbuffer", clearBuffer);
 	CProgram::addFunction("attackall", attackall);
 	CProgram::addFunction("drainall", drainall);
 	CProgram::addFunction("inn", inn);
@@ -4124,8 +4219,8 @@ void initRpgCode(void)
 	CProgram::addFunction("putitem", putitem);
 	CProgram::addFunction("createitem", createitem);
 	CProgram::addFunction("destroyitem", destroyitem);
-	CProgram::addFunction("walkspeed", walkspeed);
-	CProgram::addFunction("itemwalkspeed", itemwalkspeed);
+	CProgram::addFunction("walkspeed", walkSpeed);
+	CProgram::addFunction("itemwalkspeed", itemWalkSpeed);
 	CProgram::addFunction("posture", posture);
 	CProgram::addFunction("setbutton", setbutton);
 	CProgram::addFunction("checkbutton", checkbutton);
@@ -4139,24 +4234,24 @@ void initRpgCode(void)
 	CProgram::addFunction("callplayerswap", callplayerswap);
 	CProgram::addFunction("playavi", playavi);
 	CProgram::addFunction("playavismall", playavismall);
-	CProgram::addFunction("getcorner", getcorner);
-	CProgram::addFunction("underarrow", underarrow);
+	CProgram::addFunction("getcorner", getCorner);
+	CProgram::addFunction("underarrow", underArrow);
 	CProgram::addFunction("getlevel", getlevel);
 	CProgram::addFunction("ai", ai);
 	CProgram::addFunction("menugraphic", menugraphic);
-	CProgram::addFunction("fightmenugraphic", fightmenugraphic);
-	CProgram::addFunction("fightstyle", fightstyle);
+	CProgram::addFunction("fightmenugraphic", fightMenuGraphic);
+	CProgram::addFunction("fightstyle", fightStyle);
 	CProgram::addFunction("stance", stance);
-	CProgram::addFunction("battlespeed", battlespeed);
-	CProgram::addFunction("textspeed", textspeed);
-	CProgram::addFunction("characterspeed", characterspeed);
+	CProgram::addFunction("battlespeed", battleSpeed);
+	CProgram::addFunction("textspeed", textSpeed);
+	CProgram::addFunction("characterspeed", characterSpeed);
 	CProgram::addFunction("mwinsize", mwinsize);
-	CProgram::addFunction("getdp", getdp);
-	CProgram::addFunction("getfp", getfp);
+	CProgram::addFunction("getdp", getDp);
+	CProgram::addFunction("getfp", getFp);
 	CProgram::addFunction("internalmenu", internalmenu);
 	CProgram::addFunction("applystatus", applystatus);
 	CProgram::addFunction("removestatus", removestatus);
-	CProgram::addFunction("setimage", setimage);
+	CProgram::addFunction("setimage", setImage);
 	CProgram::addFunction("drawcircle", drawcircle);
 	CProgram::addFunction("fillcircle", fillcircle);
 	CProgram::addFunction("savescreen", savescreen);
@@ -4164,30 +4259,30 @@ void initRpgCode(void)
 	CProgram::addFunction("sin", sin);
 	CProgram::addFunction("cos", cos);
 	CProgram::addFunction("tan", tan);
-	CProgram::addFunction("getpixel", getpixel);
-	CProgram::addFunction("getcolor", getcolor);
-	CProgram::addFunction("getfontsize", getfontsize);
-	CProgram::addFunction("setimagetransparent", setimagetransparent);
-	CProgram::addFunction("setimagetranslucent", setimagetranslucent);
+	CProgram::addFunction("getpixel", getPixel);
+	CProgram::addFunction("getcolor", getColor);
+	CProgram::addFunction("getfontsize", getFontSize);
+	CProgram::addFunction("setimagetransparent", setImageTransparent);
+	CProgram::addFunction("setimagetranslucent", setImageTranslucent);
 	CProgram::addFunction("mp3", wav);
 	CProgram::addFunction("sourcelocation", sourcelocation);
 	CProgram::addFunction("targethandle", targethandle);
 	CProgram::addFunction("sourcehandle", sourcehandle);
-	CProgram::addFunction("drawenemy", drawenemy);
+	CProgram::addFunction("drawenemy", drawEnemy);
 	CProgram::addFunction("mp3pause", mp3pause);
 	CProgram::addFunction("layerput", layerput);
-	CProgram::addFunction("getboardtile", getboardtile);
-	CProgram::addFunction("boardgettile", getboardtile);
+	CProgram::addFunction("getboardtile", getBoardTile);
+	CProgram::addFunction("boardgettile", getBoardTile);
 	CProgram::addFunction("sqrt", sqrt);
-	CProgram::addFunction("getboardtiletype", getboardtiletype);
+	CProgram::addFunction("getboardtiletype", getBoardTileType);
 	CProgram::addFunction("setimageadditive", setimageadditive);
 	CProgram::addFunction("animation", animation);
 	CProgram::addFunction("sizedanimation", sizedanimation);
-	CProgram::addFunction("forceredraw", forceredraw);
+	CProgram::addFunction("forceredraw", forceRedraw);
 	CProgram::addFunction("itemlocation", itemlocation);
 	CProgram::addFunction("wipe", wipe);
-	CProgram::addFunction("getres", getres);
-	CProgram::addFunction("statictext", statictext);
+	CProgram::addFunction("getres", getRes);
+	CProgram::addFunction("statictext", staticText);
 	CProgram::addFunction("pathfind", pathfind);
 	CProgram::addFunction("itemstep", itemstep);
 	CProgram::addFunction("playerstep", playerstep);
@@ -4196,36 +4291,36 @@ void initRpgCode(void)
 	CProgram::addFunction("killallredirects", killallredirects);
 	CProgram::addFunction("parallax", parallax);
 	CProgram::addFunction("giveexp", giveexp);
-	CProgram::addFunction("animatedtiles", animatedtiles);
-	CProgram::addFunction("smartstep", smartstep);
+	CProgram::addFunction("animatedtiles", animatedTiles);
+	CProgram::addFunction("smartstep", smartStep);
 	CProgram::addFunction("gamespeed", gamespeed);
 	CProgram::addFunction("thread", thread);
-	CProgram::addFunction("killthread", killthread);
-	CProgram::addFunction("getthreadid", getthreadid);
-	CProgram::addFunction("threadsleep", threadsleep);
+	CProgram::addFunction("killthread", killThread);
+	CProgram::addFunction("getthreadid", getThreadId);
+	CProgram::addFunction("threadsleep", threadSleep);
 	CProgram::addFunction("tellthread", tellthread);
-	CProgram::addFunction("threadwake", threadwake);
-	CProgram::addFunction("threadsleepremaining", threadsleepremaining);
+	CProgram::addFunction("threadwake", threadWake);
+	CProgram::addFunction("threadsleepremaining", threadSleepRemaining);
 	CProgram::addFunction("local", local);
 	CProgram::addFunction("global", global);
-	CProgram::addFunction("autocommand", autocommand);
-	CProgram::addFunction("createcursormap", createcursormap);
-	CProgram::addFunction("killcursormap", killcursormap);
-	CProgram::addFunction("cursormapadd", cursormapadd);
-	CProgram::addFunction("cursormaprun", cursormaprun);
-	CProgram::addFunction("createcanvas", createcanvas);
-	CProgram::addFunction("killcanvas", killcanvas);
-	CProgram::addFunction("drawcanvas", drawcanvas);
-	CProgram::addFunction("openfileinput", openfileinput);
-	CProgram::addFunction("openfileoutput", openfileoutput);
-	CProgram::addFunction("openfileappend", openfileappend);
-	CProgram::addFunction("openfilebinary", openfilebinary);
-	CProgram::addFunction("closefile", closefile);
-	CProgram::addFunction("fileinput", fileinput);
-	CProgram::addFunction("fileprint", fileprint);
-	CProgram::addFunction("fileget", fileget);
-	CProgram::addFunction("fileput", fileput);
-	CProgram::addFunction("fileeof", fileeof);
+	CProgram::addFunction("autocommand", autoCommand);
+	CProgram::addFunction("createcursormap", createCursorMap);
+	CProgram::addFunction("killcursormap", killCursorMap);
+	CProgram::addFunction("cursormapadd", cursorMapAdd);
+	CProgram::addFunction("cursormaprun", cursorMapRun);
+	CProgram::addFunction("createcanvas", createCanvas);
+	CProgram::addFunction("killcanvas", killCanvas);
+	CProgram::addFunction("drawcanvas", drawCanvas);
+	CProgram::addFunction("openfileinput", openFileInput);
+	CProgram::addFunction("openfileoutput", openFileOutput);
+	CProgram::addFunction("openfileappend", openFileAppend);
+	CProgram::addFunction("openfilebinary", openFileBinary);
+	CProgram::addFunction("closefile", closeFile);
+	CProgram::addFunction("fileinput", fileInput);
+	CProgram::addFunction("fileprint", filePrint);
+	CProgram::addFunction("fileget", fileGet);
+	CProgram::addFunction("fileput", filePut);
+	CProgram::addFunction("fileeof", fileEof);
 	CProgram::addFunction("length", len);
 	CProgram::addFunction("len", len);
 	CProgram::addFunction("instr", instr);
@@ -4245,14 +4340,14 @@ void initRpgCode(void)
 	CProgram::addFunction("left", left);
 	CProgram::addFunction("cursormaphand", cursormaphand);
 	CProgram::addFunction("debugger", debugger);
-	CProgram::addFunction("onerror", onerror);
-	CProgram::addFunction("resumenext", resumenext);
+	CProgram::addFunction("onerror", onError);
+	CProgram::addFunction("resumenext", resumeNext);
 	CProgram::addFunction("msgbox", msgbox);
 	CProgram::addFunction("setconstants", setconstants);
 	CProgram::addFunction("log", log);
 	CProgram::addFunction("onboard", onboard);
 	CProgram::addFunction("autolocal", autolocal);
-	CProgram::addFunction("getboardname", getboardname);
+	CProgram::addFunction("getboardname", getBoardName);
 	CProgram::addFunction("pixelmovement", pixelmovement);
 	CProgram::addFunction("lcase", lcase);
 	CProgram::addFunction("ucase", ucase);
@@ -4272,7 +4367,7 @@ void initRpgCode(void)
 	CProgram::addFunction("itemstance", itemstance);
 	CProgram::addFunction("playerstance", playerstance);
 	CProgram::addFunction("drawcanvastransparent", drawcanvastransparent);
-	CProgram::addFunction("gettickcount", gettickcount);
+	CProgram::addFunction("gettickcount", getTickCount);
 	CProgram::addFunction("setvolume", setvolume);
 	CProgram::addFunction("createtimer", createtimer);
 	CProgram::addFunction("killtimer", killtimer);

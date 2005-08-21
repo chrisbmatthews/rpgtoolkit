@@ -44,6 +44,7 @@ typedef struct tagStackFrame
 	UNIT_DATA_TYPE udt;
 	CProgram *prg;
 
+	bool getBool() const;
 	double getNum() const;
 	std::string getLit() const;
 	UNIT_DATA_TYPE getType() const;

@@ -1154,6 +1154,16 @@ double tagStackFrame::getNum() const
 	return num;
 }
 
+// Get the boolean value from a stack frame.
+bool tagStackFrame::getBool() const
+{
+	if (getType() & UDT_LIT)
+	{
+		return (getLit() != "off");
+	}
+	return (getNum() != 0.0);
+}
+
 // Get the literal value from a stack frame.
 std::string tagStackFrame::getLit() const
 {
