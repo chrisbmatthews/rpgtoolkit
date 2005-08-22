@@ -1660,17 +1660,16 @@ void eraseplayer(CALL_DATA &params)
 }
 
 /*
- * void kill(variant &var)
+ * void kill(variant &var, ...)
  * 
- * Delete a variable.
+ * Delete variables.
  */
 void kill(CALL_DATA &params)
 {
-	if (params.params != 1)
+	for (unsigned int i = 0; i < params.params; ++i)
 	{
-		throw CError("Kill() requires one parameter.");
+		params.prg->freeVar(params[i].lit);
 	}
-	params.prg->freeVar(params[0].lit);
 }
 
 /*
