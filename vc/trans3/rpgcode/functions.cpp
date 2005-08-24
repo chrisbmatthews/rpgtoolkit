@@ -160,20 +160,11 @@ void mwin(CALL_DATA &params)
  */
 void wait(CALL_DATA &params)
 {
-	if (params.params == 0)
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = waitForKey();
+	if (params.params == 1)
 	{
-		params.ret().udt = UDT_LIT;
-		params.ret().lit = waitForKey();
-	}
-	else if (params.params == 1)
-	{
-		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
-		var->udt = UDT_LIT;
-		var->lit = waitForKey();
-	}
-	else
-	{
-		throw CError("Wait() requires zero or one parameters.");
+		*params.prg->getVar(params[0].lit) = params.ret();
 	}
 }
 

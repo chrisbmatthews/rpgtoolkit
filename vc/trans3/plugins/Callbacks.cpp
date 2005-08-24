@@ -449,7 +449,8 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			*pRet = g_resY;
 			break;
 		case GEN_GP:
-			// TBD!
+			extern unsigned long g_gp;
+			*pRet = int(g_gp);
 			break;
 		case GEN_FONTCOLOR:
 			extern COLORREF g_color;
