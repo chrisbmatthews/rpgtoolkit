@@ -1066,7 +1066,7 @@ bool CSprite::programTest(void)
 		{
 			LPSTACK_FRAME var = CProgram::getGlobal(finalVar);
 			const double num = atof(finalValue.c_str());
-			if (num == 0.0)
+			if (num != 0.0)
 			{
 				var->udt = UDT_NUM;
 				var->num = num;
@@ -1173,7 +1173,7 @@ bool CSprite::programTest(void)
 		{
 			LPSTACK_FRAME var = CProgram::getGlobal(finalVar);
 			const double num = atof(finalValue.c_str());
-			if (num == 0.0)
+			if (num != 0.0)
 			{
 				var->udt = UDT_NUM;
 				var->num = num;
