@@ -434,12 +434,13 @@ void CSprite::setQueuedPath(PF_PATH path)
 {
 	// PF_PATH is a std::vector<DB_POINT> with the points stored
 	// in *reverse*.
-	while (!path.empty())
+	if (path.empty()) return;
+	PF_PATH::reverse_iterator i = path.rbegin();
+	for (; i != path.rend(); ++i)
 	{
-		m_pend.path.push_back(path.back());
-		path.pop_back();
-		m_pos.bIsPath = true;
+		m_pend.path.push_back(*i);
 	}
+	m_pos.bIsPath = true;
 }
 
 /*
@@ -548,7 +549,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 		// Check that the board vector contains the player,
 		// *not* the other way round!
 		// Disregard "under" type, it has no effect in collisions.
-		if(i->type != TT_UNDER && i->pV->contains(sprBase, p))
+		if (i->type != TT_UNDER && i->pV->contains(sprBase, p))
 		{
 			tt = i->type;
 		}
@@ -724,7 +725,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
 	CVector sprBase = m_attr.vBase + p;
 	const RECT bounds = sprBase.getBounds();
 
-	for(i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
+	for (i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
 	{
 		if (m_pos.l > (*i)->m_pos.l)
 		{
@@ -979,7 +980,7 @@ bool CSprite::programTest(void)
 	// Construct merged origin / target?
 
 	// Players 
-	for(std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
+	for (std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
 		if (this == *i || m_pos.l != (*i)->m_pos.l) continue;
 
@@ -995,7 +996,7 @@ bool CSprite::programTest(void)
 	CItem *itm = NULL; DB_POINT f = {0, 0}; double fs = -1;
 
 	// Items
-	for(std::vector<CItem *>::iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j)
+	for (std::vector<CItem *>::iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j)
 	{
 		if (this == *j || m_pos.l != (*j)->m_pos.l) continue;
 
@@ -1424,7 +1425,7 @@ bool CSprite::render(void)
 		{
 			if (GetTickCount() - m_pos.idle.frameTime >= m_pos.idle.frameDelay)
 			{
-				// if(m_pos.frame > m_pos.idle.frames)
+				// if (m_pos.frame > m_pos.idle.frames)
 				//	m_pos.loopFrame = LOOP_WAIT;
 
 				// Increment the animation frame when the delay is up.
