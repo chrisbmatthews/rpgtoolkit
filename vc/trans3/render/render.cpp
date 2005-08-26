@@ -658,7 +658,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 				  0, 0, 0); 
 
 		// Draw program and tile vectors.
-		/**pCnv->Lock();
+		pCnv->Lock();
 		for (std::vector<LPBRD_PROGRAM>::iterator b = g_pBoard->programs.begin(); b != g_pBoard->programs.end(); ++b)
 		{
 			(*b)->vBase.draw(RGB(128, 255, 255), true, r.left, r.top, pCnv);
@@ -667,7 +667,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 		{
 			c->pV->draw(RGB(255, 255, 255), true, r.left, r.top, pCnv);
 		}
-		pCnv->Unlock();**/
+		pCnv->Unlock();
 	}
 }
 
@@ -793,14 +793,14 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 
 	} // for (layer)
 
-/*	// Draw sprite bases for debugging.
+	// Draw sprite bases for debugging.
 	cnv->Lock();
 	for (std::vector<CSprite *>::iterator a = g_sprites.v.begin(); a != g_sprites.v.end(); ++a)
 	{
 		(*a)->drawVector(cnv);
 	}
 	cnv->Unlock();
-*/
+
 	if (bScreen) g_pDirectDraw->Refresh();
 	return true;
 }

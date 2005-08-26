@@ -368,9 +368,9 @@ lutEnd:
 		// Required only for the active board.
 
 		// Setup the background image as an attached image.
-		bkgImage = new BRD_IMAGE();
 		if (!brdBack.empty())
 		{
+			bkgImage = new BRD_IMAGE();
 			bkgImage->type = BI_STRETCH;
 			bkgImage->file = brdBack;
 			// Layer 0 reserved for the background images. (?)
@@ -409,7 +409,7 @@ lutEnd:
 				(*p)->vBase.push_back(pos->x * 32.0, (pos->y - 1.0) * 32.0);
 				(*p)->vBase.push_back((pos->x - 1.0) * 32.0, (pos->y - 1.0) * 32.0);
 			}
-			(*p)->vBase.close(true, 0);
+			(*p)->vBase.close(true);
 		}
 
 		// Set the positions of and create vectors for old items.
@@ -552,19 +552,19 @@ void tagBoard::vectorize(const unsigned int layer)
 		BRD_VECTOR vector;
 		if (coordType & ISO_STACKED)
 		{
-			vector.pV = new CVector(((origX - 1) - (origY - 1) + bSizeX) * 32, ((origX - 1) + (origY - 1) - bSizeX) * 16, 4, type);
+			vector.pV = new CVector(((origX - 1) - (origY - 1) + bSizeX) * 32, ((origX - 1) + (origY - 1) - bSizeX) * 16, 4);
 			vector.pV->push_back(((origX - 1) - y + bSizeX) * 32, ((origX - 1) + y - bSizeX) * 16);
 			vector.pV->push_back((x - y + bSizeX) * 32, (x + y - bSizeX) * 16);
 			vector.pV->push_back((x - (origY - 1) + bSizeX) * 32, (x + (origY - 1) - bSizeX) * 16);
 		}
 		else
 		{
-			vector.pV = new CVector((origX - 1) * 32, (origY - 1) * 32, 4, type);
+			vector.pV = new CVector((origX - 1) * 32, (origY - 1) * 32, 4);
 			vector.pV->push_back((origX - 1) * 32, y * 32);
 			vector.pV->push_back(x * 32, y * 32);
 			vector.pV->push_back(x * 32, (origY - 1) * 32);
 		}
-		vector.pV->close(true, 0);
+		vector.pV->close(true);
 		vector.layer = layer;
 		vector.type = TILE_TYPE(type);
 

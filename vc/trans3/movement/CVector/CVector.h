@@ -24,6 +24,7 @@
  */
 const double CV_PRECISION = 0.001;	// Pixel precision for point comparison.
 const double PI = 3.14159265359;
+const double RADIAN = 180 / PI;
 const double GRAD_INF = 0x00100000;	// Something big.
 
 /*
@@ -38,17 +39,7 @@ typedef enum tagCurl
 #define CURL_LEFT  1
 #define CURL_RIGHT -1
 
-/*
-typedef enum tagVectorType
-{
-	TT_NORMAL = 0,
-	TT_SOLID = 1,
-	TT_UNDER = 2,
-	TT_UNIDIRECTIONAL = 4,
-	TT_STAIRS = 8
-} CVECTOR_TYPE;
-*/
-
+// Sprite z-order flags.
 typedef enum tagZOrder
 {
 	ZO_NONE,
@@ -56,6 +47,7 @@ typedef enum tagZOrder
 	ZO_ABOVE
 } ZO_ENUM;
 
+// Tile type flags.
 typedef enum tagTileType
 {
 	TT_NORMAL = 0,
@@ -74,14 +66,27 @@ typedef struct tagDbPoint
 
 typedef std::vector<DB_POINT>::iterator DB_ITR;
 
+inline bool operator== (DB_POINT &a, DB_POINT &b)
+{
+	return ((a.x == b.x) && (a.y == b.y));
+}
+
+inline bool operator!= (DB_POINT &a, DB_POINT &b)
+{
+	return ((a.x != b.x) || (a.y != b.y));
+}
+
 class CVector  
 {
 public:
-	// (0, 0) point Constructor.
+	// Default constructor.
 	CVector(void);
 
 	// (x, y) point Constructor.
-	CVector(const double x, const double y, const int reserve, const int tileType);
+	CVector(const double x, const double y, const int reserve);
+
+	// (x, y) point Constructor.
+	CVector(const DB_POINT p, const int reserve);
 
 	// Addition operator (moves entire vector).
 	CVector operator+ (const DB_POINT p) { return (CVector(*this) += p); }
@@ -90,13 +95,16 @@ public:
 	CVector &operator+= (const DB_POINT p);
 
 	// Push a point onto the back of the vector.
+	void push_back(DB_POINT p);
+
+	// Push a point onto the back of the vector.
 	void push_back(const double x, const double y);
 
 	// Push an array of points onto the end of the vector.
 	void push_back(const DB_POINT pts[], const short size);
 
 	// Seal the vector to create a polygon.
-	bool close(const bool isClosed, const int curl);
+	bool close(const bool isClosed/*, const int curl*/);
 
 	// Determine if a vector intersects or contains another vector.
 	bool contains(CVector &rhs, DB_POINT &ref);
@@ -110,14 +118,23 @@ public:
 	// Create a mask from a closed vector.
 	bool createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG color);
 
+	// Construct nodes from a CVector and add to the nodes vector.
+	void createNodes(std::vector<DB_POINT> &points, const DB_POINT max);
+
 	// Get the bounding box.
 	RECT getBounds(void) const { return m_bounds; };
+
+	// Expand the vector around its origin.
+	void grow(const int width, const int height);
 
 	// Determine if a vector intersects another vector.
 	bool intersect(CVector &rhs, DB_POINT &ref);
 
 	// Draw the vector to the screen (testing purposes).
 	void draw(CONST LONG color, const bool drawText, const int x, const int y, CGDICanvas *const cnv);
+
+	// Path-find ::contains() equivalent.
+	bool pfContains(CVector &rhs);
 
 	// Return number of points in vector.
 	int size(void) const { return m_p.size(); };
@@ -150,7 +167,6 @@ private:
 	RECT m_bounds;				// Bounding box.
 	bool m_closed;				// Closed to form a polygon.
 	int m_curl;					// Clockwise or Anti-clockwise subvector movement.
-//	CVECTOR_TYPE m_type;		// What kind of action does this vector have?
 
 };
 

@@ -142,13 +142,13 @@ void tagSpriteAttr::createVectors(const int activationType)
 		{
 			const DB_POINT pts[] = {{-15, 0}, {0, 7}, {15, 0}, {0, -7}};
 			vBase.push_back(pts, 4);
-			vBase.close(true, 0);
+			vBase.close(true);
 
 			if (activationType & SPR_KEYPRESS)
 			{
 				const DB_POINT pts[] = {{-31, 0}, {0, 15}, {15, 0}, {0, -31}};
 				vActivate.push_back(pts, 4);
-				vActivate.close(true, 0);
+				vActivate.close(true);
 			}
 			else
 			{
@@ -159,14 +159,14 @@ void tagSpriteAttr::createVectors(const int activationType)
 		{
 			const DB_POINT pts[] = {{-31, 0}, {0, 15}, {31, 0}, {0, -15}};
 			vBase.push_back(pts, 4);
-			vBase.close(true, 0);
+			vBase.close(true);
 
 			if (activationType & SPR_KEYPRESS)
 			{
 				// Create a one tile-wide ring around player.
 				const DB_POINT pts[] = {{-95, 0}, {0, 47}, {95, 0}, {0, -47}};
 				vActivate.push_back(pts, 4);
-				vActivate.close(true, 0);
+				vActivate.close(true);
 			}
 			else
 			{
@@ -177,18 +177,21 @@ void tagSpriteAttr::createVectors(const int activationType)
 	}
 	else
 	{
+		// Referenced with the origin at bottom-centre of tile.
 		if (CSprite::m_bPxMovement)
 		{
 			// 1/2 height base for pixel movement (or other?).
-			const DB_POINT pts[] = {{1, 17}, {1, 31}, {31, 31}, {31, 17}};
+//topleft	const DB_POINT pts[] = {{1, 17}, {1, 31}, {31, 31}, {31, 17}};
+			const DB_POINT pts[] = {{-15, -1}, {-15, -15}, {15, -15}, {15, -1}};
 			vBase.push_back(pts, 4);
-			vBase.close(true, 0);
+			vBase.close(true);
 
 			if (activationType & SPR_KEYPRESS)
 			{
-				const DB_POINT pts[] = {{-8, 8}, {-8, 39}, {39, 39}, {39, 8}};
+//topleft		const DB_POINT pts[] = {{-8, 8}, {-8, 39}, {39, 39}, {39, 8}};
+				const DB_POINT pts[] = {{-24, 8}, {-24, -24}, {24, -24}, {24, 8}};
 				vActivate.push_back(pts, 4);
-				vActivate.close(true, 0);
+				vActivate.close(true);
 			}
 			else
 			{
@@ -197,17 +200,18 @@ void tagSpriteAttr::createVectors(const int activationType)
 		}
 		else
 		{
-
-			const DB_POINT pts[] = {{1, 1}, {1, 31}, {31, 31}, {31, 1}};
+//topleft	const DB_POINT pts[] = {{1, 1}, {1, 31}, {31, 31}, {31, 1}};
+			const DB_POINT pts[] = {{-15, -1}, {-15, -31}, {15, -31}, {15, -1}};
 			vBase.push_back(pts, 4);
-			vBase.close(true, 0);
+			vBase.close(true);
 
 			if (activationType & SPR_KEYPRESS)
 			{
 				// Create a one tile-wide ring around player.
-				const DB_POINT pts[] = {{-32, -32}, {-32, 63}, {63, 63}, {63, -32}};
+//topleft		const DB_POINT pts[] = {{-32, -32}, {-32, 63}, {63, 63}, {63, -32}};
+				const DB_POINT pts[] = {{-47, 31}, {-47, -63}, {47, -63}, {47, 32}};
 				vActivate.push_back(pts, 4);
-				vActivate.close(true, 0);
+				vActivate.close(true);
 			}
 			else
 			{

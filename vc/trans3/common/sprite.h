@@ -27,44 +27,59 @@
 typedef enum tagMovementCodes
 {
 	MV_IDLE,
-	MV_N,
-	MV_NE,
 	MV_E,
 	MV_SE,
 	MV_S,
 	MV_SW,
 	MV_W,
-	MV_NW
+	MV_NW,
+	MV_N,
+	MV_NE
 } MV_ENUM;
 
-// Postfix increment - rotate the movement "right".
-inline void operator++ (MV_ENUM& lhs, int)
+// Postfix increment - rotate the movement "right", return a new object.
+inline MV_ENUM operator++ (MV_ENUM lhs, int)
 {
-	if (lhs == MV_NW) { lhs = MV_N; return; }
+	if (lhs == MV_NE) return MV_E; 
+	if (lhs == MV_IDLE) return MV_IDLE;
+	return MV_ENUM(lhs + 1);
+}
+
+inline MV_ENUM operator-- (MV_ENUM lhs, int)
+{
+	if (lhs == MV_E) return MV_NE;
+	if (lhs == MV_IDLE) return MV_IDLE;
+	return MV_ENUM(lhs - 1);
+}
+
+// Prefix increment - rotate the movement "right".
+inline void operator++ (MV_ENUM &lhs)
+{
+	if (lhs == MV_NE) { lhs = MV_E; return; }
 	if (lhs == MV_IDLE) return;
 	lhs = MV_ENUM(lhs + 1);
-};
+}
+
+inline void operator-- (MV_ENUM &lhs)
+{
+	if (lhs == MV_E) { lhs = MV_NE; return; }
+	if (lhs == MV_IDLE) return;
+	lhs = MV_ENUM(lhs - 1);
+}
 
 inline MV_ENUM &operator+=(MV_ENUM &lhs, unsigned int inc)
 {
-	for (unsigned int i = 0; i < inc; ++i) lhs++;
+	for (unsigned int i = 0; i < inc; ++i) ++lhs;
 	return lhs;
 }
 
-// Postfix decrement - rotate the movement "left".
-inline void operator-- (MV_ENUM& lhs, int)
-{
-	if (lhs == MV_N) { lhs = MV_NW; return; }
-	if (lhs == MV_IDLE) return;
-	lhs = MV_ENUM(lhs - 1);
-};
 
 /*
  * Movement vector values - increments for insertTarget().
  *		{ dx, dy }
  *		{ MV_IDLE, 
- *		 MV_N, MV_NE, MV_E, MV_SE, 
- *		 MV_S, MV_SW, MV_W, MV_NW }
+ *		 MV_E, MV_SE, MV_S, MV_SW, 
+ *		 MV_W, MV_NW, MV_N, MV_NE }
  *
  *		g_directions[isIsometric][MV_CODE][x or y]
  */
@@ -72,13 +87,13 @@ const double g_directions[2][9][2] =
 			{
 				// Non - isometric.
 				{	{ 0, 0 }, 
-					{ 0,-1 }, { 1,-1 }, { 1, 0 }, { 1, 1 },
-					{ 0, 1 }, {-1, 1 }, {-1, 0 }, {-1,-1 }
+					{ 1, 0 }, { 1, 1 }, { 0, 1 }, {-1, 1 },
+					{-1, 0 }, {-1,-1 }, { 0,-1 }, { 1,-1 }
 				},
 				// Isometric.
 				{	{ 0, 0 }, 
-					{ 0,-1 }, { 1,-0.5 }, { 2, 0 }, { 1, 0.5 },
-					{ 0, 1 }, {-1, 0.5 }, {-2, 0 }, {-1,-0.5 }
+					{ 2, 0 }, { 1, 0.5 }, { 0, 1 }, {-1, 0.5 },
+					{-2, 0 }, {-1,-0.5 }, { 0,-1 }, { 1,-0.5 }
 				}
 			};
 

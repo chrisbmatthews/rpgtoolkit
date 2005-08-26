@@ -912,6 +912,10 @@ SOURCE=.\movement\CItem\CItem.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\movement\CPathFind\CPathFind.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\movement\CPlayer\CPlayer.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -1032,6 +1036,10 @@ SOURCE=.\movement\movement.cpp
 # Begin Source File
 
 SOURCE=.\movement\CItem\CItem.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\movement\CPathFind\CPathFind.h
 # End Source File
 # Begin Source File
 

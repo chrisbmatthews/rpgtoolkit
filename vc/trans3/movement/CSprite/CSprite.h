@@ -14,6 +14,7 @@
 #include "../../common/sprite.h"
 #include "../../render/render.h"
 #include "../CVector/CVector.h"
+#include "../CPathFind/CPathFind.h"
 
 class CSprite  
 {
@@ -54,6 +55,12 @@ public:
 	
 	// Run all the movements in the queue.
 	void runQueuedMovements(void);
+
+	// Queue up a path-finding path.
+	void setQueuedPath(PF_PATH path);
+
+	// Pathfind to pixel position x, y (same layer).
+	void pathFind(const int x, const int y);
 
 	// Complete the selected player's move.
 	void playerDoneMove(void);
@@ -105,8 +112,17 @@ private:
 	// Complete a single frame's movement of the sprite.
 	bool push(const bool bScroll);
 
-	// Increment the target co-ordinates based on the move direction.
-	void insertTarget(void);
+	// Take the angle of movement and return a MV_ENUM direction.
+	MV_ENUM getDirection(void);
+
+	// Get the next position co-ordinates.
+	DB_POINT getTarget(void);
+
+	// Increment target co-ordinates based on a direction.
+	void setTarget(MV_ENUM direction);
+
+	// Insert target co-ordinates from the path.
+	void setPathTarget(void);
 
 	// Calculate the loopSpeed - the number of renders that equate to
 	// the sprite's movement speed (and any offsets).

@@ -18,13 +18,24 @@
  * Definitions.
  */
 const int MILLISECONDS	= 1000;			// Milliseconds in a second.
-const double PX_FACTOR	= 8.0;			// Movement scaler factor.
+const double PX_FACTOR	= 4.0;			// Movement scaler factor.
 										// Note: Possibly out by a factor of 2.
-
+/*
 // m_pos.loopFrame idle states. Only condition: must be negative.
 const int LOOP_WAIT				= -1;	// Waiting to begin idle animations.
 const int LOOP_IDLE				= -2;	// Running idle animations.
 const int LOOP_CUSTOM_STANCE	= -3;	// Running a custom stance?
+*/
+
+// m_pos.loopFrame idle states. Only condition: must be negative.
+enum
+{
+	LOOP_CUSTOM_STANCE = -4,			// Running a custom stance.
+	LOOP_IDLE,							// Running idle animations.
+	LOOP_WAIT,							// Waiting to begin idle animations.
+	LOOP_DONE,							// Just finished moving.
+	LOOP_MOVE = 0,						// Moving.
+};
 
 enum GAME_STATE
 {
@@ -136,6 +147,7 @@ typedef struct tagSpritePosition
 							//		= LOOP_CUSTOM_STANCE - running a custom stance through the mainloop.
 	int loopSpeed;			// speed converted to loops.
     IDLE_INFO idle;
+	bool bIsPath;			// Is the current movement part of a path?
 
 	tagSpritePosition(void): 
 		stance(std::string()),
@@ -143,6 +155,7 @@ typedef struct tagSpritePosition
 		frame(0),
 		x(0), y(0), l(1),
 		loopFrame(LOOP_WAIT),
+		bIsPath(false),
 		loopSpeed(1),
 		idle() {};
 
@@ -153,20 +166,23 @@ typedef struct tagSpritePosition
  */
 typedef struct tagPendingMovement
 {
-    MV_ENUM direction;		// MV_ direction code.
     double xOrig;			// Origin PIXEL co-ordinates.
     double yOrig;
     int lOrig;				// Integer levels.
     double xTarg;			// Target PIXEL co-ordinates.
     double yTarg;
     int lTarg;
-	std::deque<int> queue;	// The pending movements of the player/item.
+//	std::deque<int> queue;	// The pending movements of the player/item.
+	std::deque<DB_POINT> path;
 
 	tagPendingMovement(void):
-		direction(MV_IDLE),
+//		direction(MV_IDLE),
 		xOrig(0), yOrig(0), lOrig(1),
 		xTarg(0), yTarg(0), lTarg(1),
-		queue() {};
+		path() {};
+
+	/* TO BE REMOVED */
+    MV_ENUM direction;		// MV_ direction code.
 
 } PENDING_MOVEMENT;
 

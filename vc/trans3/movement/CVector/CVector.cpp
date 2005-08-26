@@ -10,12 +10,12 @@
 
 #include "CVector.h"
 #include <math.h>
+#include "../movement.h"
 
 /*
  * Default constructor.
  */
 CVector::CVector(void):
-// m_type(TT_SOLID),
 m_closed(false),
 m_curl(CURL_NDEF)
 {
@@ -28,8 +28,7 @@ m_curl(CURL_NDEF)
 /*
  * Point constructor. Note reserve need not be the exact number of points.
  */
-CVector::CVector(const double x, const double y, const int reserve, const int tileType):
-// m_type(CVECTOR_TYPE(tileType)),
+CVector::CVector(const double x, const double y, const int reserve):
 m_closed(false),
 m_curl(CURL_NDEF)
 {
@@ -38,6 +37,20 @@ m_curl(CURL_NDEF)
 	m_bounds = bounds;
 	m_p.reserve(reserve);
 	push_back(x, y);
+}
+
+/*
+ * Point constructor. Note reserve need not be the exact number of points.
+ */
+CVector::CVector(const DB_POINT p, const int reserve):
+m_closed(false),
+m_curl(CURL_NDEF)
+{
+	// Create a vector of one point.
+	RECT bounds = {p.x, p.y, p.x, p.y}; 
+	m_bounds = bounds;
+	m_p.reserve(reserve);
+	push_back(p);
 }
 
 /*
@@ -63,7 +76,7 @@ CVector &CVector::operator+= (const DB_POINT p)
 /*
  * Push a point onto the end of the vector.
  */
-void CVector::push_back(const double x, const double y)
+void CVector::push_back(DB_POINT p)
 {
 	// If closed, don't allow more points to be added.
 	if (m_closed) return;
@@ -71,13 +84,22 @@ void CVector::push_back(const double x, const double y)
 	// Check we're not adding the same point twice.
 	if (size() > 1)
 	{
-		if ((x == m_p.back().x) && (y == m_p.back().y)) return;
+		if (p == m_p.back()) return;
 	}
 
 	// Push a point onto the vector.
-	DB_POINT p = {x, y};
 	m_p.push_back(p);
 }	
+
+/*
+ * Push a point onto the end of the vector.
+ */
+void CVector::push_back(const double x, const double y)
+{
+	DB_POINT p = {x, y};
+	this->push_back(p);
+}
+
 
 /*
  * Push an array of points onto the end of the vector.
@@ -86,7 +108,7 @@ void CVector::push_back(const DB_POINT pts[], const short size)
 {
 	for (int i = 0; i != size; ++i)
 	{
-		this->push_back(pts[i].x, pts[i].y);
+		this->push_back(pts[i]);
 	}
 }
 
@@ -112,7 +134,7 @@ void CVector::boundingBox(RECT &rect)
  * Seal the vector: create a polygon and prevent 
  * further points from being added.
  */
-bool CVector::close(const bool isClosed, const int curl)
+bool CVector::close(const bool isClosed/*, const int curl*/)
 {
 	boundingBox(m_bounds);			// Make the bounding box.
 
@@ -123,7 +145,8 @@ bool CVector::close(const bool isClosed, const int curl)
 		m_closed = isClosed;
 
 		// Assign the curl. Estimate if needed.
-		m_curl = (!curl ? estimateCurl() : curl);
+		// m_curl = (!curl ? estimateCurl() : curl);
+		m_curl = estimateCurl();
 	}
 	return true;
 }
@@ -502,7 +525,7 @@ int CVector::estimateCurl(void)
 		 * Conveniently, cos(180 - c) = -cos(c).
 		 * c = arccos(a.b / |a||b|)
 		 */
-		double angle = (180 / PI) * acos(-(dx1 * dx2 + dy1 * dy2) / sqrt((dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2)));
+		double angle = RADIAN * acos(-(dx1 * dx2 + dy1 * dy2) / sqrt((dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2)));
 
 		/*
 		 * Vector (cross) product returns a vector in the z-plane.
@@ -663,4 +686,106 @@ bool CVector::intersect(DB_ITR &i, CVector &rhs)
 	} // for (j)
 
 	return false;
+}
+
+/*
+ * Path-find ::contains() equivalent.
+ */
+bool CVector::pfContains(CVector &rhs)
+{
+	/*
+	 * pf-specific: the nodes of the path are corners of the
+	 * board vectors, so standard collision detection will always
+	 * block movement at these points.
+	 * But the pf vectors have been grown and we want to allow
+	 * movement between consecutive points on the vector.
+	 */
+
+	// Do a bounding box test for the entire rhs vector.
+	if ((rhs.m_bounds.right < m_bounds.left) ||
+		(rhs.m_bounds.left > m_bounds.right) ||
+		(rhs.m_bounds.bottom < m_bounds.top) ||
+		(rhs.m_bounds.top > m_bounds.bottom))
+	{
+		return false;
+	}
+
+	// rhs will only be comprise two points.
+	DB_POINT start = rhs.m_p.front(), end = rhs.m_p.back();
+
+	DB_ITR first = NULL, last = NULL;
+
+	// Loop over the subvectors in this vector (to size() - 1).
+	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
+	{
+		// Check if *both* of the points of the rhs vector are in this vector.
+		if (*i == start || *i == end)
+		{
+			if (!first) first = i;
+			else
+			{
+				last = i;
+				// We have two points on the vector.
+				// Are they consecutive? If so, we can move between them.
+				// If one of the points is concave, we can also move to
+				// the next point.
+				// TO BE DONE.
+				if (abs(first - last) == 1)
+					// Consecutive.
+					return false;
+				else
+					return true;
+			}
+		}
+		else
+		{
+			if (*(i + 1) != start && *(i + 1) != end)
+			{
+				// Check the other subvectors of this that don't
+				// connect to these.
+				if (intersect(i, rhs)) return true;
+			}
+		}
+
+	} // for (i)
+
+	// No internal point requirements (except for goal, perhaps).
+
+}
+
+/*
+ * Expand the vector around its origin.
+ */
+void CVector::grow(const int width, const int height)
+{
+	if (!m_closed) return;
+
+	DB_POINT centre = { (m_bounds.left + m_bounds.right) * 0.5,
+						(m_bounds.top + m_bounds.bottom) * 0.5};
+
+	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
+	{
+		// The nodes need to be offset from the vector points so that
+		// they do not interfere with collision checks and sprites
+		// can reach to them.
+
+		// Temporary solution: create two offset nodes (useful for
+		// open CVectors, concave points).
+		i->x += width * sgn(i->x - centre.x);
+		i->y += height * sgn(i->y - centre.y);
+	}
+}
+
+/*
+ * Construct CPathFind nodes from a CVector and add to the nodes vector.
+ */
+void CVector::createNodes(std::vector<DB_POINT> &points, const DB_POINT max)
+{
+	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
+	{
+		if (i->x > 0 && i->y > 0 && i->x < max.x && i->y < max.y) 
+		{
+			points.push_back(*i);
+		}
+	}
 }
