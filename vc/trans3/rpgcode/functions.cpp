@@ -2947,7 +2947,7 @@ void thread(CALL_DATA &params)
 		throw CError("Could not find " + params[0].getLit() + " for Thread().");
 	}
 	CThread *p = CThread::create(file);
-	if (params[1].getNum() == 0)
+	if (!params[1].getBool())
 	{
 		extern LPBOARD g_pBoard;
 		g_pBoard->threads.push_back(p);
