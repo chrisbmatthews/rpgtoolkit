@@ -107,13 +107,4 @@ bool drawTileCnv(CGDICanvas *cnv,
 				 const bool bIsometric = false, 
 				 const bool isoEvenOdd = false);
 
-void drawBoard(CONST LPBOARD brd, 
-			   CGDICanvas *cnv,
-			   const int destX, const int destY,
-			   const int layer, 
-			   const int topX, const int topY, 
-			   const int tilesX, const int tilesY, 
-			   const int aR, const int aG, const int aB, 
-			   const bool bIsometric);
-
 #endif

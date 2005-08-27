@@ -126,7 +126,7 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			/* Test */
 			//int time = GetTickCount();
 
-			pathFind(rand() % g_pBoard->pxWidth(), rand() % g_pBoard->pxHeight());
+			// pathFind(rand() % g_pBoard->pxWidth(), rand() % g_pBoard->pxHeight());
 			/*
 			time = GetTickCount() - time;
 			int size = m_pend.path.size();
@@ -383,6 +383,18 @@ void CSprite::setQueuedMovements(const int queue, const bool bClearQueue)
 */
 
 /*
+ * Clear the queue.
+ */
+void CSprite::clearQueue(void)
+{
+	if (m_pos.loopFrame != LOOP_DONE) m_pos.loopFrame = LOOP_WAIT;
+	m_pend.xOrig = m_pos.x;
+	m_pend.yOrig = m_pos.y;
+	m_pend.path.clear();
+	m_pos.bIsPath = false;
+}
+
+/*
  * Place a movement in the sprite's queue.
  */
 void CSprite::setQueuedMovements(const int direction, const bool bClearQueue)
@@ -390,11 +402,7 @@ void CSprite::setQueuedMovements(const int direction, const bool bClearQueue)
 	if (bClearQueue)
 	{
 		// Break out of the current movement.
-		if (m_pos.loopFrame != LOOP_DONE) m_pos.loopFrame = LOOP_WAIT;
-		m_pend.xOrig = m_pos.x;
-		m_pend.yOrig = m_pos.y;
-		m_pend.path.clear();
-		m_pos.bIsPath = false;
+		clearQueue();
 	}
 
 	extern LPBOARD g_pBoard;
@@ -452,7 +460,7 @@ void CSprite::pathFind(const int x, const int y)
 
 	CPathFind path(start, goal, m_pos.l, m_attr.vBase.getBounds());
 
-setQueuedPath(path.pathFind());
+	setQueuedPath(path.pathFind());
 }
 
 /*
@@ -1234,6 +1242,7 @@ void CSprite::deactivatePrograms(void)
 void CSprite::drawVector(CGDICanvas *const cnv)
 {
 	extern RECT g_screen;
+	extern CSprite *g_pSelectedPlayer;
 
 	// Draw the target base one colour.
 	DB_POINT p = getTarget();
@@ -1249,19 +1258,36 @@ void CSprite::drawVector(CGDICanvas *const cnv)
 	sprBase = m_attr.vActivate + p;
 	sprBase.draw(RGB(255,255,255), false, g_screen.left, g_screen.top, cnv);
 
-	// Draw the path.
-	if (!m_pend.path.empty())
+	// Draw the path this sprite is on. This is always done for the selected
+	// player, so don't draw it for him here.
+	if (this != g_pSelectedPlayer)
 	{
-		std::deque<DB_POINT>::iterator i = m_pend.path.begin();
-		cnv->DrawLine(round(m_pos.x) - g_screen.left, round(m_pos.y) - g_screen.top, 
-			i->x - g_screen.left, i->y - g_screen.top, RGB(255,255,128));
-
-		for (; i != m_pend.path.end() - 1; ++i)
-		{
-			cnv->DrawLine(i->x - g_screen.left, i->y - g_screen.top, 
-				(i + 1)->x - g_screen.left, (i + 1)->y - g_screen.top, RGB(255,255,128));
-		}
+		drawPath(cnv);
 	}
+}
+
+/*
+ * Draw the path this sprite is on. Used when clicking
+ * to move -- the player needs to be able to see where
+ * the character is going.
+ */
+void CSprite::drawPath(CGDICanvas *const cnv)
+{
+	extern RECT g_screen;
+
+	if (m_pend.path.empty() || !m_pos.bIsPath) return;
+
+	std::deque<DB_POINT>::iterator i = m_pend.path.begin();
+	cnv->DrawLine(round(m_pos.x) - g_screen.left, round(m_pos.y) - g_screen.top, 
+		i->x - g_screen.left, i->y - g_screen.top, RGB(255, 255, 128));
+
+	for (; i != m_pend.path.end() - 1; ++i)
+	{
+		cnv->DrawLine(i->x - g_screen.left, i->y - g_screen.top, 
+			(i + 1)->x - g_screen.left, (i + 1)->y - g_screen.top, RGB(255, 255, 128));
+	}
+
+	// To be done: draw a circle around the target.
 }
 
 /*

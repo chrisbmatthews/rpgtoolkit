@@ -10,6 +10,7 @@
 #include <vector>
 #include "input.h"
 #include "../common/sprite.h"
+#include "../common/board.h"
 #include "../movement/CSprite/CSprite.h"
 
 /*
@@ -185,6 +186,9 @@ void scanKeys(void)
  */
 LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	extern CSprite *g_pSelectedPlayer;
+	extern double g_topX, g_topY;
+	extern RECT g_screen;
 
 	// Switch on the message we're to process
 	switch (msg)
@@ -230,8 +234,8 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		// Left mouse button clicked
 		case WM_LBUTTONDOWN:
 		{
-			// Handle the event
-			
+			g_pSelectedPlayer->clearQueue();
+			g_pSelectedPlayer->pathFind(LOWORD(lParam) + g_screen.left, HIWORD(lParam) + g_screen.top);
 		} break;
 
 		// Window activated/deactivated

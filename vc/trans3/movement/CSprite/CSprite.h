@@ -56,6 +56,9 @@ public:
 	// Run all the movements in the queue.
 	void runQueuedMovements(void);
 
+	// Clear the queue.
+	void clearQueue(void);
+
 	// Queue up a path-finding path.
 	void setQueuedPath(PF_PATH path);
 
@@ -82,6 +85,9 @@ public:
 
 	// Debug: draw the sprite's base vector.
 	void drawVector(CGDICanvas *const cnv);
+
+	// Draw the path this sprite is on.
+	void drawPath(CGDICanvas *const cnv);
 
 	// Calculate sprite location and place on destination canvas.
 	bool putSpriteAt(const CGDICanvas *cnvTarget, 

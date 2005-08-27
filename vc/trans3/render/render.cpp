@@ -24,10 +24,10 @@
 #include <windows.h>
 #include <vector>
 
-/*
- * Definitions.
- */
 #define CLASS_NAME "TK Window"
+
+// Uncomment to show debug vectors.
+// #define DEBUG_VECTORS
 
 /*
  * Globals.
@@ -364,84 +364,6 @@ bool drawTileCnv(CGDICanvas *cnv,
 	return true;
 }
 
-
-/*
- * Draw a board.
- *
- * brd			- board to draw.
- * cnv			- target surface.
- * destX, destY	- destination canvas co-ordinates.
- * layer		- layer to draw.
- * topX, topY	- tile co-ordinates to begin drawing at.
- * tilesX, 
- * tilesY		- width, height to draw, in tiles.
- * aR,aG,aB		- ambient rgb.
- * bIsometric	- is board isometric?
- */
-void drawBoard(CONST LPBOARD brd, 
-			   CGDICanvas *cnv,
-			   const int destX, const int destY,
-			   const int layer, 
-			   const int topX, const int topY, 
-			   const int tilesX, const int tilesY, 
-			   const int aR, const int aG, const int aB, 
-			   const bool bIsometric)
-{
-
-	// Is it an even or odd tile?
-	const int nIsoEvenOdd = !(topY % 2);
-
-	// Record top and bottom layers
-	const int nLower = layer ? layer : 1;
-	const int nUpper = layer ? layer : brd->bSizeL;
-
-	// Calculate width and height
-	const int nWidth = (tilesX + topX > brd->bSizeX) ? brd->bSizeX - topX : tilesX;
-	const int nHeight = (tilesY + topY > brd->bSizeY) ? brd->bSizeY - topY : tilesY;
-
-	// For each layer
-	for (unsigned int i = nLower; i <= nUpper; ++i)
-	{
-
-		// For the x axis
-		for (unsigned int j = 1; j <= nWidth; ++j)
-		{
-
-			// For the y axis
-			for (unsigned int k = 1; k <= nHeight; ++k)
-			{
-
-				// The tile co-ordinates.
-				const int x = j + topX, y = k + topY;
-				
-				if (brd->board[x][y][i])
-				{
-					const std::string strTile = brd->tileIndex[brd->board[x][y][i]];
-					if (!strTile.empty())
-					{
-						// Tile exists at this location.
-						drawTile(strTile, 
-								 j, k, 
-								 brd->ambientRed[x][y][i] + aR,
-								 brd->ambientGreen[x][y][i] + aG,
-								 brd->ambientBlue[x][y][i] + aB,
-								 cnv, 
-								 destX, destY,
-								 bIsometric, 
-								 nIsoEvenOdd);
-
-					} // if (!strTile.empty())
-
-				} // if (brd.board[x][y][i])
-
-			} // for k
-
-		} // for j
-
-	} // for i
-
-}
-
 /*
  * Create global canvases.
  */
@@ -657,6 +579,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 				  height, 
 				  0, 0, 0); 
 
+#ifdef DEBUG_VECTORS
 		// Draw program and tile vectors.
 		pCnv->Lock();
 		for (std::vector<LPBRD_PROGRAM>::iterator b = g_pBoard->programs.begin(); b != g_pBoard->programs.end(); ++b)
@@ -668,6 +591,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 			c->pV->draw(RGB(255, 255, 255), true, r.left, r.top, pCnv);
 		}
 		pCnv->Unlock();
+#endif
 	}
 }
 
@@ -682,6 +606,7 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 {
 	extern ZO_VECTOR g_sprites;
 	extern LPBOARD g_pBoard;
+	extern CSprite *g_pSelectedPlayer;
 
 	const bool bScreen = (cnv == NULL);
 	if (!cnv) cnv = g_pDirectDraw->getBackBuffer();
@@ -793,12 +718,19 @@ bool renderNow(CGDICanvas *cnv, const bool bForce)
 
 	} // for (layer)
 
-	// Draw sprite bases for debugging.
 	cnv->Lock();
+
+#ifdef DEBUG_VECTORS
+	// Draw sprite bases for debugging.
 	for (std::vector<CSprite *>::iterator a = g_sprites.v.begin(); a != g_sprites.v.end(); ++a)
 	{
 		(*a)->drawVector(cnv);
 	}
+#endif
+
+	// Draw the path the selected player is on.
+	g_pSelectedPlayer->drawPath(cnv);
+
 	cnv->Unlock();
 
 	if (bScreen) g_pDirectDraw->Refresh();
