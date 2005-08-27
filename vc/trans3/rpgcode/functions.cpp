@@ -1472,7 +1472,9 @@ void wander(CALL_DATA &params)
 
 	DB_POINT d;
 	p->getDestination(d);
-	p->pathFind(d.x + g_directions[isIso][direction][0] * 32, d.y + g_directions[isIso][direction][1] * 32);
+
+	DB_POINT pt = {d.x + g_directions[isIso][direction][0] * 32, d.y + g_directions[isIso][direction][1] * 32};
+	p->setQueuedPoint(pt);
 
 	if (!params.prg->isThread())
 	{
