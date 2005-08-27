@@ -62,8 +62,18 @@ public:
 	// Queue up a path-finding path.
 	void setQueuedPath(PF_PATH path);
 
+	// Queue just one point to create a path.
+	void setQueuedPoint(DB_POINT pt)
+	{
+		if (!m_pend.path.empty() && (m_pend.path.back() == pt)) return;
+		m_pend.path.push_back(pt);
+	}
+
 	// Pathfind to pixel position x, y (same layer).
 	void pathFind(const int x, const int y);
+
+	// Get the destination.
+	void getDestination(DB_POINT &p) const;
 
 	// Complete the selected player's move.
 	void playerDoneMove(void);

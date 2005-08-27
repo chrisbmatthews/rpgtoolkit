@@ -418,17 +418,34 @@ void CSprite::setQueuedMovements(const int direction, const bool bClearQueue)
 	m_v.x = g_directions[nIso][direction][0];
 	m_v.y = g_directions[nIso][direction][1];
 
-/*
-	if (nIso == 1 && !m_bPxMovement && m_v.x && !m_v.y)
+	/** if (nIso == 1 && !m_bPxMovement && m_v.x && !m_v.y)
 	{
 		// Cause players to move twice as far for East/West in tile movement.
 		m_v.x *= 2;
-	}
-*/
-	DB_POINT p = {m_pend.xOrig + m_v.x * step, m_pend.yOrig + m_v.y * step};
-	
+	} **/
+
+	DB_POINT dest;
+	getDestination(dest);
+
+	DB_POINT p = {dest.x + m_v.x * step, dest.y + m_v.y * step};	
 	m_pend.path.push_back(p);
-}	
+}
+
+/*
+ * Get the destionation.
+ */
+void CSprite::getDestination(DB_POINT &p) const
+{
+	if (m_pend.path.empty())
+	{
+		p.x = m_pend.xOrig;
+		p.y = m_pend.yOrig;
+	}
+	else
+	{
+		p = m_pend.path.back();
+	}
+}
 
 /*
  * Run all the movements in the queue.

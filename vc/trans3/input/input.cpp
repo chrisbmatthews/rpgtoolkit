@@ -187,7 +187,6 @@ void scanKeys(void)
 LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	extern CSprite *g_pSelectedPlayer;
-	extern double g_topX, g_topY;
 	extern RECT g_screen;
 
 	// Switch on the message we're to process

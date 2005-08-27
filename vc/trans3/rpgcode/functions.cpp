@@ -1400,6 +1400,7 @@ void pushItem(CALL_DATA &params)
 void wander(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
+	extern const double g_directions[2][9][2];
 
 	if ((params.params != 1) && (params.params != 2))
 	{
@@ -1439,18 +1440,41 @@ void wander(CALL_DATA &params)
 
 	if (!p) return;
 
-	if (CSprite::m_bPxMovement)
+	const int isIso = int(g_pBoard->isIsometric());
+
+	int restrict = 0;
+	if (params.params == 3)
 	{
-		const int queue = rand() % 9;
-		for (unsigned int i = 0; i < 32; ++i)
-		{
-			p->setQueuedMovements(queue, false);
-		}
+		restrict = int(params[1].getNum());
+		if (restrict < 0) restrict = 0;
+		else if (restrict > 3) restrict = 3;
+	}
+
+	if (restrict-- == 0)
+	{
+		restrict = isIso;
+	}
+
+	int direction = 0;
+
+	if (restrict == 0)
+	{
+		direction = (rand() % 4) * 2 + 1;
+	}
+	else if (restrict == 1)
+	{
+		direction = (rand() % 4) * 2 + 2;
 	}
 	else
 	{
-		p->setQueuedMovements(rand() % 9, false);
+		direction = rand() % 8 + 1;
 	}
+
+	DB_POINT d;
+	p->getDestination(d);
+
+	DB_POINT pt = {d.x + g_directions[isIso][direction][0] * 32, d.y + g_directions[isIso][direction][1] * 32};
+	p->setQueuedPoint(pt);
 
 	if (!params.prg->isThread())
 	{
