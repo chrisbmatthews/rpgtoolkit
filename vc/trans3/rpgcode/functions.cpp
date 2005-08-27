@@ -1443,7 +1443,7 @@ void wander(CALL_DATA &params)
 	const int isIso = int(g_pBoard->isIsometric());
 
 	int restrict = 0;
-	if (params.params == 3)
+	if (params.params == 2)
 	{
 		restrict = int(params[1].getNum());
 		if (restrict < 0) restrict = 0;
