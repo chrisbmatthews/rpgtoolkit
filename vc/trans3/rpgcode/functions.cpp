@@ -4026,13 +4026,14 @@ void gettextheight(CALL_DATA &params)
 }
 
 /*
- * iif()
+ * iif(condition, true, false)
  * 
  * Obsolete.
  */
 void iif(CALL_DATA &params)
 {
-	throw CError("IIf() is obsolete. Use the ?: operator.");
+	operators::tertiary(params);
+	throw CWarning("IIf() is obsolete. Use the ?: operator.");
 }
 
 /*
