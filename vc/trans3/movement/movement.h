@@ -12,6 +12,7 @@
  */
 #include <string>
 #include <deque>
+#include <math.h>
 #include "../common/sprite.h"
 
 /*
@@ -204,6 +205,14 @@ inline int sgn(const double num)
 {
 	if (!num) return 0;
 	return (num > 0 ? 1 : -1);
+}
+
+/*
+ * Absolute value of a double.
+ */
+inline double dAbs(const double x)
+{
+	return (x < 0 ? -x : x);
 }
 
 #endif

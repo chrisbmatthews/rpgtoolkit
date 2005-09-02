@@ -142,7 +142,7 @@ bool CVector::close(const bool isClosed/*, const int curl*/)
 	{
 		// If this is closed, add the first points as the last (for curl estimate).
 		push_back(m_p.front().x, m_p.front().y);
-		m_closed = isClosed;
+		m_closed = true;
 
 		// Assign the curl. Estimate if needed.
 		// m_curl = (!curl ? estimateCurl() : curl);
@@ -180,10 +180,12 @@ bool CVector::contains(CVector &rhs, DB_POINT &ref)
 //	if (intersect(rhs, ref) != TT_NORMAL) return m_type;
 
 	/* BOARD VECTOR */
+
+	DB_POINT unused = {0, 0};
 	// Loop over the subvectors in this vector (to size() - 1).
 	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
-		if (intersect(i, rhs))
+		if (intersect(i, rhs, unused))
 		{
 			ref.x = (i + 1)->x - i->x;
 			ref.y = (i + 1)->y - i->y;
@@ -246,17 +248,8 @@ ZO_ENUM CVector::contains(CVector &rhs/*, DB_POINT &ref*/)
 
 	ZO_ENUM zo = ZO_NONE;
 
-	// Loop over the subvectors in this vector (to size() - 1).
-	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
-	{
-		if (intersect(i, rhs))
-		{
-			zo = ZO_COLLIDE;
-
-//			ref.x = (i + 1)->x - i->x;
-//			ref.y = (i + 1)->y - i->y;
-		}
-	}
+	DB_POINT unused = {0, 0};
+	if (intersect(rhs, unused)) zo = ZO_COLLIDE;
 
 	// We may be completely inside the vector.
 	// Check we have a closed object.
@@ -264,7 +257,7 @@ ZO_ENUM CVector::contains(CVector &rhs/*, DB_POINT &ref*/)
 	if (m_closed && m_curl)
 	{
 		// Loop over the points of the rhs vector.
-		for (i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
+		for (DB_ITR i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
 		{
 			// Determine if this point is contained in the polygon.
 			// Returns the number of times the target vector's borders
@@ -312,7 +305,7 @@ bool CVector::pointOnLine(const DB_ITR &i, const DB_POINT &p) const
 		}
 		else
 		{
-			if (abs(p.y - (gradient(i) * p.x + intercept(i))) < CV_PRECISION) return true;
+			if (dAbs(p.y - (gradient(i) * p.x + intercept(i))) < CV_PRECISION) return true;
 		}
 	}
 	return false;
@@ -335,6 +328,7 @@ int CVector::containsPoint(const DB_POINT p)
 	 * If the sprite is below the vector, the boundaries will be crossed
 	 * (an even number of times).
 	 */
+	if (!m_closed) return 0;
 
 	// Do a bounding box test for *this* point only.
 	// (As opposed to the whole vector check in contains().)
@@ -437,7 +431,7 @@ bool CVector::createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG c
 	DB_POINT p = {(m_bounds.left + m_bounds.right) / 2, m_bounds.top};
 	for (; p.y != m_bounds.bottom; ++p.y)
 	{
-		if (containsPoint(p) && GetPixel(hdc, p.x - x, p.y - y) != color)
+		if ((containsPoint(p) % 2) && GetPixel(hdc, p.x - x, p.y - y) != color)
 		{
 			ExtFloodFill(hdc, p.x - x, p.y - y, color, FLOODFILLBORDER);
 			break;
@@ -483,24 +477,25 @@ void CVector::draw(CONST LONG color, const bool drawText, const int x, const int
  */
 int CVector::estimateCurl(void)
 {
-	if (!m_closed) return CURL_NDEF;
-
 	/*
 	 * Curl is estimated by summing the internal angles
 	 * of the polygon. The obtuse and acute angles are summed
 	 * for each point - the smaller total indicates the inner edge.
+	 * Note the curl of an open vector is meaningless.
 	 *
 	 * "Right" curl is defined as anti-clockwise movement of subvectors.
 	 * "Left" curl is defined as clockwise movement of subvectors.
 	 */
 
 	// NOTE! This is for use in the board editor, and users 
-	// can "flip" the curl if it is mis-calculated.
-	// NOTE! Currently misses last angle (last vector -> first vector).
+	// should "flip" the curl if it is mis-calculated.
+
+	// Push the 2nd point onto the end in order to evaluate the last corner.
+	m_p.push_back(*(m_p.begin() + 1));
 
 	double lAngle = 0, rAngle = 0;
 
-	for (DB_ITR i = m_p.begin(); i != m_p.end() - 2; ++i)	
+	for (DB_ITR i = m_p.begin() + 1; i != m_p.end() - 1; ++i)	
 	{
 		/*
 		 * We use the vector and scalar products to determine the angle between
@@ -513,20 +508,25 @@ int CVector::estimateCurl(void)
 		if (gradient(i) == gradient(i + 1)) continue;
 
 		// Dimensions of vectors.
-		const double dx1 = (i + 1)->x - i->x;
-		const double dy1 = (i + 1)->y - i->y;
+		const DB_POINT  a = {i->x - (i - 1)->x, i->y - (i - 1)->y},
+						b = {(i + 1)->x - i->x, (i + 1)->y - i->y};
 
-		const double dx2 = (i + 2)->x - (i + 1)->x;
-		const double dy2 = (i + 2)->y - (i + 1)->y;
 
 		/*
 		 * Using the scalar (dot) product: a.b = |a||b|cos(c).
 		 * For our two subvectors end-on-end, the angle we want is (180 - c).
 		 * Conveniently, cos(180 - c) = -cos(c).
 		 * c = arccos(a.b / |a||b|)
+		 * c is in the interval [0, 180].
 		 */
-		double angle = RADIAN * acos(-(dx1 * dx2 + dy1 * dy2) / sqrt((dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2)));
-
+		double angle = RADIAN * 
+						acos(
+							-(a.x * b.x + a.y * b.y) / 
+							sqrt(
+								(a.x * a.x + a.y * a.y) * 
+								(b.x * b.x + b.y * b.y)
+								)
+							);
 		/*
 		 * Vector (cross) product returns a vector in the z-plane.
 		 * [k] represents the z unit vector (the normal).
@@ -534,17 +534,20 @@ int CVector::estimateCurl(void)
 		 * Note that we cannot use the vector product to find the angle since arcsin only 
 		 * returns in the range -90 to +90 degrees - so we use the scalar product instead.
 		 *
-		 * double normal = (dx1 * dy2 - dy1 * dx2);
+		 * double normal = (a.x * b.y - a.y * b.x);
 		 *
 		 * If the normal is -ve, this angle is the right-curl inner angle.
 		 * If the normal is +ve, this is the left-curl inner angle.
 		 * NB: this would be the other way around normally, but we've flipped the 
 		 * y-axis on the board so the normal points in the opposite direction.
 		 */
-		if ((dx1 * dy2 - dy1 * dx2) > 0) angle = 360 - angle;
+		if ((a.x * b.y - a.y * b.x) > 0) angle = 360 - angle;
 		rAngle += angle;
 		lAngle += 360 - angle;
 	} // for (i)
+
+	// Remove the temporary last point.
+	m_p.pop_back();
 
 	// The inside will be the edge with the smallest sum of angles.
 	return (rAngle < lAngle ? CURL_RIGHT : CURL_LEFT);
@@ -583,104 +586,75 @@ bool CVector::intersect(CVector &rhs, DB_POINT &ref)
 	// Check the rhs vector.
 	if (&rhs == this) return false;
 
-	/* BOARD VECTOR */
+	DB_POINT unused = {0, 0};
+
 	// Loop over the subvectors in this vector (to size() - 1).
 	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
-		const double m1 = gradient(i), c1 = intercept(i);
-
-		/* SPRITE VECTOR */
-		// Loop over the subvectors in the target vector.
-		for (DB_ITR j = rhs.m_p.begin(); j != rhs.m_p.end() - 1; ++j)	
+		if (intersect(i, rhs, unused))
 		{
-			// Calculate gradient, intercept.
-			const double m2 = rhs.gradient(j), c2 = rhs.intercept(j);
-
-			// Skip this subvector if lines are parallel.
-			if (m1 == m2) continue;
-
-			// Deal with vertical lines.
-			if (isVertical(i)) 
-			{
-				ref.x = i->x;
-				ref.y = m2 * ref.x + c2;
-			} 
-			else if (rhs.isVertical(j)) 
-			{
-				ref.x = j->x;
-				ref.y = m1 * ref.x + c1;
-			} 
-			else 
-			{
-				// Solve the equations.
-				ref.x = (c2 - c1) / (m1 - m2);
-				// Unless m2 is 0, use m1 as it is more likely to be more simply shaped.
-				ref.y = (!m2 ? c2 : m1 * ref.x + c1);
-			}
-
-			// Determine if this point lies on either line.
-			if ((pointOnLine(i, ref)) && (rhs.pointOnLine(j, ref)))
-			{
-				/*
-				 * Return a point that represents this board's subvector
-				 * as a position vector (i.e. with origin at 0, 0), so
-				 * that we can test for one-way movement and collision
-				 * angle with the velocity vector.
-				 */
-				ref.x = (i + 1)->x - i->x;
-				ref.y = (i + 1)->y - i->y;
-
-				// Return the tile type.
-				return true;
-			}
-		} // for (j)
+			/*
+			 * Return a point that represents this board's subvector
+			 * as a position vector (i.e. with origin at 0, 0), so
+			 * that we can test for one-way movement and collision
+			 * angle with the velocity vector.
+			 */
+			ref.x = (i + 1)->x - i->x;
+			ref.y = (i + 1)->y - i->y;
+			return true;
+		}
 	} // for (i)
 
 	return false;
 }
 
-/* Internal function to be contained in a loop over i */
+/* Internal function to be contained in a loop over a DB_ITR */
 
 /*
  * Determine if a CVector intersects this CVector.
+ * Return the point of intersection (passed in).
  */
-bool CVector::intersect(DB_ITR &i, CVector &rhs)
+bool CVector::intersect(DB_ITR &i, CVector &rhs, DB_POINT &ref)
 {
 	const double m1 = gradient(i), c1 = intercept(i);
-	DB_POINT p = {0, 0};
 
-	/* SPRITE VECTOR */
 	// Loop over the subvectors in the target vector.
 	for (DB_ITR j = rhs.m_p.begin(); j != rhs.m_p.end() - 1; ++j)	
 	{
+		if (*j == *i || *j == *(i + 1)) 
+		{ 
+			ref = *j; 
+			return true; 
+		}
 		// Calculate gradient, intercept.
 		const double m2 = rhs.gradient(j), c2 = rhs.intercept(j);
 
 		// Skip this subvector if lines are parallel.
-		if (m1 == m2) continue;
+		if (dAbs(m1 - m2) < CV_PRECISION) continue;
 
 		// Deal with vertical lines.
 		if (isVertical(i)) 
 		{
-			p.x = i->x;
-			p.y = m2 * p.x + c2;
+			ref.x = i->x;
+			ref.y = m2 * ref.x + c2;
 		} 
 		else if (rhs.isVertical(j)) 
 		{
-			p.x = j->x;
-			p.y = m1 * p.x + c1;
+			ref.x = j->x;
+			ref.y = m1 * ref.x + c1;
 		} 
 		else 
 		{
 			// Solve the equations.
-			p.x = (c2 - c1) / (m1 - m2);
+			ref.x = (c2 - c1) / (m1 - m2);
 			// Unless m2 is 0, use m1 as it is more likely to be more simply shaped.
-			p.y = (!m2 ? c2 : m1 * p.x + c1);
+			ref.y = (!m2 ? c2 : m1 * ref.x + c1);
 		}
 
 		// Determine if this point lies on either line.
-		if ((pointOnLine(i, p)) && (rhs.pointOnLine(j, p)))
+		if ((pointOnLine(i, ref)) && (rhs.pointOnLine(j, ref)))
 		{
+			// Return the point of intersection.
 			return true;
 		}
 	} // for (j)
@@ -688,13 +662,15 @@ bool CVector::intersect(DB_ITR &i, CVector &rhs)
 	return false;
 }
 
+/* Pathfinding functions */
+
 /*
  * Path-find ::contains() equivalent.
  */
 bool CVector::pfContains(CVector &rhs)
 {
 	/*
-	 * pf-specific: the nodes of the path are corners of the
+	 * pathfinding: the nodes of the path are corners of the
 	 * board vectors, so standard collision detection will always
 	 * block movement at these points.
 	 * But the pf vectors have been grown and we want to allow
@@ -710,8 +686,8 @@ bool CVector::pfContains(CVector &rhs)
 		return false;
 	}
 
-	// rhs will only be comprise two points.
-	DB_POINT start = rhs.m_p.front(), end = rhs.m_p.back();
+	// rhs will only comprise two points.
+	const DB_POINT start = rhs.m_p.front(), end = rhs.m_p.back();
 
 	DB_ITR first = NULL, last = NULL;
 
@@ -725,56 +701,188 @@ bool CVector::pfContains(CVector &rhs)
 			else
 			{
 				last = i;
-				// We have two points on the vector.
+				// There are two points on the vector.
 				// Are they consecutive? If so, we can move between them.
 				// If one of the points is concave, we can also move to
 				// the next point.
-				// TO BE DONE.
-				if (abs(first - last) == 1)
+
+				if (last - first == 1 || last - first == (m_p.end() - 2) - m_p.begin())
 					// Consecutive.
 					return false;
-				else
-					return true;
-			}
-		}
-		else
-		{
-			if (*(i + 1) != start && *(i + 1) != end)
-			{
-				// Check the other subvectors of this that don't
-				// connect to these.
-				if (intersect(i, rhs)) return true;
-			}
-		}
 
+				// See if the midpoint of the path is in the vector.
+				// Whilst this is not enough on its own, its half.
+				const DB_POINT d = {(start.x + end.x) / 2,
+									(start.y + end.y) / 2};
+				if (containsPoint(d) % 2) return true;
+
+				// See if the path crosses the vector anywhere -
+				// include in second loop.
+				break;
+
+			} // (*i == first)
+		} // if (either point on vector)
 	} // for (i)
 
-	// No internal point requirements (except for goal, perhaps).
+	// Repeat, knowing if a node is on this vector.
+	for (i = m_p.begin(); i != m_p.end() - 1; ++i)	
+	{
+		DB_POINT p = {0, 0};
+		// Do the two lines cross?
+		if (intersect(i, rhs, p))
+		{
+			// Check if the intersect point is on the vector.
+			DB_POINT a = first ? *first : *i, b = {-1, -1};
+			b = last ? *last : (first ? b : *(i + 1));
+
+			if ((dAbs(p.x - a.x) > CV_PRECISION || dAbs(p.y - a.y) > CV_PRECISION) &&
+				(dAbs(p.x - b.x) > CV_PRECISION || dAbs(p.y - b.y) > CV_PRECISION))
+				return true;
+		}
+	} // for (i)
+
+	// There are 2 or 0 nodes on the vector and the line does not intersect the vector.
+	if (!first || last)	return false;
+
+	// There is one node on the vector - is the other inside the vector?
+	return (*first == end ? containsPoint(start) % 2 : containsPoint(end) % 2);
 
 }
 
 /*
- * Expand the vector around its origin.
+ * Expand the vector radially outwards by a number of pixels.
  */
-void CVector::grow(const int width, const int height)
+void CVector::grow(const int offset)
 {
-	if (!m_closed) return;
+	/*
+	 * For pathfinding each point must be offset so a sprite
+	 * can navigate around the obstruction.
+	 * For an arbitrary vector, each point can be offset along
+	 * its bisector, or two points can be created extended from
+	 * the end of each incident vector.
+	 * For an open vector, a closed vector is formed around it.
+	 */
 
-	DB_POINT centre = { (m_bounds.left + m_bounds.right) * 0.5,
-						(m_bounds.top + m_bounds.bottom) * 0.5};
+	// Store the new points separately so we can work on the originals.
+	std::vector<DB_POINT> p;
+
+	if (!m_closed)
+	{
+		// Create a closed vector from the open vector to expand.
+		// Add each point to m_p in reverse to close.
+		p = m_p;
+		for (std::vector<DB_POINT>::reverse_iterator i = p.rbegin() + 1; i != p.rend(); ++i)
+		{
+			m_p.push_back(*i);
+		}
+		p.clear();
+
+		m_curl = estimateCurl();
+	}
+	// Push the second point so we can start from begin()++ and
+	// go up to end()--. The last point of a closed vector is a 
+	// copy of the  first point.
+	m_p.push_back(*(m_p.begin() + 1));
+
+	for (DB_ITR i = m_p.begin() + 1; i != m_p.end() - 1; ++i)
+	{
+		// Create points at the extensions of each vector or on the
+		// the internal bisector: Dimensions of vectors.
+		const DB_POINT  a = {i->x - (i - 1)->x, i->y - (i - 1)->y},
+						b = {(i + 1)->x - i->x, (i + 1)->y - i->y};
+		DB_POINT pt = *i;
+
+		// Cross the vectors and calculate the normal.
+		// If the normal is -ve, the corner is right-curl convex.
+		// If the normal is +ve, the corner is left-curl convex.
+		const int curl = sgn(a.x * b.y - a.y * b.x);
+		if (curl == CURL_NDEF)
+		{
+			// Parallel lines.
+			if (m_closed) continue;
+
+			// Place two points diagonally.
+			// Parallel extension.
+			extendPoint(pt, a, offset);
+			DB_POINT q = pt;
+
+			// Perpendicular extension.
+			const DB_POINT c = {-a.y, a.x};
+			extendPoint(q, c, offset);
+			p.push_back(q);
+
+			q = pt;
+			const DB_POINT d = {a.y, -a.x};
+			extendPoint(q, d, offset);
+			p.push_back(q);
+		}
+		else if (curl == m_curl)
+		{
+			// Form a small triangle from i-1, i, i+1 by joining short
+			// vectors parallel to i-1 and i+1.
+			// The bisector is *approximately* the line joining the 
+			// the midpoint of the third side to i.
+			DB_POINT m = *i, n = *i;
+			extendPoint(m, b, offset);
+
+			const DB_POINT c = {-a.x, -a.y};
+			extendPoint(n, c, offset);
+
+			m.x = pt.x - (m.x + n.x) / 2;
+			m.y = pt.y - (m.y + n.y) / 2;
+			extendPoint(pt, m, offset);
+			p.push_back(pt);
+		}
+		else
+		{
+			// Concave.
+			// Form a triangle from i-1, i, i+1 by joining i-1 to i+1.
+			// The bisector is *approximately* the line joining the 
+			// the midpoint of the third side.
+			const DB_POINT c = {((i - 1)->x + (i + 1)->x) / 2 - i->x,
+								((i - 1)->y + (i + 1)->y) / 2 - i->y};
+			extendPoint(pt, c, offset);
+			p.push_back(pt);
+		}
+	}
+
+	// Push the first point onto the back to close the vector.
+	p.push_back(p.front());
+
+	m_p.swap(p);
+
+	m_closed = true;
+
+	// Expand the bounding rectangle.
+	boundingBox(m_bounds);
+}
+
+#if(0)
+void CVector::grow(const int offset)
+{
+	// Offset each point depending on its position relative to the centre.
+
+	const DB_POINT centre = { (m_bounds.left + m_bounds.right) * 0.5,
+							  (m_bounds.top + m_bounds.bottom) * 0.5};
 
 	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
 		// The nodes need to be offset from the vector points so that
 		// they do not interfere with collision checks and sprites
-		// can reach to them.
+		// can reach them.
+		const int x = sgn(i->x - centre.x), y = sgn(i->y - centre.y);
 
-		// Temporary solution: create two offset nodes (useful for
-		// open CVectors, concave points).
-		i->x += width * sgn(i->x - centre.x);
-		i->y += height * sgn(i->y - centre.y);
+		i->x += x * offset;
+		i->y += y * offset;
 	}
+
+	// Expand the bounding rectangle.
+	m_bounds.left -= r.left;
+	m_bounds.right += r.right;
+	m_bounds.top -= r.top;
+	m_bounds.bottom += r.bottom;
 }
+#endif
 
 /*
  * Construct CPathFind nodes from a CVector and add to the nodes vector.
@@ -787,5 +895,101 @@ void CVector::createNodes(std::vector<DB_POINT> &points, const DB_POINT max)
 		{
 			points.push_back(*i);
 		}
+	}
+}
+
+/*
+ * Find the nearest point on the edge of a vector to a point.
+ */
+DB_POINT CVector::nearestPoint(const DB_POINT start)
+{
+	// Take a perpendicular line to each vector and intersect()
+	// to give point, or find nearest point.
+
+	const int PX_OFFSET = 1;
+	DB_POINT best = {0, 0};
+
+	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)
+	{
+		DB_POINT p = {0, 0};
+
+		if (pointOnLine(i, start))
+		{
+			// This will be the nearest point and we can break now.
+			p = start;
+			// Perpendicular line.
+			DB_POINT d = {i->y - (i + 1)->y, (i + 1)->x - i->x};
+			extendPoint(p, d, PX_OFFSET);
+			if (containsPoint(p) % 2)
+			{
+				// Extended on the wrong side!
+				p = start;
+				d.x = -d.x; d.y = -d.y;
+				extendPoint(p, d, PX_OFFSET);
+			}
+			return p;
+		}
+
+		if (isVertical(i)) 
+		{
+			p.x = i->x;
+			p.y = start.y;
+		} 
+		else if (i->y == (i + 1)->y) 
+		{
+			// Horizontal
+			p.x = start.x;
+			p.y = i->y;
+		} 
+		else 
+		{
+			// Solve the equations.
+			const double m1 = gradient(i), c1 = intercept(i);
+			const double m2 = -1 / m1, c2 = start.y - (m2 * start.x);
+
+			p.x = (c2 - c1) / (m1 - m2);
+			p.y = m1 * p.x + c1;
+		}
+
+		if (!pointOnLine(i, p))
+		{
+			// If the perpendicular point is not on the line, 
+			// take the nearest node.
+			const double j = abs(start.x - i->x) + abs(start.y - i->y),
+					     k = abs(start.x - (i + 1)->x) + abs(start.y - (i + 1)->y);
+			p = (j < k) ? *i : *(i + 1);
+		}
+
+		// Keep nearest point.
+		const double j = abs(start.x - p.x) + abs(start.y - p.y),
+					 k = abs(start.x - best.x) + abs(start.y - best.y);
+
+		if (j < k) best = p;
+
+	} // for (i)
+
+	// Offset best a little to prevent pfContains() blocking vectors to it.
+	const DB_POINT d = {best.x - start.x, best.y - start.y};
+	extendPoint(best, d, PX_OFFSET);
+
+	return best;
+}
+
+/*
+ * Extend a point 'a' at the end of a (position) vector 'd' by 'offset' pixels.
+ */
+void CVector::extendPoint(DB_POINT &a, const DB_POINT &d, const int offset)
+{
+	const double grad = (!d.x ? GRAD_INF : dAbs(d.y / d.x));
+
+	if (dAbs(grad) < 1)
+	{
+		a.x += sgn(d.x) * offset; 
+		a.y += sgn(d.y) * offset * grad;
+	}
+	else
+	{
+		a.x += sgn(d.x) * offset / grad;
+		a.y += sgn(d.y) * offset;
 	}
 }

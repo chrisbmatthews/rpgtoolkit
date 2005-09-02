@@ -56,16 +56,30 @@ class CPathFind
 public:
 
 	// Constructor.
-	CPathFind(const DB_POINT start, const DB_POINT goal, const int layer, const RECT base);
+	CPathFind();
 
 	// Destructor.
 	virtual ~CPathFind()
+	{
+		freeVectors();
+	}
+
+	void freeVectors(void)
 	{
 		for (std::vector<CVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
 		{
 			delete *i;
 		}
-	}
+		m_obstructions.clear();
+	};
+
+	// Main function - apply the algorithm to the input points.
+	PF_PATH pathFind(const DB_POINT start, const DB_POINT goal,
+					 const int layer, const RECT &r, const int type);
+
+private:
+	CPathFind (CPathFind &rhs);
+	CPathFind &operator= (CPathFind &rhs);
 
 	// Find the node with the lowest f-value.
 	NODE *bestOpenNode (void);
@@ -79,15 +93,14 @@ public:
 	// Estimate the straight-line distance between nodes.
 	int distance (NODE &a, NODE &b);
 
+	// Re-initialise the search.
+	void initialize(const int layer, const RECT &r, const int type);
+
 	// Determine if a node can be directly reached from another node.
 	bool isChild(NODE &child, NODE &parent);
 
-	// Main function - apply the algorithm to the input points.
-	PF_PATH pathFind (void);
-
-private:
-	CPathFind (CPathFind &rhs);
-	CPathFind &operator= (CPathFind &rhs);
+	// Reset the points at the start of a search.
+	void reset(DB_POINT start, DB_POINT goal);
 
 	std::vector<DB_POINT> m_points;				// All node coords.
 	std::vector<NODE> m_openNodes;

@@ -22,21 +22,13 @@
 /*
  * Defines
  */
-const double CV_PRECISION = 0.001;	// Pixel precision for point comparison.
+const double CV_PRECISION = 0.01;	// Pixel precision for point comparison.
 const double PI = 3.14159265359;
 const double RADIAN = 180 / PI;
 const double GRAD_INF = 0x00100000;	// Something big.
 
-/*
-typedef enum tagCurl 
-{
-	CURL_RIGHT = -1,	
-	CURL_NDEF,
-	CURL_LEFT
-} E_CURL;
-*/
-#define CURL_NDEF  0
-#define CURL_LEFT  1
+#define CURL_NDEF	0
+#define CURL_LEFT	1
 #define CURL_RIGHT -1
 
 // Sprite z-order flags.
@@ -45,6 +37,7 @@ typedef enum tagZOrder
 	ZO_NONE,
 	ZO_COLLIDE,
 	ZO_ABOVE
+
 } ZO_ENUM;
 
 // Tile type flags.
@@ -66,12 +59,12 @@ typedef struct tagDbPoint
 
 typedef std::vector<DB_POINT>::iterator DB_ITR;
 
-inline bool operator== (DB_POINT &a, DB_POINT &b)
+inline bool operator== (const DB_POINT &a, const DB_POINT &b) 
 {
 	return ((a.x == b.x) && (a.y == b.y));
 }
 
-inline bool operator!= (DB_POINT &a, DB_POINT &b)
+inline bool operator!= (const DB_POINT &a, const DB_POINT &b)
 {
 	return ((a.x != b.x) || (a.y != b.y));
 }
@@ -113,7 +106,7 @@ public:
 	ZO_ENUM contains(CVector &rhs/*, DB_POINT &ref*/);
 
 	// Determine if a polygon contains a point.
-	int containsPoint(DB_POINT p);
+	int containsPoint(const DB_POINT p);
 
 	// Create a mask from a closed vector.
 	bool createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG color);
@@ -124,11 +117,14 @@ public:
 	// Get the bounding box.
 	RECT getBounds(void) const { return m_bounds; };
 
-	// Expand the vector around its origin.
-	void grow(const int width, const int height);
+	// Expand the vector radially outwards by a number of pixels.
+	void grow(const int offset);
 
 	// Determine if a vector intersects another vector.
 	bool intersect(CVector &rhs, DB_POINT &ref);
+
+	// Find the nearest point on the edge of a vector to a point.
+	DB_POINT nearestPoint(const DB_POINT start);
 
 	// Draw the vector to the screen (testing purposes).
 	void draw(CONST LONG color, const bool drawText, const int x, const int y, CGDICanvas *const cnv);
@@ -145,8 +141,12 @@ public:
 	int estimateCurl(void);
 
 private:
+
 	// Calculate the bounding box of the vector.
 	void boundingBox(RECT &rect);
+
+	// Extend a point 'a' at the end of a (position) vector 'd' by 'offset' pixels.
+	void extendPoint(DB_POINT &a, const DB_POINT &d, const int offset);
 
 	// Calculate gradient of a sub-vector.
 	double gradient(const DB_ITR &i) const;
@@ -155,7 +155,7 @@ private:
 	double intercept(const DB_ITR &i) const;
 
 	// Internal function NOT public: intersect.
-	bool intersect(DB_ITR &i, CVector &rhs);
+	bool intersect(DB_ITR &i, CVector &rhs, DB_POINT &ref);
 
 	// Determine if a sub-vector is vertical.
 	inline bool isVertical(const DB_ITR &i) const { return (i->x == (i + 1)->x); };

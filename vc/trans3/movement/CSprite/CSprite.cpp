@@ -42,6 +42,7 @@ CSprite::CSprite(const bool show):
 m_attr(),
 m_bActive(show),
 m_lastRender(),
+m_pathFind(),
 m_pend(),
 m_pos(),
 m_tileType(TT_NORMAL)				// Tiletype at location, NOT sprite's type.
@@ -123,19 +124,6 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			// Clear any pathfinding status.
 			m_pos.bIsPath = false;
 
-			/* Test */
-			//int time = GetTickCount();
-
-			// pathFind(rand() % g_pBoard->pxWidth(), rand() % g_pBoard->pxHeight());
-			/*
-			time = GetTickCount() - time;
-			int size = m_pend.path.size();
-			std::stringstream text;
-			text << time << "ms\n" << size << " points\n" <<
-				(time / float(size)) << " ms/p";
-			messageBox(text.str().c_str());
-			*/
-
 		} // if (!m_pend.path.empty())
 	} // if (.loopFrame < LOOP_MOVE)
 
@@ -151,6 +139,9 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			{
 				/* Re-pathfind - tbd *
 			}
+			
+			// Program check here.
+			
 		}
 */
 		// Push the sprite only when the tiletype is passable.
@@ -473,11 +464,13 @@ void CSprite::setQueuedPath(PF_PATH path)
  */
 void CSprite::pathFind(const int x, const int y)
 {
-	DB_POINT start = {m_pos.x, m_pos.y}, goal = {x, y};
+	const DB_POINT start = {m_pos.x, m_pos.y}, goal = {x, y};
 
-	CPathFind path(start, goal, m_pos.l, m_attr.vBase.getBounds());
-
-	setQueuedPath(path.pathFind());
+	setQueuedPath(m_pathFind.pathFind(start, 
+									  goal, 
+									  m_pos.l, 
+									  m_attr.vBase.getBounds(), 
+									  PF_VECTOR));
 }
 
 /*
@@ -964,6 +957,7 @@ void CSprite::send(void)
 
 	extern ZO_VECTOR g_sprites;
 	g_sprites.zOrder();
+	g_sprites.freePaths();
 
 	// Ensure that programs the player is standing on don't run immediately.
 	deactivatePrograms();

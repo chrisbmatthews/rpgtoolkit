@@ -10,10 +10,8 @@
 
 /*
  * TO DO:
- *		GOAL TESTS.
  *		TILE PATHFINDING.
  *		SPRITES.
- *		CONCAVE POINTS.
  */
 
 #include "CPathFind.h"
@@ -103,47 +101,15 @@
 /*
  * Default constructor.
  */
-CPathFind::CPathFind(const DB_POINT start, const DB_POINT goal, 
-					 const int layer, const RECT base):
-m_start(start),
-m_goal(goal),
-m_layer(layer),
-m_heuristic(PF_DIAGONAL)
+CPathFind::CPathFind():
+m_heuristic(PF_VECTOR),
+m_goal(),
+m_layer(0),
+m_start(),
+m_steps(0)
 {
-	extern LPBOARD g_pBoard;
-	// Determine closest approach to obstructions, rounded up.
-	const int width = (base.right - base.left + 1) * 0.5, 
-			  height = (base.bottom - base.top + 1) /* 0.5*/;
-
-	// Distance estimate for start node (heuristic).
-	m_start.dist = distance(m_start, m_goal);
-
-	// Add to coordinate vector.
-	m_points.push_back(start);
-	m_points.push_back(goal);
-
-	DB_POINT limits = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
-
-	// Add collidable nodes.
-	for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
-	{
-		if (i->layer != m_layer || i->type != TT_SOLID) continue;
-
-		/* Check goal is not in a solid region. */
-
-		// The board vectors have to be "grown" to make sure the sprites
-		// can move around them without colliding.
-		CVector *vector = new CVector(*(i->pV));
-		vector->grow(width, height);
-
-		m_obstructions.push_back(vector);
-		vector->createNodes(m_points, limits);					
-	}
-
-	/* Sprite collisions */
-
-	// Prevent reallocation. Alternatively make .parent the offset from .begin().
-	m_closedNodes.reserve(PF_MAX_STEPS);
+	// Insufficient information is available when CSprite is constructed
+	// to be able to do anything here.
 }
 
 /*
@@ -171,7 +137,6 @@ PF_PATH CPathFind::constructPath(NODE node)
 		path.push_back(node.pos);
 		node = *node.parent;
 	}
-
 	return path;
 }
 
@@ -196,6 +161,48 @@ int CPathFind::distance(NODE &a, NODE &b)
 }
 
 /*
+ * Re-initialise the search.
+ */
+void CPathFind::initialize(const int layer, const RECT &r, const int type)
+{
+	extern LPBOARD g_pBoard;
+
+	m_layer = layer;
+	m_heuristic = PF_HEURISTIC(type);
+
+	m_points.clear();
+	freeVectors();					// m_obstructions.
+
+	const DB_POINT limits = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
+
+	// Grow by longest diagonal.
+	const int x = abs(r.left) > abs(r.right) ? r.left : r.right,
+			  y = abs(r.top) > abs(r.bottom) ? r.top : r.bottom;
+	const int size = x > y ? x : y; //sqrt(x * x + y * y);
+
+	// Add collidable nodes.
+	for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
+	{
+		if (i->layer != layer || i->type != TT_SOLID) continue;
+
+		// The board vectors have to be "grown" to make sure the sprites
+		// can move around them without colliding.
+		CVector *vector = new CVector(*(i->pV));
+		vector->grow(size);
+
+		m_obstructions.push_back(vector);
+		vector->createNodes(m_points, limits);					
+	}
+
+	// Pushback two empty points to act as the first goal and start.
+	m_points.push_back(DB_POINT());
+	m_points.push_back(DB_POINT());
+
+	// Prevent reallocation. Alternatively make .parent the offset from .begin().
+	m_closedNodes.reserve(PF_MAX_STEPS);
+}
+
+/*
  * Determine if a node can be directly reached from another node
  * i.e. is there an unobstructed line between the two?
  */
@@ -211,10 +218,8 @@ bool CPathFind::isChild(NODE &child, NODE &parent)
 	for (std::vector<CVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
 	{
 		// Collision against a solid vector: not a child node.
-		if ((*i)->pfContains(v)) break;					
+		if ((*i)->pfContains(v)) break;		
 	}
-
-	/* Sprite collisions */			
 
 	// No collisions - is a child.
 	return (i == m_obstructions.end());
@@ -223,15 +228,18 @@ bool CPathFind::isChild(NODE &child, NODE &parent)
 /*
  * Main function - apply the algorithm to the input points.
  */
-PF_PATH CPathFind::pathFind(void)
+PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
+							const int layer, const RECT &r, const int type)
 {
-	m_openNodes.clear();
-	m_closedNodes.clear();
-	m_openNodes.push_back(m_start);
+	// Recreate m_obstructions if running on a new board or changing layers.
+	if (layer != m_layer || m_obstructions.empty()) initialize(layer, r, type);
+
+	reset(start, goal);
 
 	while (!m_openNodes.empty())
 	{
 		// Explore all open nodes until there are none left.
+		++m_steps;
 
 		// Remove the best open node and add it to the closed nodes.
 		NODE *parent = bestOpenNode();
@@ -250,7 +258,7 @@ PF_PATH CPathFind::pathFind(void)
 			// efficient.
 
 			NODE child(*i);
-			if (*i == parent->pos || !isChild(child, *parent)) continue;
+			if (!isChild(child, *parent)) continue;
 
 			// Assign total cost of moving from the start to this node
 			// *via this parent*, and the straight-line estimate to the goal (heuristic).
@@ -307,5 +315,43 @@ PF_PATH CPathFind::pathFind(void)
 		
 }
 
+/*
+ * Reset the points at the start of a search.
+ */
+void CPathFind::reset(DB_POINT start, DB_POINT goal)
+{
+	// Check if the goal is contained in a solid area.
+	// If so, set the goal to be the closest edge point.
+	for (std::vector<CVector *>::iterator j = m_obstructions.begin(); j != m_obstructions.end(); ++j)
+	{
+		if ((*j)->containsPoint(goal) % 2)
+		{
+			goal = (*j)->nearestPoint(goal);
+			/* Consider goals contained in multiple vectors! */
+		}
+		if ((*j)->containsPoint(start) % 2)
+		{
+			start = (*j)->nearestPoint(start);
+			/* Consider starts contained in multiple vectors! */
+		}
 
-			
+	}
+
+	/* Sprite collisions */
+
+	m_goal = NODE(goal);
+	m_start = NODE(start);
+
+	// Change the previous goal and start.
+	*(m_points.end() - 2) = start;
+	*(m_points.end() - 1) = goal;
+
+	// Distance estimate for start node (heuristic).
+	m_start.dist = distance(m_start, m_goal);
+	m_steps = 0;
+
+	m_openNodes.clear();
+	m_closedNodes.clear();
+	m_openNodes.push_back(m_start);
+}
+

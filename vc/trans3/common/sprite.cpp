@@ -121,6 +121,16 @@ std::string tagSpriteAttr::getStanceAnm(std::string stance)
 	return mapCustomGfx[stance];
 }
 
+
+void offset(DB_POINT pts[], const int size, const int x, const int y)
+{
+	for (int i = 0; i != size; ++i)
+	{
+		pts[i].x += x;
+		pts[i].y += y;
+	}
+}
+
 /*
  * Create some default vectors for *old* versions of players, items.
  */
@@ -181,15 +191,15 @@ void tagSpriteAttr::createVectors(const int activationType)
 		if (CSprite::m_bPxMovement)
 		{
 			// 1/2 height base for pixel movement (or other?).
-//topleft	const DB_POINT pts[] = {{1, 17}, {1, 31}, {31, 31}, {31, 17}};
-			const DB_POINT pts[] = {{-15, -1}, {-15, -15}, {15, -15}, {15, -1}};
+			DB_POINT pts[] = {{0, 0}, {30, 0}, {30, 15}, {0, 15}};
+			offset(pts, 4, -15, -15);
 			vBase.push_back(pts, 4);
 			vBase.close(true);
 
 			if (activationType & SPR_KEYPRESS)
 			{
-//topleft		const DB_POINT pts[] = {{-8, 8}, {-8, 39}, {39, 39}, {39, 8}};
-				const DB_POINT pts[] = {{-24, 8}, {-24, -24}, {24, -24}, {24, 8}};
+				DB_POINT pts[] = {{0, 0}, {48, 0}, {48, 32}, {0, 32}};
+				offset(pts, 4, -24, -24);
 				vActivate.push_back(pts, 4);
 				vActivate.close(true);
 			}
@@ -200,16 +210,16 @@ void tagSpriteAttr::createVectors(const int activationType)
 		}
 		else
 		{
-//topleft	const DB_POINT pts[] = {{1, 1}, {1, 31}, {31, 31}, {31, 1}};
-			const DB_POINT pts[] = {{-15, -1}, {-15, -31}, {15, -31}, {15, -1}};
+			DB_POINT pts[] = {{0, 0}, {30, 0}, {30, 30}, {0, 30}};
+			offset(pts, 4, -15, -30);
 			vBase.push_back(pts, 4);
 			vBase.close(true);
 
 			if (activationType & SPR_KEYPRESS)
 			{
 				// Create a one tile-wide ring around player.
-//topleft		const DB_POINT pts[] = {{-32, -32}, {-32, 63}, {63, 63}, {63, -32}};
-				const DB_POINT pts[] = {{-47, 31}, {-47, -63}, {47, -63}, {47, 32}};
+				DB_POINT pts[] = {{0, 0}, {96, 0}, {96, 96}, {0, 96}};
+				offset(pts, 4, -48, -48);
 				vActivate.push_back(pts, 4);
 				vActivate.close(true);
 			}
@@ -220,4 +230,5 @@ void tagSpriteAttr::createVectors(const int activationType)
 		} // if (pixel movement)
 	} // if (g_pBoard->isIsometric())
 }
+
 

@@ -112,6 +112,8 @@ public:
 
 	bool isActive() const { return m_bActive; }
 
+	void freePath(void) { m_pathFind.freeVectors(); };
+
 protected:
 	SPRITE_ATTR m_attr;				// Sprite attributes (common file data).
 	bool m_bActive;					// Is the sprite visible?
@@ -122,6 +124,7 @@ protected:
 	PENDING_MOVEMENT m_pend;		// Pending movements of the player, including queue.
 	TILE_TYPE m_tileType;			// The tiletypes at the sprite's location (NOT the "tiletype" of the sprite).
 	DB_POINT m_v;					// Position vector in movement direction
+	CPathFind m_pathFind;			// Sprite-specific pathfinding information.
 
 private:
 
@@ -161,13 +164,23 @@ private:
 
 	// Render if the current frame requires updating.
 	bool render(void);
-
 };
 
+/*
+ * A z-ordered vector of players and items.
+ */
 typedef struct tagZOrderedSprites
 {
 	std::vector<CSprite *> v;
+	// Form v into a z-ordered vector from g_players and g_items.
 	void zOrder(void);
+	// Free pathfinding vectors CPathFind::m_obstructions.
+	void freePaths(void)
+	{
+		for (std::vector<CSprite *>::iterator i = v.begin(); i != v.end(); ++i)
+			(*i)->freePath();
+	};
+
 } ZO_VECTOR;
 
 #endif
