@@ -1027,7 +1027,6 @@ void CProgram::run()
 {
 	extern void programInit();
 	extern void programFinish();
-	++m_runningPrograms;
 	programInit();
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
@@ -1037,7 +1036,6 @@ void CProgram::run()
 		processEvent();
 	}
 	programFinish();
-	--m_runningPrograms;
 }
 
 // Execute one unit from a program.
@@ -1071,6 +1069,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 {
 	if (udt & UDT_FUNC)
 	{
+		++CProgram::m_runningPrograms;
 		prg->m_pStack->push_back(prg);
 		try
 		{
@@ -1088,6 +1087,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 			CProgram::debugger(std::string("Near line ") + str + ": Unexpected error.");
 		}
 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
+		--CProgram::m_runningPrograms;
 	}
 	else if (udt & UDT_CLOSE)
 	{
