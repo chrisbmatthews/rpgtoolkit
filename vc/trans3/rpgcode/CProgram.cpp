@@ -31,6 +31,7 @@ std::vector<std::string> CProgram::m_inclusions;
 std::vector<IPlugin *> CProgram::m_plugins;
 std::set<CThread *> CThread::m_threads;
 std::string CProgram::m_parsing;
+unsigned long CProgram::m_runningPrograms = 0;
 
 // Create a thread.
 CThread *CThread::create(const std::string str)
@@ -1026,6 +1027,7 @@ void CProgram::run()
 {
 	extern void programInit();
 	extern void programFinish();
+	++m_runningPrograms;
 	programInit();
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
@@ -1035,6 +1037,7 @@ void CProgram::run()
 		processEvent();
 	}
 	programFinish();
+	--m_runningPrograms;
 }
 
 // Execute one unit from a program.

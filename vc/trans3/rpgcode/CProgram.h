@@ -204,6 +204,8 @@ public:
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
 	static void freePlugins();
 
+	static bool isRunning() { return (m_runningPrograms != 0); }
+
 private:
 	std::deque<std::deque<STACK_FRAME> > m_stack;
 	std::vector<std::map<std::string, STACK_FRAME> > m_locals;
@@ -226,6 +228,7 @@ private:
 	static std::map<std::string, MACHINE_FUNC> m_functions;
 	static std::map<std::string, STACK_FRAME> m_heap;
 	static std::vector<IPlugin *> m_plugins;
+	static unsigned long m_runningPrograms;
 
 	// Special constructs.
 	static void conditional(CALL_DATA &);
