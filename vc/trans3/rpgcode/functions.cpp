@@ -1077,7 +1077,7 @@ void random(CALL_DATA &params)
 		throw CError("Random() requires one or two parameters.");
 	}
 	params.ret().udt = UDT_NUM;
-	params.ret().num = (1 + (rand() % int(params[0].getNum() + 1)));
+	params.ret().num = (rand() % int(params[0].getNum())) + 1;
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -1310,8 +1310,8 @@ void castNum(CALL_DATA &params)
 	else if (params.params == 2)
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-		var->udt = UDT_NUM;
 		var->num = params[0].getNum();
+		var->udt = UDT_NUM;
 	}
 	else
 	{
@@ -1336,8 +1336,8 @@ void castLit(CALL_DATA &params)
 	else if (params.params == 2)
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-		var->udt = UDT_LIT;
 		var->lit = params[0].getLit();
+		var->udt = UDT_LIT;
 	}
 	else
 	{
@@ -1362,8 +1362,8 @@ void castInt(CALL_DATA &params)
 	else if (params.params == 2)
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-		var->udt = UDT_NUM;
 		var->num = double(int(params[0].getNum()));
+		var->udt = UDT_NUM;
 	}
 	else
 	{
