@@ -341,37 +341,48 @@ void CSprite::setPathTarget(void)
 }
 
 /*
- * Get the next queued movement and remove it from the queue.
- * TO BE REMOVED.
- *
-MV_ENUM CSprite::getQueuedMovements(void) 
+ * Parse a Push() string and pass to setQueuedMovement().
+ */
+void CSprite::parseQueuedMovements(std::string str)
 {
-	// Check that we have queued movements before popping!
-	if (m_pend.queue.size())
+	extern MAIN_FILE g_mainFile;
+	std::string s;
+
+	const int step = (g_mainFile.pixelMovement == MF_PUSH_PIXEL ? moveSize() : 32);
+
+	// Include str.end() in the loop to catch the last movement.
+	for (std::string::iterator i = str.begin(); i <= str.end(); ++i)
 	{
-		// Peek.
-		const int peek = m_pend.queue.front();
-		// Pop.
-		m_pend.queue.pop_front();
-		return MV_ENUM(peek);
-	}
-	return MV_IDLE;
-}
-*/
+		if (i == str.end() || i[0] == ',')
+		{
+			MV_ENUM mv = MV_IDLE;
+			if (!s.compare("NORTH") || !s.compare("N") || !s.compare(MVQ_NORTH))
+				mv = MV_N;
+			else if (!s.compare("SOUTH") || !s.compare("S") || !s.compare(MVQ_SOUTH))
+				mv = MV_S;
+			else if (!s.compare("EAST") || !s.compare("E") || !s.compare(MVQ_EAST))
+				mv = MV_E;
+			else if (!s.compare("WEST") || !s.compare("W") || !s.compare(MVQ_WEST))
+				mv = MV_W;
+			else if (!s.compare("NORTHEAST") || !s.compare("NE") || !s.compare(MVQ_NE))
+				mv = MV_NE;
+			else if (!s.compare("NORTHWEST") || !s.compare("NW") || !s.compare(MVQ_NW))
+				mv = MV_NW;
+			else if (!s.compare("SOUTHEAST") || !s.compare("SE") || !s.compare(MVQ_SE))
+				mv = MV_SE;
+			else if (!s.compare("SOUTHWEST") || !s.compare("SW") || !s.compare(MVQ_SW))
+				mv = MV_SW;
 
-/*
- * Place a movement in the sprite's queue.
- * TO BE DONE.
- *
-void CSprite::setQueuedMovements(const int queue, const bool bClearQueue) 
-{
-	// Clear any currently queued movements if requested.
-	if (bClearQueue) m_pend.queue.clear();
+			if (mv != MV_IDLE) setQueuedMovement(mv, false, step);
+			s.erase();
+		}
+		else
+		{
+			if (i[0] != ' ') s += *i;
+		}
+	} // for (i)
 
-	// Push the new movements onto the queue.
-	m_pend.queue.push_back(queue);
 }
-*/
 
 /*
  * Clear the queue.
@@ -388,7 +399,7 @@ void CSprite::clearQueue(void)
 /*
  * Place a movement in the sprite's queue.
  */
-void CSprite::setQueuedMovements(const int direction, const bool bClearQueue)
+void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int step)
 {
 	if (bClearQueue)
 	{
@@ -401,8 +412,8 @@ void CSprite::setQueuedMovements(const int direction, const bool bClearQueue)
 
 	const int nIso = int(g_pBoard->isIsometric());
 
-	// Pixels travelled this move.
-	const int step = moveSize();
+	// Pixels travelled this move, optionally overriden for rpgcode commands.
+	if (!step) step = moveSize();
 
 	// The "movement vector".
 	// g_directions[isIsometric()][MV_CODE][x OR y].
@@ -423,6 +434,21 @@ void CSprite::setQueuedMovements(const int direction, const bool bClearQueue)
 }
 
 /*
+ * Run all the movements in the queue.
+ */
+void CSprite::runQueuedMovements(void) 
+{
+	extern CSprite *g_pSelectedPlayer;
+	extern CGDICanvas *g_cnvRpgCode;
+
+	while (move(g_pSelectedPlayer))
+	{
+		renderNow(g_cnvRpgCode, true);
+		renderRpgCodeScreen();
+	}
+}
+
+/*
  * Get the destionation.
  */
 void CSprite::getDestination(DB_POINT &p) const
@@ -439,14 +465,9 @@ void CSprite::getDestination(DB_POINT &p) const
 }
 
 /*
- * Run all the movements in the queue.
- */
-void CSprite::runQueuedMovements(void) {}
-
-/*
  * Queue up a path-finding path.
  */
-void CSprite::setQueuedPath(PF_PATH path)
+void CSprite::setQueuedPath(PF_PATH &path)
 {
 	// PF_PATH is a std::vector<DB_POINT> with the points stored
 	// in *reverse*.
@@ -462,15 +483,15 @@ void CSprite::setQueuedPath(PF_PATH path)
 /*
  * Pathfind to pixel position x, y (same layer).
  */
-void CSprite::pathFind(const int x, const int y)
+PF_PATH CSprite::pathFind(const int x, const int y)
 {
 	const DB_POINT start = {m_pos.x, m_pos.y}, goal = {x, y};
 
-	setQueuedPath(m_pathFind.pathFind(start, 
-									  goal, 
-									  m_pos.l, 
-									  m_attr.vBase.getBounds(), 
-									  PF_VECTOR));
+	return m_pathFind.pathFind (start, 
+								goal, 
+								m_pos.l, 
+								m_attr.vBase.getBounds(), 
+								PF_AXIAL);
 }
 
 /*
@@ -485,8 +506,12 @@ void CSprite::playerDoneMove(void)
 	const int step = moveSize();
 	g_stepsTaken += step;
 
-	programTest();
-	fightTest(step);
+	// Movement in a program should not trigger other programs.
+	if (!CProgram::isRunning())
+	{
+		programTest();
+		fightTest(step);
+	}
 
 	// Back to idle state (accepting input)
 	g_gameState = GS_IDLE;
@@ -498,31 +523,9 @@ void CSprite::playerDoneMove(void)
  */
 void CSprite::setPosition(int x, int y, const int l, const COORD_TYPE coord)
 {
-	extern LPBOARD g_pBoard;
+	// Convert the co-ordinates an absolute pixel value.
+	pixelCoordinate(x, y, coord);
 
-	switch (coord)
-	{
-		case TILE_NORMAL:
-			// Bottom-centre of tile.
-			x = x * 32 - 16;	//x * 32 - 32;
-			y = y * 32 - 0;		//y * 32 - 32;
-			break;
-
-		case ISO_STACKED:
-			x *= 64;
-			x -= (y % 2 ? 32 : 64);
-			y = (y * 16) - 16;
-			break;
-
-		case ISO_ROTATED:
-			x = (x - y + g_pBoard->bSizeX) * 32; 
-			y = (x + y - g_pBoard->bSizeX) * 16;	
-
-	}
-	// If we have any combination (## & PX_ABSOLUTE), the position
-	// will be in pixels (PX_ABSOLUTE overrides).
-
-	// default, PX_ABSOLUTE	take directly.
 	m_pend.xOrig = m_pend.xTarg = m_pos.x = x;
 	m_pend.yOrig = m_pend.yTarg = m_pos.y = y;
 	m_pend.lOrig = m_pend.lTarg = m_pos.l = l;
@@ -777,7 +780,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
 			// No rect intersect - compare on bounding box bottom-left
 			// corner position.
 			if ((bounds.bottom * g_pBoard->pxWidth() + bounds.left) <
-				(tBounds.bottom * g_pBoard->pxWidth() + tBounds.left));
+				(tBounds.bottom * g_pBoard->pxWidth() + tBounds.left))
 				pos = i;
 		}
 		else if (!(zo & ZO_ABOVE) && !pos)
@@ -889,13 +892,13 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
             if (!m_bPxMovement && pBoard->isIsometric())
                 m_pos.y = (int(pos.y) % 32 ? 16.0 : 32.0);
 			else
-				m_pos.y = (height - offset < 0 ? 0 : height - offset);
+				m_pos.y = (height - offset < BASE_POINT_Y ? BASE_POINT_Y : height - offset);
 
 			break;
 
 		case LK_E:
 			// East
-			m_pos.x = (width - offset < 0 ? 0 : width - offset);
+			m_pos.x = (width - offset < BASE_POINT_X ? BASE_POINT_X : width - offset);
 			break;
 
 		case LK_W:

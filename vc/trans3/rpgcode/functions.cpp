@@ -23,9 +23,11 @@
 #include "../common/CAllocationHeap.h"
 #include "../common/CInventory.h"
 #include "../common/CFile.h"
+#include "../movement/locate.h"
 #include "../movement/CSprite/CSprite.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
+#include "../movement/CPathFind/CPathFind.h"
 #include "../images/FreeImage.h"
 #include "../fight/fight.h"
 #include "CCursorMap.h"
@@ -78,6 +80,54 @@ void programFinish()
 }
 
 /*
+ * Format direction string.
+ */
+std::string formatDirectionString(std::string str)
+{
+	str = parser::uppercase(str);
+	const std::string delimiter = ",";
+
+	// If the string contains any delimiters,
+	// assume it's been properly formatted.
+	if (str.find(delimiter, 0) != std::string::npos) return str;
+	
+	std::string s;
+
+	for (std::string::iterator i = str.begin(); i != str.end(); ++i)
+	{
+		if (i[0] == ' ') continue;
+
+		if (i[0] == 'N' || i[0] == 'W')
+		{
+			// Start of a direction.
+			s += delimiter;
+		}
+		else if (i[0] == 'S')
+		{
+			// Look at the next letter.
+			if (i >= str.end() - 1 || i[1] != 'T')
+			{
+				// Not part of west or east.
+				s += delimiter;
+			}
+		}
+		else if (i[0] == 'E')
+		{
+			// Look at the 2nd next letter.
+			if (i >= str.end() - 2 || i[2] != 'T')
+			{
+				// Not part of west.
+				s += delimiter;
+			}
+		}
+		s += *i;
+
+	} // for (i)
+
+	return s;
+}
+
+/*
  * Get a player by name.
  */
 IFighter *getFighter(const std::string name)
@@ -118,6 +168,43 @@ IFighter *getFighter(const std::string name)
 	}
 	// Doesn't exist.
 	return NULL;
+}
+
+/*
+ * Get an item pointer from a board index / literal target parameter.
+ */
+CSprite *getItemPointer(STACK_FRAME &param)
+{
+	extern LPBOARD g_pBoard;
+
+	if (param.getType() & UDT_NUM)
+	{
+		const unsigned int i = (unsigned int)param.getNum();
+		if (g_pBoard->items.size() > i)
+		{
+			return g_pBoard->items[i];
+		}
+		else
+		{
+			throw CError("Item does not exist at board index " + i);
+		}
+	}
+	else
+	{
+		const std::string str = param.getLit();
+		if (_strcmpi(str.c_str(), "target") == 0)
+		{
+			return (CSprite *)g_pTarget;
+		}
+		else if (_strcmpi(str.c_str(), "source") == 0)
+		{
+			return (CSprite *)g_pSource;
+		}
+		else
+		{
+			throw CError("Literal item target must be \"target\" or \"source\".");
+		}
+	}
 }
 
 /*
@@ -1085,24 +1172,6 @@ void random(CALL_DATA &params)
 }
 
 /*
- * void push(string direction, [string handle])
- * 
- * Push the player with the specified handle, or the default player
- * if no handle is specified, along the given directions. The direction
- * should be a comma delimited, but if it is not, it will be delimited
- * for backward compatibility. These styles are accepted, and can be
- * mixed even within the same directonal string:
- *
- * - N, S, E, W, NE, NW, SE, SW
- * - NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST
- * - 1, 2, 3, 4, 5, 6, 7, 8
- */
-void push(CALL_DATA &params)
-{
-
-}
-
-/*
  * void tileType(int x, int y, string type, [int z = 1])
  * 
  * Change a tile's type. Valid types for the string parameter
@@ -1372,6 +1441,207 @@ void castInt(CALL_DATA &params)
 }
 
 /*
+ * string pathfind (int x1, int y1, int x2, int y2, string return [, int layer])
+ *
+ * Construct a directional string of the shortest tiled path from
+ * one location to the other.
+ */
+void pathfind(CALL_DATA &params)
+{
+	extern CSprite *g_pSelectedPlayer;
+	extern LPBOARD g_pBoard;
+
+	if (params.params < 4 || params.params > 6)
+	{
+		throw CError("PathFind() requires four, five or six parameters."); 
+	}
+
+	const int layer = 
+		((params.params == 6) && (params[5].getType() & UDT_LIT)) ?
+		int(params[5].getNum()) :
+		// I *hope* there will be a better way to get the layer!
+		g_pSelectedPlayer->getLayer();
+
+	int x1 = int(params[0].getNum()), y1 = int(params[1].getNum()),
+		x2 = int(params[2].getNum()), y2 = int(params[3].getNum());
+
+	// Transform the input co-ordinates based on the board co-ordinate system.
+	pixelCoordinate(x1, y1, g_pBoard->coordType);
+	pixelCoordinate(x2, y2, g_pBoard->coordType);
+
+	// Parameters. r is unneeded for tile pathfinding.
+	const DB_POINT start = {x1, y1}, goal = {x2, y2};
+	const RECT r = {0, 0, 0, 0};
+	std::string s;
+
+	// Pre C++, PathFind() was implemented axially only.
+	CPathFind path;
+	path.pathFind(start, goal, layer, r, PF_AXIAL); 
+	std::vector<MV_ENUM> p = path.directionalPath();
+
+	for(std::vector<MV_ENUM>::reverse_iterator i = p.rbegin(); i != p.rend(); ++i)
+	{
+		switch (*i)
+		{
+			case MV_N: { s += "N"; } break;
+			case MV_S: { s += "S"; } break;
+			case MV_E: { s += "E"; } break;
+			case MV_W: { s += "W"; } break;
+			case MV_NE: { s += "NE"; } break;
+			case MV_NW: { s += "NW"; } break;
+			case MV_SE: { s += "SE"; } break;
+			case MV_SW: { s += "SW"; }
+		}
+		if (i != p.rend() - 1) s += ",";
+	}
+	
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = s;
+
+	if (params.params >= 5)
+	{
+		*params.prg->getVar(params[4].lit) = params.ret();
+	}
+}
+
+/*
+ * playerstep(string handle, int x, int y)
+ * 
+ * Causes the player to take one step in the direction of x, y
+ * following a route determined by pathFind.
+ */
+void playerstep(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	if (params.params != 3)
+	{
+		throw CError("PlayerStep() requires three parameters.");
+	}
+
+	CSprite *p = (CPlayer *)getFighter(params[0].getLit());
+	if (!p) return;
+
+	int x = int(params[1].getNum()), y = int(params[2].getNum());
+	pixelCoordinate(x, y, g_pBoard->coordType);
+
+	PF_PATH path = p->pathFind(x, y);
+	if (!path.empty())
+	{
+		// Prune to the last element.
+		path.front() = path.back();		
+		path.resize(1);
+		p->setQueuedPath(path);
+
+		if (!params.prg->isThread())
+		{
+			// If not a thread, move now.
+			p->runQueuedMovements();
+		}
+	}
+}
+
+/*
+ * itemstep(variant handle, int x, int y)
+ * 
+ * Causes the item to take one step in the direction of x, y
+ * following a route determined by pathFind.
+ */
+void itemstep(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	if (params.params != 3)
+	{
+		throw CError("ItemStep() requires three parameters.");
+	}
+
+	CSprite *p = getItemPointer(params[0]);
+	if (!p) return;
+
+	int x = int(params[1].getNum()), y = int(params[2].getNum());
+	pixelCoordinate(x, y, g_pBoard->coordType);
+
+	PF_PATH path = p->pathFind(x, y);
+	if (!path.empty())
+	{
+		// Prune to the last element.
+		path.front() = path.back();		
+		path.resize(1);
+		p->setQueuedPath(path);
+
+		if (!params.prg->isThread())
+		{
+			// If not a thread, move now.
+			p->runQueuedMovements();
+		}
+	}
+}
+
+/*
+ * void push(string direction, [string handle])
+ * 
+ * Push the player with the specified handle, or the default player
+ * if no handle is specified, along the given directions. The direction
+ * should be a comma delimited, but if it is not, it will be delimited
+ * for backward compatibility. These styles are accepted, and can be
+ * mixed even within the same directonal string:
+ *
+ * - N, S, E, W, NE, NW, SE, SW
+ * - NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST
+ * - 1, 2, 3, 4, 5, 6, 7, 8
+ */
+void push(CALL_DATA &params)
+{
+	extern CSprite *g_pSelectedPlayer;
+	extern std::vector<CPlayer *> g_players;
+
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("Push() requires one or two parameters.");
+	}
+
+	CSprite *p = NULL;
+
+	if (params.params == 2)
+	{
+		if (params[1].getType() & UDT_LIT)
+		{
+			p = (CPlayer *)getFighter(params[1].getLit());
+		}
+		else
+		{
+			const int i = int(params[1].getNum());
+			if (i < g_players.size())
+			{
+				p = g_players.at(i);
+			}
+			else
+			{
+				throw CError("Push(): player index not found");
+			}
+		}
+	}
+	else
+	{
+		p = g_pSelectedPlayer;
+	}
+	if (!p) return;
+
+	// Backwards compatibility.
+	std::string str = formatDirectionString(params[0].getLit());
+
+	// Parse and set queued movements.
+	p->parseQueuedMovements(str);
+
+	if (!params.prg->isThread())
+	{
+		// If not a thread, move now.
+		p->runQueuedMovements();
+	}
+}
+
+/*
  * void pushItem(variant item, string direction)
  * 
  * The first parameter accepts either a string that can be either
@@ -1380,7 +1650,27 @@ void castInt(CALL_DATA &params)
  */
 void pushItem(CALL_DATA &params)
 {
+	extern CSprite *g_pSelectedPlayer;
 
+	if (params.params != 2)
+	{
+		throw CError("PushItem() requires two parameters.");
+	}
+
+	CSprite *p = getItemPointer(params[0]);
+	if (!p) return;
+
+	// Backwards compatibility.
+	std::string str = formatDirectionString(params[1].getLit());
+
+	// Parse and set queued movements.
+	p->parseQueuedMovements(str);
+
+	if (!params.prg->isThread())
+	{
+		// If not a thread, move now.
+		p->runQueuedMovements();
+	}
 }
 
 /*
@@ -1407,37 +1697,7 @@ void wander(CALL_DATA &params)
 		throw CError("Wander() requires one or two parameters.");
 	}
 
-	CSprite *p = NULL;
-
-	if (params[0].getType() & UDT_NUM)
-	{
-		const unsigned int i = (unsigned int)params[0].getNum();
-		if (g_pBoard->items.size() > i)
-		{
-			p = g_pBoard->items[i];
-		}
-		else
-		{
-			throw CError("Item does not exist.");
-		}
-	}
-	else
-	{
-		const std::string str = params[0].getLit();
-		if (_strcmpi(str.c_str(), "target") == 0)
-		{
-			p = (CSprite *)g_pTarget;
-		}
-		else if (_strcmpi(str.c_str(), "souce") == 0)
-		{
-			p = (CSprite *)g_pSource;
-		}
-		else
-		{
-			throw CError("Literal target must be \"target\" or \"source\".");
-		}
-	}
-
+	CSprite *p = getItemPointer(params[0]);
 	if (!p) return;
 
 	const int isIso = int(g_pBoard->isIsometric());
@@ -1479,14 +1739,8 @@ void wander(CALL_DATA &params)
 	if (!params.prg->isThread())
 	{
 		// If not a thread, move now.
-		extern CSprite *g_pSelectedPlayer;
-		while (p->move(g_pSelectedPlayer))
-		{
-			renderNow(g_cnvRpgCode, true);
-			renderRpgCodeScreen();
-		}
+		p->runQueuedMovements();
 	}
-
 }
 
 /*
@@ -2830,36 +3084,6 @@ void getRes(CALL_DATA &params)
 void staticText(CALL_DATA &params)
 {
 	throw CError("StaticText() is obsolete.");
-}
-
-/*
- * pathfind(...)
- * 
- * Description.
- */
-void pathfind(CALL_DATA &params)
-{
-
-}
-
-/*
- * itemstep(...)
- * 
- * Description.
- */
-void itemstep(CALL_DATA &params)
-{
-
-}
-
-/*
- * playerstep(...)
- * 
- * Description.
- */
-void playerstep(CALL_DATA &params)
-{
-
 }
 
 /*

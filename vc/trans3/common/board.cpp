@@ -596,6 +596,7 @@ void tagBoard::createVectorCanvases(void)
 
 		// Get the bounding box of the vector.
 		const RECT r = i->pV->getBounds();
+		if (r.right - r.left < 1 || r.bottom - r.top < 1) continue;
 
 		i->pCnv = new CGDICanvas();
 		i->pCnv->CreateBlank(NULL, r.right - r.left, r.bottom - r.top, TRUE);
@@ -804,14 +805,14 @@ void tagBoard::render(CGDICanvas *cnv,
 		for (unsigned int j = 1; j <= nWidth; ++j)
 		{
 			const int x = j + topX;
-			if (x < 0) continue;
+			if (x < 0 || x > bSizeX) continue;
 
 			// For the y axis
 			for (unsigned int k = 1; k <= nHeight; ++k)
 			{
 				// The tile co-ordinates.
 				const int  y = k + topY;
-				if (y < 0) continue;
+				if (y < 0 || y > bSizeY) continue;
 
 				if (board[x][y][i])
 				{

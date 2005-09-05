@@ -172,7 +172,7 @@ void scanKeys(void)
 	if (queue != MV_IDLE)
 	{
 		// Queue up the movement, and clear any currently queued movements.
-		g_pSelectedPlayer->setQueuedMovements(queue, true);
+		g_pSelectedPlayer->setQueuedMovement(queue, true);
 		g_gameState = GS_MOVEMENT;
 	}
 }
@@ -234,7 +234,8 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_LBUTTONDOWN:
 		{
 			g_pSelectedPlayer->clearQueue();
-			g_pSelectedPlayer->pathFind(LOWORD(lParam) + g_screen.left, HIWORD(lParam) + g_screen.top);
+			PF_PATH p = g_pSelectedPlayer->pathFind(LOWORD(lParam) + g_screen.left, HIWORD(lParam) + g_screen.top);
+			g_pSelectedPlayer->setQueuedPath(p);
 		} break;
 
 		// Window activated/deactivated

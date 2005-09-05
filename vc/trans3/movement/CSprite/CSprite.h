@@ -47,11 +47,11 @@ public:
 	// Called for PRE_VECTOR_ITEMs.
 	void createVectors(void) { m_attr.createVectors(m_brdData.activationType); };
 
-	// Get the next queued movement and remove it from the queue.
-	MV_ENUM getQueuedMovements(void);
+	// Parse a Push() string and pass to setQueuedMovement().
+	void parseQueuedMovements(std::string str);
 
 	// Place a movement in the sprite's queue.
-	void setQueuedMovements(const int queue, const bool bClearQueue);
+	void setQueuedMovement(const int queue, const bool bClearQueue, int step = 0);
 	
 	// Run all the movements in the queue.
 	void runQueuedMovements(void);
@@ -60,7 +60,7 @@ public:
 	void clearQueue(void);
 
 	// Queue up a path-finding path.
-	void setQueuedPath(PF_PATH path);
+	void setQueuedPath(PF_PATH &path);
 
 	// Queue just one point to create a path.
 	void setQueuedPoint(DB_POINT pt)
@@ -70,7 +70,7 @@ public:
 	}
 
 	// Pathfind to pixel position x, y (same layer).
-	void pathFind(const int x, const int y);
+	PF_PATH pathFind(const int x, const int y);
 
 	// Get the destination.
 	void getDestination(DB_POINT &p) const;
@@ -113,6 +113,8 @@ public:
 	bool isActive() const { return m_bActive; }
 
 	void freePath(void) { m_pathFind.freeVectors(); };
+
+	int getLayer() const { return m_pos.l; }
 
 protected:
 	SPRITE_ATTR m_attr;				// Sprite attributes (common file data).

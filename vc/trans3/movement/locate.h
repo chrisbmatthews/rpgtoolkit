@@ -13,6 +13,16 @@
 #include "movement.h"
 
 /*
+ * Convert a tile co-ordinate to a pixel co-ordinate.
+ */
+void pixelCoordinate(int &x, int &y, const COORD_TYPE coord);
+
+/*
+ * Round a pixel co-ordinate to the centre of the corresponding tile.
+ */
+void roundToTile(double &x, double &y, const bool bIso);
+
+/*
  * Transform old-type isometric co-ordinates to new-type.
  */
 void isoCoordTransform(const double oldX, const double oldY, double &newX, double &newY);

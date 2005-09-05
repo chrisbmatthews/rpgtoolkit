@@ -12,6 +12,77 @@
 
 extern LPBOARD g_pBoard;
 
+/*
+ * Convert a tile co-ordinate to a pixel co-ordinate.
+ */
+void pixelCoordinate(int &x, int &y, const COORD_TYPE coord)
+{
+	// If we have any combination (## & PX_ABSOLUTE), the position
+	// will be in pixels (PX_ABSOLUTE overrides).
+	switch (coord)
+	{
+		case TILE_NORMAL:
+		{
+			x = (x - 1) * 32 + BASE_POINT_X;
+			y = (y - 1) * 32 + BASE_POINT_Y;
+			break;
+		}
+		case ISO_STACKED:
+		{
+			x = x * 64 - (y % 2 ? 32 : 64) + BASE_POINT_ISO_X;
+			y = y * 16 - 16 + BASE_POINT_ISO_Y;
+			break;
+		}
+		case ISO_ROTATED:
+		{
+			const int dx = x;
+			x = (x - y + g_pBoard->bSizeX) * 32 + BASE_POINT_ISO_X; 
+			y = (dx + y - g_pBoard->bSizeX) * 16 + BASE_POINT_ISO_Y;	
+		}
+	}
+}
+
+/*
+ * Round a pixel co-ordinate to the centre of the corresponding tile.
+ */
+void roundToTile(double &x, double &y, const bool bIso)
+{
+	if (bIso)
+	{
+		// Round to a 32x16 grid.
+		const int px = int(x / 32) * 32, py = int(y / 16) * 16,
+		// Pixel offset from px.
+				  dx = x - px, dy = y - py;
+		x = px;
+		y = py;
+		// Two cases: tile division runs top-left to bottom-right or
+		// top-right to bottom-left through this square.
+		// Determine which side the point is on - the tile centre is
+		// at the closest corner.
+		if (px % 64 == (py % 32) * 2)
+		{
+			if (dx > 2 * dy) x += 32;
+			else y += 16;
+		}
+		else
+		{
+			if (32 - dx < 2 * dy)
+			{
+				x += 32;
+				y += 16;
+			}
+		}
+		x += BASE_POINT_ISO_X;
+		y += BASE_POINT_ISO_Y;
+	}
+	else
+	{
+		// Round to the 32x32 grid.
+		x = int((x - 1) / 32.0) * 32.0 + BASE_POINT_X;
+		y = int((y - 1) / 32.0) * 32.0 + BASE_POINT_Y;
+	}
+}
+
 /**** Note to self: merge these and use COORD_TYPE. ****/
 
 /*

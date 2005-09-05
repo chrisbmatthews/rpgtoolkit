@@ -15,6 +15,16 @@
 #include <vector>
 
 /*
+ * Defines.
+ */
+enum
+{
+	MF_MOVE_TILE,
+	MF_MOVE_PIXEL,
+	MF_PUSH_PIXEL
+};
+
+/*
  * A main file.
  */
 typedef struct tagMainFile
