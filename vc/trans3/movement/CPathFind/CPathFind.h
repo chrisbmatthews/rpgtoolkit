@@ -15,6 +15,7 @@
  * Includes
  */
 #include "../CVector/CVector.h"
+#include "../../common/sprite.h"
 #include <vector>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>				// RECT only.
@@ -23,7 +24,7 @@
 /*
  * Defines
  */
-const int PF_MAX_STEPS = 100;		// Maximum number of steps in a path.
+const int PF_MAX_STEPS = 1000;		// Maximum number of steps in a path.
 
 // Distance measurements.
 enum PF_HEURISTIC
@@ -40,9 +41,10 @@ typedef struct tagNode
 	int cost;						// Cost to reach this node from start via parents (g).
 	int dist;						// Estimate to destination (h).
 	tagNode *parent;				// Node's parent in m_closedNodes.
+	MV_ENUM direction;				// Directional relationship to parent.
 
-	tagNode(): pos(), cost(0), dist(0), parent(NULL) {};
-	tagNode(DB_POINT p): pos(p), cost(0), dist(0), parent (NULL) {};
+	tagNode(): pos(), cost(0), direction(MV_IDLE), dist(0), parent(NULL) {};
+	tagNode(DB_POINT p): pos(p), cost(0), direction(MV_IDLE), dist(0), parent (NULL) {};
 
 	int fValue(void) { return (cost + dist); };
 
@@ -63,6 +65,9 @@ public:
 	{
 		freeVectors();
 	}
+
+	// Construct an equvialent directional path.
+	std::vector<MV_ENUM> directionalPath(void);
 
 	void freeVectors(void)
 	{
@@ -93,6 +98,9 @@ private:
 	// Estimate the straight-line distance between nodes.
 	int distance (NODE &a, NODE &b);
 
+	// Get the next potential child of a node.
+	bool getChild(DB_POINT &child, const DB_POINT &parent);
+
 	// Re-initialise the search.
 	void initialize(const int layer, const RECT &r, const int type);
 
@@ -112,6 +120,12 @@ private:
 	int m_steps;								// Number of steps taken.
 	NODE m_start;
 	NODE m_goal;
+
+	union										// Get child loop trackers. 
+	{
+		DB_ITR v;								// Vector - m_points.
+		int i;									// Tile - MV_ENUM.
+	} m_u;
 };
 
 #endif
