@@ -234,7 +234,7 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_LBUTTONDOWN:
 		{
 			g_pSelectedPlayer->clearQueue();
-			PF_PATH p = g_pSelectedPlayer->pathFind(LOWORD(lParam) + g_screen.left, HIWORD(lParam) + g_screen.top);
+			PF_PATH p = g_pSelectedPlayer->pathFind(LOWORD(lParam) + g_screen.left, HIWORD(lParam) + g_screen.top, PF_VECTOR);
 			g_pSelectedPlayer->setQueuedPath(p);
 		} break;
 
@@ -243,18 +243,22 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		{
 			if (wParam != WA_INACTIVE)
 			{
-				// Window is being *activated*
+				// Window is being activated,
 				if (g_lpdiKeyboard) g_lpdiKeyboard->Acquire();
 			}
 			else
 			{
-				// Window is being *deactivated*
+				// Window is being deactivated.
 			}
+		} break;
+
+		default:
+		{
+			return DefWindowProc(hwnd, msg, wParam, lParam);
 		} break;
 
 	}
 
-	// Return success
-	return DefWindowProc(hwnd, msg, wParam, lParam);
+	return TRUE;
 
 }

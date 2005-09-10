@@ -1525,7 +1525,7 @@ void playerstep(CALL_DATA &params)
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	pixelCoordinate(x, y, g_pBoard->coordType);
 
-	PF_PATH path = p->pathFind(x, y);
+	PF_PATH path = p->pathFind(x, y, PF_AXIAL);
 	if (!path.empty())
 	{
 		// Prune to the last element.
@@ -1562,7 +1562,7 @@ void itemstep(CALL_DATA &params)
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	pixelCoordinate(x, y, g_pBoard->coordType);
 
-	PF_PATH path = p->pathFind(x, y);
+	PF_PATH path = p->pathFind(x, y, PF_AXIAL);
 	if (!path.empty())
 	{
 		// Prune to the last element.

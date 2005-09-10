@@ -70,7 +70,7 @@ public:
 	}
 
 	// Pathfind to pixel position x, y (same layer).
-	PF_PATH pathFind(const int x, const int y);
+	PF_PATH pathFind(const int x, const int y, const int type);
 
 	// Get the destination.
 	void getDestination(DB_POINT &p) const;

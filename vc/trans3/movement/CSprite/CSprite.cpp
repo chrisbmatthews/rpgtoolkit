@@ -483,7 +483,7 @@ void CSprite::setQueuedPath(PF_PATH &path)
 /*
  * Pathfind to pixel position x, y (same layer).
  */
-PF_PATH CSprite::pathFind(const int x, const int y)
+PF_PATH CSprite::pathFind(const int x, const int y, const int type)
 {
 	const DB_POINT start = {m_pos.x, m_pos.y}, goal = {x, y};
 
@@ -491,7 +491,7 @@ PF_PATH CSprite::pathFind(const int x, const int y)
 								goal, 
 								m_pos.l, 
 								m_attr.vBase.getBounds(), 
-								PF_AXIAL);
+								type);
 }
 
 /*
