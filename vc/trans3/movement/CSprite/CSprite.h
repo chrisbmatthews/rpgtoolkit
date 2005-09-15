@@ -65,7 +65,7 @@ public:
 	// Queue just one point to create a path.
 	void setQueuedPoint(DB_POINT pt)
 	{
-		if (!m_pend.path.empty() && (m_pend.path.back() == pt)) return;
+		if (!m_pend.path.empty() || m_pos.loopFrame > LOOP_MOVE) return;
 		m_pend.path.push_back(pt);
 	}
 

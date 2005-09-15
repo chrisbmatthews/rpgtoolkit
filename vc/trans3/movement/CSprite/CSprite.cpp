@@ -166,9 +166,6 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			}
 			// else restore xTarg -> xOrig?
 
-			// Remove the movement just finished from the queue.
-			m_pend.path.pop_front();
-
 			// Start the idle timer.
 			m_pos.idle.time = GetTickCount();
 
@@ -330,6 +327,7 @@ void CSprite::setPathTarget(void)
 {
 	m_pend.xTarg = m_pend.path.front().x;
 	m_pend.yTarg = m_pend.path.front().y;
+	m_pend.path.pop_front();
 
 	const double dx = m_pend.xTarg - m_pend.xOrig,
 				 dy = m_pend.yTarg - m_pend.yOrig;
