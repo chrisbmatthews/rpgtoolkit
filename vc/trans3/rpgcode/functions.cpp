@@ -186,25 +186,26 @@ CSprite *getItemPointer(STACK_FRAME &param)
 		}
 		else
 		{
-			throw CError("Item does not exist at board index " + i);
+			char str[255]; itoa(i, str, 10);
+			throw CError("Item does not exist at board index " + std::string(str) + ".");
 		}
+	}
+
+	const std::string str = param.getLit();
+	if (_strcmpi(str.c_str(), "target") == 0)
+	{
+		return (CSprite *)g_pTarget;
+	}
+	else if (_strcmpi(str.c_str(), "source") == 0)
+	{
+		return (CSprite *)g_pSource;
 	}
 	else
 	{
-		const std::string str = param.getLit();
-		if (_strcmpi(str.c_str(), "target") == 0)
-		{
-			return (CSprite *)g_pTarget;
-		}
-		else if (_strcmpi(str.c_str(), "source") == 0)
-		{
-			return (CSprite *)g_pSource;
-		}
-		else
-		{
-			throw CError("Literal item target must be \"target\" or \"source\".");
-		}
+		throw CError("Literal item target must be \"target\" or \"source\".");
 	}
+
+	return NULL;
 }
 
 /*
@@ -1131,7 +1132,7 @@ void takeItem(CALL_DATA &params)
 /*
  * void wav(string file)
  * 
- * Play a wave file (e.g., a source effect).
+ * Play a wave file (e.g. a sound effect).
  */
 void wav(CALL_DATA &params)
 {
@@ -1479,7 +1480,7 @@ void pathfind(CALL_DATA &params)
 	path.pathFind(start, goal, layer, r, PF_AXIAL); 
 	std::vector<MV_ENUM> p = path.directionalPath();
 
-	for(std::vector<MV_ENUM>::reverse_iterator i = p.rbegin(); i != p.rend(); ++i)
+	for (std::vector<MV_ENUM>::reverse_iterator i = p.rbegin(); i != p.rend(); ++i)
 	{
 		switch (*i)
 		{
@@ -2241,13 +2242,29 @@ void earthquake(CALL_DATA &params)
 }
 
 /*
- * itemcount(...)
+ * int itemCount(string fileName[, int &ret])
  * 
- * Description.
+ * Count the number of a certain item in the inventory.
  */
 void itemcount(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("ItemCount() requires one or two parameters.");
+	}
+
+	const std::string file = g_projectPath + ITM_PATH + params[0].getLit();
+	if (!CFile::fileExists(file)) return;
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = g_inv.getQuantity(file);
+
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
@@ -3771,43 +3788,119 @@ void instr(CALL_DATA &params)
 }
 
 /*
- * getitemname(...)
+ * string getItemName(string fileName[, string &ret])
  * 
- * Description.
+ * Get an item's handle.
  */
 void getitemname(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("GetItemName() requires one or two parameters.");
+	}
+
+	const std::string file = g_projectPath + ITM_PATH + params[0].getLit();
+	if (!CFile::fileExists(file)) return;
+
+	ITEM itm; SPRITE_ATTR attr;
+	itm.open(file, attr);
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = itm.itemName;
+
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
- * getitemdesc(...)
+ * string getItemDesc(string fileName[, string &ret])
  * 
- * Description.
+ * Get an item's description.
  */
 void getitemdesc(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("GetItemDesc() requires one or two parameters.");
+	}
+
+	const std::string file = g_projectPath + ITM_PATH + params[0].getLit();
+	if (!CFile::fileExists(file)) return;
+
+	ITEM itm; SPRITE_ATTR attr;
+	itm.open(file, attr);
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = itm.itmDescription;
+
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
- * getitemcost(...)
+ * int getItemCost(string fileName[, int &ret])
  * 
- * Description.
+ * Get an item's cost.
  */
 void getitemcost(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("GetItemDesc() requires one or two parameters.");
+	}
+
+	const std::string file = g_projectPath + ITM_PATH + params[0].getLit();
+	if (!CFile::fileExists(file)) return;
+
+	ITEM itm; SPRITE_ATTR attr;
+	itm.open(file, attr);
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = itm.buyPrice;
+
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
- * getitemsellprice(...)
+ * int getItemSellPrice(string fileName[, int &ret])
  * 
- * Description.
+ * Get the price for which an item sells.
  */
 void getitemsellprice(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("GetItemDesc() requires one or two parameters.");
+	}
+
+	const std::string file = g_projectPath + ITM_PATH + params[0].getLit();
+	if (!CFile::fileExists(file)) return;
+
+	ITEM itm; SPRITE_ATTR attr;
+	itm.open(file, attr);
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = itm.sellPrice;
+
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
@@ -4200,23 +4293,23 @@ void shopcolors(CALL_DATA &params)
 }
 
 /*
- * itemspeed(...)
+ * itemSpeed()
  * 
- * Description.
+ * Obsolete.
  */
 void itemspeed(CALL_DATA &params)
 {
-
+	throw CError("ItemSpeed() is obsolete.");
 }
 
 /*
- * playerspeed(...)
+ * playerSpeed()
  * 
- * Description.
+ * Obsolete.
  */
 void playerspeed(CALL_DATA &params)
 {
-
+	throw CError("PlayerSpeed() is obsolete.");
 }
 
 /*

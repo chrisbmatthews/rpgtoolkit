@@ -581,7 +581,7 @@ bool CProgram::loadFromString(const std::string str)
 // Parse a file.
 void CProgram::parseFile(FILE *pFile)
 {
-	// Phase I:
+	// Pass I:
 	//   - Run the file though the YACC generated parser,
 	//     producing machine units. See yacc.txt.
 	m_inclusions.clear();
@@ -597,7 +597,7 @@ void CProgram::parseFile(FILE *pFile)
 	yyparse();
 	m_yyFors.clear();
 
-	// Phase II:
+	// Pass II:
 	//   - Include requested files.
 	{
 		std::vector<std::string> inclusions = m_inclusions;
@@ -610,7 +610,7 @@ void CProgram::parseFile(FILE *pFile)
 		m_inclusions.clear();
 	}
 
-	// Phase III:
+	// Pass III:
 	//   - Handle member references within class methods.
 	//   - Record class members.
 	//   - Detect class factory references.
@@ -808,7 +808,7 @@ void CProgram::parseFile(FILE *pFile)
 		}
 	}
 
-	// Phase IV:
+	// Pass IV:
 	//   - Update curly brace pairing and method locations.
 	depth = 0;
 	for (i = m_units.begin(); i != m_units.end(); ++i)
@@ -858,7 +858,7 @@ void CProgram::parseFile(FILE *pFile)
 		}
 	}
 
-	// Phase V:
+	// Pass V:
 	//   - Resolve function calls.
 	for (i = m_units.begin(); i != m_units.end(); ++i)
 	{
@@ -1025,17 +1025,17 @@ void CProgram::save(const std::string fileName) const
 // Run an RPGCode program.
 void CProgram::run()
 {
-	extern void programInit();
-	extern void programFinish();
+	extern void programInit(), programFinish();
+
+	++CProgram::m_runningPrograms;
 	programInit();
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
-		// std::cout << "Number " << (m_i - m_units.begin()) << std::endl;
-		// m_i->show();
 		m_i->execute(this);
 		processEvent();
 	}
 	programFinish();
+	--CProgram::m_runningPrograms;
 }
 
 // Execute one unit from a program.
@@ -1069,7 +1069,6 @@ void tagMachineUnit::execute(CProgram *prg) const
 {
 	if (udt & UDT_FUNC)
 	{
-		++CProgram::m_runningPrograms;
 		prg->m_pStack->push_back(prg);
 		try
 		{
@@ -1087,7 +1086,6 @@ void tagMachineUnit::execute(CProgram *prg) const
 			CProgram::debugger(std::string("Near line ") + str + ": Unexpected error.");
 		}
 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
-		--CProgram::m_runningPrograms;
 	}
 	else if (udt & UDT_CLOSE)
 	{
