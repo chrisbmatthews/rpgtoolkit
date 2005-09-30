@@ -27,7 +27,7 @@ public:
 	virtual ~CSprite() { }
 
 	// Evaluate the current movement state.
-	bool move(const CSprite *selectedPlayer);
+	bool move(const CSprite *selectedPlayer, const bool bRunningProgram);
 
 	// Return the number of pixels for the whole move (e.g. 32, 1, 2).
 	int moveSize(void) const
@@ -111,10 +111,21 @@ public:
 	static bool m_bPxMovement;		
 
 	bool isActive() const { return m_bActive; }
+	void setActive(const bool bActive) { m_bActive = bActive; }
+	static void setLoopOffset(const int offset) { m_loopOffset = offset; }
+	void setSpeed(const double delay) { m_attr.speed = delay * MILLISECONDS; }
 
-	void freePath(void) { m_pathFind.freeVectors(); };
+	void freePath(void) { m_pathFind.freeVectors(); }
 
-	int getLayer() const { return m_pos.l; }
+	SPRITE_POSITION getPosition(void) const { return m_pos; }
+
+	// Swap the graphics of this sprite for those of another.
+	void swapGraphics(CSprite *rhs)
+	{
+		m_attr.mapGfx = rhs->m_attr.mapGfx;
+		m_attr.mapCustomGfx = rhs->m_attr.mapCustomGfx;
+		// Vector bases also?
+	}
 
 protected:
 	SPRITE_ATTR m_attr;				// Sprite attributes (common file data).
@@ -129,6 +140,12 @@ protected:
 	CPathFind m_pathFind;			// Sprite-specific pathfinding information.
 
 private:
+
+	// Record whether we need to run playerDoneMove().
+	static bool m_bDoneMove;
+
+	// Global speed offset.
+	static int m_loopOffset;
 
 	// Complete a single frame's movement of the sprite.
 	bool push(const bool bScroll);
@@ -149,12 +166,11 @@ private:
 	// the sprite's movement speed (and any offsets).
 	inline int calcLoops(void) const
 	{
-		extern int g_loopOffset;
 		extern double g_renderCount, g_renderTime;
 
 		// Frames per millisecond.
 		const double fpms = g_renderCount / g_renderTime;
-		const int result = round(m_attr.speed * fpms) + (g_loopOffset * round(fpms * 100.0));
+		const int result = round(m_attr.speed * fpms) + (m_loopOffset * round(fpms * 100.0));
 		return (result < 1 ? 1 : result);
 	};
 
@@ -174,13 +190,28 @@ private:
 typedef struct tagZOrderedSprites
 {
 	std::vector<CSprite *> v;
+
 	// Form v into a z-ordered vector from g_players and g_items.
 	void zOrder(void);
+
 	// Free pathfinding vectors CPathFind::m_obstructions.
 	void freePaths(void)
 	{
 		for (std::vector<CSprite *>::iterator i = v.begin(); i != v.end(); ++i)
 			(*i)->freePath();
+	};
+
+	// Remove a pointer from the vector.
+	void remove(CSprite *p)
+	{
+		for (std::vector<CSprite *>::iterator i = v.begin(); i != v.end(); ++i)
+		{
+			if (*i == p) 
+			{
+				v.erase(i);
+				return;
+			}
+		}
 	};
 
 } ZO_VECTOR;

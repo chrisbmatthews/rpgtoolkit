@@ -35,6 +35,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+bool CSprite::m_bDoneMove = false;
+int CSprite::m_loopOffset = 0;
+
 /*
  * Constructor
  */
@@ -62,20 +65,21 @@ m_tileType(TT_NORMAL)				// Tiletype at location, NOT sprite's type.
  * Evaluate the current movement state.
  * Returns: true if movement occurred.
  */ 
-bool CSprite::move(const CSprite *selectedPlayer) 
+bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram) 
 {
 	extern LPBOARD g_pBoard;
 	extern GAME_STATE g_gameState;
 
 	// Is the sprite active (visible).
-	if (!m_bActive) return false;
+	/** Unrequired, since all sprites in g_sprites must be active. 
+	if (!m_bActive) return false; **/
+
 	// Is this the selected player?
 	const bool isUser = (this == selectedPlayer);
 
 	// Negative value indicates idle status.
 	if (m_pos.loopFrame < LOOP_MOVE)
 	{
-
 		if (!m_pend.path.empty())
 		{
 			/*
@@ -132,18 +136,19 @@ bool CSprite::move(const CSprite *selectedPlayer)
 	{
 		// Movement is occurring.
 
-/*		if (m_pos.bIsPath)
+		if (m_pos.bIsPath)
 		{
-			// Have to redo this each move for a path.
-//			if (spriteCollisions() & TT_SOLID)
+			// Re-test for sprite collisions. The path was calculated
+			// to avoid sprites but cannot account for moving sprites.
+			if (spriteCollisions() & TT_SOLID)
 			{
-				/* Re-pathfind - tbd *
+				DB_POINT goal = {0, 0};
+				getDestination(goal);
+				clearQueue();
+				setQueuedPath(pathFind(goal.x, goal.y, PF_VECTOR));
 			}
-			
-			// Program check here.
-			
 		}
-*/
+
 		// Push the sprite only when the tiletype is passable.
 		// Items will not have entered this block if their target is solid.
 		if (!(m_tileType & TT_SOLID)) push(isUser);
@@ -164,7 +169,6 @@ bool CSprite::move(const CSprite *selectedPlayer)
 				m_pend.yOrig = m_pos.y = m_pend.yTarg;
 				m_pend.lOrig = m_pos.l;
 			}
-			// else restore xTarg -> xOrig?
 
 			// Start the idle timer.
 			m_pos.idle.time = GetTickCount();
@@ -175,10 +179,29 @@ bool CSprite::move(const CSprite *selectedPlayer)
 			m_pos.loopFrame = LOOP_DONE;
 
 			// Finish the move for the selected player.
-			if (this == selectedPlayer) playerDoneMove();
+			if (this == selectedPlayer && !bRunningProgram) 
+			{
+				// Programs cannot be run from within the 
+				// main movement loop (gameLogic()) because
+				// they may add or erase players from g_sprites.
+				// Instead, hold the result until after.
 
+				// playerDoneMove();
+				m_bDoneMove = true;
+
+				// Back to idle state (accepting input)
+				g_gameState = GS_IDLE;
+			}
+		}
+		else
+		{
+			// Do program/fight tests every move for sprites on a path.
+			if (m_pos.bIsPath && this == selectedPlayer && !bRunningProgram) 
+			{
+				// playerDoneMove();
+				m_bDoneMove = true;
+			}
 		} // if (movement ended)
-
 		return true;
 
 	} // if (movement occurred)
@@ -346,6 +369,7 @@ void CSprite::parseQueuedMovements(std::string str)
 	extern MAIN_FILE g_mainFile;
 	std::string s;
 
+	// Should step = 8 for pixel push?
 	const int step = (g_mainFile.pixelMovement == MF_PUSH_PIXEL ? moveSize() : 32);
 
 	// Include str.end() in the loop to catch the last movement.
@@ -439,7 +463,7 @@ void CSprite::runQueuedMovements(void)
 	extern CSprite *g_pSelectedPlayer;
 	extern CGDICanvas *g_cnvRpgCode;
 
-	while (move(g_pSelectedPlayer))
+	while (move(g_pSelectedPlayer, true))
 	{
 		renderNow(g_cnvRpgCode, true);
 		renderRpgCodeScreen();
@@ -447,7 +471,7 @@ void CSprite::runQueuedMovements(void)
 }
 
 /*
- * Get the destionation.
+ * Get the destination.
  */
 void CSprite::getDestination(DB_POINT &p) const
 {
@@ -489,7 +513,8 @@ PF_PATH CSprite::pathFind(const int x, const int y, const int type)
 								goal, 
 								m_pos.l, 
 								m_attr.vBase.getBounds(), 
-								type);
+								type,
+								this);
 }
 
 /*
@@ -497,6 +522,10 @@ PF_PATH CSprite::pathFind(const int x, const int y, const int type)
  */
 void CSprite::playerDoneMove(void) 
 {
+	// Check if the selected player just completed a move.
+	if (!m_bDoneMove) return;
+	m_bDoneMove = false;
+
 	extern GAME_STATE g_gameState;
 	extern unsigned long g_stepsTaken;
 
@@ -505,14 +534,8 @@ void CSprite::playerDoneMove(void)
 	g_stepsTaken += step;
 
 	// Movement in a program should not trigger other programs.
-	if (!CProgram::isRunning())
-	{
-		programTest();
-		fightTest(step);
-	}
-
-	// Back to idle state (accepting input)
-	g_gameState = GS_IDLE;
+	programTest();
+	fightTest(step);
 }
 
 /*
@@ -522,7 +545,7 @@ void CSprite::playerDoneMove(void)
 void CSprite::setPosition(int x, int y, const int l, const COORD_TYPE coord)
 {
 	// Convert the co-ordinates an absolute pixel value.
-	pixelCoordinate(x, y, coord);
+	pixelCoordinate(x, y, coord, true);
 
 	m_pend.xOrig = m_pend.xTarg = m_pos.x = x;
 	m_pend.yOrig = m_pend.yTarg = m_pos.y = y;
@@ -695,6 +718,14 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 
 	} // for (i)
 
+	// A normal-type override nullifies a TT_SOLID.
+	if (tileTypes & TT_N_OVERRIDE)
+	{
+		tileTypes = TT_NORMAL;
+		// Remove any sliding that may have occurred.
+		setTarget(m_pos.facing);
+	}
+
 	// Move the player to the target layer (if stairs were encountered).
 	m_pos.l = layer;
 
@@ -858,7 +889,6 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 	LPBOARD pBoard = g_boards.allocate();
 	pBoard->open(g_projectPath + BRD_PATH + fileName);
 
-
 	// Determine the target co-ordinates from the direction and current location.
 	// Work on m_pos rather than pos so that boardCollisions() operates
 	// with the correct co-ordinates.
@@ -1018,7 +1048,9 @@ bool CSprite::programTest(void)
 	// Items
 	for (std::vector<CItem *>::iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j)
 	{
-		if (this == *j || m_pos.l != (*j)->m_pos.l) continue;
+		// Some item entries may be NULL since users
+		// can insert items at any slot number.
+		if (!*j || this == *j || m_pos.l != (*j)->m_pos.l) continue;
 
 		DB_POINT pt = {(*j)->m_pos.x, (*j)->m_pos.y};
 
@@ -1181,6 +1213,12 @@ bool CSprite::programTest(void)
 			prg->distance = 0;
 		}
 
+		if (prg->activationType & PRG_STOPS_MOVEMENT)
+		{
+			// Clear the queue.
+			clearQueue();
+		}
+
 		// If we go to a new board in this program, we kill
 		// this pointer, so save the values we need.
 		const short activate = prg->activate;
@@ -1290,8 +1328,12 @@ void CSprite::drawPath(CGDICanvas *const cnv)
 	if (m_pend.path.empty() || !m_pos.bIsPath) return;
 
 	std::deque<DB_POINT>::iterator i = m_pend.path.begin();
+
 	cnv->DrawLine(round(m_pos.x) - g_screen.left, round(m_pos.y) - g_screen.top, 
+		m_pend.xTarg - g_screen.left, m_pend.yTarg - g_screen.top, RGB(255, 255, 128));
+	cnv->DrawLine(m_pend.xTarg - g_screen.left, m_pend.yTarg - g_screen.top, 
 		i->x - g_screen.left, i->y - g_screen.top, RGB(255, 255, 128));
+
 
 	for (; i != m_pend.path.end() - 1; ++i)
 	{
@@ -1322,12 +1364,14 @@ void tagZOrderedSprites::zOrder(void)
 	// into v.
 	for (std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
-		(*i)->spriteCollisions();
+		if ((*i)->isActive()) (*i)->spriteCollisions();
 	}
 
 	for (std::vector<CItem *>::iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j)
 	{
-		(*j)->spriteCollisions();
+		// Some item entries may be NULL since users
+		// can insert items at any slot number.
+		if (*j && (*j)->isActive()) (*j)->spriteCollisions();
 	}
 }
 
@@ -1539,6 +1583,8 @@ bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 						  RECT &rect)
 {
 	extern LPBOARD g_pBoard;
+	extern RECT g_screen;
+	extern double g_translucentOpacity;
 
 	// If we're rendering the top layer, draw the translucent sprite.
 	if (m_pos.l != layer && layer != g_pBoard->bSizeL) return false;
@@ -1547,16 +1593,13 @@ bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget,
 	if (m_pos.l == layer) this->render();
 
 	// Screen location on board.
-	extern RECT g_screen;
-	extern CDirectDraw *g_pDirectDraw;
-	extern double g_translucentOpacity;
-
 	// Referencing with m_pos at the bottom-centre of the tile for
 	// 2D, in the centre of the tile for isometric. 
 	// Vertically offset iso sprites.
 
-	const int centreX = round(m_pos.x), // + (g_pBoard->isIsometric() ? 0 : 0),
+	const int centreX = round(m_pos.x),
 			  centreY = round(m_pos.y) + (g_pBoard->isIsometric() ? 8 : 0);
+	/** centreY = round(m_pos.y) + m_attr.vBase.getBounds().bottom; **/
   
 	// Sprite location on screen and board.
 	RECT screen = {0, 0, 0, 0},

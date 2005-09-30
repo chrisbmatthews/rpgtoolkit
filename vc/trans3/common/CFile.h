@@ -24,6 +24,7 @@ public:
 	//
 	// Write.
 	//
+	CFile &operator<<(CONST BYTE data);
 	CFile &operator<<(CONST CHAR data);
 	CFile &operator<<(CONST SHORT data);
 	CFile &operator<<(CONST INT data);
@@ -32,6 +33,7 @@ public:
 	//
 	// Read.
 	//
+	CFile &operator>>(BYTE &data);
 	CFile &operator>>(CHAR &data);
 	CFile &operator>>(SHORT &data);
 	CFile &operator>>(INT &data);

@@ -20,13 +20,14 @@ typedef struct tagBoard BOARD, *LPBOARD;
 /*
  * A board-set program.
  */
-#define PRG_STEP		0				// Triggers once until player leaves area.
-#define PRG_KEYPRESS	1				// Player must hit activation key.
-#define PRG_REPEAT		2				// Triggers repeatedly after a certain distance or
+#define PRG_STEP			0			// Triggers once until player leaves area.
+#define PRG_KEYPRESS		1			// Player must hit activation key.
+#define PRG_REPEAT			2			// Triggers repeatedly after a certain distance or
 										// can only be triggered after a certain distance.
+#define PRG_STOPS_MOVEMENT	4			// Running the program clears the movement queue.
 
-#define PRG_ACTIVE		0				// Program is always active.
-#define PRG_CONDITIONAL	1				// Program's running depends on RPGCode variables.
+#define PRG_ACTIVE			0			// Program is always active.
+#define PRG_CONDITIONAL		1			// Program's running depends on RPGCode variables.
 
 typedef struct tagBoardProgram
 {
@@ -82,8 +83,10 @@ typedef struct tagBoardVector
 	tagBoardVector():
 		layer(0),
 		pCnv(NULL),
-		pV(),
+		pV(NULL),
 		type(TT_SOLID) {};
+
+	void createCanvas(BOARD &board);
 
 } BRD_VECTOR;
 

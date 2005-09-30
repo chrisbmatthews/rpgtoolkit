@@ -27,7 +27,7 @@
 #define CLASS_NAME "TK Window"
 
 // Uncomment to show debug vectors.
-// #define DEBUG_VECTORS
+#define DEBUG_VECTORS
 
 /*
  * Globals.
@@ -43,9 +43,13 @@ double scTopY = 0.0;						// Vertical offset of the scroll cache
 int scTilesX = 0;							// Maximum scroll cache capacity, on width
 int scTilesY = 0;							// Maximum scroll cache capacity, on height
 std::vector<CTile *> g_tiles;				// Cache of tiles.
+
 CGDICanvas *g_cnvRpgCode = NULL;			// RPGCode canvas.
 CGDICanvas *g_cnvMessageWindow = NULL;		// RPGCode message window.
 CGDICanvas *g_cnvCursor = NULL;				// Cursor used on maps &c.
+std::vector<CGDICanvas *>g_cnvRpgScreens;	// SaveScreen() array.
+std::vector<CGDICanvas *>g_cnvRpgScans;		// Scan() array...
+
 bool g_bShowMessageWindow = false;			// Show the message window?
 double g_translucentOpacity = 0.30;			// Opacity to draw translucent sprites at.
 
@@ -398,6 +402,17 @@ void destroyCanvases(void)
 	delete g_cnvMessageWindow;
 	delete g_scrollCache.pCnv;
 	delete g_cnvCursor;
+
+	std::vector<CGDICanvas *>::iterator i = g_cnvRpgScreens.begin();
+	for (; i != g_cnvRpgScreens.end(); ++i)
+	{
+		delete *i;
+	}
+	i = g_cnvRpgScans.begin();
+	for (; i != g_cnvRpgScans.end(); ++i)
+	{
+		delete *i;
+	}
 }
 
 /*
@@ -588,7 +603,8 @@ void tagScrollCache::render(const bool bForceRedraw)
 		}
 		for (std::vector<BRD_VECTOR>::iterator c = g_pBoard->vectors.begin(); c != g_pBoard->vectors.end(); ++c)
 		{
-			c->pV->draw(RGB(255, 255, 255), true, r.left, r.top, pCnv);
+			int color = c->type == TT_SOLID ? RGB(255, 255, 255) : RGB(255, 128, 128);
+			c->pV->draw(color, true, r.left, r.top, pCnv);
 		}
 		pCnv->Unlock();
 #endif

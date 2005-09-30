@@ -163,6 +163,7 @@ VOID setUpGame(VOID)
 	}
 
 	CSprite::m_bPxMovement = g_mainFile.pixelMovement;
+	CSprite::setLoopOffset(g_mainFile.getGameSpeed());
 	g_selectedPlayer = 0;
 
     // Get the last gAvgTime from the registry.
@@ -431,14 +432,15 @@ GAME_STATE gameLogic(VOID)
 			CThread::multitask();
 
 			// Movement.
-			for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
+			std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
+			for (; i != g_sprites.v.end(); ++i)
 			{
-				(*i)->move(g_pSelectedPlayer);
+				(*i)->move(g_pSelectedPlayer, false);
 			}
-			for (std::vector<CItem *>::const_iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j) 
-			{
-				(*j)->move(g_pSelectedPlayer);
-			}
+
+			// Run programs outside of the above loop for the cases
+			// when sprites may be removed from the vector.
+			g_pSelectedPlayer->playerDoneMove();
 
 			// Render.
 			renderNow();
@@ -522,8 +524,8 @@ INT mainEventLoop(VOID)
  */
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
-	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	// #define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	set_terminate(termFunc);
 

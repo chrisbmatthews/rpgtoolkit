@@ -47,7 +47,8 @@ typedef enum tagTileType
 	TT_SOLID = 1,
 	TT_UNDER = 2,
 	TT_UNIDIRECTIONAL = 4,
-	TT_STAIRS = 8
+	TT_STAIRS = 8,
+	TT_N_OVERRIDE = 16				// Normal type to override solid.
 
 } TILE_TYPE;
 
@@ -98,6 +99,9 @@ public:
 
 	// Seal the vector to create a polygon.
 	bool close(const bool isClosed/*, const int curl*/);
+
+	// Compare the points of two vectors.
+	bool compare(const CVector &rhs) const;
 
 	// Determine if a vector intersects or contains another vector.
 	bool contains(CVector &rhs, DB_POINT &ref);

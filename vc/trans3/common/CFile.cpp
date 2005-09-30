@@ -39,6 +39,13 @@ void CFile::open(const std::string fileName, CONST UINT mode)
  *
  * data (in) - source
  */
+CFile &CFile::operator<<(CONST BYTE data)
+{
+	DWORD write = 0;
+	WriteFile(HANDLE(m_hFile), &data, sizeof(data), &write, &m_ptr);
+	m_ptr.Offset += sizeof(data);
+	return *this;
+}
 CFile &CFile::operator<<(CONST CHAR data)
 {
 	DWORD write = 0;
@@ -81,6 +88,13 @@ CFile &CFile::operator<<(CONST std::string data)
  *
  * data (out) - destination
  */
+CFile &CFile::operator>>(BYTE &data)
+{
+	DWORD read = 0;
+	m_bEof = ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	m_ptr.Offset += sizeof(data);
+	return *this;
+}
 CFile &CFile::operator>>(CHAR &data)
 {
 	DWORD read = 0;

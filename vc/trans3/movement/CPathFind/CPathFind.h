@@ -80,7 +80,8 @@ public:
 
 	// Main function - apply the algorithm to the input points.
 	PF_PATH pathFind(const DB_POINT start, const DB_POINT goal,
-					 const int layer, const RECT &r, const int type);
+					 const int layer, const RECT &r, 
+					 const int type, const void *pSprite);
 
 private:
 	CPathFind (CPathFind &rhs);
@@ -90,7 +91,7 @@ private:
 	NODE *bestOpenNode (void);
 
 	// Make the path by tracing parents through m_closedNodes.
-	PF_PATH constructPath(NODE node);
+	PF_PATH constructPath(NODE node, const RECT &r);
 
 	// Construct nodes from a CVector and add to the nodes vector.
 	void createNodes (CVector *vector);
@@ -102,13 +103,13 @@ private:
 	bool getChild(DB_POINT &child, const DB_POINT &parent);
 
 	// Re-initialise the search.
-	void initialize(const int layer, const RECT &r, const int type);
+	void initialize(const int layer, const RECT &r, const int type, const void *pSprite);
 
 	// Determine if a node can be directly reached from another node.
 	bool isChild(NODE &child, NODE &parent);
 
 	// Reset the points at the start of a search.
-	void reset(DB_POINT start, DB_POINT goal);
+	void reset(DB_POINT start, DB_POINT goal, const RECT &r);
 
 	std::vector<DB_POINT> m_points;				// All node coords.
 	std::vector<NODE> m_openNodes;

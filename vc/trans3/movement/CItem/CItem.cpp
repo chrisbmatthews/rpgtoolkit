@@ -21,7 +21,11 @@ CItem::CItem(const std::string file, const bool show):
 CSprite(false),
 m_pThread(NULL)
 {
-	open(file);
+	if (open(file) <= PRE_VECTOR_ITEM)
+	{
+		// Create standard vectors for old items.
+		createVectors();
+	}
 	m_bActive = show;				// Overwrite open() result.
 }
 

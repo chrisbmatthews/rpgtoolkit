@@ -17,9 +17,10 @@
 #include "../input/input.h"
 #include "../render/render.h"
 #include "../audio/CAudioSegment.h"
-#include "../common/board.h"
-#include "../common/paths.h"
 #include "../common/animation.h"
+#include "../common/board.h"
+#include "../common/mainfile.h"
+#include "../common/paths.h"
 #include "../common/CAllocationHeap.h"
 #include "../common/CInventory.h"
 #include "../common/CFile.h"
@@ -171,9 +172,31 @@ IFighter *getFighter(const std::string name)
 }
 
 /*
+ * Get a player pointer from an index / literal target parameter.
+ */
+CPlayer *getPlayerPointer(STACK_FRAME &param)
+{
+	extern std::vector<CPlayer *> g_players;
+
+	if (param.getType() & UDT_LIT)
+	{
+		// Handle, "target", "source".
+		return (CPlayer *)getFighter(param.getLit());
+	}
+
+	// g_players index.
+	const int i = int(param.getNum());
+	if (i < g_players.size())
+	{
+		return g_players.at(i);
+	}
+	return NULL;
+}
+
+/*
  * Get an item pointer from a board index / literal target parameter.
  */
-CSprite *getItemPointer(STACK_FRAME &param)
+CItem *getItemPointer(STACK_FRAME &param)
 {
 	extern LPBOARD g_pBoard;
 
@@ -194,11 +217,11 @@ CSprite *getItemPointer(STACK_FRAME &param)
 	const std::string str = param.getLit();
 	if (_strcmpi(str.c_str(), "target") == 0)
 	{
-		return (CSprite *)g_pTarget;
+		return (CItem *)g_pTarget;
 	}
 	else if (_strcmpi(str.c_str(), "source") == 0)
 	{
-		return (CSprite *)g_pSource;
+		return (CItem *)g_pSource;
 	}
 	else
 	{
@@ -565,13 +588,61 @@ void gone(CALL_DATA &params)
 }
 
 /*
- * viewbrd(...)
+ * void viewbrd(string filename [, int x, int y [, canvas cnv])
  * 
- * Description.
+ * Draw a board to the screen or to a canvas,
+ * starting at co-ordinates topX, topY.
  */
 void viewbrd(CALL_DATA &params)
 {
+	extern CAllocationHeap<BOARD> g_boards;
+	extern std::string g_projectPath;
+	CGDICanvas *pCnv = g_cnvRpgCode;
 
+	if (params.params == 4)
+	{
+		pCnv = g_canvases.cast(int(params[3].getNum()));
+	}
+	if (!pCnv) throw CError("ViewBrd(): canvas not found.");
+
+	LPBOARD pBoard = NULL;
+	if (params.params > 0)
+	{
+		pBoard = g_boards.allocate();
+		if (!pBoard->open(g_projectPath + BRD_PATH + params[0].getLit()))
+		{
+			g_boards.free(pBoard);
+			throw CError("ViewBrd(): unable to open board.");
+		}
+	}
+	else throw CError("ViewBrd(): requires at least one parameter.");
+
+	int x = 0, y = 0;
+	if (params.params > 2)
+	{
+		x = params[1].getNum();
+		y = params[2].getNum();
+		pixelCoordinate(x, y, pBoard->coordType, false);
+		if (pBoard->coordType == TILE_NORMAL)
+		{
+			// pixelCoordinate(,,,false) returns at top-left for 2D.
+			x += 32;
+			y += 32;
+		}
+	}
+
+	pCnv->ClearScreen(pBoard->brdColor);
+	pBoard->render(
+		pCnv, 
+		0, 0, 
+		1, pBoard->bSizeL,
+		x, y, 
+		pCnv->GetWidth(), 
+		pCnv->GetHeight(), 
+		0, 0, 0); 
+	g_boards.free(pBoard);
+
+	if (params.params != 4) renderRpgCodeScreen();
 }
 
 /*
@@ -720,18 +791,6 @@ void move(CALL_DATA &params)
 }
 
 /*
- * void newPlyr(string file)
- * 
- * Change the graphics of the main player to that of the
- * file passed in. The file can be a character file (*.tem)
- * or that of a tile (*.tstxxx, *.gph).
- */
-void newPlyr(CALL_DATA &params)
-{
-
-}
-
-/*
  * void over()
  * 
  * Displays a game over message and resets the game. Because
@@ -775,7 +834,7 @@ void put(CALL_DATA &params)
 	{
 		throw CError("Put() requires three parameters.");
 	}
-	// getAmbientLevel();
+	// TBD: getAmbientLevel();
 	drawTileCnv(g_cnvRpgCode, params[2].getLit(), params[0].getNum(), params[1].getNum(), 0, 0, 0, false, true, false, false);
 	renderRpgCodeScreen();
 }
@@ -863,7 +922,7 @@ void giveHp(CALL_DATA &params)
 	{
 		const int hp = p->health() + params[0].getNum();
 		p->health((hp <= p->maxHealth()) ? ((hp > 0) ? hp : 0) : p->maxHealth());
-		// if (fighting)
+		// TBD: if (fighting)
 		// {
 		//		...
 		// }
@@ -1176,11 +1235,85 @@ void random(CALL_DATA &params)
  * void tileType(int x, int y, string type, [int z = 1])
  * 
  * Change a tile's type. Valid types for the string parameter
- * are "NORMAL", "SOLID", and "UNDER".
+ * are "NORMAL", "SOLID", "UNDER", "NS", "EW", "STAIRS#".
+ * Using vector collision, square vectors are added to the board with 
+ * corresponding types. If an identical vector exists at the point,
+ * alter its type rather than adding another.
+ * Note: Overriding with "normal" may now not work as intended - users
+ * should use vector tools instead.
  */
 void tileType(CALL_DATA &params)
 {
+	/** TBD: unidirectionals **/
 
+	extern LPBOARD g_pBoard;
+
+	if (params.params != 3 && params.params != 4)
+	{
+		throw CError("TileType() requires three or four parameters.");
+	}
+
+	// Construct new vector. v.type defaults to TT_SOLID.
+	BRD_VECTOR v;
+	v.pV = new CVector();
+
+	const std::string type = params[2].getLit();
+	if (_strcmpi(type.c_str(), "NORMAL") == 0) v.type = TT_N_OVERRIDE;
+	else if (_strcmpi(type.c_str(), "UNDER") == 0) v.type = TT_UNDER;
+	else if (_strcmpi(type.substr(0, 6).c_str(), "STAIRS") == 0)
+	{
+		v.type = TT_STAIRS;
+		v.attributes = atoi(type.substr(6).c_str());
+	}
+	else if (_strcmpi(type.c_str(), "NS") == 0) v.type = TT_UNIDIRECTIONAL;
+	else if (_strcmpi(type.c_str(), "EW") == 0) v.type = TT_UNIDIRECTIONAL;
+
+	// Transform to pixel co-ordinates.
+	int x = params[0].getNum(), y = params[1].getNum();
+	pixelCoordinate(x, y, g_pBoard->coordType, false);
+
+	if (g_pBoard->isIsometric())
+	{
+		// Isometric diamond. See tagBoard::vectorize() for order.
+		DB_POINT p[] = {{x, y - 16}, {x - 32, y}, {x, y + 16}, {x + 32, y}};
+		v.pV->push_back(p, 4);
+	}
+	else
+	{
+		// 2D square. See tagBoard::vectorize() for order.
+		DB_POINT p[] = {{x, y}, {x, y + 32}, {x + 32, y + 32}, {x + 32, y}};
+		v.pV->push_back(p, 4);
+	}
+	v.pV->close(true);
+	v.layer = (params.params == 4 ? params[3].getNum() : 1);
+
+	std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin();
+	for (; i != g_pBoard->vectors.end(); ++i)
+	{
+		if (i->layer != v.layer) continue;
+		if (i->pV->compare(*v.pV))
+		{
+			// Found a matching vector.
+			if (v.type == TT_N_OVERRIDE)
+			{
+				// Delete this vector.
+				delete i->pV;
+				delete i->pCnv;
+				g_pBoard->vectors.erase(i);
+			}
+			else
+			{
+				i->type = v.type;
+				i->attributes = v.attributes;
+				if (v.type == TT_UNDER) i->createCanvas(*g_pBoard);
+			}
+			return;
+		}
+	}
+
+	// Didn't find a match.
+	g_pBoard->vectors.push_back(v);
+	if (v.type == TT_UNDER) g_pBoard->vectors.back().createCanvas(*g_pBoard);
 }
 
 /*
@@ -1221,32 +1354,6 @@ void mediaStop(CALL_DATA &params)
 void goDos(CALL_DATA &params)
 {
 	throw CError("GoDos() is obsolete.");
-}
-
-/*
- * void addPlayer(string file)
- * 
- * Add a player to the party.
- */
-void addPlayer(CALL_DATA &params)
-{
-	if (params.params != 1)
-	{
-		throw CError("AddPlayer() requires one parameter.");
-	}
-	extern std::vector<CPlayer *> g_players;
-	extern std::string g_projectPath;
-	g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + params[0].getLit(), false));
-}
-
-/*
- * void removePlayer(string handle)
- * 
- * Remove the player whose handle is specified from the party.
- */
-void removePlayer(CALL_DATA &params)
-{
-
 }
 
 /*
@@ -1442,7 +1549,64 @@ void castInt(CALL_DATA &params)
 }
 
 /*
- * string pathfind (int x1, int y1, int x2, int y2, string return [, int layer])
+ * int pixelmovement([string pixelMovement [, string pixelPush]])
+ * 
+ * Toggles pixel movement and push() et al in pixels.
+ * Returns the current state (0 for pixel, 1 for tile).
+ * pixelMovement = "ON"/"OFF" or 1/0.
+ * pixelPush = "ON"/"OFF" or 1/0. Ineffective for tile movement.
+ */
+void pixelmovement(CALL_DATA &params)
+{
+	extern MAIN_FILE g_mainFile;
+
+	if ((params.params == 1) || (params.params == 2))
+	{
+		if (params.params == 2)
+		{
+			if (params[1].getType() & UDT_LIT)
+			{
+				g_mainFile.pixelMovement =
+					(_strcmpi(params[1].getLit().c_str(), "on") == 0 ?
+					MF_PUSH_PIXEL :	MF_MOVE_PIXEL);
+			}
+			else
+			{
+				g_mainFile.pixelMovement = 
+					(params[1].getNum() != 0 ? 
+					MF_PUSH_PIXEL : MF_MOVE_PIXEL);
+			}
+		}
+
+		if (params[0].getType() & UDT_LIT)
+		{
+			if (_strcmpi(params[0].getLit().c_str(), "on") == 0)
+				CSprite::m_bPxMovement = true;
+			else
+			{
+				g_mainFile.pixelMovement = MF_MOVE_TILE;
+				CSprite::m_bPxMovement = false;
+			}
+		}
+		else
+		{
+			if (params[0].getNum() != 0)
+				CSprite::m_bPxMovement = true;
+			else
+			{
+				g_mainFile.pixelMovement = MF_MOVE_TILE;
+				CSprite::m_bPxMovement = false;
+			}
+		}
+	}
+
+	// Return the state.
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(CSprite::m_bPxMovement);
+}
+
+/*
+ * string pathfind (int x1, int y1, int x2, int y2, string &ret [, int layer])
  *
  * Construct a directional string of the shortest tiled path from
  * one location to the other.
@@ -1457,18 +1621,16 @@ void pathfind(CALL_DATA &params)
 		throw CError("PathFind() requires four, five or six parameters."); 
 	}
 
-	const int layer = 
-		((params.params == 6) && (params[5].getType() & UDT_LIT)) ?
-		int(params[5].getNum()) :
-		// I *hope* there will be a better way to get the layer!
-		g_pSelectedPlayer->getLayer();
+	const int layer = (params.params == 6) ?
+					  int(params[5].getNum()) :
+					  g_pSelectedPlayer->getPosition().l;
 
 	int x1 = int(params[0].getNum()), y1 = int(params[1].getNum()),
 		x2 = int(params[2].getNum()), y2 = int(params[3].getNum());
 
 	// Transform the input co-ordinates based on the board co-ordinate system.
-	pixelCoordinate(x1, y1, g_pBoard->coordType);
-	pixelCoordinate(x2, y2, g_pBoard->coordType);
+	pixelCoordinate(x1, y1, g_pBoard->coordType, true);
+	pixelCoordinate(x2, y2, g_pBoard->coordType, true);
 
 	// Parameters. r is unneeded for tile pathfinding.
 	const DB_POINT start = {x1, y1}, goal = {x2, y2};
@@ -1477,7 +1639,7 @@ void pathfind(CALL_DATA &params)
 
 	// Pre C++, PathFind() was implemented axially only.
 	CPathFind path;
-	path.pathFind(start, goal, layer, r, PF_AXIAL); 
+	path.pathFind(start, goal, layer, r, PF_AXIAL, NULL); 
 	std::vector<MV_ENUM> p = path.directionalPath();
 
 	for (std::vector<MV_ENUM>::reverse_iterator i = p.rbegin(); i != p.rend(); ++i)
@@ -1506,7 +1668,7 @@ void pathfind(CALL_DATA &params)
 }
 
 /*
- * playerstep(string handle, int x, int y)
+ * void playerstep(string handle, int x, int y)
  * 
  * Causes the player to take one step in the direction of x, y
  * following a route determined by pathFind.
@@ -1520,11 +1682,11 @@ void playerstep(CALL_DATA &params)
 		throw CError("PlayerStep() requires three parameters.");
 	}
 
-	CSprite *p = (CPlayer *)getFighter(params[0].getLit());
-	if (!p) return;
+	CSprite *p = getPlayerPointer(params[0]);
+	if (!p) throw CError("PlayerStep(): player not found");
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
-	pixelCoordinate(x, y, g_pBoard->coordType);
+	pixelCoordinate(x, y, g_pBoard->coordType, true);
 
 	PF_PATH path = p->pathFind(x, y, PF_AXIAL);
 	if (!path.empty())
@@ -1543,7 +1705,7 @@ void playerstep(CALL_DATA &params)
 }
 
 /*
- * itemstep(variant handle, int x, int y)
+ * void itemstep(variant handle, int x, int y)
  * 
  * Causes the item to take one step in the direction of x, y
  * following a route determined by pathFind.
@@ -1558,10 +1720,10 @@ void itemstep(CALL_DATA &params)
 	}
 
 	CSprite *p = getItemPointer(params[0]);
-	if (!p) return;
+	if (!p) throw CError("ItemStep(): item not found");
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
-	pixelCoordinate(x, y, g_pBoard->coordType);
+	pixelCoordinate(x, y, g_pBoard->coordType, true);
 
 	PF_PATH path = p->pathFind(x, y, PF_AXIAL);
 	if (!path.empty())
@@ -1580,7 +1742,7 @@ void itemstep(CALL_DATA &params)
 }
 
 /*
- * void push(string direction, [string handle])
+ * void push(string direction[, string handle])
  * 
  * Push the player with the specified handle, or the default player
  * if no handle is specified, along the given directions. The direction
@@ -1606,28 +1768,13 @@ void push(CALL_DATA &params)
 
 	if (params.params == 2)
 	{
-		if (params[1].getType() & UDT_LIT)
-		{
-			p = (CPlayer *)getFighter(params[1].getLit());
-		}
-		else
-		{
-			const int i = int(params[1].getNum());
-			if (i < g_players.size())
-			{
-				p = g_players.at(i);
-			}
-			else
-			{
-				throw CError("Push(): player index not found");
-			}
-		}
+		p = getPlayerPointer(params[1]);
 	}
 	else
 	{
 		p = g_pSelectedPlayer;
 	}
-	if (!p) return;
+	if (!p) throw CError("Push(): player not found");
 
 	// Backwards compatibility.
 	std::string str = formatDirectionString(params[0].getLit());
@@ -1659,7 +1806,7 @@ void pushItem(CALL_DATA &params)
 	}
 
 	CSprite *p = getItemPointer(params[0]);
-	if (!p) return;
+	if (!p) throw CError("PushItem(): item not found");
 
 	// Backwards compatibility.
 	std::string str = formatDirectionString(params[1].getLit());
@@ -1699,7 +1846,7 @@ void wander(CALL_DATA &params)
 	}
 
 	CSprite *p = getItemPointer(params[0]);
-	if (!p) return;
+	if (!p) throw CError("Wander(): item not found");
 
 	const int isIso = int(g_pBoard->isIsometric());
 
@@ -1741,6 +1888,583 @@ void wander(CALL_DATA &params)
 	{
 		// If not a thread, move now.
 		p->runQueuedMovements();
+	}
+}
+
+/*
+ * void addPlayer(string file)
+ * 
+ * Add a player to the party.
+ */
+void addPlayer(CALL_DATA &params)
+{
+	if (params.params != 1)
+	{
+		throw CError("AddPlayer() requires one parameter.");
+	}
+	extern std::vector<CPlayer *> g_players;
+	extern std::string g_projectPath;
+	g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + params[0].getLit(), false));
+}
+
+/*
+ * void putplayer(string handle, int x, int y, int layer)
+ * 
+ * Place the player on the board at the given location.
+ */
+void putplayer(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+	extern RECT g_screen;
+	extern ZO_VECTOR g_sprites;
+
+	if (params.params != 4)
+	{
+		throw CError("PutPlayer() requires four parameters.");
+	}
+
+	CSprite *p = getPlayerPointer(params[0]);
+	if (!p) throw CError("PutPlayer(): player not found");
+
+	p->setActive(true);
+    p->setPosition(int(params[1].getNum()), 
+		int(params[2].getNum()), 
+		int(params[3].getNum()), 
+		g_pBoard->coordType);
+
+	// Insert the pointer into the z-ordered vector.
+	g_sprites.zOrder();
+    
+	/** TBD: do not "auto align" ?
+	p->alignBoard(g_screen, true); **/
+	renderNow(g_cnvRpgCode, true);
+	renderRpgCodeScreen();
+}
+
+/*
+ * void eraseplayer(string handle)
+ *
+ * Erase a party player from the screen.
+ */
+void eraseplayer(CALL_DATA &params)
+{
+	extern ZO_VECTOR g_sprites;
+
+	if (params.params != 1)
+	{
+		throw CError("ErasePlayer() requires one parameter.");
+	}
+
+	CSprite *p = getPlayerPointer(params[0]);
+	if (!p) throw CError("ErasePlayer(): player not found");
+
+	// Remove the player from the z-ordered vector.
+	g_sprites.remove(p);
+	p->setActive(false);
+
+	renderNow(g_cnvRpgCode, true);
+	renderRpgCodeScreen();
+}
+
+/*
+ * void removePlayer(string handle)
+ * 
+ * Remove a player from the party to an old player list.
+ */
+void removePlayer(CALL_DATA &params)
+{
+
+}
+
+/*
+ * void newPlyr(string file)
+ * 
+ * Change the graphics of the main player to that of the
+ * file passed in. The file can be a character file (*.tem)
+ * or that of a tile (*.gph, *.tstxxx, *.tbm).
+ */
+void newPlyr(CALL_DATA &params)
+{
+	extern CSprite *g_pSelectedPlayer;
+	extern std::string g_projectPath;
+
+	if (params.params != 1)
+	{
+		throw CError("newPlyr() requires one parameter.");
+	}
+	std::string ext = getExtension(params[0].getLit());
+
+	if (_strcmpi(ext.c_str(), "TEM") == 0)
+	{
+		// Load new sprite graphics from this character.
+		CPlayer p(g_projectPath + TEM_PATH + params[0].getLit(), false);
+		g_pSelectedPlayer->swapGraphics(&p);
+	}
+	else if (_strcmpi(ext.c_str(), "GPH") == 0)
+	{
+		/** TBD: Construct anm... / depreciate **/
+	}
+	else if (_strcmpi(ext.substr(0, 3).c_str(), "TST") == 0)
+	{
+		/** TBD: Construct anm... / not in 3.0.6 **/
+	}
+	else if (_strcmpi(ext.c_str(), "TBM") == 0)
+	{
+		/** TBD: Construct anm... / not in 3.0.6 **/
+	}
+	else
+	{
+		throw CError("newPlyr() requires a tem, tst or tbm file.");
+	}
+}
+
+/*
+ * int onBoard(variant handle)
+ *
+ * Return whether a player is being shown on the board or not.
+ */
+void onboard(CALL_DATA &params)
+{
+	if (params.params != 1)
+	{
+		throw CError("OnBoard() requires one parameter.");
+	}
+	
+	CSprite *p = getPlayerPointer(params[0]);
+	if (!p) throw CError("OnBoard(): player not found");
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = p->isActive() ? 1 : 0;
+}
+
+/*
+ * void createitem(string filename, int &pos)
+ * 
+ * Load an item into board item slot 'pos'.
+ */
+void createitem(CALL_DATA &params)
+{
+	/** TBD: return the inserted slot number! **/
+
+	extern std::string g_projectPath;
+	extern LPBOARD g_pBoard;
+
+	if (params.params != 2)
+	{
+		throw CError("CreateItem() requires two parameters.");
+	}
+
+	int i = params[1].getNum();
+	CItem *p = NULL;
+	try
+	{
+		p = new CItem(g_projectPath + ITM_PATH + params[0].getLit(), false);
+	}
+	catch (CInvalidItem) { }
+
+	// Is the board item array large enough?
+	while (g_pBoard->items.size() <= i)
+	{
+		g_pBoard->items.push_back(NULL);
+	}
+
+	// Erase the item at this position.
+	delete g_pBoard->items[i];
+	g_pBoard->items[i] = p;
+}
+
+/*
+ * void putitem(variant handle, int x, int y, int layer)
+ * 
+ * Place the item on the board at the given location.
+ */
+void putitem(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+	extern RECT g_screen;
+	extern ZO_VECTOR g_sprites;
+
+	if (params.params != 4)
+	{
+		throw CError("PutItem() requires four parameters.");
+	}
+
+	CSprite *p = getItemPointer(params[0]);
+	if (!p) throw CError("PutItem(): item not found");
+
+	int x = int(params[1].getNum()), y = int(params[2].getNum());
+	const int l = int(params[3].getNum());
+
+	p->setActive(true);
+    p->setPosition(int(params[1].getNum()), 
+		int(params[2].getNum()), 
+		int(params[3].getNum()), 
+		g_pBoard->coordType);
+
+	// Insert the pointer into the z-ordered vector.
+	g_sprites.zOrder();
+    
+	renderNow(g_cnvRpgCode, true);
+	renderRpgCodeScreen();
+}
+
+/*
+ * void eraseitem(variant handle)
+ *
+ * Erase an item from the screen, but keep it in memory.
+ */
+void eraseitem(CALL_DATA &params)
+{
+	extern ZO_VECTOR g_sprites;
+
+	if (params.params != 1)
+	{
+		throw CError("EraseItem() requires one parameter.");
+	}
+
+	CSprite *p = getItemPointer(params[0]);
+	if (!p) throw CError("EraseItem(): item not found");
+
+	// Remove the item from the z-ordered vector.
+	g_sprites.remove(p);
+	p->setActive(false);
+
+	renderNow(g_cnvRpgCode, true);
+	renderRpgCodeScreen();
+}
+
+/*
+ * void destroyitem(int slot)
+ * 
+ * Remove an item from memory.
+ */
+void destroyitem(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+	extern ZO_VECTOR g_sprites;
+
+	if (params.params != 1)
+	{
+		throw CError("DestroyItem() requires one parameter.");
+	}
+
+	unsigned int i = (unsigned int)params[0].getNum();
+
+	// Only accept slot numbers, not source or target handles.
+	if (i < g_pBoard->items.size())
+	{
+		g_sprites.remove(g_pBoard->items[i]);
+		delete g_pBoard->items[i];
+		g_pBoard->items[i] = NULL;
+	}
+}
+
+/*
+ * void gamespeed(int speed)
+ * 
+ * Set the overall walking speed. Changes the walking speed proportionally.
+ * +ve values increase speed, -ve decrease, by a factor of 10% per increment.
+ * Allowed values range from -MAX_GAMESPEED to +MAX_GAMESPEED.
+ */
+void gamespeed(CALL_DATA &params)
+{
+	if (params.params != 1)
+	{
+		throw CError("GameSpeed() requires one parameter.");
+	}
+	CSprite::setLoopOffset(params[0].getNum());
+}
+
+/*
+ * void playerspeed(string handle, int speed)
+ * 
+ * Set the delay in seconds between a player's steps.
+ */
+void playerspeed(CALL_DATA &params)
+{
+	if (params.params != 2)
+	{
+		throw CError("PlayerSpeed() requires two parameters.");
+	}
+	CSprite *p = getPlayerPointer(params[0]);
+	if (!p) throw CError("PlayerSpeed(): player not found");
+
+	p->setSpeed(params[1].getNum());
+}
+
+/*
+ * void itemspeed(variant handle, int speed)
+ * 
+ * Set the delay in seconds between an item's steps.
+ */
+void itemspeed(CALL_DATA &params)
+{
+	if (params.params != 2)
+	{
+		throw CError("ItemSpeed() requires two parameters.");
+	}
+	CSprite *p = getItemPointer(params[0]);
+	if (!p) throw CError("ItemSpeed(): item not found");
+
+	p->setSpeed(params[1].getNum());
+}
+
+/*
+ * void walkSpeed()
+ * 
+ * Obsolete.
+ */
+void walkSpeed(CALL_DATA &params)
+{
+	throw CError("WalkSpeed() is obsolete.");
+}
+
+/*
+ * void itemWalkSpeed()
+ * 
+ * Obsolete.
+ */
+void itemWalkSpeed(CALL_DATA &params)
+{
+	throw CError("ItemWalkSpeed() is obsolete.");
+}
+
+/*
+ * void characterSpeed()
+ * 
+ * Obsolete.
+ */
+void characterSpeed(CALL_DATA &params)
+{
+	CProgram::debugger("CharacterSpeed() has depreciated into GameSpeed().");
+	gamespeed(params);
+}
+
+/*
+ * void itemlocation(int slot, int &x, int &y, int &layer)
+ * 
+ * Get the location of an item. Take board slot numbers only;
+ * use SourceLocation() and TargetLocation() otherwise.
+ */
+void itemlocation(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+	/** TBD: Multitasking considerations **/
+
+	if (params.params != 4)
+	{
+		throw CError("ItemLocation() requires four parameters.");
+	}
+	
+	LPSTACK_FRAME x = params.prg->getVar(params[1].lit),
+				  y = params.prg->getVar(params[2].lit),
+				  l = params.prg->getVar(params[3].lit);
+	x->udt = UDT_NUM;
+	y->udt = UDT_NUM;
+	l->udt = UDT_NUM;
+
+	const CSprite *p = getItemPointer(params[0]);
+	if (!p) throw CError("ItemLocation(): item not found");
+
+	const SPRITE_POSITION s = p->getPosition();
+
+	// Transform from pixel to board type (e.g. tile).
+	int dx = int(s.x), dy = int(s.y);
+	tileCoordinate(dx, dy, g_pBoard->coordType);
+
+	x->num = dx;
+	y->num = dy;
+	l->num = s.l;
+}
+
+/*
+ * void sourcelocation(int &x, &int y)
+ * 
+ * Get the location of the source object.
+ */
+void sourcelocation(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+	/** TBD: Multitasking considerations **/
+
+	if (params.params != 2)
+	{
+		throw CError("SourceLocation() requires two parameters.");
+	}
+	
+	LPSTACK_FRAME x = params.prg->getVar(params[0].lit),
+				  y = params.prg->getVar(params[1].lit);
+	x->udt = UDT_NUM;
+	y->udt = UDT_NUM;
+
+	int dx = 0, dy = 0;
+
+	if (g_sourceType == TT_ENEMY)
+	{
+		/** TBD: get enemy location. **/
+	}
+	else
+	{
+		// Player or item.
+		/** TBD:
+		if (fighting)
+		{
+			// Get location from plugin...
+		}
+		else
+		**/
+		{
+			const CSprite *p = (CSprite *)g_pSource;
+			const SPRITE_POSITION s = p->getPosition();
+			dx = int(s.x);
+			dy = int(s.y);
+		}
+	}
+	// Transform from pixel to board type (e.g. tile).
+	tileCoordinate(dx, dy, g_pBoard->coordType);
+	x->num = dx;
+	y->num = dy;
+}
+
+/*
+ * void targetlocation(int &x, &int y)
+ * 
+ * Get the location of the target object.
+ */
+void targetlocation(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+	/** TBD: Multitasking considerations **/
+
+	if (params.params != 2)
+	{
+		throw CError("TargetLocation() requires two parameters.");
+	}
+	
+	LPSTACK_FRAME x = params.prg->getVar(params[0].lit),
+				  y = params.prg->getVar(params[1].lit);
+	x->udt = UDT_NUM;
+	y->udt = UDT_NUM;
+
+	int dx = 0, dy = 0;
+
+	if (g_targetType == TT_ENEMY)
+	{
+		/** TBD: get enemy location. **/
+	}
+	else
+	{
+		// Player or item.
+		/** TBD:
+		if (fighting)
+		{
+			// Get location from plugin...
+		}
+		else
+		**/
+		{
+			const CSprite *p = (CSprite *)g_pTarget;
+			const SPRITE_POSITION s = p->getPosition();
+			dx = int(s.x);
+			dy = int(s.y);
+		}
+	}
+	// Transform from pixel to board type (e.g. tile).
+	tileCoordinate(dx, dy, g_pBoard->coordType);
+	x->num = dx;
+	y->num = dy;
+}
+
+/*
+ * string sourcehandle([string &ret])
+ * 
+ * Get the handle of the source object.
+ */
+void sourcehandle(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	std::string str;
+	if (g_sourceType == TT_PLAYER)
+	{
+		CPlayer *p = (CPlayer *)g_pSource;
+		str = p->name();
+	}
+	else if (g_sourceType == TT_ITEM)
+	{
+		// Return the item index...(!)
+		int i = 0;
+		str = "ITEM";
+		CItem *p = (CItem *)g_pSource;
+		std::vector<CItem *>::iterator j = g_pBoard->items.begin();
+		for (; j != g_pBoard->items.end(); ++j)
+		{
+			if (p == *j) i = j - g_pBoard->items.begin();
+		}
+		char c[8];
+		str += itoa(i, c, 8);
+	}
+	else if (g_sourceType == TT_ENEMY)
+	{
+		/** TBD: return enemy index... (?) 
+		str = "ENEMY" + i; **/
+	}
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = str;
+	if (params.params == 1)
+	{
+		*params.prg->getVar(params[0].lit) = params.ret();
+	}
+	else if (params.params != 0)
+	{
+		throw CError("SourceHandle() requires zero or one parameter(s).");
+	}
+}
+/*
+ * string targethandle([string &ret])
+ * 
+ * Get the handle of the target object.
+ */
+void targethandle(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	std::string str;
+	if (g_targetType == TT_PLAYER)
+	{
+		CPlayer *p = (CPlayer *)g_pTarget;
+		str = p->name();
+	}
+	else if (g_targetType == TT_ITEM)
+	{
+		// Return the item index...(!)
+		int i = 0;
+		str = "ITEM";
+		CItem *p = (CItem *)g_pTarget;
+		std::vector<CItem *>::iterator j = g_pBoard->items.begin();
+		for (; j != g_pBoard->items.end(); ++j)
+		{
+			if (p == *j) i = j - g_pBoard->items.begin();
+		}
+		char c[8];
+		str += itoa(i, c, 8);
+	}
+	else if (g_targetType == TT_ENEMY)
+	{
+		/** TBD: return enemy index... (?) 
+		str = "ENEMY" + i; **/
+	}
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = str;
+	if (params.params == 1)
+	{
+		*params.prg->getVar(params[0].lit) = params.ret();
+	}
+	else if (params.params != 0)
+	{
+		throw CError("TargetHandle() requires zero or one parameter(s).");
 	}
 }
 
@@ -1824,20 +2548,75 @@ void load(CALL_DATA &params)
  * Save the tile specified to a buffer identified by
  * pos. There is no particular number to pick for pos;
  * any will do.
+ * ** Flag for depreciation **
  */
 void scan(CALL_DATA &params)
 {
+	extern std::vector<CGDICanvas *> g_cnvRpgScans;
+	extern LPBOARD g_pBoard;
 
+	if (params.params != 3)
+	{
+		throw CError("Scan() requires three parameters.");
+	}
+	
+	const int i = int(params[2].getNum());
+	int x = int(params[0].getNum()), y = int(params[1].getNum());
+	pixelCoordinate(x, y, g_pBoard->coordType, false);
+
+	while (i >= g_cnvRpgScans.size())
+	{
+		g_cnvRpgScans.push_back(NULL);
+	}
+	
+	if (!g_cnvRpgScans[i])
+	{
+		g_cnvRpgScans[i] = new CGDICanvas();
+		g_cnvRpgScans[i]->CreateBlank(NULL, 32, 32, TRUE);
+	}
+	g_cnvRpgScans[i]->ClearScreen(TRANSP_COLOR);
+
+	g_cnvRpgCode->BltPart(
+		g_cnvRpgScans[i],
+		0, 0,
+		x, y,
+		32, 32,
+		SRCCOPY);
 }
 
 /*
  * void mem(int x, int y, int pos)
  * 
- * Lay a scanned tile on the board at the specified position.
+ * Lay a scanned tile on the screen at the specified position.
+ * ** Flag for depreciation **
  */
 void mem(CALL_DATA &params)
 {
+	extern std::vector<CGDICanvas *> g_cnvRpgScans;
+	extern LPBOARD g_pBoard;
 
+	if (params.params != 3)
+	{
+		throw CError("Mem() requires three parameters.");
+	}
+
+	const int i = int(params[2].getNum());
+	int x = int(params[0].getNum()), y = int(params[1].getNum());
+	pixelCoordinate(x, y, g_pBoard->coordType, false);
+
+	if (i < g_cnvRpgScans.size() && g_cnvRpgScans[i])
+	{
+		// The canvas exists.
+		g_cnvRpgScans[i]->BltPart(
+			g_cnvRpgCode,
+			x, y,
+			0, 0,
+			32, 32,
+			SRCCOPY);
+	}
+	else throw CError("Mem(): canvas not found.");
+
+	renderRpgCodeScreen();
 }
 
 /*
@@ -1905,26 +2684,6 @@ void equip(CALL_DATA &params)
  * Description.
  */
 void remove(CALL_DATA &params)
-{
-
-}
-
-/*
- * putplayer(...)
- * 
- * Description.
- */
-void putplayer(CALL_DATA &params)
-{
-
-}
-
-/*
- * eraseplayer(...)
- * 
- * Description.
- */
-void eraseplayer(CALL_DATA &params)
 {
 
 }
@@ -2092,76 +2851,6 @@ void inn(CALL_DATA &params)
 }
 
 /*
- * targetlocation(...)
- * 
- * Description.
- */
-void targetlocation(CALL_DATA &params)
-{
-
-}
-
-/*
- * eraseitem(...)
- * 
- * Description.
- */
-void eraseitem(CALL_DATA &params)
-{
-
-}
-
-/*
- * putitem(...)
- * 
- * Description.
- */
-void putitem(CALL_DATA &params)
-{
-
-}
-
-/*
- * createitem(...)
- * 
- * Description.
- */
-void createitem(CALL_DATA &params)
-{
-
-}
-
-/*
- * destroyitem(...)
- * 
- * Description.
- */
-void destroyitem(CALL_DATA &params)
-{
-
-}
-
-/*
- * void walkSpeed()
- * 
- * Obsolete.
- */
-void walkSpeed(CALL_DATA &params)
-{
-	throw CError("WalkSpeed() is obsolete.");
-}
-
-/*
- * void itemWalkSpeed()
- * 
- * Obsolete.
- */
-void itemWalkSpeed(CALL_DATA &params)
-{
-	throw CError("ItemWalkSpeed() is obsolete.");
-}
-
-/*
  * posture(...)
  * 
  * Description.
@@ -2314,7 +3003,7 @@ void playavismall(CALL_DATA &params)
  */
 void getCorner(CALL_DATA &params)
 {
-	extern double g_topX, g_topY;
+	extern RECT g_screen;
 
 	if (params.params != 2)
 	{
@@ -2323,12 +3012,12 @@ void getCorner(CALL_DATA &params)
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
 		var->udt = UDT_NUM;
-		var->num = g_topX;
+		var->num = g_screen.left;
 	}
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
 		var->udt = UDT_NUM;
-		var->num = g_topY;
+		var->num = g_screen.top;
 	}
 }
 
@@ -2587,23 +3276,139 @@ void fillcircle(CALL_DATA &params)
 }
 
 /*
- * savescreen(...)
+ * void savescreen([int position = 0])
  * 
- * Description.
+ * Save the current screen onto a canvas that can be restored at a
+ * later time.
  */
 void savescreen(CALL_DATA &params)
 {
+	extern std::vector<CGDICanvas *> g_cnvRpgScreens;
+	extern CGDICanvas *g_cnvRpgCode;
+	extern RECT g_screen;
 
+	if (params.params != 0 && params.params != 1)
+	{
+		throw CError("RestoreScreen() requires zero or one parameter(s).");
+	}
+
+	const int i = (params.params == 0 ? 0 : int(params[0].getNum())),
+			  width = g_screen.right - g_screen.left, 
+			  height = g_screen.bottom - g_screen.top;
+
+	while (i >= g_cnvRpgScreens.size())
+	{
+		g_cnvRpgScreens.push_back(NULL);
+	}
+	
+	if (!g_cnvRpgScreens[i])
+	{
+		g_cnvRpgScreens[i] = new CGDICanvas();
+		g_cnvRpgScreens[i]->CreateBlank(NULL, width, height, TRUE);
+	}
+	g_cnvRpgScreens[i]->ClearScreen(TRANSP_COLOR);
+
+	g_cnvRpgCode->BltPart(
+		g_cnvRpgScreens[i],
+		0, 0,
+		0, 0,
+		width, height,
+		SRCCOPY);
 }
 
 /*
- * restorescreen(...)
+ * void restorescreen([int x1, int y1, int x2, int y2, int xdest, int ydest])
  * 
- * Description.
+ * Draw a buffered screen capture to the screen. The canvas
+ * drawn is the first in the screen array. x1, x2 specify the bottom-
+ * right corner of the screen, so that width = x2 - x1, etc.
  */
 void restorescreen(CALL_DATA &params)
 {
+	extern std::vector<CGDICanvas *> g_cnvRpgScreens;
+	extern CGDICanvas *g_cnvRpgCode;
+	extern RECT g_screen;
 
+	if (params.params != 0 && params.params != 6)
+	{
+		throw CError("RestoreScreen() requires zero or six parameters.");
+	}
+
+	int xSrc = 0, ySrc = 0, 
+		width = g_screen.right - g_screen.left, 
+		height = g_screen.bottom - g_screen.top, 
+		xDest = 0, yDest = 0;
+
+	if (params.params == 6)
+	{
+		xSrc = int(params[0].getNum());
+		ySrc = int(params[1].getNum());
+		width = int(params[2].getNum()) - xSrc;
+		height = int(params[3].getNum()) - ySrc;
+		xDest = int(params[4].getNum());
+		yDest = int(params[5].getNum());
+	}
+	
+	if (g_cnvRpgScreens.size() && g_cnvRpgScreens.front())
+	{
+		// The first canvas exists.
+		g_cnvRpgScreens.front()->BltPart(
+			g_cnvRpgCode,
+			xDest, yDest,
+			xSrc, ySrc,
+			width, height,
+			SRCCOPY);
+	}
+	else throw CError("RestoreScreen(): canvas not found.");
+
+	renderRpgCodeScreen();
+}
+
+/*
+ * void restorescreenarray(int pos [,int x1, int y1, int x2, int y2, int xdest, int ydest])
+ * 
+ * Draw a buffered screen capture to the screen. 
+ * x1, x2 specify the bottom-right corner of the screen, 
+ * so that width = x2 - x1, etc.
+ */
+void restorescreenarray(CALL_DATA &params)
+{
+	extern std::vector<CGDICanvas *> g_cnvRpgScreens;
+	extern CGDICanvas *g_cnvRpgCode;
+
+	if (params.params != 1 && params.params != 7)
+	{
+		throw CError("RestoreScreen() requires one or seven parameters.");
+	}
+
+	const int i = int(params[0].getNum());
+	if (i < g_cnvRpgScreens.size() && g_cnvRpgScreens[i])
+	{
+		// Temporarily switch the pointers for
+		// RestoreScreen() to use the first.
+		CGDICanvas *pCnv = g_cnvRpgScreens[0];
+		g_cnvRpgScreens[0] = g_cnvRpgScreens[i];
+
+		// Send the last 6 parameters to RestoreScreen();
+		--params.params;
+		++params.p;
+		restorescreen(params);
+
+		g_cnvRpgScreens[0] = pCnv;
+	}
+	else throw CError("RestoreScreenArray(): canvas not found.");
+}
+
+/*
+ * void restorearrayscreen(int pos [,int x1, int y1, int x2, int y2, int xdest, int ydest])
+ * 
+ * Draw a buffered screen capture to the screen. 
+ * x1, x2 specify the bottom-right corner of the screen, 
+ * so that width = x2 - x1, etc.
+ */
+void restorearrayscreen(CALL_DATA &params)
+{
+	restorescreenarray(params);
 }
 
 /*
@@ -2663,6 +3468,45 @@ void tan(CALL_DATA &params)
 		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
 		var->udt = UDT_NUM;
 		var->num = tan(params[0].getNum() / 180 * PI);
+	}
+}
+
+/*
+ * double sqrt(double x, [double &ret])
+ * 
+ * Calculate the square root of x.
+ */
+void sqrt(CALL_DATA &params)
+{
+	if (params.params == 1)
+	{
+		params.ret().udt = UDT_NUM;
+		params.ret().num = sqrt(params[0].getNum());
+	}
+	else if (params.params == 2)
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
+		var->udt = UDT_NUM;
+		var->num = sqrt(params[0].getNum());
+	}
+}
+
+/*
+ * double log(double x, [double &ret])
+ * 
+ * Get the natural log of x.
+ */
+void log(CALL_DATA &params)
+{
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("Log() requires one or two parameters.");
+	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = log(params[0].getNum());
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
 	}
 }
 
@@ -2822,36 +3666,6 @@ void setImageTranslucent(CALL_DATA &params)
 }
 
 /*
- * sourcelocation(...)
- * 
- * Description.
- */
-void sourcelocation(CALL_DATA &params)
-{
-
-}
-
-/*
- * targethandle(...)
- * 
- * Description.
- */
-void targethandle(CALL_DATA &params)
-{
-
-}
-
-/*
- * sourcehandle(...)
- * 
- * Description.
- */
-void sourcehandle(CALL_DATA &params)
-{
-
-}
-
-/*
  * void drawEnemy(string file, int x, int y, [canvas cnv])
  * 
  * Draw an enemy.
@@ -2901,13 +3715,61 @@ void mp3pause(CALL_DATA &params)
 }
 
 /*
- * layerput(...)
+ * void layerput(int x, int y, int layer, string tile)
  * 
- * Description.
+ * Place a tile on the board for the duration the player is on the board.
  */
 void layerput(CALL_DATA &params)
 {
+	extern LPBOARD g_pBoard;
+	extern SCROLL_CACHE g_scrollCache;
 
+	if (params.params != 4)
+	{
+		throw CError("LayerPut() requires four parameters.");
+	}
+	
+	// Instead of drawing onto the scrollcache (which seems quite
+	// useless), enter the tile into the tile lookup table.
+	const int x = int(params[0].getNum()), 
+			  y = int(params[1].getNum()),
+			  l = int(params[2].getNum());
+	const std::string tile = params[3].getLit();
+	int index = 0;
+
+	// Search the table for the tile.
+	std::vector<std::string>::iterator i = g_pBoard->tileIndex.begin(),
+									   j = i;
+	for(; i != g_pBoard->tileIndex.end(); ++i)
+	{
+		if (_strcmpi(tile.c_str(), i->c_str()) == 0)
+		{
+			index = i - j;
+			break;
+		}
+	}
+	if (!index)
+	{
+		// Insert it onto the end.
+		index = g_pBoard->tileIndex.size();
+		g_pBoard->tileIndex.push_back(tile);
+	}
+
+	try
+	{
+		g_pBoard->board[x][y][l] = index;
+		g_pBoard->bLayerOccupied[l] = true;
+		g_pBoard->bLayerOccupied[0] = true;			// Any layer occupied.
+	}
+	catch(...)
+	{
+		throw CError("LayerPut(): tile co-ordinates out of bounds.");
+	}
+
+	// Redraw the scrollcache.
+	g_scrollCache.render(true);
+    renderNow(g_cnvRpgCode, true);
+    renderRpgCodeScreen();
 }
 
 /*
@@ -2950,32 +3812,14 @@ void getBoardTile(CALL_DATA &params)
 }
 
 /*
- * double sqrt(double x, [double &ret])
- * 
- * Calculate the square root of x.
- */
-void sqrt(CALL_DATA &params)
-{
-	if (params.params == 1)
-	{
-		params.ret().udt = UDT_NUM;
-		params.ret().num = sqrt(params[0].getNum());
-	}
-	else if (params.params == 2)
-	{
-		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-		var->udt = UDT_NUM;
-		var->num = sqrt(params[0].getNum());
-	}
-}
-
-/*
  * int getBoardTileType(int x, int y, int z, [int &ret])
  * 
  * Get the type of a tile.
  */
 void getBoardTileType(CALL_DATA &params)
 {
+	/** TBD: vector alterations ? **/
+
 	extern LPBOARD g_pBoard;
 	if (params.params == 3)
 	{
@@ -3050,16 +3894,6 @@ void forceRedraw(CALL_DATA &params)
 }
 
 /*
- * itemlocation(...)
- * 
- * Description.
- */
-void itemlocation(CALL_DATA &params)
-{
-
-}
-
-/*
  * wipe(...)
  * 
  * Description.
@@ -3080,16 +3914,16 @@ void getRes(CALL_DATA &params)
 	{
 		throw CError("GetRes() requires two parameters.");
 	}
-	extern int g_resX, g_resY;
+	extern RECT g_screen;
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
 		var->udt = UDT_NUM;
-		var->num = g_resX;
+		var->num = g_screen.right - g_screen.left;
 	}
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
 		var->udt = UDT_NUM;
-		var->num = g_resY;
+		var->num = g_screen.bottom - g_screen.top;
 	}
 }
 
@@ -3171,27 +4005,6 @@ void animatedTiles(CALL_DATA &params)
 void smartStep(CALL_DATA &params)
 {
 	throw CError("SmartStep() is obsolete.");
-}
-
-/*
- * gamespeed(...)
- * 
- * Description.
- */
-void gamespeed(CALL_DATA &params)
-{
-
-}
-
-/*
- * void characterSpeed()
- * 
- * Obsolete.
- */
-void characterSpeed(CALL_DATA &params)
-{
-	CProgram::debugger("CharacterSpeed() has depreciated into GameSpeed().");
-	gamespeed(params);
 }
 
 /*
@@ -3342,7 +4155,7 @@ void threadSleepRemaining(CALL_DATA &params)
 /*
  * variant &local(variant &var, [variant &ret])
  * 
- * Allocate a variable off the stack and returns a reference to it.
+ * Allocates a variable off the stack and returns a reference to it.
  */
 void local(CALL_DATA &params)
 {
@@ -3904,26 +4717,6 @@ void getitemsellprice(CALL_DATA &params)
 }
 
 /*
- * restorescreenarray(...)
- * 
- * Description.
- */
-void restorescreenarray(CALL_DATA &params)
-{
-
-}
-
-/*
- * restorearrayscreen(...)
- * 
- * Description.
- */
-void restorearrayscreen(CALL_DATA &params)
-{
-
-}
-
-/*
  * splicevariables(...)
  * 
  * Description.
@@ -4116,35 +4909,6 @@ void setconstants(CALL_DATA &params)
 }
 
 /*
- * double log(double x, [double &ret])
- * 
- * Get the natural log of x.
- */
-void log(CALL_DATA &params)
-{
-	if ((params.params != 1) && (params.params != 2))
-	{
-		throw CError("Log() requires one or two parameters.");
-	}
-	params.ret().udt = UDT_NUM;
-	params.ret().num = log(params[0].getNum());
-	if (params.params == 2)
-	{
-		*params.prg->getVar(params[1].lit) = params.ret();
-	}
-}
-
-/*
- * onboard(...)
- * 
- * Description.
- */
-void onboard(CALL_DATA &params)
-{
-
-}
-
-/*
  * autolocal(...)
  * 
  * Description.
@@ -4168,16 +4932,6 @@ void getBoardName(CALL_DATA &params)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
 	}
-}
-
-/*
- * pixelmovement(...)
- * 
- * Description.
- */
-void pixelmovement(CALL_DATA &params)
-{
-
 }
 
 /*
@@ -4290,26 +5044,6 @@ void multirun(CALL_DATA &params)
 void shopcolors(CALL_DATA &params)
 {
 
-}
-
-/*
- * itemSpeed()
- * 
- * Obsolete.
- */
-void itemspeed(CALL_DATA &params)
-{
-	throw CError("ItemSpeed() is obsolete.");
-}
-
-/*
- * playerSpeed()
- * 
- * Obsolete.
- */
-void playerspeed(CALL_DATA &params)
-{
-	throw CError("PlayerSpeed() is obsolete.");
 }
 
 /*

@@ -19,6 +19,9 @@ class CItem : public CSprite
 {
 public:
 
+	// Empty constructor.
+	CItem(void): CSprite(false), m_pThread(NULL) {};
+
 	// Default constructor.
 	CItem(const std::string file, const bool show);
 

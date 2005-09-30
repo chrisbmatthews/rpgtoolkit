@@ -10,10 +10,11 @@
 
 /*
  * TO DO:
- *		SPRITES.
+ *		CENTRE SPRITE BASES IN 2D MODE.
  */
 
 #include "CPathFind.h"
+#include "../CSprite/CSprite.h"
 #include "../../common/board.h"
 #include "../locate.h"
 
@@ -129,12 +130,33 @@ NODE *CPathFind::bestOpenNode(void)
 /*
  * Make the path by tracing parents through m_closedNodes.
  */
-PF_PATH CPathFind::constructPath(NODE node)
+PF_PATH CPathFind::constructPath(NODE node, const RECT &r)
 {
+	extern LPBOARD g_pBoard;
+
+	int dx = 0, dy = 0;
 	PF_PATH path;
+
+	// Modify the points for any offsets.
+	if (!g_pBoard->isIsometric())
+	{
+		// Shift points down the board by half
+		// the base height or to the tile edge.
+//		dx = (m_heuristic == PF_VECTOR ? (r.right - r.left) / 2 : BASE_POINT_X - 16);
+		dy = (m_heuristic == PF_VECTOR ? (r.bottom - r.top) / 2 : BASE_POINT_Y - 16);
+	}
+
+	if (m_heuristic == PF_VECTOR)
+	{
+		// Pushback the goal without modification.
+		path.push_back(node.pos);
+		node = *node.parent;
+	}
 
 	while(node.pos != m_start.pos)
 	{
+		node.pos.x += dx;
+		node.pos.y += dy;
 		path.push_back(node.pos);
 		node = *node.parent;
 	}
@@ -203,7 +225,7 @@ bool CPathFind::getChild(DB_POINT &child, const DB_POINT &parent)
 		const int isIso = int(g_pBoard->isIsometric());
 		if (m_u.i > MV_NE)
 		{
-			m_u.i = (m_heuristic == PF_AXIAL && isIso ? MV_SE : MV_E);;
+			m_u.i = (m_heuristic == PF_AXIAL && isIso ? MV_SE : MV_E);
 			return false;
 		}
 		child.x = g_directions[isIso][m_u.i][0] * 32 + parent.x;
@@ -218,9 +240,10 @@ bool CPathFind::getChild(DB_POINT &child, const DB_POINT &parent)
 /*
  * Re-initialise the search.
  */
-void CPathFind::initialize(const int layer, const RECT &r, const int type)
+void CPathFind::initialize(const int layer, const RECT &r, const int type, const void *pSprite)
 {
 	extern LPBOARD g_pBoard;
+	extern ZO_VECTOR g_sprites;
 
 	m_layer = layer;
 	m_heuristic = PF_HEURISTIC(type);
@@ -250,6 +273,18 @@ void CPathFind::initialize(const int layer, const RECT &r, const int type)
 		// can move around them without colliding.
 		CVector *vector = new CVector(*(i->pV));
 		vector->grow(size);
+
+		m_obstructions.push_back(vector);
+		vector->createNodes(m_points, limits);					
+	}
+
+	/* TBD Note to self: shouldn't this be in reset()? */
+	for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
+	{
+		if ((*j)->getPosition().l != layer || *j == (CSprite *)pSprite) continue;
+		CVector *vector = new CVector((*j)->getVectorBase());
+		// Extra clearance for sprites...
+		vector->grow(size + 1);
 
 		m_obstructions.push_back(vector);
 		vector->createNodes(m_points, limits);					
@@ -307,12 +342,14 @@ bool CPathFind::isChild(NODE &child, NODE &parent)
  * Main function - apply the algorithm to the input points.
  */
 PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
-							const int layer, const RECT &r, const int type)
+							const int layer, const RECT &r, 
+							const int type, const void *pSprite)
 {
 	// Recreate m_obstructions if running on a new board or changing layers.
-	if (layer != m_layer || m_obstructions.empty()) initialize(layer, r, type);
+	if (layer != m_layer || m_obstructions.empty()) initialize(layer, r, type, pSprite);
 
-	reset(start, goal);
+	reset(start, goal, r);
+	if (m_start.pos == m_goal.pos) return PF_PATH();
 
 	while (!m_openNodes.empty())
 	{
@@ -393,7 +430,7 @@ PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
 	if (m_closedNodes.back().pos == m_goal.pos)
 	{
 		// Construct the path.
-		return constructPath(m_closedNodes.back());
+		return constructPath(m_closedNodes.back(), r);
 	}
 	return PF_PATH();
 		
@@ -402,10 +439,9 @@ PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
 /*
  * Reset the points at the start of a search.
  */
-void CPathFind::reset(DB_POINT start, DB_POINT goal)
+void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r)
 {
 	extern LPBOARD g_pBoard;
-	extern RECT g_screen;
 
 	if (m_heuristic == PF_VECTOR)
 	{
@@ -416,6 +452,17 @@ void CPathFind::reset(DB_POINT start, DB_POINT goal)
 			if ((*j)->containsPoint(goal) % 2)
 			{
 				goal = (*j)->nearestPoint(goal);
+				
+				// Make provision for offsetting the points in
+				// constructPath().
+				if (!g_pBoard->isIsometric())
+				{
+					// Shift points down the board by half
+					// the base height or to the tile edge.
+//					goal.x += (r.right - r.left) / 2;
+//					goal.y += (r.bottom - r.top) / 2;
+				}
+
 				/* Consider goals contained in multiple vectors! */
 			}
 			if ((*j)->containsPoint(start) % 2)
@@ -423,7 +470,6 @@ void CPathFind::reset(DB_POINT start, DB_POINT goal)
 				start = (*j)->nearestPoint(start);
 				/* Consider starts contained in multiple vectors! */
 			}
-
 		}
 
 		/* Sprite collisions */
@@ -440,13 +486,25 @@ void CPathFind::reset(DB_POINT start, DB_POINT goal)
 		const bool isIso = g_pBoard->isIsometric();
 		m_u.i = (m_heuristic == PF_AXIAL && isIso ? MV_SE : MV_E);
 
-		roundToTile(goal.x, goal.y, isIso);
-		roundToTile(start.x, start.y, isIso);
+		// The base points 2D-board sprite bases are at the
+		// bottom-centre, which causes an aesthetic problem 
+		// because CVector::grow() is designed for centred
+		// base points (as with isometric).
+		// A solution is to offset the generated path points
+		// by half the base height to centre the base point.
 
-		/* - Temporary measure for vectorized boards - */
-		--goal.y;
-		--start.y;
+		roundToTile(goal.x, goal.y, isIso, false);
+		roundToTile(start.x, start.y, isIso, false);
 
+		if (!isIso)
+		{
+			// Place the tile pathfind node in the centre of the tile.
+			// roundToTile(,,, false) returns top-left corner in 2D.
+			goal.x += 16;
+			goal.y += 16;
+			start.x += 16;
+			start.y += 16;
+		}
 	}
 
 	m_goal = NODE(goal);

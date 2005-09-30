@@ -76,7 +76,7 @@ typedef struct tagMainFile
 	void setGameSpeed(const int gs) { gameSpeed = gs + 128; }
 	bool open(const std::string fileName);
 private:
-    char gameSpeed;						// Speed at which game runs.
+    unsigned char gameSpeed;			// Speed at which game runs.
 } MAIN_FILE;
 
 #endif

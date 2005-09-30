@@ -152,6 +152,21 @@ bool CVector::close(const bool isClosed/*, const int curl*/)
 }
 
 /*
+ * Compare the points of two vectors. 
+ * Assumes all points were added in same order.
+ */
+bool CVector::compare(const CVector &rhs) const
+{
+	if (m_p.size() != rhs.m_p.size()) return false;
+
+	for (unsigned int i = 0; i != m_p.size(); ++i)
+	{
+		if (m_p[i] != rhs.m_p[i]) return false;
+	}
+	return true;
+}
+
+/*
  * Determine if a polygon intersects or contains a CVector.
  * Return a point that represents the intersecting subvector
  * as a position vector for use in sliding tests, etc.
@@ -711,7 +726,7 @@ bool CVector::pfContains(CVector &rhs)
 					return false;
 
 				// See if the midpoint of the path is in the vector.
-				// Whilst this is not enough on its own, its half.
+				// Whilst this is not enough on its own, it's half.
 				const DB_POINT d = {(start.x + end.x) / 2,
 									(start.y + end.y) / 2};
 				if (containsPoint(d) % 2) return true;

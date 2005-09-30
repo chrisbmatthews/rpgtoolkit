@@ -204,7 +204,8 @@ public:
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
 	static void freePlugins();
 
-	static bool isRunning() { return (m_runningPrograms != 0); }
+/** Delano: could be unneeded after all. Will check after multiRun().
+	static bool isRunning() { return (m_runningPrograms != 0); } **/
 
 private:
 	std::deque<std::deque<STACK_FRAME> > m_stack;

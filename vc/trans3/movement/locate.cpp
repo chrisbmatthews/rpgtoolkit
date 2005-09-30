@@ -15,7 +15,7 @@ extern LPBOARD g_pBoard;
 /*
  * Convert a tile co-ordinate to a pixel co-ordinate.
  */
-void pixelCoordinate(int &x, int &y, const COORD_TYPE coord)
+void pixelCoordinate(int &x, int &y, const COORD_TYPE coord, const bool bAddBasePoint)
 {
 	// If we have any combination (## & PX_ABSOLUTE), the position
 	// will be in pixels (PX_ABSOLUTE overrides).
@@ -23,21 +23,64 @@ void pixelCoordinate(int &x, int &y, const COORD_TYPE coord)
 	{
 		case TILE_NORMAL:
 		{
-			x = (x - 1) * 32 + BASE_POINT_X;
-			y = (y - 1) * 32 + BASE_POINT_Y;
+			x = (x - 1) * 32;
+			y = (y - 1) * 32;
 			break;
 		}
 		case ISO_STACKED:
 		{
-			x = x * 64 - (y % 2 ? 32 : 64) + BASE_POINT_ISO_X;
-			y = y * 16 - 16 + BASE_POINT_ISO_Y;
+			x = x * 64 - (y % 2 ? 32 : 64);
+			y = y * 16 - 16;
 			break;
 		}
 		case ISO_ROTATED:
 		{
 			const int dx = x;
-			x = (x - y + g_pBoard->bSizeX) * 32 + BASE_POINT_ISO_X; 
-			y = (dx + y - g_pBoard->bSizeX) * 16 + BASE_POINT_ISO_Y;	
+			x = (x - y + g_pBoard->bSizeX) * 32; 
+			y = (dx + y - g_pBoard->bSizeX) * 16 - 16;	
+			break;
+		}
+		default:
+			return;
+	}
+
+	if (bAddBasePoint)
+	{
+		x += (coord == TILE_NORMAL ? BASE_POINT_X : BASE_POINT_ISO_X);
+		y += (coord == TILE_NORMAL ? BASE_POINT_Y : BASE_POINT_ISO_Y);
+	}
+}
+
+/*
+ * Convert a pixel co-ordinate to a tile co-ordinate.
+ */
+void tileCoordinate(int &x, int &y, const COORD_TYPE coord)
+{
+	// coord is the output type.
+	switch (coord)
+	{
+		case TILE_NORMAL:
+		{
+			x = x / 32 + 1;
+			y = y / 32 + 1;
+			break;
+		}
+		case ISO_STACKED:
+		{
+			double dx = x, dy = y;
+			roundToTile(dx, dy, true, false);
+			// dy is at tile centre.
+			y = int(dy / 16.0) + 1;
+			x = int(dx / 64.0) + 1;
+			break;
+		}
+		case ISO_ROTATED:
+		{
+			double dx = x, dy = y;
+			roundToTile(dx, dy, true, false);
+			y = int((dy + 16.0) / 32.0) - int(dx / 64.0) + g_pBoard->bSizeX;
+			x = int(dx / 32.0) + y - g_pBoard->bSizeX;
+			break;
 		}
 	}
 }
@@ -45,7 +88,7 @@ void pixelCoordinate(int &x, int &y, const COORD_TYPE coord)
 /*
  * Round a pixel co-ordinate to the centre of the corresponding tile.
  */
-void roundToTile(double &x, double &y, const bool bIso)
+void roundToTile(double &x, double &y, const bool bIso, const bool bAddBasePoint)
 {
 	if (bIso)
 	{
@@ -72,14 +115,22 @@ void roundToTile(double &x, double &y, const bool bIso)
 				y += 16;
 			}
 		}
-		x += BASE_POINT_ISO_X;
-		y += BASE_POINT_ISO_Y;
+		if (bAddBasePoint)
+		{
+			x += BASE_POINT_ISO_X;
+			y += BASE_POINT_ISO_Y;
+		}
 	}
 	else
 	{
 		// Round to the 32x32 grid.
-		x = int((x - 1) / 32.0) * 32.0 + BASE_POINT_X;
-		y = int((y - 1) / 32.0) * 32.0 + BASE_POINT_Y;
+		x = int((x - 1) / 32.0) * 32.0;
+		y = int((y - 1) / 32.0) * 32.0;
+		if (bAddBasePoint)
+		{
+			x += BASE_POINT_X;
+			y += BASE_POINT_Y;
+		}
 	}
 }
 

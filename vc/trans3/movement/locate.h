@@ -15,12 +15,17 @@
 /*
  * Convert a tile co-ordinate to a pixel co-ordinate.
  */
-void pixelCoordinate(int &x, int &y, const COORD_TYPE coord);
+void pixelCoordinate(int &x, int &y, const COORD_TYPE coord, const bool bAddBasePoint);
+
+/*
+ * Convert a pixel co-ordinate to a tile co-ordinate.
+ */
+void tileCoordinate(int &x, int &y, const COORD_TYPE coord);
 
 /*
  * Round a pixel co-ordinate to the centre of the corresponding tile.
  */
-void roundToTile(double &x, double &y, const bool bIso);
+void roundToTile(double &x, double &y, const bool bIso, const bool bAddBasePoint);
 
 /*
  * Transform old-type isometric co-ordinates to new-type.

@@ -259,6 +259,9 @@ lutEnd:
 		file >> prg->finalValue;
 		file >> prg->activationType;
 
+		// Old programs: default to PRG_STOPS_MOVEMENT.
+		prg->activationType |= PRG_STOPS_MOVEMENT;
+
 		if (!prg->fileName.empty())
 		{
 			// Add the program to the list.
@@ -439,7 +442,7 @@ lutEnd:
  */
 void tagBoard::vectorize(const unsigned int layer)
 {
-	// TO DO: n/s e/w types (2D only, no iso support).
+	// TBD: n/s e/w types (2D only, no iso support).
 
 	// Some old tiletype defines for this function.
 	#define NORTH_SOUTH 3
@@ -552,6 +555,7 @@ void tagBoard::vectorize(const unsigned int layer)
 		BRD_VECTOR vector;
 		if (coordType & ISO_STACKED)
 		{
+			// Order: top, left, bottom, right.
 			vector.pV = new CVector(((origX - 1) - (origY - 1) + bSizeX) * 32, ((origX - 1) + (origY - 1) - bSizeX) * 16, 4);
 			vector.pV->push_back(((origX - 1) - y + bSizeX) * 32, ((origX - 1) + y - bSizeX) * 16);
 			vector.pV->push_back((x - y + bSizeX) * 32, (x + y - bSizeX) * 16);
@@ -559,6 +563,7 @@ void tagBoard::vectorize(const unsigned int layer)
 		}
 		else
 		{
+			// Order: top-left, bot-left, bot-right, top-right.
 			vector.pV = new CVector((origX - 1) * 32, (origY - 1) * 32, 4);
 			vector.pV->push_back((origX - 1) * 32, y * 32);
 			vector.pV->push_back(x * 32, y * 32);
@@ -581,92 +586,98 @@ void tagBoard::vectorize(const unsigned int layer)
 }
 
 /*
- * Create canvases from a board's vectors.
+ * Create under tile canvases from a board's vectors.
  */
 void tagBoard::createVectorCanvases(void)
 {
 	// After vectorize() on old formats.
 	
-	CONST LONG SOLID_COLOR = 0;
-
 	for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
 	{
-		// Only need to do this for under tiles.
-		if (!(i->type & TT_UNDER)) continue;
-
-		// Get the bounding box of the vector.
-		const RECT r = i->pV->getBounds();
-		if (r.right - r.left < 1 || r.bottom - r.top < 1) continue;
-
-		i->pCnv = new CGDICanvas();
-		i->pCnv->CreateBlank(NULL, r.right - r.left, r.bottom - r.top, TRUE);
-		i->pCnv->ClearScreen(TRANSP_COLOR);
-
-		// Inflate to align to the grid (iso or 2D).
-		const RECT rAlign = {r.left - r.left % 32,
-							r.top - r.top % 32,
-							r.right - r.right % 32 + 32,
-							r.bottom - r.bottom % 32 + 32};
-
-		// Create an intermediate canvas that is aligned to the grid.
-		CGDICanvas *cnv = new CGDICanvas();
-		cnv->CreateBlank(NULL, rAlign.right - rAlign.left, rAlign.bottom - rAlign.top, TRUE);
-		cnv->ClearScreen(TRANSP_COLOR);
-
-		// Create a mask from the vector on the vector's canvas.
-		if (i->pV->createMask(i->pCnv, r.left, r.top, SOLID_COLOR))
-		{
-			// Was drawn if vector was closed.
-
-			// Determine whether all layers below the under vector
-			// are affected, or just the specified layer.
-			const int lLower = (i->attributes & TA_ALL_LAYERS_BELOW ? 1 : i->layer); 
-		
-			if (i->attributes & TA_BRD_BACKGROUND)
-			{
-				// If the under tile applies to the background.
-				renderBackground(cnv, rAlign);
-			}
-
-			// Draw the board layer within the bounds to the intermediate canvas.
-			render (cnv, 
-					0, 0, lLower, i->layer,  
-					rAlign.left, rAlign.top, 
-					rAlign.right - rAlign.left, 
-					rAlign.bottom - rAlign.top,
-					0, 0, 0);
-			
-			// Blt the mask onto the canvas. In this case we want
-			// the *solid* colour on the mask to be transparent.
-			i->pCnv->BltTransparentPart(cnv, 
-										r.left % 32, r.top % 32, 
-										0, 0, 
-										r.right - r.left, 
-										r.bottom - r.top, 
-										SOLID_COLOR);
-
-			// Blt the vector area back to the vector's canvas.
-			// (Note: it may seem easier to put the mask on the intermediate
-			// canvas, but this results in a larger vector canvas that
-			// is harder to manipulate.)
-			cnv->BltPart(i->pCnv, 
-						0, 0, 
-						r.left % 32, r.top % 32, 
-						r.right - r.left, 
-						r.bottom - r.top, 
-						SRCCOPY);
-
-		}
-		else
-		{
-			// No need to keep this canvas.
-			delete i->pCnv;
-			i->pCnv = NULL;
-		}
-
-		delete cnv;
-
+		i->createCanvas(*this);
 	}
+}
+
+/*
+ * Create a canvas from a vector.
+ */
+void tagBoardVector::createCanvas(BOARD &board)
+{
+	CONST LONG SOLID_COLOR = 0;
+
+	// Only need to do this for under tiles.
+	if (!(type & TT_UNDER)) return;
+
+	// Get the bounding box of the vector.
+	const RECT r = pV->getBounds();
+	if (r.right - r.left < 1 || r.bottom - r.top < 1) return;
+
+	pCnv = new CGDICanvas();
+	pCnv->CreateBlank(NULL, r.right - r.left, r.bottom - r.top, TRUE);
+	pCnv->ClearScreen(TRANSP_COLOR);
+
+	// Inflate to align to the grid (iso or 2D).
+	const RECT rAlign = {r.left - r.left % 32,
+						r.top - r.top % 32,
+						r.right - r.right % 32 + 32,
+						r.bottom - r.bottom % 32 + 32};
+
+	// Create an intermediate canvas that is aligned to the grid.
+	CGDICanvas *cnv = new CGDICanvas();
+	cnv->CreateBlank(NULL, rAlign.right - rAlign.left, rAlign.bottom - rAlign.top, TRUE);
+	cnv->ClearScreen(TRANSP_COLOR);
+
+	// Create a mask from the vector on the vector's canvas.
+	if (pV->createMask(pCnv, r.left, r.top, SOLID_COLOR))
+	{
+		// Was drawn if vector was closed.
+
+		// Determine whether all layers below the under vector
+		// are affected, or just the specified layer.
+		const int lLower = (attributes & TA_ALL_LAYERS_BELOW ? 1 : layer); 
+	
+		if (attributes & TA_BRD_BACKGROUND)
+		{
+			// If the under tile applies to the background.
+			board.renderBackground(cnv, rAlign);
+		}
+
+		// Draw the board layer within the bounds to the intermediate canvas.
+		board.render (cnv, 
+			0, 0, lLower, layer,  
+			rAlign.left, rAlign.top, 
+			rAlign.right - rAlign.left, 
+			rAlign.bottom - rAlign.top,
+			0, 0, 0);
+		
+		// Blt the mask onto the canvas. In this case we want
+		// the *solid* colour on the mask to be transparent.
+		pCnv->BltTransparentPart(cnv, 
+			r.left % 32, r.top % 32, 
+			0, 0, 
+			r.right - r.left, 
+			r.bottom - r.top, 
+			SOLID_COLOR);
+
+		// Blt the vector area back to the vector's canvas.
+		// (Note: it may seem easier to put the mask on the intermediate
+		// canvas, but this results in a larger vector canvas that
+		// is harder to manipulate.)
+		cnv->BltPart(pCnv, 
+			0, 0, 
+			r.left % 32, r.top % 32, 
+			r.right - r.left, 
+			r.bottom - r.top, 
+			SRCCOPY);
+	}
+	else
+	{
+		// No need to keep this canvas.
+		delete pCnv;
+		pCnv = NULL;
+	}
+
+	delete cnv;
 }
 
 #include "../images/FreeImage.h"
