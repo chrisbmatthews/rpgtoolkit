@@ -1564,39 +1564,17 @@ void pixelmovement(CALL_DATA &params)
 	{
 		if (params.params == 2)
 		{
-			if (params[1].getType() & UDT_LIT)
-			{
-				g_mainFile.pixelMovement =
-					(_strcmpi(params[1].getLit().c_str(), "on") == 0 ?
-					MF_PUSH_PIXEL :	MF_MOVE_PIXEL);
-			}
-			else
-			{
-				g_mainFile.pixelMovement = 
-					(params[1].getNum() != 0 ? 
-					MF_PUSH_PIXEL : MF_MOVE_PIXEL);
-			}
+			g_mainFile.pixelMovement = params[1].getBool() ? MF_PUSH_PIXEL : MF_MOVE_PIXEL;
 		}
 
-		if (params[0].getType() & UDT_LIT)
+		if (params[0].getBool())
 		{
-			if (_strcmpi(params[0].getLit().c_str(), "on") == 0)
-				CSprite::m_bPxMovement = true;
-			else
-			{
-				g_mainFile.pixelMovement = MF_MOVE_TILE;
-				CSprite::m_bPxMovement = false;
-			}
+			CSprite::m_bPxMovement = true;
 		}
 		else
 		{
-			if (params[0].getNum() != 0)
-				CSprite::m_bPxMovement = true;
-			else
-			{
-				g_mainFile.pixelMovement = MF_MOVE_TILE;
-				CSprite::m_bPxMovement = false;
-			}
+			g_mainFile.pixelMovement = MF_MOVE_TILE;
+			CSprite::m_bPxMovement = false;
 		}
 	}
 
@@ -3400,18 +3378,6 @@ void restorescreenarray(CALL_DATA &params)
 }
 
 /*
- * void restorearrayscreen(int pos [,int x1, int y1, int x2, int y2, int xdest, int ydest])
- * 
- * Draw a buffered screen capture to the screen. 
- * x1, x2 specify the bottom-right corner of the screen, 
- * so that width = x2 - x1, etc.
- */
-void restorearrayscreen(CALL_DATA &params)
-{
-	restorescreenarray(params);
-}
-
-/*
  * double sin(double x, [double &ret])
  * 
  * Calculate sine x.
@@ -3740,7 +3706,7 @@ void layerput(CALL_DATA &params)
 	// Search the table for the tile.
 	std::vector<std::string>::iterator i = g_pBoard->tileIndex.begin(),
 									   j = i;
-	for(; i != g_pBoard->tileIndex.end(); ++i)
+	for (; i != g_pBoard->tileIndex.end(); ++i)
 	{
 		if (_strcmpi(tile.c_str(), i->c_str()) == 0)
 		{
@@ -3761,7 +3727,7 @@ void layerput(CALL_DATA &params)
 		g_pBoard->bLayerOccupied[l] = true;
 		g_pBoard->bLayerOccupied[0] = true;			// Any layer occupied.
 	}
-	catch(...)
+	catch (...)
 	{
 		throw CError("LayerPut(): tile co-ordinates out of bounds.");
 	}
@@ -5396,7 +5362,7 @@ void initRpgCode()
 	CProgram::addFunction("getitemsellprice", getitemsellprice);
 	CProgram::addFunction("stop", end);
 	CProgram::addFunction("restorescreenarray", restorescreenarray);
-	CProgram::addFunction("restorearrayscreen", restorearrayscreen);
+	CProgram::addFunction("restorearrayscreen", restorescreenarray);
 	CProgram::addFunction("splicevariables", splicevariables);
 	CProgram::addFunction("split", split);
 	CProgram::addFunction("asc", asc);
