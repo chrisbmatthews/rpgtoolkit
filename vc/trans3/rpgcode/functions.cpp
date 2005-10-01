@@ -3769,7 +3769,7 @@ void getBoardTile(CALL_DATA &params)
 }
 
 /*
- * int getBoardTileType(int x, int y, int z, [int &ret])
+ * string getBoardTileType(int x, int y, int z[, string &ret])
  * 
  * Get the type of a tile.
  */
