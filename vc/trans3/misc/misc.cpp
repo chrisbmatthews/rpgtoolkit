@@ -20,6 +20,34 @@
 #define KEY_TRANS3 "Software\\VB and VBA Program Settings\\RPGToolkit3\\Trans3"
 
 /*
+ * Split a string.
+ */
+void split(const std::string str, const std::string delim, std::vector<std::string> &parts)
+{
+	std::string::size_type pos = std::string::npos, begin = 0;
+	while ((pos = str.find(delim, pos + 1)) != std::string::npos)
+	{
+		parts.push_back(str.substr(begin, pos - begin));
+		begin = pos + 1;
+	}
+	parts.push_back(str.substr(begin, pos - begin));
+}
+
+/*
+ * Replace text in a string.
+ */
+std::string &replace(std::string &str, const std::string find, const std::string replace)
+{
+	unsigned int pos = std::string::npos;
+	while ((pos = str.find(find)) != std::string::npos)
+	{
+		str.erase(pos, find.length());
+		str.insert(pos, replace);
+	}
+	return str;
+}
+
+/*
  * Replace within a string.
  *
  * str (in) - string in question

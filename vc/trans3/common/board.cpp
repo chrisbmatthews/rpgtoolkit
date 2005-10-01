@@ -1079,3 +1079,29 @@ void tagBoard::setSize(const int width, const int height, const int depth)
 		for (i = 0; i <= bSizeX; i++) tiletype.push_back(face);
 	}
 }
+
+/*
+ * Get the vector that contains a given tile.
+ */
+const BRD_VECTOR *tagBoard::getVectorFromTile(const int x, const int y, const int z) const
+{
+	// Convert the point to pixels. May need changing for iso boards.
+	DB_POINT pt = {x * 32 + 1, y * 32 + 1};
+
+	// Locate the vector.
+	std::vector<BRD_VECTOR>::const_iterator i = vectors.begin();
+	for (; i != vectors.end(); ++i)
+	{
+		if (i->layer == z)
+		{
+			if (i->pV->containsPoint(pt))
+			{
+				return &*i;
+			}
+		}
+	}
+
+	// Didn't find it -- point may still be valid, as normal tiles
+	// do not have vectors.
+	return NULL;
+}

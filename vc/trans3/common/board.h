@@ -88,7 +88,7 @@ typedef struct tagBoardVector
 
 	void createCanvas(BOARD &board);
 
-} BRD_VECTOR;
+} BRD_VECTOR, *LPBRD_VECTOR;
 
 // Vector indices for .dirLink member (only used in CSprite::send())
 typedef enum tagDirectionalLinks
@@ -238,10 +238,12 @@ typedef struct tagBoard
 
 	void renderBackground(CGDICanvas *cnv, RECT bounds);
 
-	bool isIsometric(void) { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
+	bool isIsometric(void) const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	// Board dimensions in pixels.
 	inline int pxWidth (void);
 	inline int pxHeight(void);
+
+	const BRD_VECTOR *getVectorFromTile(const int x, const int y, const int z) const;
 
 	tagBoard(void): coordType(TILE_NORMAL), bkgImage(NULL) { }
 	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); }

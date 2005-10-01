@@ -11,6 +11,17 @@
  * Inclusions.
  */
 #include <string>
+#include <vector>
+
+/*
+ * Split a string.
+ */
+void split(const std::string str, const std::string delim, std::vector<std::string> &parts);
+
+/*
+ * Replace text in a string.
+ */
+std::string &replace(std::string &str, const std::string find, const std::string replace);
 
 /*
  * Replace within a string.

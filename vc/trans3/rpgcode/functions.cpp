@@ -31,6 +31,7 @@
 #include "../movement/CPathFind/CPathFind.h"
 #include "../images/FreeImage.h"
 #include "../fight/fight.h"
+#include "../misc/misc.h"
 #include "CCursorMap.h"
 #include <math.h>
 #include <iostream>
@@ -1549,12 +1550,11 @@ void castInt(CALL_DATA &params)
 }
 
 /*
- * int pixelmovement([string pixelMovement [, string pixelPush]])
+ * bool pixelMovement([bool pixelMovement [, bool pixelPush]])
  * 
- * Toggles pixel movement and push() et al in pixels.
- * Returns the current state (0 for pixel, 1 for tile).
- * pixelMovement = "ON"/"OFF" or 1/0.
- * pixelPush = "ON"/"OFF" or 1/0. Ineffective for tile movement.
+ * Toggles pixel movement and push() et al. in pixels.
+ * Returns whether pixel movement is being used.
+ * pixelPush is ineffective for tile movement.
  */
 void pixelmovement(CALL_DATA &params)
 {
@@ -3746,34 +3746,25 @@ void layerput(CALL_DATA &params)
 void getBoardTile(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
-	if (params.params == 3)
-	{
-		try
-		{
-			params.ret().udt = UDT_LIT;
-			params.ret().lit = g_pBoard->tileIndex[g_pBoard->board[params[0].getNum()][params[1].getNum()][params[2].getNum()]];
-		}
-		catch (...) // Lazy solution.
-		{
-			throw CError("Out of bounds.");
-		}
-	}
-	else if (params.params == 4)
-	{
-		try
-		{
-			LPSTACK_FRAME var = params.prg->getVar(params[3].lit);
-			var->udt = UDT_LIT;
-			var->lit = g_pBoard->tileIndex[g_pBoard->board[params[0].getNum()][params[1].getNum()][params[2].getNum()]];
-		}
-		catch (...)
-		{
-			throw CError("Out of bounds.");
-		}
-	}
-	else
+
+	if ((params.params != 3) && (params.params != 4))
 	{
 		throw CError("GetBoardTile() requires three or four parameters.");
+	}
+
+	params.ret().udt = UDT_LIT;
+	try
+	{
+		params.ret().lit = g_pBoard->tileIndex[g_pBoard->board[params[0].getNum()][params[1].getNum()][params[2].getNum()]];
+	}
+	catch (...)
+	{
+		throw CError("Out of bounds.");
+	}
+
+	if (params.params == 4)
+	{
+		*params.prg->getVar(params[3].lit) = params.ret();
 	}
 }
 
@@ -3784,37 +3775,61 @@ void getBoardTile(CALL_DATA &params)
  */
 void getBoardTileType(CALL_DATA &params)
 {
-	/** TBD: vector alterations ? **/
-
 	extern LPBOARD g_pBoard;
-	if (params.params == 3)
+
+	if ((params.params != 3) && (params.params != 4))
 	{
-		try
-		{
-			params.ret().udt = UDT_NUM;
-			params.ret().num = double(g_pBoard->tiletype[params[0].getNum()][params[1].getNum()][params[2].getNum()]);
-		}
-		catch (...) // Lazy solution.
-		{
-			throw CError("Out of bounds.");
-		}
+		throw CError("GetBoardTypeType() requires three or four parameters.");
 	}
-	else if (params.params == 4)
+
+	// Get the vector that contains the tile.
+	const BRD_VECTOR *p = g_pBoard->getVectorFromTile(
+		int(params[0].getNum()),
+		int(params[1].getNum()),
+		int(params[2].getNum())
+	);
+
+	std::string type;
+	if (!p)
 	{
-		try
-		{
-			LPSTACK_FRAME var = params.prg->getVar(params[3].lit);
-			var->udt = UDT_NUM;
-			var->num = double(g_pBoard->tiletype[params[0].getNum()][params[1].getNum()][params[2].getNum()]);
-		}
-		catch (...)
-		{
-			throw CError("Out of bounds.");
-		}
+		type = "NORMAL";
 	}
 	else
 	{
-		throw CError("GetBoardTileType() requires three or four parameters.");
+		// Convert the type to a string.
+		switch (p->type)
+		{
+			case TT_NORMAL:
+			case TT_N_OVERRIDE:
+				type = "NORMAL";
+				break;
+
+			case TT_SOLID:
+				type = "SOLID";
+				break;
+
+			case TT_UNDER:
+				type = "UNDER";
+				break;
+
+			case TT_UNIDIRECTIONAL:
+				// TBD: Differentiate between NW and NE?
+				type = "NW";
+				break;
+
+			case TT_STAIRS:
+				char str[255]; itoa(p->attributes, str, 10);
+				type = std::string("STAIRS") + str;
+				break;
+		}
+	}
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = type;
+
+	if (params.params == 4)
+	{
+		*params.prg->getVar(params[3].lit) = params.ret();
 	}
 }
 
@@ -4557,13 +4572,27 @@ void len(CALL_DATA &params)
 }
 
 /*
- * instr(...)
+ * int inStr(string haystack, string needle[, int offset])
  * 
- * Description.
+ * Returns the first occurence of needle within haystack,
+ * optionally starting from an offset. Both the return
+ * value and the offset are one-based.
  */
 void instr(CALL_DATA &params)
 {
+	if ((params.params != 2) && (params.params != 3))
+	{
+		throw CError("InStr() requires two or three parameters.");
+	}
 
+	const std::string haystack = params[0].getLit();
+	unsigned int offset = (params.params == 3) ? (int(params[2].getNum()) - 1) : 0;
+	if (offset < 0) offset = 0;
+
+	const unsigned int pos = haystack.find(params[1].getLit(), offset) + 1;
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(pos);
 }
 
 /*
@@ -4693,13 +4722,39 @@ void splicevariables(CALL_DATA &params)
 }
 
 /*
- * split(...)
+ * int split(string str, string delimiter, array arr)
  * 
- * Description.
+ * Splits a string at a delimiter. Returns the number of
+ * elements in the array. This is a change from previous
+ * versions where split() returned the upper bound, but
+ * it is a change for the better that should not affect
+ * to many people.
  */
 void split(CALL_DATA &params)
 {
+	if (params.params != 3)
+	{
+		throw CError("Split() requires three parameters.");
+	}
 
+	std::vector<std::string> parts;
+	split(params[0].getLit(), params[1].getLit(), parts);
+
+	// Strip '[]' off the array name.
+	std::string array = params[2].lit;
+	replace(array, "[]", "");
+
+	std::vector<std::string>::const_iterator i = parts.begin();
+	for (unsigned int j = 0; i != parts.end(); ++i, ++j)
+	{
+		char str[255]; itoa(j, str, 10);
+		LPSTACK_FRAME var = params.prg->getVar(array + '[' + str + ']');
+		var->udt = UDT_LIT;
+		var->lit = *i;
+	}
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(parts.size());
 }
 
 /*
@@ -4943,33 +4998,76 @@ void ucase(CALL_DATA &params)
 }
 
 /*
- * apppath(...)
+ * string appPath([string &dest])
  * 
- * Description.
+ * Retrieve the path of trans3.exe, without the final backslash.
  */
 void apppath(CALL_DATA &params)
 {
+	extern HINSTANCE g_hInstance;
 
+	TCHAR path[MAX_PATH];
+	GetModuleFileName(g_hInstance, path, MAX_PATH);
+
+	// Path is fully qualified, but we want only the directory.
+	std::string strPath = path;
+	strPath = strPath.substr(0, strPath.find_last_of('\\'));
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = strPath;
+
+	if (params.params == 1)
+	{
+		*params.prg->getVar(params[0].lit) = params.ret();
+	}
 }
 
 /*
- * mid(...)
+ * string mid(string str, int start, int length[, string &dest])
  * 
- * Description.
+ * Obtain a substring. The offset is one-based.
  */
 void mid(CALL_DATA &params)
 {
+	if ((params.params != 3) && (params.params != 4))
+	{
+		throw CError("Mid() requires three or four parameters.");
+	}
 
+	unsigned int start = int(params[1].getNum()) - 1;
+	unsigned int length = int(params[2].getNum());
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = params[0].getLit().substr(start, length);
+
+	if (params.params == 4)
+	{
+		*params.prg->getVar(params[3].lit) = params.ret();
+	}
 }
 
 /*
- * replace(...)
+ * string replace(string str, string find, string replace[, string &dest])
  * 
- * Description.
+ * Replace within a string.
  */
 void replace(CALL_DATA &params)
 {
+	if ((params.params != 3) && (params.params != 4))
+	{
+		throw CError("Replace() requires three or four parameters.");
+	}
 
+	std::string str = params[0].getLit();
+	replace(str, params[1].getLit(), params[2].getLit());
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = str;
+
+	if (params.params == 4)
+	{
+		*params.prg->getVar(params[3].lit) = params.ret();
+	}
 }
 
 /*

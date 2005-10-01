@@ -93,20 +93,6 @@ void termFunc(void)
 }
 
 /*
- * Split a string.
- */
-void split(const std::string str, const std::string delim, std::vector<std::string> &parts)
-{
-	std::string::size_type pos = std::string::npos, begin = 0;
-	while ((pos = str.find(delim, pos + 1)) != std::string::npos)
-	{
-		parts.push_back(str.substr(begin, pos - begin));
-		begin = pos + 1;
-	}
-	parts.push_back(str.substr(begin, pos - begin));
-}
-
-/*
  * Set up the game.
  */
 VOID setUpGame(VOID)
@@ -524,8 +510,8 @@ INT mainEventLoop(VOID)
  */
 INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
 {
-	// #define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	#define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
+	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
 
 	set_terminate(termFunc);
 
