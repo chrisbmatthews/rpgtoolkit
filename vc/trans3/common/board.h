@@ -11,7 +11,6 @@
 struct tagBoard;
 typedef struct tagBoard BOARD, *LPBOARD;
 
-#include "../rpgcode/CProgram.h"
 #include "../movement/CVector/CVector.h"
 #include "../movement/movement.h"
 #include <string>

@@ -305,8 +305,8 @@ bool COldPlugin::load(const std::string file)
 	if (m_hModule || !g_pCallbacks) return false;
 	m_hModule = LoadLibrary(file.c_str());
 	if (!m_hModule) return false;
-	INIT_PROC pInit = INIT_PROC(GetProcAddress(m_hModule, "TKPlugInit"));
-	VERSION_PROC pVersion = VERSION_PROC(GetProcAddress(m_hModule, "TKPlugVersion"));
+	INIT_PROC pInit = INIT_PROC(GetProcAddress(m_hModule, TEXT("TKPlugInit")));
+	VERSION_PROC pVersion = VERSION_PROC(GetProcAddress(m_hModule, TEXT("TKPlugVersion")));
 	if (pInit)
 	{
 		pInit(&g_oldCallbacks[0], (!pVersion) ? 45 : g_oldCallbacks.size());
@@ -316,16 +316,16 @@ bool COldPlugin::load(const std::string file)
 		FreeLibrary(m_hModule);
 		return false;
 	}
-	m_plugBegin = BEGIN_PROC(GetProcAddress(m_hModule, "TKPlugBegin"));
-	m_plugQuery = QUERY_PROC(GetProcAddress(m_hModule, "TKPlugQuery"));
-	m_plugExecute = EXECUTE_PROC(GetProcAddress(m_hModule, "TKPlugExecute"));
-	m_plugEnd = END_PROC(GetProcAddress(m_hModule, "TKPlugEnd"));
-	m_plugType = TYPE_PROC(GetProcAddress(m_hModule, "TKPlugType"));
-	m_plugMenu = MENU_PROC(GetProcAddress(m_hModule, "TKPlugMenu"));
-	m_plugFight = FIGHT_PROC(GetProcAddress(m_hModule, "TKPlugFight"));
-	m_plugFightInform = FIGHT_INFORM_PROC(GetProcAddress(m_hModule, "TKPlugFightInform"));
-	m_plugInputRequested = INPUT_REQUESTED_PROC(GetProcAddress(m_hModule, "TKPlugInputRequested"));
-	m_plugEventInform = EVENT_INFORM_PROC(GetProcAddress(m_hModule, "TKPlugEventInform"));
+	m_plugBegin = BEGIN_PROC(GetProcAddress(m_hModule, TEXT("TKPlugBegin")));
+	m_plugQuery = QUERY_PROC(GetProcAddress(m_hModule, TEXT("TKPlugQuery")));
+	m_plugExecute = EXECUTE_PROC(GetProcAddress(m_hModule, TEXT("TKPlugExecute")));
+	m_plugEnd = END_PROC(GetProcAddress(m_hModule, TEXT("TKPlugEnd")));
+	m_plugType = TYPE_PROC(GetProcAddress(m_hModule, TEXT("TKPlugType")));
+	m_plugMenu = MENU_PROC(GetProcAddress(m_hModule, TEXT("TKPlugMenu")));
+	m_plugFight = FIGHT_PROC(GetProcAddress(m_hModule, TEXT("TKPlugFight")));
+	m_plugFightInform = FIGHT_INFORM_PROC(GetProcAddress(m_hModule, TEXT("TKPlugFightInform")));
+	m_plugInputRequested = INPUT_REQUESTED_PROC(GetProcAddress(m_hModule, TEXT("TKPlugInputRequested")));
+	m_plugEventInform = EVENT_INFORM_PROC(GetProcAddress(m_hModule, TEXT("TKPlugEventInform")));
 	return true;
 }
 

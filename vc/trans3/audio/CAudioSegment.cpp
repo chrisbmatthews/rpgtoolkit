@@ -91,7 +91,7 @@ void CAudioSegment::play(const bool repeat)
 /*
  * Stop this segment.
  */
-void CAudioSegment::stop(void)
+void CAudioSegment::stop()
 {
 	if (m_audiere)
 	{
@@ -111,7 +111,7 @@ void CAudioSegment::stop(void)
 /*
  * Initialize this audio segment.
  */
-void CAudioSegment::init(void)
+void CAudioSegment::init()
 {
 	// Set up DirectMusic.
 	CoCreateInstance(CLSID_DirectMusicPerformance, NULL, CLSCTX_INPROC, IID_IDirectMusicPerformance8, (void **)&m_pPerformance);
@@ -127,7 +127,7 @@ void CAudioSegment::init(void)
 /*
  * Initialize the DirectMusic loader.
  */
-void CAudioSegment::initLoader(void)
+void CAudioSegment::initLoader()
 {
 	if (m_pLoader) return;
 	CoCreateInstance(CLSID_DirectMusicLoader, NULL, CLSCTX_INPROC, IID_IDirectMusicLoader8, (void **)&m_pLoader);
@@ -140,7 +140,7 @@ void CAudioSegment::initLoader(void)
 /*
  * Free the DirectMusic loader.
  */
-void CAudioSegment::freeLoader(void)
+void CAudioSegment::freeLoader()
 {
 	if (!m_pLoader) return;
 	m_pLoader->Release();
@@ -150,7 +150,7 @@ void CAudioSegment::freeLoader(void)
 /*
  * Deconstructor.
  */
-CAudioSegment::~CAudioSegment(void)
+CAudioSegment::~CAudioSegment()
 {
 	stop();
 	if (m_pSegment) m_pSegment->Unload(m_pPerformance);

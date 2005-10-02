@@ -290,6 +290,11 @@
 #define MNU_EQUIP				4		// Equip menu requested
 #define MNU_ABILITIES			8		// Abilities menu requested
 
+// RPGCode data types
+/////////////////////////////////////////////////////////////////////////////
+#define PLUG_DT_NUM				0		// Numerical data
+#define PLUG_DT_LIT				1		// Literal data
+
 /////////////////////////////////////////////////////////////////////////////
 // CCallbacks
 class ATL_NO_VTABLE CCallbacks : 
@@ -432,17 +437,17 @@ public:
 	STDMETHOD(CBGetFighterName) (int partyIdx, int fighterIdx, BSTR *pRet);
 	STDMETHOD(CBGetFighterAnimation) (int partyIdx, int fighterIdx, BSTR animationName, BSTR *pRet);
 	STDMETHOD(CBGetFighterChargePercent) (int partyIdx, int fighterIdx, int *pRet);
-	STDMETHOD(CBFightTick) (void);
+	STDMETHOD(CBFightTick) ();
 	STDMETHOD(CBDrawTextAbsolute) (BSTR text, BSTR font, int size, int x, int y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int *pRet);
 	STDMETHOD(CBReleaseFighterCharge) (int partyIdx, int fighterIdx);
 	STDMETHOD(CBFightDoAttack) (int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, int amount, int toSMP, int *pRet);
 	STDMETHOD(CBFightUseItem) (int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, BSTR itemFile);
 	STDMETHOD(CBFightUseSpecialMove) (int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, BSTR moveFile);
-	STDMETHOD(CBDoEvents) (void);
+	STDMETHOD(CBDoEvents) ();
 	STDMETHOD(CBFighterAddStatusEffect) (int partyIdx, int fightIdx, BSTR statusFile);
 	STDMETHOD(CBFighterRemoveStatusEffect) (int partyIdx, int fightIdx, BSTR statusFile);
-	STDMETHOD(CBCheckMusic) (void);
-	STDMETHOD(CBReleaseScreenDC) (void);
+	STDMETHOD(CBCheckMusic) ();
+	STDMETHOD(CBReleaseScreenDC) ();
 	STDMETHOD(CBCanvasOpenHdc) (int cnv, int *pRet);
 	STDMETHOD(CBCanvasCloseHdc) (int cnv, int hdc);
 	STDMETHOD(CBFileExists) (BSTR strFile, short *pRet);

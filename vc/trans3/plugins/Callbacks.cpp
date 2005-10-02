@@ -32,6 +32,7 @@
 #include "../images/FreeImage.h"
 #include "../fight/fight.h"
 #include "../plugins/plugins.h"
+#include "../audio/CAudioSegment.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
 #include <map>
@@ -327,6 +328,8 @@ STDMETHODIMP CCallbacks::CBSetPlayerString(int infoCode, int arrayPos, BSTR newV
 
 STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int playerSlot, BSTR *pRet)
 {
+	extern CInventory g_inv;
+
 	BSTR bstr = NULL;
 	switch (infoCode)
 	{
@@ -344,15 +347,18 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 		case GEN_PLYROTHERFILES:
 			break;
 		case GEN_INVENTORY_FILES:
+			bstr = getString(g_inv.getFileAt(arrayPos));
 			break;
 		case GEN_INVENTORY_HANDLES:
+			bstr = getString(g_inv.getHandleAt(arrayPos));
 			break;
 		case GEN_EQUIP_FILES:
 			break;
 		case GEN_EQUIP_HANDLES:
 			break;
 		case GEN_MUSICPLAYING:
-			// No way to get it, Colin.
+			extern CAudioSegment *g_bkgMusic;
+			bstr = getString(g_bkgMusic->getPlayingFile());
 			break;
 		case GEN_CURRENTBOARD:
 			extern LPBOARD g_pBoard;
@@ -405,7 +411,8 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 	switch (infoCode)
 	{
 		case GEN_INVENTORY_NUM:
-			// TBD!
+			extern CInventory g_inv;
+			*pRet = g_inv.getQuantityAt(arrayPos);
 			break;
 		case GEN_EQUIP_HPADD:
 			// TBD!
@@ -470,7 +477,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			*pRet = g_stepsTaken;
 			break;
 		case GEN_ENE_RUN:
-			// TBD!
+			*pRet = int(canRunFromFight());
 			break;
 		case GEN_TRANSPARENTCOLOR:
 			*pRet = TRANSP_COLOR;
@@ -505,11 +512,24 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 
 STDMETHODIMP CCallbacks::CBGetCommandName(BSTR rpgcodeCommand, BSTR *pRet)
 {
+	std::string str = getString(rpgcodeCommand);
+	str = str.substr(0, str.find_first_of('('));
+	char *const pstr = _strlwr(_strdup(str.c_str()));
+	BSTR bstr = getString(pstr);
+	SysReAllocString(pRet, bstr);
+	SysFreeString(bstr);
+	free(pstr);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetBrackets(BSTR rpgcodeCommand, BSTR *pRet)
 {
+	std::string str = getString(rpgcodeCommand);
+	str = str.substr(str.find_first_of('(') + 1);
+	str = str.substr(0, str.find_last_of(')'));
+	BSTR bstr = getString(str);
+	SysReAllocString(pRet, bstr);
+	SysFreeString(bstr);
 	return S_OK;
 }
 
@@ -525,20 +545,22 @@ STDMETHODIMP CCallbacks::CBGetBracketElement(BSTR rpgcodeCommand, int elemNum, B
 
 STDMETHODIMP CCallbacks::CBGetStringElementValue(BSTR rpgcodeCommand, BSTR *pRet)
 {
+	const std::string str = getString(rpgcodeCommand);
+	BSTR bstr = getString(str.substr(1, str.length() - 2));
+	SysReAllocString(pRet, bstr);
+	SysFreeString(bstr);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetNumElementValue(BSTR rpgcodeCommand, double *pRet)
 {
+	*pRet = atof(getString(rpgcodeCommand).c_str());
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetElementType(BSTR data, int *pRet)
 {
-	/**const CVariant::DATA_TYPE dt = CProgram::getCurrentProgram()->constructVariant(getString(data)).getType();
-	if (dt == CVariant::DT_NUM) *pRet = PLUG_DT_NUM;
-	else if (dt == CVariant::DT_LIT) *pRet = PLUG_DT_LIT;
-	else *pRet = PLUG_DT_VOID; // No object support for plugins.**/
+	*pRet = ((getString(data)[0] == '"') ? PLUG_DT_LIT : PLUG_DT_NUM);
 	return S_OK;
 }
 
@@ -1591,7 +1613,7 @@ STDMETHODIMP CCallbacks::CBGetFighterChargePercent(int partyIdx, int fighterIdx,
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBFightTick(void)
+STDMETHODIMP CCallbacks::CBFightTick()
 {
 	fightTick();
 	return S_OK;
@@ -1682,9 +1704,9 @@ STDMETHODIMP CCallbacks::CBFightUseSpecialMove(int sourcePartyIdx, int sourceFig
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBDoEvents(void)
+STDMETHODIMP CCallbacks::CBDoEvents()
 {
-	extern void processEvent(void);
+	extern void processEvent();
 	processEvent();
 	return S_OK;
 }
@@ -1744,13 +1766,13 @@ STDMETHODIMP CCallbacks::CBFighterRemoveStatusEffect(int partyIdx, int fightIdx,
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCheckMusic(void)
+STDMETHODIMP CCallbacks::CBCheckMusic()
 {
 	// Obsolete. Do nothing.
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBReleaseScreenDC(void)
+STDMETHODIMP CCallbacks::CBReleaseScreenDC()
 {
 	extern HWND g_hHostWnd;
 	ReleaseDC(g_hHostWnd, g_hScreenDc);

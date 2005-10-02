@@ -2016,39 +2016,117 @@ void onboard(CALL_DATA &params)
 }
 
 /*
- * void createitem(string filename, int &pos)
+ * int createItem(string filename[, int &pos])
  * 
- * Load an item into board item slot 'pos'.
+ * Load an item and return the slot into which it was loaded.
  */
 void createitem(CALL_DATA &params)
 {
-	/** TBD: return the inserted slot number! **/
+	/*
+	 * In the beginning, CreateItem() loaded the item into
+	 * the first available position and then returned the
+	 * number of that position so that the user could use it.
+	 *
+	 * Because of poor documentation, people sometimes passed
+	 * numbers into the second parameter, and then used only
+	 * numbers to refer to the item. This generally worked because
+	 * the coder would pick the first free number (thinking it
+	 * would be loaded into it) and the interpreter would report
+	 * no error when it failed to set the variable (which was
+	 * not a variable but a number).
+	 *
+	 * In 3.0.4, I rewrote CreateItem() without a full understanding
+	 * of its history and made it actually load the item into
+	 * the slot that was passed in. This enabled code that had
+	 * passed in numbers to continue to work but effectively
+	 * broke code that was passing in a variable to be set.
+	 *
+	 * Thus, to preserve backwards compatibility with both systems,
+	 * and provide predictable behaviour, 3.0.7 must support both
+	 * methods in a way that does not break any code. The solution
+	 * is to check whether a var has been passed for the second
+	 * parameter, if a second parameter has been given. If the
+	 * parameter is a var, it is safe to set its value to the
+	 * first open slot and load the item into the first slot.
+	 *
+	 * There are two scenarios: either the user intended for that
+	 * var to be set (historical code); or the variable contains
+	 * the position that the user intends for the item to be loaded
+	 * into. In the second case, it is highly likely that the
+	 * user will proceed to use that var, rather than the constant
+	 * number, to refer to the position; it is also unlikely that
+	 * the user intends to overwrite an existing item in that spot.
+	 * If, however, the user is attempting to do one of those two
+	 * things, his code will break -- but it is a negligible worry.
+	 *
+	 * If the second parameter is a constant, we will simply load
+	 * the item into that spot, as that is the only predictable action.
+	 *
+	 * Though this system is not fool proof, it shall suffice.
+	 *
+	 * --Colin
+	 */
 
 	extern std::string g_projectPath;
 	extern LPBOARD g_pBoard;
 
-	if (params.params != 2)
+	if ((params.params != 1) && (params.params != 2))
 	{
-		throw CError("CreateItem() requires two parameters.");
+		throw CError("CreateItem() requires one or two parameters.");
 	}
 
-	int i = params[1].getNum();
 	CItem *p = NULL;
 	try
 	{
 		p = new CItem(g_projectPath + ITM_PATH + params[0].getLit(), false);
 	}
-	catch (CInvalidItem) { }
+	catch (CInvalidItem) { return; }
 
-	// Is the board item array large enough?
-	while (g_pBoard->items.size() <= i)
+	// If two parameters were provided and the second parameter is
+	// a cosntant, load the item into that position.
+	if ((params.params == 2) && !(params[1].udt & UDT_ID))
 	{
-		g_pBoard->items.push_back(NULL);
+		const int i = params[1].getNum();
+
+		// Is the board item array large enough?
+		while (g_pBoard->items.size() <= i)
+		{
+			g_pBoard->items.push_back(NULL);
+		}
+
+		// Erase the item at this position.
+		delete g_pBoard->items[i];
+		g_pBoard->items[i] = p;
+
+		return;
 	}
 
-	// Erase the item at this position.
-	delete g_pBoard->items[i];
-	g_pBoard->items[i] = p;
+	// Search for an open spot.
+	std::vector<CItem *>::iterator i = g_pBoard->items.begin();
+	for (; i != g_pBoard->items.end(); ++i)
+	{
+		if (*i == NULL)
+		{
+			// Insert the item here.
+			*i = p;
+			break;
+		}
+	}
+
+	if (i == g_pBoard->items.end())
+	{
+		// Create a new spot for the item.
+		g_pBoard->items.push_back(p);
+		i = g_pBoard->items.end() - 1; // Not redundant.
+	}
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(i - g_pBoard->items.begin());
+
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*

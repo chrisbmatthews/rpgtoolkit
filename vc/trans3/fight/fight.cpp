@@ -18,6 +18,15 @@
 
 IPlugin *g_pFightPlugin = NULL;			// The fight plugin.
 std::vector<VECTOR_FIGHTER> g_parties;	// Parties.
+static bool g_bCanRun = false;			// Can we run away from this fight?
+
+/*
+ * Can we run away from this fight?
+ */
+bool canRunFromFight()
+{
+	return g_bCanRun;
+}
 
 /*
  * Get a fighter.
@@ -271,7 +280,7 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 	VECTOR_FIGHTER &rEnemies = g_parties.back();
 
 	std::string runPrg, rewardPrg;
-	bool bCanRun = true;
+	g_bCanRun = true;
 
 	extern std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 
@@ -289,7 +298,7 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 		}
 		if (fighter.pEnemy->run == 0)
 		{
-			bCanRun = false;
+			g_bCanRun = false;
 		}
 		if (!fighter.pEnemy->winPrg.empty())
 		{
@@ -332,7 +341,7 @@ void runFight(const std::vector<std::string> enemies, const std::string backgrou
 	g_bkgMusic->open(bkg.bkgMusic);
 	g_bkgMusic->play(true);
 
-	const int outcome = g_pFightPlugin->fight(enemies.size(), -1, background, bCanRun);
+	const int outcome = g_pFightPlugin->fight(enemies.size(), -1, background, g_bCanRun);
 	if (outcome == FIGHT_RUN_AUTO)
 	{
 		CProgram(g_projectPath + PRG_PATH + runPrg).run();

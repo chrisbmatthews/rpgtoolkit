@@ -11,6 +11,7 @@
 #include "input.h"
 #include "../common/sprite.h"
 #include "../common/board.h"
+#include "../plugins/plugins.h"
 #include "../movement/CSprite/CSprite.h"
 
 /*

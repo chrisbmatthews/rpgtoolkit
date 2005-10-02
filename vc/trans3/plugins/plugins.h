@@ -25,8 +25,9 @@ void initPluginSystem(void);
 void freePluginSystem(void);
 
 // Any plugin.
-interface IPlugin
+class IPlugin
 {
+public:
 	virtual void initialize(void) = 0;
 	virtual void terminate(void) = 0;
 	virtual bool query(const std::string function) = 0;

@@ -69,6 +69,9 @@ typedef struct tagPluginEnemy
 // A party.
 typedef std::vector<FIGHTER> VECTOR_FIGHTER;
 
+// Can we run away?
+bool canRunFromFight();
+
 // Run a fight.
 void runFight(const std::vector<std::string> enemies, const std::string background);
 

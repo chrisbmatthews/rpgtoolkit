@@ -17,19 +17,21 @@ typedef DWORD *DWORD_PTR;
 class CAudioSegment
 {
 public:
-	static void initLoader(void);
-	static void freeLoader(void);
-	CAudioSegment(void) { init(); }
+	static void initLoader();
+	static void freeLoader();
+	CAudioSegment() { init(); }
 	CAudioSegment(const std::string file);
-	~CAudioSegment(void);
+	~CAudioSegment();
 	bool open(const std::string file);
 	void play(const bool repeat);
-	void stop(void);
+	void stop();
+
+	std::string getPlayingFile() const { return m_file; }
 
 private:
 	CAudioSegment(const CAudioSegment &rhs);			// No implementation.
 	CAudioSegment &operator=(const CAudioSegment &rhs); // No implementation.
-	void init(void);
+	void init();
 
 	static IDirectMusicLoader8 *m_pLoader;
 	IDirectMusicPerformance8 *m_pPerformance;

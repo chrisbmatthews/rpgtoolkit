@@ -18,7 +18,6 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "../plugins/plugins.h"
 
 // Data types.
 typedef enum tagUnitDataType
@@ -171,6 +170,9 @@ typedef struct tagClass
 typedef std::deque<MACHINE_UNIT> MACHINE_UNITS, *LPMACHINE_UNITS;
 typedef MACHINE_UNITS::const_iterator CONST_POS;
 typedef MACHINE_UNITS::iterator POS;
+
+// A plugin.
+class IPlugin;
 
 // A program.
 class CProgram

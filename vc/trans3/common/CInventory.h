@@ -53,11 +53,42 @@ public:
 		}
 		return true;
 	}
-	void clear(void)
+	void clear()
 	{
 		m_data.clear();
 	}
+
+	std::string getFileAt(const int i)
+	{
+		if (m_data.size() > i)
+		{
+			return at(i)->first;
+		}
+		return "";
+	}
+	std::string getHandleAt(const int i)
+	{
+		if (m_data.size() > i)
+		{
+			return at(i)->second.first;
+		}
+		return "";
+	}
+	unsigned int getQuantityAt(const int i)
+	{
+		if (m_data.size() > i)
+		{
+			return at(i)->second.second;
+		}
+		return 0;
+	}
 private:
+	std::map<std::string, DATA_PAIR>::iterator at(const int j)
+	{
+		std::map<std::string, DATA_PAIR>::iterator i = m_data.begin();
+		for (int k = 0; k < j; ++k, ++i);
+		return i;
+	}
 	std::map<std::string, DATA_PAIR> m_data;
 };
 

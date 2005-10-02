@@ -14,6 +14,7 @@
 #include "CFile.h"
 #include "mbox.h"
 #include "../movement/locate.h"
+#include "../rpgcode/CProgram.h"
 #include <malloc.h>
 
 // Struct to temporarily hold locations for old items, programs.
