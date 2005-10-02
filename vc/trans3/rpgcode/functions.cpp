@@ -4728,7 +4728,7 @@ void splicevariables(CALL_DATA &params)
  * elements in the array. This is a change from previous
  * versions where split() returned the upper bound, but
  * it is a change for the better that should not affect
- * to many people.
+ * too many people.
  */
 void split(CALL_DATA &params)
 {

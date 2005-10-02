@@ -136,6 +136,13 @@ void scanKeys(void)
 		return;
 	}
 
+	if (SCAN_KEY_DOWN(RETURN))
+	{
+		extern IPlugin *g_pMenuPlugin;
+		g_pMenuPlugin->menu(1);
+		return;
+	}
+
 	if (SCAN_KEY_DOWN(RIGHT) && SCAN_KEY_DOWN(UP))
 	{
 		queue = MV_NE;			// Northeast.
