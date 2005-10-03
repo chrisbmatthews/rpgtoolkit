@@ -9,6 +9,7 @@
 #include "../common/paths.h"
 #include "../common/mainfile.h"
 #include "../common/board.h"
+#include "../common/mbox.h"
 #include "../common/CAllocationHeap.h"
 #include "../plugins/plugins.h"
 #include "../audio/CAudioSegment.h"
@@ -214,7 +215,7 @@ void skillFight(const int skill, const std::string bkg)
 		{
 			char num[255];
 			itoa(skill, num, 10);
-			MessageBox(NULL, (std::string("No enemies of skill level ") + num + " found.").c_str(), NULL, 0);
+			messageBox(std::string("No enemies of skill level ") + num + " found.");
 			return;
 		}
 		enemies.push_back(enemy);

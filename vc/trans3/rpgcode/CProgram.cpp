@@ -1691,4 +1691,5 @@ void CProgram::initialize()
 	addFunction("until", untilLoop);
 	addFunction("for", forLoop);
 	addFunction("return", returnVal);
+	addFunction("returnmethod", returnVal); // For backwards compatibility.
 }

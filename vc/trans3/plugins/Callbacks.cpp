@@ -43,7 +43,7 @@ extern std::vector<CPlayer *> g_players;
 static CAllocationHeap<ANIMATION> g_animations;
 static HDC g_hScreenDc = NULL;
 std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
-std::string g_fightMenuGraphic;
+std::string g_menuGraphic, g_fightMenuGraphic;
 
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
@@ -365,6 +365,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			bstr = getString(g_pBoard->strFilename);
 			break;
 		case GEN_MENUGRAPHIC:
+			bstr = getString(g_menuGraphic);
 			break;
 		case GEN_FIGHTMENUGRAPHIC:
 			bstr = getString(g_fightMenuGraphic);
@@ -408,6 +409,9 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 
 STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerSlot, int *pRet)
 {
+	extern CSprite *g_pSelectedPlayer;
+	extern std::vector<CPlayer *> g_players;
+
 	switch (infoCode)
 	{
 		case GEN_INVENTORY_NUM:
@@ -433,8 +437,14 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			// No way to get it, Jon.
 			break;
 		case GEN_CURLAYER:
-			// No way to get it, Jon.
-			break;
+		{
+			std::vector<CPlayer *>::const_iterator i = g_players.begin();
+			for (; i != g_players.end(); ++i)
+			{
+				if (*i == g_pSelectedPlayer) break;
+			}
+			*pRet = i - g_players.begin();
+		} break;
 		case GEN_CURRENT_PLYR:
 			extern int g_selectedPlayer;
 			*pRet = g_selectedPlayer;

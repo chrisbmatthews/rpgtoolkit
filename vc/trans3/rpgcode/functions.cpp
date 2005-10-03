@@ -3108,13 +3108,19 @@ void ai(CALL_DATA &params)
 }
 
 /*
- * menugraphic(...)
+ * void menuGraphic(string image)
  * 
- * Description.
+ * Choose an image for the menu.
  */
 void menugraphic(CALL_DATA &params)
 {
+	extern std::string g_menuGraphic;
 
+	if (params.params != 1)
+	{
+		throw CError("MenuGraphic() requires one parameter.");
+	}
+	g_menuGraphic = params[0].getLit();
 }
 
 /*
@@ -3124,15 +3130,13 @@ void menugraphic(CALL_DATA &params)
  */
 void fightMenuGraphic(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		extern std::string g_fightMenuGraphic;
-		g_fightMenuGraphic = params[0].getLit();
-	}
-	else
+	extern std::string g_fightMenuGraphic;
+
+	if (params.params != 1)
 	{
 		throw CError("FightMenuGraphic() requires one parameter.");
 	}
+	g_fightMenuGraphic = params[0].getLit();
 }
 
 /*
