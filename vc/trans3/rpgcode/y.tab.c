@@ -800,7 +800,7 @@ static short   *yyss;
 static short   *yysslim;
 static YYSTYPE *yyvs;
 static int      yystacksize;
-#line 619 "yacc.txt"
+#line 620 "yacc.txt"
 
 #include "lex.yy.c"
 LPMACHINE_UNITS g_yyOldUnits = NULL;
@@ -1018,16 +1018,17 @@ case 8:
 			{
 				MACHINE_UNIT &name = *(CProgram::m_pyyUnits->end() - 2);
 				name.udt = UNIT_DATA_TYPE(name.udt | UDT_OBJ);
-			}
+				/*CProgram::debugger(name.lit);*/
+			} /**else { CProgram::debugger(CProgram::getFunctionName(CProgram::m_pyyUnits->back().func)); }**/
 			++CProgram::m_pyyUnits->back().params;
 		}
 break;
 case 9:
-#line 139 "yacc.txt"
+#line 140 "yacc.txt"
 { _MACHINE_UNIT(operators::member, 2); }
 break;
 case 15:
-#line 152 "yacc.txt"
+#line 153 "yacc.txt"
 {
 			MACHINE_UNIT mu;
 			mu.num = yyvsp[0].getNum();
@@ -1036,7 +1037,7 @@ case 15:
 		}
 break;
 case 16:
-#line 159 "yacc.txt"
+#line 160 "yacc.txt"
 {
 			MACHINE_UNIT mu;
 			mu.lit = yyvsp[0].getLit().substr(1, yyvsp[0].getLit().length() - 2);
@@ -1045,27 +1046,27 @@ case 16:
 		}
 break;
 case 17:
-#line 169 "yacc.txt"
+#line 170 "yacc.txt"
 { _FOUND_PARAM; }
 break;
 case 18:
-#line 171 "yacc.txt"
+#line 172 "yacc.txt"
 { _FOUND_PARAM; }
 break;
 case 19:
-#line 173 "yacc.txt"
+#line 174 "yacc.txt"
 { }
 break;
 case 21:
-#line 179 "yacc.txt"
+#line 180 "yacc.txt"
 { CProgram::m_inclusions.push_back(yyvsp[-2].getLit() + ".prg"); yyval = yyvsp[0]; }
 break;
 case 22:
-#line 184 "yacc.txt"
+#line 185 "yacc.txt"
 { CProgram::m_params.push_back(0); }
 break;
 case 23:
-#line 186 "yacc.txt"
+#line 187 "yacc.txt"
 {
 			MACHINE_FUNC pFunc = NULL;
 			if (CProgram::m_functions.count(yyvsp[-4].getLit()))
@@ -1086,159 +1087,159 @@ case 23:
 		}
 break;
 case 59:
-#line 246 "yacc.txt"
+#line 247 "yacc.txt"
 { _MACHINE_UNIT(operators::prefixIncrement, 1); }
 break;
 case 60:
-#line 248 "yacc.txt"
+#line 249 "yacc.txt"
 { _MACHINE_UNIT(operators::postfixIncrement, 1); }
 break;
 case 61:
-#line 250 "yacc.txt"
+#line 251 "yacc.txt"
 { _MACHINE_UNIT(operators::prefixDecrement, 1); }
 break;
 case 62:
-#line 252 "yacc.txt"
+#line 253 "yacc.txt"
 { _MACHINE_UNIT(operators::postfixDecrement, 1); }
 break;
 case 63:
-#line 254 "yacc.txt"
+#line 255 "yacc.txt"
 { _MACHINE_UNIT(operators::unaryNegation, 1); }
 break;
 case 64:
-#line 256 "yacc.txt"
+#line 257 "yacc.txt"
 { _MACHINE_UNIT(operators::lnot, 1); }
 break;
 case 65:
-#line 258 "yacc.txt"
+#line 259 "yacc.txt"
 { _MACHINE_UNIT(operators::xor_assign, 2); }
 break;
 case 66:
-#line 260 "yacc.txt"
+#line 261 "yacc.txt"
 { _MACHINE_UNIT(operators::or_assign, 2); }
 break;
 case 67:
-#line 262 "yacc.txt"
+#line 263 "yacc.txt"
 { _MACHINE_UNIT(operators::and_assign, 2); }
 break;
 case 68:
-#line 264 "yacc.txt"
+#line 265 "yacc.txt"
 { _MACHINE_UNIT(operators::rs_assign, 2); }
 break;
 case 69:
-#line 266 "yacc.txt"
+#line 267 "yacc.txt"
 { _MACHINE_UNIT(operators::ls_assign, 2); }
 break;
 case 70:
-#line 268 "yacc.txt"
+#line 269 "yacc.txt"
 { _MACHINE_UNIT(operators::sub_assign, 2); }
 break;
 case 71:
-#line 270 "yacc.txt"
+#line 271 "yacc.txt"
 { _MACHINE_UNIT(operators::add_assign, 2); }
 break;
 case 72:
-#line 272 "yacc.txt"
+#line 273 "yacc.txt"
 { _MACHINE_UNIT(operators::mod_assign, 2); }
 break;
 case 73:
-#line 274 "yacc.txt"
+#line 275 "yacc.txt"
 { _MACHINE_UNIT(operators::div_assign, 2); }
 break;
 case 74:
-#line 276 "yacc.txt"
+#line 277 "yacc.txt"
 { _MACHINE_UNIT(operators::mul_assign, 2); }
 break;
 case 75:
-#line 278 "yacc.txt"
+#line 279 "yacc.txt"
 { _MACHINE_UNIT(operators::pow_assign, 2); }
 break;
 case 76:
-#line 280 "yacc.txt"
+#line 281 "yacc.txt"
 { _MACHINE_UNIT(operators::assign, 2); }
 break;
 case 77:
-#line 282 "yacc.txt"
+#line 283 "yacc.txt"
 { _MACHINE_UNIT(operators::lor, 2); }
 break;
 case 78:
-#line 284 "yacc.txt"
+#line 285 "yacc.txt"
 { _MACHINE_UNIT(operators::land, 2); }
 break;
 case 79:
-#line 286 "yacc.txt"
+#line 287 "yacc.txt"
 { _MACHINE_UNIT(operators::bor, 2); }
 break;
 case 80:
-#line 288 "yacc.txt"
+#line 289 "yacc.txt"
 { _MACHINE_UNIT(operators::bxor, 2); }
 break;
 case 81:
-#line 290 "yacc.txt"
+#line 291 "yacc.txt"
 { _MACHINE_UNIT(operators::band, 2); }
 break;
 case 82:
-#line 292 "yacc.txt"
+#line 293 "yacc.txt"
 { _MACHINE_UNIT(operators::ieq, 2); }
 break;
 case 83:
-#line 294 "yacc.txt"
+#line 295 "yacc.txt"
 { _MACHINE_UNIT(operators::eq, 2); }
 break;
 case 84:
-#line 296 "yacc.txt"
+#line 297 "yacc.txt"
 { _MACHINE_UNIT(operators::gte, 2); }
 break;
 case 85:
-#line 298 "yacc.txt"
+#line 299 "yacc.txt"
 { _MACHINE_UNIT(operators::lte, 2); }
 break;
 case 86:
-#line 300 "yacc.txt"
+#line 301 "yacc.txt"
 { _MACHINE_UNIT(operators::gt, 2); }
 break;
 case 87:
-#line 302 "yacc.txt"
+#line 303 "yacc.txt"
 { _MACHINE_UNIT(operators::lt, 2); }
 break;
 case 88:
-#line 304 "yacc.txt"
+#line 305 "yacc.txt"
 { _MACHINE_UNIT(operators::rs, 2); }
 break;
 case 89:
-#line 306 "yacc.txt"
+#line 307 "yacc.txt"
 { _MACHINE_UNIT(operators::ls, 2); }
 break;
 case 90:
-#line 308 "yacc.txt"
+#line 309 "yacc.txt"
 { _MACHINE_UNIT(operators::sub, 2); }
 break;
 case 91:
-#line 310 "yacc.txt"
+#line 311 "yacc.txt"
 { _MACHINE_UNIT(operators::add, 2); }
 break;
 case 92:
-#line 312 "yacc.txt"
+#line 313 "yacc.txt"
 { _MACHINE_UNIT(operators::mod, 2); }
 break;
 case 93:
-#line 314 "yacc.txt"
+#line 315 "yacc.txt"
 { _MACHINE_UNIT(operators::div, 2); }
 break;
 case 94:
-#line 316 "yacc.txt"
+#line 317 "yacc.txt"
 { _MACHINE_UNIT(operators::mul, 2); }
 break;
 case 95:
-#line 318 "yacc.txt"
+#line 319 "yacc.txt"
 { _MACHINE_UNIT(operators::pow, 2); }
 break;
 case 96:
-#line 320 "yacc.txt"
+#line 321 "yacc.txt"
 { _MACHINE_UNIT(operators::tertiary, 3); }
 break;
 case 98:
-#line 326 "yacc.txt"
+#line 327 "yacc.txt"
 {
 			_END_LINE;
 			MACHINE_UNIT mu;
@@ -1247,7 +1248,7 @@ case 98:
 		}
 break;
 case 99:
-#line 333 "yacc.txt"
+#line 334 "yacc.txt"
 {
 			_END_LINE;
 			MACHINE_UNIT mu;
@@ -1301,7 +1302,7 @@ case 99:
 		}
 break;
 case 102:
-#line 393 "yacc.txt"
+#line 394 "yacc.txt"
 {
 			_END_LINE;
 			if (CProgram::m_pyyUnits->size() > 1)
@@ -1316,27 +1317,27 @@ case 102:
 		}
 break;
 case 104:
-#line 413 "yacc.txt"
+#line 414 "yacc.txt"
 { g_methods.back()[yyvsp[-2].getLit()] = g_methods.back().size(); }
 break;
 case 105:
-#line 415 "yacc.txt"
+#line 416 "yacc.txt"
 { g_methods.back()[yyvsp[0].getLit()] = g_methods.back().size(); }
 break;
 case 106:
-#line 417 "yacc.txt"
+#line 418 "yacc.txt"
 { }
 break;
 case 108:
-#line 423 "yacc.txt"
+#line 424 "yacc.txt"
 { yyval = yyvsp[-3].getLit() + "::" + yyvsp[0].getLit(); }
 break;
 case 110:
-#line 429 "yacc.txt"
+#line 430 "yacc.txt"
 { g_methods.push_back(std::map<std::string, int>()); }
 break;
 case 111:
-#line 431 "yacc.txt"
+#line 432 "yacc.txt"
 {
 			const std::string name = (g_pClass ? (g_pClass->first + "::") : "") + yyvsp[-3].getLit();
 			if (NAMED_METHOD::locate(name, g_methods.back().size(), false))
@@ -1389,11 +1390,11 @@ case 111:
 		}
 break;
 case 114:
-#line 487 "yacc.txt"
+#line 488 "yacc.txt"
 { }
 break;
 case 116:
-#line 493 "yacc.txt"
+#line 494 "yacc.txt"
 {
 			MACHINE_UNIT mu;
 			mu.udt = UDT_NUM;
@@ -1402,11 +1403,11 @@ case 116:
 		}
 break;
 case 117:
-#line 503 "yacc.txt"
+#line 504 "yacc.txt"
 { _END_LINE; }
 break;
 case 118:
-#line 505 "yacc.txt"
+#line 506 "yacc.txt"
 {
 			g_yyOldUnits = CProgram::m_pyyUnits;
 			CProgram::m_yyFors.push_back(MACHINE_UNITS());
@@ -1414,7 +1415,7 @@ case 118:
 		}
 break;
 case 119:
-#line 511 "yacc.txt"
+#line 512 "yacc.txt"
 {
 			_END_LINE;
 			CProgram::m_pyyUnits = g_yyOldUnits;
@@ -1422,27 +1423,27 @@ case 119:
 		}
 break;
 case 121:
-#line 521 "yacc.txt"
+#line 522 "yacc.txt"
 { _MACHINE_UNIT(CProgram::returnVal, 1); }
 break;
 case 122:
-#line 526 "yacc.txt"
+#line 527 "yacc.txt"
 { g_pClass->second.inherits.push_back(yyvsp[0].getLit()); }
 break;
 case 126:
-#line 537 "yacc.txt"
+#line 538 "yacc.txt"
 { }
 break;
 case 127:
-#line 542 "yacc.txt"
+#line 543 "yacc.txt"
 { g_vis = CV_PRIVATE; }
 break;
 case 128:
-#line 544 "yacc.txt"
+#line 545 "yacc.txt"
 { g_vis = CV_PUBLIC; }
 break;
 case 129:
-#line 549 "yacc.txt"
+#line 550 "yacc.txt"
 {
 			g_pClass = &*CProgram::m_pClasses->insert(std::map<std::string, tagClass>::value_type(yyvsp[0].getLit(), tagClass())).first;
 			_MACHINE_UNIT(CProgram::skipClass, 0);
@@ -1450,7 +1451,7 @@ case 129:
 		}
 break;
 case 131:
-#line 559 "yacc.txt"
+#line 560 "yacc.txt"
 {
 			if (g_pClass)
 			{
@@ -1459,15 +1460,15 @@ case 131:
 		}
 break;
 case 135:
-#line 578 "yacc.txt"
+#line 579 "yacc.txt"
 { CProgram::m_inclusions.push_back(yyvsp[0].getLit().substr(1, yyvsp[0].getLit().length() - 2)); }
 break;
 case 136:
-#line 580 "yacc.txt"
+#line 581 "yacc.txt"
 { CProgram::m_inclusions.push_back(yyvsp[-1].getLit().substr(1, yyvsp[-1].getLit().length() - 2)); }
 break;
 case 141:
-#line 589 "yacc.txt"
+#line 590 "yacc.txt"
 {
 			MACHINE_UNIT mu;
 			mu.udt = UNIT_DATA_TYPE(UDT_ID | UDT_NUM);
@@ -1476,7 +1477,7 @@ case 141:
 		}
 break;
 case 142:
-#line 596 "yacc.txt"
+#line 597 "yacc.txt"
 {
 			MACHINE_UNIT mu;
 			mu.udt = UNIT_DATA_TYPE(UDT_ID | UDT_NUM);
@@ -1484,7 +1485,7 @@ case 142:
 			CProgram::m_pyyUnits->push_back(mu);
 		}
 break;
-#line 1488 "y.tab.c"
+#line 1489 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;

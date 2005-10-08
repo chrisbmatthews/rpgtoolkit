@@ -11,6 +11,7 @@
 /*
  * Inclusions.
  */
+#include "../stdafx.h"
 #include "CProgram.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkGfx/CTile.h"
@@ -32,10 +33,12 @@
 #include "../images/FreeImage.h"
 #include "../fight/fight.h"
 #include "../misc/misc.h"
+#include "../plugins/plugins.h"
 #include "CCursorMap.h"
 #include <math.h>
 #include <iostream>
 #include <shellapi.h>
+#include <objbase.h>
 
 /*
  * Globals.
@@ -1196,7 +1199,11 @@ void takeItem(CALL_DATA &params)
  */
 void wav(CALL_DATA &params)
 {
-
+	if (params.params != 1)
+	{
+		throw CError("Wav() requires one parameter.");
+	}
+	CAudioSegment::playSoundEffect(params[0].getLit());
 }
 
 /*
@@ -4807,10 +4814,8 @@ void splicevariables(CALL_DATA &params)
  * int split(string str, string delimiter, array arr)
  * 
  * Splits a string at a delimiter. Returns the number of
- * elements in the array. This is a change from previous
- * versions where split() returned the upper bound, but
- * it is a change for the better that should not affect
- * too many people.
+ * upper bound of the array (i.e. the index of the last
+ * set element).
  */
 void split(CALL_DATA &params)
 {
@@ -4826,6 +4831,17 @@ void split(CALL_DATA &params)
 	std::string array = params[2].lit;
 	replace(array, "[]", "");
 
+	if (params[2].udt & UDT_LIT)
+	{
+		// The array name was passed in quotes, so a $ or !
+		// may have eluded the parser's stripping of them.
+		char &c = array[array.length() - 1];
+		if ((c == '$') || (c == '!'))
+		{
+			array = array.substr(0, array.length() - 1);
+		}
+	}
+
 	std::vector<std::string>::const_iterator i = parts.begin();
 	for (unsigned int j = 0; i != parts.end(); ++i, ++j)
 	{
@@ -4836,7 +4852,7 @@ void split(CALL_DATA &params)
 	}
 
 	params.ret().udt = UDT_NUM;
-	params.ret().num = double(parts.size());
+	params.ret().num = double(parts.size()) + 1.0;
 }
 
 /*
@@ -5315,6 +5331,50 @@ void setmwintranslucency(CALL_DATA &params)
 }
 
 /*
+ * string regExpReplace(string subject, string pattern, string replace)
+ *
+ * Replace using a regular expression.
+ */
+void regExpReplace(CALL_DATA &params)
+{
+	if (params.params != 3)
+	{
+		throw CError("RegExpReplace() requires three parameters.");
+	}
+
+	// Create a RegExp object.
+	IDispatch *pRegExp = NULL;
+	CLSID clsid = {0x3F4DACA4, 0x160D, 0x11D2, {0xA8, 0xE9, 0x00, 0x10, 0x4B, 0x36, 0x5C, 0x9F}};
+	HRESULT res = CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IDispatch, (void **)&pRegExp);
+
+	if (FAILED(res))
+	{
+		throw CError("RegExpReplace(): Internet Explorer 4 or higher is required for regular expression support.");
+	}
+
+	CComDispatchDriver regexp = pRegExp;
+	pRegExp->Release();
+
+	// Set to replace all instances, not just the first.
+	CComVariant global(true);
+	regexp.PutPropertyByName(L"Global", &global);
+
+	// Set the pattern to be used.
+	CComVariant pattern(params[1].getLit().c_str());
+	regexp.PutPropertyByName(L"Pattern", &pattern);
+
+	// Execute the replace.
+	CComVariant search(params[0].getLit().c_str());
+	CComVariant replace(params[2].getLit().c_str());
+	CComVariant ret;
+	regexp.Invoke2(L"Replace", &search, &replace, &ret);
+
+	// Return the result.
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = getString(ret.bstrVal);
+}
+
+/*
  * Initialize RPGCode.
  */
 void initRpgCode()
@@ -5584,4 +5644,5 @@ void initRpgCode()
 	CProgram::addFunction("createtimer", createtimer);
 	CProgram::addFunction("killtimer", killtimer);
 	CProgram::addFunction("setmwintranslucency", setmwintranslucency);
+	CProgram::addFunction("regexpreplace", regExpReplace);
 }

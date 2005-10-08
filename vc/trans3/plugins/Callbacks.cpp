@@ -14,7 +14,7 @@
  * Note to self.
  */
 
-#include "stdafx.h"
+#include "../stdafx.h"
 #include "../trans3.h"
 #include "Callbacks.h"
 #include "../rpgcode/CProgram.h"

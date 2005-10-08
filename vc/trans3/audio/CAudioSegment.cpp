@@ -9,6 +9,7 @@
 #include "../rpgcode/parser/parser.h"
 
 IDirectMusicLoader8 *CAudioSegment::m_pLoader = NULL;
+HANDLE CAudioSegment::m_notify = NULL;
 
 /*
  * Construct and load a file.
@@ -31,7 +32,7 @@ bool CAudioSegment::open(const std::string file)
 	}
 	stop();
 	const std::string ext = parser::uppercase(getExtension(file));
-	if (ext == "MID" || ext == "MIDI" || ext == "RMI" || ext == "MPL" || ext == "WAV")
+	if ((ext == "MID") || (ext == "MIDI") || (ext == "RMI") || (ext == "MPL") || (ext == "WAV"))
 	{
 		if (m_pSegment)
 		{
@@ -125,6 +126,71 @@ void CAudioSegment::init()
 }
 
 /*
+ * Event manager.
+ * Used only for sound effects.
+ */
+DWORD WINAPI CAudioSegment::eventManager(LPVOID lpv)
+{
+	CAudioSegment *pAudioSegment = (CAudioSegment *)lpv;
+	IDirectMusicPerformance8 *pPerf = pAudioSegment->m_pPerformance;
+	DMUS_NOTIFICATION_PMSG *pMsg = NULL;
+
+	while (m_notify)
+	{
+		WaitForSingleObject(m_notify, 100);
+		while (pPerf->GetNotificationPMsg(&pMsg) == S_OK)
+		{
+			if (pMsg->guidNotificationType == GUID_NOTIFICATION_SEGMENT)
+			{
+				// Segment notification.
+				// Check if it's a sound effect finishing playback.
+				if (pMsg->dwNotificationOption == DMUS_NOTIFICATION_SEGEND)
+				{
+					// Delete the sound effect.
+					pPerf->FreePMsg((DMUS_PMSG *)pMsg);
+					delete pAudioSegment;
+					return S_OK;
+				}
+			}
+			pPerf->FreePMsg((DMUS_PMSG *)pMsg);
+		}
+	}
+
+	return S_OK;
+}
+
+/*
+ * Play a sound effect.
+ */
+void CAudioSegment::playSoundEffect(const std::string file)
+{
+	CAudioSegment *pSeg = new CAudioSegment();
+	if (!pSeg->open(file))
+	{
+		delete pSeg;
+		return;
+	}
+
+	if (pSeg->m_pPerformance)
+	{
+		pSeg->m_pPerformance->SetNotificationHandle(m_notify, 0);
+		pSeg->m_pPerformance->AddNotificationType(GUID_NOTIFICATION_SEGMENT);
+		DWORD id = 0;
+		HANDLE hThread = CreateThread(NULL, 0, eventManager, pSeg, 0, &id);
+		CloseHandle(hThread);
+	}
+	else
+	{
+		// Audiere events?
+		// Delete for now.
+		delete pSeg;
+		return; // Temp!
+	}
+
+	pSeg->play(false);
+}
+
+/*
  * Initialize the DirectMusic loader.
  */
 void CAudioSegment::initLoader()
@@ -135,6 +201,9 @@ void CAudioSegment::initLoader()
 	extern std::string g_projectPath;
 	MultiByteToWideChar(CP_ACP, 0, (g_projectPath + MEDIA_PATH).c_str(), -1, searchPath, MAX_PATH);
 	m_pLoader->SetSearchDirectory(GUID_DirectMusicAllTypes, searchPath, FALSE);
+
+	// Not loader related, but I don't feel like making another function.
+	m_notify = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
 /*

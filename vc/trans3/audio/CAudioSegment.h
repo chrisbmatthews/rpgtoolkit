@@ -12,6 +12,7 @@
 typedef DWORD *DWORD_PTR;
 #include <dmusici.h>
 #include <string>
+#include <set>
 #include "audiere.h"
 
 class CAudioSegment
@@ -24,16 +25,19 @@ public:
 	~CAudioSegment();
 	bool open(const std::string file);
 	void play(const bool repeat);
+	static void playSoundEffect(const std::string file);
 	void stop();
 
 	std::string getPlayingFile() const { return m_file; }
 
-private:
+protected:
 	CAudioSegment(const CAudioSegment &rhs);			// No implementation.
 	CAudioSegment &operator=(const CAudioSegment &rhs); // No implementation.
 	void init();
+	static DWORD WINAPI eventManager(LPVOID lpv);
 
 	static IDirectMusicLoader8 *m_pLoader;
+	static HANDLE m_notify;
 	IDirectMusicPerformance8 *m_pPerformance;
 	IDirectMusicSegment8 *m_pSegment;
 	audiere::AudioDevicePtr m_device;

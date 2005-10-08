@@ -366,7 +366,10 @@ void CProgram::methodCall(CALL_DATA &call)
 		}
 		else
 		{
-			local[std::string(" ") + char(++j)] = call[i].getValue();
+			++j;
+			char pos = call.params - j;
+			if (fr.obj) --pos;
+			local[std::string(" ") + pos] = call[i].getValue();
 		}
 	}
 
@@ -1179,6 +1182,12 @@ std::string tagStackFrame::getLit() const
 	}
 	else if (udt & UDT_NUM)
 	{
+		if (udt & UDT_UNSET)
+		{
+			// Return an empty string rather than "0" if
+			// the variable hasn't been set.
+			return std::string();
+		}
 		char str[255];
 		gcvt(num, 255, str);
 		char &c = str[strlen(str) - 1];

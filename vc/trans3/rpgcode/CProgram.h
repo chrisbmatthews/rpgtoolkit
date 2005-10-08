@@ -22,6 +22,7 @@
 // Data types.
 typedef enum tagUnitDataType
 {
+	UDT_UNSET = 1,		// Unset.
 	UDT_NUM = 2,		// Number.
 	UDT_LIT = 4,		// String literal.
 	UDT_ID = 8,			// Identifier.
@@ -49,8 +50,13 @@ typedef struct tagStackFrame
 	UNIT_DATA_TYPE getType() const;
 	tagStackFrame getValue() const;
 
-	tagStackFrame(): num(0.0), udt(UDT_NUM) { }
-	tagStackFrame(CProgram *prg): prg(prg), num(0.0), udt(UDT_NUM) { }
+	tagStackFrame():
+		num(0.0),
+		udt(UNIT_DATA_TYPE(UDT_NUM | UDT_UNSET)) { }
+	tagStackFrame(CProgram *prg):
+		prg(prg),
+		num(0.0),
+		udt(UNIT_DATA_TYPE(UDT_NUM | UDT_UNSET)) { }
 } STACK_FRAME, *LPSTACK_FRAME;
 
 // Data passed to a called function.

@@ -16,7 +16,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifndef STRICT
 #define STRICT
+#endif // STRICT
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0400
 #endif

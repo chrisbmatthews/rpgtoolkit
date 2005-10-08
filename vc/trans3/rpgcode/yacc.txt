@@ -132,7 +132,8 @@ identifier:
 			{
 				MACHINE_UNIT &name = *(CProgram::m_pyyUnits->end() - 2);
 				name.udt = UNIT_DATA_TYPE(name.udt | UDT_OBJ);
-			}
+				//CProgram::debugger(name.lit);
+			} /**else { CProgram::debugger(CProgram::getFunctionName(CProgram::m_pyyUnits->back().func)); }**/
 			++CProgram::m_pyyUnits->back().params;
 		}
 |	value MEM var_identifier

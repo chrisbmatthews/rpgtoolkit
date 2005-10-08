@@ -47,7 +47,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /Ze /w /W0 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /GZ /c
+# ADD CPP /nologo /w /W0 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX"stdafx.h" /FD /GZ /c
 # ADD BASE RSC /l 0x1009 /d "_DEBUG"
 # ADD RSC /l 0x1009 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -428,7 +428,7 @@ SOURCE=.\rpgcode\functions.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
 
-# SUBTRACT CPP /YX /Yc /Yu
+# ADD CPP /YX"stdafx.h"
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
@@ -1324,7 +1324,7 @@ SOURCE=.\plugins\Callbacks.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
 
-# ADD CPP /Yu"stdafx.h"
+# ADD CPP /YX
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
@@ -1493,6 +1493,26 @@ SOURCE=.\fight\fight.h
 # Begin Source File
 
 SOURCE=.\fight\IFighter.h
+# End Source File
+# End Group
+# End Group
+# Begin Group "video"
+
+# PROP Default_Filter ""
+# Begin Group "video - source"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\video\CVideo.cpp
+# End Source File
+# End Group
+# Begin Group "video - headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\video\CVideo.h
 # End Source File
 # End Group
 # End Group
