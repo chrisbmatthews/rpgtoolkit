@@ -34,6 +34,7 @@
 #include "../fight/fight.h"
 #include "../misc/misc.h"
 #include "../plugins/plugins.h"
+#include "../video/CVideo.h"
 #include "CCursorMap.h"
 #include <math.h>
 #include <iostream>
@@ -3040,23 +3041,93 @@ void callplayerswap(CALL_DATA &params)
 }
 
 /*
- * playavi(...)
+ * void playAvi(string movie)
  * 
- * Description.
+ * Play a movie full screen.
+ * Supported types are *.avi, *.mpg, and *.mov.
  */
 void playavi(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
+	extern CAudioSegment *g_bkgMusic;
+	extern HWND g_hHostWnd;
+	extern int g_resX, g_resY;
 
+	if (params.params != 1)
+	{
+		throw CError("PlayAvi() requires one parameter.");
+	}
+
+	const std::string file = g_projectPath + MEDIA_PATH + params[0].getLit();
+	if (!CFile::fileExists(file))
+	{
+		throw CError("PlayAvi(): could not find " + params[0].getLit() + ".");
+	}
+
+	// Stop music.
+	g_bkgMusic->stop();
+
+	// Don't bother checking extension, in case it doesn't match
+	// the actual type of movie. Playing an invalid file will do
+	// no harm.
+	CVideo vid;
+	vid.renderFile(file);
+	vid.setWindow(long(g_hHostWnd));
+	vid.setPosition(0, 0, g_resX, g_resY);
+	vid.play();
+
+	// Resume music.
+	g_bkgMusic->play(true);
 }
 
 /*
- * playavismall(...)
+ * playAviSmall(string movie)
  * 
- * Description.
+ * Play a movie at actual size, centred.
+ * Supported types are *.avi, *.mpg, and *.mov.
  */
 void playavismall(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
+	extern CAudioSegment *g_bkgMusic;
+	extern HWND g_hHostWnd;
+	extern int g_resX, g_resY;
 
+	if (params.params != 1)
+	{
+		throw CError("PlayAviSmall() requires one parameter.");
+	}
+
+	const std::string file = g_projectPath + MEDIA_PATH + params[0].getLit();
+	if (!CFile::fileExists(file))
+	{
+		throw CError("PlayAviSmall(): could not find " + params[0].getLit() + ".");
+	}
+
+	// Stop music.
+	g_bkgMusic->stop();
+
+	// Don't bother checking extension, in case it doesn't match
+	// the actual type of movie. Playing an invalid file will do
+	// no harm.
+	CVideo vid;
+	vid.renderFile(file);
+	vid.setWindow(long(g_hHostWnd));
+	const int width = vid.getWidth(), height = vid.getHeight();
+	if ((g_resX >= width) && (g_resY >= height))
+	{
+		// Centre the video.
+		vid.setPosition((g_resX - width) / 2, (g_resY - height) / 2, width, height);
+	}
+	else
+	{
+		// Larger than the screen.
+		vid.setPosition(0, 0, g_resX, g_resY);
+	}
+	vid.play();
+
+	// Resume music.
+	g_bkgMusic->play(true);
 }
 
 /*

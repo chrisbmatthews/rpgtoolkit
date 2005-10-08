@@ -8,22 +8,34 @@
 #define _CVIDEO_H_
 
 #include <string>
-#include "../stdafx.h"
+
+class IGraphBuilder;
+class IMediaControl;
+class IMediaPosition;
+class IVideoWindow;
 
 // A video.
 class CVideo
 {
 public:
 	CVideo();
+	~CVideo();
+
 	void renderFile(const std::string file);
 	void play();
 	int getWidth();
 	int getHeight();
-	void setWindow(const HWND hwnd);
+	void setWindow(const long hwnd);
 	void setPosition(const int x, const int y, const int width, const int height);
 
 private:
-	CComDispatchDriver m_video;
+	CVideo(CVideo &);
+	CVideo &operator=(CVideo);
+
+	IGraphBuilder *m_pGraphBuilder;
+	IMediaControl *m_pMediaControl;
+	IMediaPosition *m_pMediaPosition;
+	IVideoWindow *m_pVideoWindow;
 };
 
 #endif

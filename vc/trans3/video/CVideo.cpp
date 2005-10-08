@@ -5,88 +5,95 @@
  */
 
 #include "CVideo.h"
+#include "../stdafx.h"
 #include "../rpgcode/CProgram.h"
 #include "../input/input.h"
+#include "../plugins/plugins.h"
+#include <strmif.h>
+#include <control.h>
+#include <uuids.h>
 
 // Constructor.
 CVideo::CVideo()
 {
-	// Create a FilgraphManager object.
-	IDispatch *pDispatch = NULL;
-
-	// TBD: This CLSID is wrong. Find the right one.
-	CLSID clsid = {0xE436EBB3, 0x524F, 0x11CE, {0x9F, 0x53, 0x00, 0x20, 0xAF, 0x0BA, 0x77, 0x00}};
-	HRESULT res = CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IDispatch, (void **)&pDispatch);
-
+	// Create a Filter Graph manager.
+	HRESULT res = CoCreateInstance(
+		CLSID_FilterGraph,
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_IGraphBuilder,
+		(void **)&m_pGraphBuilder
+	);
 	if (FAILED(res))
 	{
 		throw CError("ActiveMovie is required to play movies.");
 	}
 
-	m_video = pDispatch;
-	pDispatch->Release();
-
-	// Hide the cursor.
-	CComVariant hide(TRUE); // 'TRUE' -- not 'true'!
-	m_video.Invoke1(L"HideCursor", &hide);
-
-	// Set window style.
-	CComVariant style(WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	m_video.PutPropertyByName(L"WindowStyle", &style);
+	// Query for IMediaControl, IMediaEvent, and IVideoWindow.
+	m_pGraphBuilder->QueryInterface(IID_IMediaControl, (void **)&m_pMediaControl);
+	m_pGraphBuilder->QueryInterface(IID_IMediaPosition, (void **)&m_pMediaPosition);
+	m_pGraphBuilder->QueryInterface(IID_IVideoWindow, (void **)&m_pVideoWindow);
 }
 
 // Render a file.
 void CVideo::renderFile(const std::string file)
 {
-	CComVariant bstrFile(file.c_str());
-	m_video.Invoke1(L"RenderFile", &bstrFile, NULL);
+	BSTR bstr = getString(file);
+	m_pMediaControl->RenderFile(bstr);
+	SysFreeString(bstr);
 }
 
 // Set the window.
-void CVideo::setWindow(const HWND hwnd)
+void CVideo::setWindow(const long hwnd)
 {
-	CComVariant window(hwnd);
-	m_video.PutPropertyByName(L"Owner", &window);
+	m_pVideoWindow->put_Owner(hwnd);
+	m_pVideoWindow->HideCursor(TRUE);
+	m_pVideoWindow->put_WindowStyle(WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 }
 
 // Get the video's width.
 int CVideo::getWidth()
 {
-	CComVariant ret;
-	m_video.GetPropertyByName(L"Width", &ret);
-	return ret.intVal;
+	long width = 0;
+	m_pVideoWindow->get_Width(&width);
+	return width;
 }
 
 // Get the video's height.
 int CVideo::getHeight()
 {
-	CComVariant ret;
-	m_video.GetPropertyByName(L"Height", &ret);
-	return ret.intVal;
+	long height = 0;
+	m_pVideoWindow->get_Height(&height);
+	return height;
 }
 
 // Set the position of the video.
 void CVideo::setPosition(const int x, const int y, const int width, const int height)
 {
-	CComVariant params[] = {x, y, width, height};
-	m_video.InvokeN(L"SetWindowPosition", params, 4, NULL);
+	m_pVideoWindow->SetWindowPosition(x, y, width, height);
 }
 
 // Play the movie.
 void CVideo::play()
 {
-	m_video.Invoke0(L"Run", NULL);
-	while (true)
+	HRESULT hr = m_pMediaControl->Run();
+	if (SUCCEEDED(hr))
 	{
-		CComVariant pos, dur;
-		m_video.GetPropertyByName(L"CurrentPosition", &pos);
-		m_video.GetPropertyByName(L"Duration", &dur);
-		if (pos.dblVal >= dur.dblVal)
+		while (true)
 		{
-			// Movie has finished.
-			break;
+			double pos = 0, dur = 0;
+			m_pMediaPosition->get_CurrentPosition(&pos);
+			m_pMediaPosition->get_Duration(&dur);
+			if (pos >= dur) break;
+			processEvent();
 		}
-		processEvent();
 	}
-	m_video.Invoke0(L"Stop", NULL);
+}
+
+CVideo::~CVideo()
+{
+	m_pVideoWindow->Release();
+	m_pMediaPosition->Release();
+	m_pMediaControl->Release();
+	m_pGraphBuilder->Release();
 }
