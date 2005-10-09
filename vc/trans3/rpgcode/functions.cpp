@@ -34,6 +34,7 @@
 #include "../fight/fight.h"
 #include "../misc/misc.h"
 #include "../plugins/plugins.h"
+#include "../plugins/constants.h"
 #include "../video/CVideo.h"
 #include "CCursorMap.h"
 #include <math.h>
@@ -3332,13 +3333,40 @@ void getFp(CALL_DATA &params)
 }
 
 /*
- * internalmenu(...)
+ * void internalMenu(int menu)
  * 
- * Description.
+ * Show a menu using the menu plugin.
+ * 0 - main menu
+ * 1 - item menu
+ * 2 - equip menu
+ * 4 (sic) - abilities menu
  */
 void internalmenu(CALL_DATA &params)
 {
+	if (params.params != 1)
+	{
+		throw CError("InternalMenu() requires one parameter.");
+	}
 
+	extern IPlugin *g_pMenuPlugin;
+	if (!g_pMenuPlugin)
+	{
+		throw CError("InternalMenu(): no menu plugin set.");
+	}
+
+	int menu = int(params[0].getNum());
+	if (menu == 0) menu = MNU_MAIN;
+	else if (menu == 1) menu = MNU_INVENTORY;
+	else if (menu == 2) menu = MNU_EQUIP;
+	else if (menu == 4) menu = MNU_ABILITIES;
+	else
+	{
+		throw CError("InternalMenu(): invalid menu specified.");
+	}
+
+	g_pMenuPlugin->menu(menu);
+	renderNow(g_cnvRpgCode, true);
+	renderRpgCodeScreen();
 }
 
 /*

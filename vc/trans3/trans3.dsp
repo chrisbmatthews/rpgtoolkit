@@ -1376,6 +1376,10 @@ SOURCE=.\plugins\Callbacks.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\plugins\constants.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\plugins\oldCallbacks.h
 # End Source File
 # Begin Source File

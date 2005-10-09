@@ -12,6 +12,7 @@
 #include "../common/sprite.h"
 #include "../common/board.h"
 #include "../plugins/plugins.h"
+#include "../plugins/constants.h"
 #include "../movement/CSprite/CSprite.h"
 
 /*
@@ -140,7 +141,8 @@ void scanKeys(void)
 	if (SCAN_KEY_DOWN(RETURN))
 	{
 		extern IPlugin *g_pMenuPlugin;
-		g_pMenuPlugin->menu(1);
+		g_pMenuPlugin->menu(MNU_MAIN);
+		renderNow(NULL, true);
 		return;
 	}
 
