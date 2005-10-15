@@ -18,12 +18,13 @@ public:
 	typedef std::pair<std::string, unsigned int> DATA_PAIR, *LPDATA_PAIR;
 	void give(const std::string file)
 	{
+		// file contains complete path.
 		LPDATA_PAIR p = &m_data[parser::uppercase(file)];
 		if (p->first.empty())
 		{
 			ITEM itm;
 			SPRITE_ATTR attr;
-			if (!itm.open(file, attr)) return;
+			if (!itm.open(file, NULL)) return;
 			p->first = itm.itemName;
 			p->second = 1;
 		}
@@ -46,7 +47,12 @@ public:
 	{
 		const std::string ucase = parser::uppercase(file);
 		LPDATA_PAIR p = &m_data[ucase];
-		if (p->first.empty()) return false;
+		if (p->first.empty())
+		{
+			// Could be a handle.
+			p = byHandle(file);
+			if (!p) return false;
+		}
 		if (--p->second == 0)
 		{
 			m_data.erase(ucase);
@@ -89,6 +95,16 @@ private:
 		for (int k = 0; k < j; ++k, ++i);
 		return i;
 	}
+	LPDATA_PAIR byHandle(const std::string file)
+	{
+		std::map<std::string, DATA_PAIR>::iterator i = m_data.begin();
+		for(; i != m_data.end(); ++i)
+		{
+			if (file == i->second.first) break;
+		}
+		return (i == m_data.end() ? NULL : &i->second);
+	}
+
 	std::map<std::string, DATA_PAIR> m_data;
 };
 

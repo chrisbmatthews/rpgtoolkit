@@ -19,7 +19,7 @@
 
 /*
  * Definitions.
- */
+ *
 #define ITEM_WALK_S 0
 #define ITEM_WALK_N 1
 #define ITEM_WALK_E 2
@@ -32,14 +32,16 @@
 
 #define ITEM_GFX_UBOUND 9
 #define ITEM_GFX_STANDING_UBOUND 7
+*/
 
 /*
  * Open an item. Return the minor version.
  *
  * fileName (in) - file to open
  */
-short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
+short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 {
+	const bool bAttr = (pAttr == NULL);
 
 	CFile file(fileName);
 
@@ -179,14 +181,10 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 	char itmSizeType;
 	file >> itmSizeType;
 
+	if (bAttr) pAttr = new SPRITE_ATTR();
+
 	if (minorVer >= 4)
 	{
-/*
-		for (i = 0; i <= ITEM_GFX_UBOUND; i++)
-		{
-			file >> gfx[i];
-		}
-*/
 		// Load standard graphics - saved in a different order!
 		GFX_MAP gfx;
 		gfx.clear();
@@ -204,22 +202,16 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		file >> strUnused;
 
 		// Complete diagonal directions with east/west graphics.
-		spriteAttr.completeStances(gfx);
+		pAttr->completeStances(gfx);
 
 		// Push graphics onto the gfx vector.
-		spriteAttr.mapGfx.clear();
-		spriteAttr.mapGfx.push_back(gfx);
+		pAttr->mapGfx.clear();
+		pAttr->mapGfx.push_back(gfx);
 
 		gfx.clear();
 
 		if (minorVer >= 5)
 		{
-/*
-			for (i = 0; i <= ITEM_GFX_STANDING_UBOUND; i++)
-			{
-				file >> standingGfx[i];
-			}
-*/
 			// Idle graphics - saved in a different order!
 			file >> gfx[MV_S];
 			file >> gfx[MV_N];
@@ -230,19 +222,17 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 			file >> gfx[MV_SW];
 			file >> gfx[MV_SE];
 
-			file >> spriteAttr.speed;
-			file >> spriteAttr.idleTime;
+			file >> pAttr->speed;
+			file >> pAttr->idleTime;
 		}
 
 		// Push idle graphics onto vector (empty for minorVer = 4).
-		spriteAttr.completeStances(gfx);
-		spriteAttr.mapGfx.push_back(gfx);
+		pAttr->completeStances(gfx);
+		pAttr->mapGfx.push_back(gfx);
 
 		if (minorVer < 6)
 		{
-			spriteAttr.mapGfx[GFX_IDLE][MV_S] = strItemRest;
-//			standingGfx[ITEM_WALK_S] = gfx[ITEM_REST];
-//			gfx[ITEM_REST] = "";
+			pAttr->mapGfx[GFX_IDLE][MV_S] = strItemRest;
 		}
 
 		// Custom stances - place in a map with handles as keys.
@@ -256,13 +246,12 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 			file >> handle;
 			if (!handle.empty() && !anim.empty())
 			{
-				spriteAttr.mapCustomGfx[handle] = anim;
+				pAttr->mapCustomGfx[handle] = anim;
 			}
 		}
 	}
 	else // if (minorVer < 4)
 	{
-//		std::string gfx[10];
 		GFX_MAP gfx;
 		gfx.clear();
 
@@ -320,7 +309,6 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 			{
 				walkFix = "E";
 				anm.save(anmName);
-//				gfx[ITEM_WALK_S] = removePath(anmName);
 				gfx[MV_S] = removePath(anmName);
 				xx = -1;
 			}
@@ -328,7 +316,6 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 			{
 				walkFix = "N";
 				anm.save(anmName);
-//				gfx[ITEM_WALK_E] = removePath(anmName);
 				gfx[MV_E] = removePath(anmName);
 				xx = -1;
 			}
@@ -336,14 +323,12 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 			{
 				walkFix = "W";
 				anm.save(anmName);
-//				gfx[ITEM_WALK_N] = removePath(anmName);
 				gfx[MV_N] = removePath(anmName);
 				xx = -1;
 			}
 			else if (x == 15)
 			{
 				anm.save(anmName);
-//				gfx[ITEM_WALK_W] = removePath(anmName);
 				gfx[MV_W] = removePath(anmName);
 				xx = -1;
 			}
@@ -356,11 +341,11 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		} // for (x)
 
 		// Complete diagonal directions with east/west graphics.
-		spriteAttr.completeStances(gfx);
+		pAttr->completeStances(gfx);
 
 		// Push graphics onto the gfx vector.
-		spriteAttr.mapGfx.clear();
-		spriteAttr.mapGfx.push_back(gfx);
+		pAttr->mapGfx.clear();
+		pAttr->mapGfx.push_back(gfx);
 
 		/* Idle frame. */
 
@@ -384,15 +369,16 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		anm.animSound.push_back("");
 		anm.save(anmName);
 
-//		standingGfx[ITEM_WALK_S] = removePath(anmName);
 		gfx.clear();
 		gfx[MV_S] = removePath(anmName);
 
 		// Push graphics onto the gfx vector.
-		spriteAttr.completeStances(gfx);
-		spriteAttr.mapGfx.push_back(gfx);
+		pAttr->completeStances(gfx);
+		pAttr->mapGfx.push_back(gfx);
 
 	} // if (minorVer >= 4)
 
+	// Clean up.
+	if (bAttr) delete pAttr;
 	return minorVer;
 }

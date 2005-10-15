@@ -31,6 +31,7 @@
 #include "../common/background.h"
 #include "../common/item.h"
 #include "../movement/CPlayer/CPlayer.h"
+#include "../movement/locate.h"
 #include "../images/FreeImage.h"
 #include "../fight/fight.h"
 #include "../audio/CAudioSegment.h"
@@ -331,17 +332,18 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 {
 	extern CInventory g_inv;
 
+	CPlayer *pPlayer = NULL;
+	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
+
 	BSTR bstr = NULL;
 	switch (infoCode)
 	{
 		case GEN_PLAYERHANDLES:
-			if (g_players.size() > playerSlot)
-			{
-				bstr = getString(g_players[playerSlot]->name());
-			}
+			if (pPlayer) bstr = getString(pPlayer->name());
 			break;
 		case GEN_PLAYERFILES:
 			// No way to get it, Jon.
+			// That's the great thing about encapsulation, Colin.
 			break;
 		case GEN_PLYROTHERHANDLES:
 			break;
@@ -354,9 +356,15 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			bstr = getString(g_inv.getHandleAt(arrayPos));
 			break;
 		case GEN_EQUIP_FILES:
-			break;
+			{
+				EQ_SLOT eq = pPlayer->equipment(arrayPos);
+				bstr = getString(eq.first);
+			} break;
 		case GEN_EQUIP_HANDLES:
-			break;
+			{
+				EQ_SLOT eq = pPlayer->equipment(arrayPos);
+				bstr = getString(eq.second);
+			} break;
 		case GEN_MUSICPLAYING:
 			extern CAudioSegment *g_bkgMusic;
 			bstr = getString(g_bkgMusic->getPlayingFile());
@@ -412,6 +420,10 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 {
 	extern CSprite *g_pSelectedPlayer;
 	extern std::vector<CPlayer *> g_players;
+	extern LPBOARD g_pBoard;
+
+	CPlayer *pPlayer = NULL;
+	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
 
 	switch (infoCode)
 	{
@@ -420,32 +432,29 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			*pRet = g_inv.getQuantityAt(arrayPos);
 			break;
 		case GEN_EQUIP_HPADD:
-			// TBD!
+			if (pPlayer) *pRet = pPlayer->equipmentHP();
 			break;
 		case GEN_EQUIP_SMPADD:
-			// TBD!
+			if (pPlayer) *pRet = pPlayer->equipmentSM();
 			break;
 		case GEN_EQUIP_DPADD:
-			// TBD!
+			if (pPlayer) *pRet = pPlayer->equipmentDP();
 			break;
 		case GEN_EQUIP_FPADD:
-			// TBD!
+			if (pPlayer) *pRet = pPlayer->equipmentFP();
 			break;
 		case GEN_CURX:
-			// No way to get it, Jon.
-			break;
 		case GEN_CURY:
-			// No way to get it, Jon.
-			break;
-		case GEN_CURLAYER:
-		{
-			std::vector<CPlayer *>::const_iterator i = g_players.begin();
-			for (; i != g_players.end(); ++i)
+			if (pPlayer)
 			{
-				if (*i == g_pSelectedPlayer) break;
-			}
-			*pRet = i - g_players.begin();
-		} break;
+				SPRITE_POSITION p = pPlayer->getPosition();
+				int x = p.x, y = p.y;
+				tileCoordinate(x, y, g_pBoard->coordType);
+				*pRet = (infoCode == GEN_CURX ? x : y);
+			} break;
+		case GEN_CURLAYER:
+			if (pPlayer) *pRet = pPlayer->getPosition().l;
+			break;
 		case GEN_CURRENT_PLYR:
 			extern int g_selectedPlayer;
 			*pRet = g_selectedPlayer;
@@ -459,12 +468,12 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			*pRet = int(g_tilesY);
 			break;
 		case GEN_RESX:
-			extern int g_resX;
-			*pRet = g_resX;
+			extern RECT g_screen;
+			*pRet = g_screen.right - g_screen.left;
 			break;
 		case GEN_RESY:
-			extern int g_resY;
-			*pRet = g_resY;
+			extern RECT g_screen;
+			*pRet = g_screen.bottom - g_screen.top;
 			break;
 		case GEN_GP:
 			extern unsigned long g_gp;
@@ -1668,9 +1677,8 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	ITEM itm;
 	extern std::string g_projectPath;
 	const std::string strItemFile = getString(itemFile);
-	SPRITE_ATTR attr;
 	const std::string fullPath = g_projectPath + ITM_PATH + strItemFile;
-	if (!itm.open(fullPath, attr)) return S_OK;
+	if (!itm.open(fullPath, NULL)) return S_OK;
 
 	// HP.
 	pTarget->pFighter->health(pTarget->pFighter->health() + itm.fgtHPup);

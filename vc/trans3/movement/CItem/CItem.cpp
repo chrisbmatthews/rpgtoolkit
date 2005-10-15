@@ -47,7 +47,7 @@ m_pThread(NULL)
 short CItem::open(const std::string file) throw(CInvalidItem)
 {
 
-	const short minorVer = m_itemMem.open(file, m_attr);
+	const short minorVer = m_itemMem.open(file, &m_attr);
 	if (minorVer == 0)
 	{
 		throw CInvalidItem();

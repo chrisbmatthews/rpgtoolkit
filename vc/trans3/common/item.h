@@ -54,7 +54,7 @@ typedef struct tagItem
 	std::string itmPrgOnBoard;					// Program to run while item is on board.
 	std::string itmPrgPickUp;					// Program to run when picked up.
 
-	short open(const std::string fileName, SPRITE_ATTR &spriteAttr);
+	short open(const std::string fileName, SPRITE_ATTR *pAttr);
 } ITEM;
 
 #endif

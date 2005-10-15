@@ -11,6 +11,10 @@
 #include "../../common/player.h"
 #include "../CSprite/CSprite.h"
 
+//	EQ_SLOT.first = filename
+//	EQ_SLOT.second = handle
+typedef std::pair<std::string, std::string> EQ_SLOT;
+
 class CPlayer : public CSprite, public IFighter
 {
 public:
@@ -35,12 +39,34 @@ public:
 	void name(const std::string str) { m_playerMem.charname = str; }
 	std::string name(void) { return m_playerMem.charname; }
 	std::string getStanceAnimation(const std::string anim) { return m_attr.getStanceAnm(anim); }
+
+	// This is ridiculous! Make them public!
+	int equipmentDP(void) const { return m_equipment.mDP; }
+	int equipmentFP(void) const { return m_equipment.mFP; }
+	int equipmentHP(void) const { return m_equipment.mHP; }
+	int equipmentSM(void) const { return m_equipment.mSM; }
+	int equipmentDP(const int val) { m_equipment.mDP = val; }
+	int equipmentFP(const int val) { m_equipment.mFP = val; }
+	int equipmentHP(const int val) { m_equipment.mHP = val; }
+	int equipmentSM(const int val) { m_equipment.mSM = val; }
+	EQ_SLOT equipment(const int i) const { return (m_equipment.data.size() > abs(i) ? m_equipment.data[i] : EQ_SLOT()); }
+	void equipment(const EQ_SLOT eq, const int i) { if(m_equipment.data.size() > abs(i)) m_equipment.data[i] = eq; }
 	//--------------------------------------------------------------------
 
 	// Constructor
 	CPlayer(const std::string file, const bool show);
 
+	void addEquipment(const unsigned int slot, const std::string file);
+	void removeEquipment(const unsigned int slot);
+
 private:
+
+	struct tagEquipment
+	{
+		int mDP, mFP, mHP, mSM;		// Cumulative attribute modifiers.
+		std::vector<EQ_SLOT> data;
+	} m_equipment;
+
 	PLAYER m_playerMem;			// Player-specific data.
 
 };

@@ -1246,6 +1246,59 @@ void random(CALL_DATA &params)
  * 
  * Change a tile's type. Valid types for the string parameter
  * are "NORMAL", "SOLID", "UNDER", "NS", "EW", "STAIRS#".
+ */
+void tileType(CALL_DATA &params)
+{
+	/* Better solution: regenerate vectors from tagBoard.tiletype */
+
+	extern LPBOARD g_pBoard;
+
+	#define NORTH_SOUTH 3
+	#define EAST_WEST 4
+	#define STAIRS1 11
+	#define STAIRS8 18
+
+	if (params.params != 3 && params.params != 4)
+	{
+		throw CError("TileType() requires three or four parameters.");
+	}
+
+	const int x = int(params[0].getNum()), 
+			  y = int(params[1].getNum()),
+			  z = (params.params == 4 ? int(params[3].getNum()) : 1);
+
+	const std::string type = params[2].getLit();
+	int tile = TT_NORMAL;
+
+	// "tile" to be recognised in tagBoard::vectorize()
+	if (_strcmpi(type.c_str(), "SOLID") == 0) tile = TT_SOLID;
+	else if (_strcmpi(type.c_str(), "UNDER") == 0) tile = TT_UNDER;
+	else if (_strcmpi(type.substr(0, 6).c_str(), "STAIRS") == 0)
+	{
+		tile = 10 + atoi(type.substr(6).c_str());
+	}
+	else if (_strcmpi(type.c_str(), "NS") == 0) tile = NORTH_SOUTH;
+	else if (_strcmpi(type.c_str(), "EW") == 0) tile = EAST_WEST;
+
+	// Enter the tiletype into the table.
+	try
+	{
+		g_pBoard->tiletype[x][y][z] = tile;
+	}
+	catch (...)
+	{
+		throw CError("TileType(): tile co-ordinates out of bounds.");
+	}
+
+	// Delete the vectors of this layer and re-generate.
+	g_pBoard->freeVectors(z);
+	g_pBoard->vectorize(z);
+}
+
+#if(0)
+/*
+ * Old method: vector brute force.
+ *
  * Using vector collision, square vectors are added to the board with 
  * corresponding types. If an identical vector exists at the point,
  * alter its type rather than adding another.
@@ -1254,8 +1307,7 @@ void random(CALL_DATA &params)
  */
 void tileType(CALL_DATA &params)
 {
-	/** TBD: unidirectionals **/
-
+	// TBD: unidirectionals
 	extern LPBOARD g_pBoard;
 
 	if (params.params != 3 && params.params != 4)
@@ -1325,6 +1377,7 @@ void tileType(CALL_DATA &params)
 	g_pBoard->vectors.push_back(v);
 	if (v.type == TT_UNDER) g_pBoard->vectors.back().createCanvas(*g_pBoard);
 }
+#endif
 
 /*
  * void mediaPlay(string file)
@@ -2734,23 +2787,62 @@ void charAt(CALL_DATA &params)
 }
 
 /*
- * equip(...)
+ * void equip(variant handle, int location, string item)
  * 
- * Description.
+ * Equip an item from the inventory (by handle or filename) 
+ * to a location on the player's body.
+ *
+ * 1 - Head
+ * 2 - Neck accessory
+ * 3 - Right hand
+ * 4 - Left hand
+ * 5 - Body
+ * 6 - Legs
+ * 7+ - Custom accessories
  */
 void equip(CALL_DATA &params)
 {
+	extern std::string g_projectPath;
 
+	if (params.params != 3)
+	{
+		throw CError("Equip() requires three parameters.");
+	}
+
+	CPlayer *p = getPlayerPointer(params[0]);
+	if (!p) throw CError("Equip(): player not found.");
+
+	const unsigned int i = abs(params[1].getNum());
+	const std::string str = g_projectPath + ITM_PATH + params[2].getLit();
+
+	// Try to take the item.
+	if (g_inv.take(str))
+	{
+		// Remove any item that may be equipped.
+		p->removeEquipment(i);
+		p->addEquipment(i, str); 
+	}
+	else throw CError("Equip(): item not in inventory.");
 }
 
 /*
- * remove(...)
+ * void remove(variant handle, int location)
  * 
- * Description.
+ * Remove an equipped item and return it to the inventory.
  */
 void remove(CALL_DATA &params)
 {
+	if (params.params != 2)
+	{
+		throw CError("Remove() requires two parameters.");
+	}
 
+	CPlayer *p = getPlayerPointer(params[0]);
+	if (!p) throw CError("Remove(): player not found.");
+
+	unsigned int i = abs(params[1].getNum());
+
+	p->removeEquipment(i);
 }
 
 /*
@@ -4800,8 +4892,8 @@ void getitemname(CALL_DATA &params)
 	const std::string file = g_projectPath + ITM_PATH + params[0].getLit();
 	if (!CFile::fileExists(file)) return;
 
-	ITEM itm; SPRITE_ATTR attr;
-	itm.open(file, attr);
+	ITEM itm;
+	itm.open(file, NULL);
 
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = itm.itemName;
@@ -4829,8 +4921,8 @@ void getitemdesc(CALL_DATA &params)
 	const std::string file = g_projectPath + ITM_PATH + params[0].getLit();
 	if (!CFile::fileExists(file)) return;
 
-	ITEM itm; SPRITE_ATTR attr;
-	itm.open(file, attr);
+	ITEM itm;
+	itm.open(file, NULL);
 
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = itm.itmDescription;
@@ -4858,8 +4950,8 @@ void getitemcost(CALL_DATA &params)
 	const std::string file = g_projectPath + ITM_PATH + params[0].getLit();
 	if (!CFile::fileExists(file)) return;
 
-	ITEM itm; SPRITE_ATTR attr;
-	itm.open(file, attr);
+	ITEM itm;
+	itm.open(file, NULL);
 
 	params.ret().udt = UDT_NUM;
 	params.ret().num = itm.buyPrice;
@@ -4887,8 +4979,8 @@ void getitemsellprice(CALL_DATA &params)
 	const std::string file = g_projectPath + ITM_PATH + params[0].getLit();
 	if (!CFile::fileExists(file)) return;
 
-	ITEM itm; SPRITE_ATTR attr;
-	itm.open(file, attr);
+	ITEM itm;
+	itm.open(file, NULL);
 
 	params.ret().udt = UDT_NUM;
 	params.ret().num = itm.sellPrice;
