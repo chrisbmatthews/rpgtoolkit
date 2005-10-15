@@ -220,7 +220,7 @@ typedef struct tagBoard
 	bool open(const std::string fileName);
 	void vectorize(const unsigned int layer);
 	void createVectorCanvases(void);
-	void freeVectors(void);
+	void freeVectors(const int layer = 0);
 	void freePrograms(void);
 	void freeItems(void);
 	void freeImages(void);

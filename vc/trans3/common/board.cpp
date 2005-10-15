@@ -957,16 +957,38 @@ inline int tagBoard::pxHeight(void)
 }
 
 /*
- * Free vectors.
+ * Free vectors, optionally on a single layer.
  */
-void tagBoard::freeVectors(void)
+void tagBoard::freeVectors(const int layer)
 {
-	for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
+	if (layer)
 	{
-		delete i->pCnv;
-		delete i->pV;
+		// Delete vectors on the given layer.
+		while(true)
+		{
+			for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
+			{
+				if (i->layer == layer) break;
+			}
+
+			// If no vectors were found, break.
+			if (i == vectors.end()) break;
+
+			// Else, clean up and remove the pointer.
+			delete i->pCnv;
+			delete i->pV;			
+			vectors.erase(i);
+		}
 	}
-	vectors.clear();
+	else
+	{
+		for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
+		{
+			delete i->pCnv;
+			delete i->pV;
+		}
+		vectors.clear();
+	}
 }
 
 /*
@@ -1097,7 +1119,7 @@ const BRD_VECTOR *tagBoard::getVectorFromTile(const int x, const int y, const in
 	{
 		if (i->layer == z)
 		{
-			if (i->pV->containsPoint(pt))
+			if (i->pV->containsPoint(pt) % 2)
 			{
 				return &*i;
 			}
