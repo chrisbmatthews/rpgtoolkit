@@ -5400,13 +5400,42 @@ void shopcolors(CALL_DATA &params)
 }
 
 /*
- * mousecursor(...)
+ * void mouseCursor(string file, int x, int y, int red, int green. int blue)
  * 
- * Description.
+ * Change the mouse cursor. "TK DEFAULT" or "" restores
+ * the default cursor.
  */
 void mousecursor(CALL_DATA &params)
 {
+	extern MAIN_FILE g_mainFile;
+	extern std::string g_projectPath;
 
+	if (params.params != 6)
+	{
+		throw CError("MouseCursor() requires six parameters.");
+	}
+	g_mainFile.hotSpotX = int(params[1].getNum());
+	g_mainFile.hotSpotY = int(params[2].getNum());
+	g_mainFile.transpColor = RGB(
+		int(params[3].getNum()),
+		int(params[4].getNum()),
+		int(params[5].getNum())
+	);
+	const std::string ext = parser::uppercase(getExtension(params[0].getLit()).substr(0, 3));
+	std::string tempFile;
+	std::string file = params[0].getLit();
+	if (file.empty()) file = "TK DEFAULT";
+	if ((ext == "TST") || (ext == "GPH"))
+	{
+		TILE_BITMAP tbm;
+		tempFile = "mouse_cursor_tile_temp_bitmap_cursor_.tbm";
+		tbm.resize(1, 1);
+		tbm.tiles[0][0] = file;
+		tbm.save(g_projectPath + BMP_PATH + tempFile);
+		file = tempFile;
+	}
+	changeCursor(file);
+	if (!tempFile.empty()) unlink(tempFile.c_str());
 }
 
 /*
@@ -5512,13 +5541,20 @@ void killtimer(CALL_DATA &params)
 }
 
 /*
- * setmwintranslucency(...)
+ * void setMwinTranslucency(int percent)
  * 
- * Description.
+ * Set the translucency of the message window.
+ * 0% is invisible; 100% is opaque.
  */
 void setmwintranslucency(CALL_DATA &params)
 {
+	extern double g_messageWindowTranslucency;
 
+	if (params.params != 1)
+	{
+		throw CError("SetMwinTranslucency() requires one parameter.");
+	}
+	g_messageWindowTranslucency = params[0].getNum();
 }
 
 /*
