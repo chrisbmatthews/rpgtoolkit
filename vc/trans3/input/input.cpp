@@ -49,11 +49,30 @@ void processEvent(void)
 }
 
 /*
+ * Transform a char to an std::string, converting
+ * common characters to string representations.
+ */
+std::string getName(char chr)
+{
+	switch (chr)
+	{
+		case 13: return "ENTER";
+		case 27: return "ESC";
+		case 37: return "LEFT";
+		case 39: return "RIGHT";
+		case 38: return "UP";
+		case 40: return "DOWN";
+	}
+	const char toRet[] = {chr, '\0'};
+	return toRet;
+}
+
+/*
  * Wait for a key.
  *
  * return (out) - the key pressed
  */
-std::string waitForKey(void)
+std::string waitForKey()
 {
 	g_keys.clear();
 	while (g_keys.size() == 0)
@@ -62,16 +81,7 @@ std::string waitForKey(void)
 	}
 	const char chr = g_keys.front();
 	g_keys.erase(g_keys.begin());
-	switch (chr)
-	{
-		case 13: return "ENTER";
-		case 38: return "UP";
-		case 40: return "DOWN";
-		case 37: return "RIGHT";
-		case 39: return "LEFT";
-	}
-	const char toRet[] = {chr, '\0'};
-	return toRet;
+	return getName(chr);
 }
 
 /*
@@ -90,7 +100,7 @@ BOOL CALLBACK diEnumKeyboardProc(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
 /*
  * Initialize input.
  */
-void initInput(void)
+void initInput()
 {
 	if (g_lpdi) return;
 	extern HINSTANCE g_hInstance;
@@ -107,7 +117,7 @@ void initInput(void)
 /*
  * Close input.
  */
-void freeInput(void)
+void freeInput()
 {
 	if (!g_lpdi) return;
 	g_lpdiKeyboard->Unacquire();
@@ -120,7 +130,7 @@ void freeInput(void)
 /*
  * Scan for keys.
  */
-void scanKeys(void)
+void scanKeys()
 {
 	extern GAME_STATE g_gameState;
 	extern CSprite *g_pSelectedPlayer;
@@ -199,11 +209,11 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 	extern CSprite *g_pSelectedPlayer;
 	extern RECT g_screen;
 
-	// Switch on the message we're to process
+	// Switch on the message we're to process.
 	switch (msg)
 	{
 
-		// Window needs painting
+		// Window needs painting.
 		case WM_PAINT:
 		{
 
@@ -220,35 +230,49 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 		} break;
 
-		//Window was closed
+		//Window was closed.
 		case WM_DESTROY:
 		{
 			PostQuitMessage(EXIT_SUCCESS);
 		} break;
 
-		// Key down
+		// Key down.
 		case WM_KEYDOWN:
 		{
 			// Queue the key.
-			g_keys.push_back(char(wParam));
+			const char key = char(wParam);
+			g_keys.push_back(key);
+
+			const std::string strKey = getName(key);
+			informPluginEvent(key, -1, -1, -1, /*shift*/0, strKey, INPUT_KB);
 		} break;
 
-		// Mouse moved
+		// Mouse moved.
 		case WM_MOUSEMOVE:
 		{
-			// Handle the mouse move event
+			// Handle the mouse move event.
 			
 		} break;
 
-		// Left mouse button clicked
+		// Left mouse button clicked.
 		case WM_LBUTTONDOWN:
 		{
+			const int x = LOWORD(lParam), y = HIWORD(lParam);
 			g_pSelectedPlayer->clearQueue();
-			PF_PATH p = g_pSelectedPlayer->pathFind(LOWORD(lParam) + g_screen.left, HIWORD(lParam) + g_screen.top, PF_VECTOR);
+			PF_PATH p = g_pSelectedPlayer->pathFind(x + g_screen.left, y + g_screen.top, PF_VECTOR);
 			g_pSelectedPlayer->setQueuedPath(p);
+
+			informPluginEvent(-1, x, y, 1, /*shift*/0, "", INPUT_MOUSEDOWN);
 		} break;
 
-		// Window activated/deactivated
+		// Right mouse button clicked.
+		case WM_RBUTTONDOWN:
+		{
+			const int x = LOWORD(lParam), y = HIWORD(lParam);
+			informPluginEvent(-1, x, y, 2, /*shift*/0, "", INPUT_MOUSEDOWN);
+		} break;
+
+		// Window activated/deactivated.
 		case WM_ACTIVATE:
 		{
 			if (wParam != WA_INACTIVE)

@@ -17,11 +17,17 @@
 #include <string>
 
 /*
+ * Transform a char to an std::string, converting
+ * common characters to string representations.
+ */
+std::string getName(char chr);
+
+/*
  * Wait for a key.
  *
  * return (out) - the key pressed
  */
-std::string waitForKey(void);
+std::string waitForKey();
 
 /*
  * Host window event processor.
@@ -35,11 +41,11 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 /*
  * Scan for keys.
  */
-void scanKeys(void);
+void scanKeys();
 
 /*
  * Process an event from the message queue.
  */
-void processEvent(void);
+void processEvent();
 
 #endif

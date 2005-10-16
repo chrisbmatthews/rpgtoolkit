@@ -11,9 +11,11 @@ static ICallbacks *g_pCallbacks = NULL;
 #include "oldCallbacks.h"
 #include <atlbase.h>
 #include <vector>
+#include <set>
 #include "../common/mbox.h"
 
 static std::vector<int> g_oldCallbacks;
+static std::set<IPluginInput *> g_inputPlugins;
 
 /*
  * Load a plugin.
@@ -21,7 +23,7 @@ static std::vector<int> g_oldCallbacks;
 IPlugin *loadPlugin(const std::string file)
 {
 	const int backslash = file.find_last_of('\\') + 1;
-	const std::string name = file.substr(backslash, file.length() - (4 + backslash));
+	const std::string name = file.substr(backslash, file.length() - 4 - backslash);
 	if (name.empty()) return NULL;
 
 	HMODULE mod = LoadLibrary(file.c_str());
@@ -46,7 +48,7 @@ IPlugin *loadPlugin(const std::string file)
 		return NULL;
 	}
 
-	if (FAILED(((HRESULT (__stdcall *)(void))pReg)()))
+	if (FAILED(((HRESULT (__stdcall *)())pReg)()))
 	{
 		messageBox("An error occurred while registering " + file + ".");
 		FreeLibrary(mod);
@@ -75,9 +77,24 @@ IPlugin *loadPlugin(const std::string file)
 }
 
 /*
+ * Inform applicable plugins of an event.
+ */
+void informPluginEvent(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type)
+{
+	std::set<IPluginInput *>::iterator i = g_inputPlugins.begin();
+	for (; i != g_inputPlugins.end(); ++i)
+	{
+		if ((*i)->inputRequested(type))
+		{
+			(*i)->eventInform(keyCode, x, y, button, shift, key, type);
+		}
+	}
+}
+
+/*
  * Initialize the plugin system.
  */
-void initPluginSystem(void)
+void initPluginSystem()
 {
 	if (g_pCallbacks) return;
 	CoCreateInstance(CLSID_Callbacks, NULL, CLSCTX_INPROC_SERVER, IID_ICallbacks, (void **)&g_pCallbacks);
@@ -220,7 +237,7 @@ void initPluginSystem(void)
 /*
  * Shut down the plugin system.
  */
-void freePluginSystem(void)
+void freePluginSystem()
 {
 	if (!g_pCallbacks) return;
 	g_pCallbacks->Release();
@@ -231,12 +248,12 @@ void freePluginSystem(void)
 /*
  * Default constructor.
  */
-CComPlugin::CComPlugin(void)
+CComPlugin::CComPlugin()
 {
 	m_plugin = NULL;
 }
 
-COldPlugin::COldPlugin(void)
+COldPlugin::COldPlugin()
 {
 	m_hModule = NULL;
 }
@@ -326,19 +343,24 @@ bool COldPlugin::load(const std::string file)
 	m_plugFightInform = FIGHT_INFORM_PROC(GetProcAddress(m_hModule, TEXT("TKPlugFightInform")));
 	m_plugInputRequested = INPUT_REQUESTED_PROC(GetProcAddress(m_hModule, TEXT("TKPlugInputRequested")));
 	m_plugEventInform = EVENT_INFORM_PROC(GetProcAddress(m_hModule, TEXT("TKPlugEventInform")));
+	if (m_plugInputRequested)
+	{
+		// This plugin accepts 'special' input.
+		g_inputPlugins.insert(this);
+	}
 	return true;
 }
 
 /*
  * Initialize the plugin.
  */
-void CComPlugin::initialize(void)
+void CComPlugin::initialize()
 {
 	if (!m_plugin) return;
 	m_plugin->initialize();
 }
 
-void COldPlugin::initialize(void)
+void COldPlugin::initialize()
 {
 	if (!m_hModule) return;
 	m_plugBegin();
@@ -347,13 +369,13 @@ void COldPlugin::initialize(void)
 /*
  * Terminate the plugin.
  */
-void CComPlugin::terminate(void)
+void CComPlugin::terminate()
 {
 	if (!m_plugin) return;
 	m_plugin->terminate();
 }
 
-void COldPlugin::terminate(void)
+void COldPlugin::terminate()
 {
 	if (!m_hModule) return;
 	m_plugEnd();
@@ -481,9 +503,37 @@ bool COldPlugin::plugType(const int request)
 }
 
 /*
+ * Determine whether this plugin requested input.
+ */
+bool COldPlugin::inputRequested(const int type)
+{
+	if (m_plugInputRequested)
+	{
+#pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
+		return m_plugInputRequested(type);
+#pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
+	}
+	return false;
+}
+
+/*
+ * Inform this plugin that an event occurred.
+ */
+bool COldPlugin::eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type)
+{
+	if (m_plugEventInform)
+	{
+#pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
+		return m_plugEventInform(keyCode, x, y, button, shift, (char *)key.c_str(), type);
+#pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
+	}
+	return true;
+}
+
+/*
  * Unload a plugin.
  */
-void CComPlugin::unload(void)
+void CComPlugin::unload()
 {
 	if (m_plugin)
 	{
@@ -492,10 +542,14 @@ void CComPlugin::unload(void)
 	}
 }
 
-void COldPlugin::unload(void)
+void COldPlugin::unload()
 {
 	if (m_hModule)
 	{
+		if (m_plugInputRequested)
+		{
+			g_inputPlugins.erase(this);
+		}
 		FreeLibrary(m_hModule);
 		m_hModule = NULL;
 	}

@@ -560,20 +560,7 @@ void get(CALL_DATA &params)
 	}
 	const char chr = g_keys.front();
 	g_keys.erase(g_keys.begin());
-	std::string toRet;
-	switch (chr)
-	{
-		case 13: toRet = "ENTER"; break;
-		case 38: toRet = "UP"; break;
-		case 40: toRet = "DOWN"; break;
-		case 37: toRet = "RIGHT"; break;
-		case 39: toRet = "LEFT"; break;
-	}
-	if (toRet.empty())
-	{
-		const char str[] = {chr, '\0'};
-		toRet = str;
-	}
+	const std::string toRet = getName(chr);
 	if (params.params == 1)
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);

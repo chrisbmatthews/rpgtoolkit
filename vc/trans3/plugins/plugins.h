@@ -14,36 +14,40 @@
 #include <string>
 
 // Plugin types.
-#define PT_RPGCODE 1	// RPGCode plugin
-#define PT_MENU 2		// Menu plugin
-#define PT_FIGHT 4		// Fight plugin
+#define PT_RPGCODE 1		// RPGCode plugin
+#define PT_MENU 2			// Menu plugin
+#define PT_FIGHT 4			// Fight plugin
+
+// Input types.
+#define INPUT_KB 0			// Keyboard input
+#define INPUT_MOUSEDOWN 1	// Mouse down
 
 // Initialize the plugin system.
-void initPluginSystem(void);
+void initPluginSystem();
 
 // Shut down the plugin system.
-void freePluginSystem(void);
+void freePluginSystem();
 
 // Any plugin.
 class IPlugin
 {
 public:
-	virtual void initialize(void) = 0;
-	virtual void terminate(void) = 0;
+	virtual void initialize() = 0;
+	virtual void terminate() = 0;
 	virtual bool query(const std::string function) = 0;
 	virtual bool execute(const std::string line, int &retValDt, std::string &retValLit, double &retValNum, const short usingReturn) = 0;
 	virtual int fight(const int enemyCount, const int skillLevel, const std::string background, const bool canRun) = 0;
 	virtual int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const std::string strMessage, const int attackCode) = 0;
 	virtual int menu(const int request) = 0;
 	virtual bool plugType(const int request) = 0;
-	virtual ~IPlugin(void) { }
+	virtual ~IPlugin() { }
 };
 
 // Interface of a COM plugin.
 interface __declspec(novtable) IComPlugin : public IDispatch
 {
-	virtual HRESULT STDMETHODCALLTYPE initialize(void) = 0;
-	virtual HRESULT STDMETHODCALLTYPE terminate(void) = 0;
+	virtual HRESULT STDMETHODCALLTYPE initialize() = 0;
+	virtual HRESULT STDMETHODCALLTYPE terminate() = 0;
 	virtual HRESULT STDMETHODCALLTYPE version(BSTR __RPC_FAR *) = 0;
 	virtual HRESULT STDMETHODCALLTYPE description(BSTR __RPC_FAR *) = 0;
 	virtual HRESULT STDMETHODCALLTYPE type(int, VARIANT_BOOL __RPC_FAR *) = 0;
@@ -55,18 +59,25 @@ interface __declspec(novtable) IComPlugin : public IDispatch
 	virtual HRESULT STDMETHODCALLTYPE put_setCallbacks(IDispatch __RPC_FAR *) = 0;
 };
 
+// A plugin that accepts input using the special methods.
+interface IPluginInput
+{
+	virtual bool inputRequested(const int type) = 0;
+	virtual bool eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type) = 0;
+};
+
 // A COM based plugin.
 class CComPlugin : public IPlugin
 {
 public:
-	CComPlugin(void);
+	CComPlugin();
 	CComPlugin(const std::wstring cls);
-	~CComPlugin(void) { unload(); }
+	~CComPlugin() { unload(); }
 	bool load(const std::wstring cls);
-	void unload(void);
+	void unload();
 
-	void initialize(void);
-	void terminate(void);
+	void initialize();
+	void terminate();
 	bool query(const std::string function);
 	bool execute(const std::string line, int &retValDt, std::string &retValLit, double &retValNum, const short usingReturn);
 	int fight(const int enemyCount, const int skillLevel, const std::string background, const bool canRun);
@@ -81,12 +92,12 @@ private:
 };
 
 // Typedefs for old plugins.
-typedef long (__stdcall *VERSION_PROC)(void);
+typedef long (__stdcall *VERSION_PROC)();
 typedef int (__stdcall *INIT_PROC)(int *pCbArray, int nCallbacks);
-typedef void (__stdcall *BEGIN_PROC)(void);
+typedef void (__stdcall *BEGIN_PROC)();
 typedef int (__stdcall *QUERY_PROC)(char *pstrQuery);
 typedef int (__stdcall *EXECUTE_PROC)(char *pstrCommand);
-typedef void (__stdcall *END_PROC)(void);
+typedef void (__stdcall *END_PROC)();
 typedef int (__stdcall *TYPE_PROC)(int nRequestedFeature);
 typedef int (__stdcall *MENU_PROC)(int nRequestedMenu);
 typedef int (__stdcall *FIGHT_PROC)(int nEnemyCount, int nSkillLevel, char *pstrBackground, int nCanRun);
@@ -95,23 +106,25 @@ typedef int (__stdcall *INPUT_REQUESTED_PROC)(int nCode);
 typedef int (__stdcall *EVENT_INFORM_PROC)(int nKeyCode, int nX, int nY, int nButton, int nShift, char *pstrKey, int nCode);
 
 // An old plugin.
-class COldPlugin : public IPlugin
+class COldPlugin : public IPlugin, public IPluginInput
 {
 public:
-	COldPlugin(void);
+	COldPlugin();
 	COldPlugin(const std::string file);
-	~COldPlugin(void) { unload(); }
+	~COldPlugin() { unload(); }
 	bool load(const std::string file);
-	void unload(void);
+	void unload();
 
-	void initialize(void);
-	void terminate(void);
+	void initialize();
+	void terminate();
 	bool query(const std::string function);
 	bool execute(const std::string line, int &retValDt, std::string &retValLit, double &retValNum, const short usingReturn);
 	int fight(const int enemyCount, const int skillLevel, const std::string background, const bool canRun);
 	int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const std::string strMessage, const int attackCode);
 	int menu(const int request);
 	bool plugType(const int request);
+	bool inputRequested(const int type);
+	bool eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type);
 
 private:
 	COldPlugin(const COldPlugin &rhs);
@@ -131,6 +144,9 @@ private:
 
 // Load a plugin.
 IPlugin *loadPlugin(const std::string file);
+
+// Inform applicable plugins of an event.
+void informPluginEvent(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type);
 
 inline std::string getString(const BSTR bstr)
 {
