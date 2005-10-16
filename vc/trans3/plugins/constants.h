@@ -290,6 +290,7 @@
 
 // RPGCode data types
 /////////////////////////////////////////////////////////////////////////////
+#define PLUG_DT_VOID			-1		// Void data
 #define PLUG_DT_NUM				0		// Numerical data
 #define PLUG_DT_LIT				1		// Literal data
 

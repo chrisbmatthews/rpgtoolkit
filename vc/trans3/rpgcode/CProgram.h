@@ -31,7 +31,8 @@ typedef enum tagUnitDataType
 	UDT_CLOSE = 64,		// Closing brace.
 	UDT_LINE = 128,		// Final unit of a statement.
 	UDT_OBJ = 256,		// An object.
-	UDT_LABEL = 512		// A label.
+	UDT_LABEL = 512,	// A label.
+	UDT_PLUGIN = 1024	// A plugin call.
 } UNIT_DATA_TYPE;
 
 class CProgram;
@@ -249,6 +250,7 @@ private:
 	static void untilLoop(CALL_DATA &);
 	static void forLoop(CALL_DATA &);
 	static void methodCall(CALL_DATA &);
+	static void pluginCall(CALL_DATA &);
 	static void returnVal(CALL_DATA &);
 	static void classFactory(CALL_DATA &);
 
@@ -264,6 +266,7 @@ private:
 	unsigned int matchBrace(POS i);
 	void include(const std::string file);
 	void prime();
+	bool resolvePluginCall(POS unit);
 
 protected:
 	MACHINE_UNITS m_units;

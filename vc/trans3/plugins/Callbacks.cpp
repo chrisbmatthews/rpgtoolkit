@@ -46,6 +46,7 @@ static CAllocationHeap<ANIMATION> g_animations;
 static HDC g_hScreenDc = NULL;
 std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 std::string g_menuGraphic, g_fightMenuGraphic;
+CProgram *g_prg = NULL;
 
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
@@ -57,7 +58,9 @@ STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 
 STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 {
-	BSTR bstr = getString(CProgram::getGlobal(getString(varname))->getLit());
+	const std::string var = getString(varname);
+	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
+	BSTR bstr = getString(pVar->getLit());
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
 	return S_OK;
@@ -65,23 +68,27 @@ STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 {
-	*pRet = CProgram::getGlobal(getString(varname))->getNum();
+	const std::string var = getString(varname);
+	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
+	*pRet = pVar->getNum();
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 {
-	LPSTACK_FRAME var = CProgram::getGlobal(getString(varname));
-	var->udt = UDT_LIT;
-	var->lit = getString(newValue);
+	const std::string var = getString(varname);
+	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
+	pVar->udt = UDT_LIT;
+	pVar->lit = getString(newValue);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetNumerical(BSTR varname, double newValue)
 {
-	LPSTACK_FRAME var = CProgram::getGlobal(getString(varname));
-	var->udt = UDT_NUM;
-	var->num = newValue;
+	const std::string var = getString(varname);
+	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
+	pVar->udt = UDT_NUM;
+	pVar->num = newValue;
 	return S_OK;
 }
 
@@ -342,6 +349,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 		case GEN_PLAYERFILES:
 			// No way to get it, Jon.
 			// That's the great thing about encapsulation, Colin.
+			// Your style of 'encapsulation', at least.
 			break;
 		case GEN_PLYROTHERHANDLES:
 			break;
@@ -551,20 +559,76 @@ STDMETHODIMP CCallbacks::CBGetBrackets(BSTR rpgcodeCommand, BSTR *pRet)
 	return S_OK;
 }
 
+void getParameters(const std::string str, std::vector<std::string> &ret)
+{
+	int pos = str.find('(') + 1;
+	const int initPos = pos;
+	bool bQuotes = false;
+	unsigned int i;
+	for (i = pos; i < str.length(); ++i)
+	{
+		const char &c = str[i];
+		if (c == '"') bQuotes = !bQuotes;
+		else if (!bQuotes)
+		{
+			if (c == ',')
+			{
+				ret.push_back(str.substr(pos, i - pos));
+				pos = i + 1;
+			}
+			else if (c == ')') break;
+		}
+	}
+	const std::string push = str.substr(pos, i - pos);
+	if (!push.empty())
+	{
+		ret.push_back(push);
+	}
+}
+
 STDMETHODIMP CCallbacks::CBCountBracketElements(BSTR rpgcodeCommand, int *pRet)
 {
+	const std::string str = getString(rpgcodeCommand);
+	std::vector<std::string> parts;
+	getParameters(str, parts);
+	*pRet = parts.size();
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetBracketElement(BSTR rpgcodeCommand, int elemNum, BSTR *pRet)
 {
+	const std::string str = getString(rpgcodeCommand);
+	std::vector<std::string> parts;
+	getParameters(str, parts);
+	if (parts.size() > --elemNum)
+	{
+		BSTR bstr = getString(parts[elemNum]);
+		SysReAllocString(pRet, bstr);
+		SysFreeString(bstr);
+	}
+	else
+	{
+		SysReAllocString(pRet, L"");
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetStringElementValue(BSTR rpgcodeCommand, BSTR *pRet)
 {
 	const std::string str = getString(rpgcodeCommand);
-	BSTR bstr = getString(str.substr(1, str.length() - 2));
+	std::string ret;
+	char c = str[str.length() - 1];
+	if (c == '$')
+	{
+		const std::string var = str.substr(0, str.length() - 1);
+		ret = g_prg->getVar(var)->getLit();
+	}
+	else
+	{
+		ret = str.substr(1, str.length() - 2);
+	}
+
+	BSTR bstr = getString(ret);
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
 	return S_OK;
@@ -572,13 +636,37 @@ STDMETHODIMP CCallbacks::CBGetStringElementValue(BSTR rpgcodeCommand, BSTR *pRet
 
 STDMETHODIMP CCallbacks::CBGetNumElementValue(BSTR rpgcodeCommand, double *pRet)
 {
-	*pRet = atof(getString(rpgcodeCommand).c_str());
+	const std::string str = getString(rpgcodeCommand);
+	char c = str[str.length() - 1];
+	if (c == '!')
+	{
+		const std::string var = str.substr(0, str.length() - 1);
+		*pRet = g_prg->getVar(var)->getNum();
+	}
+	else
+	{
+		*pRet = atof(str.c_str());
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetElementType(BSTR data, int *pRet)
 {
-	*pRet = ((getString(data)[0] == '"') ? PLUG_DT_LIT : PLUG_DT_NUM);
+	const std::string str = getString(data);
+	if (str[0] == '"')
+	{
+		*pRet = PLUG_DT_LIT;
+	}
+	else
+	{
+		char c = str[str.length() - 1];
+		if (c == '!') *pRet = PLUG_DT_NUM;
+		else if (c == '$') *pRet = PLUG_DT_LIT;
+		else
+		{
+			*pRet = PLUG_DT_NUM;
+		}
+	}
 	return S_OK;
 }
 

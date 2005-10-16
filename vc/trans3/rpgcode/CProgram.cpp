@@ -11,6 +11,7 @@
 #include "CProgram.h"
 #include "CVariant.h"
 #include "../plugins/plugins.h"
+#include "../plugins/constants.h"
 #include "../common/mbox.h"
 #include "../common/paths.h"
 #include "../input/input.h"
@@ -448,6 +449,58 @@ void CProgram::methodCall(CALL_DATA &call)
 	call.prg->m_calls.push_back(fr);
 }
 
+// Handle a plugin call.
+void CProgram::pluginCall(CALL_DATA &call)
+{
+	extern CProgram *g_prg;
+
+	// Get the plugin.
+	STACK_FRAME &fra = call[call.params - 1];
+	IPlugin *pPlugin = m_plugins[(unsigned int)fra.num];
+
+	// Prepare the command line.
+	std::string line = fra.lit + '(';
+	for (unsigned int i = 0; i < (call.params - 1); ++i)
+	{
+		STACK_FRAME &param = call[i];
+		if (param.udt & UDT_NUM)
+		{
+			line += param.getLit();
+		}
+		else if (param.udt & UDT_LIT)
+		{
+			line += '"' + param.lit + '"';
+		}
+		else if (param.udt & UDT_ID)
+		{
+			line += param.lit + ((param.getType() & UDT_NUM) ? '!' : '$');
+		}
+		if (i != call.params - 2)
+		{
+			line += ',';
+		}
+	}
+	line += ')';
+
+	// Call the function.
+	CProgram *const prg = g_prg;
+	g_prg = call.prg;
+	int dt = PLUG_DT_VOID; std::string lit; double num = 0.0;
+	pPlugin->execute(line, dt, lit, num, (call.prg->m_i->udt & UDT_LINE) ? VARIANT_FALSE : VARIANT_TRUE);
+	g_prg = prg;
+
+	if (dt == PLUG_DT_NUM)
+	{
+		call.ret().udt = UDT_NUM;
+		call.ret().num = num;
+	}
+	else if (dt == PLUG_DT_LIT)
+	{
+		call.ret().udt = UDT_LIT;
+		call.ret().lit = lit;
+	}
+}
+
 void CProgram::returnVal(CALL_DATA &call)
 {
 	if (!call.prg->m_calls.size()) return;
@@ -550,6 +603,11 @@ bool CProgram::open(const std::string fileName)
 			}
 			else if ((mu.udt & UDT_LIT) || (mu.udt & UDT_ID) || (mu.udt & UDT_LABEL))
 			{
+				mu.lit = freadString(file);
+			}
+			else if (mu.udt & UDT_PLUGIN)
+			{
+				fread(&mu.num, sizeof(double), 1, file);
 				mu.lit = freadString(file);
 			}
 			else if (mu.udt & UDT_FUNC)
@@ -899,12 +957,48 @@ void CProgram::parseFile(FILE *pFile)
 				unit->udt = UDT_NUM;
 				unit->num = p->i;
 			}
+			else if (resolvePluginCall(unit))
+			{
+				// Found it in a plugin.
+				i->func = pluginCall;
+			}
 			else
 			{
-				// Check plugins.
+				// Could not find function.
+				char str[255]; itoa(getLine(i), str, 10);
+				debugger(std::string("Near line ") + str + ": Could not find function \"" + unit->lit + "\".");
+				i->func = NULL;
 			}
 		}
 	}
+}
+
+// Resolve a plugin call.
+bool CProgram::resolvePluginCall(POS unit)
+{
+	// Get lowercase name.
+	char *const lwr = _strlwr(_strdup(unit->lit.c_str()));
+	const std::string name = lwr;
+	free(lwr);
+
+	// Query plugins.
+	std::vector<IPlugin *>::iterator i = m_plugins.begin();
+	for (; i != m_plugins.end(); ++i)
+	{
+		if ((*i)->plugType(PT_RPGCODE) && (*i)->query(name))
+		{
+			// Refer to the plugin by its index in the list
+			// of plugins. This is bad, but it will have to
+			// do for now.
+			unit->udt = UDT_PLUGIN;
+			unit->num = i - m_plugins.begin();
+			unit->lit = name;
+			return true;
+		}
+	}
+
+	// It wasn't a plugin call.
+	return false;
 }
 
 // Match a curly brace pair.
@@ -1038,6 +1132,11 @@ void CProgram::save(const std::string fileName) const
 		{
 			fwrite(i->lit.c_str(), sizeof(char), i->lit.length() + 1, file);
 		}
+		else if (i->udt & UDT_PLUGIN)
+		{
+			fwrite(&i->num, sizeof(double), 1, file);
+			fwrite(i->lit.c_str(), sizeof(char), i->lit.length() + 1, file);
+		}
 		else if (i->udt & UDT_FUNC)
 		{
 			const int funcId = funcs[i->func];
@@ -1108,20 +1207,23 @@ void tagMachineUnit::execute(CProgram *prg) const
 	if (udt & UDT_FUNC)
 	{
 		prg->m_pStack->push_back(prg);
-		try
+		if (func)
 		{
-			CALL_DATA call = {params, &prg->m_pStack->back() - params, prg};
-			func(call);
-		}
-		catch (CException exp)
-		{
-			char str[255]; itoa(prg->getLine(prg->m_i), str, 10);
-			CProgram::debugger(std::string("Near line ") + str + ": " + exp.getMessage());
-		}
-		catch (...)
-		{
-			char str[255]; itoa(prg->getLine(prg->m_i), str, 10);
-			CProgram::debugger(std::string("Near line ") + str + ": Unexpected error.");
+			try
+			{
+				CALL_DATA call = {params, &prg->m_pStack->back() - params, prg};
+				func(call);
+			}
+			catch (CException exp)
+			{
+				char str[255]; itoa(prg->getLine(prg->m_i), str, 10);
+				CProgram::debugger(std::string("Near line ") + str + ": " + exp.getMessage());
+			}
+			catch (...)
+			{
+				char str[255]; itoa(prg->getLine(prg->m_i), str, 10);
+				CProgram::debugger(std::string("Near line ") + str + ": Unexpected error.");
+			}
 		}
 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
 	}
@@ -1679,6 +1781,9 @@ void CProgram::classFactory(CALL_DATA &call)
 
 void CProgram::initialize()
 {
+	// Special.
+	addFunction(" null", NULL);
+
 	// Operators.
 	addFunction("+", operators::add);
 	addFunction("-", operators::sub);
@@ -1726,6 +1831,7 @@ void CProgram::initialize()
 	// Reserved.
 	addFunction("method a", skipMethod);
 	addFunction("method b", methodCall);
+	addFunction(" plugin", pluginCall);
 	addFunction("class a", skipClass);
 	addFunction("class b", classFactory);
 	addFunction("if", conditional);
