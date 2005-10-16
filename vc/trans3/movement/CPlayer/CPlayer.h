@@ -41,6 +41,9 @@ public:
 	std::string getStanceAnimation(const std::string anim) { return m_attr.getStanceAnm(anim); }
 
 	// This is ridiculous! Make them public!
+	// Be my guest! IFigher is using functions because it
+	// is implemented differently in players and enemies, not
+	// because I love pointless functions!
 	int equipmentDP(void) const { return m_equipment.mDP; }
 	int equipmentFP(void) const { return m_equipment.mFP; }
 	int equipmentHP(void) const { return m_equipment.mHP; }
