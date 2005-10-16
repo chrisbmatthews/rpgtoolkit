@@ -7,7 +7,7 @@
 %{
 unsigned int g_lines = 0;
 
-#define _END_FILE_LINE ++g_lines; CProgram::m_pLines->push_back(CProgram::m_pyyUnits->size() - 1)
+#define _END_FILE_LINE ++g_lines; CProgram::m_pLines->push_back(CProgram::m_pyyUnits->size() - 1)/**; std::cerr << "line " << g_lines << "\n"**/
 %}
 
 %%

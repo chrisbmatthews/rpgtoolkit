@@ -23,7 +23,6 @@ public:
 		if (p->first.empty())
 		{
 			ITEM itm;
-			SPRITE_ATTR attr;
 			if (!itm.open(file, NULL)) return;
 			p->first = itm.itemName;
 			p->second = 1;

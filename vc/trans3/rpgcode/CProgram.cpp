@@ -253,7 +253,7 @@ std::string CProgram::getFunctionName(const MACHINE_FUNC func)
 // Show the contents of the instruction unit.
 inline void tagMachineUnit::show() const
 {
-	std::cout	<< "Lit: " << lit
+	std::cerr	<< "Lit: " << lit
 				<< "\nNum: " << num
 				<< "\nType: " << udt
 				<< "\nFunc: " << CProgram::getFunctionName(func)
@@ -393,11 +393,25 @@ void CProgram::methodCall(CALL_DATA &call)
 		}
 	}
 
+	// Push a new local heap onto the stack of heaps for this method.
 	call.prg->m_locals.push_back(local);
 
+	// Record the current position in the program.
+	fr.i = call.prg->m_i - call.prg->m_units.begin();
+
+	// The final parameter has the line this method begins on.
+	const unsigned int firstLine = (unsigned int)call[call.params - 1].num;
+
+	// Push a new stack onto the stack of stacks for this method.
+	// It should be a copy of the stack being used at the time of
+	// this call so that the remainder of tagMachineUnit::execute()
+	// is able to pop off the parameters for this method without
+	// crashing.
 	call.prg->m_stack.push_back(call.prg->m_stack.back());
 
-	fr.i = call.prg->m_i - call.prg->m_units.begin();
+	// Pop the parameters of this method off the current stack, as
+	// they will not be popped off by tagMachineUnit::execute().
+	call.prg->m_pStack->erase(call.prg->m_pStack->end() - call.params - 1, call.prg->m_pStack->end() - 1);
 
 	if (bNoRet)
 	{
@@ -405,24 +419,32 @@ void CProgram::methodCall(CALL_DATA &call)
 	}
 	else if (call.prg->m_i->udt & UDT_LINE)
 	{
+		// This call is the last thing on a line, so its
+		// value is not being used. Do not bother setting
+		// up a return value.
 		fr.bReturn = false;
 		fr.p = NULL;
 	}
 	else
 	{
+		// Set the return pointer to the stack frame
+		// that this call would use to return.
 		fr.bReturn = true;
 		fr.p = &call.prg->m_pStack->back();
-		fr.p->udt = UDT_NUM;
+		fr.p->udt = UNIT_DATA_TYPE(UDT_NUM | UDT_UNSET);
 		fr.p->num = 0.0;
 	}
 
-	call.prg->m_pStack->erase(call.prg->m_pStack->end() - call.params - 1, call.prg->m_pStack->end() - 1);
-
+	// Set the stack pointer to this method's stack.
 	call.prg->m_pStack = &call.prg->m_stack.back();
-	call.prg->m_i = call.prg->m_units.begin() + (unsigned int)call[call.params - 1].num;
 
+	// Jump to the first line of this method.
+	call.prg->m_i = call.prg->m_units.begin() + firstLine;
+
+	// Record the last line of this method.
 	fr.j = (unsigned int)call.prg->m_i->num;
 
+	// Push this call onto the call stack.
 	call.prg->m_calls.push_back(fr);
 }
 
@@ -432,6 +454,7 @@ void CProgram::returnVal(CALL_DATA &call)
 	if (call.prg->m_calls.back().p)
 	{
 		*call.prg->m_calls.back().p = call[0].getValue();
+		//std::cerr << "ret: " << call.prg->m_stack[call.prg->m_stack.size() - 2].back().getLit() << std::endl;
 	}
 	call.prg->m_i = call.prg->m_units.begin() + call.prg->m_calls.back().j - 1;
 }
@@ -736,6 +759,7 @@ void CProgram::parseFile(FILE *pFile)
 				i = m_units.insert(j, mu) + 1 + dec;
 				i = m_units.erase(unit);
 				i->func = operators::assign;
+				++i;
 			}
 			else if (unit->lit == "case")
 			{
@@ -1030,15 +1054,26 @@ void CProgram::run()
 {
 	extern void programInit(), programFinish();
 
-	++CProgram::m_runningPrograms;
+	++m_runningPrograms;
 	programInit();
+
+	//std::cerr << "\n============================================\n\n";
+
+	//for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
+	//{
+	//	m_i->show();
+	//}
+
+	//std::cerr << "\n============================================\n\n";
+
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
+		//m_i->show();
 		m_i->execute(this);
 		processEvent();
 	}
 	programFinish();
-	--CProgram::m_runningPrograms;
+	--m_runningPrograms;
 }
 
 // Execute one unit from a program.

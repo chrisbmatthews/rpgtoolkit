@@ -49,8 +49,6 @@ std::string g_menuGraphic, g_fightMenuGraphic;
 
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
-	extern CGDICanvas *g_cnvRpgCode;
-	g_pDirectDraw->CopyScreenToCanvas(g_cnvRpgCode);
 	CProgram prg;
 	prg.loadFromString(getString(rpgcodeCommand));
 	prg.run();
