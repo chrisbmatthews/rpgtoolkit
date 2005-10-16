@@ -105,6 +105,18 @@ unsigned long CThread::sleepRemaining() const
 	return (m_sleepDuration - (GetTickCount() - m_sleepBegin));
 }
 
+// Execute one unit from a program.
+bool CThread::execute()
+{
+	if (m_i != m_units.end())
+	{
+		m_i->execute(this);
+		++m_i;
+		return true;
+	}
+	return false;
+}
+
 // Show the debugger.
 void CProgram::debugger(const std::string str)
 {
@@ -607,8 +619,9 @@ bool CProgram::open(const std::string fileName)
 			}
 			else if (mu.udt & UDT_PLUGIN)
 			{
-				fread(&mu.num, sizeof(double), 1, file);
 				mu.lit = freadString(file);
+				// Resolve this plugin call.
+				resolvePluginCall(&mu);
 			}
 			else if (mu.udt & UDT_FUNC)
 			{
@@ -957,7 +970,7 @@ void CProgram::parseFile(FILE *pFile)
 				unit->udt = UDT_NUM;
 				unit->num = p->i;
 			}
-			else if (resolvePluginCall(unit))
+			else if (resolvePluginCall(&*unit))
 			{
 				// Found it in a plugin.
 				i->func = pluginCall;
@@ -974,10 +987,10 @@ void CProgram::parseFile(FILE *pFile)
 }
 
 // Resolve a plugin call.
-bool CProgram::resolvePluginCall(POS unit)
+bool CProgram::resolvePluginCall(LPMACHINE_UNIT pUnit)
 {
 	// Get lowercase name.
-	char *const lwr = _strlwr(_strdup(unit->lit.c_str()));
+	char *const lwr = _strlwr(_strdup(pUnit->lit.c_str()));
 	const std::string name = lwr;
 	free(lwr);
 
@@ -988,11 +1001,10 @@ bool CProgram::resolvePluginCall(POS unit)
 		if ((*i)->plugType(PT_RPGCODE) && (*i)->query(name))
 		{
 			// Refer to the plugin by its index in the list
-			// of plugins. This is bad, but it will have to
-			// do for now.
-			unit->udt = UDT_PLUGIN;
-			unit->num = i - m_plugins.begin();
-			unit->lit = name;
+			// of plugins.
+			pUnit->udt = UDT_PLUGIN;
+			pUnit->num = i - m_plugins.begin();
+			pUnit->lit = name;
 			return true;
 		}
 	}
@@ -1128,13 +1140,8 @@ void CProgram::save(const std::string fileName) const
 		{
 			fwrite(&i->num, sizeof(double), 1, file);
 		}
-		else if ((i->udt & UDT_LIT) || (i->udt & UDT_ID) || (i->udt & UDT_LABEL))
+		else if ((i->udt & UDT_LIT) || (i->udt & UDT_ID) || (i->udt & UDT_LABEL) || (i->udt & UDT_PLUGIN))
 		{
-			fwrite(i->lit.c_str(), sizeof(char), i->lit.length() + 1, file);
-		}
-		else if (i->udt & UDT_PLUGIN)
-		{
-			fwrite(&i->num, sizeof(double), 1, file);
 			fwrite(i->lit.c_str(), sizeof(char), i->lit.length() + 1, file);
 		}
 		else if (i->udt & UDT_FUNC)
@@ -1173,18 +1180,6 @@ void CProgram::run()
 	}
 	programFinish();
 	--m_runningPrograms;
-}
-
-// Execute one unit from a program.
-bool CThread::execute()
-{
-	if (m_i != m_units.end())
-	{
-		m_i->execute(this);
-		++m_i;
-		return true;
-	}
-	return false;
 }
 
 // Jump to a label.

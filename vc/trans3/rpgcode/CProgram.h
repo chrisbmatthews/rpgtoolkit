@@ -266,7 +266,7 @@ private:
 	unsigned int matchBrace(POS i);
 	void include(const std::string file);
 	void prime();
-	bool resolvePluginCall(POS unit);
+	static bool resolvePluginCall(LPMACHINE_UNIT pUnit);
 
 protected:
 	MACHINE_UNITS m_units;
