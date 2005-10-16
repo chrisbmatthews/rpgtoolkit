@@ -107,4 +107,6 @@ bool drawTileCnv(CGDICanvas *cnv,
 				 const bool bIsometric = false, 
 				 const bool isoEvenOdd = false);
 
+void changeCursor(const std::string strCursor);
+
 #endif

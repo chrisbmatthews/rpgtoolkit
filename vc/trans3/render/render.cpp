@@ -47,10 +47,11 @@ std::vector<CTile *> g_tiles;				// Cache of tiles.
 CGDICanvas *g_cnvRpgCode = NULL;			// RPGCode canvas.
 CGDICanvas *g_cnvMessageWindow = NULL;		// RPGCode message window.
 CGDICanvas *g_cnvCursor = NULL;				// Cursor used on maps &c.
-std::vector<CGDICanvas *>g_cnvRpgScreens;	// SaveScreen() array.
-std::vector<CGDICanvas *>g_cnvRpgScans;		// Scan() array...
+std::vector<CGDICanvas *> g_cnvRpgScreens;	// SaveScreen() array.
+std::vector<CGDICanvas *> g_cnvRpgScans;	// Scan() array...
 
 bool g_bShowMessageWindow = false;			// Show the message window?
+double g_messageWindowTranslucency = 0.5;	// Message window translucency.
 double g_translucentOpacity = 0.30;			// Opacity to draw translucent sprites at.
 
 RECT g_screen = {0, 0, 0, 0};				// = {g_topX, g_topY, g_resX + g_topX, g_resY + g_topY}
@@ -65,7 +66,14 @@ void renderRpgCodeScreen(void)
 	if (g_bShowMessageWindow)
 	{
 		extern COLORREF g_color;
-		g_pDirectDraw->DrawCanvasTranslucent(g_cnvMessageWindow, (g_tilesX * 32.0 - 600.0) * 0.5, 0, 0.5, g_color, -1);
+		if (g_messageWindowTranslucency != 1.0)
+		{
+			g_pDirectDraw->DrawCanvasTranslucent(g_cnvMessageWindow, (g_tilesX * 32.0 - 600.0) * 0.5, 0, g_messageWindowTranslucency, g_color, -1);
+		}
+		else
+		{
+			g_pDirectDraw->DrawCanvas(g_cnvMessageWindow, (g_tilesX * 32.0 - 600.0) * 0.5, 0);
+		}
 	}
 	g_pDirectDraw->Refresh();
 }
@@ -435,6 +443,9 @@ void changeCursor(const std::string strCursor)
 		extern HINSTANCE g_hInstance;
 		hColorBmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP2));
 		SelectObject(hColorDc, hColorBmp);
+
+		g_mainFile.transpColor = RGB(255, 0, 0);
+		g_mainFile.hotSpotX = g_mainFile.hotSpotY = 0;
 	}
 	else
 	{
