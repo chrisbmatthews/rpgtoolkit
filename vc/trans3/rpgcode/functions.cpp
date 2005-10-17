@@ -270,9 +270,9 @@ void mwin(CALL_DATA &params)
 	CONST_POS i = params.prg->getPos() + 1;
 	for (; i != params.prg->getEnd(); ++i)
 	{
-		if (i->udt & UDT_FUNC)
+		if (i->udt & UDT_LINE)
 		{
-			if (i->func == mwin)
+			if ((i->udt & UDT_FUNC) && (i->func == mwin))
 			{
 				// The next line is also a call to mwin(),
 				// so don't bother drawing yet.
