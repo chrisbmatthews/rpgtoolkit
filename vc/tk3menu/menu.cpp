@@ -36,6 +36,8 @@ int g_nOffsetY;
 #define SIZEX 640			// Dimensions of this menu.
 #define SIZEY 480
 
+#define _MSGBOX(x) MessageBox(NULL, x, NULL, 0)
+
 void BeginMenu(void)
 {
 	//get transparent color...
@@ -61,7 +63,6 @@ void MainMenu(void)
 	// Calculate the offsets.
 	g_nOffsetX = (CBGetGeneralNum(GEN_RESX, 0, 0) - SIZEX) / 2;
 	g_nOffsetY = (CBGetGeneralNum(GEN_RESY, 0, 0) - SIZEY) / 2;
-
 	RenderMainMenu();
 	g_nButton = 0;
 	DrawCursor();

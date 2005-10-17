@@ -22,7 +22,7 @@ void messageBox(const std::string str)
 		return;
 	}
 
-	CGDICanvas backup;
+	CCanvas backup;
 	backup.CreateBlank(NULL, g_resX, g_resY, TRUE);
 	g_pDirectDraw->CopyScreenToCanvas(&backup);
 
@@ -37,7 +37,7 @@ void messageBox(const std::string str)
 
 	backup.CloseDC(hdc);
 
-	CGDICanvas box;
+	CCanvas box;
 	box.CreateBlank(NULL, r.right + 20, r.bottom + 20, TRUE);
 	box.ClearScreen(0);
 	box.DrawRect(0, 0, box.GetWidth() - 1, box.GetHeight() - 1, RGB(255, 255, 255));

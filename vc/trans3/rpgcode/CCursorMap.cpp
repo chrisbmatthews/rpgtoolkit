@@ -23,12 +23,12 @@ void CCursorMap::add(const int x, const int y)
  */
 int CCursorMap::run(void)
 {
-	CGDICanvas cnv;
+	CCanvas cnv;
 	extern int g_resX, g_resY;
 	cnv.CreateBlank(NULL, g_resX, g_resY, TRUE);
 	extern CDirectDraw *g_pDirectDraw;
 	g_pDirectDraw->CopyScreenToCanvas(&cnv);
-	extern CGDICanvas *g_cnvCursor;
+	extern CCanvas *g_cnvCursor;
 	int toRet = 0, pos = -1;
 	MSG message;
 	while (true)

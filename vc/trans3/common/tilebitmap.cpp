@@ -125,8 +125,8 @@ void tagTileBitmap::resize(const int width, const int height)
  * Draw a tile bitmap, including tst.
  * Called when rendering sprite frames.
  */
-bool tagTileBitmap::draw(CGDICanvas *cnv, 
-						 CGDICanvas *cnvMask, 
+bool tagTileBitmap::draw(CCanvas *cnv, 
+						 CCanvas *cnvMask, 
 						 const int x, 
 						 const int y)
 {

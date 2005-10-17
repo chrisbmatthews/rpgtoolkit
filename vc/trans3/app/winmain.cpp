@@ -206,8 +206,8 @@ VOID setUpGame(VOID)
 	// This *must* be done here. I'm not sure why.
 	// But don't move it to render.cpp unless you like seeing
 	// things crash for no real reason.
-	extern CGDICanvas *g_cnvCursor;
-	g_cnvCursor = new CGDICanvas();
+	extern CCanvas *g_cnvCursor;
+	g_cnvCursor = new CCanvas();
 	g_cnvCursor->CreateBlank(NULL, 32, 32, TRUE);
 	{
 		const HDC hdc = g_cnvCursor->OpenDC();

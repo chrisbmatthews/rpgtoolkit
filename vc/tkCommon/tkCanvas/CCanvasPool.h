@@ -28,9 +28,9 @@ public:
 
 	void SetPixel( int nX, int nY, long crColor, int nIndex );
 	void Blt( HDC hDest, int nDestX, int nDestY, int nIndex, long rasterOp = SRCCOPY );
-	void Blt( CGDICanvas* pDest, int nDestX, int nDestY, int nIndex, long rasterOp = SRCCOPY );
+	void Blt( CCanvas* pDest, int nDestX, int nDestY, int nIndex, long rasterOp = SRCCOPY );
 	void BltTransparent( HDC hDest, int nDestX, int nDestY, int nIndex, long crTransparent );
-	void BltTransparent( CGDICanvas* pDest, int nDestX, int nDestY, int nIndex, long crTransparent );
+	void BltTransparent( CCanvas* pDest, int nDestX, int nDestY, int nIndex, long crTransparent );
 	void SetPixels( long* p_crPixelArray, int x, int y, int width, int height, int nIndex );
 
 	void Lock( int nIndex );
@@ -48,12 +48,12 @@ private:
 	}
 
 	int getY( int nY, int nIndex ) { return nY; }
-	CGDICanvas* getCanvas( int nIndex );
+	CCanvas* getCanvas( int nIndex );
 
 private:
 	//the canvas that holds this pool object
 	int m_nCompatibleDC;
-	std::vector<CGDICanvas*> m_vCanvases;
+	std::vector<CCanvas*> m_vCanvases;
 	int m_nSizeX, m_nSizeY, m_nPoolSize;
 	std::vector<bool> m_vOccupied;
 };

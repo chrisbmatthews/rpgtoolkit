@@ -147,7 +147,7 @@ void tagAnimation::save(const std::string fileName) const
  * Checks through the animation cache for previous renderings of this frame,
  * if not found, it is rendered here and copied to the animation cache.
  */
-bool renderAnimationFrame(CGDICanvas *cnv,
+bool renderAnimationFrame(CCanvas *cnv,
 						  std::string file,
 						  int frame,
 						  const int x,
@@ -249,8 +249,8 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 		}
 
         // Draw the tilebitmap and mask to new canvases.
-		CGDICanvas *cnvTbm = new CGDICanvas();
-		CGDICanvas *cnvMaskTbm = new CGDICanvas();
+		CCanvas *cnvTbm = new CCanvas();
+		CCanvas *cnvMaskTbm = new CCanvas();
 		cnvTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, TRUE);
 		cnvMaskTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, TRUE);
 
@@ -273,7 +273,7 @@ bool renderAnimationFrame(CGDICanvas *cnv,
 	else
 	{
 		// Image file.
-        CGDICanvas *c2 = new CGDICanvas();
+        CCanvas *c2 = new CCanvas();
 		c2->CreateBlank(NULL, anm.animSizeX, anm.animSizeY, TRUE);
 		const std::string strFile = g_projectPath + BMP_PATH + frameFile;
 		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(strFile.c_str(), 16), strFile.c_str());
@@ -296,7 +296,7 @@ bool renderAnimationFrame(CGDICanvas *cnv,
     anmFr.maxFrames = anm.animFrames;
     anmFr.strSound = g_projectPath + MEDIA_PATH + anm.animSound[frame];
 
-	anmFr.cnv = new CGDICanvas();
+	anmFr.cnv = new CCanvas();
     anmFr.cnv->CreateBlank(NULL, anm.animSizeX, anm.animSizeY, TRUE);
 	anmFr.cnv->ClearScreen(TRANSP_COLOR);
     cnv->Blt(anmFr.cnv, 0, 0, SRCCOPY);
@@ -314,7 +314,7 @@ void drawImage(const std::string strFile, const HDC hdc, const int x, const int 
 	{
 		TILE_BITMAP tbm;
 		if (!tbm.open(strFile)) return;
-		CGDICanvas cnvInt, cnvMask;
+		CCanvas cnvInt, cnvMask;
 		const int fullWidth = tbm.width * 32, fullHeight = tbm.height * 32;
 		cnvInt.CreateBlank(NULL, fullWidth, fullHeight, TRUE);
 		cnvMask.CreateBlank(NULL, fullWidth, fullHeight, TRUE);
@@ -337,20 +337,20 @@ void drawImage(const std::string strFile, const HDC hdc, const int x, const int 
  * *** This function is looking for a home! ***
  * Colin: CCanvas?
  */
-bool canvasMaskBltStretchTransparent(const CGDICanvas *cnvSource,
-									  const CGDICanvas *cnvMask,
+bool canvasMaskBltStretchTransparent(const CCanvas *cnvSource,
+									  const CCanvas *cnvMask,
 									  const int destX,
 									  const int destY,
 									  const int newWidth,
 									  const int newHeight, 
-									  const CGDICanvas *cnvTarget,
+									  const CCanvas *cnvTarget,
 									  const int crTranspColor)
 {
 	
 	const int w = cnvSource->GetWidth(), h = cnvSource->GetHeight();
 
 	// Create an intermediate canvas
-	CGDICanvas *cnvInt = new CGDICanvas();
+	CCanvas *cnvInt = new CCanvas();
 	cnvInt->CreateBlank(NULL, newWidth, newHeight, TRUE);
 	cnvInt->ClearScreen(crTranspColor);
 

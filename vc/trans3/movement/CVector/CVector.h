@@ -113,7 +113,7 @@ public:
 	int containsPoint(const DB_POINT p);
 
 	// Create a mask from a closed vector.
-	bool createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG color);
+	bool createMask(CCanvas *cnv, const int x, const int y, CONST LONG color);
 
 	// Construct nodes from a CVector and add to the nodes vector.
 	void createNodes(std::vector<DB_POINT> &points, const DB_POINT max);
@@ -131,7 +131,7 @@ public:
 	DB_POINT nearestPoint(const DB_POINT start);
 
 	// Draw the vector to the screen (testing purposes).
-	void draw(CONST LONG color, const bool drawText, const int x, const int y, CGDICanvas *const cnv);
+	void draw(CONST LONG color, const bool drawText, const int x, const int y, CCanvas *const cnv);
 
 	// Path-find ::contains() equivalent.
 	bool pfContains(CVector &rhs);

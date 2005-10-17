@@ -17,7 +17,7 @@
  */
 typedef struct tagSpriteRender
 {
-    CGDICanvas *canvas;		// Canvas used for this render.
+    CCanvas *canvas;		// Canvas used for this render.
 	std::string stance;		// Stance player was rendered in.
     unsigned int frame;		// Frame of this stance.
     double x;				// X position the render occured in.
@@ -33,7 +33,7 @@ typedef struct tagSpriteRender
 
 typedef struct tagScrollCache
 {
-	CGDICanvas *pCnv;		// Canvas for each layer.
+	CCanvas *pCnv;		// Canvas for each layer.
 	RECT r;					// Bounds of graphics on this layer (board co-ords).
 
 	tagScrollCache(): 
@@ -72,7 +72,7 @@ void renderRpgCodeScreen(void);
  * bForce (in) - force the render?
  * return (out) - did a render occur?
  */
-bool renderNow(CGDICanvas *cnv = NULL, const bool bForce = false);
+bool renderNow(CCanvas *cnv = NULL, const bool bForce = false);
 
 /*** These functions are looking for homes ***/
 
@@ -82,7 +82,7 @@ typedef struct tagBoard BOARD, *LPBOARD;
 bool drawTile(const std::string fileName, 
 			  const int x, const int y, 
 			  const int r, const int g, const int b, 
-			  CGDICanvas *cnv, 
+			  CCanvas *cnv, 
 			  const int offX, const int offY,
 			  const BOOL bIsometric, 
 			  const int nIsoEvenOdd);
@@ -90,12 +90,12 @@ bool drawTile(const std::string fileName,
 bool drawTileMask (const std::string fileName, 
 				   const int x, const int y, 
 				   const int r, const int g, const int b, 
-				   CGDICanvas *cnv,
+				   CCanvas *cnv,
 				   const int nDirectBlt,
 				   const bool bIsometric,
 				   const int nIsoEvenOdd);
 
-bool drawTileCnv(CGDICanvas *cnv, 
+bool drawTileCnv(CCanvas *cnv, 
 				 const std::string file, 
 				 const double x,
 				 const double y, 

@@ -94,13 +94,13 @@ public:
 	void deactivatePrograms(void);
 
 	// Debug: draw the sprite's base vector.
-	void drawVector(CGDICanvas *const cnv);
+	void drawVector(CCanvas *const cnv);
 
 	// Draw the path this sprite is on.
-	void drawPath(CGDICanvas *const cnv);
+	void drawPath(CCanvas *const cnv);
 
 	// Calculate sprite location and place on destination canvas.
-	bool putSpriteAt(const CGDICanvas *cnvTarget, 
+	bool putSpriteAt(const CCanvas *cnvTarget, 
 					const int layer,
 					RECT &rect);
 
@@ -132,7 +132,7 @@ protected:
 	bool m_bActive;					// Is the sprite visible?
 	BRD_SPRITE m_brdData;			// Board-set sprite data (activation variables).
 	SPRITE_RENDER m_lastRender;		// Last render location / frame of the sprite.
-	CGDICanvas m_canvas;			// Pointer to sprite's frame.
+	CCanvas m_canvas;			// Pointer to sprite's frame.
 	SPRITE_POSITION m_pos;			// Current location and frame details.
 	PENDING_MOVEMENT m_pend;		// Pending movements of the player, including queue.
 	TILE_TYPE m_tileType;			// The tiletypes at the sprite's location (NOT the "tiletype" of the sprite).

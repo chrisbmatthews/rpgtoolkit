@@ -116,7 +116,7 @@ class CTile
 
 		// Draw the tile to a canvas
 		VOID FAST_CALL cnvDraw(
-			CGDICanvas *pCanvas,
+			CCanvas *pCanvas,
 			CONST INT x,
 			CONST INT y
 		);
@@ -137,14 +137,14 @@ class CTile
 
 		// Draw the tile's alpha portion to a canvas
 		VOID FAST_CALL cnvDrawAlpha(
-			CGDICanvas *pCanvas,
+			CCanvas *pCanvas,
 			CONST INT x,
 			CONST INT y
 		);
 
 		// Render the tile's alpha portion to a canvas
 		VOID FAST_CALL cnvRenderAlpha(
-			CGDICanvas *pCanvas,
+			CCanvas *pCanvas,
 			CONST INT x,
 			CONST INT y
 		);

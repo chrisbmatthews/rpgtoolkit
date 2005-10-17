@@ -613,7 +613,7 @@ void tagBoardVector::createCanvas(BOARD &board)
 	const RECT r = pV->getBounds();
 	if (r.right - r.left < 1 || r.bottom - r.top < 1) return;
 
-	pCnv = new CGDICanvas();
+	pCnv = new CCanvas();
 	pCnv->CreateBlank(NULL, r.right - r.left, r.bottom - r.top, TRUE);
 	pCnv->ClearScreen(TRANSP_COLOR);
 
@@ -624,7 +624,7 @@ void tagBoardVector::createCanvas(BOARD &board)
 						r.bottom - r.bottom % 32 + 32};
 
 	// Create an intermediate canvas that is aligned to the grid.
-	CGDICanvas *cnv = new CGDICanvas();
+	CCanvas *cnv = new CCanvas();
 	cnv->CreateBlank(NULL, rAlign.right - rAlign.left, rAlign.bottom - rAlign.top, TRUE);
 	cnv->ClearScreen(TRANSP_COLOR);
 
@@ -702,7 +702,7 @@ void tagBoardImage::createCanvas(BOARD &board)
 		const DWORD width  = (type == BI_STRETCH) ? board.pxWidth() : FreeImage_GetWidth(bmp),
 					height = (type == BI_STRETCH) ? board.pxHeight() : FreeImage_GetHeight(bmp);
 
-		pCnv = new CGDICanvas();
+		pCnv = new CCanvas();
 		pCnv->CreateBlank(NULL, width, height, TRUE);
 		pCnv->ClearScreen(TRANSP_COLOR);
 
@@ -767,7 +767,7 @@ void tagBoardImage::createCanvas(BOARD &board)
 /*
  * Render the board to a canvas.
  */
-void tagBoard::render(CGDICanvas *cnv,
+void tagBoard::render(CCanvas *cnv,
 			   int destX, const int destY,			// canvas destination.
 			   const int lLower, const int lUpper,	// layer bounds. 
 			   int topX, int topY,					// pixel location on board to start from. 
@@ -878,7 +878,7 @@ void tagBoard::render(CGDICanvas *cnv,
 /*
  * Render the board background (independently of the board).
  */
-void tagBoard::renderBackground(CGDICanvas *cnv, RECT bounds)
+void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 {
 	extern RECT g_screen;
 

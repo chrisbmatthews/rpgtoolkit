@@ -42,7 +42,7 @@ typedef struct tagAnimation
 typedef struct tagAnimationFrame
 {
 	tagAnimationFrame(void): cnv(NULL) { }
-	CGDICanvas *cnv;					// Canvas of frame.
+	CCanvas *cnv;					// Canvas of frame.
 	std::string file;					// Animation filename.
 	int frame;							// Frame number.
 	int maxFrames;						// Max frames in this anim.
@@ -54,7 +54,7 @@ typedef struct tagAnimationFrame
  * Checks through the animation cache for previous renderings of this frame,
  * if not found, it is rendered here and copied to the animation cache.
  */
-bool renderAnimationFrame(CGDICanvas* cnv,
+bool renderAnimationFrame(CCanvas* cnv,
 						  std::string file, 
 						  int frame, 
 						  const int x, 
@@ -65,18 +65,18 @@ bool renderAnimationFrame(CGDICanvas* cnv,
  */
 void clearAnmCache(void);
 
-bool canvasMaskBltStretchTransparent(const CGDICanvas *cnvSource,
-									  const CGDICanvas *cnvMask,
+bool canvasMaskBltStretchTransparent(const CCanvas *cnvSource,
+									  const CCanvas *cnvMask,
 									  const int destX,
 									  const int destY,
 									  const int newWidth,
 									  const int newHeight, 
-									  const CGDICanvas *cnvTarget,
+									  const CCanvas *cnvTarget,
 									  const int crTranspColor);
 
 void drawImage(const std::string strFile, const HDC hdc, const int x, const int y, const int width, const int height);
 
-inline void drawImage(const std::string strFile, CGDICanvas *const cnv, const int x, const int y, const int width, const int height)
+inline void drawImage(const std::string strFile, CCanvas *const cnv, const int x, const int y, const int width, const int height)
 {
 	const HDC hdc = cnv->OpenDC();
 	drawImage(strFile, hdc, x, y, width, height);

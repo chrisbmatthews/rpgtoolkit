@@ -39,7 +39,7 @@
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
 #include <map>
 
-extern CAllocationHeap<CGDICanvas> g_canvases;
+extern CAllocationHeap<CCanvas> g_canvases;
 extern CDirectDraw *g_pDirectDraw;
 extern std::vector<CPlayer *> g_players;
 static CAllocationHeap<ANIMATION> g_animations;
@@ -785,7 +785,7 @@ STDMETHODIMP CCallbacks::CBRefreshScreen(int *pRet)
 
 STDMETHODIMP CCallbacks::CBCreateCanvas(int width, int height, int *pRet)
 {
-	CGDICanvas *p = g_canvases.allocate();
+	CCanvas *p = g_canvases.allocate();
 	p->CreateBlank(NULL, width, height, TRUE);
 	*pRet = (int)p;
 	return S_OK;
@@ -793,13 +793,13 @@ STDMETHODIMP CCallbacks::CBCreateCanvas(int width, int height, int *pRet)
 
 STDMETHODIMP CCallbacks::CBDestroyCanvas(int canvasID, int *pRet)
 {
-	*pRet = (int)g_canvases.free((CGDICanvas *)canvasID);
+	*pRet = (int)g_canvases.free((CCanvas *)canvasID);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBDrawCanvas(int canvasID, int x, int y, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = g_pDirectDraw->DrawCanvas(p, x, y, SRCCOPY);
@@ -813,7 +813,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvas(int canvasID, int x, int y, int *pRet)
 
 STDMETHODIMP CCallbacks::CBDrawCanvasPartial(int canvasID, int xDest, int yDest, int xsrc, int ysrc, int width, int height, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = g_pDirectDraw->DrawCanvasPartial(p, xDest, yDest, xsrc, ysrc, width, height, SRCCOPY);
@@ -827,7 +827,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvasPartial(int canvasID, int xDest, int yDest,
 
 STDMETHODIMP CCallbacks::CBDrawCanvasTransparent(int canvasID, int x, int y, int crTransparentColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = g_pDirectDraw->DrawCanvasTransparent(p, x, y, crTransparentColor);
@@ -841,7 +841,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvasTransparent(int canvasID, int x, int y, int
 
 STDMETHODIMP CCallbacks::CBDrawCanvasTransparentPartial(int canvasID, int xDest, int yDest, int xsrc, int ysrc, int width, int height, int crTransparentColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = g_pDirectDraw->DrawCanvasTransparentPartial(p, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor);
@@ -855,7 +855,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvasTransparentPartial(int canvasID, int xDest,
 
 STDMETHODIMP CCallbacks::CBDrawCanvasTranslucent(int canvasID, int x, int y, double dIntensity, int crUnaffectedColor, int crTransparentColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = g_pDirectDraw->DrawCanvasTranslucent(p, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
@@ -869,7 +869,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvasTranslucent(int canvasID, int x, int y, dou
 
 STDMETHODIMP CCallbacks::CBCanvasLoadImage(int canvasID, BSTR filename, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		extern std::string g_projectPath;
@@ -884,7 +884,7 @@ STDMETHODIMP CCallbacks::CBCanvasLoadImage(int canvasID, BSTR filename, int *pRe
 
 STDMETHODIMP CCallbacks::CBCanvasLoadSizedImage(int canvasID, BSTR filename, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		extern std::string g_projectPath;
@@ -899,7 +899,7 @@ STDMETHODIMP CCallbacks::CBCanvasLoadSizedImage(int canvasID, BSTR filename, int
 
 STDMETHODIMP CCallbacks::CBCanvasFill(int canvasID, int crColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (*pRet = (p != NULL))
 	{
 		p->ClearScreen(crColor);
@@ -909,7 +909,7 @@ STDMETHODIMP CCallbacks::CBCanvasFill(int canvasID, int crColor, int *pRet)
 
 STDMETHODIMP CCallbacks::CBCanvasResize(int canvasID, int width, int height, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (*pRet = (p != NULL))
 	{
 		p->Resize(NULL, width, height);
@@ -919,10 +919,10 @@ STDMETHODIMP CCallbacks::CBCanvasResize(int canvasID, int width, int height, int
 
 STDMETHODIMP CCallbacks::CBCanvas2CanvasBlt(int cnvSrc, int cnvDest, int xDest, int yDest, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(cnvSrc);
+	CCanvas *p = g_canvases.cast(cnvSrc);
 	if (p)
 	{
-		CGDICanvas *pDest = g_canvases.cast(cnvDest);
+		CCanvas *pDest = g_canvases.cast(cnvDest);
 		if (pDest)
 		{	
 			*pRet = p->Blt(pDest, xDest, yDest, SRCCOPY);
@@ -941,10 +941,10 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBlt(int cnvSrc, int cnvDest, int xDest, 
 
 STDMETHODIMP CCallbacks::CBCanvas2CanvasBltPartial(int cnvSrc, int cnvDest, int xDest, int yDest, int xsrc, int ysrc, int width, int height, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(cnvSrc);
+	CCanvas *p = g_canvases.cast(cnvSrc);
 	if (p)
 	{
-		CGDICanvas *pDest = g_canvases.cast(cnvDest);
+		CCanvas *pDest = g_canvases.cast(cnvDest);
 		if (pDest)
 		{	
 			*pRet = p->BltPart(pDest, xDest, yDest, xsrc, ysrc, width, height, SRCCOPY);
@@ -963,10 +963,10 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBltPartial(int cnvSrc, int cnvDest, int 
 
 STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparent(int cnvSrc, int cnvDest, int xDest, int yDest, int crTransparentColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(cnvSrc);
+	CCanvas *p = g_canvases.cast(cnvSrc);
 	if (p)
 	{
-		CGDICanvas *pDest = g_canvases.cast(cnvDest);
+		CCanvas *pDest = g_canvases.cast(cnvDest);
 		if (pDest)
 		{	
 			*pRet = p->BltTransparent(pDest, xDest, yDest, crTransparentColor);
@@ -985,10 +985,10 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparent(int cnvSrc, int cnvDest, 
 
 STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparentPartial(int cnvSrc, int cnvDest, int xDest, int yDest, int xsrc, int ysrc, int width, int height, int crTransparentColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(cnvSrc);
+	CCanvas *p = g_canvases.cast(cnvSrc);
 	if (p)
 	{
-		CGDICanvas *pDest = g_canvases.cast(cnvDest);
+		CCanvas *pDest = g_canvases.cast(cnvDest);
 		if (pDest)
 		{	
 			*pRet = p->BltTransparentPart(pDest, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor);
@@ -1007,10 +1007,10 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparentPartial(int cnvSrc, int cn
 
 STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTranslucent(int cnvSrc, int cnvDest, int destX, int destY, double dIntensity, int crUnaffectedColor, int crTransparentColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(cnvSrc);
+	CCanvas *p = g_canvases.cast(cnvSrc);
 	if (p)
 	{
-		CGDICanvas *pDest = g_canvases.cast(cnvDest);
+		CCanvas *pDest = g_canvases.cast(cnvDest);
 		if (pDest)
 		{	
 			*pRet = p->BltTranslucent(pDest, destX, destY, dIntensity, crUnaffectedColor, crTransparentColor);
@@ -1029,7 +1029,7 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTranslucent(int cnvSrc, int cnvDest, 
 
 STDMETHODIMP CCallbacks::CBCanvasGetScreen(int cnvDest, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(cnvDest);
+	CCanvas *p = g_canvases.cast(cnvDest);
 	if (p)
 	{
 		*pRet = g_pDirectDraw->CopyScreenToCanvas(p);
@@ -1050,7 +1050,7 @@ STDMETHODIMP CCallbacks::CBLoadString(int id, BSTR defaultString, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBCanvasDrawText(int canvasID, BSTR text, BSTR font, int size, double x, double y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = p->DrawText(x * size - size, y * size - size, getString(text), getString(font), size, crColor, isBold, isItalics, isUnderline, isCentred);
@@ -1069,7 +1069,7 @@ STDMETHODIMP CCallbacks::CBCanvasPopup(int canvasID, int x, int y, int stepSize,
 
 STDMETHODIMP CCallbacks::CBCanvasWidth(int canvasID, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = p->GetWidth();
@@ -1083,7 +1083,7 @@ STDMETHODIMP CCallbacks::CBCanvasWidth(int canvasID, int *pRet)
 
 STDMETHODIMP CCallbacks::CBCanvasHeight(int canvasID, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = p->GetHeight();
@@ -1097,7 +1097,7 @@ STDMETHODIMP CCallbacks::CBCanvasHeight(int canvasID, int *pRet)
 
 STDMETHODIMP CCallbacks::CBCanvasDrawLine(int canvasID, int x1, int y1, int x2, int y2, int crColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = p->DrawLine(x1, y1, x2, y2, crColor);
@@ -1111,7 +1111,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawLine(int canvasID, int x1, int y1, int x2, 
 
 STDMETHODIMP CCallbacks::CBCanvasDrawRect(int canvasID, int x1, int y1, int x2, int y2, int crColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = p->DrawRect(x1, y1, x2, y2, crColor);
@@ -1125,7 +1125,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawRect(int canvasID, int x1, int y1, int x2, 
 
 STDMETHODIMP CCallbacks::CBCanvasFillRect(int canvasID, int x1, int y1, int x2, int y2, int crColor, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = p->DrawFilledRect(x1, y1, x2, y2, crColor);
@@ -1139,8 +1139,8 @@ STDMETHODIMP CCallbacks::CBCanvasFillRect(int canvasID, int x1, int y1, int x2, 
 
 STDMETHODIMP CCallbacks::CBCanvasDrawHand(int canvasID, int pointx, int pointy, int *pRet)
 {
-	extern CGDICanvas *g_cnvCursor;
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	extern CCanvas *g_cnvCursor;
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		*pRet = g_cnvCursor->BltTransparent(p, pointx - 42, pointy - 10, RGB(255, 0, 0));
@@ -1154,7 +1154,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawHand(int canvasID, int pointx, int pointy, 
 
 STDMETHODIMP CCallbacks::CBDrawHand(int pointx, int pointy, int *pRet)
 {
-	extern CGDICanvas *g_cnvCursor;
+	extern CCanvas *g_cnvCursor;
 	*pRet = g_pDirectDraw->DrawCanvasTransparent(g_cnvCursor, pointx - 42, pointy - 10, RGB(255, 0, 0));
 	return S_OK;
 }
@@ -1456,7 +1456,7 @@ STDMETHODIMP CCallbacks::CBSetEnemySMP(int amount, int eneIdx)
 
 STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int x, int y, int width, int height)
 {
-	CGDICanvas *p = g_canvases.cast(canvasID);
+	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
 		extern std::string g_projectPath;
@@ -1487,7 +1487,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int
 	LPANIMATION p = g_animations.cast(idx);
 	if (p)
 	{
-		CGDICanvas *pCnv = g_canvases.cast(canvasID);
+		CCanvas *pCnv = g_canvases.cast(canvasID);
 		if (pCnv)
 		{
 			if ((!(p->timerFrame++ % int(80 * p->animPause))) || (p->currentAnmFrame == -1))
@@ -1499,7 +1499,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int
 			{
 				pCnv->ClearScreen(TRANSP_COLOR);
 			}
-			CGDICanvas cnvTemp;
+			CCanvas cnvTemp;
 			cnvTemp.CreateBlank(NULL, p->animSizeX, p->animSizeY, TRUE);
 			renderAnimationFrame(&cnvTemp, p->animFile, p->currentAnmFrame, 0, 0);
 			cnvTemp.BltTransparent(pCnv, x, y, TRANSP_COLOR);
@@ -1515,14 +1515,14 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int f
 	{
 		if (frame >= p->animFrames) frame = 0;
 		p->currentAnmFrame = frame;
-		CGDICanvas *pCnv = g_canvases.cast(canvasID);
+		CCanvas *pCnv = g_canvases.cast(canvasID);
 		if (pCnv)
 		{
 			if (forceTranspFill)
 			{
 				pCnv->ClearScreen(TRANSP_COLOR);
 			}
-			CGDICanvas cnvTemp;
+			CCanvas cnvTemp;
 			cnvTemp.CreateBlank(NULL, p->animSizeX, p->animSizeY, TRUE);
 			renderAnimationFrame(&cnvTemp, p->animFile, frame, 0, 0);
 			cnvTemp.BltTransparent(pCnv, x, y, TRANSP_COLOR);
@@ -1887,7 +1887,7 @@ STDMETHODIMP CCallbacks::CBReleaseScreenDC()
 
 STDMETHODIMP CCallbacks::CBCanvasOpenHdc(int cnv, int *pRet)
 {
-	CGDICanvas *p = g_canvases.cast(cnv);
+	CCanvas *p = g_canvases.cast(cnv);
 	if (p)
 	{
 		*pRet = (int)p->OpenDC();
@@ -1901,7 +1901,7 @@ STDMETHODIMP CCallbacks::CBCanvasOpenHdc(int cnv, int *pRet)
 
 STDMETHODIMP CCallbacks::CBCanvasCloseHdc(int cnv, int hdc)
 {
-	CGDICanvas *p = g_canvases.cast(cnv);
+	CCanvas *p = g_canvases.cast(cnv);
 	if (p)
 	{
 		p->CloseDC((HDC)hdc);

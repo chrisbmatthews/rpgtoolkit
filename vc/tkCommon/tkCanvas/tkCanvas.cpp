@@ -5,21 +5,21 @@
 //--------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------
-// Handle based interface to CGDICanvas
+// Handle based interface to CCanvas
 //--------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------
 // Inclusions
 //--------------------------------------------------------------------------
 #include "tkCanvas.h"						// Stuff for this file
-#include "GDICanvas.h"						// The CGDICanvas class
+#include "GDICanvas.h"						// The CCanvas class
 #include <list>								// Standard list class
 
 //--------------------------------------------------------------------------
 // Locals
 //--------------------------------------------------------------------------
 static HWND m_hHostWnd = NULL;				// Handle to the canvas host
-static std::list<CGDICanvas *> m_canvases;	// All canvases
+static std::list<CCanvas *> m_canvases;	// All canvases
 
 //--------------------------------------------------------------------------
 // Create the canvas host
@@ -110,7 +110,7 @@ BOOL APIENTRY CNVShutdown(
 {
 
 	// Create an iterator
-	std::list<CGDICanvas *>::iterator itr = m_canvases.begin();
+	std::list<CCanvas *>::iterator itr = m_canvases.begin();
 
 	// Iterate over the canvas list
 	for (; itr != m_canvases.end(); itr++)
@@ -139,7 +139,7 @@ CNV_HANDLE APIENTRY CNVCreate(
 {
 
 	// Allocate a new canvas
-	CGDICanvas *cnv = new CGDICanvas();
+	CCanvas *cnv = new CCanvas();
 
 	// Create the canvas
 	cnv->CreateBlank(HDC(hdcCompatable), nWidth, nHeight, nUseDX);
@@ -160,8 +160,8 @@ BOOL APIENTRY CNVDestroy(
 		)
 {
 
-	// Cast to a CGDICanvas pointer
-	CGDICanvas *CONST pCnv = reinterpret_cast<CGDICanvas *>(cnv);
+	// Cast to a CCanvas pointer
+	CCanvas *CONST pCnv = reinterpret_cast<CCanvas *>(cnv);
 
 	// Remove the canvas from the list
 	m_canvases.remove(pCnv);
@@ -183,7 +183,7 @@ INT APIENTRY CNVOpenHDC(
 {
 
 	// Return the canvas' HDC
-	return INT(reinterpret_cast<CGDICanvas *>(cnv)->OpenDC());
+	return INT(reinterpret_cast<CCanvas *>(cnv)->OpenDC());
 
 }
 
@@ -197,7 +197,7 @@ BOOL APIENTRY CNVCloseHDC(
 {
 
 	// Close the canvas' HDC
-	reinterpret_cast<CGDICanvas *>(cnv)->CloseDC(HDC(hdc));
+	reinterpret_cast<CCanvas *>(cnv)->CloseDC(HDC(hdc));
 
 	// All's good
 	return TRUE;
@@ -213,7 +213,7 @@ BOOL APIENTRY CNVLock(
 {
 
 	// Lock the canvas
-	reinterpret_cast<CGDICanvas *>(cnv)->Lock();
+	reinterpret_cast<CCanvas *>(cnv)->Lock();
 
 	// All's good
 	return TRUE;
@@ -229,7 +229,7 @@ BOOL APIENTRY CNVUnlock(
 {
 
 	// Unlock the canvas
-	reinterpret_cast<CGDICanvas *>(cnv)->Unlock();
+	reinterpret_cast<CCanvas *>(cnv)->Unlock();
 
 	// All's good
 	return TRUE;
@@ -245,7 +245,7 @@ INT APIENTRY CNVGetWidth(
 {
 
 	// Return the canvas' width
-	return reinterpret_cast<CGDICanvas *>(cnv)->GetWidth();
+	return reinterpret_cast<CCanvas *>(cnv)->GetWidth();
 
 }
 
@@ -258,7 +258,7 @@ INT APIENTRY CNVGetHeight(
 {
 
 	// Return the canvas' height
-	return reinterpret_cast<CGDICanvas *>(cnv)->GetHeight();
+	return reinterpret_cast<CCanvas *>(cnv)->GetHeight();
 
 }
 
@@ -273,7 +273,7 @@ INT APIENTRY CNVGetPixel(
 {
 
 	// Return the pixel in question
-	return reinterpret_cast<CGDICanvas *>(cnv)->GetPixel(x, y);
+	return reinterpret_cast<CCanvas *>(cnv)->GetPixel(x, y);
 
 }
 
@@ -289,7 +289,7 @@ BOOL APIENTRY CNVSetPixel(
 {
 
 	// Set a pixel on the canvas
-	reinterpret_cast<CGDICanvas *>(cnv)->SetPixel(x, y, crColor);
+	reinterpret_cast<CCanvas *>(cnv)->SetPixel(x, y, crColor);
 
 	// All's good
 	return TRUE;
@@ -305,10 +305,10 @@ BOOL APIENTRY CNVExists(
 {
 
 	// Create an iterator
-	std::list<CGDICanvas *>::iterator itr = m_canvases.begin();
+	std::list<CCanvas *>::iterator itr = m_canvases.begin();
 
 	// Obtain a pointer to the canvas
-	CONST CGDICanvas *pCnv = reinterpret_cast<CGDICanvas *>(cnv);
+	CONST CCanvas *pCnv = reinterpret_cast<CCanvas *>(cnv);
 
 	// Iterate over the canvas list
 	for (; itr != m_canvases.end(); itr++)
@@ -339,8 +339,8 @@ BOOL APIENTRY CNVBltCanvas(
 {
 
 	// Execute the blt
-	return reinterpret_cast<CGDICanvas *>(cnvSource)->Blt(
-		reinterpret_cast<CGDICanvas *>(cnvTarget),
+	return reinterpret_cast<CCanvas *>(cnvSource)->Blt(
+		reinterpret_cast<CCanvas *>(cnvTarget),
 		x,
 		y,
 		lRasterOp
@@ -361,8 +361,8 @@ BOOL APIENTRY CNVBltCanvasTransparent(
 {
 
 	// Execute the blt
-	return reinterpret_cast<CGDICanvas *>(cnvSource)->BltTransparent(
-		reinterpret_cast<CGDICanvas *>(cnvTarget),
+	return reinterpret_cast<CCanvas *>(cnvSource)->BltTransparent(
+		reinterpret_cast<CCanvas *>(cnvTarget),
 		x,
 		y,
 		crColor
@@ -389,8 +389,8 @@ BOOL APIENTRY CNVBltCanvasTranslucentPart(
 {
 
 	// Execute the blt
-	return reinterpret_cast<CGDICanvas *>(cnvSource)->BltTranslucentPart(
-		reinterpret_cast<CGDICanvas *>(cnvTarget),
+	return reinterpret_cast<CCanvas *>(cnvSource)->BltTranslucentPart(
+		reinterpret_cast<CCanvas *>(cnvTarget),
 		x,
 		y,
 		xSrc,
@@ -419,8 +419,8 @@ BOOL APIENTRY CNVBltCanvasTranslucent(
 {
 
 	// Execute the blt
-	return reinterpret_cast<CGDICanvas *>(cnvSource)->BltTranslucent(
-		reinterpret_cast<CGDICanvas *>(cnvTarget),
+	return reinterpret_cast<CCanvas *>(cnvSource)->BltTranslucent(
+		reinterpret_cast<CCanvas *>(cnvTarget),
 		x,
 		y,
 		dIntensity,
@@ -440,7 +440,7 @@ INT APIENTRY CNVGetRGBColor(
 {
 
 	// Return the color
-	return reinterpret_cast<CGDICanvas *>(cnv)->matchColor(crColor);
+	return reinterpret_cast<CCanvas *>(cnv)->matchColor(crColor);
 
 }
 
@@ -456,7 +456,7 @@ BOOL APIENTRY CNVResize(
 {
 
 	// Resize the canvas
-	reinterpret_cast<CGDICanvas *>(cnv)->Resize(HDC(hdcCompatible), nWidth, nHeight);
+	reinterpret_cast<CCanvas *>(cnv)->Resize(HDC(hdcCompatible), nWidth, nHeight);
 
 	// All's good
 	return TRUE;
@@ -473,7 +473,7 @@ BOOL APIENTRY CNVShiftLeft(
 {
 
 	// Execute the shift
-	return reinterpret_cast<CGDICanvas *>(cnv)->ShiftLeft(nPixels);
+	return reinterpret_cast<CCanvas *>(cnv)->ShiftLeft(nPixels);
 
 }
 
@@ -487,7 +487,7 @@ BOOL APIENTRY CNVShiftRight(
 {
 
 	// Execute the shift
-	return reinterpret_cast<CGDICanvas *>(cnv)->ShiftRight(nPixels);
+	return reinterpret_cast<CCanvas *>(cnv)->ShiftRight(nPixels);
 
 }
 
@@ -501,7 +501,7 @@ BOOL APIENTRY CNVShiftUp(
 {
 
 	// Execute the shift
-	return reinterpret_cast<CGDICanvas *>(cnv)->ShiftUp(nPixels);
+	return reinterpret_cast<CCanvas *>(cnv)->ShiftUp(nPixels);
 
 }
 
@@ -515,7 +515,7 @@ BOOL APIENTRY CNVShiftDown(
 {
 
 	// Execute the shift
-	return reinterpret_cast<CGDICanvas *>(cnv)->ShiftDown(nPixels);
+	return reinterpret_cast<CCanvas *>(cnv)->ShiftDown(nPixels);
 
 }
 
@@ -536,8 +536,8 @@ BOOL APIENTRY CNVBltPartCanvas(
 {
 
 	// Execute the blt
-	return reinterpret_cast<CGDICanvas *>(cnvSource)->BltPart(
-		reinterpret_cast<CGDICanvas *>(cnvTarget),
+	return reinterpret_cast<CCanvas *>(cnvSource)->BltPart(
+		reinterpret_cast<CCanvas *>(cnvTarget),
 		x,
 		y,
 		xSrc,
@@ -566,8 +566,8 @@ BOOL APIENTRY CNVBltTransparentPartCanvas(
 {
 
 	// Execute the blt
-	return reinterpret_cast<CGDICanvas *>(cnvSource)->BltTransparentPart(
-		reinterpret_cast<CGDICanvas *>(cnvTarget),
+	return reinterpret_cast<CCanvas *>(cnvSource)->BltTransparentPart(
+		reinterpret_cast<CCanvas *>(cnvTarget),
 		x,
 		y,
 		xSrc,
@@ -597,8 +597,8 @@ INT APIENTRY CNVBltStretchCanvas(
 		)
 {
 
-	return reinterpret_cast<CGDICanvas *>(cnvSource)->BltStretch(
-		reinterpret_cast<CGDICanvas *>(cnvTarget), x, y,
+	return reinterpret_cast<CCanvas *>(cnvSource)->BltStretch(
+		reinterpret_cast<CCanvas *>(cnvTarget), x, y,
 		xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp
 	);
 

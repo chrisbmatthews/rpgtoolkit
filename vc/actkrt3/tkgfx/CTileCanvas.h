@@ -54,8 +54,8 @@ class CTileCanvas
 		//GDI Stuff:
 		int m_nCompatibleDC;						//the compatible hdc that we use to create ofscreen DCs
 		//Offscreen DCs to actually hold the tile.
-		CGDICanvas m_cnvForeground;		//the drawn tile, foreground
-		//CGDICanvas* m_pcnvAlphaMask;		//the drawn tile, trnasparency mask
+		CCanvas m_cnvForeground;		//the drawn tile, foreground
+		//CCanvas* m_pcnvAlphaMask;		//the drawn tile, trnasparency mask
 };
 
 #endif

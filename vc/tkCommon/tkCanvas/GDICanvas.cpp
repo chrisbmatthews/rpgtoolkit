@@ -14,7 +14,7 @@
 //--------------------------------------------------------------------------
 // Default constructor
 //--------------------------------------------------------------------------
-CGDICanvas::CGDICanvas(VOID)
+CCanvas::CCanvas(VOID)
 {
 	// Initialize members
 	m_hdcMem = NULL;
@@ -31,8 +31,8 @@ CGDICanvas::CGDICanvas(VOID)
 //--------------------------------------------------------------------------
 // Copy constructor
 //--------------------------------------------------------------------------
-CGDICanvas::CGDICanvas(
-	CONST CGDICanvas &rhs
+CCanvas::CCanvas(
+	CONST CCanvas &rhs
 		)
 {
 
@@ -70,8 +70,8 @@ CGDICanvas::CGDICanvas(
 //--------------------------------------------------------------------------
 // Assignment operator
 //--------------------------------------------------------------------------
-CGDICanvas &CGDICanvas::operator=(
-	CONST CGDICanvas &rhs
+CCanvas &CCanvas::operator=(
+	CONST CCanvas &rhs
 		)
 {
 
@@ -117,7 +117,7 @@ CGDICanvas &CGDICanvas::operator=(
 //   Note that this surface will *not* be freed by this canvas, so its
 //   destruction must be handled by whoever created it.
 //--------------------------------------------------------------------------
-CGDICanvas::CGDICanvas(LPDIRECTDRAWSURFACE7 surface, INT width, INT height, BOOL bRam)
+CCanvas::CCanvas(LPDIRECTDRAWSURFACE7 surface, INT width, INT height, BOOL bRam)
 {
 	surface->AddRef();
 	m_lpddsSurface = surface;
@@ -132,7 +132,7 @@ CGDICanvas::CGDICanvas(LPDIRECTDRAWSURFACE7 surface, INT width, INT height, BOOL
 //--------------------------------------------------------------------------
 // Deconstructor
 //--------------------------------------------------------------------------
-INLINE CGDICanvas::~CGDICanvas(VOID)
+INLINE CCanvas::~CCanvas(VOID)
 {
 	// Destroy existing canavs, if one
 	if (usingDX())
@@ -151,7 +151,7 @@ INLINE CGDICanvas::~CGDICanvas(VOID)
 //------------------------------------------------------------------------
 // Draw text onto the screen
 //------------------------------------------------------------------------
-BOOL FAST_CALL CGDICanvas::DrawText(
+BOOL FAST_CALL CCanvas::DrawText(
 	CONST INT x,
 	CONST INT y,
 	CONST std::string strText,
@@ -255,7 +255,7 @@ BOOL FAST_CALL CGDICanvas::DrawText(
 //------------------------------------------------------------------------
 // Draw a rectangle.
 //------------------------------------------------------------------------
-BOOL FAST_CALL CGDICanvas::DrawRect(
+BOOL FAST_CALL CCanvas::DrawRect(
 	CONST INT x1,
 	CONST INT y1,
 	CONST INT x2,
@@ -276,7 +276,7 @@ BOOL FAST_CALL CGDICanvas::DrawRect(
 //------------------------------------------------------------------------
 // Draw a filled rectangle.
 //------------------------------------------------------------------------
-BOOL FAST_CALL CGDICanvas::DrawFilledRect(
+BOOL FAST_CALL CCanvas::DrawFilledRect(
 	CONST INT x1,
 	CONST INT y1,
 	CONST INT x2,
@@ -302,7 +302,7 @@ BOOL FAST_CALL CGDICanvas::DrawFilledRect(
 //------------------------------------------------------------------------
 // Draw a line on the canvas.
 //------------------------------------------------------------------------
-BOOL FAST_CALL CGDICanvas::DrawLine(
+BOOL FAST_CALL CCanvas::DrawLine(
 	CONST INT x1,
 	CONST INT y1,
 	CONST INT x2,
@@ -327,7 +327,7 @@ BOOL FAST_CALL CGDICanvas::DrawLine(
 //------------------------------------------------------------------------
 // Clear the canvas to a color
 //------------------------------------------------------------------------
-VOID FAST_CALL CGDICanvas::ClearScreen(CONST LONG crColor)
+VOID FAST_CALL CCanvas::ClearScreen(CONST LONG crColor)
 {
 
 	// Open the screen's DC
@@ -361,7 +361,7 @@ VOID FAST_CALL CGDICanvas::ClearScreen(CONST LONG crColor)
 //--------------------------------------------------------------------------
 // Find the closest match to a colour
 //--------------------------------------------------------------------------
-COLORREF FAST_CALL CGDICanvas::matchColor(CONST COLORREF rgb) CONST
+COLORREF FAST_CALL CCanvas::matchColor(CONST COLORREF rgb) CONST
 {
 
 	// Map of colours
@@ -404,7 +404,7 @@ COLORREF FAST_CALL CGDICanvas::matchColor(CONST COLORREF rgb) CONST
 //--------------------------------------------------------------------------
 // Create a canvas
 //--------------------------------------------------------------------------
-VOID FAST_CALL CGDICanvas::CreateBlank(
+VOID FAST_CALL CCanvas::CreateBlank(
 	CONST HDC hdcCompatible,
 	CONST INT width,
 	CONST INT height,
@@ -460,7 +460,7 @@ VOID FAST_CALL CGDICanvas::CreateBlank(
 //--------------------------------------------------------------------------
 // Resize the canvas
 //--------------------------------------------------------------------------
-VOID FAST_CALL CGDICanvas::Resize(
+VOID FAST_CALL CCanvas::Resize(
 	CONST HDC hdcCompatible,
 	CONST INT width,
 	CONST INT height
@@ -474,7 +474,7 @@ VOID FAST_CALL CGDICanvas::Resize(
 //--------------------------------------------------------------------------
 // Destroy the canvas
 //--------------------------------------------------------------------------
-INLINE VOID CGDICanvas::Destroy(VOID)
+INLINE VOID CCanvas::Destroy(VOID)
 {
 
 	// If using GDI
@@ -510,7 +510,7 @@ INLINE VOID CGDICanvas::Destroy(VOID)
 //--------------------------------------------------------------------------
 // Set a pixel using GDI
 //--------------------------------------------------------------------------
-INLINE VOID CGDICanvas::SetPixel(
+INLINE VOID CCanvas::SetPixel(
 	CONST INT x,
 	CONST INT y,
 	CONST LONG crColor
@@ -524,7 +524,7 @@ INLINE VOID CGDICanvas::SetPixel(
 //--------------------------------------------------------------------------
 // Get a pixel using GDI
 //--------------------------------------------------------------------------
-INT FAST_CALL CGDICanvas::GetPixel(
+INT FAST_CALL CCanvas::GetPixel(
 	CONST INT x,
 	CONST INT y
 		) CONST
@@ -542,7 +542,7 @@ INT FAST_CALL CGDICanvas::GetPixel(
 //
 // HDC target
 //
-INT FAST_CALL CGDICanvas::BltPart(
+INT FAST_CALL CCanvas::BltPart(
 	CONST HDC hdcTarget,
 	CONST INT x,
 	CONST INT y,
@@ -562,8 +562,8 @@ INT FAST_CALL CGDICanvas::BltPart(
 //
 // Canvas target
 //
-INT FAST_CALL CGDICanvas::BltPart(
-	CONST CGDICanvas *pCanvas,
+INT FAST_CALL CCanvas::BltPart(
+	CONST CCanvas *pCanvas,
 	INT x,
 	INT y,
 	INT xSrc,
@@ -617,7 +617,7 @@ INT FAST_CALL CGDICanvas::BltPart(
 //
 // Surface target
 //
-INT FAST_CALL CGDICanvas::BltPart(
+INT FAST_CALL CCanvas::BltPart(
 	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 	CONST INT x,
 	CONST INT y,
@@ -776,7 +776,7 @@ std::string getDirectDrawErrorString(CONST HRESULT hr)
 //
 // Surface target
 //
-INT FAST_CALL CGDICanvas::BltStretch(
+INT FAST_CALL CCanvas::BltStretch(
 	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 	CONST INT x,
 	CONST INT y,
@@ -844,7 +844,7 @@ INT FAST_CALL CGDICanvas::BltStretch(
 //
 // HDC target
 //
-INT FAST_CALL CGDICanvas::BltStretch(
+INT FAST_CALL CCanvas::BltStretch(
 	CONST HDC hdc,
 	CONST INT x,
 	CONST INT y,
@@ -868,8 +868,8 @@ INT FAST_CALL CGDICanvas::BltStretch(
 //
 // Canvas target
 //
-INT FAST_CALL CGDICanvas::BltStretch(
-	CONST CGDICanvas *cnv,
+INT FAST_CALL CCanvas::BltStretch(
+	CONST CCanvas *cnv,
 	CONST INT x,
 	CONST INT y,
 	CONST INT xSrc,
@@ -905,7 +905,7 @@ INT FAST_CALL CGDICanvas::BltStretch(
 //
 // Complete blt to an HDC
 //
-INT FAST_CALL CGDICanvas::Blt(
+INT FAST_CALL CCanvas::Blt(
 	CONST HDC hdcTarget,
 	CONST INT x,
 	CONST INT y,
@@ -918,8 +918,8 @@ INT FAST_CALL CGDICanvas::Blt(
 //
 // Complete blt to a canvas
 //
-INT FAST_CALL CGDICanvas::Blt(
-	CONST CGDICanvas *pCanvas,
+INT FAST_CALL CCanvas::Blt(
+	CONST CCanvas *pCanvas,
 	CONST INT x,
 	CONST INT y,
 	CONST LONG lRasterOp
@@ -931,7 +931,7 @@ INT FAST_CALL CGDICanvas::Blt(
 //
 // Complete blt to a strface
 //
-INT FAST_CALL CGDICanvas::Blt(
+INT FAST_CALL CCanvas::Blt(
 	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 	CONST INT x,
 	CONST INT y,
@@ -948,7 +948,7 @@ INT FAST_CALL CGDICanvas::Blt(
 //
 // HDC target
 //
-INT FAST_CALL CGDICanvas::BltTransparent(
+INT FAST_CALL CCanvas::BltTransparent(
 	CONST HDC hdcTarget,
 	CONST INT x,
 	CONST INT y,
@@ -961,8 +961,8 @@ INT FAST_CALL CGDICanvas::BltTransparent(
 //
 // Canvas target
 //
-INT FAST_CALL CGDICanvas::BltTransparent(
-	CONST CGDICanvas *pCanvas,
+INT FAST_CALL CCanvas::BltTransparent(
+	CONST CCanvas *pCanvas,
 	CONST INT x,
 	CONST INT y,
 	CONST LONG crTransparentColor
@@ -974,7 +974,7 @@ INT FAST_CALL CGDICanvas::BltTransparent(
 //
 // Surface target
 //
-INT FAST_CALL CGDICanvas::BltTransparent(
+INT FAST_CALL CCanvas::BltTransparent(
 	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 	CONST INT x,
 	CONST INT y,
@@ -987,7 +987,7 @@ INT FAST_CALL CGDICanvas::BltTransparent(
 //
 // Partial - HDC target
 //
-INT FAST_CALL CGDICanvas::BltTransparentPart(
+INT FAST_CALL CCanvas::BltTransparentPart(
 	CONST HDC hdcTarget,
 	CONST INT x,
 	CONST INT y,
@@ -1007,8 +1007,8 @@ INT FAST_CALL CGDICanvas::BltTransparentPart(
 //
 // Partial - canvas target
 //
-INT FAST_CALL CGDICanvas::BltTransparentPart(
-	CONST CGDICanvas *pCanvas,
+INT FAST_CALL CCanvas::BltTransparentPart(
+	CONST CCanvas *pCanvas,
 	INT x,
 	INT y,
 	INT xSrc,
@@ -1062,7 +1062,7 @@ INT FAST_CALL CGDICanvas::BltTransparentPart(
 //
 // Partial - surface target
 //
-INT FAST_CALL CGDICanvas::BltTransparentPart(
+INT FAST_CALL CCanvas::BltTransparentPart(
 	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 	CONST INT x,
 	CONST INT y,
@@ -1115,7 +1115,7 @@ INT FAST_CALL CGDICanvas::BltTransparentPart(
 //
 // HDC target
 //
-INT FAST_CALL CGDICanvas::BltTranslucent(
+INT FAST_CALL CCanvas::BltTranslucent(
 	CONST HDC hdcTarget,
 	CONST INT x,
 	CONST INT y,
@@ -1142,8 +1142,8 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 //
 // Canvas target
 //
-INT FAST_CALL CGDICanvas::BltTranslucent(
-	CONST CGDICanvas *pCanvas,
+INT FAST_CALL CCanvas::BltTranslucent(
+	CONST CCanvas *pCanvas,
 	CONST INT x,
 	CONST INT y,
 	CONST DOUBLE dIntensity,
@@ -1172,7 +1172,7 @@ INT FAST_CALL CGDICanvas::BltTranslucent(
 //
 // Surface target
 //
-INLINE INT CGDICanvas::BltTranslucent(
+INLINE INT CCanvas::BltTranslucent(
 	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 	CONST INT x,
 	CONST INT y,
@@ -1195,7 +1195,7 @@ INLINE INT CGDICanvas::BltTranslucent(
 //
 // Partial - HDC target
 //
-INT FAST_CALL CGDICanvas::BltTranslucentPart(
+INT FAST_CALL CCanvas::BltTranslucentPart(
 	CONST HDC hdcTarget,
 	CONST INT x,
 	CONST INT y,
@@ -1226,8 +1226,8 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 //
 // Partial - canvas target
 //
-INT FAST_CALL CGDICanvas::BltTranslucentPart(
-	CONST CGDICanvas *pCanvas,
+INT FAST_CALL CCanvas::BltTranslucentPart(
+	CONST CCanvas *pCanvas,
 	CONST INT x,
 	CONST INT y,
 	CONST INT xSrc,
@@ -1269,7 +1269,7 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 //
 // Partial - surface target
 //
-INT FAST_CALL CGDICanvas::BltTranslucentPart(
+INT FAST_CALL CCanvas::BltTranslucentPart(
 	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 	CONST INT x,
 	CONST INT y,
@@ -1561,7 +1561,7 @@ INT FAST_CALL CGDICanvas::BltTranslucentPart(
 //--------------------------------------------------------------------------
 // Shift the canvas left
 //--------------------------------------------------------------------------
-INT FAST_CALL CGDICanvas::ShiftLeft(
+INT FAST_CALL CCanvas::ShiftLeft(
 	CONST INT nPixels
 		)
 {
@@ -1571,7 +1571,7 @@ INT FAST_CALL CGDICanvas::ShiftLeft(
 	{
 
 		// Create a copy of this canvas
-		CONST CGDICanvas temp = *this;
+		CONST CCanvas temp = *this;
 
 		// Setup rects
 		RECT destRect = {0, 0, m_nWidth - nPixels, m_nHeight};
@@ -1603,7 +1603,7 @@ INT FAST_CALL CGDICanvas::ShiftLeft(
 //--------------------------------------------------------------------------
 // Shift the canvas right
 //--------------------------------------------------------------------------
-INT FAST_CALL CGDICanvas::ShiftRight(
+INT FAST_CALL CCanvas::ShiftRight(
 	CONST INT nPixels
 		)
 {
@@ -1613,7 +1613,7 @@ INT FAST_CALL CGDICanvas::ShiftRight(
 	{
 
 		// Create a copy of this canvas
-		CONST CGDICanvas temp = *this;
+		CONST CCanvas temp = *this;
 
 		// Setup rects
 		RECT destRect = {nPixels, 0, m_nWidth, m_nHeight};
@@ -1645,7 +1645,7 @@ INT FAST_CALL CGDICanvas::ShiftRight(
 //--------------------------------------------------------------------------
 // Shift the canvas up
 //--------------------------------------------------------------------------
-INT FAST_CALL CGDICanvas::ShiftUp(
+INT FAST_CALL CCanvas::ShiftUp(
 	CONST INT nPixels
 		)
 {
@@ -1655,7 +1655,7 @@ INT FAST_CALL CGDICanvas::ShiftUp(
 	{
 
 		// Create a copy of this canvas
-		CONST CGDICanvas temp = *this;
+		CONST CCanvas temp = *this;
 
 		// Setup rects
 		RECT destRect = {0, 0, m_nWidth, m_nHeight - nPixels};
@@ -1687,7 +1687,7 @@ INT FAST_CALL CGDICanvas::ShiftUp(
 //--------------------------------------------------------------------------
 // Shift the canvas down
 //--------------------------------------------------------------------------
-INT FAST_CALL CGDICanvas::ShiftDown(
+INT FAST_CALL CCanvas::ShiftDown(
 	CONST INT nPixels
 		)
 {
@@ -1697,7 +1697,7 @@ INT FAST_CALL CGDICanvas::ShiftDown(
 	{
 
 		// Create a copy of this canvas
-		CONST CGDICanvas temp = *this;
+		CONST CCanvas temp = *this;
 
 		// Setup rects
 		RECT destRect = {0, nPixels, m_nWidth, m_nHeight};
@@ -1730,7 +1730,7 @@ INT FAST_CALL CGDICanvas::ShiftDown(
 //--------------------------------------------------------------------------
 // Convert a DirectX color to RGB
 //--------------------------------------------------------------------------
-INLINE LONG CGDICanvas::GetSurfaceColor(
+INLINE LONG CCanvas::GetSurfaceColor(
 	CONST LONG dxColor
 		) CONST
 {
@@ -1753,7 +1753,7 @@ INLINE LONG CGDICanvas::GetSurfaceColor(
 //--------------------------------------------------------------------------
 // Obtain the canvas' HDC
 //--------------------------------------------------------------------------
-INLINE HDC CGDICanvas::OpenDC(VOID) CONST
+INLINE HDC CCanvas::OpenDC(VOID) CONST
 {
 	if (m_hdcLocked)
 	{
@@ -1779,7 +1779,7 @@ INLINE HDC CGDICanvas::OpenDC(VOID) CONST
 //--------------------------------------------------------------------------
 // Close the canvas' HDC
 //--------------------------------------------------------------------------
-INLINE VOID CGDICanvas::CloseDC(
+INLINE VOID CCanvas::CloseDC(
 	CONST HDC hdc
 		) CONST
 {
@@ -1793,7 +1793,7 @@ INLINE VOID CGDICanvas::CloseDC(
 //--------------------------------------------------------------------------
 // Lock the canvas
 //--------------------------------------------------------------------------
-INLINE VOID CGDICanvas::Lock(VOID)
+INLINE VOID CCanvas::Lock(VOID)
 {
 	m_hdcLocked = OpenDC();
 }
@@ -1801,7 +1801,7 @@ INLINE VOID CGDICanvas::Lock(VOID)
 //--------------------------------------------------------------------------
 // Unlock the canvas
 //--------------------------------------------------------------------------
-INLINE VOID CGDICanvas::Unlock(VOID)
+INLINE VOID CCanvas::Unlock(VOID)
 {
 	CONST HDC hdc = m_hdcLocked;
 	m_hdcLocked = NULL;
@@ -1811,7 +1811,7 @@ INLINE VOID CGDICanvas::Unlock(VOID)
 //--------------------------------------------------------------------------
 // Convert a DX color to a RGB color
 //--------------------------------------------------------------------------
-INLINE COLORREF CGDICanvas::ConvertDDColor(
+INLINE COLORREF CCanvas::ConvertDDColor(
 	CONST DWORD dwColor,
 	CONST LPDDPIXELFORMAT pddpf
 		)
@@ -1836,7 +1836,7 @@ INLINE COLORREF CGDICanvas::ConvertDDColor(
 //--------------------------------------------------------------------------
 // Convert a RGB color to a DX color
 //--------------------------------------------------------------------------
-INLINE DWORD CGDICanvas::ConvertColorRef(
+INLINE DWORD CCanvas::ConvertColorRef(
 	CONST COLORREF crColor,
 	CONST LPDDPIXELFORMAT pddpf
 		)
@@ -1864,7 +1864,7 @@ INLINE DWORD CGDICanvas::ConvertColorRef(
 //--------------------------------------------------------------------------
 // Get the number of bits from a mask
 //--------------------------------------------------------------------------
-INLINE WORD CGDICanvas::GetNumberOfBits(
+INLINE WORD CCanvas::GetNumberOfBits(
 	DWORD dwMask
 		)
 {
@@ -1880,7 +1880,7 @@ INLINE WORD CGDICanvas::GetNumberOfBits(
 //--------------------------------------------------------------------------
 // Get a mask position
 //--------------------------------------------------------------------------
-INLINE WORD CGDICanvas::GetMaskPos(
+INLINE WORD CCanvas::GetMaskPos(
 	CONST DWORD dwMask
 		)
 {
@@ -1892,7 +1892,7 @@ INLINE WORD CGDICanvas::GetMaskPos(
 //--------------------------------------------------------------------------
 // Set a RGB pixel
 //--------------------------------------------------------------------------
-INLINE VOID CGDICanvas::SetRGBPixel(
+INLINE VOID CCanvas::SetRGBPixel(
 	CONST LPDDSURFACEDESC2 destSurface,
 	CONST LPDDPIXELFORMAT pddpf,
 	CONST INT x,
@@ -1917,7 +1917,7 @@ INLINE VOID CGDICanvas::SetRGBPixel(
 //--------------------------------------------------------------------------
 // Get a pixel on a locked surface
 //--------------------------------------------------------------------------
-INLINE LONG CGDICanvas::GetRGBPixel(
+INLINE LONG CCanvas::GetRGBPixel(
 	CONST LPDDSURFACEDESC2 destSurface,
 	CONST LPDDPIXELFORMAT pddpf,
 	CONST INT x,
@@ -1941,7 +1941,7 @@ INLINE LONG CGDICanvas::GetRGBPixel(
 //--------------------------------------------------------------------------
 // Set pixels using DirectX
 //--------------------------------------------------------------------------
-VOID FAST_CALL CGDICanvas::SetPixelsDX(
+VOID FAST_CALL CCanvas::SetPixelsDX(
 	CONST LPLONG p_crPixelArray,
 	CONST INT x,
 	CONST INT y,
@@ -2060,7 +2060,7 @@ VOID FAST_CALL CGDICanvas::SetPixelsDX(
 //--------------------------------------------------------------------------
 // Set pixels using GDI
 //--------------------------------------------------------------------------
-INLINE VOID CGDICanvas::SetPixelsGDI(
+INLINE VOID CCanvas::SetPixelsGDI(
 	CONST LPLONG p_crPixelArray,
 	CONST INT x,
 	CONST INT y,
@@ -2092,7 +2092,7 @@ INLINE VOID CGDICanvas::SetPixelsGDI(
 //--------------------------------------------------------------------------
 // Set a block of pixels
 //--------------------------------------------------------------------------
-VOID FAST_CALL CGDICanvas::SetPixels(
+VOID FAST_CALL CCanvas::SetPixels(
 	CONST LPLONG p_crPixelArray,
 	CONST INT x,
 	CONST INT y,

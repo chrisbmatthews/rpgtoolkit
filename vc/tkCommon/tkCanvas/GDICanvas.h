@@ -23,6 +23,7 @@
 #define WIN32_LEAN_AND_MEAN			// Flag lean version of Windows
 #include <windows.h>				// The Windows API
 #include <ddraw.h>					// For DirectDraw
+#include <string>
 
 //--------------------------------------------------------------------------
 // Definitions
@@ -44,9 +45,9 @@ typedef double DOUBLE;
 #endif
 
 //--------------------------------------------------------------------------
-// Definition of the CGDICanvas class
+// Definition of the CCanvas class
 //--------------------------------------------------------------------------
-class CGDICanvas
+class CCanvas
 {
 
 //
@@ -54,27 +55,27 @@ class CGDICanvas
 //
 public:
 
-	CGDICanvas(
+	CCanvas(
 		VOID
 	);
 
-	CGDICanvas(
-		CONST CGDICanvas &rhs
+	CCanvas(
+		CONST CCanvas &rhs
 	);
 
-	CGDICanvas(
+	CCanvas(
 		LPDIRECTDRAWSURFACE7 surface,
 		INT width,
 		INT height,
 		BOOL bRam
 	);
 
-	~CGDICanvas(
+	~CCanvas(
 		VOID
 	);
 
-	CGDICanvas &operator=(
-		CONST CGDICanvas &rhs
+	CCanvas &operator=(
+		CONST CCanvas &rhs
 	);
 
 	VOID FAST_CALL CreateBlank(
@@ -149,7 +150,7 @@ public:
 	) CONST;
 
 	INT FAST_CALL Blt(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST LONG lRasterOp = SRCCOPY
@@ -174,7 +175,7 @@ public:
 	) CONST;
 
 	INT FAST_CALL BltPart(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST INT xSrc,
@@ -203,7 +204,7 @@ public:
 	) CONST;
 
 	INT FAST_CALL BltTransparent(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST LONG crTransparentColor
@@ -228,7 +229,7 @@ public:
 	) CONST;
 
 	INT FAST_CALL BltTransparentPart(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST INT xSrc,
@@ -263,7 +264,7 @@ public:
 	) CONST;
 
 	INT FAST_CALL BltTranslucentPart(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST INT xSrc,
@@ -298,7 +299,7 @@ public:
 	) CONST;
 
 	INT FAST_CALL BltTranslucent(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST DOUBLE dIntensity,
@@ -329,7 +330,7 @@ public:
 	) CONST;
 
 	INT FAST_CALL BltStretch(
-		CONST CGDICanvas *cnv,
+		CONST CCanvas *cnv,
 		CONST INT x,
 		CONST INT y,
 		CONST INT xSrc,

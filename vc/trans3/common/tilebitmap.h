@@ -31,8 +31,8 @@ typedef struct tagTileBitmap
 	bool open(const std::string fileName);
 	void save(const std::string fileName) const;
 	void resize(const int width, const int height);
-	bool draw(CGDICanvas *cnv, 
-			  CGDICanvas *cnvMask, 
+	bool draw(CCanvas *cnv, 
+			  CCanvas *cnvMask, 
 			  const int x, 
 			  const int y);
 } TILE_BITMAP;

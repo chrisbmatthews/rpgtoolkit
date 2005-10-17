@@ -426,7 +426,7 @@ int APIENTRY GFXDrawTileCNV ( const char* fname,
 	CONST std::string strPath = "tiles\\";
 	CONST std::string strFilename = strPath + fname;
 
-	CGDICanvas *CONST canvas = reinterpret_cast<CGDICanvas *>(cnv);
+	CCanvas *CONST canvas = reinterpret_cast<CCanvas *>(cnv);
 
 	int xx, yy;
 
@@ -703,7 +703,7 @@ int APIENTRY GFXDrawTileMaskCNV ( const char fname[],
 	std::string strPath = "tiles\\";
 	strFilename = strPath + strFilename;
 
-	CGDICanvas* canvas = (CGDICanvas*)cnv;
+	CCanvas* canvas = (CCanvas*)cnv;
 
 	int xx, yy;
 

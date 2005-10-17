@@ -461,7 +461,7 @@ void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int
 void CSprite::runQueuedMovements(void) 
 {
 	extern CSprite *g_pSelectedPlayer;
-	extern CGDICanvas *g_cnvRpgCode;
+	extern CCanvas *g_cnvRpgCode;
 
 	while (move(g_pSelectedPlayer, true))
 	{
@@ -976,7 +976,7 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 void CSprite::send(void)
 {
 	extern std::string g_projectPath;
-	extern CGDICanvas *g_cnvRpgCode;
+	extern CCanvas *g_cnvRpgCode;
 	extern LPBOARD g_pBoard;
 
 	clearAnmCache();
@@ -1289,7 +1289,7 @@ void CSprite::deactivatePrograms(void)
 
 // Debug function - draw vector onto screen.
 // Might be worth keeping in some form.
-void CSprite::drawVector(CGDICanvas *const cnv)
+void CSprite::drawVector(CCanvas *const cnv)
 {
 	extern RECT g_screen;
 	extern CSprite *g_pSelectedPlayer;
@@ -1321,7 +1321,7 @@ void CSprite::drawVector(CGDICanvas *const cnv)
  * to move -- the player needs to be able to see where
  * the character is going.
  */
-void CSprite::drawPath(CGDICanvas *const cnv)
+void CSprite::drawPath(CCanvas *const cnv)
 {
 	extern RECT g_screen;
 
@@ -1578,7 +1578,7 @@ bool CSprite::render(void)
 /*
  * Calculate sprite location and place on destination canvas.
  */
-bool CSprite::putSpriteAt(const CGDICanvas *cnvTarget, 
+bool CSprite::putSpriteAt(const CCanvas *cnvTarget, 
 						  const int layer,
 						  RECT &rect)
 {

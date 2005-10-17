@@ -160,7 +160,7 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 	{
 		ddsd.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
 		if (FAILED(m_lpddsPrime->GetAttachedSurface(&ddsd.ddsCaps, &m_lpddsSecond))) return;
-		m_pBackBuffer = new CGDICanvas(m_lpddsSecond, nWidth, nHeight, TRUE);
+		m_pBackBuffer = new CCanvas(m_lpddsSecond, nWidth, nHeight, TRUE);
 	}
 	else
 	{
@@ -192,7 +192,7 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 			ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
 			if (FAILED(m_lpdd->CreateSurface(&ddsd, &m_lpddsSecond, NULL))) return;
 		}
-		m_pBackBuffer = new CGDICanvas(m_lpddsSecond, nWidth, nHeight, bUseRam);
+		m_pBackBuffer = new CCanvas(m_lpddsSecond, nWidth, nHeight, bUseRam);
 
 	}
 
@@ -271,7 +271,7 @@ BOOL FAST_CALL CDirectDraw::RefreshWindowed(VOID)
 // Draw a canvas with translucency
 //------------------------------------------------------------------------
 BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucent(
-	CONST CGDICanvas *pCanvas,
+	CONST CCanvas *pCanvas,
 	CONST INT x,
 	CONST INT y,
 	CONST DOUBLE dIntensity,
@@ -290,7 +290,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucent(
 // Partially draw a canvas
 //------------------------------------------------------------------------
 BOOL FAST_CALL CDirectDraw::DrawCanvasPartial(
-	CONST CGDICanvas *pCanvas,
+	CONST CCanvas *pCanvas,
 	CONST INT destX,
 	CONST INT destY,
 	CONST INT srcX,
@@ -311,7 +311,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasPartial(
 // Draw part of a canvas with transparency
 //------------------------------------------------------------------------
 BOOL FAST_CALL CDirectDraw::DrawCanvasTransparentPartial(
-	CONST CGDICanvas *pCanvas,
+	CONST CCanvas *pCanvas,
 	CONST INT destX,
 	CONST INT destY,
 	CONST INT srcX,
@@ -332,7 +332,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTransparentPartial(
 // Draw part of a canvas, using translucency
 //------------------------------------------------------------------------
 BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(
-	CONST CGDICanvas *pCanvas,
+	CONST CCanvas *pCanvas,
 	CONST INT x,
 	CONST INT y,
 	CONST INT xSrc,
@@ -355,7 +355,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(
 // Copy contents of screen to a canvas
 //------------------------------------------------------------------------
 BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(
-	CONST CGDICanvas *pCanvas
+	CONST CCanvas *pCanvas
 		) CONST
 {
 	if (pCanvas)

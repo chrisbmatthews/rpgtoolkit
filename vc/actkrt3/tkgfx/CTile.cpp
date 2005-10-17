@@ -1021,7 +1021,7 @@ VOID FAST_CALL CTile::gdiDraw(CONST INT hdc, CONST INT x, CONST INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID FAST_CALL CTile::cnvDraw(CGDICanvas *pCanvas, CONST INT x, CONST INT y)
+VOID FAST_CALL CTile::cnvDraw(CCanvas *pCanvas, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
@@ -1090,7 +1090,7 @@ VOID FAST_CALL CTile::gdiDrawAlpha(CONST INT hdc, CONST INT x, CONST INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID FAST_CALL CTile::cnvDrawAlpha(CGDICanvas* pCanvas, CONST INT x, CONST INT y)
+VOID FAST_CALL CTile::cnvDrawAlpha(CCanvas* pCanvas, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
@@ -1141,7 +1141,7 @@ VOID FAST_CALL CTile::gdiRenderAlpha(INT hdc, CONST INT x, CONST INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID FAST_CALL CTile::cnvRenderAlpha(CGDICanvas* pCanvas, CONST INT x, CONST INT y)
+VOID FAST_CALL CTile::cnvRenderAlpha(CCanvas* pCanvas, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{

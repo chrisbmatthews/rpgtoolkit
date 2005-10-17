@@ -71,7 +71,7 @@ typedef struct tagBoardProgram
 typedef struct tagBoardVector
 {
 	int layer;
-	CGDICanvas *pCnv;
+	CCanvas *pCnv;
 	CVector *pV;
 	TILE_TYPE type;
 	int attributes;						// Various attributes for each tile type.
@@ -120,7 +120,7 @@ typedef struct tagBoardImage
 	BI_ENUM type;						// Drawing option.
 	std::string file;
 	int layer;
-	CGDICanvas *pCnv;
+	CCanvas *pCnv;
 	RECT r;								// Board pixel co-ordinates.
 	DB_POINT scroll;					// Scrolling factors (x,y).
 	CONST LONG transpColor;				// Transparent colour on the image.
@@ -228,14 +228,14 @@ typedef struct tagBoard
 	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
 
-	void render(CGDICanvas *cnv,
+	void render(CCanvas *cnv,
 			   const int destX, const int destY,		// canvas destination.
 			   const int lLower, const int lUpper, 
 			   int topX, int topY,						// pixel location on board to start from. 
 			   const int width, const int height,		// pixel dimensions to draw. 
 			   const int aR, const int aG, const int aB);
 
-	void renderBackground(CGDICanvas *cnv, RECT bounds);
+	void renderBackground(CCanvas *cnv, RECT bounds);
 
 	bool isIsometric(void) const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	// Board dimensions in pixels.

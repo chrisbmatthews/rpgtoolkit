@@ -31,7 +31,7 @@ CCanvasPool::CCanvasPool( int nCompatibleDC, int nSizeX, int nSizeY, int nPoolSi
 
 	for ( int c = 0; c < ( nPoolSize / POOLS_PER_CANVAS ); c++ )
 	{
-		CGDICanvas* pCanvas = new CGDICanvas();
+		CCanvas* pCanvas = new CCanvas();
 		pCanvas->CreateBlank( ( HDC ) nCompatibleDC, nX, nY, true );
 		m_vCanvases.push_back( pCanvas );
 	}
@@ -52,7 +52,7 @@ CCanvasPool::CCanvasPool( int nCompatibleDC, int nSizeX, int nSizeY, int nPoolSi
 //D-tor
 CCanvasPool::~CCanvasPool()
 {
-	std::vector<CGDICanvas*>::iterator itr = m_vCanvases.begin();
+	std::vector<CCanvas*>::iterator itr = m_vCanvases.begin();
 	for (; itr != m_vCanvases.end(); itr++)
 	{
 		delete (*itr);
@@ -81,7 +81,7 @@ int CCanvasPool::getFree()
 	int nX = getSizeX() * POOLS_PER_CANVAS;
 	int nY = getSizeY();
 
-	CGDICanvas* pCanvas = new CGDICanvas();
+	CCanvas* pCanvas = new CCanvas();
 	pCanvas->CreateBlank( ( HDC ) m_nCompatibleDC, nX, nY, true );
 	m_vCanvases.push_back( pCanvas );
 
@@ -124,7 +124,7 @@ void CCanvasPool::SetPixel( int nX, int nY, long crColor, int nIndex )
 	}
 
 	//in bounds...
-	CGDICanvas* pCanvas = getCanvas( nIndex );
+	CCanvas* pCanvas = getCanvas( nIndex );
 	pCanvas->SetPixel( getX( nX, nIndex ), getY( nY, nIndex ), crColor );
 }
 
@@ -139,7 +139,7 @@ void CCanvasPool::Blt( HDC hDest, int nDestX, int nDestY, int nIndex, long raste
 		return;
 	}
 
-	CGDICanvas* pCanvas = getCanvas( nIndex );
+	CCanvas* pCanvas = getCanvas( nIndex );
 	pCanvas->BltPart( hDest, nDestX, nDestY, 
 		getX( 0, nIndex ), getY( 0, nIndex ), getSizeX(), getSizeY(), rasterOp );
 }
@@ -147,7 +147,7 @@ void CCanvasPool::Blt( HDC hDest, int nDestX, int nDestY, int nIndex, long raste
 
 //////////////////////
 //Blt the whole thing onto another surface
-void CCanvasPool::Blt( CGDICanvas* pDest, int nDestX, int nDestY, int nIndex, long rasterOp )
+void CCanvasPool::Blt( CCanvas* pDest, int nDestX, int nDestY, int nIndex, long rasterOp )
 {
 	if ( nIndex > getPoolSize() - 1)
 	{
@@ -155,7 +155,7 @@ void CCanvasPool::Blt( CGDICanvas* pDest, int nDestX, int nDestY, int nIndex, lo
 		return;
 	}
 
-	CGDICanvas* pCanvas = getCanvas( nIndex );
+	CCanvas* pCanvas = getCanvas( nIndex );
 	pCanvas->BltPart( pDest, nDestX, nDestY, 
 		getX( 0, nIndex ), getY( 0, nIndex ), getSizeX(), getSizeY(), rasterOp );
 }
@@ -165,7 +165,7 @@ void CCanvasPool::Blt( CGDICanvas* pDest, int nDestX, int nDestY, int nIndex, lo
 //Lock for pixel setting.  Remember to unlock!
 void CCanvasPool::Lock( int nIndex )
 {
-	CGDICanvas* pCanvas = getCanvas( nIndex );
+	CCanvas* pCanvas = getCanvas( nIndex );
 	pCanvas->Lock();
 }
 
@@ -173,7 +173,7 @@ void CCanvasPool::Lock( int nIndex )
 //Unlock for pixel setting.
 void CCanvasPool::Unlock( int nIndex )
 {
-	CGDICanvas* pCanvas = getCanvas( nIndex );
+	CCanvas* pCanvas = getCanvas( nIndex );
 	pCanvas->Unlock();
 }
 
@@ -188,14 +188,14 @@ void CCanvasPool::SetPixels( long* p_crPixelArray, int x, int y, int width, int 
 		return;
 	}
 
-	CGDICanvas* pCanvas = getCanvas( nIndex );
+	CCanvas* pCanvas = getCanvas( nIndex );
 	pCanvas->SetPixels( p_crPixelArray, getX( x, nIndex ), getY( y, nIndex ), width, height );
 }
 
 
 //////////////////////
 // Get the canvas for the associated index
-CGDICanvas* CCanvasPool::getCanvas( int nIndex )
+CCanvas* CCanvasPool::getCanvas( int nIndex )
 {
 	if ( nIndex > getPoolSize() - 1)
 	{
@@ -216,12 +216,12 @@ void CCanvasPool::BltTransparent( HDC hDest, int nDestX, int nDestY, int nIndex,
 		return;
 	}
 
-	CGDICanvas* pCanvas = getCanvas( nIndex );
+	CCanvas* pCanvas = getCanvas( nIndex );
 	pCanvas->BltTransparentPart( hDest, nDestX, nDestY, 
 		getX( 0, nIndex ), getY( 0, nIndex ), getSizeX(), getSizeY(), crTransparent );
 }
 
-void CCanvasPool::BltTransparent( CGDICanvas* pDest, int nDestX, int nDestY, int nIndex, long crTransparent )
+void CCanvasPool::BltTransparent( CCanvas* pDest, int nDestX, int nDestY, int nIndex, long crTransparent )
 {
 	if ( nIndex > getPoolSize() - 1)
 	{
@@ -229,7 +229,7 @@ void CCanvasPool::BltTransparent( CGDICanvas* pDest, int nDestX, int nDestY, int
 		return;
 	}
 
-	CGDICanvas* pCanvas = getCanvas( nIndex );
+	CCanvas* pCanvas = getCanvas( nIndex );
 	pCanvas->BltTransparentPart( pDest, nDestX, nDestY, 
 		getX( 0, nIndex ), getY( 0, nIndex ), getSizeX(), getSizeY(), crTransparent );
 }

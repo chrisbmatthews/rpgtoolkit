@@ -132,12 +132,12 @@ public:
 
 	// Copy the screen to a canvas
 	BOOL FAST_CALL CopyScreenToCanvas(
-		CONST CGDICanvas *pCanvas
+		CONST CCanvas *pCanvas
 	) CONST;
 
 	// Draw a canvas
 	BOOL DrawCanvas(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST LONG lRasterOp = SRCCOPY
@@ -145,7 +145,7 @@ public:
 
 	// Draw a canvas, using transparency
 	BOOL DrawCanvasTransparent(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST LONG crTransparentColor
@@ -153,7 +153,7 @@ public:
 
 	// Draw a canvas, using translucency
 	BOOL FAST_CALL DrawCanvasTranslucent(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST DOUBLE dIntensity,
@@ -163,7 +163,7 @@ public:
 
 	// Draw part of a canvas, using translucency
 	BOOL FAST_CALL DrawCanvasTranslucentPartial(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT x,
 		CONST INT y,
 		CONST INT xSrc,
@@ -177,7 +177,7 @@ public:
 
 	// Draw part of a canvas
 	BOOL FAST_CALL DrawCanvasPartial(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT destX,
 		CONST INT destY,
 		CONST INT srcX,
@@ -189,7 +189,7 @@ public:
 
 	// Draw part of a canvas, using transparency
 	BOOL FAST_CALL DrawCanvasTransparentPartial(
-		CONST CGDICanvas *pCanvas,
+		CONST CCanvas *pCanvas,
 		CONST INT destX,
 		CONST INT destY,
 		CONST INT srcX,
@@ -237,7 +237,7 @@ public:
 		CONST HDC hdc
 	) CONST { m_pBackBuffer->CloseDC(hdc); }
 
-	CGDICanvas *getBackBuffer(VOID) { return m_pBackBuffer; }
+	CCanvas *getBackBuffer(VOID) { return m_pBackBuffer; }
 
 	// Deconstructor
 	~CDirectDraw(
@@ -272,7 +272,7 @@ private:
 	HWND m_hWndMain;					// Handle to host window
 	HINSTANCE m_hInstance;				// Handle of instance to app
 	HDC m_hDCLocked;					// HDC of locked surface
-	CGDICanvas *m_pBackBuffer;			// Backbuffer
+	CCanvas *m_pBackBuffer;			// Backbuffer
 	BOOL m_bSrcAnd[4];					// SRCAND support?
 	BOOL m_bSrcPaint[4];				// SRCPAINT support?
 	BOOL (FAST_CALL CDirectDraw::*m_pRefresh) (VOID);

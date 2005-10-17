@@ -44,11 +44,11 @@ int scTilesX = 0;							// Maximum scroll cache capacity, on width
 int scTilesY = 0;							// Maximum scroll cache capacity, on height
 std::vector<CTile *> g_tiles;				// Cache of tiles.
 
-CGDICanvas *g_cnvRpgCode = NULL;			// RPGCode canvas.
-CGDICanvas *g_cnvMessageWindow = NULL;		// RPGCode message window.
-CGDICanvas *g_cnvCursor = NULL;				// Cursor used on maps &c.
-std::vector<CGDICanvas *> g_cnvRpgScreens;	// SaveScreen() array.
-std::vector<CGDICanvas *> g_cnvRpgScans;	// Scan() array...
+CCanvas *g_cnvRpgCode = NULL;			// RPGCode canvas.
+CCanvas *g_cnvMessageWindow = NULL;		// RPGCode message window.
+CCanvas *g_cnvCursor = NULL;				// Cursor used on maps &c.
+std::vector<CCanvas *> g_cnvRpgScreens;	// SaveScreen() array.
+std::vector<CCanvas *> g_cnvRpgScans;	// Scan() array...
 
 bool g_bShowMessageWindow = false;			// Show the message window?
 double g_messageWindowTranslucency = 0.5;	// Message window translucency.
@@ -92,7 +92,7 @@ void renderRpgCodeScreen(void)
 bool drawTile(const std::string fileName, 
 			  const int x, const int y, 
 			  const int r, const int g, const int b, 
-			  CGDICanvas *cnv, 
+			  CCanvas *cnv, 
 			  const int offX, const int offY, 
 			  const BOOL bIsometric, 
 			  const int nIsoEvenOdd)
@@ -171,7 +171,7 @@ bool drawTile(const std::string fileName,
 bool drawTileMask (const std::string fileName, 
 				   const int x, const int y, 
 				   const int r, const int g, const int b, 
-				   CGDICanvas *cnv,
+				   CCanvas *cnv,
 				   const int nDirectBlt,
 				   const BOOL bIsometric,
 				   const int nIsoEvenOdd) 
@@ -284,7 +284,7 @@ bool drawTileMask (const std::string fileName,
 /*
  * Draw a tile onto a canvas (CommonTkGfx drawTileCnv)
  */
-bool drawTileCnv(CGDICanvas *cnv, 
+bool drawTileCnv(CCanvas *cnv, 
 				 const std::string file, 
 				 const double x,
 				 const double y, 
@@ -381,11 +381,11 @@ bool drawTileCnv(CGDICanvas *cnv,
  */
 void createCanvases(void)
 {
-	g_cnvRpgCode = new CGDICanvas();
+	g_cnvRpgCode = new CCanvas();
 	g_cnvRpgCode->CreateBlank(NULL, g_resX, g_resY, TRUE);
 	g_cnvRpgCode->ClearScreen(0);
 
-	g_cnvMessageWindow = new CGDICanvas();
+	g_cnvMessageWindow = new CCanvas();
 	g_cnvMessageWindow->CreateBlank(NULL, 600, 100, TRUE);
 
 	// Create sprite cache.
@@ -394,7 +394,7 @@ void createCanvases(void)
 //	g_anmCache.reserve(128);
 
 	RECT rect = {0, 0, g_resX * 2, g_resY * 2};
-	g_scrollCache.pCnv = new CGDICanvas();
+	g_scrollCache.pCnv = new CCanvas();
 	g_scrollCache.pCnv->CreateBlank(NULL, rect.right, rect.bottom, TRUE);
 	g_scrollCache.pCnv->ClearScreen(0);
 	g_scrollCache.r = rect;
@@ -411,7 +411,7 @@ void destroyCanvases(void)
 	delete g_scrollCache.pCnv;
 	delete g_cnvCursor;
 
-	std::vector<CGDICanvas *>::iterator i = g_cnvRpgScreens.begin();
+	std::vector<CCanvas *>::iterator i = g_cnvRpgScreens.begin();
 	for (; i != g_cnvRpgScreens.end(); ++i)
 	{
 		delete *i;
@@ -629,7 +629,7 @@ void tagScrollCache::render(const bool bForceRedraw)
  * bForce (in) - force the render?
  * return (out) - did a render occur?
  */
-bool renderNow(CGDICanvas *cnv, const bool bForce)
+bool renderNow(CCanvas *cnv, const bool bForce)
 {
 	extern ZO_VECTOR g_sprites;
 	extern LPBOARD g_pBoard;

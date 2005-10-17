@@ -408,7 +408,7 @@ int CVector::containsPoint(const DB_POINT p)
  * Create a mask by drawing a closed area and flooding.
  * (Currently using the GDI).
  */
-bool CVector::createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG color)
+bool CVector::createMask(CCanvas *cnv, const int x, const int y, CONST LONG color)
 {
 	// Can't create a mask from an open vector (or a null canvas).
 	if (!m_closed || !cnv) return false;
@@ -464,7 +464,7 @@ bool CVector::createMask(CGDICanvas *cnv, const int x, const int y, CONST LONG c
 /*
  * Draw the vector / polygon onto a canvas, offset by x,y. 
  */
-void CVector::draw(CONST LONG color, const bool drawText, const int x, const int y, CGDICanvas *const cnv)
+void CVector::draw(CONST LONG color, const bool drawText, const int x, const int y, CCanvas *const cnv)
 {
 	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 	{

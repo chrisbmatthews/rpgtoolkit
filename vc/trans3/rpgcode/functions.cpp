@@ -45,7 +45,7 @@
 /*
  * Globals.
  */
-extern CGDICanvas *g_cnvRpgCode;
+extern CCanvas *g_cnvRpgCode;
 std::string g_fontFace = "Arial";			// Font face.
 int g_fontSize = 20;						// Font size.
 COLORREF g_color = RGB(255, 255, 255);		// Current colour.
@@ -55,7 +55,7 @@ BOOL g_underline = FALSE;					// Underline enabled?
 unsigned long g_mwinY = 0;					// MWin() y position.
 std::string g_mwinBkg;						// MWin() background image.
 COLORREF g_mwinColor = 0;					// Mwin() background colour.
-CAllocationHeap<CGDICanvas> g_canvases;		// Allocated canvases.
+CAllocationHeap<CCanvas> g_canvases;		// Allocated canvases.
 CAllocationHeap<CCursorMap> g_cursorMaps;	// Cursor maps.
 void *g_pTarget = NULL;						// Targetted entity.
 TARGET_TYPE g_targetType = TI_EMPTY;		// Type of target entity.
@@ -248,7 +248,7 @@ void mwin(CALL_DATA &params)
 	{
 		throw CError("MWin() requires one parameter.");
 	}
-	extern CGDICanvas *g_cnvMessageWindow;
+	extern CCanvas *g_cnvMessageWindow;
 	// If this is the first line, draw the background.
 	if (g_mwinY == 0)
 	{
@@ -378,7 +378,7 @@ void text(CALL_DATA &params)
 	{
 		throw CError("Text() requires 3 or 4 parameters!");
 	}
-	CGDICanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
+	CCanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
 	if (cnv)
 	{
 		cnv->DrawText(params[0].getNum() * g_fontSize - g_fontSize, params[1].getNum() * g_fontSize - g_fontSize, params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
@@ -401,7 +401,7 @@ void pixelText(CALL_DATA &params)
 	{
 		throw CError("PixelText() requires 3 or 4 parameters!");
 	}
-	CGDICanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
+	CCanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
 	if (cnv)
 	{
 		cnv->DrawText(int(params[0].getNum()), int(params[1].getNum()), params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
@@ -448,7 +448,7 @@ void clear(CALL_DATA &params)
 {
 	if (params.params != 0)
 	{
-		CGDICanvas *cnv = g_canvases.cast((int)params[0].getNum());
+		CCanvas *cnv = g_canvases.cast((int)params[0].getNum());
 		if (cnv)
 		{
 			cnv->ClearScreen(0);
@@ -606,7 +606,7 @@ void viewbrd(CALL_DATA &params)
 {
 	extern CAllocationHeap<BOARD> g_boards;
 	extern std::string g_projectPath;
-	CGDICanvas *pCnv = g_cnvRpgCode;
+	CCanvas *pCnv = g_cnvRpgCode;
 
 	if (params.params == 4)
 	{
@@ -1436,7 +1436,7 @@ void setPixel(CALL_DATA &params)
 	}
 	else if (params.params == 3)
 	{
-		CGDICanvas *cnv = g_canvases.cast((int)params[2].getNum());
+		CCanvas *cnv = g_canvases.cast((int)params[2].getNum());
 		if (cnv)
 		{
 			cnv->SetPixel(params[0].getNum(), params[1].getNum(), g_color);
@@ -1462,7 +1462,7 @@ void drawLine(CALL_DATA &params)
 	}
 	else if (params.params == 5)
 	{
-		CGDICanvas *cnv = g_canvases.cast((int)params[4].getNum());
+		CCanvas *cnv = g_canvases.cast((int)params[4].getNum());
 		if (cnv)
 		{
 			cnv->DrawLine(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
@@ -1488,7 +1488,7 @@ void drawRect(CALL_DATA &params)
 	}
 	else if (params.params == 5)
 	{
-		CGDICanvas *cnv = g_canvases.cast((int)params[4].getNum());
+		CCanvas *cnv = g_canvases.cast((int)params[4].getNum());
 		if (cnv)
 		{
 			cnv->DrawRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
@@ -1514,7 +1514,7 @@ void fillRect(CALL_DATA &params)
 	}
 	else if (params.params == 5)
 	{
-		CGDICanvas *cnv = g_canvases.cast((int)params[4].getNum());
+		CCanvas *cnv = g_canvases.cast((int)params[4].getNum());
 		if (cnv)
 		{
 			cnv->DrawFilledRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
@@ -2596,7 +2596,7 @@ void targethandle(CALL_DATA &params)
  */
 void bitmap(CALL_DATA &params)
 {
-	CGDICanvas *cnv = NULL;
+	CCanvas *cnv = NULL;
 	if (params.params == 1)
 	{
 		cnv = g_cnvRpgCode;
@@ -2673,7 +2673,7 @@ void load(CALL_DATA &params)
  */
 void scan(CALL_DATA &params)
 {
-	extern std::vector<CGDICanvas *> g_cnvRpgScans;
+	extern std::vector<CCanvas *> g_cnvRpgScans;
 	extern LPBOARD g_pBoard;
 
 	if (params.params != 3)
@@ -2692,7 +2692,7 @@ void scan(CALL_DATA &params)
 	
 	if (!g_cnvRpgScans[i])
 	{
-		g_cnvRpgScans[i] = new CGDICanvas();
+		g_cnvRpgScans[i] = new CCanvas();
 		g_cnvRpgScans[i]->CreateBlank(NULL, 32, 32, TRUE);
 	}
 	g_cnvRpgScans[i]->ClearScreen(TRANSP_COLOR);
@@ -2713,7 +2713,7 @@ void scan(CALL_DATA &params)
  */
 void mem(CALL_DATA &params)
 {
-	extern std::vector<CGDICanvas *> g_cnvRpgScans;
+	extern std::vector<CCanvas *> g_cnvRpgScans;
 	extern LPBOARD g_pBoard;
 
 	if (params.params != 3)
@@ -3491,7 +3491,7 @@ void removestatus(CALL_DATA &params)
  */
 void setImage(CALL_DATA &params)
 {
-	CGDICanvas *cnv = NULL;
+	CCanvas *cnv = NULL;
 	if (params.params == 5)
 	{
 		cnv = g_cnvRpgCode;
@@ -3544,8 +3544,8 @@ void fillcircle(CALL_DATA &params)
  */
 void savescreen(CALL_DATA &params)
 {
-	extern std::vector<CGDICanvas *> g_cnvRpgScreens;
-	extern CGDICanvas *g_cnvRpgCode;
+	extern std::vector<CCanvas *> g_cnvRpgScreens;
+	extern CCanvas *g_cnvRpgCode;
 	extern RECT g_screen;
 
 	if (params.params != 0 && params.params != 1)
@@ -3564,7 +3564,7 @@ void savescreen(CALL_DATA &params)
 	
 	if (!g_cnvRpgScreens[i])
 	{
-		g_cnvRpgScreens[i] = new CGDICanvas();
+		g_cnvRpgScreens[i] = new CCanvas();
 		g_cnvRpgScreens[i]->CreateBlank(NULL, width, height, TRUE);
 	}
 	g_cnvRpgScreens[i]->ClearScreen(TRANSP_COLOR);
@@ -3586,8 +3586,8 @@ void savescreen(CALL_DATA &params)
  */
 void restorescreen(CALL_DATA &params)
 {
-	extern std::vector<CGDICanvas *> g_cnvRpgScreens;
-	extern CGDICanvas *g_cnvRpgCode;
+	extern std::vector<CCanvas *> g_cnvRpgScreens;
+	extern CCanvas *g_cnvRpgCode;
 	extern RECT g_screen;
 
 	if (params.params != 0 && params.params != 6)
@@ -3634,8 +3634,8 @@ void restorescreen(CALL_DATA &params)
  */
 void restorescreenarray(CALL_DATA &params)
 {
-	extern std::vector<CGDICanvas *> g_cnvRpgScreens;
-	extern CGDICanvas *g_cnvRpgCode;
+	extern std::vector<CCanvas *> g_cnvRpgScreens;
+	extern CCanvas *g_cnvRpgCode;
 
 	if (params.params != 1 && params.params != 7)
 	{
@@ -3647,7 +3647,7 @@ void restorescreenarray(CALL_DATA &params)
 	{
 		// Temporarily switch the pointers for
 		// RestoreScreen() to use the first.
-		CGDICanvas *pCnv = g_cnvRpgScreens[0];
+		CCanvas *pCnv = g_cnvRpgScreens[0];
 		g_cnvRpgScreens[0] = g_cnvRpgScreens[i];
 
 		// Send the last 6 parameters to RestoreScreen();
@@ -3773,7 +3773,7 @@ void getPixel(CALL_DATA &params)
 	}
 	else if (params.params == 6)
 	{
-		CGDICanvas *cnv = g_canvases.cast(int(params[5].getNum()));
+		CCanvas *cnv = g_canvases.cast(int(params[5].getNum()));
 		if (cnv)
 		{
 			color = cnv->GetPixel(params[0].getNum(), params[1].getNum());
@@ -3853,7 +3853,7 @@ void getFontSize(CALL_DATA &params)
  */
 void setImageTransparent(CALL_DATA &params)
 {
-	CGDICanvas *cnv = NULL;
+	CCanvas *cnv = NULL;
 	if (params.params == 8)
 	{
 		cnv = g_cnvRpgCode;
@@ -3869,7 +3869,7 @@ void setImageTransparent(CALL_DATA &params)
 	if (cnv)
 	{
 		extern std::string g_projectPath;
-		CGDICanvas intermediate;
+		CCanvas intermediate;
 		intermediate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
 		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, params[3].getNum(), params[4].getNum());
 		intermediate.BltTransparent(cnv, params[1].getNum(), params[2].getNum(), RGB(params[5].getNum(), params[6].getNum(), params[7].getNum()));
@@ -3887,7 +3887,7 @@ void setImageTransparent(CALL_DATA &params)
  */
 void setImageTranslucent(CALL_DATA &params)
 {
-	CGDICanvas *cnv = NULL;
+	CCanvas *cnv = NULL;
 	if (params.params == 5)
 	{
 		cnv = g_cnvRpgCode;
@@ -3903,7 +3903,7 @@ void setImageTranslucent(CALL_DATA &params)
 	if (cnv)
 	{
 		extern std::string g_projectPath;
-		CGDICanvas intermediate;
+		CCanvas intermediate;
 		intermediate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
 		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, params[3].getNum(), params[4].getNum());
 		intermediate.BltTranslucent(cnv, params[1].getNum(), params[2].getNum(), 0.5, -1, -1);
@@ -3923,7 +3923,7 @@ void drawEnemy(CALL_DATA &params)
 {
 	extern std::string g_projectPath;
 
-	CGDICanvas *cnv = NULL;
+	CCanvas *cnv = NULL;
 	if (params.params == 3)
 	{
 		cnv = g_cnvRpgCode;
@@ -3942,7 +3942,7 @@ void drawEnemy(CALL_DATA &params)
 	ENEMY enemy;
 	if (enemy.open(g_projectPath + ENE_PATH + params[0].getLit()))
 	{
-		CGDICanvas c;
+		CCanvas c;
 		c.CreateBlank(NULL, 1, 1, TRUE);
 		renderAnimationFrame(&c, enemy.gfx[EN_REST], 0, 0, 0);
 		c.BltTransparent(cnv, int(params[1].getNum()), int(params[2].getNum()), TRANSP_COLOR);
@@ -4579,7 +4579,7 @@ void createCanvas(CALL_DATA &params)
 	{
 		throw CError("CreateCanvas() requires two or three parameters.");
 	}
-	CGDICanvas *p = g_canvases.allocate();
+	CCanvas *p = g_canvases.allocate();
 	p->CreateBlank(NULL, params[0].getNum(), params[1].getNum(), TRUE);
 	p->ClearScreen(0);
 	params.ret().udt = UDT_NUM;
@@ -4601,7 +4601,7 @@ void killCanvas(CALL_DATA &params)
 	{
 		throw CError("KillCanvas() requires one parameter.");
 	}
-	CGDICanvas *p = (CGDICanvas *)(int)params[0].getNum();
+	CCanvas *p = (CCanvas *)(int)params[0].getNum();
 	g_canvases.free(p);
 }
 
@@ -4614,7 +4614,7 @@ void drawCanvas(CALL_DATA &params)
 {
 	if (params.params == 3)
 	{
-		CGDICanvas *p = g_canvases.cast((int)params[0].getNum());
+		CCanvas *p = g_canvases.cast((int)params[0].getNum());
 		if (p)
 		{
 			p->Blt(g_cnvRpgCode, params[1].getNum(), params[2].getNum());
@@ -4623,7 +4623,7 @@ void drawCanvas(CALL_DATA &params)
 	}
 	else if (params.params == 5)
 	{
-		CGDICanvas *p = g_canvases.cast((int)params[0].getNum());
+		CCanvas *p = g_canvases.cast((int)params[0].getNum());
 		if (p)
 		{
 			p->BltStretch(g_cnvRpgCode, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
@@ -4632,10 +4632,10 @@ void drawCanvas(CALL_DATA &params)
 	}
 	else if (params.params == 6)
 	{
-		CGDICanvas *p = g_canvases.cast((int)params[0].getNum());
+		CCanvas *p = g_canvases.cast((int)params[0].getNum());
 		if (p)
 		{
-			CGDICanvas *pDest = g_canvases.cast((int)params[5].getNum());
+			CCanvas *pDest = g_canvases.cast((int)params[5].getNum());
 			if (pDest)
 			{
 				p->BltStretch(pDest, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
