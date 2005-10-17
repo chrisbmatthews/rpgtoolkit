@@ -500,7 +500,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			break;
 		case GEN_STEPS:
 			extern unsigned long g_stepsTaken;
-			*pRet = g_stepsTaken;
+			*pRet = g_stepsTaken / 32.0;
 			break;
 		case GEN_ENE_RUN:
 			*pRet = int(canRunFromFight());
