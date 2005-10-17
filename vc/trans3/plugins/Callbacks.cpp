@@ -1155,7 +1155,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawHand(int canvasID, int pointx, int pointy, 
 STDMETHODIMP CCallbacks::CBDrawHand(int pointx, int pointy, int *pRet)
 {
 	extern CGDICanvas *g_cnvCursor;
-	*pRet = g_pDirectDraw->DrawCanvasTransparent(g_cnvCursor, pointx - 72, pointy - 20, RGB(255, 0, 0));
+	*pRet = g_pDirectDraw->DrawCanvasTransparent(g_cnvCursor, pointx - 42, pointy - 10, RGB(255, 0, 0));
 	return S_OK;
 }
 
