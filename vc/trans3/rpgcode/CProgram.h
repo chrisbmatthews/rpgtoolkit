@@ -198,6 +198,8 @@ public:
 	void freeVar(const std::string var);
 	void end() { m_i = m_units.end() - 1; }
 	void jump(const std::string label);
+	CONST_POS getPos() const { return m_i; }
+	CONST_POS getEnd() const { return m_units.end(); }
 	LPSTACK_FRAME getLocal(const std::string var) { return &m_locals.back()[var]; }
 
 	virtual LPSTACK_FRAME getVar(const std::string name);

@@ -266,6 +266,22 @@ void mwin(CALL_DATA &params)
 	// Write the text.
 	g_cnvMessageWindow->DrawText(0, g_mwinY, params[0].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	g_mwinY += g_fontSize;
+
+	CONST_POS i = params.prg->getPos() + 1;
+	for (; i != params.prg->getEnd(); ++i)
+	{
+		if (i->udt & UDT_FUNC)
+		{
+			if (i->func == mwin)
+			{
+				// The next line is also a call to mwin(),
+				// so don't bother drawing yet.
+				return;
+			}
+			break;
+		}
+	}
+
 	// Draw the window.
 	renderRpgCodeScreen();
 }
