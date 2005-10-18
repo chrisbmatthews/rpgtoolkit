@@ -26,7 +26,7 @@ CVideo::CVideo()
 	);
 	if (FAILED(res))
 	{
-		throw CError("ActiveMovie is required to play movies.");
+		throw CError(_T("ActiveMovie is required to play movies."));
 	}
 
 	// Query for IMediaControl, IMediaEvent, and IVideoWindow.
@@ -36,7 +36,7 @@ CVideo::CVideo()
 }
 
 // Render a file.
-void CVideo::renderFile(const std::string file)
+void CVideo::renderFile(const STRING file)
 {
 	BSTR bstr = getString(file);
 	m_pMediaControl->RenderFile(bstr);

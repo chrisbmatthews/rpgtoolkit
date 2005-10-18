@@ -7,9 +7,9 @@
 #ifndef _MESSAGE_BOX_H_
 #define _MESSAGE_BOX_H_
 
-#include <string>
+#include "../../tkCommon/strings.h"
 
 // Show a message box.
-void messageBox(const std::string str);
+void messageBox(const STRING str);
 
 #endif

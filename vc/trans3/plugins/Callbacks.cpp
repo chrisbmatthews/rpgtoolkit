@@ -37,6 +37,7 @@
 #include "../audio/CAudioSegment.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
+#include "../../tkCommon/strings.h"
 #include <map>
 
 extern CAllocationHeap<CCanvas> g_canvases;
@@ -45,7 +46,7 @@ extern std::vector<CPlayer *> g_players;
 static CAllocationHeap<ANIMATION> g_animations;
 static HDC g_hScreenDc = NULL;
 std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
-std::string g_menuGraphic, g_fightMenuGraphic;
+STRING g_menuGraphic, g_fightMenuGraphic;
 CProgram *g_prg = NULL;
 
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
@@ -58,7 +59,7 @@ STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 
 STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 {
-	const std::string var = getString(varname);
+	const STRING var = getString(varname);
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	BSTR bstr = getString(pVar->getLit());
 	SysReAllocString(pRet, bstr);
@@ -68,7 +69,7 @@ STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 {
-	const std::string var = getString(varname);
+	const STRING var = getString(varname);
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	*pRet = pVar->getNum();
 	return S_OK;
@@ -76,7 +77,7 @@ STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 
 STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 {
-	const std::string var = getString(varname);
+	const STRING var = getString(varname);
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	pVar->udt = UDT_LIT;
 	pVar->lit = getString(newValue);
@@ -85,7 +86,7 @@ STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 
 STDMETHODIMP CCallbacks::CBSetNumerical(BSTR varname, double newValue)
 {
-	const std::string var = getString(varname);
+	const STRING var = getString(varname);
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	pVar->udt = UDT_NUM;
 	pVar->num = newValue;
@@ -135,8 +136,8 @@ STDMETHODIMP CCallbacks::CBHideMwin(int *pRet)
 
 STDMETHODIMP CCallbacks::CBLoadEnemy(BSTR file, int eneSlot)
 {
-	extern std::string g_projectPath;
-	const std::string strFile = getString(file);
+	extern STRING g_projectPath;
+	const STRING strFile = getString(file);
 	g_enemies[eneSlot].enemy.open(g_projectPath + ENE_PATH + strFile);
 	g_enemies[eneSlot].fileName = strFile;
 	return S_OK;
@@ -349,7 +350,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 		case GEN_PLAYERFILES:
 			// No way to get it, Jon.
 			// That's the great thing about encapsulation, Colin.
-			// Your style of 'encapsulation', at least.
+			// Your style of _T('encapsulation'), at least.
 			break;
 		case GEN_PLYROTHERHANDLES:
 			break;
@@ -386,11 +387,11 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			bstr = getString(g_fightMenuGraphic);
 			break;
 		case GEN_MWIN_PIC_FILE:
-			extern std::string g_mwinBkg;
+			extern STRING g_mwinBkg;
 			bstr = getString(g_mwinBkg);
 			break;
 		case GEN_FONTFILE:
-			extern std::string g_fontFace;
+			extern STRING g_fontFace;
 			bstr = getString(g_fontFace);
 			break;
 		case GEN_ENE_FILE:
@@ -538,8 +539,8 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 
 STDMETHODIMP CCallbacks::CBGetCommandName(BSTR rpgcodeCommand, BSTR *pRet)
 {
-	std::string str = getString(rpgcodeCommand);
-	str = str.substr(0, str.find_first_of('('));
+	STRING str = getString(rpgcodeCommand);
+	str = str.substr(0, str.find_first_of(_T('(')));
 	char *const pstr = _strlwr(_strdup(str.c_str()));
 	BSTR bstr = getString(pstr);
 	SysReAllocString(pRet, bstr);
@@ -550,36 +551,36 @@ STDMETHODIMP CCallbacks::CBGetCommandName(BSTR rpgcodeCommand, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBGetBrackets(BSTR rpgcodeCommand, BSTR *pRet)
 {
-	std::string str = getString(rpgcodeCommand);
-	str = str.substr(str.find_first_of('(') + 1);
-	str = str.substr(0, str.find_last_of(')'));
+	STRING str = getString(rpgcodeCommand);
+	str = str.substr(str.find_first_of(_T('(')) + 1);
+	str = str.substr(0, str.find_last_of(_T(')')));
 	BSTR bstr = getString(str);
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
 	return S_OK;
 }
 
-void getParameters(const std::string str, std::vector<std::string> &ret)
+void getParameters(const STRING str, std::vector<STRING> &ret)
 {
-	int pos = str.find('(') + 1;
+	int pos = str.find(_T('(')) + 1;
 	const int initPos = pos;
 	bool bQuotes = false;
 	unsigned int i;
 	for (i = pos; i < str.length(); ++i)
 	{
 		const char &c = str[i];
-		if (c == '"') bQuotes = !bQuotes;
+		if (c == _T('"')) bQuotes = !bQuotes;
 		else if (!bQuotes)
 		{
-			if (c == ',')
+			if (c == _T(','))
 			{
 				ret.push_back(str.substr(pos, i - pos));
 				pos = i + 1;
 			}
-			else if (c == ')') break;
+			else if (c == _T(')')) break;
 		}
 	}
-	const std::string push = str.substr(pos, i - pos);
+	const STRING push = str.substr(pos, i - pos);
 	if (!push.empty())
 	{
 		ret.push_back(push);
@@ -588,8 +589,8 @@ void getParameters(const std::string str, std::vector<std::string> &ret)
 
 STDMETHODIMP CCallbacks::CBCountBracketElements(BSTR rpgcodeCommand, int *pRet)
 {
-	const std::string str = getString(rpgcodeCommand);
-	std::vector<std::string> parts;
+	const STRING str = getString(rpgcodeCommand);
+	std::vector<STRING> parts;
 	getParameters(str, parts);
 	*pRet = parts.size();
 	return S_OK;
@@ -597,8 +598,8 @@ STDMETHODIMP CCallbacks::CBCountBracketElements(BSTR rpgcodeCommand, int *pRet)
 
 STDMETHODIMP CCallbacks::CBGetBracketElement(BSTR rpgcodeCommand, int elemNum, BSTR *pRet)
 {
-	const std::string str = getString(rpgcodeCommand);
-	std::vector<std::string> parts;
+	const STRING str = getString(rpgcodeCommand);
+	std::vector<STRING> parts;
 	getParameters(str, parts);
 	if (parts.size() > --elemNum)
 	{
@@ -615,12 +616,12 @@ STDMETHODIMP CCallbacks::CBGetBracketElement(BSTR rpgcodeCommand, int elemNum, B
 
 STDMETHODIMP CCallbacks::CBGetStringElementValue(BSTR rpgcodeCommand, BSTR *pRet)
 {
-	const std::string str = getString(rpgcodeCommand);
-	std::string ret;
+	const STRING str = getString(rpgcodeCommand);
+	STRING ret;
 	char c = str[str.length() - 1];
-	if (c == '$')
+	if (c == _T('$'))
 	{
-		const std::string var = str.substr(0, str.length() - 1);
+		const STRING var = str.substr(0, str.length() - 1);
 		ret = g_prg->getVar(var)->getLit();
 	}
 	else
@@ -636,11 +637,11 @@ STDMETHODIMP CCallbacks::CBGetStringElementValue(BSTR rpgcodeCommand, BSTR *pRet
 
 STDMETHODIMP CCallbacks::CBGetNumElementValue(BSTR rpgcodeCommand, double *pRet)
 {
-	const std::string str = getString(rpgcodeCommand);
+	const STRING str = getString(rpgcodeCommand);
 	char c = str[str.length() - 1];
-	if (c == '!')
+	if (c == _T('!'))
 	{
-		const std::string var = str.substr(0, str.length() - 1);
+		const STRING var = str.substr(0, str.length() - 1);
 		*pRet = g_prg->getVar(var)->getNum();
 	}
 	else
@@ -652,16 +653,16 @@ STDMETHODIMP CCallbacks::CBGetNumElementValue(BSTR rpgcodeCommand, double *pRet)
 
 STDMETHODIMP CCallbacks::CBGetElementType(BSTR data, int *pRet)
 {
-	const std::string str = getString(data);
-	if (str[0] == '"')
+	const STRING str = getString(data);
+	if (str[0] == _T('"'))
 	{
 		*pRet = PLUG_DT_LIT;
 	}
 	else
 	{
 		char c = str[str.length() - 1];
-		if (c == '!') *pRet = PLUG_DT_NUM;
-		else if (c == '$') *pRet = PLUG_DT_LIT;
+		if (c == _T('!')) *pRet = PLUG_DT_NUM;
+		else if (c == _T('$')) *pRet = PLUG_DT_LIT;
 		else
 		{
 			*pRet = PLUG_DT_NUM;
@@ -872,7 +873,7 @@ STDMETHODIMP CCallbacks::CBCanvasLoadImage(int canvasID, BSTR filename, int *pRe
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		extern std::string g_projectPath;
+		extern STRING g_projectPath;
 		drawImage(g_projectPath + BMP_PATH + getString(filename), p, 0, 0, -1, -1);
 	}
 	else
@@ -887,7 +888,7 @@ STDMETHODIMP CCallbacks::CBCanvasLoadSizedImage(int canvasID, BSTR filename, int
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		extern std::string g_projectPath;
+		extern STRING g_projectPath;
 		drawImage(g_projectPath + BMP_PATH + getString(filename), p, 0, 0, p->GetWidth(), p->GetHeight());
 	}
 	else
@@ -1161,24 +1162,24 @@ STDMETHODIMP CCallbacks::CBDrawHand(int pointx, int pointy, int *pRet)
 
 STDMETHODIMP CCallbacks::CBCheckKey(BSTR keyPressed, int *pRet)
 {
-	const std::string key = parser::uppercase(getString(keyPressed));
-	if (key == "LEFT") *pRet = (GetAsyncKeyState(VK_LEFT) < 0);
-	else if (key == "RIGHT") *pRet = (GetAsyncKeyState(VK_RIGHT) < 0);
-	else if (key == "UP") *pRet = (GetAsyncKeyState(VK_UP) < 0);
-	else if (key == "DOWN") *pRet = (GetAsyncKeyState(VK_DOWN) < 0);
-	else if (key == "SPACE") *pRet = (GetAsyncKeyState(VK_SPACE) < 0);
-	else if (key == "ESC" || key == "ESCAPE") *pRet = (GetAsyncKeyState(VK_ESCAPE) < 0);
-	else if (key == "ENTER") *pRet = (GetAsyncKeyState(VK_RETURN) < 0);
-	else if (key == "NUMPAD0") *pRet = (GetAsyncKeyState(VK_NUMPAD0) < 0);
-	else if (key == "NUMPAD1") *pRet = (GetAsyncKeyState(VK_NUMPAD1) < 0);
-	else if (key == "NUMPAD2") *pRet = (GetAsyncKeyState(VK_NUMPAD2) < 0);
-	else if (key == "NUMPAD3") *pRet = (GetAsyncKeyState(VK_NUMPAD3) < 0);
-	else if (key == "NUMPAD4") *pRet = (GetAsyncKeyState(VK_NUMPAD4) < 0);
-	else if (key == "NUMPAD5") *pRet = (GetAsyncKeyState(VK_NUMPAD5) < 0);
-	else if (key == "NUMPAD6") *pRet = (GetAsyncKeyState(VK_NUMPAD6) < 0);
-	else if (key == "NUMPAD7") *pRet = (GetAsyncKeyState(VK_NUMPAD7) < 0);
-	else if (key == "NUMPAD8") *pRet = (GetAsyncKeyState(VK_NUMPAD8) < 0);
-	else if (key == "NUMPAD9") *pRet = (GetAsyncKeyState(VK_NUMPAD9) < 0);
+	const STRING key = parser::uppercase(getString(keyPressed));
+	if (key == _T("LEFT")) *pRet = (GetAsyncKeyState(VK_LEFT) < 0);
+	else if (key == _T("RIGHT")) *pRet = (GetAsyncKeyState(VK_RIGHT) < 0);
+	else if (key == _T("UP")) *pRet = (GetAsyncKeyState(VK_UP) < 0);
+	else if (key == _T("DOWN")) *pRet = (GetAsyncKeyState(VK_DOWN) < 0);
+	else if (key == _T("SPACE")) *pRet = (GetAsyncKeyState(VK_SPACE) < 0);
+	else if (key == _T("ESC") || key == _T("ESCAPE")) *pRet = (GetAsyncKeyState(VK_ESCAPE) < 0);
+	else if (key == _T("ENTER")) *pRet = (GetAsyncKeyState(VK_RETURN) < 0);
+	else if (key == _T("NUMPAD0")) *pRet = (GetAsyncKeyState(VK_NUMPAD0) < 0);
+	else if (key == _T("NUMPAD1")) *pRet = (GetAsyncKeyState(VK_NUMPAD1) < 0);
+	else if (key == _T("NUMPAD2")) *pRet = (GetAsyncKeyState(VK_NUMPAD2) < 0);
+	else if (key == _T("NUMPAD3")) *pRet = (GetAsyncKeyState(VK_NUMPAD3) < 0);
+	else if (key == _T("NUMPAD4")) *pRet = (GetAsyncKeyState(VK_NUMPAD4) < 0);
+	else if (key == _T("NUMPAD5")) *pRet = (GetAsyncKeyState(VK_NUMPAD5) < 0);
+	else if (key == _T("NUMPAD6")) *pRet = (GetAsyncKeyState(VK_NUMPAD6) < 0);
+	else if (key == _T("NUMPAD7")) *pRet = (GetAsyncKeyState(VK_NUMPAD7) < 0);
+	else if (key == _T("NUMPAD8")) *pRet = (GetAsyncKeyState(VK_NUMPAD8) < 0);
+	else if (key == _T("NUMPAD9")) *pRet = (GetAsyncKeyState(VK_NUMPAD9) < 0);
 	else *pRet = (GetAsyncKeyState(key[0]) < 0);
 	return S_OK;
 }
@@ -1210,7 +1211,7 @@ STDMETHODIMP CCallbacks::CBGetSpecialMoveListEntry(int idx, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBRunProgram(BSTR prgFile)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	CProgram(g_projectPath + PRG_PATH + getString(prgFile)).run();
 	return S_OK;
 }
@@ -1459,7 +1460,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int 
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		extern std::string g_projectPath;
+		extern STRING g_projectPath;
 		BACKGROUND bkg;
 		bkg.open(g_projectPath + BKG_PATH + getString(bkgFile));
 		drawImage(g_projectPath + BMP_PATH + bkg.image, p, x, y, width, height);
@@ -1470,7 +1471,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int 
 STDMETHODIMP CCallbacks::CBCreateAnimation(BSTR file, int *pRet)
 {
 	LPANIMATION p = g_animations.allocate();
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	p->open(g_projectPath + MISC_PATH + getString(file));
 	*pRet = (int)p;
 	return S_OK;
@@ -1744,9 +1745,9 @@ STDMETHODIMP CCallbacks::CBReleaseFighterCharge(int partyIdx, int fighterIdx)
 
 STDMETHODIMP CCallbacks::CBFightDoAttack(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, int amount, int toSmp, int *pRet)
 {
-#pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
+#pragma warning (disable : 4800) // forcing value to bool _T('true') or _T('false') (performance warning)
 	*pRet = performAttack(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, amount, toSmp);
-#pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
+#pragma warning (default : 4800) // forcing value to bool _T('true') or _T('false') (performance warning)
 	return S_OK;
 }
 
@@ -1761,9 +1762,9 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	}
 
 	ITEM itm;
-	extern std::string g_projectPath;
-	const std::string strItemFile = getString(itemFile);
-	const std::string fullPath = g_projectPath + ITM_PATH + strItemFile;
+	extern STRING g_projectPath;
+	const STRING strItemFile = getString(itemFile);
+	const STRING fullPath = g_projectPath + ITM_PATH + strItemFile;
 	if (!itm.open(fullPath, NULL)) return S_OK;
 
 	// HP.
@@ -1821,8 +1822,8 @@ STDMETHODIMP CCallbacks::CBFighterAddStatusEffect(int partyIdx, int fightIdx, BS
 	LPFIGHTER p = getFighter(partyIdx, fightIdx);
 	if (p)
 	{
-		const std::string file = getString(statusFile);
-		extern std::string g_projectPath;
+		const STRING file = getString(statusFile);
+		extern STRING g_projectPath;
 		LPSTATUS_EFFECT pEffect = &p->statuses[parser::uppercase(file)];
 		pEffect->open(g_projectPath + STATUS_PATH + file);
 		if (pEffect->speed)
@@ -1852,7 +1853,7 @@ STDMETHODIMP CCallbacks::CBFighterRemoveStatusEffect(int partyIdx, int fightIdx,
 	LPFIGHTER p = getFighter(partyIdx, fightIdx);
 	if (p)
 	{
-		const std::string file = parser::uppercase(getString(statusFile));
+		const STRING file = parser::uppercase(getString(statusFile));
 		LPSTATUS_EFFECT pEffect = &p->statuses[file];
 		if (pEffect->speed)
 		{
@@ -1911,7 +1912,7 @@ STDMETHODIMP CCallbacks::CBCanvasCloseHdc(int cnv, int hdc)
 
 STDMETHODIMP CCallbacks::CBFileExists(BSTR strFile, VARIANT_BOOL *pRet)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	*pRet = (CFile::fileExists(g_projectPath + getString(strFile)) ? VARIANT_TRUE : VARIANT_FALSE);
 	return S_OK;
 }

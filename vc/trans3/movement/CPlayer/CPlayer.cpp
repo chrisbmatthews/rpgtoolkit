@@ -20,7 +20,7 @@
 /*
  * Constructor
  */
-CPlayer::CPlayer(const std::string file, const bool show):
+CPlayer::CPlayer(const STRING file, const bool show):
 CSprite(show)				// Is the player visible?
 {
 	if (m_playerMem.open(file, m_attr) <= PRE_VECTOR_PLAYER)
@@ -52,9 +52,9 @@ CSprite(show)				// Is the player visible?
  * Equip an item to a location on the player.
  * file contains complete path.
  */
-void CPlayer::addEquipment(const unsigned int slot, const std::string file)
+void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	extern void *g_pTarget;
 	extern TARGET_TYPE g_targetType;
 
@@ -64,18 +64,18 @@ void CPlayer::addEquipment(const unsigned int slot, const std::string file)
 	item.open(file, NULL);
 
 	// Is item equippable?
-	if (item.equipYN != 1) throw CError("Item not equippable");
+	if (item.equipYN != 1) throw CError(_T("Item not equippable"));
 
 	// Is player allowed to equip it?
 	if (item.usedBy == 1)
 	{
-		std::vector<std::string>::iterator i = item.itmChars.begin();
+		std::vector<STRING>::iterator i = item.itmChars.begin();
 		for (; i != item.itmChars.end(); ++i)
 		{
 			if (_strcmpi(m_playerMem.charname.c_str(), i->c_str()) == 0)
 				break;
 		}
-		if (i == item.itmChars.end()) throw CError("Player cannot equip item.");
+		if (i == item.itmChars.end()) throw CError(_T("Player cannot equip item."));
 	}
 
 	while (slot >= m_equipment.data.size())
@@ -115,7 +115,7 @@ void CPlayer::addEquipment(const unsigned int slot, const std::string file)
  */
 void CPlayer::removeEquipment(const unsigned int slot)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	extern void *g_pTarget;
 	extern TARGET_TYPE g_targetType;
 	extern CInventory g_inv;

@@ -66,13 +66,13 @@ int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int 
 	{
 		pTarget->pFighter->smp(pTarget->pFighter->smp() - amount);
 		if (pTarget->pFighter->smp() < 0) pTarget->pFighter->smp(0);
-		g_pFightPlugin->fightInform(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, 0, 0, 0, amount, "", INFORM_SOURCE_ATTACK);
+		g_pFightPlugin->fightInform(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, 0, 0, 0, amount, _T(""), INFORM_SOURCE_ATTACK);
 	}
 	else
 	{
 		pTarget->pFighter->health(pTarget->pFighter->health() - amount);
 		if (pTarget->pFighter->health() < 0) pTarget->pFighter->health(0);
-		g_pFightPlugin->fightInform(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, 0, 0, amount, 0, "", INFORM_SOURCE_ATTACK);
+		g_pFightPlugin->fightInform(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, 0, 0, amount, 0, _T(""), INFORM_SOURCE_ATTACK);
 	}
 	return amount;
 }
@@ -104,7 +104,7 @@ void fightTick(void)
 				const unsigned int party = i - g_parties.begin(), idx = j - i->begin();
 
 				// Status effects.
-				std::map<std::string, STATUS_EFFECT>::iterator k = j->statuses.begin();
+				std::map<STRING, STATUS_EFFECT>::iterator k = j->statuses.begin();
 				for (; k != j->statuses.end(); ++k)
 				{
 					LPSTATUS_EFFECT pEffect = &k->second;
@@ -128,7 +128,7 @@ void fightTick(void)
 						extern TARGET_TYPE g_targetType, g_sourceType;
 						g_targetType = g_sourceType = j->bPlayer ? TT_PLAYER : TT_ENEMY;
 						g_pTarget = g_pSource = j->pFighter;
-						extern std::string g_projectPath;
+						extern STRING g_projectPath;
 						CProgram(g_projectPath + PRG_PATH + pEffect->prg).run();
 					}
 
@@ -149,12 +149,12 @@ void fightTick(void)
 					if (!j->bFrozenCharge)
 					{
 						j->bFrozenCharge = true; // This *must* be done before the informing.
-						g_pFightPlugin->fightInform(party, idx, -1, -1, 0, 0, 0, 0, "", INFORM_SOURCE_CHARGED);
+						g_pFightPlugin->fightInform(party, idx, -1, -1, 0, 0, 0, 0, _T(""), INFORM_SOURCE_CHARGED);
 					}
 				}
 				else
 				{
-					g_pFightPlugin->fightInform(party, idx, -1, -1, 0, 0, 0, 0, "", INFORM_SOURCE_CHARGED);
+					g_pFightPlugin->fightInform(party, idx, -1, -1, 0, 0, 0, 0, _T(""), INFORM_SOURCE_CHARGED);
 					// TBD: Enemy attack here.
 					j->charge = 0;
 				}
@@ -171,7 +171,7 @@ void fightTick(void)
 /*
  * Get an enemy of a particular skill level.
  */
-std::string getEnemy(const int level)
+STRING getEnemy(const int level)
 {
 	// Blame the crappiness of this function on
 	// the mess that is the main file format.
@@ -186,7 +186,7 @@ std::string getEnemy(const int level)
 	}
 	if (count == 0)
 	{
-		return "";
+		return _T("");
 	}
 	const unsigned int ene = rand() % count + 1;
 	count = 0;
@@ -198,24 +198,24 @@ std::string getEnemy(const int level)
 			return g_mainFile.enemy[i - g_mainFile.skills.begin()];
 		}
 	}
-	return "";
+	return _T("");
 }
 
 /*
  * Start a fight based on skill level.
  */
-void skillFight(const int skill, const std::string bkg)
+void skillFight(const int skill, const STRING bkg)
 {
 	const int num = rand() % 4 + 1;
-	std::vector<std::string> enemies;
+	std::vector<STRING> enemies;
 	for (unsigned int i = 0; i < num; ++i)
 	{
-		const std::string enemy = getEnemy(skill);
+		const STRING enemy = getEnemy(skill);
 		if (enemy.empty())
 		{
 			char num[255];
 			itoa(skill, num, 10);
-			messageBox(std::string("No enemies of skill level ") + num + " found.");
+			messageBox(STRING(_T("No enemies of skill level ")) + num + _T(" found."));
 			return;
 		}
 		enemies.push_back(enemy);
@@ -238,7 +238,7 @@ void fightTest(const int moveSize)
 	if (g_mainFile.fightGameYn || !g_pBoard->fightingYN) return;
 
 	// The goal here is to test for a fight only after walking
-	// a whole tile. The introduction of 'true' pixel movement,
+	// a whole tile. The introduction of _T('true') pixel movement,
 	// however, allows a user to set the movement size to a
 	// distance that is not a factor of 32, making it impossible
 	// for us to be in this function when the player has walked
@@ -258,7 +258,7 @@ void fightTest(const int moveSize)
 		// Start a fight.
 		if (g_mainFile.fprgYn)
 		{
-			extern std::string g_projectPath;
+			extern STRING g_projectPath;
 			CProgram(g_projectPath + PRG_PATH + g_mainFile.fightPrg).run();
 		}
 		else
@@ -271,21 +271,21 @@ void fightTest(const int moveSize)
 /*
  * Run a fight.
  */
-void runFight(const std::vector<std::string> enemies, const std::string background)
+void runFight(const std::vector<STRING> enemies, const STRING background)
 {
 	if (!g_pFightPlugin) return;
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 
 	g_parties.clear(); // Redundant, but takes so little time that it's worth being paranoid.
 	g_parties.push_back(VECTOR_FIGHTER());
 	VECTOR_FIGHTER &rEnemies = g_parties.back();
 
-	std::string runPrg, rewardPrg;
+	STRING runPrg, rewardPrg;
 	g_bCanRun = true;
 
 	extern std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 
-	std::vector<std::string>::const_iterator i = enemies.begin();
+	std::vector<STRING>::const_iterator i = enemies.begin();
 	for (unsigned int pos = 0; i != enemies.end(); ++i, ++pos)
 	{
 		FIGHTER fighter;

@@ -20,10 +20,10 @@
 //------------------------------------------------------------------------
 // Inclusions
 //------------------------------------------------------------------------
-#include <windows.h>					// For windows
-#include <string>						// For strings
-#include <ddraw.h>						// For DirectDraw
-#include "..\tkCanvas\GDICanvas.h"		// For canvases
+#include <windows.h>
+#include <ddraw.h>
+#include "../strings.h"
+#include "../tkCanvas/GDICanvas.h"
 
 //------------------------------------------------------------------------
 // Definitions
@@ -119,8 +119,8 @@ public:
 	BOOL DrawText(
 		CONST INT x,
 		CONST INT y,
-		CONST std::string strText,
-		CONST std::string strTypeFace,
+		CONST STRING strText,
+		CONST STRING strTypeFace,
 		CONST INT size,
 		CONST LONG clr,
 		CONST BOOL bold = FALSE,

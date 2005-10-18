@@ -11,6 +11,7 @@
 /*
  * Inclusions.
  */
+#include "../../tkCommon/strings.h"
 #include "../render/render.h"
 #include "tilebitmap.h"
 #include <string>
@@ -24,16 +25,16 @@ typedef struct tagAnimation
 	int animSizeX;						// Width.
 	int animSizeY;						// Height.
 	int animFrames;						// Total number of frames.
-	std::vector<std::string> animFrame;	// Filenames of each image in animation.
+	std::vector<STRING> animFrame;	// Filenames of each image in animation.
 	std::vector<int> animTransp;		// Transparent color for frame.
-	std::vector<std::string> animSound;	// Sounds for each frame.
+	std::vector<STRING> animSound;	// Sounds for each frame.
 	double animPause;					// Pause length (sec) between each frame.
 	short animGetTransp;				// Currently getting transparent color?
 	int timerFrame;						// This number will be 0 to 29 to indicate how many times the timer has clicked.
 	int currentAnmFrame;				// Currently animating frame.
-	std::string animFile;				// Filename (no path).
-	bool open(const std::string fileName);
-	void save(const std::string fileName) const;
+	STRING animFile;				// Filename (no path).
+	bool open(const STRING fileName);
+	void save(const STRING fileName) const;
 } ANIMATION, *LPANIMATION;
 
 /*
@@ -43,10 +44,10 @@ typedef struct tagAnimationFrame
 {
 	tagAnimationFrame(void): cnv(NULL) { }
 	CCanvas *cnv;					// Canvas of frame.
-	std::string file;					// Animation filename.
+	STRING file;					// Animation filename.
 	int frame;							// Frame number.
 	int maxFrames;						// Max frames in this anim.
-	std::string strSound;				// Sound played on this frame.
+	STRING strSound;				// Sound played on this frame.
 } ANIMATION_FRAME;
 
 /*
@@ -54,8 +55,8 @@ typedef struct tagAnimationFrame
  * Checks through the animation cache for previous renderings of this frame,
  * if not found, it is rendered here and copied to the animation cache.
  */
-bool renderAnimationFrame(CCanvas* cnv,
-						  std::string file, 
+bool renderAnimationFrame(CCanvas *cnv,
+						  STRING file, 
 						  int frame, 
 						  const int x, 
 						  const int y);
@@ -74,9 +75,9 @@ bool canvasMaskBltStretchTransparent(const CCanvas *cnvSource,
 									  const CCanvas *cnvTarget,
 									  const int crTranspColor);
 
-void drawImage(const std::string strFile, const HDC hdc, const int x, const int y, const int width, const int height);
+void drawImage(const STRING strFile, const HDC hdc, const int x, const int y, const int width, const int height);
 
-inline void drawImage(const std::string strFile, CCanvas *const cnv, const int x, const int y, const int width, const int height)
+inline void drawImage(const STRING strFile, CCanvas *const cnv, const int x, const int y, const int width, const int height)
 {
 	const HDC hdc = cnv->OpenDC();
 	drawImage(strFile, hdc, x, y, width, height);

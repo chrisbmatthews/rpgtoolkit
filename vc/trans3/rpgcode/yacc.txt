@@ -108,7 +108,7 @@ var_identifier:
 			MACHINE_UNIT mu;
 			if (g_methods.size() && g_methods.back().count($1.getLit()))
 			{
-				(mu.lit = " ") += char(g_methods.back()[$1.getLit()] + 1);
+				(mu.lit = _T(" ")) += char(g_methods.back()[$1.getLit()] + 1);
 			}
 			else
 			{
@@ -177,7 +177,7 @@ params:
 function_identifier:
 	IDENTIFIER
 |	IDENTIFIER DOT IDENTIFIER
-		{ CProgram::m_inclusions.push_back($1.getLit() + ".prg"); $$ = $3; }
+		{ CProgram::m_inclusions.push_back($1.getLit() + _T(".prg")); $$ = $3; }
 ;
 
 function:
@@ -421,31 +421,31 @@ method_params:
 method_name:
 	IDENTIFIER
 |	IDENTIFIER COLON COLON method_name
-		{ $$ = $1.getLit() + "::" + $4.getLit(); }
+		{ $$ = $1.getLit() + _T("::") + $4.getLit(); }
 |	method_name operator
 ;
 
 method:
 	METHOD method_name LPARAN
-		{ g_methods.push_back(std::map<std::string, int>()); }
+		{ g_methods.push_back(std::map<STD_NATURAL_STRING, int>()); }
 	method_params
 		{
-			const std::string name = (g_pClass ? (g_pClass->first + "::") : "") + $2.getLit();
+			const STD_NATURAL_STRING name = (g_pClass ? (g_pClass->first + _T("::")) : _T("")) + $2.getLit();
 			if (NAMED_METHOD::locate(name, g_methods.back().size(), false))
 			{
 				char str[255];
 				itoa(g_methods.back().size(), str, 10);
 				char line[255];
 				itoa(g_lines + 1, line, 10);
-				CProgram::debugger(std::string("Line ") + line + ": Method \"" + name + "\" with a parameter count of " + str + " already exists.");
+				CProgram::debugger(STD_NATURAL_STRING(_T("Line ")) + line + _T(": Method \"") + name + _T("\" with a parameter count of ") + str + _T(" already exists."));
 			}
 			else
 			{
-				const std::string::size_type pos = name.find("::");
-				if (!g_pClass && (pos != std::string::npos))
+				const STD_NATURAL_STRING::size_type pos = name.find(_T("::"));
+				if (!g_pClass && (pos != STD_NATURAL_STRING::npos))
 				{
-					const std::string clsName = name.substr(0, pos);
-					const std::string method = name.substr(pos + 2);
+					const STD_NATURAL_STRING clsName = name.substr(0, pos);
+					const STD_NATURAL_STRING method = name.substr(pos + 2);
 					LPNAMED_METHOD p = NAMED_METHOD::locate(name, g_methods.back().size(), true);
 					if (p)
 					{
@@ -458,7 +458,7 @@ method:
 						itoa(g_methods.back().size(), str, 10);
 						char line[255];
 						itoa(g_lines + 1, line, 10);
-						CProgram::debugger(std::string("Line ") + line + ": Class \"" + clsName + "\" has no method \"" + method + "\" with a parameter count of " + str + ".");
+						CProgram::debugger(STD_NATURAL_STRING(_T("Line ")) + line + _T(": Class \"") + clsName + _T("\" has no method \"") + method + _T("\" with a parameter count of ") + str + _T("."));
 					}
 				}
 				else
@@ -548,7 +548,7 @@ class_declarator:
 class:
 	class_declarator IDENTIFIER
 		{
-			g_pClass = &*CProgram::m_pClasses->insert(std::map<std::string, tagClass>::value_type($2.getLit(), tagClass())).first;
+			g_pClass = &*CProgram::m_pClasses->insert(std::map<STD_NATURAL_STRING, tagClass>::value_type($2.getLit(), tagClass())).first;
 			_MACHINE_UNIT(CProgram::skipClass, 0);
 			CProgram::m_pyyUnits->back().num = g_vis;
 		}
@@ -560,7 +560,7 @@ class_member:
 		{
 			if (g_pClass)
 			{
-				g_pClass->second.members.push_back(std::pair<std::string, CLASS_VISIBILITY>($1.getLit(), g_vis));
+				g_pClass->second.members.push_back(std::pair<STD_NATURAL_STRING, CLASS_VISIBILITY>($1.getLit(), g_vis));
 			}
 		}
 ;
@@ -619,7 +619,8 @@ begin:
 %%
 
 #include "lex.yy.c"
+#include "../../tkCommon/strings.h"
 LPMACHINE_UNITS g_yyOldUnits = NULL;
-std::deque<std::map<std::string, int> > g_methods;
-std::map<std::string, tagClass>::value_type *g_pClass = NULL;
+std::deque<std::map<STD_NATURAL_STRING, int> > g_methods;
+std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass = NULL;
 CLASS_VISIBILITY g_vis = CV_PRIVATE;

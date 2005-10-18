@@ -7,6 +7,8 @@
 #ifndef _PLUGINS_H_
 #define _PLUGINS_H_
 
+#include "../../tkCommon/strings.h"
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <objbase.h>
@@ -34,10 +36,10 @@ class IPlugin
 public:
 	virtual void initialize() = 0;
 	virtual void terminate() = 0;
-	virtual bool query(const std::string function) = 0;
-	virtual bool execute(const std::string line, int &retValDt, std::string &retValLit, double &retValNum, const short usingReturn) = 0;
-	virtual int fight(const int enemyCount, const int skillLevel, const std::string background, const bool canRun) = 0;
-	virtual int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const std::string strMessage, const int attackCode) = 0;
+	virtual bool query(const STRING function) = 0;
+	virtual bool execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn) = 0;
+	virtual int fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun) = 0;
+	virtual int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode) = 0;
 	virtual int menu(const int request) = 0;
 	virtual bool plugType(const int request) = 0;
 	virtual ~IPlugin() { }
@@ -63,7 +65,7 @@ interface __declspec(novtable) IComPlugin : public IDispatch
 interface IPluginInput
 {
 	virtual bool inputRequested(const int type) = 0;
-	virtual bool eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type) = 0;
+	virtual bool eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const STRING key, const int type) = 0;
 };
 
 // A COM based plugin.
@@ -78,10 +80,10 @@ public:
 
 	void initialize();
 	void terminate();
-	bool query(const std::string function);
-	bool execute(const std::string line, int &retValDt, std::string &retValLit, double &retValNum, const short usingReturn);
-	int fight(const int enemyCount, const int skillLevel, const std::string background, const bool canRun);
-	int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const std::string strMessage, const int attackCode);
+	bool query(const STRING function);
+	bool execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn);
+	int fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun);
+	int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode);
 	int menu(const int request);
 	bool plugType(const int request);
 
@@ -110,21 +112,21 @@ class COldPlugin : public IPlugin, public IPluginInput
 {
 public:
 	COldPlugin();
-	COldPlugin(const std::string file);
+	COldPlugin(const STRING file);
 	~COldPlugin() { unload(); }
-	bool load(const std::string file);
+	bool load(const STRING file);
 	void unload();
 
 	void initialize();
 	void terminate();
-	bool query(const std::string function);
-	bool execute(const std::string line, int &retValDt, std::string &retValLit, double &retValNum, const short usingReturn);
-	int fight(const int enemyCount, const int skillLevel, const std::string background, const bool canRun);
-	int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const std::string strMessage, const int attackCode);
+	bool query(const STRING function);
+	bool execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn);
+	int fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun);
+	int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode);
 	int menu(const int request);
 	bool plugType(const int request);
 	bool inputRequested(const int type);
-	bool eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type);
+	bool eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const STRING key, const int type);
 
 private:
 	COldPlugin(const COldPlugin &rhs);
@@ -143,28 +145,36 @@ private:
 };
 
 // Load a plugin.
-IPlugin *loadPlugin(const std::string file);
+IPlugin *loadPlugin(const STRING file);
 
 // Inform applicable plugins of an event.
-void informPluginEvent(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type);
+void informPluginEvent(const int keyCode, const int x, const int y, const int button, const int shift, const STRING key, const int type);
 
-inline std::string getString(const BSTR bstr)
+inline STRING getString(const BSTR bstr)
 {
+#ifndef _UNICODE
 	const int length = SysStringLen(bstr) + 1;
 	char *const str = new char[length];
 	WideCharToMultiByte(CP_ACP, 0, bstr, -1, str, length, NULL, NULL);
-	const std::string toRet = str;
+	const STRING toRet = str;
 	delete [] str;
 	return toRet;
+#else
+	return (wchar_t *)bstr;
+#endif
 }
 
-inline BSTR getString(const std::string rhs)
+inline BSTR getString(const STRING rhs)
 {
+#ifndef _UNICODE
 	wchar_t *str = new wchar_t[rhs.length() + 1];
 	MultiByteToWideChar(CP_ACP, 0, rhs.c_str(), -1, str, rhs.length() + 1);
 	const BSTR toRet = SysAllocString(str);
 	delete [] str;
 	return toRet;
+#else
+	return SysAllocString(rhs.c_str());
+#endif
 }
 
 #endif

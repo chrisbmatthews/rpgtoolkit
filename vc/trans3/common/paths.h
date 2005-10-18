@@ -10,31 +10,31 @@
 /*
  * Inclusions
  */
-#include <string>
+#include "../../tkCommon/strings.h"
 
 /*
  * Path definitions.
  */
-#define GAME_PATH "Game\\"				// Game dir.
-#define TILE_PATH "Tiles\\"				// Tile dir path.
-#define BRD_PATH "Boards\\"				// Board dir path.
-#define TEM_PATH "Chrs\\"				// Character dir path.
-#define ARC_PATH "Archives\\"			// Archive dir path.
-#define SPC_PATH "SpcMove\\"			// Spc move path.
-#define BKG_PATH "Bkrounds\\"			// Bkg path.
-#define MEDIA_PATH "Media\\"			// Media path.
-#define PRG_PATH "Prg\\"				// Prg path.
-#define FONT_PATH "Font\\"				// Font path.
-#define ITM_PATH "Item\\"				// Item path.
-#define ENE_PATH "Enemy\\"				// Enemy path.
-#define GAM_PATH "Main\\"				// Main file path.
-#define BMP_PATH "Bitmap\\"				// Bmp file path.
-#define STATUS_PATH "StatusE\\"			// Status effect.
-#define HELP_PATH "Help\\"				// Help file path.
-#define HASH_PATH "Hash\\"				// Hash file path.
-#define MISC_PATH "Misc\\"				// Misc file path.
-#define RESOURCE_PATH "Resources\\"		// Resource file path.
-#define PLUG_PATH "Plugin\\"			// Plugin path.
+#define GAME_PATH _T("Game\\")				// Game dir.
+#define TILE_PATH _T("Tiles\\")				// Tile dir path.
+#define BRD_PATH _T("Boards\\")				// Board dir path.
+#define TEM_PATH _T("Chrs\\")				// Character dir path.
+#define ARC_PATH _T("Archives\\")			// Archive dir path.
+#define SPC_PATH _T("SpcMove\\")			// Spc move path.
+#define BKG_PATH _T("Bkrounds\\")			// Bkg path.
+#define MEDIA_PATH _T("Media\\")			// Media path.
+#define PRG_PATH _T("Prg\\")				// Prg path.
+#define FONT_PATH _T("Font\\")				// Font path.
+#define ITM_PATH _T("Item\\")				// Item path.
+#define ENE_PATH _T("Enemy\\")				// Enemy path.
+#define GAM_PATH _T("Main\\")				// Main file path.
+#define BMP_PATH _T("Bitmap\\")				// Bmp file path.
+#define STATUS_PATH _T("StatusE\\")			// Status effect.
+#define HELP_PATH _T("Help\\")				// Help file path.
+#define HASH_PATH _T("Hash\\")				// Hash file path.
+#define MISC_PATH _T("Misc\\")				// Misc file path.
+#define RESOURCE_PATH _T("Resources\\")		// Resource file path.
+#define PLUG_PATH _T("Plugin\\")			// Plugin path.
 
 /*
  * Remove the path from a filename.
@@ -42,9 +42,9 @@
  * str (in) - filename
  * return (out) - pathless filename
  */
-inline std::string removePath(const std::string str)
+inline STRING removePath(const STRING str)
 {
-	return str.substr(str.find_last_of('\\') + 1);
+	return str.substr(str.find_last_of(_T('\\')) + 1);
 }
 
 /*
@@ -53,10 +53,10 @@ inline std::string removePath(const std::string str)
  * str (in) - file to check
  * return (out) - extension
  */
-inline std::string getExtension(const std::string str)
+inline STRING getExtension(const STRING str)
 {
-	const int dot = str.find_last_of('.');
-	return (dot == -1) ? "" : str.substr(dot + 1);
+	const int dot = str.find_last_of(_T('.'));
+	return (dot == -1) ? _T("") : str.substr(dot + 1);
 }
 
 #endif

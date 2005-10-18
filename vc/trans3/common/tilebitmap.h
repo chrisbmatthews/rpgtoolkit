@@ -12,7 +12,7 @@
  * Inclusions.
  */
 #include "../render/render.h"
-#include <string>
+#include "../../tkCommon/strings.h"
 #include <vector>
 
 /*
@@ -22,14 +22,14 @@ typedef struct tagTileBitmap
 {
 	short width;
 	short height;
-	typedef std::vector<std::string> VECTOR_STR;
+	typedef std::vector<STRING> VECTOR_STR;
 	std::vector<VECTOR_STR> tiles;
 	typedef std::vector<short> VECTOR_SHORT;
 	std::vector<VECTOR_SHORT> red;
 	std::vector<VECTOR_SHORT> green;
 	std::vector<VECTOR_SHORT> blue;
-	bool open(const std::string fileName);
-	void save(const std::string fileName) const;
+	bool open(const STRING fileName);
+	void save(const STRING fileName) const;
 	void resize(const int width, const int height);
 	bool draw(CCanvas *cnv, 
 			  CCanvas *cnvMask, 

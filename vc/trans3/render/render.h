@@ -10,6 +10,7 @@
 /*
  * Inclusions.
  */
+#include "../../tkCommon/strings.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 
 /*
@@ -18,14 +19,14 @@
 typedef struct tagSpriteRender
 {
     CCanvas *canvas;		// Canvas used for this render.
-	std::string stance;		// Stance player was rendered in.
+	STRING stance;		// Stance player was rendered in.
     unsigned int frame;		// Frame of this stance.
     double x;				// X position the render occured in.
     double y;				// Y position the render occured in.
 
-	tagSpriteRender(void):
+	tagSpriteRender():
 		canvas(NULL),
-		stance(std::string()),
+		stance(STRING()),
 		frame(0),
 		x(0), y(0) {};
 
@@ -53,17 +54,17 @@ const long TRANSP_COLOR = 16711935;	// Transparent color (magic pink).
 /*
  * Initialize the graphics engine.
  */
-void initGraphics(void);
+void initGraphics();
 
 /*
  * Shut down the graphics engine.
  */
-void closeGraphics(void);
+void closeGraphics();
 
 /*
  * Render the RPGCode screen.
  */
-void renderRpgCodeScreen(void);
+void renderRpgCodeScreen();
 
 /*
  * Render the scene now.
@@ -79,7 +80,7 @@ bool renderNow(CCanvas *cnv = NULL, const bool bForce = false);
 struct tagBoard;
 typedef struct tagBoard BOARD, *LPBOARD;
 
-bool drawTile(const std::string fileName, 
+bool drawTile(const STRING fileName, 
 			  const int x, const int y, 
 			  const int r, const int g, const int b, 
 			  CCanvas *cnv, 
@@ -87,7 +88,7 @@ bool drawTile(const std::string fileName,
 			  const BOOL bIsometric, 
 			  const int nIsoEvenOdd);
 
-bool drawTileMask (const std::string fileName, 
+bool drawTileMask (const STRING fileName, 
 				   const int x, const int y, 
 				   const int r, const int g, const int b, 
 				   CCanvas *cnv,
@@ -96,7 +97,7 @@ bool drawTileMask (const std::string fileName,
 				   const int nIsoEvenOdd);
 
 bool drawTileCnv(CCanvas *cnv, 
-				 const std::string file, 
+				 const STRING file, 
 				 const double x,
 				 const double y, 
 				 const int r, 
@@ -107,6 +108,6 @@ bool drawTileCnv(CCanvas *cnv,
 				 const bool bIsometric = false, 
 				 const bool isoEvenOdd = false);
 
-void changeCursor(const std::string strCursor);
+void changeCursor(const STRING strCursor);
 
 #endif

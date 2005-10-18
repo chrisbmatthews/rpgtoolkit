@@ -14,7 +14,7 @@
  * Inclusions
  */
 #include <vector>
-#include <string>
+#include "../../../tkCommon/strings.h"
 
 /*
  * String parsing functions.
@@ -22,11 +22,11 @@
 namespace parser
 {
 
-	std::string trim(const std::string str);
+	STRING trim(const STRING str);
 
-	inline std::string uppercase(const std::string str)
+	inline STRING uppercase(const STRING str)
 	{
-		char *pstr = _strupr(_strdup(str.c_str()));
+		char *pstr = _tcsupr(_tcsdup(str.c_str()));
 		const std::string toRet = pstr;
 		free(pstr);
 		return toRet;

@@ -14,7 +14,7 @@
 #include "animation.h"
 #include "mbox.h"
 
-bool tagEnemy::open(const std::string strFile)
+bool tagEnemy::open(const STRING strFile)
 {
 	CFile file(strFile);
 	if (!file.isOpen()) return false;
@@ -25,11 +25,11 @@ bool tagEnemy::open(const std::string strFile)
 	file.seek(0);
 	if (!c)
 	{
-		std::string header;
+		STRING header;
 		file >> header;
-		if (header != "RPGTLKIT ENEMY")
+		if (header != _T("RPGTLKIT ENEMY"))
 		{
-			messageBox("Unrecognised File Format! " + strFile);
+			messageBox(_T("Unrecognised File Format! ") + strFile);
 			return false;
 		}
 		short majorVer, minorVer;
@@ -48,7 +48,7 @@ bool tagEnemy::open(const std::string strFile)
 		unsigned int i;
 		for (i = 0; i <= count; i++)
 		{
-			std::string str;
+			STRING str;
 			file >> str;
 			specials.push_back(str);
 		}
@@ -56,7 +56,7 @@ bool tagEnemy::open(const std::string strFile)
 		weaknesses.clear();
 		for (i = 0; i <= count; i++)
 		{
-			std::string str;
+			STRING str;
 			file >> str;
 			weaknesses.push_back(str);
 		}
@@ -64,7 +64,7 @@ bool tagEnemy::open(const std::string strFile)
 		strengths.clear();
 		for (i = 0; i <= count; i++)
 		{
-			std::string str;
+			STRING str;
 			file >> str;
 			strengths.push_back(str);
 		}
@@ -79,7 +79,7 @@ bool tagEnemy::open(const std::string strFile)
 		gfx.clear();
 		for (i = 0; i <= count; i++)
 		{
-			std::string str;
+			STRING str;
 			file >> str;
 			gfx.push_back(str);
 		}
@@ -87,7 +87,7 @@ bool tagEnemy::open(const std::string strFile)
 		customAnims.clear();
 		for (i = 0; i <= count; i++)
 		{
-			std::string str;
+			STRING str;
 			file >> str;
 			file >> customAnims[str];
 		}
@@ -95,26 +95,26 @@ bool tagEnemy::open(const std::string strFile)
 	else
 	{
 
-		if (file.line() != "RPGTLKIT ENEMY")
+		if (file.line() != _T("RPGTLKIT ENEMY"))
 		{
-			messageBox("Unrecognised File Format! " + strFile);
+			messageBox(_T("Unrecognised File Format! ") + strFile);
 			return false;
 		}
 
-		const short majorVer = atoi(file.line().c_str());
-		const short minorVer = atoi(file.line().c_str());
+		const short majorVer = _ttoi(file.line().c_str());
+		const short minorVer = _ttoi(file.line().c_str());
 
 		strName = file.line();
-		iMaxHp = iHp = atoi(file.line().c_str());
-		iMaxSmp = iSmp = atoi(file.line().c_str());
-		fp = atoi(file.line().c_str());
-		dp = atoi(file.line().c_str());
-		run = atoi(file.line().c_str());
-		takeCrit = atoi(file.line().c_str());
-		giveCrit = atoi(file.line().c_str());
+		iMaxHp = iHp = _ttoi(file.line().c_str());
+		iMaxSmp = iSmp = _ttoi(file.line().c_str());
+		fp = _ttoi(file.line().c_str());
+		dp = _ttoi(file.line().c_str());
+		run = _ttoi(file.line().c_str());
+		takeCrit = _ttoi(file.line().c_str());
+		giveCrit = _ttoi(file.line().c_str());
 
-		const int width = atoi(file.line().c_str());
-		const int height = atoi(file.line().c_str());
+		const int width = _ttoi(file.line().c_str());
+		const int height = _ttoi(file.line().c_str());
 
 		TILE_BITMAP tbm;
 		tbm.resize(width, height);
@@ -127,9 +127,9 @@ bool tagEnemy::open(const std::string strFile)
 			}
 		}
 
-		extern std::string g_projectPath;
+		extern STRING g_projectPath;
 
-		const std::string tbmFile = replace(removePath(strFile), '.', '_') + "_rest.tbm";
+		const STRING tbmFile = replace(removePath(strFile), _T('.'), _T('_')) + _T("_rest.tbm");
 		tbm.save(g_projectPath + BMP_PATH + tbmFile);
 
 		ANIMATION anm;
@@ -138,9 +138,9 @@ bool tagEnemy::open(const std::string strFile)
 		anm.animPause = 0.167;
 		anm.animFrame.push_back(tbmFile);
 		anm.animTransp.push_back(RGB(255, 255, 255));
-		anm.animSound.push_back("");
+		anm.animSound.push_back(_T(""));
 		anm.animFrames = 1;
-		const std::string anmFile = replace(removePath(strFile), '.', '_') + "_rest.anm";
+		const STRING anmFile = replace(removePath(strFile), _T('.'), _T('_')) + _T("_rest.anm");
 		anm.save(g_projectPath + MISC_PATH + anmFile);
 
 		gfx.clear();
@@ -154,11 +154,11 @@ bool tagEnemy::open(const std::string strFile)
 			weaknesses.push_back(file.line());
 		}
 
-		ai = atoi(file.line().c_str());
-		useCode = atoi(file.line().c_str());
+		ai = _ttoi(file.line().c_str());
+		useCode = _ttoi(file.line().c_str());
 		prg = file.line();
-		exp = atoi(file.line().c_str());
-		gp = atoi(file.line().c_str());
+		exp = _ttoi(file.line().c_str());
+		gp = _ttoi(file.line().c_str());
 		winPrg = file.line();
 		runPrg = file.line();
 
@@ -179,26 +179,26 @@ bool tagEnemy::open(const std::string strFile)
 	return true;
 }
 
-std::string tagEnemy::getStanceAnimation(const std::string anim)
+STRING tagEnemy::getStanceAnimation(const STRING anim)
 {
-	const std::string stance = anim.empty() ? "REST" : parser::uppercase(anim);
-	if (stance == "FIGHT" || stance == "ATTACK")
+	const STRING stance = anim.empty() ? _T("REST") : parser::uppercase(anim);
+	if (stance == _T("FIGHT") || stance == _T("ATTACK"))
 	{
 		return gfx[EN_FIGHT];
 	}
-	else if (stance == "DEFEND")
+	else if (stance == _T("DEFEND"))
 	{
 		return gfx[EN_DEFEND];
 	}
-	else if (stance == "SPC" || stance == "SPECIAL MOVE")
+	else if (stance == _T("SPC") || stance == _T("SPECIAL MOVE"))
 	{
 		return gfx[EN_SPECIAL];
 	}
-	else if (stance == "DIE")
+	else if (stance == _T("DIE"))
 	{
 		return gfx[EN_DIE];
 	}
-	else if (stance == "REST")
+	else if (stance == _T("REST"))
 	{
 		return gfx[EN_REST];
 	}
@@ -206,5 +206,5 @@ std::string tagEnemy::getStanceAnimation(const std::string anim)
 	{
 		return customAnims[stance];
 	}
-	return "";
+	return _T("");
 }

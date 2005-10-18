@@ -10,7 +10,7 @@
 /*
  * Inclusions.
  */
-#include <string>
+#include "../../tkCommon/strings.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -19,8 +19,8 @@ class CFile
 
 public:
 	CFile(): m_hFile(HFILE_ERROR) { }
-	void open(const std::string fileName, CONST UINT mode = OF_READ);
-	CFile(CONST std::string fileName, CONST UINT mode = OF_READ);
+	void open(const STRING fileName, CONST UINT mode = OF_READ);
+	CFile(CONST STRING fileName, CONST UINT mode = OF_READ);
 	//
 	// Write.
 	//
@@ -29,7 +29,7 @@ public:
 	CFile &operator<<(CONST SHORT data);
 	CFile &operator<<(CONST INT data);
 	CFile &operator<<(CONST double data);
-	CFile &operator<<(CONST std::string data);
+	CFile &operator<<(CONST STRING data);
 	//
 	// Read.
 	//
@@ -38,8 +38,8 @@ public:
 	CFile &operator>>(SHORT &data);
 	CFile &operator>>(INT &data);
 	CFile &operator>>(double &data);
-	CFile &operator>>(std::string &data);
-	std::string line(VOID);
+	CFile &operator>>(STRING &data);
+	STRING line(VOID);
 	//
 	// Misc.
 	//
@@ -47,7 +47,7 @@ public:
 	BOOL isEof(VOID) CONST { return m_bEof; }
 	BOOL isOpen(VOID) CONST { return (m_hFile != HFILE_ERROR); }
 	DWORD size(VOID) CONST { return GetFileSize(HANDLE(m_hFile), NULL); }
-	static BOOL fileExists(CONST std::string file) { return CFile(file).isOpen(); }
+	static BOOL fileExists(CONST STRING file) { return CFile(file).isOpen(); }
 	~CFile(VOID);
 
 private:

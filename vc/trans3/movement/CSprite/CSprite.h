@@ -10,6 +10,7 @@
 /*
  * Includes 
  */
+#include "../../../tkCommon/strings.h"
 #include "../movement.h"
 #include "../../common/sprite.h"
 #include "../../render/render.h"
@@ -30,14 +31,14 @@ public:
 	bool move(const CSprite *selectedPlayer, const bool bRunningProgram);
 
 	// Return the number of pixels for the whole move (e.g. 32, 1, 2).
-	int moveSize(void) const
+	int moveSize() const
 	{
 		const int result = (!m_bPxMovement ? 32 : round(PX_FACTOR / m_pos.loopSpeed));
 		return (result < 1 ? 1 : result);
 	};
 
 	// Determine if the sprite's base intersects a RECT.
-	CVector getVectorBase(void)
+	CVector getVectorBase()
 	{
 		const DB_POINT p = { m_pos.x, m_pos.y };
 		return (m_attr.vBase + p);
@@ -45,19 +46,19 @@ public:
 
 	// Create default vectors, overwriting any user-defined.
 	// Called for PRE_VECTOR_ITEMs.
-	void createVectors(void) { m_attr.createVectors(m_brdData.activationType); };
+	void createVectors() { m_attr.createVectors(m_brdData.activationType); };
 
 	// Parse a Push() string and pass to setQueuedMovement().
-	void parseQueuedMovements(std::string str);
+	void parseQueuedMovements(STRING str);
 
 	// Place a movement in the sprite's queue.
 	void setQueuedMovement(const int queue, const bool bClearQueue, int step = 0);
 	
 	// Run all the movements in the queue.
-	void runQueuedMovements(void);
+	void runQueuedMovements();
 
 	// Clear the queue.
-	void clearQueue(void);
+	void clearQueue();
 
 	// Queue up a path-finding path.
 	void setQueuedPath(PF_PATH &path);
@@ -76,22 +77,22 @@ public:
 	void getDestination(DB_POINT &p) const;
 
 	// Complete the selected player's move.
-	void playerDoneMove(void);
+	void playerDoneMove();
 
 	// Set the sprite's locations based on a co-ordinate system.
 	void setPosition(int x, int y, const int l, const COORD_TYPE coord);
 
 	// Evaluate sprites (players and items).
-	TILE_TYPE spriteCollisions(void);
+	TILE_TYPE spriteCollisions();
 
 	// Unconditionally send the sprite to the active board.
-	void send(void);
+	void send();
 
 	// Test for program activations (by programs, items, players).
-	bool programTest(void);
+	bool programTest();
 
 	// Override repeat values for programs the player is standing on.
-	void deactivatePrograms(void);
+	void deactivatePrograms();
 
 	// Debug: draw the sprite's base vector.
 	void drawVector(CCanvas *const cnv);
@@ -115,9 +116,9 @@ public:
 	static void setLoopOffset(const int offset) { m_loopOffset = offset; }
 	void setSpeed(const double delay) { m_attr.speed = delay * MILLISECONDS; }
 
-	void freePath(void) { m_pathFind.freeVectors(); }
+	void freePath() { m_pathFind.freeVectors(); }
 
-	SPRITE_POSITION getPosition(void) const { return m_pos; }
+	SPRITE_POSITION getPosition() const { return m_pos; }
 
 	// Swap the graphics of this sprite for those of another.
 	void swapGraphics(CSprite *rhs)
@@ -151,20 +152,20 @@ private:
 	bool push(const bool bScroll);
 
 	// Take the angle of movement and return a MV_ENUM direction.
-	MV_ENUM getDirection(void);
+	MV_ENUM getDirection();
 
 	// Get the next position co-ordinates.
-	DB_POINT getTarget(void);
+	DB_POINT getTarget();
 
 	// Increment target co-ordinates based on a direction.
 	void setTarget(MV_ENUM direction);
 
 	// Insert target co-ordinates from the path.
-	void setPathTarget(void);
+	void setPathTarget();
 
 	// Calculate the loopSpeed - the number of renders that equate to
 	// the sprite's movement speed (and any offsets).
-	inline int calcLoops(void) const
+	inline int calcLoops() const
 	{
 		extern double g_renderCount, g_renderTime;
 
@@ -181,7 +182,7 @@ private:
 	TILE_TYPE boardEdges(const bool bSend);
 
 	// Render if the current frame requires updating.
-	bool render(void);
+	bool render();
 };
 
 /*
@@ -192,10 +193,10 @@ typedef struct tagZOrderedSprites
 	std::vector<CSprite *> v;
 
 	// Form v into a z-ordered vector from g_players and g_items.
-	void zOrder(void);
+	void zOrder();
 
 	// Free pathfinding vectors CPathFind::m_obstructions.
-	void freePaths(void)
+	void freePaths()
 	{
 		for (std::vector<CSprite *>::iterator i = v.begin(); i != v.end(); ++i)
 			(*i)->freePath();

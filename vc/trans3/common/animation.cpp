@@ -14,6 +14,7 @@
 #include "../rpgcode/parser/parser.h"
 #include "../images/FreeImage.h"
 #include "mbox.h"
+#include <mmsystem.h>
 
 /*
  * Globals
@@ -26,14 +27,14 @@ std::vector<ANIMATION_FRAME> g_anmCache;	// Animation cache.
  * fileName (in) - file to open
  * bool (out) - open success
  */
-bool tagAnimation::open(const std::string fileName)
+bool tagAnimation::open(const STRING fileName)
 {
 
 	CFile file(fileName);
 
-	std::string fileHeader;
+	STRING fileHeader;
 	file >> fileHeader;
-	if (fileHeader == "RPGTLKIT ANIM")
+	if (fileHeader == _T("RPGTLKIT ANIM"))
 	{
 		short majorVer, minorVer;
 		file >> majorVer;
@@ -48,7 +49,7 @@ bool tagAnimation::open(const std::string fileName)
 			animSound.clear();
 			for (unsigned int i = 0; i <= animFrames; i++)
 			{
-				std::string strA, strB;
+				STRING strA, strB;
 				int num;
 				file >> strA;
 				file >> num;
@@ -61,39 +62,39 @@ bool tagAnimation::open(const std::string fileName)
 					animSound.push_back(strB);
 				}
 			}
-			// Effective "UBound".
+			// Effective _T("UBound").
 			animFrames = animFrame.size() - 1;
 			file >> animPause;
 		}
 		else
 		{
-			messageBox("This is not a valid animaton file. " + fileName);
+			messageBox(_T("This is not a valid animaton file. ") + fileName);
 			return false;
 		}
  	}
 	else
 	{
 		file.seek(0);
-		if (file.line() != "RPGTLKIT ANIM")
+		if (file.line() != _T("RPGTLKIT ANIM"))
 		{
-			messageBox("This is not a valid animaton file. " + fileName);
+			messageBox(_T("This is not a valid animaton file. ") + fileName);
 			return false;
 		}
 		file.line();
 		file.line();
-		animSizeX = atoi(file.line().c_str());
-		animSizeY = atoi(file.line().c_str());
-		animFrames = atoi(file.line().c_str());
+		animSizeX = _ttoi(file.line().c_str());
+		animSizeY = _ttoi(file.line().c_str());
+		animFrames = _ttoi(file.line().c_str());
 		animFrame.clear();
 		animTransp.clear();
 		animSound.clear();
 		for (unsigned int i = 0; i <= animFrames; i++)
 		{
 			animFrame.push_back(file.line());
-			animTransp.push_back(atoi(file.line().c_str()));
+			animTransp.push_back(_ttoi(file.line().c_str()));
 			animSound.push_back(file.line());
 		}
-		animPause = atof(file.line().c_str());
+		animPause = atof(getAsciiString(file.line()).c_str());
 	}
 
 	animFile = removePath(fileName);
@@ -104,7 +105,7 @@ bool tagAnimation::open(const std::string fileName)
 /*
  * Clear the animation cache.
  */
-void clearAnmCache(void)
+void clearAnmCache()
 {
 	for (std::vector<ANIMATION_FRAME>::iterator i = g_anmCache.begin(); i != g_anmCache.end(); ++i)
 	{
@@ -118,12 +119,12 @@ void clearAnmCache(void)
  *
  * fileName (in) - file to save to
  */
-void tagAnimation::save(const std::string fileName) const
+void tagAnimation::save(const STRING fileName) const
 {
 
 	CFile file(fileName, OF_CREATE | OF_WRITE);
 
-	file << "RPGTLKIT ANIM";
+	file << _T("RPGTLKIT ANIM");
 	file << short(2);
 	file << short(3);
 	file << animSizeX;
@@ -143,17 +144,17 @@ void tagAnimation::save(const std::string fileName) const
 }
 
 /*
- * Render "frame" of animation "file" at location "x,y" at canvas "cnv".
+ * Render _T("frame") of animation _T("file") at location _T("x,y") at canvas _T("cnv").
  * Checks through the animation cache for previous renderings of this frame,
  * if not found, it is rendered here and copied to the animation cache.
  */
 bool renderAnimationFrame(CCanvas *cnv,
-						  std::string file,
+						  STRING file,
 						  int frame,
 						  const int x,
 						  const int y)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 
 	// Pop a debugger error?
 	// Colin: No.
@@ -211,7 +212,7 @@ bool renderAnimationFrame(CCanvas *cnv,
 
     frame %= (anm.animFrames + 1);
 
-	const std::string frameFile = anm.animFrame[frame];
+	const STRING frameFile = anm.animFrame[frame];
 
     if (frameFile.empty()) return false;
 
@@ -229,15 +230,15 @@ bool renderAnimationFrame(CCanvas *cnv,
 
     cnv->ClearScreen(TRANSP_COLOR);
 
-	const std::string ext = parser::uppercase(getExtension(frameFile));
-    if (ext == "TBM" || ext.substr(0, 3) == "TST" || ext == "GPH")
+	const STRING ext = parser::uppercase(getExtension(frameFile));
+    if (ext == _T("TBM") || ext.substr(0, 3) == _T("TST") || ext == _T("GPH"))
 	{
         // You *must* load a tile bitmap before opening an hdc
-        // because it'll lock up on windows 98 if you don't.
+        // because it_T('ll lock up on windows 98 if you don')t.
 
 		TILE_BITMAP tbm;
 
-		if (ext == "TBM")
+		if (ext == _T("TBM"))
 		{
 			if (!tbm.open(g_projectPath + BMP_PATH + frameFile)) return false;
 		}
@@ -275,8 +276,8 @@ bool renderAnimationFrame(CCanvas *cnv,
 		// Image file.
         CCanvas *c2 = new CCanvas();
 		c2->CreateBlank(NULL, anm.animSizeX, anm.animSizeY, TRUE);
-		const std::string strFile = g_projectPath + BMP_PATH + frameFile;
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(strFile.c_str(), 16), strFile.c_str());
+		const STRING strFile = g_projectPath + BMP_PATH + frameFile;
+		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), getAsciiString(strFile).c_str());
 		const HDC hdc = c2->OpenDC();
 		StretchDIBits(hdc, 0, 0, anm.animSizeX, anm.animSizeY, 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
 		c2->CloseDC(hdc);
@@ -308,9 +309,9 @@ bool renderAnimationFrame(CCanvas *cnv,
 /*
  * Draw a picture.
  */
-void drawImage(const std::string strFile, const HDC hdc, const int x, const int y, const int width, const int height)
+void drawImage(const STRING strFile, const HDC hdc, const int x, const int y, const int width, const int height)
 {
-	if (_strcmpi(getExtension(strFile).c_str(), "TBM") == 0)
+	if (_strcmpi(getExtension(strFile).c_str(), _T("TBM")) == 0)
 	{
 		TILE_BITMAP tbm;
 		if (!tbm.open(strFile)) return;
@@ -327,7 +328,7 @@ void drawImage(const std::string strFile, const HDC hdc, const int x, const int 
 		cnvMask.CloseDC(hdcMask);
 		return;
 	}
-	FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(strFile.c_str(), 16), strFile.c_str());
+	FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), getAsciiString(strFile).c_str());
 	StretchDIBits(hdc, x, y, (width != -1) ? width : FreeImage_GetWidth(bmp), (height != -1) ? height : FreeImage_GetHeight(bmp), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
 	FreeImage_Unload(bmp);
 }

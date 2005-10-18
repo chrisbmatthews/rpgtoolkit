@@ -35,86 +35,86 @@ void tagSpriteAttr::completeStances(GFX_MAP &gfx)
  * Get a stance animation filename
  * (CommonPlayer playerGetStanceAnm and (CommonItem itemGetStanceAnm))
  */
-std::string tagSpriteAttr::getStanceAnm(std::string stance)
+STRING tagSpriteAttr::getStanceAnm(STRING stance)
 {
 	if (stance.empty())
 	{
-		stance = "WALK_S";
+		stance = _T("WALK_S");
 	}
 	else
 	{
 		stance = parser::uppercase(stance);
 	}
 
-	if (stance == "STAND_S")
+	if (stance == _T("STAND_S"))
 	{
 		return mapGfx[GFX_IDLE][MV_S];
 	}
-	else if (stance == "STAND_N")
+	else if (stance == _T("STAND_N"))
 	{
 		return mapGfx[GFX_IDLE][MV_N];
 	}
-	else if (stance == "STAND_E")
+	else if (stance == _T("STAND_E"))
 	{
 		return mapGfx[GFX_IDLE][MV_E];
 	}
-	else if (stance == "STAND_W")
+	else if (stance == _T("STAND_W"))
 	{
 		return mapGfx[GFX_IDLE][MV_W];
 	}
-	else if (stance == "STAND_NW")
+	else if (stance == _T("STAND_NW"))
 	{
 		return mapGfx[GFX_IDLE][MV_NW];
 	}
-	else if (stance == "STAND_NE")
+	else if (stance == _T("STAND_NE"))
 	{
 		return mapGfx[GFX_IDLE][MV_NE];
 	}
-	else if (stance == "STAND_SW")
+	else if (stance == _T("STAND_SW"))
 	{
 		return mapGfx[GFX_IDLE][MV_SW];
 	}
-	else if (stance == "STAND_SE")
+	else if (stance == _T("STAND_SE"))
 	{
 		return mapGfx[GFX_IDLE][MV_SE];
 	}
-	else if (stance == "WALK_S")
+	else if (stance == _T("WALK_S"))
 	{
 		return mapGfx[GFX_MOVE][MV_S];
 	}
-	else if (stance == "WALK_N")
+	else if (stance == _T("WALK_N"))
 	{
 		return mapGfx[GFX_MOVE][MV_N];
 	}
-	else if (stance == "WALK_E")
+	else if (stance == _T("WALK_E"))
 	{
 		return mapGfx[GFX_MOVE][MV_E];
 	}
-	else if (stance == "WALK_W")
+	else if (stance == _T("WALK_W"))
 	{
 		return mapGfx[GFX_MOVE][MV_W];
 	}
-	else if (stance == "WALK_NW")
+	else if (stance == _T("WALK_NW"))
 	{
 		return mapGfx[GFX_MOVE][MV_NW];
 	}
-	else if (stance == "WALK_NE")
+	else if (stance == _T("WALK_NE"))
 	{
 		return mapGfx[GFX_MOVE][MV_NE];
 	}
-	else if (stance == "WALK_SW")
+	else if (stance == _T("WALK_SW"))
 	{
 		return mapGfx[GFX_MOVE][MV_SW];
 	}
-	else if (stance == "WALK_SE")
+	else if (stance == _T("WALK_SE"))
 	{
 		return mapGfx[GFX_MOVE][MV_SE];
 	}
-	else if (stance == "FIGHT" || stance == "ATTACK")
+	else if (stance == _T("FIGHT") || stance == _T("ATTACK"))
 	{
 		return mapCustomGfx[GFX_FIGHT];
 	}
-	else if (stance == "SPC" || stance == "SPECIAL MOVE")
+	else if (stance == _T("SPC") || stance == _T("SPECIAL MOVE"))
 	{
 		return mapCustomGfx[GFX_SPC];
 	}
@@ -230,5 +230,3 @@ void tagSpriteAttr::createVectors(const int activationType)
 		} // if (pixel movement)
 	} // if (g_pBoard->isIsometric())
 }
-
-

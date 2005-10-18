@@ -11,6 +11,7 @@
 #include "CVector.h"
 #include <math.h>
 #include "../movement.h"
+#include "../../../tkCommon/strings.h"
 
 /*
  * Default constructor.
@@ -476,12 +477,18 @@ void CVector::draw(CONST LONG color, const bool drawText, const int x, const int
 		// Draw the co-ordinates for each corner.
 		if (drawText)
 		{
-			std::string text; 
-			char c [5]; 
-			text = gcvt (i->x, 5, c);
-			cnv->DrawText(i->x - x, i->y - y, text, "Arial", 10, color);
-			text = gcvt (i->y, 5, c);
-			cnv->DrawText(i->x - x, i->y - y + 8, text, "Arial", 10, color);
+			STRING text; 
+			char c[5]; 
+			text = gcvt(i->x, 5, c);
+#ifdef _UNICODE
+			text = getUnicodeString(text);
+#endif
+			cnv->DrawText(i->x - x, i->y - y, text, _T("Arial"), 10, color);
+			text = gcvt(i->y, 5, c);
+#ifdef _UNICODE
+			text = getUnicodeString(text);
+#endif
+			cnv->DrawText(i->x - x, i->y - y + 8, text, _T("Arial"), 10, color);
 		}
 	}
 }

@@ -11,6 +11,7 @@
 #include "input.h"
 #include "../common/sprite.h"
 #include "../common/board.h"
+#include "../common/mainfile.h"
 #include "../plugins/plugins.h"
 #include "../plugins/constants.h"
 #include "../movement/CSprite/CSprite.h"
@@ -25,7 +26,7 @@ IDirectInputDevice8A *g_lpdiKeyboard = NULL;
 /*
  * Process an event from the message queue.
  */
-void processEvent(void)
+void processEvent()
 {
 	MSG message;
 	if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
@@ -34,7 +35,7 @@ void processEvent(void)
 		if (message.message == WM_QUIT)
 		{
 			// It was; quit.
-			extern void closeSystems(void);
+			extern void closeSystems();
 			closeSystems();
 			exit(message.wParam);
 		}
@@ -49,21 +50,21 @@ void processEvent(void)
 }
 
 /*
- * Transform a char to an std::string, converting
+ * Transform a char to an STRING, converting
  * common characters to string representations.
  */
-std::string getName(char chr)
+STRING getName(char chr)
 {
 	switch (chr)
 	{
-		case 13: return "ENTER";
-		case 27: return "ESC";
-		case 37: return "LEFT";
-		case 39: return "RIGHT";
-		case 38: return "UP";
-		case 40: return "DOWN";
+		case 13: return _T("ENTER");
+		case 27: return _T("ESC");
+		case 37: return _T("LEFT");
+		case 39: return _T("RIGHT");
+		case 38: return _T("UP");
+		case 40: return _T("DOWN");
 	}
-	const char toRet[] = {chr, '\0'};
+	const TCHAR toRet[] = {TCHAR(chr), _T('\0')};
 	return toRet;
 }
 
@@ -72,7 +73,7 @@ std::string getName(char chr)
  *
  * return (out) - the key pressed
  */
-std::string waitForKey()
+STRING waitForKey()
 {
 	g_keys.clear();
 	while (g_keys.size() == 0)
@@ -134,57 +135,62 @@ void scanKeys()
 {
 	extern GAME_STATE g_gameState;
 	extern CSprite *g_pSelectedPlayer;
+	extern MAIN_FILE g_mainFile;
 
 	BYTE keys[256];
 	if (FAILED(g_lpdiKeyboard->GetDeviceState(256, keys))) return;
-	#define SCAN_KEY_DOWN(x) (keys[DIK_##x] & 0x80)
+	#define SCAN_KEY_DOWN(x) (keys[x] & 0x80)
 
 	MV_ENUM queue = MV_IDLE;
 
-	// Temporary - KeyDownEvent?
-	if (SCAN_KEY_DOWN(SPACE))
+	// General actication key.
+	if (SCAN_KEY_DOWN(g_mainFile.key))
 	{
 		g_pSelectedPlayer->programTest();
 		return;
 	}
 
-	if (SCAN_KEY_DOWN(RETURN))
+	// Menu key.
+	if (SCAN_KEY_DOWN(g_mainFile.menuKey))
 	{
 		extern IPlugin *g_pMenuPlugin;
 		g_pMenuPlugin->menu(MNU_MAIN);
 		renderNow(NULL, true);
+
+		// Delay to prevent the menu from immediately reopening.
+		Sleep(75);
 		return;
 	}
 
-	if (SCAN_KEY_DOWN(RIGHT) && SCAN_KEY_DOWN(UP))
+	if (SCAN_KEY_DOWN(DIK_RIGHT) && SCAN_KEY_DOWN(DIK_UP))
 	{
 		queue = MV_NE;			// Northeast.
 	}
-	else if (SCAN_KEY_DOWN(LEFT) && SCAN_KEY_DOWN(UP))
+	else if (SCAN_KEY_DOWN(DIK_LEFT) && SCAN_KEY_DOWN(DIK_UP))
 	{
 		queue = MV_NW;			// Northwest.
 	}
-	else if (SCAN_KEY_DOWN(RIGHT) && SCAN_KEY_DOWN(DOWN))
+	else if (SCAN_KEY_DOWN(DIK_RIGHT) && SCAN_KEY_DOWN(DIK_DOWN))
 	{
 		queue = MV_SE;			// Southeast.
 	}
-	else if (SCAN_KEY_DOWN(LEFT) && SCAN_KEY_DOWN(DOWN))
+	else if (SCAN_KEY_DOWN(DIK_LEFT) && SCAN_KEY_DOWN(DIK_DOWN))
 	{
 		queue = MV_SW;			// Southwest.
 	}
-	else if (SCAN_KEY_DOWN(UP))
+	else if (SCAN_KEY_DOWN(DIK_UP))
 	{
 		queue = MV_N;			// North.
 	}
-	else if (SCAN_KEY_DOWN(DOWN))
+	else if (SCAN_KEY_DOWN(DIK_DOWN))
 	{
 		queue = MV_S;			// South.
 	}
-	else if (SCAN_KEY_DOWN(RIGHT))
+	else if (SCAN_KEY_DOWN(DIK_RIGHT))
 	{
 		queue = MV_E;			// East.
 	}
-	else if (SCAN_KEY_DOWN(LEFT))
+	else if (SCAN_KEY_DOWN(DIK_LEFT))
 	{
 		queue = MV_W;			// West.
 	}
@@ -243,7 +249,7 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			const char key = char(wParam);
 			g_keys.push_back(key);
 
-			const std::string strKey = getName(key);
+			const STRING strKey = getName(key);
 			informPluginEvent(key, -1, -1, -1, /*shift*/0, strKey, INPUT_KB);
 		} break;
 
@@ -262,14 +268,14 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			PF_PATH p = g_pSelectedPlayer->pathFind(x + g_screen.left, y + g_screen.top, PF_VECTOR);
 			g_pSelectedPlayer->setQueuedPath(p);
 
-			informPluginEvent(-1, x, y, 1, /*shift*/0, "", INPUT_MOUSEDOWN);
+			informPluginEvent(-1, x, y, 1, /*shift*/0, _T(""), INPUT_MOUSEDOWN);
 		} break;
 
 		// Right mouse button clicked.
 		case WM_RBUTTONDOWN:
 		{
 			const int x = LOWORD(lParam), y = HIWORD(lParam);
-			informPluginEvent(-1, x, y, 2, /*shift*/0, "", INPUT_MOUSEDOWN);
+			informPluginEvent(-1, x, y, 2, /*shift*/0, _T(""), INPUT_MOUSEDOWN);
 		} break;
 
 		// Window activated/deactivated.
@@ -293,6 +299,5 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 	}
 
-	return TRUE;
-
+	return 0;
 }

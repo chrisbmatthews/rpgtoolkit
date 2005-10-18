@@ -7,7 +7,7 @@
 #ifndef _CVIDEO_H_
 #define _CVIDEO_H_
 
-#include <string>
+#include "../../tkCommon/strings.h"
 
 class IGraphBuilder;
 class IMediaControl;
@@ -21,7 +21,7 @@ public:
 	CVideo();
 	~CVideo();
 
-	void renderFile(const std::string file);
+	void renderFile(const STRING file);
 	void play();
 	int getWidth();
 	int getHeight();

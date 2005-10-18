@@ -36,14 +36,14 @@
  * spriteAttr (in)	- common attributes that feed into CSprite.
  * short (out)		- minor version.
  */
-short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
+short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 {
 	CFile file(fileName);
 
 	if (!file.isOpen())
 	{
 		// FileExists check.
-		messageBox("File not found: " + fileName);
+		messageBox(_T("File not found: ") + fileName);
 		return 0;
 	}
 
@@ -55,11 +55,11 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 	if (!cVersion)
 	{
 
-		std::string fileHeader;
+		STRING fileHeader;
 		file >> fileHeader;
-		if (fileHeader != "RPGTLKIT CHAR")
+		if (fileHeader != _T("RPGTLKIT CHAR"))
 		{
-			messageBox("Unrecognised File Format! " + fileName);
+			messageBox(_T("Unrecognised File Format! ") + fileName);
 			return 0;
 		}
 
@@ -96,7 +96,7 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		spcEquals.clear();
 		for (i = 0; i <= 200; i++)
 		{
-			std::string str;
+			STRING str;
 			int num;
 			file >> str;
 			smlist.push_back(str);
@@ -116,7 +116,7 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		accessoryName.clear();
 		for (i = 0; i <= 10; i++)
 		{
-			std::string str;
+			STRING str;
 			file >> str;
 			accessoryName.push_back(str);
 		}
@@ -147,7 +147,7 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		file >> levelFp;
 		file >> levelSm;
 
-		std::string swipeWav, defendWav, smWav, deadWav;
+		STRING swipeWav, defendWav, smWav, deadWav;
 		if (minorVer < 5)
 		{
 			file >> swipeWav;
@@ -190,7 +190,7 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 			file >> spriteAttr.mapCustomGfx[GFX_DIE];
 			file >> spriteAttr.mapCustomGfx[GFX_REST];
 
-			std::string strUnused;
+			STRING strUnused;
 			file >> strUnused;
 
 			gfx.clear();
@@ -225,7 +225,7 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 			file >> count;
 			for (i = 0; i <= count; i++)
 			{
-				std::string anim, handle;
+				STRING anim, handle;
 				file >> anim;
 				file >> handle;
 				if (!handle.empty() && !anim.empty())
@@ -237,6 +237,6 @@ short tagPlayer::open(const std::string fileName, SPRITE_ATTR &spriteAttr)
 		}
 	}
 	// Definitely don't need this.
-	messageBox("Please save " + fileName + " in the editor!");
+	messageBox(_T("Please save ") + fileName + _T(" in the editor!"));
 	return 0;
 }

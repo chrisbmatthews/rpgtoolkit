@@ -14,7 +14,7 @@ HANDLE CAudioSegment::m_notify = NULL;
 /*
  * Construct and load a file.
  */
-CAudioSegment::CAudioSegment(const std::string file)
+CAudioSegment::CAudioSegment(const STRING file)
 {
 	init();
 	open(file);
@@ -23,7 +23,7 @@ CAudioSegment::CAudioSegment(const std::string file)
 /*
  * Open a file.
  */
-bool CAudioSegment::open(const std::string file)
+bool CAudioSegment::open(const STRING file)
 {
 	if (_strcmpi(file.c_str(), m_file.c_str()) == 0)
 	{
@@ -31,8 +31,8 @@ bool CAudioSegment::open(const std::string file)
 		return false;
 	}
 	stop();
-	const std::string ext = parser::uppercase(getExtension(file));
-	if ((ext == "MID") || (ext == "MIDI") || (ext == "RMI") || (ext == "MPL") || (ext == "WAV"))
+	const STRING ext = parser::uppercase(getExtension(file));
+	if ((ext == _T("MID")) || (ext == _T("MIDI")) || (ext == _T("RMI")) || (ext == _T("MPL")) || (ext == _T("WAV")))
 	{
 		if (m_pSegment)
 		{
@@ -49,17 +49,17 @@ bool CAudioSegment::open(const std::string file)
 			return true;
 		}
 		m_pSegment = NULL;
-		m_file = "";
+		m_file = _T("");
 		return false;
 	}
 	m_audiere = true;
-	extern std::string g_projectPath;
-	if (m_outputStream = audiere::OpenSound(m_device, (g_projectPath + MEDIA_PATH + file).c_str(), true))
+	extern STRING g_projectPath;
+	if (m_outputStream = audiere::OpenSound(m_device, getAsciiString(g_projectPath + MEDIA_PATH + file).c_str(), true))
 	{
 		m_file = file;
 		return true;
 	}
-	m_file = "";
+	m_file = _T("");
 	return false;
 }
 
@@ -162,7 +162,7 @@ DWORD WINAPI CAudioSegment::eventManager(LPVOID lpv)
 /*
  * Play a sound effect.
  */
-void CAudioSegment::playSoundEffect(const std::string file)
+void CAudioSegment::playSoundEffect(const STRING file)
 {
 	CAudioSegment *pSeg = new CAudioSegment();
 	if (!pSeg->open(file))
@@ -195,12 +195,17 @@ void CAudioSegment::playSoundEffect(const std::string file)
  */
 void CAudioSegment::initLoader()
 {
+	extern STRING g_projectPath;
+
 	if (m_pLoader) return;
 	CoCreateInstance(CLSID_DirectMusicLoader, NULL, CLSCTX_INPROC, IID_IDirectMusicLoader8, (void **)&m_pLoader);
+#ifndef _UNICODE
 	WCHAR searchPath[MAX_PATH + 1];
-	extern std::string g_projectPath;
 	MultiByteToWideChar(CP_ACP, 0, (g_projectPath + MEDIA_PATH).c_str(), -1, searchPath, MAX_PATH);
 	m_pLoader->SetSearchDirectory(GUID_DirectMusicAllTypes, searchPath, FALSE);
+#else
+	m_pLoader->SetSearchDirectory(GUID_DirectMusicAllTypes, (g_projectPath + MEDIA_PATH).c_str(), FALSE);
+#endif
 
 	// Not loader related, but I don't feel like making another function.
 	m_notify = CreateEvent(NULL, FALSE, FALSE, NULL);

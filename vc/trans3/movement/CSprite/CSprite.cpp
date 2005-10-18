@@ -160,7 +160,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			sgn(m_pend.yTarg - m_pos.y) != sgn(m_v.y) ||
 			(m_tileType & TT_SOLID))
 		{
-			// If we've moved past one of the targets or we're
+			// If we_T('ve moved past one of the targets or we')re
 			// walking against a wall, stop.
 
 			if (!(m_tileType & TT_SOLID))
@@ -281,7 +281,7 @@ MV_ENUM CSprite::getDirection(void)
 
 	double angle = 90.0;
 
-	// Convert the isometric angle to a "face down" angle
+	// Convert the isometric angle to a _T("face down") angle
 	// that corresponds to the implied direction, and that can 
 	// be used along with non-iso boards.
 	// arctan returns -pi/2 to +pi/2 radians (-90 to +90 degrees).
@@ -325,7 +325,7 @@ void CSprite::setTarget(MV_ENUM direction)
 	// Pixels travelled this move.
 	const int step = moveSize();
 
-	// The "movement vector" - a unit-like vector in the current direction.
+	// The _T("movement vector") - a unit-like vector in the current direction.
 	// g_directions[isIsometric()][MV_CODE][x OR y].
 	m_v.x = g_directions[nIso][direction][0];
 	m_v.y = g_directions[nIso][direction][1];
@@ -364,35 +364,35 @@ void CSprite::setPathTarget(void)
 /*
  * Parse a Push() string and pass to setQueuedMovement().
  */
-void CSprite::parseQueuedMovements(std::string str)
+void CSprite::parseQueuedMovements(STRING str)
 {
 	extern MAIN_FILE g_mainFile;
-	std::string s;
+	STRING s;
 
 	// Should step = 8 for pixel push?
 	const int step = (g_mainFile.pixelMovement == MF_PUSH_PIXEL ? moveSize() : 32);
 
 	// Include str.end() in the loop to catch the last movement.
-	for (std::string::iterator i = str.begin(); i <= str.end(); ++i)
+	for (STRING::iterator i = str.begin(); i <= str.end(); ++i)
 	{
-		if (i == str.end() || i[0] == ',')
+		if (i == str.end() || i[0] == _T(','))
 		{
 			MV_ENUM mv = MV_IDLE;
-			if (!s.compare("NORTH") || !s.compare("N") || !s.compare(MVQ_NORTH))
+			if (!s.compare(_T("NORTH")) || !s.compare(_T("N")) || !s.compare(MVQ_NORTH))
 				mv = MV_N;
-			else if (!s.compare("SOUTH") || !s.compare("S") || !s.compare(MVQ_SOUTH))
+			else if (!s.compare(_T("SOUTH")) || !s.compare(_T("S")) || !s.compare(MVQ_SOUTH))
 				mv = MV_S;
-			else if (!s.compare("EAST") || !s.compare("E") || !s.compare(MVQ_EAST))
+			else if (!s.compare(_T("EAST")) || !s.compare(_T("E")) || !s.compare(MVQ_EAST))
 				mv = MV_E;
-			else if (!s.compare("WEST") || !s.compare("W") || !s.compare(MVQ_WEST))
+			else if (!s.compare(_T("WEST")) || !s.compare(_T("W")) || !s.compare(MVQ_WEST))
 				mv = MV_W;
-			else if (!s.compare("NORTHEAST") || !s.compare("NE") || !s.compare(MVQ_NE))
+			else if (!s.compare(_T("NORTHEAST")) || !s.compare(_T("NE")) || !s.compare(MVQ_NE))
 				mv = MV_NE;
-			else if (!s.compare("NORTHWEST") || !s.compare("NW") || !s.compare(MVQ_NW))
+			else if (!s.compare(_T("NORTHWEST")) || !s.compare(_T("NW")) || !s.compare(MVQ_NW))
 				mv = MV_NW;
-			else if (!s.compare("SOUTHEAST") || !s.compare("SE") || !s.compare(MVQ_SE))
+			else if (!s.compare(_T("SOUTHEAST")) || !s.compare(_T("SE")) || !s.compare(MVQ_SE))
 				mv = MV_SE;
-			else if (!s.compare("SOUTHWEST") || !s.compare("SW") || !s.compare(MVQ_SW))
+			else if (!s.compare(_T("SOUTHWEST")) || !s.compare(_T("SW")) || !s.compare(MVQ_SW))
 				mv = MV_SW;
 
 			if (mv != MV_IDLE) setQueuedMovement(mv, false, step);
@@ -400,7 +400,7 @@ void CSprite::parseQueuedMovements(std::string str)
 		}
 		else
 		{
-			if (i[0] != ' ') s += *i;
+			if (i[0] != _T(' ')) s += *i;
 		}
 	} // for (i)
 
@@ -437,7 +437,7 @@ void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int
 	// Pixels travelled this move, optionally overriden for rpgcode commands.
 	if (!step) step = moveSize();
 
-	// The "movement vector".
+	// The _T("movement vector").
 	// g_directions[isIsometric()][MV_CODE][x OR y].
 	m_v.x = g_directions[nIso][direction][0];
 	m_v.y = g_directions[nIso][direction][1];
@@ -590,7 +590,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 
 		// Check that the board vector contains the player,
 		// *not* the other way round!
-		// Disregard "under" type, it has no effect in collisions.
+		// Disregard _T("under") type, it has no effect in collisions.
 		if (i->type != TT_UNDER && i->pV->contains(sprBase, p))
 		{
 			tt = i->type;
@@ -618,7 +618,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 			// by crossing it with the sprite's movement vector. 
 			if (p.x * m_v.y - p.y * m_v.x >= 0)
 			{
-				// Crossing boundary from the "solid" side.
+				// Crossing boundary from the _T("solid") side.
 				tt = TT_SOLID;
 			}
 			else
@@ -631,7 +631,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 		{
 			/*
 			 * Compute the angle between the movement vector and
-			 * the subvector to determine if we should "slide".
+			 * the subvector to determine if we should _T("slide").
 			 * If the angle is greater than 45 (or chosen other),
 			 * try rotating the movement direction and evalutate
 			 * the board vectors again at the new target.
@@ -676,8 +676,8 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 				const double normal = (p.x * m_v.y - p.y * m_v.x);
 
 				// If angle and normal are both positive or negative,
-				// p is to the "right" of m_v (negative being the flipped case).
-				// Otherwise, p is to the "left" of m_v.
+				// p is to the _T("right") of m_v (negative being the flipped case).
+				// Otherwise, p is to the _T("left") of m_v.
 
 				if ((angle > 0) == (normal > 0))
 					// Rotate right. Reinsert the target and test again.
@@ -750,11 +750,11 @@ TILE_TYPE CSprite::spriteCollisions(void)
 	 * z-ordered (ZO) sprite pointers are stored in g_sprites.
 	 * Upon board loading, the initial ZO is calculated for all sprites.
 	 * We only need to alter that order when a sprite moves, and then
-	 * we only need to recalculate that sprite's ZO - the others' are preserved.
+	 * we only need to recalculate that sprite_T('s ZO - the others') are preserved.
 	 * Hence we remove the pointer from g_sprites, make the checks
 	 * and reinsert afterwards.
 	 * The position to insert will be the in front of the first pointer
-	 * we find that is "below" this sprite.
+	 * we find that is _T("below") this sprite.
 	 */
 
 	std::vector<CSprite *>::iterator i = g_sprites.v.begin(), pos = NULL;
@@ -851,7 +851,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
  */
 TILE_TYPE CSprite::boardEdges(const bool bSend)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	extern LPBOARD g_pBoard;
 	extern GAME_STATE g_gameState;
 	extern CAllocationHeap<BOARD> g_boards;
@@ -873,12 +873,12 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 	// Off an edge - return solid if we don't want to send.
 	else if (!bSend) return TT_SOLID;
 
-	const std::string &fileName = g_pBoard->dirLink[link];
+	const STRING &fileName = g_pBoard->dirLink[link];
 
 	// No board exists.
 	if (fileName.empty()) return TT_SOLID; 
 
-	if (_stricmp(getExtension(fileName).c_str(), "prg") == 0)
+	if (_stricmp(getExtension(fileName).c_str(), _T("prg")) == 0)
 	{
 		// This is a program.
 		CProgram(g_projectPath + PRG_PATH + fileName).run();
@@ -975,7 +975,7 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
  */
 void CSprite::send(void)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	extern CCanvas *g_cnvRpgCode;
 	extern LPBOARD g_pBoard;
 
@@ -1019,7 +1019,7 @@ bool CSprite::programTest(void)
 	extern std::vector<CPlayer *> g_players;
 	extern MAIN_FILE g_mainFile;
 	extern LPBOARD g_pBoard;
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 
 	// Create the sprite's vector base at the *target* location (for the
 	// case of pressing against an item, etc.)
@@ -1109,8 +1109,8 @@ bool CSprite::programTest(void)
 		// If we go to a new board in this program, we kill
 		// this pointer, so save the values we need.
 		const short activate = itm->m_brdData.activate;
-		const std::string finalValue = itm->m_brdData.finalValue;
-		const std::string finalVar = itm->m_brdData.finalVar;
+		const STRING finalValue = itm->m_brdData.finalValue;
+		const STRING finalVar = itm->m_brdData.finalVar;
 
 		CProgram(g_projectPath + PRG_PATH + itm->m_brdData.prgActivate).run();
 
@@ -1118,7 +1118,7 @@ bool CSprite::programTest(void)
 		if (activate == SPR_CONDITIONAL)
 		{
 			LPSTACK_FRAME var = CProgram::getGlobal(finalVar);
-			const double num = atof(finalValue.c_str());
+			const double num = atof(getAsciiString(finalValue).c_str());
 			if (num != 0.0)
 			{
 				var->udt = UDT_NUM;
@@ -1222,8 +1222,8 @@ bool CSprite::programTest(void)
 		// If we go to a new board in this program, we kill
 		// this pointer, so save the values we need.
 		const short activate = prg->activate;
-		const std::string finalValue = prg->finalValue;
-		const std::string finalVar = prg->finalVar;
+		const STRING finalValue = prg->finalValue;
+		const STRING finalVar = prg->finalVar;
 
 		CProgram(g_projectPath + PRG_PATH + prg->fileName).run();
 
@@ -1231,7 +1231,7 @@ bool CSprite::programTest(void)
 		if (activate == PRG_CONDITIONAL)
 		{
 			LPSTACK_FRAME var = CProgram::getGlobal(finalVar);
-			const double num = atof(finalValue.c_str());
+			const double num = atof(getAsciiString(finalValue).c_str());
 			if (num != 0.0)
 			{
 				var->udt = UDT_NUM;
@@ -1253,7 +1253,7 @@ bool CSprite::programTest(void)
  * Deactivate any programs the player is standing on.
  * Specifically designed for moving to a new board and arriving on a
  * warp tile / other program. If users need to run programs when boards
- * load, they can use the "program to run on entering board".
+ * load, they can use the _T("program to run on entering board").
  */
 void CSprite::deactivatePrograms(void)
 {
@@ -1451,12 +1451,12 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
  */
 bool CSprite::render(void) 
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 
 	// Check idleness.
 	if (m_pos.loopFrame < LOOP_MOVE && m_pend.path.empty())
 	{
-		// We're idle, and we're not about to start moving.
+		// We_T('re idle, and we')re not about to start moving.
 
 		if ((m_pos.loopFrame == LOOP_WAIT) && (GetTickCount() - m_pos.idle.time >= m_attr.idleTime))
 		{
@@ -1521,7 +1521,7 @@ bool CSprite::render(void)
 
 	} // if (player is not moving)
 
-	std::string strAnm;
+	STRING strAnm;
 
 	// Get the animation filename to use.
 	switch (m_pos.loopFrame)
@@ -1529,7 +1529,7 @@ bool CSprite::render(void)
 		case LOOP_CUSTOM_STANCE:
 		{
 			// Custom stance. RPGCode call has inserted m_pos.stance.
-			std::map<std::string, std::string>::iterator i = m_attr.mapCustomGfx.find(m_pos.stance);
+			std::map<STRING, STRING>::iterator i = m_attr.mapCustomGfx.find(m_pos.stance);
 
 			if (i != m_attr.mapCustomGfx.end())
 			{
@@ -1558,7 +1558,7 @@ bool CSprite::render(void)
 		&& m_lastRender.x == m_pos.x 
 		&& m_lastRender.y == m_pos.y)
 	{
-		// We've just rendered this frame so we don't need to again.
+		// We_T('ve just rendered this frame so we don')t need to again.
 		return false;
 	}
 

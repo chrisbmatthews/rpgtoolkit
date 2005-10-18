@@ -18,16 +18,16 @@
  * fileName (in) - file to open
  * bool (out) - open success
  */
-bool tagTileAnim::open(const std::string fileName)
+bool tagTileAnim::open(const STRING fileName)
 {
 
 	CFile file(fileName);
 
-	std::string fileHeader;
+	STRING fileHeader;
 	file >> fileHeader;
-	if (fileHeader != "RPGTLKIT TILEANIM")
+	if (fileHeader != _T("RPGTLKIT TILEANIM"))
 	{
-		messageBox("Unrecognised File Format! " + fileName);
+		messageBox(_T("Unrecognised File Format! ") + fileName);
 		return false;
 	}
 
@@ -40,7 +40,7 @@ bool tagTileAnim::open(const std::string fileName)
 	animTileFrame.clear();
 	for (unsigned int i = 0; i < animTileFrames; i++)
 	{
-		std::string frame;
+		STRING frame;
 		file >> frame;
 		animTileFrame.push_back(frame);
 	}

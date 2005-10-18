@@ -10,6 +10,7 @@
 #include "../movement/CPlayer/CPlayer.h"
 #include "../common/enemy.h"
 #include "../common/status.h"
+#include "../../tkCommon/strings.h"
 #include <map>
 
 // Party definitions.
@@ -56,14 +57,14 @@ typedef struct tagFighter
 	int chargeMax;
 	bool bFrozenCharge;
 	unsigned int freezes;
-	std::map<std::string, STATUS_EFFECT> statuses;
+	std::map<STRING, STATUS_EFFECT> statuses;
 } FIGHTER, *LPFIGHTER;
 
 // A plugin enemy.
 typedef struct tagPluginEnemy
 {
 	ENEMY enemy;
-	std::string fileName;
+	STRING fileName;
 } PLUGIN_ENEMY;
 
 // A party.
@@ -73,19 +74,19 @@ typedef std::vector<FIGHTER> VECTOR_FIGHTER;
 bool canRunFromFight();
 
 // Run a fight.
-void runFight(const std::vector<std::string> enemies, const std::string background);
+void runFight(const std::vector<STRING> enemies, const STRING background);
 
 // Get a fighter.
 LPFIGHTER getFighter(const unsigned int party, const unsigned int idx);
 
 // Advance the state of a fight.
-void fightTick(void);
+void fightTick();
 
 // Cause one fighter to attack another.
 int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int targetPartyIdx, const int targetFightIdx, const int damage, const bool toSmp);
 
 // Start a fight based on skill level.
-void skillFight(const int skill, const std::string bkg);
+void skillFight(const int skill, const STRING bkg);
 
 // Test whether we need to begin a fight.
 void fightTest(const int moveSize);

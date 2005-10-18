@@ -12,4 +12,4 @@
 /*
  * Globals.
  */
-std::string g_projectPath;
+STRING g_projectPath;

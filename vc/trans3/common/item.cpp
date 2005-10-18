@@ -39,7 +39,7 @@
  *
  * fileName (in) - file to open
  */
-short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
+short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 {
 	const bool bAttr = (pAttr == NULL);
 
@@ -48,28 +48,28 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 	if (!file.isOpen())
 	{
 		// FileExists check.
-		messageBox("File not found: " + fileName);
+		messageBox(_T("File not found: ") + fileName);
 		return 0;
 	}
 
-	itmAnimation = "";
+	itmAnimation = _T("");
 
 	file.seek(13);
 	char cVersion;
 	file >> cVersion;
 	if (cVersion)
 	{
-		messageBox("Please save " + fileName + " in the editor!");
+		messageBox(_T("Please save ") + fileName + _T(" in the editor!"));
 		return 0;
 	}
 	file.seek(0);
 
-	std::string fileHeader;
+	STRING fileHeader;
 	file >> fileHeader;
 
-	if (fileHeader != "RPGTLKIT ITEM")
+	if (fileHeader != _T("RPGTLKIT ITEM"))
 	{
-		messageBox("Unrecognised File Format! " + fileName);
+		messageBox(_T("Unrecognised File Format! ") + fileName);
 		return 0;
 	}
 
@@ -89,7 +89,7 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 	unsigned int i;
 	for (i = 0; i <= 50; i++)
 	{
-		std::string str;
+		STRING str;
 		file >> str;
 		itmChars.push_back(str);
 	}
@@ -197,7 +197,7 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 		file >> gfx[MV_SW];
 		file >> gfx[MV_SE];
 
-		std::string strItemRest, strUnused;
+		STRING strItemRest, strUnused;
 		file >> strItemRest;				// Hold this for minorVer < 6.
 		file >> strUnused;
 
@@ -241,7 +241,7 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 
 		for (i = 0; i <= count; i++)
 		{
-			std::string anim, handle;
+			STRING anim, handle;
 			file >> anim;
 			file >> handle;
 			if (!handle.empty() && !anim.empty())
@@ -257,7 +257,7 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 
 		unsigned int x, y;
 
-		std::string itmWalkGfx[16][2], itmRestGfx[2];
+		STRING itmWalkGfx[16][2], itmRestGfx[2];
 
 		for (x = 0; x <= 15; x++)
 		{
@@ -272,7 +272,7 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 			file >> itmRestGfx[y];
 		}
 
-		extern std::string g_projectPath;
+		extern STRING g_projectPath;
 
 		ANIMATION anm;
 		anm.animSizeX = 32;
@@ -280,18 +280,18 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 		anm.animPause = 0.167;
 
 		int xx = 0;
-		std::string walkFix = "S";
+		STRING walkFix = _T("S");
 
 		for (x = 0; x <= 15; x++)
 		{
 
-			const std::string anmName = g_projectPath + MISC_PATH + replace(removePath(fileName), '.', '_') + "_walk_" + walkFix + "_" + ".anm";
+			const STRING anmName = g_projectPath + MISC_PATH + replace(removePath(fileName), _T('.'), _T('_')) + _T("_walk_") + walkFix + _T("_") + _T(".anm");
 
-			std::stringstream ss;
-			ss	<< g_projectPath << BMP_PATH << replace(removePath(fileName), '.', '_') << "_walk_"
-				<< x << ".tbm";
+			STRINGSTREAM ss;
+			ss	<< g_projectPath << BMP_PATH << replace(removePath(fileName), _T('.'), _T('_')) << _T("_walk_")
+				<< x << _T(".tbm");
 
-			const std::string tbmName = ss.str();
+			const STRING tbmName = ss.str();
 
 			TILE_BITMAP tbm;
 			tbm.resize(1, 2);
@@ -303,25 +303,25 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 
 			anm.animFrame.push_back(removePath(tbmName));
 			anm.animTransp.push_back(RGB(255, 255, 255));
-			anm.animSound.push_back("");
+			anm.animSound.push_back(_T(""));
 
 			if (x == 3)
 			{
-				walkFix = "E";
+				walkFix = _T("E");
 				anm.save(anmName);
 				gfx[MV_S] = removePath(anmName);
 				xx = -1;
 			}
 			else if (x == 7)
 			{
-				walkFix = "N";
+				walkFix = _T("N");
 				anm.save(anmName);
 				gfx[MV_E] = removePath(anmName);
 				xx = -1;
 			}
 			else if (x == 11)
 			{
-				walkFix = "W";
+				walkFix = _T("W");
 				anm.save(anmName);
 				gfx[MV_N] = removePath(anmName);
 				xx = -1;
@@ -353,8 +353,8 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 		anm.animTransp.clear();
 		anm.animSound.clear();
 
-		const std::string anmName = g_projectPath + MISC_PATH + replace(removePath(fileName), '.', '_') + "_rest" + ".anm";
-		const std::string tbmName = g_projectPath + BMP_PATH + replace(removePath(fileName), '.', '_') + "_rest" + ".tbm";
+		const STRING anmName = g_projectPath + MISC_PATH + replace(removePath(fileName), _T('.'), _T('_')) + _T("_rest") + _T(".anm");
+		const STRING tbmName = g_projectPath + BMP_PATH + replace(removePath(fileName), _T('.'), _T('_')) + _T("_rest") + _T(".tbm");
 
 		TILE_BITMAP tbm;
 		tbm.resize(1, 2);
@@ -366,7 +366,7 @@ short tagItem::open(const std::string fileName, SPRITE_ATTR *pAttr)
 
 		anm.animFrame.push_back(removePath(tbmName));
 		anm.animTransp.push_back(RGB(255, 255, 255));
-		anm.animSound.push_back("");
+		anm.animSound.push_back(_T(""));
 		anm.save(anmName);
 
 		gfx.clear();

@@ -20,20 +20,20 @@ static std::set<IPluginInput *> g_inputPlugins;
 /*
  * Load a plugin.
  */
-IPlugin *loadPlugin(const std::string file)
+IPlugin *loadPlugin(const STRING file)
 {
-	const int backslash = file.find_last_of('\\') + 1;
-	const std::string name = file.substr(backslash, file.length() - 4 - backslash);
+	const int backslash = file.find_last_of(_T('\\')) + 1;
+	const STRING name = file.substr(backslash, file.length() - 4 - backslash);
 	if (name.empty()) return NULL;
 
 	HMODULE mod = LoadLibrary(file.c_str());
 	if (!mod)
 	{
-		messageBox("The file " + file + " is not a valid dynamically linkable library.");
+		messageBox(_T("The file ") + file + _T(" is not a valid dynamically linkable library."));
 		return NULL;
 	}
 
-	FARPROC pReg = GetProcAddress(mod, "DllRegisterServer");
+	FARPROC pReg = GetProcAddress(mod, _T("DllRegisterServer"));
 	if (!pReg)
 	{
 		FreeLibrary(mod);
@@ -43,14 +43,14 @@ IPlugin *loadPlugin(const std::string file)
 			p->initialize();
 			return p;
 		}
-		messageBox("The file " + file + " is not a valid plugin.");
+		messageBox(_T("The file ") + file + _T(" is not a valid plugin."));
 		delete p;
 		return NULL;
 	}
 
 	if (FAILED(((HRESULT (__stdcall *)())pReg)()))
 	{
-		messageBox("An error occurred while registering " + file + ".");
+		messageBox(_T("An error occurred while registering ") + file + _T("."));
 		FreeLibrary(mod);
 		return NULL;
 	}
@@ -59,27 +59,32 @@ IPlugin *loadPlugin(const std::string file)
 
 	CComPlugin *p = new CComPlugin();
 
+#ifndef _UNICODE
+	// Ascii.
 	wchar_t *str = new wchar_t[name.length() + 1];
 	MultiByteToWideChar(CP_ACP, 0, name.c_str(), -1, str, name.length() + 1);
 	const bool bLoaded = p->load(str + std::wstring(L".cls") + str);
 	delete [] str;
+#else
+	// Unicode.
+	const bool bLoaded = p->load(name + std::wstring(L".cls") + name);
+#endif
 
 	if (!bLoaded)
 	{
-		messageBox("A remotable class was not found in " + file + ".");
+		messageBox(_T("A remotable class was not found in ") + file + _T("."));
 		delete p;
 		return NULL;
 	}
 
 	p->initialize();
 	return p;
-
 }
 
 /*
  * Inform applicable plugins of an event.
  */
-void informPluginEvent(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type)
+void informPluginEvent(const int keyCode, const int x, const int y, const int button, const int shift, const STRING key, const int type)
 {
 	std::set<IPluginInput *>::iterator i = g_inputPlugins.begin();
 	for (; i != g_inputPlugins.end(); ++i)
@@ -269,7 +274,7 @@ CComPlugin::CComPlugin(const std::wstring cls)
 	load(cls);
 }
 
-COldPlugin::COldPlugin(const std::string file)
+COldPlugin::COldPlugin(const STRING file)
 {
 	m_hModule = NULL;
 	load(file);
@@ -317,13 +322,13 @@ bool CComPlugin::load(const std::wstring cls)
 	return true;
 }
 
-bool COldPlugin::load(const std::string file)
+bool COldPlugin::load(const STRING file)
 {
 	if (m_hModule || !g_pCallbacks) return false;
 	m_hModule = LoadLibrary(file.c_str());
 	if (!m_hModule) return false;
-	INIT_PROC pInit = INIT_PROC(GetProcAddress(m_hModule, TEXT("TKPlugInit")));
-	VERSION_PROC pVersion = VERSION_PROC(GetProcAddress(m_hModule, TEXT("TKPlugVersion")));
+	INIT_PROC pInit = INIT_PROC(GetProcAddress(m_hModule, _T("TKPlugInit")));
+	VERSION_PROC pVersion = VERSION_PROC(GetProcAddress(m_hModule, _T("TKPlugVersion")));
 	if (pInit)
 	{
 		pInit(&g_oldCallbacks[0], (!pVersion) ? 45 : g_oldCallbacks.size());
@@ -333,16 +338,16 @@ bool COldPlugin::load(const std::string file)
 		FreeLibrary(m_hModule);
 		return false;
 	}
-	m_plugBegin = BEGIN_PROC(GetProcAddress(m_hModule, TEXT("TKPlugBegin")));
-	m_plugQuery = QUERY_PROC(GetProcAddress(m_hModule, TEXT("TKPlugQuery")));
-	m_plugExecute = EXECUTE_PROC(GetProcAddress(m_hModule, TEXT("TKPlugExecute")));
-	m_plugEnd = END_PROC(GetProcAddress(m_hModule, TEXT("TKPlugEnd")));
-	m_plugType = TYPE_PROC(GetProcAddress(m_hModule, TEXT("TKPlugType")));
-	m_plugMenu = MENU_PROC(GetProcAddress(m_hModule, TEXT("TKPlugMenu")));
-	m_plugFight = FIGHT_PROC(GetProcAddress(m_hModule, TEXT("TKPlugFight")));
-	m_plugFightInform = FIGHT_INFORM_PROC(GetProcAddress(m_hModule, TEXT("TKPlugFightInform")));
-	m_plugInputRequested = INPUT_REQUESTED_PROC(GetProcAddress(m_hModule, TEXT("TKPlugInputRequested")));
-	m_plugEventInform = EVENT_INFORM_PROC(GetProcAddress(m_hModule, TEXT("TKPlugEventInform")));
+	m_plugBegin = BEGIN_PROC(GetProcAddress(m_hModule, _T("TKPlugBegin")));
+	m_plugQuery = QUERY_PROC(GetProcAddress(m_hModule, _T("TKPlugQuery")));
+	m_plugExecute = EXECUTE_PROC(GetProcAddress(m_hModule, _T("TKPlugExecute")));
+	m_plugEnd = END_PROC(GetProcAddress(m_hModule, _T("TKPlugEnd")));
+	m_plugType = TYPE_PROC(GetProcAddress(m_hModule, _T("TKPlugType")));
+	m_plugMenu = MENU_PROC(GetProcAddress(m_hModule, _T("TKPlugMenu")));
+	m_plugFight = FIGHT_PROC(GetProcAddress(m_hModule, _T("TKPlugFight")));
+	m_plugFightInform = FIGHT_INFORM_PROC(GetProcAddress(m_hModule, _T("TKPlugFightInform")));
+	m_plugInputRequested = INPUT_REQUESTED_PROC(GetProcAddress(m_hModule, _T("TKPlugInputRequested")));
+	m_plugEventInform = EVENT_INFORM_PROC(GetProcAddress(m_hModule, _T("TKPlugEventInform")));
 	if (m_plugInputRequested)
 	{
 		// This plugin accepts 'special' input.
@@ -384,7 +389,7 @@ void COldPlugin::terminate()
 /*
  * Query to check whether we support a function.
  */
-bool CComPlugin::query(const std::string function)
+bool CComPlugin::query(const STRING function)
 {
 	if (!m_plugin) return false;
 	BSTR bstr = getString(function);
@@ -394,18 +399,18 @@ bool CComPlugin::query(const std::string function)
 	return (toRet == VARIANT_TRUE);
 }
 
-bool COldPlugin::query(const std::string function)
+bool COldPlugin::query(const STRING function)
 {
 	if (!m_hModule) return false;
 #pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
-	return m_plugQuery((char *)function.c_str());
+	return m_plugQuery((char *)getAsciiString(function).c_str());
 #pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 }
 
 /*
  * Execute an RPGCode function.
  */
-bool CComPlugin::execute(const std::string line, int &retValDt, std::string &retValLit, double &retValNum, const short usingReturn)
+bool CComPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn)
 {
 	if (!m_plugin) return false;
 	BSTR bstrLine = getString(line);
@@ -418,20 +423,20 @@ bool CComPlugin::execute(const std::string line, int &retValDt, std::string &ret
 	return (toRet == VARIANT_TRUE);
 }
 
-bool COldPlugin::execute(const std::string line, int &retValDt, std::string &retValLit, double &retValNum, const short usingReturn)
+bool COldPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn)
 {
 	if (!m_hModule) return false;
 	retValDt = 0;
 	retValNum = 0.0;
 #pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
-	return m_plugExecute((char *)line.c_str());
+	return m_plugExecute((char *)getAsciiString(line).c_str());
 #pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 }
 
 /*
  * Start a fight.
  */
-int CComPlugin::fight(const int enemyCount, const int skillLevel, const std::string background, const bool canRun)
+int CComPlugin::fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun)
 {
 	if (!m_plugin) return 0;
 	int toRet = 0;
@@ -441,7 +446,7 @@ int CComPlugin::fight(const int enemyCount, const int skillLevel, const std::str
 	return toRet;
 }
 
-int COldPlugin::fight(const int enemyCount, const int skillLevel, const std::string background, const bool canRun)
+int COldPlugin::fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun)
 {
 	if (!m_hModule) return 0;
 	return m_plugFight(enemyCount, skillLevel, (char *)background.c_str(), canRun);
@@ -450,7 +455,7 @@ int COldPlugin::fight(const int enemyCount, const int skillLevel, const std::str
 /*
  * Send a fight message.
  */
-int CComPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const std::string strMessage, const int attackCode)
+int CComPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode)
 {
 	if (!m_plugin) return 0;
 	int toRet = 0;
@@ -460,7 +465,7 @@ int CComPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterI
 	return toRet;
 }
 
-int COldPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const std::string strMessage, const int attackCode)
+int COldPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode)
 {
 	if (!m_hModule) return 0;
 	return m_plugFightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, sourceHpLost, sourceSmpLost, targetHpLost, targetSmpLost, (char *)strMessage.c_str(), attackCode);
@@ -519,12 +524,12 @@ bool COldPlugin::inputRequested(const int type)
 /*
  * Inform this plugin that an event occurred.
  */
-bool COldPlugin::eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const std::string key, const int type)
+bool COldPlugin::eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const STRING key, const int type)
 {
 	if (m_plugEventInform)
 	{
 #pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
-		return m_plugEventInform(keyCode, x, y, button, shift, (char *)key.c_str(), type);
+		return m_plugEventInform(keyCode, x, y, button, shift, (char *)getAsciiString(key).c_str(), type);
 #pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	}
 	return true;

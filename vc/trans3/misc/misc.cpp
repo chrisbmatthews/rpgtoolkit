@@ -17,15 +17,15 @@
 /*
  * Definitions.
  */
-#define KEY_TRANS3 "Software\\VB and VBA Program Settings\\RPGToolkit3\\Trans3"
+#define KEY_TRANS3 _T("Software\\VB and VBA Program Settings\\RPGToolkit3\\Trans3")
 
 /*
  * Split a string.
  */
-void split(const std::string str, const std::string delim, std::vector<std::string> &parts)
+void split(const STRING str, const STRING delim, std::vector<STRING> &parts)
 {
-	std::string::size_type pos = std::string::npos, begin = 0;
-	while ((pos = str.find(delim, pos + 1)) != std::string::npos)
+	STRING::size_type pos = STRING::npos, begin = 0;
+	while ((pos = str.find(delim, pos + 1)) != STRING::npos)
 	{
 		parts.push_back(str.substr(begin, pos - begin));
 		begin = pos + 1;
@@ -36,10 +36,10 @@ void split(const std::string str, const std::string delim, std::vector<std::stri
 /*
  * Replace text in a string.
  */
-std::string &replace(std::string &str, const std::string find, const std::string replace)
+STRING &replace(STRING &str, const STRING find, const STRING replace)
 {
-	unsigned int pos = std::string::npos;
-	while ((pos = str.find(find)) != std::string::npos)
+	unsigned int pos = STRING::npos;
+	while ((pos = str.find(find)) != STRING::npos)
 	{
 		str.erase(pos, find.length());
 		str.insert(pos, replace);
@@ -55,9 +55,9 @@ std::string &replace(std::string &str, const std::string find, const std::string
  * replace (in) - replace with this
  * return (out) - result
  */
-std::string replace(const std::string str, const char find, const char replace)
+STRING replace(const STRING str, const char find, const char replace)
 {
-	std::string toRet = str;
+	STRING toRet = str;
 	const int len = str.length();
 	for (unsigned int i = 0; i < len; i++)
 	{
@@ -72,13 +72,13 @@ std::string replace(const std::string str, const char find, const char replace)
  * strKey (in) - name of key to save to
  * dblValue (in) - value to save
  */
-void saveSetting(const std::string strKey, const double dblValue)
+void saveSetting(const STRING strKey, const double dblValue)
 {
 	HKEY hKey;
 	RegCreateKey(HKEY_CURRENT_USER, KEY_TRANS3, &hKey);
-	std::stringstream ss;
+	STRINGSTREAM ss;
 	ss << dblValue;
-	const char *str = ss.str().c_str();
+	const TCHAR *str = ss.str().c_str();
 	RegSetValueEx(hKey, strKey.c_str(), 0, REG_SZ, (LPBYTE)str, strlen(str) + 1);
 	RegCloseKey(hKey);
 }
@@ -89,19 +89,23 @@ void saveSetting(const std::string strKey, const double dblValue)
  * strKey (in) - name of key to get
  * dblValue (out) - result
  */
-void getSetting(const std::string strKey, double &dblValue)
+void getSetting(const STRING strKey, double &dblValue)
 {
 	HKEY hKey;
 	RegCreateKey(HKEY_CURRENT_USER, KEY_TRANS3, &hKey);
-	unsigned char str[255];
+	TCHAR str[255];
 	DWORD dwSize = sizeof(str);
-	if (FAILED(RegQueryValueEx(hKey, strKey.c_str(), 0, NULL, str, &dwSize)))
+	if (FAILED(RegQueryValueEx(hKey, strKey.c_str(), 0, NULL, (unsigned char *)str, &dwSize)))
 	{
 		dblValue = -1;
 	}
 	else
 	{
-		dblValue = atof((const char *)str);
+#ifndef _UNICODE
+		dblValue = atof(str);
+#else
+		dblValue = atof(getAsciiString(std::wstring(str)).c_str());
+#endif
 	}
 	RegCloseKey(hKey);
 }

@@ -15,9 +15,15 @@
 #include <map>
 #include <set>
 #include <deque>
-#include <vector>
 #include <string>
+#include <vector>
+#include <tchar.h>
 #include <iostream>
+
+#ifndef STRING_DEFINED
+typedef std::basic_string<TCHAR> STRING;
+#define STRING_DEFINED
+#endif
 
 // Data types.
 typedef enum tagUnitDataType
@@ -41,13 +47,13 @@ class CProgram;
 typedef struct tagStackFrame
 {
 	double num;
-	std::string lit;
+	STRING lit;
 	UNIT_DATA_TYPE udt;
 	CProgram *prg;
 
 	bool getBool() const;
 	double getNum() const;
-	std::string getLit() const;
+	STRING getLit() const;
 	UNIT_DATA_TYPE getType() const;
 	tagStackFrame getValue() const;
 
@@ -88,7 +94,7 @@ typedef void (*MACHINE_FUNC) (CALL_DATA &);
 typedef struct tagMachineUnit
 {
 	double num;
-	std::string lit;
+	STRING lit;
 	UNIT_DATA_TYPE udt;
 	MACHINE_FUNC func;
 	int params;
@@ -147,12 +153,12 @@ namespace operators
 // For loading methods.
 typedef struct tagNamedMethod
 {
-	std::string name;
+	STRING name;
 	int params;	// For overloaded methods.
 	unsigned int i;
 
 	static std::vector<tagNamedMethod> m_methods;
-	static tagNamedMethod *locate(const std::string name, const int params, const bool bMethod);
+	static tagNamedMethod *locate(const STRING name, const int params, const bool bMethod);
 } NAMED_METHOD, *LPNAMED_METHOD;
 
 // Class visibilities.
@@ -165,12 +171,12 @@ typedef enum tagClassVisibility
 // A class.
 typedef struct tagClass
 {
-	std::deque<std::string> inherits;
-	std::deque<std::pair<std::string, CLASS_VISIBILITY> > members;
+	std::deque<STRING> inherits;
+	std::deque<std::pair<STRING, CLASS_VISIBILITY> > members;
 	std::deque<std::pair<NAMED_METHOD, CLASS_VISIBILITY> > methods;
 
-	tagNamedMethod *locate(const std::string name, const int params, const CLASS_VISIBILITY vis);
-	bool memberExists(const std::string name, const CLASS_VISIBILITY vis) const;
+	tagNamedMethod *locate(const STRING name, const int params, const CLASS_VISIBILITY vis);
+	bool memberExists(const STRING name, const CLASS_VISIBILITY vis) const;
 	void inherit(const tagClass &cls);
 } CLASS, *LPCLASS;
 
@@ -186,31 +192,31 @@ class CProgram
 {
 public:
 	CProgram() { }
-	CProgram(const std::string file) { open(file); }
+	CProgram(const STRING file) { open(file); }
 	virtual ~CProgram() { }
 
-	bool open(const std::string fileName);
-	bool loadFromString(const std::string str);
-	void save(const std::string fileName) const;
+	bool open(const STRING fileName);
+	bool loadFromString(const STRING str);
+	void save(const STRING fileName) const;
 	void run();
 	unsigned int getLine(CONST_POS i) const;
 	void freeObject(unsigned int obj);
-	void freeVar(const std::string var);
+	void freeVar(const STRING var);
 	void end() { m_i = m_units.end() - 1; }
-	void jump(const std::string label);
+	void jump(const STRING label);
 	CONST_POS getPos() const { return m_i; }
 	CONST_POS getEnd() const { return m_units.end(); }
-	LPSTACK_FRAME getLocal(const std::string var) { return &m_locals.back()[var]; }
+	LPSTACK_FRAME getLocal(const STRING var) { return &m_locals.back()[var]; }
 
-	virtual LPSTACK_FRAME getVar(const std::string name);
+	virtual LPSTACK_FRAME getVar(const STRING name);
 	virtual bool isThread() const { return false; }
 
 	static void initialize();
-	static void addFunction(const std::string name, const MACHINE_FUNC func);
-	static std::string getFunctionName(const MACHINE_FUNC func);
-	static void debugger(const std::string str);
-	static LPSTACK_FRAME getGlobal(const std::string var) { return &m_heap[var]; }
-	static void freeGlobal(const std::string var) { m_heap.erase(var); }
+	static void addFunction(const STRING name, const MACHINE_FUNC func);
+	static STRING getFunctionName(const MACHINE_FUNC func);
+	static void debugger(const STRING str);
+	static LPSTACK_FRAME getGlobal(const STRING var) { return &m_heap[var]; }
+	static void freeGlobal(const STRING var) { m_heap.erase(var); }
 	static void freeGlobals() { m_heap.clear(); m_objects.clear(); }
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
 	static void freePlugins();
@@ -220,25 +226,25 @@ public:
 
 private:
 	std::deque<std::deque<STACK_FRAME> > m_stack;
-	std::vector<std::map<std::string, STACK_FRAME> > m_locals;
+	std::vector<std::map<STRING, STACK_FRAME> > m_locals;
 	std::deque<STACK_FRAME> *m_pStack;
 	std::vector<CALL_FRAME> m_calls;
-	std::map<std::string, CLASS> m_classes;
+	std::map<STRING, CLASS> m_classes;
 	std::vector<unsigned int> m_lines;
 
 	// Yacc globals.
 	static LPMACHINE_UNITS m_pyyUnits;
 	static std::deque<std::deque<MACHINE_UNIT> > m_yyFors;
-	static std::map<std::string, CLASS> *m_pClasses;
+	static std::map<STRING, CLASS> *m_pClasses;
 	static std::deque<int> m_params;
 	static std::vector<unsigned int> *m_pLines;
-	static std::vector<std::string> m_inclusions;
-	static std::string m_parsing;
+	static std::vector<STRING> m_inclusions;
+	static STRING m_parsing;
 
 	// Other globals.
-	static std::map<unsigned int, std::string> m_objects;
-	static std::map<std::string, MACHINE_FUNC> m_functions;
-	static std::map<std::string, STACK_FRAME> m_heap;
+	static std::map<unsigned int, STRING> m_objects;
+	static std::map<STRING, MACHINE_FUNC> m_functions;
+	static std::map<STRING, STACK_FRAME> m_heap;
 	static std::vector<IPlugin *> m_plugins;
 	static unsigned long m_runningPrograms;
 
@@ -266,7 +272,7 @@ private:
 	CProgram operator=(CProgram &);
 	void parseFile(FILE *pFile);
 	unsigned int matchBrace(POS i);
-	void include(const std::string file);
+	void include(const STRING file);
 	void prime();
 	static bool resolvePluginCall(LPMACHINE_UNIT pUnit);
 
@@ -280,7 +286,7 @@ class CProgramChild : public CProgram
 {
 public:
 	CProgramChild(CProgram &prg): m_prg(prg) { }
-	LPSTACK_FRAME getVar(const std::string name) { return m_prg.getVar(name); }
+	LPSTACK_FRAME getVar(const STRING name) { return m_prg.getVar(name); }
 
 private:
 	CProgram &m_prg;
@@ -290,7 +296,7 @@ private:
 class CThread : public CProgram
 {
 public:
-	static CThread *create(const std::string str);
+	static CThread *create(const STRING str);
 	static void destroy(CThread *p);
 	static void multitask();
 	static bool isThread(CThread *p) { return (m_threads.find(p) != m_threads.end()); }
@@ -312,7 +318,7 @@ private:
 protected:
 	static void *operator new(size_t size) { return malloc(size); }
 	static void operator delete(void *p) { free(p); }
-	CThread(const std::string str): CProgram(str), m_bSleeping(false) { }
+	CThread(const STRING str): CProgram(str), m_bSleeping(false) { }
 	static std::set<CThread *> m_threads;
 };
 
@@ -327,26 +333,26 @@ typedef enum tagExceptionType
 class CException
 {
 public:
-	std::string getMessage() const { return m_str; }
+	STRING getMessage() const { return m_str; }
 	EXCEPTION_TYPE getType() const { return m_type; }
 private:
-	std::string m_str;
+	STRING m_str;
 	EXCEPTION_TYPE m_type;
 protected:
-	CException(const std::string str, const EXCEPTION_TYPE type):
+	CException(const STRING str, const EXCEPTION_TYPE type):
 		m_str(str), m_type(type) { }
 };
 
 class CError : public CException
 {
 public:
-	CError(const std::string str): CException(str, E_ERROR) { }
+	CError(const STRING str): CException(str, E_ERROR) { }
 };
 
 class CWarning : public CException
 {
 public:
-	CWarning(const std::string str): CException(str, E_WARNING) { }
+	CWarning(const STRING str): CException(str, E_WARNING) { }
 };
 
 #endif

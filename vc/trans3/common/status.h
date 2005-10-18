@@ -8,11 +8,11 @@
 #ifndef _STATUS_EFFECT_H_
 #define _STATUS_EFFECT_H_
 
-#include <string>
+#include "../../tkCommon/strings.h"
 
 typedef struct tagStatusEffect
 {
-	std::string name;
+	STRING name;
 	short rounds;
 	short speed;
 	short slow;
@@ -20,8 +20,8 @@ typedef struct tagStatusEffect
 	short hp, hpAmount;
 	short smp, smpAmount;
 	short code;
-	std::string prg;
-	void open(const std::string strFile);
+	STRING prg;
+	void open(const STRING strFile);
 } STATUS_EFFECT, *LPSTATUS_EFFECT;
 
 #endif

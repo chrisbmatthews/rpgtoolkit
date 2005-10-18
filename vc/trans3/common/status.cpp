@@ -8,7 +8,7 @@
 #include "CFile.h"
 #include "mbox.h"
 
-void tagStatusEffect::open(const std::string strFile)
+void tagStatusEffect::open(const STRING strFile)
 {
 	CFile file(strFile);
 
@@ -18,11 +18,11 @@ void tagStatusEffect::open(const std::string strFile)
 	file.seek(0);
 	if (!c)
 	{
-		std::string header;
+		STRING header;
 		file >> header;
-		if (header != "RPGTLKIT STATUSE")
+		if (header != _T("RPGTLKIT STATUSE"))
 		{
-			messageBox("This is not a valid status effect file! " + strFile);
+			messageBox(_T("This is not a valid status effect file! ") + strFile);
 			return;
 		}
 		short majorVer, minorVer;
@@ -42,22 +42,22 @@ void tagStatusEffect::open(const std::string strFile)
 
 		return;
 	}
-	if (file.line() != "RPGTLKIT STATUSE")
+	if (file.line() != _T("RPGTLKIT STATUSE"))
 	{
-		messageBox("This is not a valid status effect file! " + strFile);
+		messageBox(_T("This is not a valid status effect file! ") + strFile);
 		return;
 	}
 	file.line(); // majorVer
 	file.line(); // minorVer
 	name = file.line();
-	rounds = atoi(file.line().c_str());
-	speed = atoi(file.line().c_str());
-	slow = atoi(file.line().c_str());
-	disable = atoi(file.line().c_str());
-	hp = atoi(file.line().c_str());
-	hpAmount = atoi(file.line().c_str());
-	smp = atoi(file.line().c_str());
-	smpAmount = atoi(file.line().c_str());
-	code = atoi(file.line().c_str());
+	rounds = _ttoi(file.line().c_str());
+	speed = _ttoi(file.line().c_str());
+	slow = _ttoi(file.line().c_str());
+	disable = _ttoi(file.line().c_str());
+	hp = _ttoi(file.line().c_str());
+	hpAmount = _ttoi(file.line().c_str());
+	smp = _ttoi(file.line().c_str());
+	smpAmount = _ttoi(file.line().c_str());
+	code = _ttoi(file.line().c_str());
 	prg = file.line();
 }

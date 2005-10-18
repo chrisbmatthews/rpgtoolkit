@@ -10,18 +10,18 @@
 /*
  * Inclusions.
  */
-#include <string>
+#include "../../tkCommon/strings.h"
 #include <vector>
 
 /*
  * Split a string.
  */
-void split(const std::string str, const std::string delim, std::vector<std::string> &parts);
+void split(const STRING str, const STRING delim, std::vector<STRING> &parts);
 
 /*
  * Replace text in a string.
  */
-std::string &replace(std::string &str, const std::string find, const std::string replace);
+STRING &replace(STRING &str, const STRING find, const STRING replace);
 
 /*
  * Replace within a string.
@@ -31,7 +31,7 @@ std::string &replace(std::string &str, const std::string find, const std::string
  * replace (in) - replace with this
  * return (out) - result
  */
-std::string replace(const std::string str, const char find, const char replace);
+STRING replace(const STRING str, const char find, const char replace);
 
 /*
  * Save a setting.
@@ -39,7 +39,7 @@ std::string replace(const std::string str, const char find, const char replace);
  * strKey (in) - name of key to save to
  * dblValue (in) - value to save
  */
-void saveSetting(const std::string strKey, const double dblValue);
+void saveSetting(const STRING strKey, const double dblValue);
 
 /*
  * Get a setting.
@@ -47,6 +47,6 @@ void saveSetting(const std::string strKey, const double dblValue);
  * strKey (in) - name of key to get
  * dblValue (out) - result
  */
-void getSetting(const std::string strKey, double &dblValue);
+void getSetting(const STRING strKey, double &dblValue);
 
 #endif

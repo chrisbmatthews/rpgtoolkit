@@ -17,7 +17,7 @@
 /*
  * Default constructor.
  */
-CItem::CItem(const std::string file, const bool show):
+CItem::CItem(const STRING file, const bool show):
 CSprite(false),
 m_pThread(NULL)
 {
@@ -32,7 +32,7 @@ m_pThread(NULL)
 /*
  * Constructor - load an item directly from the board.
  */
-CItem::CItem(const std::string file, const BRD_SPRITE spr, short &version):
+CItem::CItem(const STRING file, const BRD_SPRITE spr, short &version):
 CSprite(false),
 m_pThread(NULL)
 {
@@ -44,9 +44,8 @@ m_pThread(NULL)
 /*
  * Common opening procedure. Return the minor version.
  */
-short CItem::open(const std::string file) throw(CInvalidItem)
+short CItem::open(const STRING file) throw(CInvalidItem)
 {
-
 	const short minorVer = m_itemMem.open(file, &m_attr);
 	if (minorVer == 0)
 	{
@@ -78,8 +77,8 @@ short CItem::open(const std::string file) throw(CInvalidItem)
 	// Create thread
 	if (!m_brdData.prgMultitask.empty())
 	{
-		extern std::string g_projectPath;
-		const std::string file = g_projectPath + PRG_PATH + m_brdData.prgMultitask;
+		extern STRING g_projectPath;
+		const STRING file = g_projectPath + PRG_PATH + m_brdData.prgMultitask;
 		if (CFile::fileExists(file))
 		{
 			m_pThread = CItemThread::create(file, this);
@@ -92,7 +91,7 @@ short CItem::open(const std::string file) throw(CInvalidItem)
 /*
  * Create an item thread.
  */
-CItemThread *CItemThread::create(const std::string str, CItem *pItem)
+CItemThread *CItemThread::create(const STRING str, CItem *pItem)
 {
 	CItemThread *p = new CItemThread(str);
 	m_threads.insert(p);

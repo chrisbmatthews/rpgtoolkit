@@ -11,14 +11,14 @@
 /*
  * Show a message box.
  */
-void messageBox(const std::string str)
+void messageBox(const STRING str)
 {
 	extern int g_resX, g_resY;
 	extern CDirectDraw *g_pDirectDraw;
 
 	if (!g_pDirectDraw)
 	{
-		MessageBox(NULL, str.c_str(), "RPGToolkit 3 Translator", 0);
+		MessageBox(NULL, str.c_str(), _T("RPGToolkit 3 Translator"), 0);
 		return;
 	}
 
@@ -58,8 +58,8 @@ void messageBox(const std::string str)
 
 	while (true)
 	{
-		const std::string key = waitForKey();
-		if (key != "LEFT" && key != "RIGHT" && key != "UP" && key != "DOWN") break;
+		const STRING key = waitForKey();
+		if ((key != _T("LEFT")) && (key != _T("RIGHT")) && (key != _T("UP")) && (key != _T("DOWN"))) break;
 	}
 	g_pDirectDraw->DrawCanvas(&backup, 0, 0);
 	g_pDirectDraw->Refresh();

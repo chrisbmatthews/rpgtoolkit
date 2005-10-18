@@ -8,15 +8,15 @@
 #define _CINVENTORY_H_
 
 #include <map>
-#include <string>
 #include "item.h"
+#include "../../tkCommon/strings.h"
 #include "../rpgcode/parser/parser.h"
 
 class CInventory
 {
 public:
-	typedef std::pair<std::string, unsigned int> DATA_PAIR, *LPDATA_PAIR;
-	void give(const std::string file)
+	typedef std::pair<STRING, unsigned int> DATA_PAIR, *LPDATA_PAIR;
+	void give(const STRING file)
 	{
 		// file contains complete path.
 		LPDATA_PAIR p = &m_data[parser::uppercase(file)];
@@ -29,22 +29,22 @@ public:
 		}
 		else
 		{
-			p->second++;
+			++p->second;
 		}
 	}
-	unsigned int getQuantity(const std::string file)
+	unsigned int getQuantity(const STRING file)
 	{
 		LPDATA_PAIR p = &m_data[parser::uppercase(file)];
 		if (p->first.empty()) return 0;
 		return p->second;
 	}
-	std::string getHandle(const std::string file)
+	STRING getHandle(const STRING file)
 	{
 		return m_data[parser::uppercase(file)].first;
 	}
-	bool take(const std::string file)
+	bool take(const STRING file)
 	{
-		const std::string ucase = parser::uppercase(file);
+		const STRING ucase = parser::uppercase(file);
 		LPDATA_PAIR p = &m_data[ucase];
 		if (p->first.empty())
 		{
@@ -63,21 +63,21 @@ public:
 		m_data.clear();
 	}
 
-	std::string getFileAt(const int i)
+	STRING getFileAt(const int i)
 	{
 		if (m_data.size() > i)
 		{
 			return at(i)->first;
 		}
-		return "";
+		return _T("");
 	}
-	std::string getHandleAt(const int i)
+	STRING getHandleAt(const int i)
 	{
 		if (m_data.size() > i)
 		{
 			return at(i)->second.first;
 		}
-		return "";
+		return _T("");
 	}
 	unsigned int getQuantityAt(const int i)
 	{
@@ -88,15 +88,15 @@ public:
 		return 0;
 	}
 private:
-	std::map<std::string, DATA_PAIR>::iterator at(const int j)
+	std::map<STRING, DATA_PAIR>::iterator at(const int j)
 	{
-		std::map<std::string, DATA_PAIR>::iterator i = m_data.begin();
+		std::map<STRING, DATA_PAIR>::iterator i = m_data.begin();
 		for (int k = 0; k < j; ++k, ++i);
 		return i;
 	}
-	LPDATA_PAIR byHandle(const std::string file)
+	LPDATA_PAIR byHandle(const STRING file)
 	{
-		std::map<std::string, DATA_PAIR>::iterator i = m_data.begin();
+		std::map<STRING, DATA_PAIR>::iterator i = m_data.begin();
 		for(; i != m_data.end(); ++i)
 		{
 			if (file == i->second.first) break;
@@ -104,7 +104,7 @@ private:
 		return (i == m_data.end() ? NULL : &i->second);
 	}
 
-	std::map<std::string, DATA_PAIR> m_data;
+	std::map<STRING, DATA_PAIR> m_data;
 };
 
 #endif

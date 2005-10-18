@@ -14,7 +14,7 @@
  *
  * fileName (in) - file to open
  */
-CFile::CFile(CONST std::string fileName, CONST UINT mode)
+CFile::CFile(CONST STRING fileName, CONST UINT mode)
 {
 	OFSTRUCT ofs;
 	m_hFile = OpenFile(fileName.c_str(), &ofs, mode);
@@ -22,7 +22,7 @@ CFile::CFile(CONST std::string fileName, CONST UINT mode)
 	m_bEof = FALSE;
 }
 
-void CFile::open(const std::string fileName, CONST UINT mode)
+void CFile::open(const STRING fileName, CONST UINT mode)
 {
 	if (m_hFile != HFILE_ERROR)
 	{
@@ -74,11 +74,11 @@ CFile &CFile::operator<<(CONST double data)
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
-CFile &CFile::operator<<(CONST std::string data)
+CFile &CFile::operator<<(CONST STRING data)
 {
 	DWORD write = 0;
 	CONST INT len = data.length() + 1;
-	WriteFile(HANDLE(m_hFile), data.c_str(), len, &write, &m_ptr);
+	WriteFile(HANDLE(m_hFile), getAsciiString(data).c_str(), len, &write, &m_ptr);
 	m_ptr.Offset += len;
 	return *this;
 }
@@ -123,7 +123,7 @@ CFile &CFile::operator>>(double &data)
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
-CFile &CFile::operator>>(std::string &data)
+CFile &CFile::operator>>(STRING &data)
 {
 	std::string toRet;
 	while (TRUE)
@@ -145,7 +145,11 @@ CFile &CFile::operator>>(std::string &data)
 			toRet += chr;
 		}
 	}
+#ifdef _UNICODE
+	data = getUnicodeString(toRet);
+#else
 	data = toRet;
+#endif
 	return *this;
 }
 
@@ -154,7 +158,7 @@ CFile &CFile::operator>>(std::string &data)
  *
  * return (out) - the line
  */
-std::string CFile::line(void)
+STRING CFile::line()
 {
 	std::string toRet;
 	while (TRUE)
@@ -177,13 +181,17 @@ std::string CFile::line(void)
 	}
 	CONST UINT len = toRet.length() - 1;
 	if (toRet[len] == '\r') toRet[len] = '\0';
+#ifndef _UNICODE
 	return toRet;
+#else
+	return getUnicodeString(toRet);
+#endif
 }
 
 /*
  * Deconstructor.
  */
-CFile::~CFile(VOID)
+CFile::~CFile()
 {
 	CloseHandle(HANDLE(m_hFile));
 }

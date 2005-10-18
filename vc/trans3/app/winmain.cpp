@@ -7,6 +7,7 @@
 /*
  * Inclusions.
  */
+#include "../../tkCommon/strings.h"
 #include "../rpgcode/CProgram.h"
 #include "../plugins/plugins.h"
 #include "../common/paths.h"
@@ -30,7 +31,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commdlg.h>
-#include <string>
 #include <vector>
 #include <sstream>
 #include <iostream>
@@ -79,27 +79,27 @@ void operator delete(void *p)
 
 #endif
 
-void termFunc(void)
+void termFunc()
 {
-	messageBox(	"An unhandled exception has occurred. "
-				"Trans3 will now close.\n\n"
-				"We apologize for this inconvenience. "
-				"If this problem persists, please post at www.toolkitzone.com "
-				"on the \"Toolkit Discussion\" forum with an explanation of "
-				"what you were doing when the bug occurred and instructions "
-				"on how to reproduce the bug, and we will attempt to solve "
-				"this problem."	);
+	messageBox(	_T("An unhandled exception has occurred. ")
+				_T("Trans3 will now close.\n\n")
+				_T("We apologize for this inconvenience. ")
+				_T("If this problem persists, please post at www.toolkitzone.com ")
+				_T("on the \"Toolkit Discussion\" forum with an explanation of ")
+				_T("what you were doing when the bug occurred and instructions ")
+				_T("on how to reproduce the bug, and we will attempt to solve ")
+				_T("this problem.")	);
 	exit(EXIT_FAILURE);
 }
 
 /*
  * Set up the game.
  */
-VOID setUpGame(VOID)
+void setUpGame()
 {
 
 	extern int g_selectedPlayer;
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	extern RECT g_screen;
 	extern SCROLL_CACHE g_scrollCache;
 
@@ -107,7 +107,7 @@ VOID setUpGame(VOID)
 
 	// Load plugins.
 	CProgram::freePlugins();
-	std::vector<std::string>::iterator i = g_mainFile.plugins.begin();
+	std::vector<STRING>::iterator i = g_mainFile.plugins.begin();
 	for (; i != g_mainFile.plugins.end(); ++i)
 	{
 		IPlugin *p = loadPlugin(g_projectPath + PLUG_PATH + *i);
@@ -159,13 +159,13 @@ VOID setUpGame(VOID)
 		switch (g_mainFile.mainResolution)
 		{
 			case 0: // 640 * 480
-				getSetting("gAvgTime_640_Win", avgTime);
+				getSetting(_T("gAvgTime_640_Win"), avgTime);
 				break;
 			case 1: // 1024 * 768
-				getSetting("gAvgTime_1024_Win", avgTime);
+				getSetting(_T("gAvgTime_1024_Win"), avgTime);
 				break;
 			default: // Custom -- use 800 * 600
-				getSetting("gAvgTime_800_Win", avgTime);
+				getSetting(_T("gAvgTime_800_Win"), avgTime);
 				break;
 		}
 	}
@@ -174,13 +174,13 @@ VOID setUpGame(VOID)
 		switch (g_mainFile.mainResolution)
 		{
 			case 0: // 640 * 480
-				getSetting("gAvgTime_640_Full", avgTime);
+				getSetting(_T("gAvgTime_640_Full"), avgTime);
 				break;
 			case 1: // 1024 * 768
-				getSetting("gAvgTime_1024_Full", avgTime);
+				getSetting(_T("gAvgTime_1024_Full"), avgTime);
 				break;
 			default: // Custom -- use 800 * 600
-				getSetting("gAvgTime_800_Full", avgTime);
+				getSetting(_T("gAvgTime_800_Full"), avgTime);
 				break;
 		}
 	}
@@ -202,25 +202,6 @@ VOID setUpGame(VOID)
 
 // Testing!
 //	g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true));
-
-	// This *must* be done here. I'm not sure why.
-	// But don't move it to render.cpp unless you like seeing
-	// things crash for no real reason.
-	extern CCanvas *g_cnvCursor;
-	g_cnvCursor = new CCanvas();
-	g_cnvCursor->CreateBlank(NULL, 32, 32, TRUE);
-	{
-		const HDC hdc = g_cnvCursor->OpenDC();
-		const HDC compat = CreateCompatibleDC(hdc);
-		extern HINSTANCE g_hInstance;
-		HBITMAP bmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP1));
-		HGDIOBJ obj = SelectObject(compat, bmp);
-		BitBlt(hdc, 0, 0, 32, 32, compat, 0, 0, SRCCOPY);
-		g_cnvCursor->CloseDC(hdc);
-		SelectObject(compat, obj);
-		DeleteObject(bmp);
-		DeleteDC(compat);
-	}
 
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())
@@ -258,13 +239,12 @@ VOID setUpGame(VOID)
 	g_pSelectedPlayer->createVectors();	// Temporary.
 
 	}
-
 }
 
 /*
  * Open engine subsystems.
  */
-VOID openSystems(VOID)
+void openSystems()
 {
 	extern void initRpgCode();
 	initPluginSystem();
@@ -282,7 +262,7 @@ VOID openSystems(VOID)
 /*
  * Close engine subsystems.
  */
-VOID closeSystems(VOID)
+void closeSystems()
 {
 
 	// Free plugins first so that they have access to
@@ -305,7 +285,7 @@ VOID closeSystems(VOID)
 	freePluginSystem();
 
 	closeGraphics();
-	extern void freeInput(void);
+	extern void freeInput();
 	freeInput();
 
 	// Destroy sprites (move to somewhere)
@@ -331,63 +311,60 @@ VOID closeSystems(VOID)
 /*
  * Get a main file name.
  */
-std::string getMainFileName(const std::string cmdLine)
+STRING getMainFileName(const STRING cmdLine)
 {
 
-	std::vector<std::string> parts;
-	split(cmdLine, " ", parts);
+	std::vector<STRING> parts;
+	split(cmdLine, _T(" "), parts);
 
 	if (parts.size() == 2)
 	{
 		// Main game file passed on command line.
-		const std::string ret = GAM_PATH + parts[1];
+		const STRING ret = GAM_PATH + parts[1];
 		if (CFile::fileExists(ret)) return ret;
 	}
 	else if (parts.size() == 3)
 	{
 		// Run program.
-		const std::string main = GAM_PATH + parts[1];
+		const STRING main = GAM_PATH + parts[1];
 		if (CFile::fileExists(main))
 		{
 			g_mainFile.open(main);
-			g_mainFile.startupPrg = "";
-			g_mainFile.initBoard = "";
+			g_mainFile.startupPrg = _T("");
+			g_mainFile.initBoard = _T("");
 			openSystems();
-			extern std::string g_projectPath;
+			extern STRING g_projectPath;
 			CProgram(g_projectPath + PRG_PATH + parts[2]).run();
 			closeSystems();
-			return "";
+			return _T("");
 		}
 	}
 
-	TCHAR strFileName[MAX_PATH] = "";
+	TCHAR strFileName[MAX_PATH] = _T("");
 
 	OPENFILENAME ofn = {
 		sizeof(OPENFILENAME),
 		NULL,
 		g_hInstance,
-		"Supported Files\0*.gam;*.tpk\0RPG Toolkit Main File (*.gam)\0*.gam\0RPG Toolkit PakFile (*.tpk)\0*.tpk\0All files(*.*)\0*.*",
+		_T("Supported Files\0*.gam;*.tpk\0RPG Toolkit Main File (*.gam)\0*.gam\0RPG Toolkit PakFile (*.tpk)\0*.tpk\0All files(*.*)\0*.*"),
 		NULL, 0, 1,
 		strFileName, MAX_PATH,
 		NULL, 0,
-		GAM_PATH, "Open Main File",
+		GAM_PATH, _T("Open Main File"),
 		OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, 0, 0,
-		TEXT(".gam"),
+		_T(".gam"),
 		0, NULL, NULL
 	};
 
-	const std::string fileName = (GetOpenFileName(&ofn) ? strFileName : "");
+	const STRING fileName = (GetOpenFileName(&ofn) ? strFileName : _T(""));
 
-	if (_stricmp(getExtension(fileName).c_str(), "TPK") == 0)
+	if (_ftcsicmp(getExtension(fileName).c_str(), _T("TPK")) == 0)
 	{
 		/* ... do pakfile stuff ... */
-		return "main.gam";
-	}
-	else
-	{
-		return fileName;
+		return _T("main.gam");
 	}
 
+	return fileName;
 }
 
 /*
@@ -395,7 +372,7 @@ std::string getMainFileName(const std::string cmdLine)
  *
  * return (out) - current game state
  */
-GAME_STATE gameLogic(VOID)
+GAME_STATE gameLogic()
 {
 	switch (g_gameState)
 	{
@@ -407,10 +384,13 @@ GAME_STATE gameLogic(VOID)
 		{
 
 			extern HWND g_hHostWnd;
-			std::stringstream ss;
-			ss << g_mainFile.gameTitle.c_str() << " — " << g_pBoard->vectors.size() << " vectors, " << ((g_renderCount * MILLISECONDS) / g_renderTime) << " FPS";
+			STRINGSTREAM ss;
+			ss <<	g_mainFile.gameTitle.c_str()
+				<< _T(" — ") << g_pBoard->vectors.size()
+				<< _T(" vectors, ") << ((g_renderCount * MILLISECONDS) / g_renderTime)
+				<< _T(" FPS");
 #if _DEBUG
-			ss << ", " << g_allocated << " bytes";
+			ss << _T(", ") << g_allocated << _T(" bytes");
 #endif
 			SetWindowText(g_hHostWnd, ss.str().c_str());
 
@@ -444,12 +424,12 @@ GAME_STATE gameLogic(VOID)
 /*
  * Main event loop.
  */
-INT mainEventLoop(VOID)
+int mainEventLoop()
 {
 
 	// Calculate how long one frame should take, in milliseconds
 	#define FPS_CAP 120.0
-	CONST DWORD dwOneFrame = DWORD(1000.0 / FPS_CAP);
+	const DWORD dwOneFrame = DWORD(1000.0 / FPS_CAP);
 
 	// Define a structure to hold the messages we recieve
 	MSG message;
@@ -508,21 +488,21 @@ INT mainEventLoop(VOID)
 /*
  * Main entry point.
  */
-INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow)
+int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, const LPTSTR lpCmdLine, const int nCmdShow)
 {
-	#define WORKING_DIRECTORY "C:\\Program Files\\Toolkit3\\"
-	// #define WORKING_DIRECTORY "C:\\CVS\\Tk3 Dev\\"
+	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
+	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
 	set_terminate(termFunc);
 
 	g_hInstance = hInstance;
 
-	_chdir(WORKING_DIRECTORY);
+	_tchdir(WORKING_DIRECTORY);
 
-	freopen("log.txt", "w", stderr); // Destination for std::cerr.
+	_tfreopen(_T("log.txt"), _T("w"), stderr); // Destination for std::cerr.
 
-	const std::string fileName = getMainFileName(lpCmdLine);
-	_chdir(WORKING_DIRECTORY);
+	const STRING fileName = getMainFileName(lpCmdLine);
+	_tchdir(WORKING_DIRECTORY);
 
 	if (fileName.empty()) return EXIT_SUCCESS;
 

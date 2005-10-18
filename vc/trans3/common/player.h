@@ -11,6 +11,7 @@
 /*
  * Inclusions.
  */
+#include "../../tkCommon/strings.h"
 #include "sprite.h"
 
 /*
@@ -26,16 +27,16 @@
  */
 typedef struct tagPlayer
 {
-	std::string charname;						// Character name.
-	std::string experienceVar;					// Experience variable.
-	std::string defenseVar;						// DP variable.
-	std::string fightVar;						// FP variable.
-	std::string healthVar;						// HP variable.
-	std::string maxHealthVar;					// Max HP var.
-	std::string nameVar;						// Character name variable.
-	std::string smVar;							// Special Move power variable.
-	std::string smMaxVar;						// Special Move maximum variable.
-	std::string leVar;							// Level variable.
+	STRING charname;						// Character name.
+	STRING experienceVar;					// Experience variable.
+	STRING defenseVar;						// DP variable.
+	STRING fightVar;						// FP variable.
+	STRING healthVar;						// HP variable.
+	STRING maxHealthVar;					// Max HP var.
+	STRING nameVar;						// Character name variable.
+	STRING smVar;							// Special Move power variable.
+	STRING smMaxVar;						// Special Move maximum variable.
+	STRING leVar;							// Level variable.
 	int experience;								// Initial Experience Level.
 	int health;									// Initial health level.
 	int maxHealth;								// Initial maximum health level.
@@ -44,15 +45,15 @@ typedef struct tagPlayer
 	int sm;										// Initial SM power.
 	int smMax;									// Initial Max SM power.
 	int level;									// Initial level.
-	std::string profilePic;						// Profile picture.
-	std::vector<std::string> smlist;			// Special Move list (200 in total!).
+	STRING profilePic;						// Profile picture.
+	std::vector<STRING> smlist;			// Special Move list (200 in total!).
 	std::vector<int> spcMinExp;					// Minimum experience for each move.
 	std::vector<int> spcMinLevel;				// Min level for each move.
-	std::vector<std::string> spcVar;			// Conditional variable for each special move.
-	std::vector<std::string> spcEquals;			// Condition of variable for each special move.
-	std::string specialMoveName;				// Name of special move.
+	std::vector<STRING> spcVar;			// Conditional variable for each special move.
+	std::vector<STRING> spcEquals;			// Condition of variable for each special move.
+	STRING specialMoveName;				// Name of special move.
 	char smYN;									// Does he do special moves? 0-Y, 1-N.
-	std::vector<std::string> accessoryName;		// Names of 10 accessories.
+	std::vector<STRING> accessoryName;		// Names of 10 accessories.
 	std::vector<char> armorType;				// Is ARMORTYPE used (0-N,1-Y).  Armour types are: 1-head,2-neck,3-lh,4-rh,5-body,6-legs.
 	int levelType;								// Initial Level progression.
 	short experienceIncrease;					// Experience increase Factor.
@@ -61,14 +62,14 @@ typedef struct tagPlayer
 	short levelDp;								// DP incrase by % when level increaes.
 	short levelFp;								// FP incrase by % when level increaes.
 	short levelSm;								// SMP incrase by % when level increaes.
-	std::string charLevelUpRPGCode;				// Rpgcode program to run on level up.
+	STRING charLevelUpRPGCode;				// Rpgcode program to run on level up.
 	char charLevelUpType;						// Level up type 0- exponential, 1-linear.
 	char charSizeType;							// Size type: 0- 32x32, 1 - 64x32.
 	short nextLevel;							// Exp value at which level up occurs.
 	short levelProgression;						// Exp required until level up.
 	std::vector<double> levelStarts;			// Exp values at which all levels start.
 
-	short open(const std::string fileName, SPRITE_ATTR &spriteAttr);
+	short open(const STRING fileName, SPRITE_ATTR &spriteAttr);
 } PLAYER;
 
 #endif

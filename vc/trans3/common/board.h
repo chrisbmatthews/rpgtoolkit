@@ -11,6 +11,7 @@
 struct tagBoard;
 typedef struct tagBoard BOARD, *LPBOARD;
 
+#include "../../tkCommon/strings.h"
 #include "../movement/CVector/CVector.h"
 #include "../movement/movement.h"
 #include <string>
@@ -30,17 +31,17 @@ typedef struct tagBoard BOARD, *LPBOARD;
 
 typedef struct tagBoardProgram
 {
-	std::string fileName;				// Board program filename.
+	STRING fileName;				// Board program filename.
 //	short x;							// Co-ordinates.
 //	short y;							
 	short layer;						// Layer.
-	std::string graphic;				// Associated graphic.
+	STRING graphic;				// Associated graphic.
 	short activate;						// PRG_ACTIVE - always active.
 										// PRG_CONDITIONAL - conditional activation.
-	std::string initialVar;				// Activation variable.
-	std::string finalVar;				// Activation variable at end of prg.
-	std::string initialValue;			// Initial value of activation variable.
-	std::string finalValue;				// Value of variable after program runs.
+	STRING initialVar;				// Activation variable.
+	STRING finalVar;				// Activation variable at end of prg.
+	STRING initialValue;			// Initial value of activation variable.
+	STRING finalValue;				// Value of variable after program runs.
 	short activationType;				// Activation type: (flags)
 										// PRG_STEP - walk in vector.
 										// PRG_KEYPRESS - hit general activation key inside vector.
@@ -118,7 +119,7 @@ typedef enum tagBoardImageEnum
 typedef struct tagBoardImage
 {
 	BI_ENUM type;						// Drawing option.
-	std::string file;
+	STRING file;
 	int layer;
 	CCanvas *pCnv;
 	RECT r;								// Board pixel co-ordinates.
@@ -127,7 +128,7 @@ typedef struct tagBoardImage
 
 	tagBoardImage():
 		type(BI_NORMAL), 
-		file(std::string()), 
+		file(STRING()), 
 		layer(1), 
 		pCnv(NULL),
 		transpColor(TRANSP_COLOR)
@@ -154,7 +155,7 @@ typedef struct tagBoard
 	short bSizeX;									// Board size x.
 	short bSizeY;									// Board size y.
 	short bSizeL;									// Board size layer.	
-	std::vector<std::string> tileIndex;				// Lookup table for tiles.
+	std::vector<STRING> tileIndex;				// Lookup table for tiles.
 	typedef std::vector<short> VECTOR_SHORT;
 	typedef std::vector<VECTOR_SHORT> VECTOR_SHORT2D;
 	typedef std::vector<VECTOR_SHORT2D> VECTOR_SHORT3D;
@@ -165,28 +166,28 @@ typedef struct tagBoard
 	typedef std::vector<char> VECTOR_CHAR;
 	typedef std::vector<VECTOR_CHAR> VECTOR_CHAR2D;
 	std::vector<VECTOR_CHAR2D> tiletype;			// Tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8.
-	std::string brdBack;							// Board background img (parallax layer).
-	std::string brdFore;							// Board foreground image (parallax).
-	std::string borderBack;							// Border background img.
+	STRING brdBack;							// Board background img (parallax layer).
+	STRING brdFore;							// Board foreground image (parallax).
+	STRING borderBack;							// Border background img.
 	int brdColor;									// Board color.
 	int borderColor;								// Border color.
 	short ambientEffect;							// BoardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery.
-	std::vector<std::string> dirLink;				// Direction links 1- N, 2- S, 3- E, 4-W.
+	std::vector<STRING> dirLink;				// Direction links 1- N, 2- S, 3- E, 4-W.
 	short boardSkill;								// Board skill level.
-	std::string boardBackground;					// Fighting background.
+	STRING boardBackground;					// Fighting background.
 	short fightingYN;								// Fighting on boardYN (1- yes, 0- no).
 	short boardDayNight;							// Board is affected by day/night? 0=no, 1=yes.
 	short boardNightBattleOverride;					// Use custom battle options at night? 0=no, 1=yes.
 	short boardSkillNight;							// Board skill level at night.
-	std::string boardBackgroundNight;				// Fighting background at night.
+	STRING boardBackgroundNight;				// Fighting background at night.
 	std::vector<short> brdConst;					// Board Constants (1-10).
-	std::string boardMusic;							// Background music file.
-	std::vector<std::string> boardTitle;			// Board title (layer).
+	STRING boardMusic;							// Background music file.
+	std::vector<STRING> boardTitle;			// Board title (layer).
 
 	std::vector<LPBRD_PROGRAM> programs;
 
-	std::string enterPrg;							// Program to run on entrance.
-	std::string bgPrg;								// Background program.
+	STRING enterPrg;							// Program to run on entrance.
+	STRING bgPrg;								// Background program.
 
 	// Delano:	These should be in the player's file.
 	// Colin:	I prefer the main file. You can only
@@ -205,7 +206,7 @@ typedef struct tagBoard
 	std::vector<BOARD_TILEANIM> animatedTile;		// Animated tiles associated with this board.
 	std::vector<int> anmTileLUTIndices;				// Indices into LUT of animated tiles.
 
-	std::string strFilename;						// Filename of the board.
+	STRING strFilename;						// Filename of the board.
 	std::vector<BRD_VECTOR> vectors;				// Vectors.
 	std::vector<CItem *> items;						// Items.
 
@@ -217,15 +218,15 @@ typedef struct tagBoard
 	LPBRD_IMAGE bkgImage;
 	std::vector<LPBRD_IMAGE> images;
 
-	bool open(const std::string fileName);
+	bool open(const STRING fileName);
 	void vectorize(const unsigned int layer);
-	void createVectorCanvases(void);
+	void createVectorCanvases();
 	void freeVectors(const int layer = 0);
-	void freePrograms(void);
-	void freeItems(void);
-	void freeImages(void);
-	void freeThreads(void);
-	void addAnimTile(const std::string fileName, const int x, const int y, const int z);
+	void freePrograms();
+	void freeItems();
+	void freeImages();
+	void freeThreads();
+	void addAnimTile(const STRING fileName, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
 
 	void render(CCanvas *cnv,
@@ -237,15 +238,15 @@ typedef struct tagBoard
 
 	void renderBackground(CCanvas *cnv, RECT bounds);
 
-	bool isIsometric(void) const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
+	bool isIsometric() const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	// Board dimensions in pixels.
-	inline int pxWidth (void);
-	inline int pxHeight(void);
+	inline int pxWidth ();
+	inline int pxHeight();
 
 	const BRD_VECTOR *getVectorFromTile(const int x, const int y, const int z) const;
 
-	tagBoard(void): coordType(TILE_NORMAL), bkgImage(NULL) { }
-	~tagBoard(void) { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); }
+	tagBoard(): coordType(TILE_NORMAL), bkgImage(NULL) { }
+	~tagBoard() { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); }
 
 private:
 	tagBoard &operator=(tagBoard &rhs);

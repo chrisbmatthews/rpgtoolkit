@@ -7,7 +7,7 @@
 #ifndef _IFIGHTER_H_
 #define _IFIGHTER_H_
 
-#include <string>
+#include "../../tkCommon/strings.h"
 
 // An entity capable of fighting.
 /////////////////////////////////////////////////
@@ -32,10 +32,10 @@ public:
 	virtual void maxSmp(const int val) = 0;
 	virtual int maxSmp(void) = 0;
 	//
-	virtual void name(const std::string str) = 0;
-	virtual std::string name(void) = 0;
+	virtual void name(const STRING str) = 0;
+	virtual STRING name(void) = 0;
 	//
-	virtual std::string getStanceAnimation(const std::string anim) = 0;
+	virtual STRING getStanceAnimation(const STRING anim) = 0;
 };
 
 #endif

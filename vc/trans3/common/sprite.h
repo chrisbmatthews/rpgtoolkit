@@ -16,7 +16,7 @@
  */
 #include <vector>
 #include <map>
-#include <string>
+#include "../../tkCommon/strings.h"
 #include "../movement/CVector/CVector.h"
 
 /*
@@ -109,17 +109,17 @@ const int BASE_POINT_ISO_Y = 0;
 #define GFX_IDLE 1
 
 // Custom map keys, mirrored in the battle plugin.
-const std::string GFX_FIGHT		= "FIGHT";
-const std::string GFX_DEFEND	= "DEFEND";
-const std::string GFX_SPC		= "SPECIAL MOVE";
-const std::string GFX_DIE		= "DIE";
-const std::string GFX_REST		= "REST";
+const STRING GFX_FIGHT		= _T("FIGHT");
+const STRING GFX_DEFEND		= _T("DEFEND");
+const STRING GFX_SPC		= _T("SPECIAL MOVE");
+const STRING GFX_DIE		= _T("DIE");
+const STRING GFX_REST		= _T("REST");
 
 /*
  * Common attributes of players and items:
  * animation sets, speed variables.
  */
-typedef std::map<MV_ENUM, std::string> GFX_MAP;
+typedef std::map<MV_ENUM, STRING> GFX_MAP;
 
 typedef struct tagSpriteAttr
 {
@@ -127,7 +127,7 @@ typedef struct tagSpriteAttr
 	std::vector<GFX_MAP> mapGfx;	
 
 	// Map of custom animations, indexed by string handles.
-	std::map<std::string, std::string> mapCustomGfx;
+	std::map<STRING, STRING> mapCustomGfx;
 
 	double idleTime;							// Seconds to wait prior to switching to idle graphics.
 	double speed;								// Seconds between each frame increase.
@@ -141,7 +141,7 @@ typedef struct tagSpriteAttr
 		vBase () {};
 
 	// Get the animation filename corresponding to stance.
-	std::string getStanceAnm(std::string stance);
+	STRING getStanceAnm(STRING stance);
 
 	// Fill out diagonal movement entries with axial entries.
 	void completeStances(GFX_MAP &gfx);
@@ -165,24 +165,24 @@ typedef struct tagSpriteAttr
 
 typedef struct tagBoardSprite
 {
-	std::string fileName;				// Filename of item.
+	STRING fileName;				// Filename of item.
 //	short x;
 //	short y;
 //	short layer;
 
 	short activate;						// SPR_ACTIVE - always active.
 										// SPR_CONDITIONAL - conditional activation.
-	std::string initialVar;				// Activation variable.
-	std::string finalVar;				// Activation variable at end of sprite prg.
-	std::string initialValue;			// Initial value of activation variable.
-	std::string finalValue;				// Value of variable after sprite prg runs.
+	STRING initialVar;				// Activation variable.
+	STRING finalVar;				// Activation variable at end of sprite prg.
+	STRING initialValue;			// Initial value of activation variable.
+	STRING finalValue;				// Value of variable after sprite prg runs.
 	short activationType;				// Activation type: (flags)
 										// SPR_STEP - walk in vector.
 										// SPR_KEYPRESS - hit general activation key inside vector.
 										// SPR_REPEAT - Whether sprite must leave vector to before
 										//				program can retrigger or not.
-	std::string prgActivate;			// Program to run when sprite is activated.
-	std::string prgMultitask;			// Multitask program for sprite.
+	STRING prgActivate;			// Program to run when sprite is activated.
+	STRING prgMultitask;			// Multitask program for sprite.
 
 	// The item will have its own vectors.
 	tagBoardSprite(void): 

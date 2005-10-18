@@ -11,7 +11,7 @@
 /*
  * Inclusions.
  */
-#include <string>
+#include "../../tkCommon/strings.h"
 #include <vector>
 
 /*
@@ -19,13 +19,13 @@
  */
 typedef struct tagBackground
 {
-	std::string image;			// Image to use on background.
-	std::string bkgMusic;		// Music to play.
-	std::string bkgSelWav;		// Wav to play when moving on the menu.
-	std::string bkgChooseWav;	// Wav to play when player chooses from menu.
-	std::string bkgReadyWav;	// Wav to play when player is ready.
-	std::string bkgCantDoWav;	// Wav to play when you can't do something.
-	void open(const std::string fileName);
+	STRING image;			// Image to use on background.
+	STRING bkgMusic;		// Music to play.
+	STRING bkgSelWav;		// Wav to play when moving on the menu.
+	STRING bkgChooseWav;	// Wav to play when player chooses from menu.
+	STRING bkgReadyWav;		// Wav to play when player is ready.
+	STRING bkgCantDoWav;	// Wav to play when you can't do something.
+	void open(const STRING fileName);
 } BACKGROUND;
 
 #endif

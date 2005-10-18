@@ -29,16 +29,16 @@ typedef struct tagObjPosition
  *
  * fileName (in) - file to open
  */
-bool tagBoard::open(const std::string fileName)
+bool tagBoard::open(const STRING fileName)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	extern LPBOARD g_pBoard;
 
 	CFile file(fileName);
 
 	if (!file.isOpen())
 	{
-		messageBox("File not found: " + fileName);
+		messageBox(_T("File not found: ") + fileName);
 		return false;
 	}
 
@@ -50,16 +50,16 @@ bool tagBoard::open(const std::string fileName)
 	file.seek(0);
 	if (cUnused)
 	{
-		messageBox("Please save " + fileName + " in the editor.");
+		messageBox(_T("Please save ") + fileName + _T(" in the editor."));
 		return false;
 	}
 
-	std::string fileHeader;
+	STRING fileHeader;
 	file >> fileHeader;
 
-	if (fileHeader != "RPGTLKIT BOARD")
+	if (fileHeader != _T("RPGTLKIT BOARD"))
 	{
-		messageBox("Please save " + fileName + " in the editor.");
+		messageBox(_T("Please save ") + fileName + _T(" in the editor."));
 		return false;
 	}
 
@@ -69,12 +69,12 @@ bool tagBoard::open(const std::string fileName)
 
 	if (minorVer < 2)
 	{
-		messageBox("Please save " + fileName + " in the editor.");
+		messageBox(_T("Please save ") + fileName + _T(" in the editor."));
 		return false;
 	}
 
 	int regYN;
-	std::string regCode;
+	STRING regCode;
 	file >> regYN;
 	file >> regCode;
 
@@ -96,13 +96,13 @@ bool tagBoard::open(const std::string fileName)
 	hasAnmTiles = false;
 	for (i = 0; i <= lutSize; i++)
 	{
-		std::string entry;
+		STRING entry;
 		file >> entry;
 		tileIndex.push_back(entry);
 		if (!entry.empty())
 		{
-			const std::string ext = getExtension(entry);
-			if (_stricmp(ext.c_str(), "TAN") == 0)
+			const STRING ext = getExtension(entry);
+			if (_stricmp(ext.c_str(), _T("TAN")) == 0)
 			{
 				anmTileLUTIndices.push_back(i);
 				hasAnmTiles = true;
@@ -122,7 +122,7 @@ bool tagBoard::open(const std::string fileName)
 
 				if (test < 0)
 				{
-					// "Compression": stream of identical tiles 'test' long. 
+					// _T("Compression"): stream of identical tiles _T('test') long. 
 					test = -test;
 					short bb, rr, gg, bl;
 					char tt;
@@ -204,7 +204,7 @@ lutEnd:
 	dirLink.clear();
 	for (i = 1; i <= 4; i++)
 	{
-		std::string link;
+		STRING link;
 		file >> link;
 		dirLink.push_back(link);
 	}
@@ -230,7 +230,7 @@ lutEnd:
 	boardTitle.clear();
 	for (i = 0; i <= 8; i++)
 	{
-		std::string title;
+		STRING title;
 		file >> title;
 		boardTitle.push_back(title);
 	}
@@ -268,7 +268,7 @@ lutEnd:
 			// Add the program to the list.
 			programs.push_back(prg);
 
-			// Can't form vector here because we don't know
+			// Can_T('t form vector here because we don')t know
 			// if the board is isometric yet.
 			prgPos.push_back(pos);
 		}
@@ -335,7 +335,7 @@ lutEnd:
 		file >> tCount;
 		for (i = 0; i <= tCount; i++)
 		{
-			std::string thread;
+			STRING thread;
 			file >> thread;
 			if (this == g_pBoard)
 			{
@@ -344,7 +344,7 @@ lutEnd:
 				{
 					CThread *p = CThread::create(thread);
 					char str[255]; itoa(i, str, 10);
-					LPSTACK_FRAME var = CProgram::getGlobal(std::string("threads[") + str + "]");
+					LPSTACK_FRAME var = CProgram::getGlobal(STRING(_T("threads[")) + str + _T("]"));
 					var->udt = UDT_NUM;
 					var->num = double(int(p));
 					threads.push_back(p);
@@ -462,7 +462,7 @@ void tagBoard::vectorize(const unsigned int layer)
 		double x = bSizeX, y = bSizeY;
 		isoCoordTransform(x, y, x, y);
 
-		// New iso board is effectively "square", but with many empty entries.
+		// New iso board is effectively _T("square"), but with many empty entries.
 		width = height = x;
 	}
 
@@ -498,7 +498,7 @@ void tagBoard::vectorize(const unsigned int layer)
 	{
 		/*
 		 * Working southeast from the top-left corner, locate
-		 * the first tile that is neither "normal" nor included
+		 * the first tile that is neither _T("normal") nor included
 		 * in any vector.
 		 */
 		unsigned int x = 0, y, i, j;
@@ -589,7 +589,7 @@ void tagBoard::vectorize(const unsigned int layer)
 /*
  * Create under tile canvases from a board's vectors.
  */
-void tagBoard::createVectorCanvases(void)
+void tagBoard::createVectorCanvases()
 {
 	// After vectorize() on old formats.
 	
@@ -681,20 +681,20 @@ void tagBoardVector::createCanvas(BOARD &board)
 	delete cnv;
 }
 
-#include "../images/FreeImage.h"
+#include _T("../images/FreeImage.h")
 
 /*
  * Load images attached to layers into separate canvases.
  */
 void tagBoardImage::createCanvas(BOARD &board)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	extern RECT g_screen;
 
 	const int resX = g_screen.right - g_screen.left, resY = g_screen.bottom - g_screen.top;
 
 	// Load the image.
-	const std::string path = g_projectPath + BMP_PATH + file;
+	const STRING path = g_projectPath + BMP_PATH + file;
 	FIBITMAP *bmp = FreeImage_Load (FreeImage_GetFileType(path.c_str(), 16), path.c_str());
 	if (bmp)
 	{
@@ -828,7 +828,7 @@ void tagBoard::render(CCanvas *cnv,
 
 				if (board[x][y][i])
 				{
-					const std::string strTile = tileIndex[board[x][y][i]];
+					const STRING strTile = tileIndex[board[x][y][i]];
 					if (!strTile.empty())
 					{
 						// Tile exists at this location.
@@ -942,14 +942,14 @@ void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 
 }
 
-inline int tagBoard::pxWidth(void) 
+inline int tagBoard::pxWidth() 
 {
 	if (coordType & ISO_STACKED) return bSizeX * 64 - 32;
 	if (coordType & ISO_ROTATED) return 0;
 	return bSizeX * 32;			// TILE_NORMAL.
 }
 
-inline int tagBoard::pxHeight(void) 
+inline int tagBoard::pxHeight() 
 { 
 	if (coordType & ISO_STACKED) return bSizeY * 16 - 16;
 	if (coordType & ISO_ROTATED) return 0;
@@ -994,7 +994,7 @@ void tagBoard::freeVectors(const int layer)
 /*
  * Free programs.
  */
-void tagBoard::freePrograms(void)
+void tagBoard::freePrograms()
 {
 	for (std::vector<LPBRD_PROGRAM>::iterator i = programs.begin(); i != programs.end(); ++i)
 	{
@@ -1006,7 +1006,7 @@ void tagBoard::freePrograms(void)
 /*
  * Free items.
  */
-void tagBoard::freeItems(void)
+void tagBoard::freeItems()
 {
 	for (std::vector<CItem *>::iterator i = items.begin(); i != items.end(); ++i)
 	{
@@ -1018,7 +1018,7 @@ void tagBoard::freeItems(void)
 /*
  * Free images.
  */
-void tagBoard::freeImages(void)
+void tagBoard::freeImages()
 {
 	delete bkgImage;
 	for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
@@ -1031,7 +1031,7 @@ void tagBoard::freeImages(void)
 /*
  * Free threads.
  */
-void tagBoard::freeThreads(void)
+void tagBoard::freeThreads()
 {
 	for (std::vector<CThread *>::iterator i = threads.begin(); i != threads.end(); ++i)
 	{
@@ -1048,13 +1048,13 @@ void tagBoard::freeThreads(void)
  * y (in) - y position on board
  * z (in) - z position on board
  */
-void tagBoard::addAnimTile(const std::string fileName, const int x, const int y, const int z)
+void tagBoard::addAnimTile(const STRING fileName, const int x, const int y, const int z)
 {
-	static std::string lastAnimFile;
+	static STRING lastAnimFile;
 	static TILEANIM lastAnim;
 	if (_stricmp(lastAnimFile.c_str(), fileName.c_str()) != 0)
 	{
-		extern std::string g_projectPath;
+		extern STRING g_projectPath;
 		lastAnim.open(g_projectPath + TILE_PATH + fileName);
 		lastAnimFile = fileName;
 	}
@@ -1096,7 +1096,7 @@ void tagBoard::setSize(const int width, const int height, const int depth)
 		VECTOR_CHAR row;
 		VECTOR_CHAR2D face;
 		unsigned int i;
-		for (i = 0; i <= bSizeL; i++) row.push_back('\0');
+		for (i = 0; i <= bSizeL; i++) row.push_back(_T('\0'));
 		for (i = 0; i <= bSizeY; i++) face.push_back(row);
 		tiletype.clear();
 		for (i = 0; i <= bSizeX; i++) tiletype.push_back(face);

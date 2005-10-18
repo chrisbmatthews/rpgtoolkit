@@ -11,9 +11,9 @@
 #include <windows.h>
 typedef DWORD *DWORD_PTR;
 #include <dmusici.h>
-#include <string>
 #include <set>
 #include "audiere.h"
+#include "../../tkCommon/strings.h"
 
 class CAudioSegment
 {
@@ -21,14 +21,14 @@ public:
 	static void initLoader();
 	static void freeLoader();
 	CAudioSegment() { init(); }
-	CAudioSegment(const std::string file);
+	CAudioSegment(const STRING file);
 	~CAudioSegment();
-	bool open(const std::string file);
+	bool open(const STRING file);
 	void play(const bool repeat);
-	static void playSoundEffect(const std::string file);
+	static void playSoundEffect(const STRING file);
 	void stop();
 
-	std::string getPlayingFile() const { return m_file; }
+	STRING getPlayingFile() const { return m_file; }
 
 protected:
 	CAudioSegment(const CAudioSegment &rhs);			// No implementation.
@@ -43,7 +43,7 @@ protected:
 	audiere::AudioDevicePtr m_device;
 	audiere::OutputStreamPtr m_outputStream;
 	bool m_audiere;
-	std::string m_file;
+	STRING m_file;
 	bool m_playing;
 };
 

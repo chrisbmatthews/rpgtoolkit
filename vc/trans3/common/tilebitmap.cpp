@@ -19,17 +19,17 @@
  * fileName (in) - file to open
  * bool (out) - open success
  */
-bool tagTileBitmap::open(const std::string fileName)
+bool tagTileBitmap::open(const STRING fileName)
 {
 
 	CFile file(fileName);
 
-	std::string fileHeader;
+	STRING fileHeader;
 	file >> fileHeader;
 
-	if (fileHeader != "TK3 TILEBITMAP")
+	if (fileHeader != _T("TK3 TILEBITMAP"))
 	{
-		messageBox("Invalid tile bitmap " + fileName);
+		messageBox(_T("Invalid tile bitmap ") + fileName);
 		return false;
 	}
 
@@ -59,12 +59,12 @@ bool tagTileBitmap::open(const std::string fileName)
  *
  * fileName (in) - file to save to
  */
-void tagTileBitmap::save(const std::string fileName) const
+void tagTileBitmap::save(const STRING fileName) const
 {
 
 	CFile file(fileName, OF_CREATE | OF_WRITE);
 
-	file << "TK3 TILEBITMAP";
+	file << _T("TK3 TILEBITMAP");
 	file << short(3);
 	file << short(0);
 
@@ -113,7 +113,7 @@ void tagTileBitmap::resize(const int width, const int height)
 		VECTOR_SHORT &d = blue.back();
 		for (unsigned int j = 0; j <= height; j++)
 		{
-			a.push_back("");
+			a.push_back(_T(""));
 			b.push_back(0);
 			c.push_back(0);
 			d.push_back(0);

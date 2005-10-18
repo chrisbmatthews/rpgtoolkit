@@ -7,6 +7,6 @@
 #ifndef _WIN_MAIN_H_
 #define _WIN_MAIN_H_
 
-INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPSTR lpCmdLine, CONST INT nCmdShow);
+INT mainEntry(CONST HINSTANCE hInstance, CONST HINSTANCE /*hPrevInstance*/, CONST LPTSTR lpCmdLine, CONST INT nCmdShow);
 
 #endif

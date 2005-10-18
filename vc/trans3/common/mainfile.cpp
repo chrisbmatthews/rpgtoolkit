@@ -11,14 +11,13 @@
 #include "mainfile.h"
 #include "CFile.h"
 #include "mbox.h"
-#include <sstream>
 
 /*
  * Open a main file.
  *
  * fileName (in) - file to open
  */
-bool tagMainFile::open(const std::string fileName)
+bool tagMainFile::open(const STRING fileName)
 {
 
 	CFile file(fileName);
@@ -26,15 +25,15 @@ bool tagMainFile::open(const std::string fileName)
 	if (!file.isOpen())
 	{
 		// FileExists check.
-		messageBox("File not found: " + fileName);
+		messageBox(_T("File not found: ") + fileName);
 		return false;
 	}
 
-	std::string fileHeader;
+	STRING fileHeader;
 	file >> fileHeader;
 	if (fileHeader != "RPGTLKIT MAIN")
 	{
-		messageBox("Unrecognised File Format! " + fileName);
+		messageBox(_T("Unrecognised File Format! ") + fileName);
 		return false;
 	}
 
@@ -43,11 +42,11 @@ bool tagMainFile::open(const std::string fileName)
 	file >> minorVer;
 
 	int iUnused;
-	std::string strUnused;
+	STRING strUnused;
 	file >> iUnused;
 	file >> strUnused;
 
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 	file >> g_projectPath;
 
 	file >> gameTitle;
@@ -62,17 +61,19 @@ bool tagMainFile::open(const std::string fileName)
 
 	file >> mainDisableProtectReg;
 
-	file >> strUnused;
-	// ^ language file
+	file >> strUnused; // Language file.
 
 	file >> startupPrg;
 	file >> initBoard;
 	file >> initChar;
 
 	file >> runTime;
-	file >> runKey;
-	file >> menuKey;
-	file >> key;
+
+	// Get these into scan codes.
+	HKL hkl = GetKeyboardLayout(0);
+	file >> runKey; runKey = MapVirtualKeyEx(runKey, 0, hkl);
+	file >> menuKey; menuKey = MapVirtualKeyEx(menuKey, 0, hkl);
+	file >> key; key = MapVirtualKeyEx(key, 0, hkl);
 
 	short len;
 	file >> len;
@@ -82,10 +83,13 @@ bool tagMainFile::open(const std::string fileName)
 	for (i = 0; i <= len; i++)
 	{
 		short sUnused;
-		file >> sUnused;
-		runTimeKeys.push_back(sUnused);
+		file >> sUnused; sUnused = MapVirtualKeyEx(sUnused, 0, hkl);
 		file >> strUnused;
-		runTimePrg.push_back(strUnused);
+		if (!strUnused.empty())
+		{
+			runTimeKeys.push_back(sUnused);
+			runTimePrg.push_back(strUnused);
+		}
 	}
 
 	if (minorVer >= 3)
@@ -96,8 +100,8 @@ bool tagMainFile::open(const std::string fileName)
 	else
 	{
 		file >> iUnused;
-		menuPlugin = "tk3menu.dll";
-		fightPlugin = "tk3fight.dll";
+		menuPlugin = _T("tk3menu.dll");
+		fightPlugin = _T("tk3fight.dll");
 	}
 
 	if (minorVer <= 2)
@@ -146,8 +150,8 @@ bool tagMainFile::open(const std::string fileName)
 			file >> sEnabled;
 			if (sEnabled)
 			{
-				std::stringstream ss;
-				ss << "tkplug" << i << ".dll";
+				STRINGSTREAM ss;
+				ss << _T("tkplug") << i << _T(".dll");
 				plugins.push_back(ss.str());
 			}
 		}
@@ -156,7 +160,7 @@ bool tagMainFile::open(const std::string fileName)
 	{
 		for (i = 0; i <= len; i++)
 		{
-			std::string plugin;
+			STRING plugin;
 			file >> plugin;
 			plugins.push_back(plugin);
 		}
@@ -197,11 +201,11 @@ bool tagMainFile::open(const std::string fileName)
 		{
 			char cEnabled;
 			file >> cEnabled;
-			mouseCursor = cEnabled ? "TK DEFAULT" : "";
+			mouseCursor = cEnabled ? _T("TK DEFAULT") : _T("");
 		}
 		else
 		{
-			mouseCursor = "TK DEFAULT";
+			mouseCursor = _T("TK DEFAULT");
 		}
 		hotSpotX = 0;
 		hotSpotY = 0;
@@ -214,7 +218,7 @@ bool tagMainFile::open(const std::string fileName)
 		file >> transpColor;
 	}
 
-	if (mouseCursor == "TK DEFAULT")
+	if (mouseCursor == _T("TK DEFAULT"))
 	{
 		transpColor = RGB(255, 0, 0);
 	}

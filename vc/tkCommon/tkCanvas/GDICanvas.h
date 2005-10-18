@@ -23,7 +23,7 @@
 #define WIN32_LEAN_AND_MEAN			// Flag lean version of Windows
 #include <windows.h>				// The Windows API
 #include <ddraw.h>					// For DirectDraw
-#include <string>
+#include "../strings.h"
 
 //--------------------------------------------------------------------------
 // Definitions
@@ -363,8 +363,8 @@ public:
 	BOOL FAST_CALL DrawText(
 		CONST INT x,
 		CONST INT y,
-		CONST std::string strText,
-		CONST std::string strTypeFace,
+		CONST STRING strText,
+		CONST STRING strTypeFace,
 		CONST INT size,
 		CONST LONG clr,
 		CONST BOOL bold = FALSE,

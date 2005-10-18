@@ -803,11 +803,12 @@ static int      yystacksize;
 #line 620 "yacc.txt"
 
 #include "lex.yy.c"
+#include "../../tkCommon/strings.h"
 LPMACHINE_UNITS g_yyOldUnits = NULL;
-std::deque<std::map<std::string, int> > g_methods;
-std::map<std::string, tagClass>::value_type *g_pClass = NULL;
+std::deque<std::map<STD_NATURAL_STRING, int> > g_methods;
+std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass = NULL;
 CLASS_VISIBILITY g_vis = CV_PRIVATE;
-#line 811 "y.tab.c"
+#line 812 "y.tab.c"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack(void)
 {
@@ -995,7 +996,7 @@ case 4:
 			MACHINE_UNIT mu;
 			if (g_methods.size() && g_methods.back().count(yyvsp[-1].getLit()))
 			{
-				(mu.lit = " ") += char(g_methods.back()[yyvsp[-1].getLit()] + 1);
+				(mu.lit = _T(" ")) += char(g_methods.back()[yyvsp[-1].getLit()] + 1);
 			}
 			else
 			{
@@ -1059,7 +1060,7 @@ case 19:
 break;
 case 21:
 #line 180 "yacc.txt"
-{ CProgram::m_inclusions.push_back(yyvsp[-2].getLit() + ".prg"); yyval = yyvsp[0]; }
+{ CProgram::m_inclusions.push_back(yyvsp[-2].getLit() + _T(".prg")); yyval = yyvsp[0]; }
 break;
 case 22:
 #line 185 "yacc.txt"
@@ -1330,31 +1331,31 @@ case 106:
 break;
 case 108:
 #line 424 "yacc.txt"
-{ yyval = yyvsp[-3].getLit() + "::" + yyvsp[0].getLit(); }
+{ yyval = yyvsp[-3].getLit() + _T("::") + yyvsp[0].getLit(); }
 break;
 case 110:
 #line 430 "yacc.txt"
-{ g_methods.push_back(std::map<std::string, int>()); }
+{ g_methods.push_back(std::map<STD_NATURAL_STRING, int>()); }
 break;
 case 111:
 #line 432 "yacc.txt"
 {
-			const std::string name = (g_pClass ? (g_pClass->first + "::") : "") + yyvsp[-3].getLit();
+			const STD_NATURAL_STRING name = (g_pClass ? (g_pClass->first + _T("::")) : _T("")) + yyvsp[-3].getLit();
 			if (NAMED_METHOD::locate(name, g_methods.back().size(), false))
 			{
 				char str[255];
 				itoa(g_methods.back().size(), str, 10);
 				char line[255];
 				itoa(g_lines + 1, line, 10);
-				CProgram::debugger(std::string("Line ") + line + ": Method \"" + name + "\" with a parameter count of " + str + " already exists.");
+				CProgram::debugger(STD_NATURAL_STRING(_T("Line ")) + line + _T(": Method \"") + name + _T("\" with a parameter count of ") + str + _T(" already exists."));
 			}
 			else
 			{
-				const std::string::size_type pos = name.find("::");
-				if (!g_pClass && (pos != std::string::npos))
+				const STD_NATURAL_STRING::size_type pos = name.find(_T("::"));
+				if (!g_pClass && (pos != STD_NATURAL_STRING::npos))
 				{
-					const std::string clsName = name.substr(0, pos);
-					const std::string method = name.substr(pos + 2);
+					const STD_NATURAL_STRING clsName = name.substr(0, pos);
+					const STD_NATURAL_STRING method = name.substr(pos + 2);
 					LPNAMED_METHOD p = NAMED_METHOD::locate(name, g_methods.back().size(), true);
 					if (p)
 					{
@@ -1367,7 +1368,7 @@ case 111:
 						itoa(g_methods.back().size(), str, 10);
 						char line[255];
 						itoa(g_lines + 1, line, 10);
-						CProgram::debugger(std::string("Line ") + line + ": Class \"" + clsName + "\" has no method \"" + method + "\" with a parameter count of " + str + ".");
+						CProgram::debugger(STD_NATURAL_STRING(_T("Line ")) + line + _T(": Class \"") + clsName + _T("\" has no method \"") + method + _T("\" with a parameter count of ") + str + _T("."));
 					}
 				}
 				else
@@ -1445,7 +1446,7 @@ break;
 case 129:
 #line 550 "yacc.txt"
 {
-			g_pClass = &*CProgram::m_pClasses->insert(std::map<std::string, tagClass>::value_type(yyvsp[0].getLit(), tagClass())).first;
+			g_pClass = &*CProgram::m_pClasses->insert(std::map<STD_NATURAL_STRING, tagClass>::value_type(yyvsp[0].getLit(), tagClass())).first;
 			_MACHINE_UNIT(CProgram::skipClass, 0);
 			CProgram::m_pyyUnits->back().num = g_vis;
 		}
@@ -1455,7 +1456,7 @@ case 131:
 {
 			if (g_pClass)
 			{
-				g_pClass->second.members.push_back(std::pair<std::string, CLASS_VISIBILITY>(yyvsp[-1].getLit(), g_vis));
+				g_pClass->second.members.push_back(std::pair<STD_NATURAL_STRING, CLASS_VISIBILITY>(yyvsp[-1].getLit(), g_vis));
 			}
 		}
 break;
@@ -1485,7 +1486,7 @@ case 142:
 			CProgram::m_pyyUnits->push_back(mu);
 		}
 break;
-#line 1489 "y.tab.c"
+#line 1490 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;

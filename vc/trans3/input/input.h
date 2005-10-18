@@ -14,20 +14,20 @@
 #include <windows.h>
 #define DIRECTINPUT_VERSION DIRECTINPUT_HEADER_VERSION
 #include <dinput.h>
-#include <string>
+#include "../../tkCommon/strings.h"
 
 /*
- * Transform a char to an std::string, converting
+ * Transform a char to an STRING, converting
  * common characters to string representations.
  */
-std::string getName(char chr);
+STRING getName(char chr);
 
 /*
  * Wait for a key.
  *
  * return (out) - the key pressed
  */
-std::string waitForKey();
+STRING waitForKey();
 
 /*
  * Host window event processor.

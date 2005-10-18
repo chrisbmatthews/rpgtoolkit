@@ -24,7 +24,7 @@
 #include <windows.h>
 #include <vector>
 
-#define CLASS_NAME "TK Window"
+#define CLASS_NAME _T("TK Window")
 
 // Uncomment to show debug vectors.
 #define DEBUG_VECTORS
@@ -60,7 +60,7 @@ SCROLL_CACHE g_scrollCache;					// The scroll cache.
 /*
  * Render the RPGCode screen.
  */
-void renderRpgCodeScreen(void)
+void renderRpgCodeScreen()
 {
 	g_pDirectDraw->DrawCanvas(g_cnvRpgCode, 0, 0);
 	if (g_bShowMessageWindow)
@@ -89,7 +89,7 @@ void renderRpgCodeScreen(void)
  * bIsometric	- draw isometrically?
  * nIsoEvenOdd	- iso is even or odd?
  */
-bool drawTile(const std::string fileName, 
+bool drawTile(const STRING fileName, 
 			  const int x, const int y, 
 			  const int r, const int g, const int b, 
 			  CCanvas *cnv, 
@@ -98,7 +98,7 @@ bool drawTile(const std::string fileName,
 			  const int nIsoEvenOdd)
 {
 
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 
 	int xx = 0, yy = 0;
 
@@ -122,11 +122,11 @@ bool drawTile(const std::string fileName,
 		GFXClearTileCache();
 */
 	const RGBSHADE rgb = {r, g, b};
-	const std::string strFileName = g_projectPath + TILE_PATH + fileName;
+	const STRING strFileName = g_projectPath + TILE_PATH + fileName;
 
 	for (std::vector<CTile *>::iterator i = g_tiles.begin(); i != g_tiles.end(); ++i)
 	{
-		const std::string strVect = (*i)->getFilename();
+		const STRING strVect = (*i)->getFilename();
 		if (strVect.compare(strFileName) == 0)
 		{
 			if ((*i)->isShadedAs(rgb, SHADE_UNIFORM))
@@ -168,7 +168,7 @@ bool drawTile(const std::string fileName,
  * bIsometric (in) - draw isometrically?
  * nIsoEvenOdd (in) - iso is even or odd?
  */
-bool drawTileMask (const std::string fileName, 
+bool drawTileMask (const STRING fileName, 
 				   const int x, const int y, 
 				   const int r, const int g, const int b, 
 				   CCanvas *cnv,
@@ -176,7 +176,7 @@ bool drawTileMask (const std::string fileName,
 				   const BOOL bIsometric,
 				   const int nIsoEvenOdd) 
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 
 	int xx = 0, yy = 0;
 
@@ -221,12 +221,12 @@ bool drawTileMask (const std::string fileName,
 */
 
 	const RGBSHADE rgb = {r, g, b};
-	const std::string strFileName = g_projectPath + TILE_PATH + fileName;
+	const STRING strFileName = g_projectPath + TILE_PATH + fileName;
 
 	// Check if this tile has already been drawn.
 	for (std::vector<CTile*>::iterator i = g_tiles.begin(); i != g_tiles.end(); i++)
 	{
-		const std::string strVect = (*i)->getFilename();
+		const STRING strVect = (*i)->getFilename();
 		if (strVect.compare(strFileName) == 0)
 		{
 			if (bIsometric)
@@ -285,7 +285,7 @@ bool drawTileMask (const std::string fileName,
  * Draw a tile onto a canvas (CommonTkGfx drawTileCnv)
  */
 bool drawTileCnv(CCanvas *cnv, 
-				 const std::string file, 
+				 const STRING file, 
 				 const double x,
 				 const double y, 
 				 const int r, 
@@ -296,7 +296,7 @@ bool drawTileCnv(CCanvas *cnv,
 				 const bool bIsometric, 
 				 const bool isoEvenOdd)
 {
-	extern std::string g_projectPath;
+	extern STRING g_projectPath;
 
     TILEANIM anm;
    
@@ -309,16 +309,16 @@ bool drawTileCnv(CCanvas *cnv,
 	if (false)
 	{
         // Do check for pakfile system
-		std::string of = file, Temp = removePath(file);
-		std::string ex = parser::uppercase(getExtension(Temp));
-        if (ex.substr(0, 3) == "TST")
+		STRING of = file, Temp = removePath(file);
+		STRING ex = parser::uppercase(getExtension(Temp));
+        if (ex.substr(0, 3) == _T("TST"))
 		{
             // numof = getTileNum(temp$)
 //            Temp = util::tilesetFilename(Temp);
         }
 //			file = PakLocate(TILE_PATH + Temp);
-		std::string ff = "";
-        if (ex == "TAN")
+		STRING ff = _T("");
+        if (ex == _T("TAN"))
 		{
             ff = removePath(Temp);
             anm.open(g_projectPath + TILE_PATH + ff);
@@ -347,9 +347,9 @@ bool drawTileCnv(CCanvas *cnv,
 	}
 	else
 	{
-		std::string ex = getExtension(file);
-		std::string ff = removePath(file);
-        if (parser::uppercase(ex) == "TAN")
+		STRING ex = getExtension(file);
+		STRING ff = removePath(file);
+        if (parser::uppercase(ex) == _T("TAN"))
 		{
             if (!anm.open(g_projectPath + TILE_PATH + ff)) return false;
 //            file$ = projectPath & tilePath & TileAnmGet(anm, 0)
@@ -379,7 +379,7 @@ bool drawTileCnv(CCanvas *cnv,
 /*
  * Create global canvases.
  */
-void createCanvases(void)
+void createCanvases()
 {
 	g_cnvRpgCode = new CCanvas();
 	g_cnvRpgCode->CreateBlank(NULL, g_resX, g_resY, TRUE);
@@ -399,12 +399,26 @@ void createCanvases(void)
 	g_scrollCache.pCnv->ClearScreen(0);
 	g_scrollCache.r = rect;
 
+	g_cnvCursor = new CCanvas();
+	g_cnvCursor->CreateBlank(NULL, 32, 32, TRUE);
+	{
+		const HDC hdc = g_cnvCursor->OpenDC();
+		const HDC compat = CreateCompatibleDC(hdc);
+		extern HINSTANCE g_hInstance;
+		HBITMAP bmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP1));
+		HGDIOBJ obj = SelectObject(compat, bmp);
+		BitBlt(hdc, 0, 0, 32, 32, compat, 0, 0, SRCCOPY);
+		g_cnvCursor->CloseDC(hdc);
+		SelectObject(compat, obj);
+		DeleteObject(bmp);
+		DeleteDC(compat);
+	}
 }
 
 /*
  * Destroy global canvases.
  */
-void destroyCanvases(void)
+void destroyCanvases()
 {
 	delete g_cnvRpgCode;
 	delete g_cnvMessageWindow;
@@ -426,7 +440,7 @@ void destroyCanvases(void)
 /*
  * Load a cursor from a file.
  */
-void changeCursor(const std::string strCursor)
+void changeCursor(const STRING strCursor)
 {
 	if (strCursor.empty()) return;
 	if (!g_hHostWnd) return;
@@ -438,7 +452,7 @@ void changeCursor(const std::string strCursor)
 	HBITMAP hColorBmp = NULL;
 
 	// Draw the cursor.
-	if (strCursor == "TK DEFAULT")
+	if (strCursor == _T("TK DEFAULT"))
 	{
 		extern HINSTANCE g_hInstance;
 		hColorBmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP2));
@@ -452,7 +466,7 @@ void changeCursor(const std::string strCursor)
 		hColorBmp = CreateCompatibleBitmap(hHostDc, 32, 32);
 		SelectObject(hColorDc, hColorBmp);
 		SetStretchBltMode(hColorDc, COLORONCOLOR);
-		extern std::string g_projectPath;
+		extern STRING g_projectPath;
 		drawImage(g_projectPath + BMP_PATH + strCursor, hColorDc, 0, 0, 32, 32);
 	}
 
@@ -544,7 +558,7 @@ void showScreen(const int width, const int height)
 		{
 			if (!g_mainFile.extendToFullScreen)
 			{
-				MessageBox(NULL, "Error initializing graphics mode. Make sure you have DirectX 8 or higher installed.", "Cannot Initialize", 0);
+				MessageBox(NULL, _T("Error initializing graphics mode. Make sure you have DirectX 8 or higher installed."), _T("Cannot Initialize"), 0);
 				delete g_pDirectDraw;
 				exit(EXIT_SUCCESS);
 			}
@@ -562,7 +576,7 @@ void showScreen(const int width, const int height)
 	ShowWindow(g_hHostWnd, SW_SHOW);
 	g_pDirectDraw->Refresh();
 
-	extern void initInput(void);
+	extern void initInput();
 	initInput();
 
 	createCanvases();
@@ -674,7 +688,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 		// Draw tiles on higher layers over the sprites.
 		if (g_pBoard->bLayerOccupied[layer])
 		{
-			// 'rects' are the sprite frames located on the board,
+			// _T('rects') are the sprite frames located on the board,
 			// which are only added when the sprite is encountered in the loop.
 			for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
 			{
@@ -711,10 +725,10 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 			}
 			else continue;
 
-			// Draw any "under" vectors this sprite is standing on.
+			// Draw any _T("under") vectors this sprite is standing on.
 			for (std::vector<BRD_VECTOR>::iterator k = g_pBoard->vectors.begin(); k != g_pBoard->vectors.end(); ++k)
 			{
-				// Check if this is an "under" vector, is on the same layer and has a canvas.
+				// Check if this is an _T("under") vector, is on the same layer and has a canvas.
 				if (!k->pCnv || k->layer != layer || !(k->type & TT_UNDER)) 
 					continue;
 
@@ -726,8 +740,8 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 				RECT r = {0, 0, 0, 0};
 				DB_POINT p = {0, 0};
 
-				// Place the intersection of the sprite's *frame* and the under vector's
-				// bounds in 'r' - this is the area to draw.
+				// Place the intersection of the sprite_T('s *frame* and the under vector')s
+				// bounds in _T('r') - this is the area to draw.
 				if (IntersectRect(&r, &rect, &rBounds) && k->pV->contains(v, p))
 				{
 					k->pCnv->BltTransparentPart(cnv, 
@@ -767,7 +781,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 /*
  * Initialize the graphics engine.
  */
-void initGraphics(void)
+void initGraphics()
 {
 
 	extern MAIN_FILE g_mainFile;
@@ -802,7 +816,7 @@ void initGraphics(void)
 /*
  * Clear the tile cache.
  */
-void clearTileCache(void)
+void clearTileCache()
 {
 	for (std::vector<CTile *>::iterator i = g_tiles.begin(); i != g_tiles.end(); ++i)
 	{
@@ -815,9 +829,8 @@ void clearTileCache(void)
 /*
  * Shut down the graphics engine.
  */
-void closeGraphics(void)
+void closeGraphics()
 {
-
 	extern HINSTANCE g_hInstance;
 
 	clearTileCache();
@@ -826,5 +839,4 @@ void closeGraphics(void)
 
 	DestroyWindow(g_hHostWnd);
 	UnregisterClass(CLASS_NAME, g_hInstance);
-
 }

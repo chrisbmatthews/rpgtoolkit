@@ -10,7 +10,7 @@
 /*
  * Inclusions.
  */
-#include <string>
+#include "../../tkCommon/strings.h"
 #include <deque>
 #include <math.h>
 #include "../common/sprite.h"
@@ -62,30 +62,30 @@ enum GAME_STATE
 #define MV_SW		8
 */
 
-#define MVQ_IDLE "0"
-#define MVQ_NORTH "1"
-#define MVQ_SOUTH "2"
-#define MVQ_EAST "3"
-#define MVQ_WEST "4"
-#define MVQ_NE "5"
-#define MVQ_NW "6"
-#define MVQ_SE "7"
-#define MVQ_SW "8"
+#define MVQ_IDLE _T("0")
+#define MVQ_NORTH _T("1")
+#define MVQ_SOUTH _T("2")
+#define MVQ_EAST _T("3")
+#define MVQ_WEST _T("4")
+#define MVQ_NE _T("5")
+#define MVQ_NW _T("6")
+#define MVQ_SE _T("7")
+#define MVQ_SW _T("8")
 
 /* In the process of being depreciated */
-#define WALK_N "walk_n"
-#define WALK_S "walk_s"
-#define WALK_E "walk_e"
-#define WALK_W "walk_w"
-#define WALK_NE "walk_ne"
-#define WALK_NW "walk_nw"
-#define WALK_SE "walk_se"
-#define WALK_SW "walk_sw"
+#define WALK_N _T("walk_n")
+#define WALK_S _T("walk_s")
+#define WALK_E _T("walk_e")
+#define WALK_W _T("walk_w")
+#define WALK_NE _T("walk_ne")
+#define WALK_NW _T("walk_nw")
+#define WALK_SE _T("walk_se")
+#define WALK_SW _T("walk_sw")
 
 /*
  * Tile type definitions.
  *
- * Stairs are in the form "stairs + layer number"; i.e., layer = stairs - 10
+ * Stairs are in the form _T("stairs + layer number"); i.e., layer = stairs - 10
  */
 
 /* Unneeded. - to be removed */
@@ -135,7 +135,7 @@ typedef struct tagIdleInfo
  */
 typedef struct tagSpritePosition
 {
-    std::string stance;		// Current stance.
+    STRING stance;		// Current stance.
 	MV_ENUM facing;			// Which direction are we facing? May be different from .direction!
     int frame;				// Animation frame.
     double x;				// Current board x position (PIXEL co-ord).
@@ -151,7 +151,7 @@ typedef struct tagSpritePosition
 	bool bIsPath;			// Is the current movement part of a path?
 
 	tagSpritePosition(void): 
-		stance(std::string()),
+		stance(STRING()),
 		facing(MV_S),
 		frame(0),
 		x(0), y(0), l(1),

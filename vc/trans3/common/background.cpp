@@ -13,13 +13,14 @@
 #include "paths.h"
 #include "CFile.h"
 #include "mbox.h"
+#include "../misc/misc.h"
 
 /*
  * Open a background.
  *
  * fileName (in) - file to open
  */
-void tagBackground::open(const std::string fileName)
+void tagBackground::open(const STRING fileName)
 {
 
 	CFile file(fileName);
@@ -31,11 +32,11 @@ void tagBackground::open(const std::string fileName)
 	if (!cUnused)
 	{
 
-		std::string fileHeader;
+		STRING fileHeader;
 		file >> fileHeader;
-		if (fileHeader != "RPGTLKIT BKG")
+		if (fileHeader != _T("RPGTLKIT BKG"))
 		{
-			messageBox("Unrecognised File Format! " + fileName);
+			messageBox(_T("Unrecognised File Format! ") + fileName);
 			return;
 		}
 
@@ -54,14 +55,14 @@ void tagBackground::open(const std::string fileName)
 	else
 	{
 
-		if (file.line() != "RPGTLKIT BKG")
+		if (file.line() != _T("RPGTLKIT BKG"))
 		{
-			messageBox("Unrecognised File Format! " + fileName);
+			messageBox(_T("Unrecognised File Format! ") + fileName);
 			return;
 		}
 
-		const short majorVer = atoi(file.line().c_str());
-		const short minorVer = atoi(file.line().c_str());
+		const short majorVer = _ttoi(file.line().c_str());
+		const short minorVer = _ttoi(file.line().c_str());
 
 		TILE_BITMAP tbm;
 		tbm.width = 19;
@@ -70,7 +71,7 @@ void tagBackground::open(const std::string fileName)
 		unsigned int i, j;
 		for (i = 0; i < 19; i++)
 		{
-			tbm.tiles.push_back(std::vector<std::string>());
+			tbm.tiles.push_back(std::vector<STRING>());
 			for (j = 0; j < 19; j++)
 			{
 				tbm.tiles.back().push_back(file.line());
@@ -92,18 +93,17 @@ void tagBackground::open(const std::string fileName)
 			tbm.blue.push_back(std::vector<short>());
 			for (j = 0; j < 19; j++)
 			{
-				tbm.red.back().push_back(atoi(file.line().c_str()));
-				tbm.green.back().push_back(atoi(file.line().c_str()));
-				tbm.blue.back().push_back(atoi(file.line().c_str()));
+				tbm.red.back().push_back(_ttoi(file.line().c_str()));
+				tbm.green.back().push_back(_ttoi(file.line().c_str()));
+				tbm.blue.back().push_back(_ttoi(file.line().c_str()));
 			}
 		}
 
-		std::string noPath = removePath(fileName);
-		const int len = noPath.length();
-		for (i = 0; i < len; i++) if (noPath[i] == '.') noPath[i] = '_';
-		const std::string tbmFile = noPath + ".tbm";
+		STRING noPath = removePath(fileName);
+		replace(noPath, ".", "_");
+		const STRING tbmFile = noPath + _T(".tbm");
 		image = tbmFile;
-		extern std::string g_projectPath;
+		extern STRING g_projectPath;
 		tbm.save(g_projectPath + BMP_PATH + tbmFile);
 
 	}

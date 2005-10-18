@@ -15,27 +15,28 @@
 #include "../common/mbox.h"
 #include "../common/paths.h"
 #include "../input/input.h"
+#include "../../tkCommon/strings.h"
 #include <malloc.h>
 #include <math.h>
 
 // Static member initialization.
 std::vector<NAMED_METHOD> tagNamedMethod::m_methods;
-std::map<std::string, MACHINE_FUNC> CProgram::m_functions;
+std::map<STRING, MACHINE_FUNC> CProgram::m_functions;
 LPMACHINE_UNITS CProgram::m_pyyUnits = NULL;
 std::deque<MACHINE_UNITS> CProgram::m_yyFors;
-std::map<std::string, STACK_FRAME> CProgram::m_heap;
+std::map<STRING, STACK_FRAME> CProgram::m_heap;
 std::deque<int> CProgram::m_params;
-std::map<std::string, CLASS> *CProgram::m_pClasses = NULL;
-std::map<unsigned int, std::string> CProgram::m_objects;
+std::map<STRING, CLASS> *CProgram::m_pClasses = NULL;
+std::map<unsigned int, STRING> CProgram::m_objects;
 std::vector<unsigned int> *CProgram::m_pLines = NULL;
-std::vector<std::string> CProgram::m_inclusions;
+std::vector<STRING> CProgram::m_inclusions;
 std::vector<IPlugin *> CProgram::m_plugins;
 std::set<CThread *> CThread::m_threads;
-std::string CProgram::m_parsing;
+STRING CProgram::m_parsing;
 unsigned long CProgram::m_runningPrograms = 0;
 
 // Create a thread.
-CThread *CThread::create(const std::string str)
+CThread *CThread::create(const STRING str)
 {
 	CThread *p = new CThread(str);
 	m_threads.insert(p);
@@ -118,9 +119,9 @@ bool CThread::execute()
 }
 
 // Show the debugger.
-void CProgram::debugger(const std::string str)
+void CProgram::debugger(const STRING str)
 {
-	messageBox("RPGCode Error\n\n" + str);
+	messageBox(_T("RPGCode Error\n\n") + str);
 }
 
 // Free loaded plugins.
@@ -139,11 +140,15 @@ void CProgram::freePlugins()
 int yyerror(const char *error)
 {
 	extern unsigned int g_lines;
-	char str[255];
-	itoa(g_lines + 1, str, 10);
-	std::string strError = error;
+	TCHAR str[255];
+	_itot(g_lines + 1, str, 10);
+#ifndef _UNICODE
+	STRING strError = error;
+#else
+	STRING strError = getUnicodeString(std::string(error));
+#endif
 	strError[0] = toupper(strError[0]);
-	CProgram::debugger(CProgram::m_parsing + "\r\nLine " + str + ": " + strError + ".");
+	CProgram::debugger(CProgram::m_parsing + _T("\r\nLine ") + str + _T(": ") + strError + _T("."));
 	return 0;
 }
 
@@ -165,9 +170,9 @@ unsigned int CProgram::getLine(CONST_POS pos) const
 }
 
 // Get a variable.
-LPSTACK_FRAME CProgram::getVar(const std::string name)
+LPSTACK_FRAME CProgram::getVar(const STRING name)
 {
-	if (name[0] == ':')
+	if (name[0] == _T(':'))
 	{
 		return &m_heap[name.substr(1)];
 	}
@@ -176,12 +181,12 @@ LPSTACK_FRAME CProgram::getVar(const std::string name)
 		unsigned int obj = m_calls.back().obj;
 		if (obj)
 		{
-			std::map<std::string, tagClass>::const_iterator i = m_classes.find(m_objects[obj]);
+			std::map<STRING, tagClass>::const_iterator i = m_classes.find(m_objects[obj]);
 			if ((i != m_classes.end()) && i->second.memberExists(name, CV_PRIVATE))
 			{
-				char str[255];
-				itoa(obj, str, 10);
-				return &m_heap[std::string(str) + "::" + name];
+				TCHAR str[255];
+				_itot(obj, str, 10);
+				return &m_heap[STRING(str) + _T("::") + name];
 			}
 		}
 	}
@@ -193,7 +198,7 @@ LPSTACK_FRAME CProgram::getVar(const std::string name)
 }
 
 // Locate a named method.
-tagNamedMethod *tagNamedMethod::locate(const std::string name, const int params, const bool bMethod)
+tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod)
 {
 	std::vector<NAMED_METHOD>::iterator i = m_methods.begin();
 	for (; i != m_methods.end(); ++i)
@@ -206,7 +211,7 @@ tagNamedMethod *tagNamedMethod::locate(const std::string name, const int params,
 	return NULL;
 }
 
-tagNamedMethod *tagClass::locate(const std::string name, const int params, const CLASS_VISIBILITY vis)
+tagNamedMethod *tagClass::locate(const STRING name, const int params, const CLASS_VISIBILITY vis)
 {
 	std::deque<std::pair<NAMED_METHOD, CLASS_VISIBILITY> >::iterator i = methods.begin();
 	for (; i != methods.end(); ++i)
@@ -220,9 +225,9 @@ tagNamedMethod *tagClass::locate(const std::string name, const int params, const
 }
 
 // Check whether the class has a member.
-bool tagClass::memberExists(const std::string name, const CLASS_VISIBILITY vis) const
+bool tagClass::memberExists(const STRING name, const CLASS_VISIBILITY vis) const
 {
-	std::deque<std::pair<std::string, CLASS_VISIBILITY> >::const_iterator i = members.begin();
+	std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator i = members.begin();
 	for (; i != members.end(); ++i)
 	{
 		if ((i->second >= vis) && (i->first == name)) return true;
@@ -233,7 +238,7 @@ bool tagClass::memberExists(const std::string name, const CLASS_VISIBILITY vis) 
 // Inherit a class.
 void tagClass::inherit(const tagClass &cls)
 {
-	std::deque<std::pair<std::string, CLASS_VISIBILITY> >::const_iterator i = cls.members.begin();
+	std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator i = cls.members.begin();
 	for (; i != cls.members.end(); ++i)
 	{
 		if (!memberExists(i->first, CV_PRIVATE))
@@ -253,37 +258,37 @@ void tagClass::inherit(const tagClass &cls)
 }
 
 // Get a function's name.
-std::string CProgram::getFunctionName(const MACHINE_FUNC func)
+STRING CProgram::getFunctionName(const MACHINE_FUNC func)
 {
-	std::map<std::string, MACHINE_FUNC>::const_iterator i = m_functions.begin();
+	std::map<STRING, MACHINE_FUNC>::const_iterator i = m_functions.begin();
 	for (; i != m_functions.end(); ++i)
 	{
 		if (i->second == func) break;
 	}
-	return ((i != m_functions.end()) ? i->first : "");
+	return ((i != m_functions.end()) ? i->first : _T(""));
 }
 
 // Show the contents of the instruction unit.
 inline void tagMachineUnit::show() const
 {
-	std::cerr	<< "Lit: " << lit
+	std::cerr	<< "Lit: " << getAsciiString(lit)
 				<< "\nNum: " << num
 				<< "\nType: " << udt
-				<< "\nFunc: " << CProgram::getFunctionName(func)
+				<< "\nFunc: " << getAsciiString(CProgram::getFunctionName(func))
 				<< "\nParams: " << params
 				<< "\n\n";
 }
 
 // Add a function to the global namespace.
-void CProgram::addFunction(const std::string name, const MACHINE_FUNC func)
+void CProgram::addFunction(const STRING name, const MACHINE_FUNC func)
 {
-	char *const str = _strlwr(_strdup(name.c_str()));
-	m_functions.insert(std::map<std::string, MACHINE_FUNC>::value_type(str, func));
+	TCHAR *const str = _tcslwr(_tcsdup(name.c_str()));
+	m_functions.insert(std::map<STRING, MACHINE_FUNC>::value_type(str, func));
 	free(str);
 }
 
 // Free a variable.
-void CProgram::freeVar(const std::string var)
+void CProgram::freeVar(const STRING var)
 {
 	if (m_locals.back().count(var))
 	{
@@ -296,20 +301,20 @@ void CProgram::freeVar(const std::string var)
 // Free an object.
 void CProgram::freeObject(unsigned int obj)
 {
-	const std::string type = m_objects[obj];
-	std::map<std::string, tagClass>::iterator i = m_classes.find(type);
+	const STRING type = m_objects[obj];
+	std::map<STRING, tagClass>::iterator i = m_classes.find(type);
 	if (i == m_classes.end())
 	{
-		throw CError("Could not find class " + type + ".");
+		throw CError(_T("Could not find class ") + type + _T("."));
 	}
 
-	char str[255];
-	itoa(obj, str, 10);
+	TCHAR str[255];
+	_itot(obj, str, 10);
 
-	std::deque<std::pair<std::string, CLASS_VISIBILITY> >::const_iterator j = i->second.members.begin();
+	std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator j = i->second.members.begin();
 	for (; j != i->second.members.end(); ++j)
 	{
-		freeVar(std::string(str) + "::" + j->first);
+		freeVar(STRING(str) + _T("::") + j->first);
 	}
 
 	m_objects.erase(obj);
@@ -318,7 +323,7 @@ void CProgram::freeObject(unsigned int obj)
 // Handle a method call.
 void CProgram::methodCall(CALL_DATA &call)
 {
-	std::map<std::string, STACK_FRAME> local;
+	std::map<STRING, STACK_FRAME> local;
 
 	CALL_FRAME fr;
 	fr.obj = 0;
@@ -333,18 +338,18 @@ void CProgram::methodCall(CALL_DATA &call)
 		{
 			unsigned int obj = (unsigned int)call[i].getNum();
 			{
-				const std::string type = CProgram::m_objects[obj];
-				std::map<std::string, tagClass>::iterator k = call.prg->m_classes.find(type);
+				const STRING type = CProgram::m_objects[obj];
+				std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
 				if (k == call.prg->m_classes.end())
 				{
-					throw CError("Could not find class " + type + ".");
+					throw CError(_T("Could not find class ") + type + _T("."));
 				}
 
 				bool bRelease = false;
-				if (fra.lit == "release")
+				if (fra.lit == _T("release"))
 				{
 					bRelease = true;
-					fra.lit = "~" + k->first;
+					fra.lit = _T("~") + k->first;
 				}
 
 				const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
@@ -353,9 +358,9 @@ void CProgram::methodCall(CALL_DATA &call)
 				{
 					if (!bRelease)
 					{
-						char str[255];
-						itoa(call.params - 2, str, 10);
-						throw CError("Class " + k->first + " has no accessible " + fra.lit + " method with a parameter count of " + str + ".");
+						TCHAR str[255];
+						_itot(call.params - 2, str, 10);
+						throw CError(_T("Class ") + k->first + _T(" has no accessible ") + fra.lit + _T(" method with a parameter count of ") + str + _T("."));
 					}
 					else
 					{
@@ -373,16 +378,16 @@ void CProgram::methodCall(CALL_DATA &call)
 				fra.num = p->i;
 			}
 
-			STACK_FRAME &lvar = local["this"];
+			STACK_FRAME &lvar = local[_T("this")];
 			lvar.udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
 			lvar.num = fr.obj = obj;
 		}
 		else
 		{
 			++j;
-			char pos = call.params - j;
+			TCHAR pos = call.params - j;
 			if (fr.obj) --pos;
-			local[std::string(" ") + pos] = call[i].getValue();
+			local[STRING(_T(" ")) + pos] = call[i].getValue();
 		}
 	}
 
@@ -391,14 +396,14 @@ void CProgram::methodCall(CALL_DATA &call)
 		const unsigned int obj = call.prg->m_calls.back().obj;
 		if (obj)
 		{
-			std::map<std::string, tagClass>::iterator i = call.prg->m_classes.find(CProgram::m_objects[obj]);
+			std::map<STRING, tagClass>::iterator i = call.prg->m_classes.find(CProgram::m_objects[obj]);
 			if (i != call.prg->m_classes.end())
 			{
 				LPNAMED_METHOD p = i->second.locate(fra.lit, call.params - 1, CV_PRIVATE);
 				if (p)
 				{
 					fra.num = p->i;
-					STACK_FRAME &lvar = local["this"];
+					STACK_FRAME &lvar = local[_T("this")];
 					lvar.udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
 					lvar.num = fr.obj = obj;
 				}
@@ -471,7 +476,7 @@ void CProgram::pluginCall(CALL_DATA &call)
 	IPlugin *pPlugin = m_plugins[(unsigned int)fra.num];
 
 	// Prepare the command line.
-	std::string line = fra.lit + '(';
+	STRING line = fra.lit + _T('(');
 	for (unsigned int i = 0; i < (call.params - 1); ++i)
 	{
 		STACK_FRAME &param = call[i];
@@ -481,23 +486,23 @@ void CProgram::pluginCall(CALL_DATA &call)
 		}
 		else if (param.udt & UDT_LIT)
 		{
-			line += '"' + param.lit + '"';
+			line += _T('"') + param.lit + _T('"');
 		}
 		else if (param.udt & UDT_ID)
 		{
-			line += param.lit + ((param.getType() & UDT_NUM) ? '!' : '$');
+			line += param.lit + ((param.getType() & UDT_NUM) ? _T('!') : _T('$'));
 		}
 		if (i != call.params - 2)
 		{
-			line += ',';
+			line += _T(',');
 		}
 	}
-	line += ')';
+	line += _T(')');
 
 	// Call the function.
 	CProgram *const prg = g_prg;
 	g_prg = call.prg;
-	int dt = PLUG_DT_VOID; std::string lit; double num = 0.0;
+	int dt = PLUG_DT_VOID; STRING lit; double num = 0.0;
 	pPlugin->execute(line, dt, lit, num, (call.prg->m_i->udt & UDT_LINE) ? VARIANT_FALSE : VARIANT_TRUE);
 	g_prg = prg;
 
@@ -519,7 +524,7 @@ void CProgram::returnVal(CALL_DATA &call)
 	if (call.prg->m_calls.back().p)
 	{
 		*call.prg->m_calls.back().p = call[0].getValue();
-		//std::cerr << "ret: " << call.prg->m_stack[call.prg->m_stack.size() - 2].back().getLit() << std::endl;
+		//std::cerr << _T("ret: ") << call.prg->m_stack[call.prg->m_stack.size() - 2].back().getLit() << std::endl;
 	}
 	call.prg->m_i = call.prg->m_units.begin() + call.prg->m_calls.back().j - 1;
 }
@@ -527,33 +532,36 @@ void CProgram::returnVal(CALL_DATA &call)
 #define YYSTACKSIZE 50000
 #define YYSTYPE CVariant
 #include "y.tab.c"	// Yacc parser.
+#ifdef STRING
+#undef STRING
+#endif
 
 // Read a string.
-inline std::string freadString(FILE *file)
+inline STRING freadString(FILE *file)
 {
-	std::string ret;
-	char c = '\0';
-	while (fread(&c, sizeof(char), 1, file) != 0)
+	STRING ret;
+	TCHAR c = _T('\0');
+	while (fread(&c, sizeof(TCHAR), 1, file) != 0)
 	{
-		if (c == '\0') break;
+		if (c == _T('\0')) break;
 		ret += c;
 	}
 	return ret;
 }
 
 // Open an RPGCode program.
-bool CProgram::open(const std::string fileName)
+bool CProgram::open(const STRING fileName)
 {
-	FILE *file = fopen(fileName.c_str(), "rb");
+	FILE *file = fopen(fileName.c_str(), _T("rb"));
 	if (!file) return false;
-	char c = '\0';
-	if (fread(&c, sizeof(char), 1, file) == 0)
+	TCHAR c = _T('\0');
+	if (fread(&c, sizeof(TCHAR), 1, file) == 0)
 	{
 		fclose(file);
 		return false;
 	}
 
-	if (c == '\0')
+	if (c == _T('\0'))
 	{
 		// File is machine code.
 
@@ -561,7 +569,7 @@ bool CProgram::open(const std::string fileName)
 		std::vector<MACHINE_FUNC> funcs;
 		while (true)
 		{
-			const std::string func = freadString(file);
+			const STRING func = freadString(file);
 			if (func.empty()) break;
 			funcs.push_back(m_functions[func]);
 		}
@@ -570,22 +578,22 @@ bool CProgram::open(const std::string fileName)
 		m_classes.clear();
 		while (true)
 		{
-			const std::string name = freadString(file);
+			const STRING name = freadString(file);
 			if (name.empty()) break;
 			tagClass cls;
 			while (true)
 			{
-				const std::string base = freadString(file);
+				const STRING base = freadString(file);
 				if (base.empty()) break;
 				cls.inherits.push_back(base);
 			}
 			while (true)
 			{
-				const std::string member = freadString(file);
+				const STRING member = freadString(file);
 				if (member.empty()) break;
 				CLASS_VISIBILITY vis;
 				fread(&vis, sizeof(int), 1, file);
-				cls.members.push_back(std::pair<std::string, CLASS_VISIBILITY>(member, vis));
+				cls.members.push_back(std::pair<STRING, CLASS_VISIBILITY>(member, vis));
 			}
 			while (true)
 			{
@@ -635,7 +643,7 @@ bool CProgram::open(const std::string fileName)
 	}
 	else
 	{
-		const std::string parsing = m_parsing;
+		const STRING parsing = m_parsing;
 		m_parsing = fileName;
 		fseek(file, 0, SEEK_SET);
 		parseFile(file);
@@ -656,12 +664,12 @@ void CProgram::prime()
 	m_pStack = &m_stack.back();
 	m_calls.clear();
 	m_locals.clear();
-	m_locals.push_back(std::map<std::string, STACK_FRAME>());
+	m_locals.push_back(std::map<STRING, STACK_FRAME>());
 	m_i = m_units.begin();
 }
 
 // Load the program from a string.
-bool CProgram::loadFromString(const std::string str)
+bool CProgram::loadFromString(const STRING str)
 {
 	FILE *p = tmpfile();
 	if (!p) return false;
@@ -697,9 +705,9 @@ void CProgram::parseFile(FILE *pFile)
 	// Pass II:
 	//   - Include requested files.
 	{
-		std::vector<std::string> inclusions = m_inclusions;
-		std::vector<std::string>::const_iterator i = inclusions.begin();
-		extern std::string g_projectPath;
+		std::vector<STRING> inclusions = m_inclusions;
+		std::vector<STRING>::const_iterator i = inclusions.begin();
+		extern STRING g_projectPath;
 		for (; i != inclusions.end(); ++i)
 		{
 			include(g_projectPath + PRG_PATH + *i);
@@ -711,19 +719,19 @@ void CProgram::parseFile(FILE *pFile)
 	//   - Handle member references within class methods.
 	//   - Record class members.
 	//   - Detect class factory references.
-	//   - Backward compatibility: "end" => "end()"
+	//   - Backward compatibility: _T("end") => _T("end()")
 	//	 - Transform switch...case structures to if...elseif...else.
 
 	tagClass **classes = (tagClass **)_alloca(sizeof(tagClass *) * m_classes.size());
-	std::map<std::string, tagClass>::iterator j = m_classes.begin();
+	std::map<STRING, tagClass>::iterator j = m_classes.begin();
 	for (unsigned int k = 0; j != m_classes.end(); ++j, ++k)
 	{
-		std::deque<std::string>::iterator l = j->second.inherits.begin();
+		std::deque<STRING>::iterator l = j->second.inherits.begin();
 		for (; l != j->second.inherits.end(); ++l)
 		{
 			if (!m_classes.count(*l))
 			{
-				debugger("Could not find " + j->first + "'s base class " + *l + ".");
+				debugger(_T("Could not find ") + j->first + _T("'s base class ") + *l + _T("."));
 				if ((l = j->second.inherits.erase(l)) == j->second.inherits.end()) break;
 				--l;
 			}
@@ -764,7 +772,7 @@ void CProgram::parseFile(FILE *pFile)
 			if (depth && !--depth) pClass = NULL;
 		}
 
-		if ((i->udt & UDT_ID) && (i->lit[0] == ':') && ((i == m_units.end()) || !(((i + 1)->udt & UDT_LINE))))
+		if ((i->udt & UDT_ID) && (i->lit[0] == _T(':')) && ((i == m_units.end()) || !(((i + 1)->udt & UDT_LINE))))
 		{
 			i->udt = UDT_LABEL;
 		}
@@ -781,13 +789,13 @@ void CProgram::parseFile(FILE *pFile)
 				else
 				{
 					// Historical member declaration.
-					pClass->members.push_back(std::pair<std::string, CLASS_VISIBILITY>(i->lit, vis));
+					pClass->members.push_back(std::pair<STRING, CLASS_VISIBILITY>(i->lit, vis));
 				}
 				i = m_units.erase(i) - 1;
 			}
 			else
 			{
-				// Convert such lines as "end" to "end()". This could
+				// Convert such lines as _T("end") to _T("end()"). This could
 				// potentially do unwanted things, but it is required
 				// for backward compatibility.
 				if (m_functions.count(i->lit))
@@ -812,7 +820,7 @@ void CProgram::parseFile(FILE *pFile)
 		{
 			POS unit = i - 1;
 			if (unit->udt & UDT_OBJ) continue;
-			if (unit->lit == "switch")
+			if (unit->lit == _T("switch"))
 			{
 				POS j = unit; unsigned int dec = 1;
 				for (; j != m_units.begin(); --j, ++dec)
@@ -825,16 +833,16 @@ void CProgram::parseFile(FILE *pFile)
 				}
 				MACHINE_UNIT mu;
 				mu.udt = UDT_ID;
-				char str[255]; itoa(nestled + 1, str, 10);
-				mu.lit = std::string(" switch[") + str + "]";
+				TCHAR str[255]; _itot(nestled + 1, str, 10);
+				mu.lit = STRING(_T(" switch[")) + str + _T("]");
 				i = m_units.insert(j, mu) + 1 + dec;
 				i = m_units.erase(unit);
 				i->func = operators::assign;
 				++i;
 			}
-			else if (unit->lit == "case")
+			else if (unit->lit == _T("case"))
 			{
-				if (((unit - 1)->udt & UDT_ID) && ((unit - 1)->lit == "else"))
+				if (((unit - 1)->udt & UDT_ID) && ((unit - 1)->lit == _T("else")))
 				{
 					unit->udt = UNIT_DATA_TYPE(UDT_FUNC | UDT_LINE);
 					unit->func = skipElse;
@@ -852,8 +860,8 @@ void CProgram::parseFile(FILE *pFile)
 					if (j != m_units.begin()) --j;
 					MACHINE_FUNC func = ((j->udt & UDT_FUNC) && (j->func == operators::assign)) ? conditional : elseIf;
 					unit->udt = UDT_ID;
-					char str[255]; itoa(nestled, str, 10);
-					unit->lit = std::string(" switch[") + str + "]";
+					TCHAR str[255]; _itot(nestled, str, 10);
+					unit->lit = STRING(_T(" switch[")) + str + _T("]");
 					i->udt = UDT_FUNC;
 					i->func = operators::eq;
 					i->params = 2;
@@ -864,7 +872,7 @@ void CProgram::parseFile(FILE *pFile)
 					i = m_units.insert(i + 1, mu) - 1;
 				}
 			}
-			else if (unit->lit == "default")
+			else if (unit->lit == _T("default"))
 			{
 				unit->udt = UNIT_DATA_TYPE(UDT_FUNC | UDT_LINE);
 				unit->func = skipElse;
@@ -898,9 +906,9 @@ void CProgram::parseFile(FILE *pFile)
 				}
 				else
 				{
-					char str[255]; itoa(i->params - 1, str, 10);
-					char line[255]; itoa(getLine(i), line, 10);
-					debugger(std::string("Near line ") + line + ": No accessible constructor for " + unit->lit + " has a parameter count of " + str + ".");
+					TCHAR str[255]; _itot(i->params - 1, str, 10);
+					TCHAR line[255]; _itot(getLine(i), line, 10);
+					debugger(STRING(_T("Near line ")) + line + _T(": No accessible constructor for ") + unit->lit + _T(" has a parameter count of ") + str + _T("."));
 				}
 			}
 		}
@@ -918,8 +926,8 @@ void CProgram::parseFile(FILE *pFile)
 			{
 				p->i = i - m_units.begin() + 1;
 			}
-			const std::string::size_type pos = i->lit.find("::");
-			if (pos != std::string::npos)
+			const STRING::size_type pos = i->lit.find(_T("::"));
+			if (pos != STRING::npos)
 			{
 				LPCLASS pCls = &m_classes[i->lit.substr(0, pos)];
 				if (pCls)
@@ -950,9 +958,9 @@ void CProgram::parseFile(FILE *pFile)
 		mu.udt = UNIT_DATA_TYPE(UDT_CLOSE | UDT_LINE);
 		for (unsigned int i = 0; i < depth; ++i)
 		{
-			char str[255];
-			itoa(getLine(m_units.begin() + matchBrace(m_units.insert(m_units.end(), mu))) + 1, str, 10);
-			debugger(std::string("Near line ") + str + ": Unmatched curly brace.");
+			TCHAR str[255];
+			_itot(getLine(m_units.begin() + matchBrace(m_units.insert(m_units.end(), mu))) + 1, str, 10);
+			debugger(STRING(_T("Near line ")) + str + _T(": Unmatched curly brace."));
 		}
 	}
 
@@ -978,8 +986,8 @@ void CProgram::parseFile(FILE *pFile)
 			else
 			{
 				// Could not find function.
-				char str[255]; itoa(getLine(i), str, 10);
-				debugger(std::string("Near line ") + str + ": Could not find function \"" + unit->lit + "\".");
+				TCHAR str[255]; _itot(getLine(i), str, 10);
+				debugger(STRING(_T("Near line ")) + str + _T(": Could not find function \"" + unit->lit + "\"."));
 				i->func = NULL;
 			}
 		}
@@ -990,8 +998,8 @@ void CProgram::parseFile(FILE *pFile)
 bool CProgram::resolvePluginCall(LPMACHINE_UNIT pUnit)
 {
 	// Get lowercase name.
-	char *const lwr = _strlwr(_strdup(pUnit->lit.c_str()));
-	const std::string name = lwr;
+	TCHAR *const lwr = _tcslwr(_tcsdup(pUnit->lit.c_str()));
+	const STRING name = lwr;
 	free(lwr);
 
 	// Query plugins.
@@ -1039,14 +1047,14 @@ unsigned int CProgram::matchBrace(POS i)
 }
 
 // Include a file.
-void CProgram::include(const std::string file)
+void CProgram::include(const STRING file)
 {
 	std::vector<NAMED_METHOD> methods = NAMED_METHOD::m_methods;
 
 	CProgram prg(file);
 
 	{
-		std::map<std::string, tagClass>::const_iterator i = prg.m_classes.begin();
+		std::map<STRING, tagClass>::const_iterator i = prg.m_classes.begin();
 		for (; i != prg.m_classes.end(); ++i)
 		{
 			m_classes.insert(*i);
@@ -1071,13 +1079,13 @@ void CProgram::include(const std::string file)
 }
 
 // Save an RPGCode program.
-void CProgram::save(const std::string fileName) const
+void CProgram::save(const STRING fileName) const
 {
-	FILE *file = fopen(fileName.c_str(), "wb");
+	FILE *file = fopen(fileName.c_str(), _T("wb"));
 
 	// First character in file is NULL.
-	const char c = '\0';
-	fwrite(&c, sizeof(char), 1, file);
+	const TCHAR c = _T('\0');
+	fwrite(&c, sizeof(TCHAR), 1, file);
 
 	// Build a list of used functions.
 	int count = 0;
@@ -1088,49 +1096,49 @@ void CProgram::save(const std::string fileName) const
 		if (i->udt & UDT_FUNC)
 		{
 			if (funcs.count(i->func) != 0) continue;
-			std::map<std::string, MACHINE_FUNC>::iterator j = m_functions.begin();
+			std::map<STRING, MACHINE_FUNC>::iterator j = m_functions.begin();
 			for (; j != m_functions.end(); ++j)
 			{
 				if (i->func == j->second) break;
 			}
 
-			fwrite(j->first.c_str(), sizeof(char), j->first.length() + 1, file);
+			fwrite(j->first.c_str(), sizeof(TCHAR), j->first.length() + 1, file);
 			funcs[j->second] = count++;
 		}
 	}
 
-	fwrite(&c, sizeof(char), 1, file);
+	fwrite(&c, sizeof(TCHAR), 1, file);
 
 	// Classes.
-	std::map<std::string, tagClass>::const_iterator j = m_classes.begin();
+	std::map<STRING, tagClass>::const_iterator j = m_classes.begin();
 	for (; j != m_classes.end(); ++j)
 	{
-		fwrite(j->first.c_str(), sizeof(char), j->first.length() + 1, file);
-		std::deque<std::string>::const_iterator k = j->second.inherits.begin();
+		fwrite(j->first.c_str(), sizeof(TCHAR), j->first.length() + 1, file);
+		std::deque<STRING>::const_iterator k = j->second.inherits.begin();
 		for (; k != j->second.inherits.end(); ++k)
 		{
-			fwrite(k->c_str(), sizeof(char), k->length() + 1, file);
+			fwrite(k->c_str(), sizeof(TCHAR), k->length() + 1, file);
 		}
-		fwrite(&c, sizeof(char), 1, file);
-		std::deque<std::pair<std::string, CLASS_VISIBILITY> >::const_iterator l = j->second.members.begin();
+		fwrite(&c, sizeof(TCHAR), 1, file);
+		std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator l = j->second.members.begin();
 		for (; l != j->second.members.end(); ++l)
 		{
-			fwrite(l->first.c_str(), sizeof(char), l->first.length() + 1, file);
+			fwrite(l->first.c_str(), sizeof(TCHAR), l->first.length() + 1, file);
 			fwrite(&l->second, sizeof(CLASS_VISIBILITY), 1, file);
 		}
-		fwrite(&c, sizeof(char), 1, file);
+		fwrite(&c, sizeof(TCHAR), 1, file);
 		std::deque<std::pair<NAMED_METHOD, CLASS_VISIBILITY> >::const_iterator m = j->second.methods.begin();
 		for (; m != j->second.methods.end(); ++m)
 		{
-			fwrite(m->first.name.c_str(), sizeof(char), m->first.name.length() + 1, file);
+			fwrite(m->first.name.c_str(), sizeof(TCHAR), m->first.name.length() + 1, file);
 			fwrite(&m->first.params, sizeof(int), 1, file);
 			fwrite(&m->first.i, sizeof(unsigned int), 1, file);
 			fwrite(&m->second, sizeof(CLASS_VISIBILITY), 1, file);
 		}
-		fwrite(&c, sizeof(char), 1, file);
+		fwrite(&c, sizeof(TCHAR), 1, file);
 	}
 
-	fwrite(&c, sizeof(char), 1, file);
+	fwrite(&c, sizeof(TCHAR), 1, file);
 
 	// Write the instruction units.
 	for (i = m_units.begin(); i != m_units.end(); ++i)
@@ -1142,7 +1150,7 @@ void CProgram::save(const std::string fileName) const
 		}
 		else if ((i->udt & UDT_LIT) || (i->udt & UDT_ID) || (i->udt & UDT_LABEL) || (i->udt & UDT_PLUGIN))
 		{
-			fwrite(i->lit.c_str(), sizeof(char), i->lit.length() + 1, file);
+			fwrite(i->lit.c_str(), sizeof(TCHAR), i->lit.length() + 1, file);
 		}
 		else if (i->udt & UDT_FUNC)
 		{
@@ -1163,14 +1171,14 @@ void CProgram::run()
 	++m_runningPrograms;
 	programInit();
 
-	//std::cerr << "\n============================================\n\n";
+	//std::cerr << _T("\n============================================\n\n");
 
 	//for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	//{
 	//	m_i->show();
 	//}
 
-	//std::cerr << "\n============================================\n\n";
+	//std::cerr << _T("\n============================================\n\n");
 
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
@@ -1183,12 +1191,12 @@ void CProgram::run()
 }
 
 // Jump to a label.
-void CProgram::jump(const std::string label)
+void CProgram::jump(const STRING label)
 {
 	CONST_POS i = m_units.begin();
 	for (; i != m_units.end(); ++i)
 	{
-		if ((i->udt & UDT_LABEL) && (_strcmpi(i->lit.c_str(), label.c_str()) == 0))
+		if ((i->udt & UDT_LABEL) && (_tcsicmp(i->lit.c_str(), label.c_str()) == 0))
 		{
 			m_i = i;
 			return;
@@ -1211,13 +1219,13 @@ void tagMachineUnit::execute(CProgram *prg) const
 			}
 			catch (CException exp)
 			{
-				char str[255]; itoa(prg->getLine(prg->m_i), str, 10);
-				CProgram::debugger(std::string("Near line ") + str + ": " + exp.getMessage());
+				TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
+				CProgram::debugger(STRING(_T("Near line ")) + str + _T(": ") + exp.getMessage());
 			}
 			catch (...)
 			{
-				char str[255]; itoa(prg->getLine(prg->m_i), str, 10);
-				CProgram::debugger(std::string("Near line ") + str + ": Unexpected error.");
+				TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
+				CProgram::debugger(STRING(_T("Near line ")) + str + _T(": Unexpected error."));
 			}
 		}
 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
@@ -1295,13 +1303,13 @@ bool tagStackFrame::getBool() const
 {
 	if (getType() & UDT_LIT)
 	{
-		return (_stricmp(getLit().c_str(), "off") != 0);
+		return (_stricmp(getLit().c_str(), _T("off")) != 0);
 	}
 	return (getNum() != 0.0);
 }
 
 // Get the literal value from a stack frame.
-std::string tagStackFrame::getLit() const
+STRING tagStackFrame::getLit() const
 {
 	if (udt & UDT_ID)
 	{
@@ -1309,21 +1317,21 @@ std::string tagStackFrame::getLit() const
 #if !defined(_DEBUG) && defined(_MSC_VER)
 		// Without the following line, VC++ will crash
 		// in release mode. I'll be damned if I know why.
-		const std::string str;
+		const STRING str;
 #endif
 	}
 	else if (udt & UDT_NUM)
 	{
 		if (udt & UDT_UNSET)
 		{
-			// Return an empty string rather than "0" if
+			// Return an empty string rather than _T("0") if
 			// the variable hasn't been set.
-			return std::string();
+			return STRING();
 		}
-		char str[255];
+		TCHAR str[255];
 		gcvt(num, 255, str);
-		char &c = str[strlen(str) - 1];
-		if (c == '.') c = '\0';
+		TCHAR &c = str[strlen(str) - 1];
+		if (c == _T('.')) c = _T('\0');
 		return str;
 	}
 	return lit;
@@ -1662,45 +1670,45 @@ void operators::member(CALL_DATA &call)
 {
 	if (!(call[0].getType() & UDT_OBJ))
 	{
-		throw CError("Invalid object.");
+		throw CError(_T("Invalid object."));
 	}
 
 	unsigned int obj = (unsigned int)call[0].getNum();
-	const std::string type = CProgram::m_objects[obj];
-	std::map<std::string, tagClass>::const_iterator i = call.prg->m_classes.find(type);
+	const STRING type = CProgram::m_objects[obj];
+	std::map<STRING, tagClass>::const_iterator i = call.prg->m_classes.find(type);
 	if (i == call.prg->m_classes.end())
 	{
-		throw CError("Could not find class " + type + ".");
+		throw CError(_T("Could not find class ") + type + _T("."));
 	}
 
 	const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
-	const std::string mem = call[1].lit;
+	const STRING mem = call[1].lit;
 	if (i->second.memberExists(mem, cv))
 	{
-		char str[255];
-		itoa(obj, str, 10);
+		TCHAR str[255];
+		_itot(obj, str, 10);
 		call.ret().udt = UDT_ID;
-		call.ret().lit = std::string(str) + "::" + mem;
+		call.ret().lit = STRING(str) + _T("::") + mem;
 	}
 	else
 	{
-		throw CError("Class " + type + " has no accessible " + mem + " member.");
+		throw CError(_T("Class ") + type + _T(" has no accessible ") + mem + _T(" member."));
 	}
 }
 
 void operators::array(CALL_DATA &call)
 {
 	call.ret().udt = UDT_ID;
-	call.ret().lit = call[0].lit + '[';
+	call.ret().lit = call[0].lit + _T('[');
 	if (call[1].getType() == UDT_NUM)
 	{
 		call.ret().lit += call[1].getLit();
 	}
 	else
 	{
-		call.ret().lit += '"' + call[1].getLit() + '"';
+		call.ret().lit += _T('"') + call[1].getLit() + _T('"');
 	}
-	call.ret().lit += ']';
+	call.ret().lit += _T(']');
 }
 
 // If...else control structure.
@@ -1763,12 +1771,12 @@ void CProgram::forLoop(CALL_DATA &call)
 // Create an object.
 void CProgram::classFactory(CALL_DATA &call)
 {
-	const std::string cls = call[0].lit;
+	const STRING cls = call[0].lit;
 	const LPCLASS pClass = &call.prg->m_classes[cls];
 
 	unsigned int obj = m_objects.size() + 1;
 	while (m_objects.count(obj)) ++obj;
-	m_objects.insert(std::map<unsigned int, std::string>::value_type(obj, cls));
+	m_objects.insert(std::map<unsigned int, STRING>::value_type(obj, cls));
 
 	call.ret().udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
 	call.ret().num = obj;
@@ -1777,64 +1785,64 @@ void CProgram::classFactory(CALL_DATA &call)
 void CProgram::initialize()
 {
 	// Special.
-	addFunction(" null", NULL);
+	addFunction(_T(" null"), NULL);
 
 	// Operators.
-	addFunction("+", operators::add);
-	addFunction("-", operators::sub);
-	addFunction("*", operators::mul);
-	addFunction("|", operators::bor);
-	addFunction("`", operators::bxor);
-	addFunction("&", operators::band);
-	addFunction("||", operators::lor);
-	addFunction("&&", operators::land);
-	addFunction("!=", operators::ieq);
-	addFunction("==", operators::eq);
-	addFunction(">=", operators::gte);
-	addFunction("<=", operators::lte);
-	addFunction(">", operators::gt);
-	addFunction("<", operators::lt);
-	addFunction(">>", operators::rs);
-	addFunction("<<", operators::ls);
-	addFunction("%", operators::mod);
-	addFunction("/", operators::div);
-	addFunction("^", operators::pow);
-	addFunction("=", operators::assign);
-	addFunction("`=", operators::xor_assign);
-	addFunction("|=", operators::or_assign);
-	addFunction("&=", operators::and_assign);
-	addFunction(">>=", operators::rs_assign);
-	addFunction("<<=", operators::ls_assign);
-	addFunction("-=", operators::sub_assign);
-	addFunction("+=", operators::add_assign);
-	addFunction("%=", operators::mod_assign);
-	addFunction("/=", operators::div_assign);
-	addFunction("*=", operators::mul_assign);
-	addFunction("^=", operators::pow_assign);
-	addFunction("||=", operators::lor_assign);
-	addFunction("&&=", operators::land_assign);
-	addFunction("[]", operators::array);
-	addFunction("++i", operators::prefixIncrement);
-	addFunction("i++", operators::postfixIncrement);
-	addFunction("--i", operators::prefixDecrement);
-	addFunction("i--", operators::postfixDecrement);
-	addFunction("-i", operators::unaryNegation);
-	addFunction("!", operators::lnot);
-	addFunction("?:", operators::tertiary);
-	addFunction("->", operators::member);
+	addFunction(_T("+"), operators::add);
+	addFunction(_T("-"), operators::sub);
+	addFunction(_T("*"), operators::mul);
+	addFunction(_T("|"), operators::bor);
+	addFunction(_T("`"), operators::bxor);
+	addFunction(_T("&"), operators::band);
+	addFunction(_T("||"), operators::lor);
+	addFunction(_T("&&"), operators::land);
+	addFunction(_T("!="), operators::ieq);
+	addFunction(_T("=="), operators::eq);
+	addFunction(_T(">="), operators::gte);
+	addFunction(_T("<="), operators::lte);
+	addFunction(_T(">"), operators::gt);
+	addFunction(_T("<"), operators::lt);
+	addFunction(_T(">>"), operators::rs);
+	addFunction(_T("<<"), operators::ls);
+	addFunction(_T("%"), operators::mod);
+	addFunction(_T("/"), operators::div);
+	addFunction(_T("^"), operators::pow);
+	addFunction(_T("="), operators::assign);
+	addFunction(_T("`="), operators::xor_assign);
+	addFunction(_T("|="), operators::or_assign);
+	addFunction(_T("&="), operators::and_assign);
+	addFunction(_T(">>="), operators::rs_assign);
+	addFunction(_T("<<="), operators::ls_assign);
+	addFunction(_T("-="), operators::sub_assign);
+	addFunction(_T("+="), operators::add_assign);
+	addFunction(_T("%="), operators::mod_assign);
+	addFunction(_T("/="), operators::div_assign);
+	addFunction(_T("*="), operators::mul_assign);
+	addFunction(_T("^="), operators::pow_assign);
+	addFunction(_T("||="), operators::lor_assign);
+	addFunction(_T("&&="), operators::land_assign);
+	addFunction(_T("[]"), operators::array);
+	addFunction(_T("++i"), operators::prefixIncrement);
+	addFunction(_T("i++"), operators::postfixIncrement);
+	addFunction(_T("--i"), operators::prefixDecrement);
+	addFunction(_T("i--"), operators::postfixDecrement);
+	addFunction(_T("-i"), operators::unaryNegation);
+	addFunction(_T("!"), operators::lnot);
+	addFunction(_T("?:"), operators::tertiary);
+	addFunction(_T("->"), operators::member);
 
 	// Reserved.
-	addFunction("method a", skipMethod);
-	addFunction("method b", methodCall);
-	addFunction(" plugin", pluginCall);
-	addFunction("class a", skipClass);
-	addFunction("class b", classFactory);
-	addFunction("if", conditional);
-	addFunction("else", skipElse);
-	addFunction("elseif", elseIf);
-	addFunction("while", whileLoop);
-	addFunction("until", untilLoop);
-	addFunction("for", forLoop);
-	addFunction("return", returnVal);
-	addFunction("returnmethod", returnVal); // For backwards compatibility.
+	addFunction(_T("method a"), skipMethod);
+	addFunction(_T("method b"), methodCall);
+	addFunction(_T(" plugin"), pluginCall);
+	addFunction(_T("class a"), skipClass);
+	addFunction(_T("class b"), classFactory);
+	addFunction(_T("if"), conditional);
+	addFunction(_T("else"), skipElse);
+	addFunction(_T("elseif"), elseIf);
+	addFunction(_T("while"), whileLoop);
+	addFunction(_T("until"), untilLoop);
+	addFunction(_T("for"), forLoop);
+	addFunction(_T("return"), returnVal);
+	addFunction(_T("returnmethod"), returnVal); // For backwards compatibility.
 }

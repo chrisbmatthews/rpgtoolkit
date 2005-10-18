@@ -8,6 +8,7 @@
 #ifndef _ENEMY_H_
 #define _ENEMY_H_
 
+#include "../../tkCommon/strings.h"
 #include "../fight/IFighter.h"
 #include <vector>
 #include <map>
@@ -23,7 +24,7 @@ typedef enum tagEneGfx
 
 typedef struct tagEnemy : public IFighter
 {
-	std::string strName;
+	STRING strName;
 	int iHp, iMaxHp;
 	int iSmp, iMaxSmp;
 	int fp;
@@ -31,38 +32,38 @@ typedef struct tagEnemy : public IFighter
 	char run;
 	short takeCrit;
 	short giveCrit;
-    std::vector<std::string> specials;
-    std::vector<std::string> weaknesses;
-	std::vector<std::string> strengths;
+    std::vector<STRING> specials;
+    std::vector<STRING> weaknesses;
+	std::vector<STRING> strengths;
 	char ai; // 0-4 inclusive.
     char useCode; // Has program for AI?
-    std::string prg;
+    STRING prg;
     int exp;
     int gp;
-    std::string winPrg;
-    std::string runPrg;
-	std::vector<std::string> gfx;
-    std::map<std::string, std::string> customAnims;
+    STRING winPrg;
+    STRING runPrg;
+	std::vector<STRING> gfx;
+    std::map<STRING, STRING> customAnims;
 	// IFighter.
 	void experience(const int val) { exp = val; }
-	int experience(void) { return exp; }
+	int experience() { return exp; }
 	void health(const int val) { iHp = val; }
-	int health(void) { return iHp; }
+	int health() { return iHp; }
 	void maxHealth(const int val) { iMaxHp = val; }
-	int maxHealth(void) { return iMaxHp; }
+	int maxHealth() { return iMaxHp; }
 	void defence(const int val) { dp = val; }
-	int defence(void) { return dp; }
+	int defence() { return dp; }
 	void fight(const int val) { fp = val; }
-	int fight(void) { return fp; }
+	int fight() { return fp; }
 	void smp(const int val) { iSmp = val; }
-	int smp(void) { return iSmp; }
+	int smp() { return iSmp; }
 	void maxSmp(const int val) { iMaxSmp = val; }
-	int maxSmp(void) { return iMaxSmp; }
-	void name(const std::string str) { strName = str; }
-	std::string name(void) { return strName; }
-	std::string getStanceAnimation(const std::string anim);
+	int maxSmp() { return iMaxSmp; }
+	void name(const STRING str) { strName = str; }
+	STRING name() { return strName; }
+	STRING getStanceAnimation(const STRING anim);
 	//----------------------------------------------------------
-	bool open(const std::string strFile);
+	bool open(const STRING strFile);
 } ENEMY, *LPENEMY;
 
 #endif
