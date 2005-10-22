@@ -1225,7 +1225,7 @@ bool CSprite::programTest(void)
 		const STRING finalValue = prg->finalValue;
 		const STRING finalVar = prg->finalVar;
 
-		CProgram(g_projectPath + PRG_PATH + prg->fileName).run();
+		CProgram(g_projectPath + PRG_PATH + prg->fileName, prg).run();
 
 		// Set the requested variable after the program is complete.
 		if (activate == PRG_CONDITIONAL)

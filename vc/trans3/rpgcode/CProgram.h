@@ -187,12 +187,17 @@ typedef MACHINE_UNITS::iterator POS;
 // A plugin.
 class IPlugin;
 
+// A board program;
+struct tagBoardProgram;
+
 // A program.
 class CProgram
 {
 public:
-	CProgram() { }
-	CProgram(const STRING file) { open(file); }
+	CProgram(tagBoardProgram *pBrdProgram = NULL):
+		m_pBoardPrg(pBrdProgram) { }
+	CProgram(const STRING file, tagBoardProgram *pBrdProgram = NULL):
+		m_pBoardPrg(pBrdProgram) { open(file); }
 	virtual ~CProgram() { }
 
 	bool open(const STRING fileName);
@@ -207,6 +212,7 @@ public:
 	CONST_POS getPos() const { return m_i; }
 	CONST_POS getEnd() const { return m_units.end(); }
 	LPSTACK_FRAME getLocal(const STRING var) { return &m_locals.back()[var]; }
+	tagBoardProgram *getBoardLocation() const { return m_pBoardPrg; }
 
 	virtual LPSTACK_FRAME getVar(const STRING name);
 	virtual bool isThread() const { return false; }
@@ -231,6 +237,7 @@ private:
 	std::vector<CALL_FRAME> m_calls;
 	std::map<STRING, CLASS> m_classes;
 	std::vector<unsigned int> m_lines;
+	tagBoardProgram *m_pBoardPrg;
 
 	// Yacc globals.
 	static LPMACHINE_UNITS m_pyyUnits;
