@@ -116,7 +116,7 @@ bool tagBoard::open(const STRING fileName)
 
 				if (test < 0)
 				{
-					// _T("Compression"): stream of identical tiles _T('test') long. 
+					// "Compression": stream of identical tiles 'test' long. 
 					test = -test;
 					short bb, rr, gg, bl;
 					char tt;

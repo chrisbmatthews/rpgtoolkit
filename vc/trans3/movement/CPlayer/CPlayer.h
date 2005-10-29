@@ -23,20 +23,20 @@ public:
 	// IFighter.
 	// Keep this first in the vtable.
 	//------------------------------------------------------------------
-	void experience(const int val) { m_playerMem.experience = val; }
-	int experience() { return m_playerMem.experience; }
-	void health(const int val) { m_playerMem.health = val; }
-	int health() { return m_playerMem.health; }
-	void maxHealth(const int val) { m_playerMem.maxHealth = val; }
-	int maxHealth() { return m_playerMem.maxHealth; }
-	void defence(const int val) { m_playerMem.defense = val; }
-	int defence() { return m_playerMem.defense; }
-	void fight(const int val) { m_playerMem.fight = val; }
-	int fight() { return m_playerMem.fight; }
-	void smp(const int val) { m_playerMem.sm = val; }
-	int smp() { return m_playerMem.sm; }
-	void maxSmp(const int val) { m_playerMem.smMax = val; }
-	int maxSmp() { return m_playerMem.smMax; }
+	void experience(const int val) { m_playerMem.stats.experience = val; }
+	int experience() { return m_playerMem.stats.experience; }
+	void health(const int val) { m_playerMem.stats.health = val; }
+	int health() { return m_playerMem.stats.health; }
+	void maxHealth(const int val) { m_playerMem.stats.maxHealth = val; }
+	int maxHealth() { return m_playerMem.stats.maxHealth; }
+	void defence(const int val) { m_playerMem.stats.defense = val; }
+	int defence() { return m_playerMem.stats.defense; }
+	void fight(const int val) { m_playerMem.stats.fight = val; }
+	int fight() { return m_playerMem.stats.fight; }
+	void smp(const int val) { m_playerMem.stats.sm = val; }
+	int smp() { return m_playerMem.stats.sm; }
+	void maxSmp(const int val) { m_playerMem.stats.smMax = val; }
+	int maxSmp() { return m_playerMem.stats.smMax; }
 	void name(const STRING str) { m_playerMem.charname = str; }
 	STRING name() { return m_playerMem.charname; }
 	STRING getStanceAnimation(const STRING anim) { return m_attr.getStanceAnm(anim); }
@@ -68,6 +68,12 @@ public:
 	void addEquipment(const unsigned int slot, const STRING file);
 	void removeEquipment(const unsigned int slot);
 
+	void calculateLevels(const bool init);
+
+	// For the callbacks...
+	LPPLAYER getPlayer() { return &m_playerMem; }
+	LPPLAYER_STATS getInitialStats() { return &m_initStats; }
+
 private:
 
 	struct tagEquipment
@@ -77,6 +83,7 @@ private:
 	} m_equipment;
 
 	PLAYER m_playerMem;			// Player-specific data.
+	PLAYER_STATS m_initStats;	// Initial stats.
 
 };
 

@@ -23,10 +23,27 @@
 #define UBOUND_STANDING_GFX 7
 
 /*
+ * Player stats.
+ */
+typedef struct tagPlayerStats
+{
+	int experience;								// Initial Experience Level.
+	int health;									// Initial health level.
+	int maxHealth;								// Initial maximum health level.
+	int defense;								// Initial DP.
+	int fight;									// Initial FP.
+	int sm;										// Initial SM power.
+	int smMax;									// Initial Max SM power.
+	int level;									// Initial level.
+} PLAYER_STATS, *LPPLAYER_STATS;
+
+/*
  * A player.
  */
 typedef struct tagPlayer
 {
+	STRING fileName;
+
 	STRING charname;						// Character name.
 	STRING experienceVar;					// Experience variable.
 	STRING defenseVar;						// DP variable.
@@ -37,14 +54,7 @@ typedef struct tagPlayer
 	STRING smVar;							// Special Move power variable.
 	STRING smMaxVar;						// Special Move maximum variable.
 	STRING leVar;							// Level variable.
-	int experience;								// Initial Experience Level.
-	int health;									// Initial health level.
-	int maxHealth;								// Initial maximum health level.
-	int defense;								// Initial DP.
-	int fight;									// Initial FP.
-	int sm;										// Initial SM power.
-	int smMax;									// Initial Max SM power.
-	int level;									// Initial level.
+	PLAYER_STATS stats;					// Stats.
 	STRING profilePic;						// Profile picture.
 	std::vector<STRING> smlist;			// Special Move list (200 in total!).
 	std::vector<int> spcMinExp;					// Minimum experience for each move.
@@ -70,6 +80,6 @@ typedef struct tagPlayer
 	std::vector<double> levelStarts;			// Exp values at which all levels start.
 
 	short open(const STRING fileName, SPRITE_ATTR &spriteAttr);
-} PLAYER;
+} PLAYER, *LPPLAYER;
 
 #endif

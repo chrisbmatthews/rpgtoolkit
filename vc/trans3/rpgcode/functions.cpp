@@ -1345,7 +1345,7 @@ void tileType(CALL_DATA &params)
 	const STRING type = params[2].getLit();
 	int tile = TT_NORMAL;
 
-	// _T("tile") to be recognised in tagBoard::vectorize()
+	// "tile" to be recognised in tagBoard::vectorize()
 	if (_ftcsicmp(type.c_str(), _T("SOLID")) == 0) tile = TT_SOLID;
 	else if (_ftcsicmp(type.c_str(), _T("UNDER")) == 0) tile = TT_UNDER;
 	else if (_ftcsicmp(type.substr(0, 6).c_str(), _T("STAIRS")) == 0)
@@ -1377,7 +1377,7 @@ void tileType(CALL_DATA &params)
  * Using vector collision, square vectors are added to the board with 
  * corresponding types. If an identical vector exists at the point,
  * alter its type rather than adding another.
- * Note: Overriding with _T("normal") may now not work as intended - users
+ * Note: Overriding with "normal" may now not work as intended - users
  * should use vector tools instead.
  */
 void tileType(CALL_DATA &params)
@@ -5546,7 +5546,7 @@ void shopcolors(CALL_DATA &params)
 /*
  * void mouseCursor(string file, int x, int y, int red, int green. int blue)
  * 
- * Change the mouse cursor. _T("TK DEFAULT") or _T("") restores
+ * Change the mouse cursor. "TK DEFAULT" or "" restores
  * the default cursor.
  */
 void mousecursor(CALL_DATA &params)

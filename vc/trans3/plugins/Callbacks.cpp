@@ -102,19 +102,19 @@ STDMETHODIMP CCallbacks::CBGetScreenDC(int *pRet)
 
 STDMETHODIMP CCallbacks::CBGetScratch1DC(int *pRet)
 {
-	*pRet = NULL; // Obsolete.
+	*pRet = 0; // Obsolete.
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetScratch2DC(int *pRet)
 {
-	*pRet = NULL; // Obsolete.
+	*pRet = 0; // Obsolete.
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetMwinDC(int *pRet)
 {
-	*pRet = NULL; // Obsolete.
+	*pRet = 0; // Obsolete.
 	return S_OK;
 }
 
@@ -316,6 +316,120 @@ STDMETHODIMP CCallbacks::CBSetEnemyString(int infoCode, BSTR newValue, int eneSl
 
 STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSlot, int *pRet)
 {
+	if (playerSlot >= g_players.size())
+	{
+		*pRet = 0;
+		return S_OK;
+	}
+
+	CPlayer *pPlayer = g_players[playerSlot];
+	LPPLAYER pData = pPlayer->getPlayer();
+	LPPLAYER_STATS pInitStats = pPlayer->getInitialStats();
+
+	switch (infoCode)
+	{
+		case PLAYER_INITXP:
+			*pRet = pInitStats->experience;
+			break;
+
+		case PLAYER_INITHP:
+			*pRet = pInitStats->health;
+			break;
+
+		case PLAYER_INITMAXHP:
+			*pRet = pInitStats->maxHealth;
+			break;
+
+		case PLAYER_INITDP:
+			*pRet = pInitStats->defense;
+			break;
+
+		case PLAYER_INITFP:
+			*pRet = pInitStats->fight;
+			break;
+
+		case PLAYER_INITSMP:
+			*pRet = pInitStats->sm;
+			break;
+
+		case PLAYER_INITMAXSMP:
+			*pRet = pInitStats->smMax;
+			break;
+
+		case PLAYER_INITLEVEL:
+			*pRet = pInitStats->level;
+			break;
+
+		case PLAYER_DOES_SM:
+			*pRet = !pData->smYN;
+			break;
+
+		case PLAYER_SM_MIN_EXPS:
+			if (arrayPos < 0) arrayPos = 0;
+			else if (arrayPos > 200) arrayPos = 200;
+			*pRet = pData->spcMinExp[arrayPos];
+			break;
+
+		case PLAYER_SM_MIN_LEVELS:
+			if (arrayPos < 0) arrayPos = 0;
+			else if (arrayPos > 200) arrayPos = 200;
+			*pRet = pData->spcMinLevel[arrayPos];
+			break;
+
+		case PLAYER_ARMOURS:
+			if (arrayPos < 0) arrayPos = 0;
+			else if (arrayPos > 6) arrayPos = 6;
+			*pRet = pData->armorType[arrayPos];
+			break;
+
+		case PLAYER_LEVELTYPE:
+			*pRet = pData->levelType;
+			break;
+
+		case PLAYER_XP_INCREASE:
+			*pRet = pData->experienceIncrease;
+			break;
+
+		case PLAYER_MAXLEVEL:
+			*pRet = pData->maxLevel;
+			break;
+
+		case PLAYER_HP_INCREASE:
+			*pRet = pData->levelHp;
+			break;
+
+		case PLAYER_DP_INCREASE:
+			*pRet = pData->levelDp;
+			break;
+
+		case PLAYER_FP_INCREASE:
+			*pRet = pData->levelFp;
+			break;
+
+		case PLAYER_SMP_INCREASE:
+			*pRet = pData->levelSm;
+			break;
+
+		case PLAYER_LEVELUP_TYPE:
+			*pRet = pData->charLevelUpType;
+			break;
+
+		case PLAYER_DIR_FACING:
+			// TBD.
+			break;
+
+		case PLAYER_NEXTLEVEL:
+		{
+			unsigned double levelStart = 0.0, perc = 0.0;
+			levelStart = pData->levelStarts[pData->stats.level - pInitStats->level];
+			perc = (pData->stats.experience - levelStart) / (pData->nextLevel - levelStart) * 100.0;
+			*pRet = int(perc);
+		} break;
+
+		default:
+			*pRet = 0;
+			break;
+	}
 	return S_OK;
 }
 
@@ -326,6 +440,107 @@ STDMETHODIMP CCallbacks::CBGetPlayerString(int infoCode, int arrayPos, int playe
 
 STDMETHODIMP CCallbacks::CBSetPlayerNum(int infoCode, int arrayPos, int newVal, int playerSlot)
 {
+	if (playerSlot >= g_players.size())
+	{
+		return S_OK;
+	}
+
+	CPlayer *pPlayer = g_players[playerSlot];
+	LPPLAYER pData = pPlayer->getPlayer();
+	LPPLAYER_STATS pInitStats = pPlayer->getInitialStats();
+
+	switch (infoCode)
+	{
+		case PLAYER_INITXP:
+			pInitStats->experience = newVal;
+			break;
+
+		case PLAYER_INITHP:
+			pInitStats->health = newVal;
+			break;
+
+		case PLAYER_INITMAXHP:
+			pInitStats->maxHealth = newVal;
+			break;
+
+		case PLAYER_INITDP:
+			pInitStats->defense = newVal;
+			break;
+
+		case PLAYER_INITFP:
+			pInitStats->fight = newVal;
+			break;
+
+		case PLAYER_INITSMP:
+			pInitStats->sm = newVal;
+			break;
+
+		case PLAYER_INITMAXSMP:
+			pInitStats->smMax = newVal;
+			break;
+
+		case PLAYER_INITLEVEL:
+			pInitStats->level = newVal;
+			break;
+
+		case PLAYER_DOES_SM:
+			pData->smYN = !newVal;
+			break;
+
+		case PLAYER_SM_MIN_EXPS:
+			if (arrayPos < 0) arrayPos = 0;
+			else if (arrayPos > 200) arrayPos = 200;
+			pData->spcMinExp[arrayPos] = newVal;
+			break;
+
+		case PLAYER_SM_MIN_LEVELS:
+			if (arrayPos < 0) arrayPos = 0;
+			else if (arrayPos > 200) arrayPos = 200;
+			pData->spcMinLevel[arrayPos] = newVal;
+			break;
+
+		case PLAYER_ARMOURS:
+			if (arrayPos < 0) arrayPos = 0;
+			else if (arrayPos > 6) arrayPos = 6;
+			pData->armorType[arrayPos] = newVal;
+			break;
+
+		case PLAYER_LEVELTYPE:
+			pData->levelType = newVal;
+			break;
+
+		case PLAYER_XP_INCREASE:
+			pData->experienceIncrease = newVal;
+			break;
+
+		case PLAYER_MAXLEVEL:
+			pData->maxLevel = newVal;
+			break;
+
+		case PLAYER_HP_INCREASE:
+			pData->levelHp = newVal;
+			break;
+
+		case PLAYER_DP_INCREASE:
+			pData->levelDp = newVal;
+			break;
+
+		case PLAYER_FP_INCREASE:
+			pData->levelFp = newVal;
+			break;
+
+		case PLAYER_SMP_INCREASE:
+			pData->levelSm = newVal;
+			break;
+
+		case PLAYER_LEVELUP_TYPE:
+			pData->charLevelUpType = newVal;
+			break;
+
+		case PLAYER_DIR_FACING:
+			// TBD.
+			break;
+	}
 	return S_OK;
 }
 
@@ -348,9 +563,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			if (pPlayer) bstr = getString(pPlayer->name());
 			break;
 		case GEN_PLAYERFILES:
-			// No way to get it, Jon.
-			// That's the great thing about encapsulation, Colin.
-			// Your style of _T('encapsulation'), at least.
+			if (pPlayer) bstr = getString(pPlayer->getPlayer()->fileName);
 			break;
 		case GEN_PLYROTHERHANDLES:
 			break;
@@ -1744,9 +1957,9 @@ STDMETHODIMP CCallbacks::CBReleaseFighterCharge(int partyIdx, int fighterIdx)
 
 STDMETHODIMP CCallbacks::CBFightDoAttack(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, int amount, int toSmp, int *pRet)
 {
-#pragma warning (disable : 4800) // forcing value to bool _T('true') or _T('false') (performance warning)
+#pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	*pRet = performAttack(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, amount, toSmp);
-#pragma warning (default : 4800) // forcing value to bool _T('true') or _T('false') (performance warning)
+#pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	return S_OK;
 }
 

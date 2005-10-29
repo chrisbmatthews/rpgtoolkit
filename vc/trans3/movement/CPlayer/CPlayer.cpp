@@ -29,6 +29,9 @@ CSprite(show)				// Is the player visible?
 		m_attr.createVectors(SPR_STEP);
 	}
 
+	m_initStats = m_playerMem.stats;
+	calculateLevels(true);
+
 	// This seemingly innocent block just loves to crash
 	// for no reason. Crashing annoys me, so I'm commenting this
 	// out until such time as I fix it.
@@ -46,6 +49,41 @@ CSprite(show)				// Is the player visible?
 	m_attr.speed *= MILLISECONDS;
 	m_attr.idleTime *= MILLISECONDS;
 
+}
+
+/*
+ * Calculate level up information.
+ */
+void CPlayer::calculateLevels(const bool init)
+{
+	if (init)
+	{
+		m_playerMem.nextLevel = m_playerMem.levelType;
+		m_playerMem.levelProgression = m_playerMem.levelType - m_initStats.experience;
+	}
+
+	unsigned int numLevels = m_playerMem.maxLevel - m_initStats.level + 1;
+
+	std::vector<double> *pLevels = &m_playerMem.levelStarts;
+	pLevels->clear();
+	pLevels->reserve(numLevels);
+	pLevels->push_back(double(m_initStats.experience));
+
+	unsigned double exp = double(m_playerMem.levelType);
+	for (unsigned int i = 1; i < numLevels; ++i)
+	{
+		pLevels->push_back((*pLevels)[i - 1] + exp);
+		if (m_playerMem.charLevelUpType == 0)
+		{
+			// Linear increase.
+			exp += m_playerMem.experienceIncrease;
+		}
+		else
+		{
+			// Exponential increase.
+			exp *= 1 + m_playerMem.experienceIncrease;
+		}
+	}
 }
 
 /*
@@ -92,10 +130,10 @@ void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 	m_equipment.mSM += item.equipSM;
 
 	// Player variables.
-	m_playerMem.defense += item.equipDP;
-	m_playerMem.fight += item.equipFP;
-	m_playerMem.maxHealth += item.equipHP;
-	m_playerMem.smMax += item.equipSM;
+	m_playerMem.stats.defense += item.equipDP;
+	m_playerMem.stats.fight += item.equipFP;
+	m_playerMem.stats.maxHealth += item.equipHP;
+	m_playerMem.stats.smMax += item.equipSM;
 
 	// Run equip program.
 
@@ -152,12 +190,12 @@ void CPlayer::removeEquipment(const unsigned int slot)
 	m_equipment.mSM -= item.equipSM;
 
 	// Player variables.
-	m_playerMem.defense -= item.equipDP;
-	m_playerMem.fight -= item.equipFP;
-	m_playerMem.maxHealth -= item.equipHP;
-	m_playerMem.smMax -= item.equipSM;
+	m_playerMem.stats.defense -= item.equipDP;
+	m_playerMem.stats.fight -= item.equipFP;
+	m_playerMem.stats.maxHealth -= item.equipHP;
+	m_playerMem.stats.smMax -= item.equipSM;
 
 	// Cap health, smp.
-	if (m_playerMem.health > m_playerMem.maxHealth) m_playerMem.health = m_playerMem.maxHealth;
-	if (m_playerMem.sm > m_playerMem.smMax) m_playerMem.sm = m_playerMem.smMax;
+	if (m_playerMem.stats.health > m_playerMem.stats.maxHealth) m_playerMem.stats.health = m_playerMem.stats.maxHealth;
+	if (m_playerMem.stats.sm > m_playerMem.stats.smMax) m_playerMem.stats.sm = m_playerMem.stats.smMax;
 }

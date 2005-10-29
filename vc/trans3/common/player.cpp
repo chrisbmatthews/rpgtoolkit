@@ -9,6 +9,7 @@
  * Inclusions.
  */
 #include "player.h"
+#include "paths.h"
 #include "CFile.h"
 #include "mbox.h"
 
@@ -47,6 +48,8 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 		return 0;
 	}
 
+	this->fileName = removePath(fileName);
+
 	file.seek(13);
 	char cVersion;
 	file >> cVersion;
@@ -77,14 +80,14 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 		file >> smVar;
 		file >> smMaxVar;
 		file >> leVar;
-		file >> experience;
-		file >> health;
-		file >> maxHealth;
-		file >> defense;
-		file >> fight;
-		file >> sm;
-		file >> smMax;
-		file >> level;
+		file >> stats.experience;
+		file >> stats.health;
+		file >> stats.maxHealth;
+		file >> stats.defense;
+		file >> stats.fight;
+		file >> stats.sm;
+		file >> stats.smMax;
+		file >> stats.level;
 		file >> profilePic;
 
 		unsigned int i;
