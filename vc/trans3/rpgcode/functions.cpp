@@ -868,7 +868,31 @@ void over(CALL_DATA &params)
  */
 void prg(CALL_DATA &params)
 {
+	extern LPBOARD g_pBoard;
 
+	int z = 1;
+	if (params.params == 4)
+	{
+		z = int(params[3].getNum());
+	}
+	else if (params.params != 3)
+	{
+		throw CError(_T("Prg() requires three or four parameters."));
+	}
+
+	std::vector<LPBRD_PROGRAM>::iterator i = g_pBoard->programs.begin();
+	for (; i != g_pBoard->programs.end(); ++i)
+	{
+		if (_tcsicmp((*i)->fileName.c_str(), params[0].getLit().c_str()) == 0)
+		{
+			OBJ_POSITION obj;
+			obj.x = short(params[1].getNum());
+			obj.y = short(params[2].getNum());
+			g_pBoard->createProgramBase(*i, &obj);
+			(*i)->layer = z;
+			break;
+		}
+	}
 }
 
 /*
