@@ -147,6 +147,12 @@ typedef struct tagBoardTileAnim
 	int x, y, z;
 } BOARD_TILEANIM;
 
+// Struct to temporarily hold locations for old items, programs.
+typedef struct tagObjPosition
+{
+	short x, y, layer, version;
+} OBJ_POSITION, *LPOBJ_POSITION;
+
 /*
  * A board.
  */
@@ -243,7 +249,10 @@ typedef struct tagBoard
 	inline int pxWidth ();
 	inline int pxHeight();
 
+	void createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const;
 	const BRD_VECTOR *getVectorFromTile(const int x, const int y, const int z) const;
+
+	bool hasProgram(LPBRD_PROGRAM p) const;
 
 	tagBoard(): coordType(TILE_NORMAL), bkgImage(NULL) { }
 	~tagBoard() { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); }

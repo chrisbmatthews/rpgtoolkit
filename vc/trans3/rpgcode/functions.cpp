@@ -436,7 +436,17 @@ void branch(CALL_DATA &params)
  */
 void change(CALL_DATA &params)
 {
+	extern LPBOARD g_pBoard;
 
+	if (params.params != 1)
+	{
+		throw CError(_T("Change() requires one parameter."));
+	}
+	LPBRD_PROGRAM p = params.prg->getBoardLocation();
+	if (g_pBoard->hasProgram(p))
+	{
+		p->fileName = params[0].getLit();
+	}
 }
 
 /*
@@ -587,13 +597,32 @@ void get(CALL_DATA &params)
 }
 
 /*
- * gone(...)
+ * Gone()
  * 
- * Description.
+ * End the currently running program and remove it from the board
+ * until the board has been left.
  */
 void gone(CALL_DATA &params)
 {
+	extern LPBOARD g_pBoard;
 
+	if (params.params != 0)
+	{
+		throw CError(_T("Gone() requires zero parameters."));
+	}
+
+	LPBRD_PROGRAM p = params.prg->getBoardLocation();
+	std::vector<LPBRD_PROGRAM>::iterator i = g_pBoard->programs.begin();
+	for (; i != g_pBoard->programs.end(); ++i)
+	{
+		if ((*i) == p)
+		{
+			g_pBoard->programs.erase(i);
+			delete p;
+			break;
+		}
+	}
+	params.prg->end();
 }
 
 /*
@@ -796,7 +825,27 @@ void colorRgb(CALL_DATA &params)
  */
 void move(CALL_DATA &params)
 {
+	extern LPBOARD g_pBoard;
 
+	int z = 1;
+	if (params.params == 3)
+	{
+		z = int(params[2].getNum());
+	}
+	else if (params.params != 2)
+	{
+		throw CError(_T("Move() requires two or three parameters."));
+	}
+
+	LPBRD_PROGRAM p = params.prg->getBoardLocation();
+	if (g_pBoard->hasProgram(p))
+	{
+		OBJ_POSITION obj;
+		obj.x = short(params[0].getNum());
+		obj.y = short(params[1].getNum());
+		g_pBoard->createProgramBase(p, &obj);
+		p->layer = z;
+	}
 }
 
 /*
@@ -865,16 +914,14 @@ void reset(CALL_DATA &params)
  */
 void run(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		params.prg->end();
-		extern STRING g_projectPath;
-		CProgram(g_projectPath + PRG_PATH + params[0].getLit()).run();
-	}
-	else
+	extern STRING g_projectPath;
+
+	if (params.params != 1)
 	{
 		throw CError(_T("Run() requires one data element."));
 	}
+	params.prg->end();
+	CProgram(g_projectPath + PRG_PATH + params[0].getLit()).run();
 }
 
 /*

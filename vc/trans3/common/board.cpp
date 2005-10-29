@@ -17,12 +17,6 @@
 #include "../rpgcode/CProgram.h"
 #include <malloc.h>
 
-// Struct to temporarily hold locations for old items, programs.
-typedef struct tagObjPosition
-{
-	short x, y, layer, version;
-} OBJ_POSITION;
-
 /*
  * Open a board. Note for old versions, all co-ordinates must be transformed into
  * pixel co-ordinates. (Isometrics to be done).
@@ -268,7 +262,7 @@ lutEnd:
 			// Add the program to the list.
 			programs.push_back(prg);
 
-			// Can_T('t form vector here because we don')t know
+			// Can't form vector here because we don't know
 			// if the board is isometric yet.
 			prgPos.push_back(pos);
 		}
@@ -394,26 +388,7 @@ lutEnd:
 		std::vector<OBJ_POSITION>::iterator pos = prgPos.begin();
 		for (; p != programs.end(); ++p, ++pos)
 		{
-			if (coordType & ISO_STACKED)
-			{
-				// Column offset (old co-ordinate system).
-				const double dx = (pos->y % 2 ? 0 : 32);
-
-				// Isometric diamond at the location (3.0-).
-				(*p)->vBase.push_back((pos->x - 1.0) * 64.0 - dx, (pos->y - 1.0) * 16.0);
-				(*p)->vBase.push_back((pos->x - 0.5) * 64.0 - dx, (pos->y - 2.0) * 16.0);
-				(*p)->vBase.push_back(pos->x * 64.0 - dx, (pos->y - 1.0) * 16.0);
-				(*p)->vBase.push_back((pos->x - 0.5) * 64.0 - dx, pos->y * 16.0);
-			}
-			else
-			{
-				// Create a 32x32 vector at the location.
-				(*p)->vBase.push_back((pos->x - 1.0) * 32.0, pos->y * 32.0);
-				(*p)->vBase.push_back(pos->x * 32.0, pos->y * 32.0);
-				(*p)->vBase.push_back(pos->x * 32.0, (pos->y - 1.0) * 32.0);
-				(*p)->vBase.push_back((pos->x - 1.0) * 32.0, (pos->y - 1.0) * 32.0);
-			}
-			(*p)->vBase.close(true);
+			createProgramBase(*p, pos);
 		}
 
 		// Set the positions of and create vectors for old items.
@@ -427,13 +402,41 @@ lutEnd:
 				(*itm)->createVectors();
 			}
 
-			// Can only do this after reading the isometric bit.
+			// Can do this only after reading the isometric bit.
 			(*itm)->setPosition(pos->x, pos->y, pos->layer, coordType);
 		}
 
 	} // if (this == g_pBoard) 
 
 	return true;
+}
+
+/*
+ * Create a program's base.
+ */
+void tagBoard::createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const
+{
+	pPrg->vBase = CVector();
+	if (coordType & ISO_STACKED)
+	{
+		// Column offset (old co-ordinate system).
+		const double dx = (pObj->y % 2 ? 0 : 32);
+
+		// Isometric diamond at the location (3.0-).
+		pPrg->vBase.push_back((pObj->x - 1.0) * 64.0 - dx, (pObj->y - 1.0) * 16.0);
+		pPrg->vBase.push_back((pObj->x - 0.5) * 64.0 - dx, (pObj->y - 2.0) * 16.0);
+		pPrg->vBase.push_back(pObj->x * 64.0 - dx, (pObj->y - 1.0) * 16.0);
+		pPrg->vBase.push_back((pObj->x - 0.5) * 64.0 - dx, pObj->y * 16.0);
+	}
+	else
+	{
+		// Create a 32x32 vector at the location.
+		pPrg->vBase.push_back((pObj->x - 1.0) * 32.0, pObj->y * 32.0);
+		pPrg->vBase.push_back(pObj->x * 32.0, pObj->y * 32.0);
+		pPrg->vBase.push_back(pObj->x * 32.0, (pObj->y - 1.0) * 32.0);
+		pPrg->vBase.push_back((pObj->x - 1.0) * 32.0, (pObj->y - 1.0) * 32.0);
+	}
+	pPrg->vBase.close(true);
 }
 
 /*
@@ -498,7 +501,7 @@ void tagBoard::vectorize(const unsigned int layer)
 	{
 		/*
 		 * Working southeast from the top-left corner, locate
-		 * the first tile that is neither _T("normal") nor included
+		 * the first tile that is neither "normal" nor included
 		 * in any vector.
 		 */
 		unsigned int x = 0, y, i, j;
@@ -1129,4 +1132,18 @@ const BRD_VECTOR *tagBoard::getVectorFromTile(const int x, const int y, const in
 	// Didn't find it -- point may still be valid, as normal tiles
 	// do not have vectors.
 	return NULL;
+}
+
+/*
+ * Determine whether the board has a given program on it.
+ */
+bool tagBoard::hasProgram(LPBRD_PROGRAM p) const
+{
+	if (!p) return false;
+	std::vector<LPBRD_PROGRAM>::const_iterator i = programs.begin();
+	for (; i != programs.end(); ++i)
+	{
+		if ((*i) == p) return true;
+	}
+	return false;
 }
