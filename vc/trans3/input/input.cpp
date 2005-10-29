@@ -10,6 +10,7 @@
 #include <vector>
 #include "input.h"
 #include "../common/sprite.h"
+#include "../common/paths.h"
 #include "../common/board.h"
 #include "../common/mainfile.h"
 #include "../plugins/plugins.h"
@@ -136,6 +137,7 @@ void scanKeys()
 	extern GAME_STATE g_gameState;
 	extern CSprite *g_pSelectedPlayer;
 	extern MAIN_FILE g_mainFile;
+	extern STRING g_projectPath;
 
 	BYTE keys[256];
 	if (FAILED(g_lpdiKeyboard->GetDeviceState(256, keys))) return;
@@ -146,8 +148,7 @@ void scanKeys()
 	// General actication key.
 	if (SCAN_KEY_DOWN(g_mainFile.key))
 	{
-		g_pSelectedPlayer->programTest();
-		return;
+		if (g_pSelectedPlayer->programTest()) return;
 	}
 
 	// Menu key.
@@ -160,6 +161,18 @@ void scanKeys()
 		// Delay to prevent the menu from immediately reopening.
 		Sleep(75);
 		return;
+	}
+
+	// Runtime keys.
+	std::vector<short>::const_iterator i = g_mainFile.runTimeKeys.begin();
+	for (; i != g_mainFile.runTimeKeys.end(); ++i)
+	{
+		if (SCAN_KEY_DOWN(*i))
+		{
+			STRING prg = g_mainFile.runTimePrg[i - g_mainFile.runTimeKeys.begin()];
+			prg = g_projectPath + PRG_PATH + prg;
+			CProgram(prg).run();
+		}
 	}
 
 	if (SCAN_KEY_DOWN(DIK_RIGHT) && SCAN_KEY_DOWN(DIK_UP))

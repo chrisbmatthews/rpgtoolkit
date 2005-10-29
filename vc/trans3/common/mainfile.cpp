@@ -67,23 +67,35 @@ bool tagMainFile::open(const STRING fileName)
 	file >> initBoard;
 	file >> initChar;
 
-	file >> runTime;
+	runTimeKeys.clear();
+	runTimePrg.clear();
 
-	// Get these into scan codes.
 	HKL hkl = GetKeyboardLayout(0);
-	file >> runKey; runKey = MapVirtualKeyEx(runKey, 0, hkl);
-	file >> menuKey; menuKey = MapVirtualKeyEx(menuKey, 0, hkl);
-	file >> key; key = MapVirtualKeyEx(key, 0, hkl);
+
+	STRING runTime; short runKey;
+	file >> runTime;
+	file >> runKey;
+	runKey = MapVirtualKeyEx(toupper(runKey), 0, hkl);
+
+	if (!runTime.empty())
+	{
+		runTimeKeys.push_back(runKey);
+		runTimePrg.push_back(runTime);
+	}
+
+	file >> menuKey;
+	menuKey = MapVirtualKeyEx(toupper(menuKey), 0, hkl);
+	file >> key;
+	key = MapVirtualKeyEx(toupper(key), 0, hkl);
 
 	short len;
 	file >> len;
-	runTimeKeys.clear();
-	runTimePrg.clear();
 	unsigned int i;
 	for (i = 0; i <= len; i++)
 	{
 		short sUnused;
-		file >> sUnused; sUnused = MapVirtualKeyEx(sUnused, 0, hkl);
+		file >> sUnused;
+		sUnused = MapVirtualKeyEx(toupper(sUnused), 0, hkl);
 		file >> strUnused;
 		if (!strUnused.empty())
 		{

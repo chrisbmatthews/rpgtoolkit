@@ -37,8 +37,6 @@ typedef struct tagMainFile
     STRING startupPrg;				// Start up program.
     STRING initBoard;				// Initial board.
     STRING initChar;				// Initial character.
-    STRING runTime;				// Run time program.
-    short runKey;						// Ascii code of run time key.
     short menuKey;						// Ascii code of menu key.
 	short key;							// Ascii code of general run key.
     std::vector<short> runTimeKeys;		// 50 extended run time keys.
