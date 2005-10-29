@@ -36,6 +36,7 @@
 #include "../plugins/constants.h"
 #include "../video/CVideo.h"
 #include "../stdafx.h"
+#include "../resource.h"
 #include "CCursorMap.h"
 #include "CProgram.h"
 #include <math.h>
@@ -1319,7 +1320,7 @@ void random(CALL_DATA &params)
  * void tileType(int x, int y, string type, [int z = 1])
  * 
  * Change a tile's type. Valid types for the string parameter
- * are _T("NORMAL"), _T("SOLID"), _T("UNDER"), _T("NS"), _T("EW"), _T("STAIRS#").
+ * are "NORMAL", "SOLID", "UNDER", "NS", "EW", "STAIRS#".
  */
 void tileType(CALL_DATA &params)
 {
@@ -1460,16 +1461,14 @@ void tileType(CALL_DATA &params)
  */
 void mediaPlay(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		extern CAudioSegment *g_bkgMusic;
-		g_bkgMusic->open(params[0].getLit());
-		g_bkgMusic->play(true);
-	}
-	else
+	extern CAudioSegment *g_bkgMusic;
+
+	if (params.params != 1)
 	{
 		throw CError(_T("MediaPlay() requires one parameter."));
 	}
+	g_bkgMusic->open(params[0].getLit());
+	g_bkgMusic->play(true);
 }
 
 /*
@@ -1907,7 +1906,7 @@ void push(CALL_DATA &params)
  * void pushItem(variant item, string direction)
  * 
  * The first parameter accepts either a string that can be either
- * _T("target") or _T("source") direction or the number of an item. The
+ * "target" or "source" direction or the number of an item. The
  * syntax of the directional string is the same as for [[push()]].
  */
 void pushItem(CALL_DATA &params)
@@ -1939,7 +1938,7 @@ void pushItem(CALL_DATA &params)
  * void wander(variant target, [int restrict = 0])
  * 
  * The first parameter accepts either a string that can be either
- * _T("target") or _T("source") or the number of an item. The selected item
+ * "target" or "source" or the number of an item. The selected item
  * will take a step in a random direction, or as restricted by the
  * optional parameter. The allowed values for said parameter are:
  *
@@ -2012,13 +2011,21 @@ void wander(CALL_DATA &params)
  */
 void addPlayer(CALL_DATA &params)
 {
+	extern std::vector<CPlayer *> g_players;
+	extern STRING g_projectPath;
+
 	if (params.params != 1)
 	{
 		throw CError(_T("AddPlayer() requires one parameter."));
 	}
-	extern std::vector<CPlayer *> g_players;
-	extern STRING g_projectPath;
-	g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + params[0].getLit(), false));
+
+	const STRING file = g_projectPath + TEM_PATH + params[0].getLit();
+
+	if (CFile::fileExists(file))
+	{
+		CPlayer *p = new CPlayer(file, false);
+		g_players.push_back(p);
+	}
 }
 
 /*
@@ -2049,7 +2056,7 @@ void putplayer(CALL_DATA &params)
 	// Insert the pointer into the z-ordered vector.
 	g_sprites.zOrder();
     
-	/** TBD: do not _T("auto align") ?
+	/** TBD: do not "auto align" ?
 	p->alignBoard(g_screen, true); **/
 	renderNow(g_cnvRpgCode, true);
 	renderRpgCodeScreen();
@@ -2613,6 +2620,7 @@ void sourcehandle(CALL_DATA &params)
 		throw CError(_T("SourceHandle() requires zero or one parameter(s)."));
 	}
 }
+
 /*
  * string targethandle([string &ret])
  * 
@@ -2705,9 +2713,9 @@ void mainFile(CALL_DATA &params)
 /*
  * string dirSav([string &ret])
  * 
- * Allow the user to choose a *.sav file from the _T("Saved")
- * directory. For historical reasons, returns _T("CANCEL") if
- * no file is chosen, not _T("").
+ * Allow the user to choose a *.sav file from the "Saved"
+ * directory. For historical reasons, returns "CANCEL" if
+ * no file is chosen, not "".
  */
 void dirSav(CALL_DATA &params)
 {
@@ -3234,7 +3242,7 @@ void playavi(CALL_DATA &params)
 	// Stop music.
 	g_bkgMusic->stop();
 
-	// Don_T('t bother checking extension, in case it doesn')t match
+	// Don't bother checking extension, in case it doesn't match
 	// the actual type of movie. Playing an invalid file will do
 	// no harm.
 	CVideo vid;
@@ -3274,7 +3282,7 @@ void playavismall(CALL_DATA &params)
 	// Stop music.
 	g_bkgMusic->stop();
 
-	// Don_T('t bother checking extension, in case it doesn')t match
+	// Don't bother checking extension, in case it doesn)t match
 	// the actual type of movie. Playing an invalid file will do
 	// no harm.
 	CVideo vid;
@@ -4166,9 +4174,14 @@ void getBoardTileType(CALL_DATA &params)
 				type = _T("UNDER");
 				break;
 
-			case TT_UNIDIRECTIONAL:
+			case NORTH_SOUTH:
 				// TBD: Differentiate between NW and NE?
-				type = _T("NW");
+				type = _T("NS");
+				break;
+
+			case EAST_WEST:
+				// TBD: Differentiate between NW and NE?
+				type = _T("EW");
 				break;
 
 			case TT_STAIRS:
@@ -4335,7 +4348,7 @@ void animatedTiles(CALL_DATA &params)
 /*
  * void smartStep()
  * 
- * Toggle _T("smart") stepping.
+ * Toggle "smart" stepping.
  */
 void smartStep(CALL_DATA &params)
 {
@@ -4524,7 +4537,7 @@ void local(CALL_DATA &params)
  * should func() be called, would be 1 and 2 respectively
  * because variables off the stack are preferred to ones
  * on the heap. The call to global() explictly requests
- * the variable _T('x') from the heap.
+ * the variable 'x' from the heap.
  */
 void global(CALL_DATA &params)
 {
@@ -5092,7 +5105,7 @@ void split(CALL_DATA &params)
 	std::vector<STRING> parts;
 	split(params[0].getLit(), params[1].getLit(), parts);
 
-	// Strip _T('[]') off the array name.
+	// Strip '[]' off the array name.
 	STRING array = params[2].lit;
 	replace(array, _T("[]"), _T(""));
 
@@ -5229,13 +5242,70 @@ void left(CALL_DATA &params)
 }
 
 /*
- * cursormaphand(...)
+ * void cursorMapHand(string cursor[, bool stretch = true])
  * 
- * Description.
+ * Change the cursor used everywhere cursors are used
+ * (e.g. cursor maps, the menu, the battle system), optionally
+ * not stretching it to 32 by 32 pixels.
+ *
+ * The string "default" restores the default image.
  */
 void cursormaphand(CALL_DATA &params)
 {
+	extern STRING g_projectPath;
+	extern CCanvas *g_cnvCursor;
+	extern HINSTANCE g_hInstance;
 
+	bool stretch = true;
+	if (params.params == 2)
+	{
+		stretch = params[1].getBool();
+	}
+	else if (params.params != 1)
+	{
+		throw CError(_T("CursorMapHand() requires one or two parameters."));
+	}
+
+	STRING strFile = params[0].getLit();
+
+	if (_tcsicmp(strFile.c_str(), _T("default")) == 0)
+	{
+		g_cnvCursor->Resize(NULL, 32, 32);
+
+		const HDC hdc = g_cnvCursor->OpenDC();
+		const HDC compat = CreateCompatibleDC(hdc);
+		HBITMAP bmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP1));
+		HGDIOBJ obj = SelectObject(compat, bmp);
+		BitBlt(hdc, 0, 0, 32, 32, compat, 0, 0, SRCCOPY);
+		g_cnvCursor->CloseDC(hdc);
+		SelectObject(compat, obj);
+		DeleteObject(bmp);
+		DeleteDC(compat);
+		return;
+	}
+
+	strFile = g_projectPath + BMP_PATH + strFile;
+
+	if (!stretch)
+	{
+		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), getAsciiString(strFile).c_str());
+
+		if (bmp)
+		{
+			g_cnvCursor->Resize(NULL, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp));
+
+			HDC hdc = g_cnvCursor->OpenDC();
+			StretchDIBits(hdc, 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+			g_cnvCursor->CloseDC(hdc);
+
+			FreeImage_Unload(bmp);
+		}
+	}
+	else
+	{
+		g_cnvCursor->Resize(NULL, 32, 32);
+		drawImage(strFile, g_cnvCursor, 0, 0, 32, 32);
+	}
 }
 
 /*
