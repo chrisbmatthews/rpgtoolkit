@@ -21,16 +21,19 @@ void CCursorMap::add(const int x, const int y)
  * Run the cursor map and return the chose option,
  * with zero as the first index.
  */
-int CCursorMap::run(void)
+int CCursorMap::run()
 {
-	CCanvas cnv;
 	extern int g_resX, g_resY;
-	cnv.CreateBlank(NULL, g_resX, g_resY, TRUE);
 	extern CDirectDraw *g_pDirectDraw;
-	g_pDirectDraw->CopyScreenToCanvas(&cnv);
 	extern CCanvas *g_cnvCursor;
+	extern void closeSystems();
+
+	CCanvas cnv;
+	cnv.CreateBlank(NULL, g_resX, g_resY, TRUE);
+	g_pDirectDraw->CopyScreenToCanvas(&cnv);
 	int toRet = 0, pos = -1;
 	MSG message;
+
 	while (true)
 	{
 		const DWORD time = GetTickCount();
@@ -40,7 +43,6 @@ int CCursorMap::run(void)
 			{
 				if (message.message == WM_QUIT)
 				{
-					extern void closeSystems(void);
 					closeSystems();
 					exit(message.wParam);
 				}
@@ -59,12 +61,12 @@ int CCursorMap::run(void)
 		}
 		if ((keys[DIK_UP] & 0x80) || (keys[DIK_LEFT] & 0x80))
 		{
-			if (toRet) toRet--;
+			if (toRet) --toRet;
 			else toRet = m_points.size() - 1;
 		}
 		else if ((keys[DIK_DOWN] & 0x80) || (keys[DIK_RIGHT] & 0x80))
 		{
-			if (toRet != (m_points.size() - 1)) toRet++;
+			if (toRet != (m_points.size() - 1)) ++toRet;
 			else toRet = 0;
 		}
 		else if ((keys[DIK_RETURN] & 0x80) || (keys[DIK_SPACE] & 0x80))

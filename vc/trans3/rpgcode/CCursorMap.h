@@ -17,7 +17,7 @@ class CCursorMap
 {
 public:
 	void add(const int x, const int y);
-	int run(void);
+	int run();
 private:
 	std::vector<POINT> m_points;
 };

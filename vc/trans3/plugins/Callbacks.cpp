@@ -563,7 +563,6 @@ STDMETHODIMP CCallbacks::CBGetBrackets(BSTR rpgcodeCommand, BSTR *pRet)
 void getParameters(const STRING str, std::vector<STRING> &ret)
 {
 	int pos = str.find(_T('(')) + 1;
-	const int initPos = pos;
 	bool bQuotes = false;
 	unsigned int i;
 	for (i = pos; i < str.length(); ++i)

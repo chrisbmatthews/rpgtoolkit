@@ -1303,7 +1303,7 @@ bool tagStackFrame::getBool() const
 {
 	if (getType() & UDT_LIT)
 	{
-		return (_stricmp(getLit().c_str(), _T("off")) != 0);
+		return (_tcsicmp(getLit().c_str(), _T("off")) != 0);
 	}
 	return (getNum() != 0.0);
 }

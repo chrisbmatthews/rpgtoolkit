@@ -72,7 +72,7 @@ void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 		std::vector<STRING>::iterator i = item.itmChars.begin();
 		for (; i != item.itmChars.end(); ++i)
 		{
-			if (_strcmpi(m_playerMem.charname.c_str(), i->c_str()) == 0)
+			if (_tcsicmp(m_playerMem.charname.c_str(), i->c_str()) == 0)
 				break;
 		}
 		if (i == item.itmChars.end()) throw CError(_T("Player cannot equip item."));
