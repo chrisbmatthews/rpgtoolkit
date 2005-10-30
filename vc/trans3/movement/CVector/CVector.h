@@ -127,6 +127,13 @@ public:
 	// Determine if a vector intersects another vector.
 	bool intersect(CVector &rhs, DB_POINT &ref);
 
+	// Move a vector (x,y = new location of first point).
+	void move(const int x, const int y)
+	{
+		const DB_POINT p = {x - m_p.front().x, y - m_p.front().y};
+		*this += p;
+	}
+
 	// Find the nearest point on the edge of a vector to a point.
 	DB_POINT nearestPoint(const DB_POINT start);
 

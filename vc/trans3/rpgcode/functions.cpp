@@ -600,7 +600,7 @@ void get(CALL_DATA &params)
 /*
  * Gone()
  * 
- * End the currently running program and remove it from the board
+ * Remove the currently running program from the board
  * until the board has been left.
  */
 void gone(CALL_DATA &params)
@@ -623,7 +623,6 @@ void gone(CALL_DATA &params)
 			break;
 		}
 	}
-	params.prg->end();
 }
 
 /*
@@ -822,7 +821,7 @@ void colorRgb(CALL_DATA &params)
  * void move(int x, int y, [int z = 1])
  * 
  * Move this board program to a new location on the board. The
- * effects last until the board has been left.
+ * effect lasts until the board has been left.
  */
 void move(CALL_DATA &params)
 {
@@ -837,14 +836,23 @@ void move(CALL_DATA &params)
 	{
 		throw CError(_T("Move() requires two or three parameters."));
 	}
+	
+	int x = int(params[0].getNum()), y = int(params[1].getNum());
+	pixelCoordinate(x, y, g_pBoard->coordType, false);
+	if (g_pBoard->isIsometric() && !(g_pBoard->coordType & PX_ABSOLUTE))
+	{
+		// pixelCoordinate() returns the centrepoint of isometric tiles.
+		// If PX_ABSOLUTE is not set, assume programs are tile-based and
+		// require an additional offset.
+		// These programs start on the left of the diamond (see board.cpp)
+		x -= 32;
+	}
 
 	LPBRD_PROGRAM p = params.prg->getBoardLocation();
 	if (g_pBoard->hasProgram(p))
 	{
-		OBJ_POSITION obj;
-		obj.x = short(params[0].getNum());
-		obj.y = short(params[1].getNum());
-		g_pBoard->createProgramBase(p, &obj);
+		// Move to a new location (x,y location for first point).
+		p->vBase.move(x, y);
 		p->layer = z;
 	}
 }
@@ -880,16 +888,23 @@ void prg(CALL_DATA &params)
 	{
 		throw CError(_T("Prg() requires three or four parameters."));
 	}
+	int x = int(params[1].getNum()), y = int(params[2].getNum());
+	pixelCoordinate(x, y, g_pBoard->coordType, false);
+	if (g_pBoard->isIsometric() && !(g_pBoard->coordType & PX_ABSOLUTE))
+	{
+		// pixelCoordinate() returns the centrepoint of isometric tiles.
+		// If PX_ABSOLUTE is not set, assume programs are tile-based and
+		// require an additional offset.
+		// These programs start on the left of the diamond (see board.cpp)
+		x -= 32;
+	}
 
 	std::vector<LPBRD_PROGRAM>::iterator i = g_pBoard->programs.begin();
 	for (; i != g_pBoard->programs.end(); ++i)
 	{
 		if (_tcsicmp((*i)->fileName.c_str(), params[0].getLit().c_str()) == 0)
 		{
-			OBJ_POSITION obj;
-			obj.x = short(params[1].getNum());
-			obj.y = short(params[2].getNum());
-			g_pBoard->createProgramBase(*i, &obj);
+			(*i)->vBase.move(x, y);
 			(*i)->layer = z;
 			break;
 		}

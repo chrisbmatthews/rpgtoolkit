@@ -431,10 +431,11 @@ void tagBoard::createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const
 	else
 	{
 		// Create a 32x32 vector at the location.
+		// Order: top-left, bot-left, bot-right, top-right.
+		pPrg->vBase.push_back((pObj->x - 1.0) * 32.0, (pObj->y - 1.0) * 32.0);
 		pPrg->vBase.push_back((pObj->x - 1.0) * 32.0, pObj->y * 32.0);
 		pPrg->vBase.push_back(pObj->x * 32.0, pObj->y * 32.0);
 		pPrg->vBase.push_back(pObj->x * 32.0, (pObj->y - 1.0) * 32.0);
-		pPrg->vBase.push_back((pObj->x - 1.0) * 32.0, (pObj->y - 1.0) * 32.0);
 	}
 	pPrg->vBase.close(true);
 }
