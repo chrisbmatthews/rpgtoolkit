@@ -5634,13 +5634,52 @@ void playerstance(CALL_DATA &params)
 }
 
 /*
- * drawcanvastransparent(...)
+ * void drawCanvasTransparent(canvas cnv, int x, int y, int r, int g, int b[, int width, int height[, canvas dest]])
  * 
- * Description.
+ * Blit a canvas forward, but don't blit one colour (the
+ * transparent colour).
  */
 void drawcanvastransparent(CALL_DATA &params)
 {
+	if ((params.params != 6) && (params.params != 8) && (params.params != 9))
+	{
+		throw CError(_T("DrawCanvasTransparent() requires six, eight, or nine parameters."));
+	}
+	CCanvas *pCanvas = g_canvases.cast(int(params[0].getNum()));
+	if (!pCanvas) return;
 
+	COLORREF colour = RGB(int(params[3].getNum()), int(params[4].getNum()), int(params[5].getNum()));
+	CCanvas *pDest = (params.params == 9) ? g_canvases.cast(int(params[8].getNum())) : g_cnvRpgCode;
+	if (!pDest) return;
+
+	const int x = int(params[1].getNum());
+	const int y = int(params[2].getNum());
+
+	if (params.params > 6)
+	{
+		const int width = int(params[6].getNum());
+		const int height = int(params[7].getNum());
+		CCanvas temp;
+		temp.CreateBlank(NULL, width, height, TRUE);
+		pCanvas->BltStretch(
+			&temp,
+			0, 0,
+			0, 0,
+			pCanvas->GetWidth(), pCanvas->GetHeight(),
+			width, height,
+			SRCCOPY
+		);
+		temp.BltTransparent(pDest, x, y, colour);
+	}
+	else
+	{
+		pCanvas->BltTransparent(pDest, x, y, colour);
+	}
+
+	if (pDest == g_cnvRpgCode)
+	{
+		renderRpgCodeScreen();
+	}
 }
 
 /*
