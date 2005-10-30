@@ -2142,7 +2142,7 @@ void newPlyr(CALL_DATA &params)
 /*
  * int onBoard(variant handle)
  *
- * Return whether a player is being shown on the board or not.
+ * Return whether a player is being shown on the board.
  */
 void onboard(CALL_DATA &params)
 {

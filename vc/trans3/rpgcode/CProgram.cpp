@@ -1324,7 +1324,7 @@ STRING tagStackFrame::getLit() const
 	{
 		if (udt & UDT_UNSET)
 		{
-			// Return an empty string rather than _T("0") if
+			// Return an empty string rather than "0" if
 			// the variable hasn't been set.
 			return STRING();
 		}

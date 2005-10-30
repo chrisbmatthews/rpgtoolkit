@@ -190,7 +190,7 @@ private:
 	/*
 	 * The actual data is referenced by a void
 	 * void pointer. Cast this pointer to the
-	 * type indicated by the _T('m_type') member to
+	 * type indicated by the 'm_type' member to
 	 * use it.
 	 */
 	void *m_pData;
