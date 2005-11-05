@@ -33,7 +33,16 @@ CCanvas::CCanvas(VOID)
 //--------------------------------------------------------------------------
 CCanvas::CCanvas(
 	CONST CCanvas &rhs
-		)
+	):
+	m_hdcMem(NULL),
+	m_nWidth(0),
+	m_nHeight(0),
+	m_lpddsSurface (NULL),
+	m_bUseDX(FALSE),
+	m_hdcLocked(NULL),
+	m_hBitmap(NULL),
+	m_hOldBitmap(NULL),
+	m_bInRam(FALSE)
 {
 
 	// First, create an equal sized canvas
@@ -291,6 +300,52 @@ BOOL FAST_CALL CCanvas::DrawFilledRect(
 	CONST HBRUSH brush = CreateSolidBrush(clr);
 	CONST HGDIOBJ m = SelectObject(hdc, brush);
 	FillRect(hdc, &r, brush);
+	SelectObject(hdc, m);
+	SelectObject(hdc, l);
+	DeleteObject(brush);
+	DeleteObject(pen);
+	CloseDC(hdc);
+	return TRUE;
+}
+
+//------------------------------------------------------------------------
+// Draw an ellipse.
+//------------------------------------------------------------------------
+BOOL FAST_CALL CCanvas::DrawEllipse(
+	CONST INT x1,
+	CONST INT y1,
+	CONST INT x2,
+	CONST INT y2,
+	CONST LONG clr
+		)
+{
+	CONST HRGN rgn = CreateEllipticRgn(x1, y1, x2 + 1, y2 + 1);
+	CONST HBRUSH brush = CreateSolidBrush(clr);
+	CONST HDC hdc = OpenDC();
+	FrameRgn(hdc, rgn, brush, 1, 1);
+	CloseDC(hdc);
+	DeleteObject(rgn);
+	DeleteObject(brush);
+	return TRUE;
+}
+
+//------------------------------------------------------------------------
+// Draw a filled ellipse.
+//------------------------------------------------------------------------
+BOOL FAST_CALL CCanvas::DrawFilledEllipse(
+	CONST INT x1,
+	CONST INT y1,
+	CONST INT x2,
+	CONST INT y2,
+	CONST LONG clr
+		)
+{
+	CONST HDC hdc = OpenDC();
+	CONST HPEN pen = CreatePen(0, 1, clr);
+	CONST HGDIOBJ l = SelectObject(hdc, pen);
+	CONST HBRUSH brush = CreateSolidBrush(clr);
+	CONST HGDIOBJ m = SelectObject(hdc, brush);
+    Ellipse(hdc, x1, y1, x2 + 1, y2 + 1);
 	SelectObject(hdc, m);
 	SelectObject(hdc, l);
 	DeleteObject(brush);

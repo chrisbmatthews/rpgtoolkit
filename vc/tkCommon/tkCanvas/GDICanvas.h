@@ -398,6 +398,22 @@ public:
 		CONST LONG clr
 	);
 
+	BOOL FAST_CALL DrawEllipse(
+		CONST INT x1,
+		CONST INT y1,
+		CONST INT x2,
+		CONST INT y2,
+		CONST LONG clr
+	);
+
+	BOOL FAST_CALL DrawFilledEllipse(
+		CONST INT x1,
+		CONST INT y1,
+		CONST INT x2,
+		CONST INT y2,
+		CONST LONG clr
+	);
+
 	INT FAST_CALL ShiftLeft(
 		CONST INT nPixels
 	);
