@@ -546,15 +546,149 @@ void fontSize(CALL_DATA &params)
  * Perform a fade using the current colour. There are several
  * different types of fades.
  *
- * 0 - the screen is blotted out by a growing a shrinking box
+ * 0 - the screen is blotted out by a growing and shrinking box
  * 1 - blots out with vertical lines
  * 2 - fades from white to black
  * 3 - line sweeps across the screen
  * 4 - black circle swallows the player
+ * 5 - image fade to black
  */
 void fade(CALL_DATA &params)
 {
+	extern RECT g_screen;
 
+	const int type = (!params.params ? 0 : int(params[0].getNum())), 
+			  width = g_cnvRpgCode->GetWidth(),
+			  height = g_cnvRpgCode->GetHeight();
+	
+	// TBD: delays?
+
+	switch(type)
+	{
+	case 0:
+		{
+			// Box grows from centre to fill screen.
+			const int pxStep = 5;
+
+			for (unsigned int i = 0; i != width / 2; i += pxStep)
+			{
+				int y1 = height / 2 - i, y2 = height / 2 + i;
+
+				g_cnvRpgCode->DrawFilledRect(
+					width / 2 - i, (y1 < 0 ? 0 : y1),
+					width / 2 + i, (y2 > height ? height : y2),
+					g_color);
+				renderRpgCodeScreen();
+			}
+			// Shrink box back to centre on a black background.
+			for (; i != 0; i -= pxStep)
+			{
+				g_cnvRpgCode->ClearScreen(0);
+				int y1 = height / 2 - i, y2 = height / 2 + i;
+
+				g_cnvRpgCode->DrawFilledRect(
+					width / 2 - i, (y1 < 0 ? 0 : y1),
+					width / 2 + i, (y2 > height ? height : y2),
+					g_color);
+				renderRpgCodeScreen();
+			}
+		} break;
+	case 1:
+		{
+			// Vertical lines sweep across screen.
+			const int pxStep = 5;
+			int color = g_color;
+
+			for (int j = 0; j != 2; ++j)
+			{
+				// First sweep.
+				for (unsigned int i = 0; i != width / 2; i += pxStep * 2)
+				{
+					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
+					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
+					renderRpgCodeScreen();
+				}
+				// Fill in gaps.
+				for (i = pxStep; i < width / 2; i += pxStep * 2)
+				{
+					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
+					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
+					renderRpgCodeScreen();
+				}
+				// Repeat once with black.
+				color = 0;
+			}
+			g_cnvRpgCode->ClearScreen(g_color);
+			renderRpgCodeScreen();
+		} break;
+	case 2:
+		{
+			// "Fade" from solid grey to solid black.
+			for (int i = 128; i >= 0; i -= 4)
+			{
+				g_cnvRpgCode->ClearScreen(RGB(i,i,i));
+				renderRpgCodeScreen();
+			}
+		} break;
+	case 3:
+		{
+			// Swipe left to right.
+			const int pxStep = 4;
+
+			// Create a gradient for the leading edge.
+			CCanvas *cnv = new CCanvas();
+			cnv->CreateBlank(NULL, 128, height, TRUE);
+			cnv->ClearScreen(0);
+			for (int i = 0; i != 128; i += pxStep)
+			{
+				cnv->DrawFilledRect(i, 0, i + pxStep, height, RGB(i,i,i));
+			}
+			// Copy over the gradient, shifting it right.
+			for (i = -128; i != width; i += pxStep)
+			{
+				// Overflow handled in BltPart().
+				cnv->Blt(g_cnvRpgCode, i, 0, SRCCOPY);
+				renderRpgCodeScreen();
+			}
+			delete cnv;
+		} break;
+	case 4:
+		{
+			// Circle in on player.
+			extern CSprite *g_pSelectedPlayer;
+			const SPRITE_POSITION p = g_pSelectedPlayer->getPosition();
+			const int x = int(p.x) - g_screen.left,// - 16,
+					  y = int(p.y) - g_screen.top - 16;
+			// Use the longest diagonal as the radius.
+			const int rX = (width - x > x ? width - x: x),
+					  rY = (height - y > y ? height - y: y);
+			int radius = sqrt(rX * rX + rY * rY);
+
+			for (; radius > 0; radius -= 1)
+			{
+				g_cnvRpgCode->DrawEllipse(x - radius, y - radius, x + radius, y + radius, 0);
+                renderRpgCodeScreen();
+			}
+		} break;
+	case 5:
+		{
+			// Image fade.
+			CCanvas *cnv = new CCanvas();
+			cnv->CreateBlank(NULL, width, height, TRUE);
+			cnv->ClearScreen(g_color);
+
+			CCanvas *cnvScr = new CCanvas(*g_cnvRpgCode);
+
+			for (double i = 0.1; i <= 1.0; i += 0.1)
+			{
+				cnvScr->Blt(g_cnvRpgCode, 0, 0, SRCCOPY);
+				cnv->BltTranslucent(g_cnvRpgCode, 0, 0, i, -1, -1);
+                renderRpgCodeScreen();
+			}
+			delete cnv;
+			delete cnvScr;
+		} break;
+	}
 }
 
 /*
@@ -3611,23 +3745,63 @@ void setImage(CALL_DATA &params)
 }
 
 /*
- * drawcircle(...)
+ * void DrawCircle(int x, int y, int radius [, int canvas])
  * 
- * Description.
+ * Draw a circle at x,y, optionally to a canvas. Previously an arc
+ * could be defined but this never worked, so the two parameters have
+ * been cut and the optional canvas is now the fourth parameter.
  */
 void drawcircle(CALL_DATA &params)
 {
+	CCanvas *cnv = g_cnvRpgCode;
+	if (params.params == 4)
+	{
+		cnv = g_canvases.cast(int(params[3].getNum()));
+		if (!cnv) return;
+	}
+	else if (params.params != 3)
+	{
+		throw CError(_T("DrawCircle() requires three or four parameters."));
+	}
+	
+	const int x = int(params[0].getNum()),
+			  y = int(params[1].getNum()),
+			  r = int(params[2].getNum());
 
+	cnv->DrawEllipse(x - r, y - r, x + r, y + r, g_color);
+	if (params.params == 3)
+	{
+		renderRpgCodeScreen();
+	}
 }
 
 /*
- * fillcircle(...)
+ * void FillCircle(int x, int y, int radius [, int canvas])
  * 
- * Description.
+ * Draw a filled circle at x, y, to screen or canvas.
  */
 void fillcircle(CALL_DATA &params)
 {
+	CCanvas *cnv = g_cnvRpgCode;
+	if (params.params == 4)
+	{
+		cnv = g_canvases.cast(int(params[3].getNum()));
+		if (!cnv) return;
+	}
+	else if (params.params != 3)
+	{
+		throw CError(_T("FillCircle() requires three or four parameters."));
+	}
+	
+	const int x = int(params[0].getNum()),
+			  y = int(params[1].getNum()),
+			  r = int(params[2].getNum());
 
+	cnv->DrawFilledEllipse(x - r, y - r, x + r, y + r, g_color);
+	if (params.params == 3)
+	{
+		renderRpgCodeScreen();
+	}
 }
 
 /*
