@@ -3629,9 +3629,9 @@ void ai(CALL_DATA &params)
 	}
 
 	const int level = int(params[0].getNum());
-	if ((level < 0) || (level > 4))
+	if ((level < 0) || (level > 3))
 	{
-		throw CError("AI(): level must be from zero to four.");
+		throw CError("AI(): level must be from zero to three.");
 	}
 
 	LPENEMY pEnemy = LPENEMY(g_pSource);
