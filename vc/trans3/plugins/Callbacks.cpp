@@ -1877,7 +1877,7 @@ STDMETHODIMP CCallbacks::CBAnimationSizeY(int idx, int *pRet)
 STDMETHODIMP CCallbacks::CBAnimationFrameImage(int idx, int frame, BSTR *pRet)
 {
 	LPANIMATION p = g_animations.cast(idx);
-	if (p && (p->animFrames > frame))
+	if (p && (p->animFrames >= frame))
 	{
 		BSTR bstr = getString(p->animFrame[frame]);
 		SysReAllocString(pRet, bstr);
