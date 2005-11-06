@@ -53,7 +53,8 @@ public:
 	int equipmentSM(const int val) { m_equipment.mSM = val; }
 	EQ_SLOT equipment(const int i) const { return (m_equipment.data.size() > abs(i) ? m_equipment.data[i] : EQ_SLOT()); }
 	void equipment(const EQ_SLOT eq, const int i) { if(m_equipment.data.size() > abs(i)) m_equipment.data[i] = eq; }
-	//--------------------------------------------------------------------
+
+	void getLearnedMoves(std::vector<STRING> &moves) const;
 
 	// Constructor
 	CPlayer(const STRING file, const bool show);

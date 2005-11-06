@@ -33,6 +33,11 @@ CSprite(show)				// Is the player visible?
 	LPPLAYER_STATS pStats = &m_playerMem.stats;
 
 	experience(pStats->experience);
+
+	LPSTACK_FRAME pLevelVar = CProgram::getGlobal(m_playerMem.leVar);
+	pLevelVar->udt = UDT_NUM;
+	pLevelVar->num = double(pStats->level);
+
 	health(pStats->health);
 	maxHealth(pStats->maxHealth);
 	defence(pStats->defense);
@@ -267,6 +272,48 @@ void CPlayer::levelUp()
 
 	// Inform the player.
 	messageBox(name() + " gained a level.");
+}
+
+/*
+ * Get a list of moves the player has learnt.
+ */
+void CPlayer::getLearnedMoves(std::vector<STRING> &moves) const
+{
+	const int exp = experience();
+	const int level = int(CProgram::getGlobal(m_playerMem.leVar)->getNum());
+
+	std::vector<STRING>::const_iterator i = m_playerMem.smlist.begin();
+	for (unsigned int j = 0; i != m_playerMem.smlist.end(); ++i, ++j)
+	{
+		if (!i->length()) continue;
+
+		bool learned = false;
+
+		// Check experience.
+		if (exp >= m_playerMem.spcMinExp[j]) learned = true;
+
+		// Check level.
+		if (!learned)
+		{
+			if (level >= m_playerMem.spcMinLevel[j]) learned = true;
+		}
+
+		// Check activation variable.
+		if (!learned)
+		{
+			if (!m_playerMem.spcVar[j].empty())
+			{
+				LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.spcVar[j]);
+				if (pVar->getLit() == m_playerMem.spcEquals[j]) learned = true;
+			}
+		}
+
+		if (learned)
+		{
+			// Add this move to the list.
+			moves.push_back(*i);
+		}
+	}
 }
 
 /*

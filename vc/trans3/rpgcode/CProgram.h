@@ -184,6 +184,15 @@ typedef std::deque<MACHINE_UNIT> MACHINE_UNITS, *LPMACHINE_UNITS;
 typedef MACHINE_UNITS::const_iterator CONST_POS;
 typedef MACHINE_UNITS::iterator POS;
 
+// Get a lowercase string.
+inline STRING lcase(const STRING str)
+{
+	char *const pstr = _tcslwr(_tcsdup(str.c_str()));
+	const STRING ret = pstr;
+	free(pstr);
+	return ret;
+}
+
 // A plugin.
 class IPlugin;
 
@@ -221,8 +230,8 @@ public:
 	static void addFunction(const STRING name, const MACHINE_FUNC func);
 	static STRING getFunctionName(const MACHINE_FUNC func);
 	static void debugger(const STRING str);
-	static LPSTACK_FRAME getGlobal(const STRING var) { return &m_heap[var]; }
-	static void freeGlobal(const STRING var) { m_heap.erase(var); }
+	static LPSTACK_FRAME getGlobal(const STRING var) { return &m_heap[lcase(var)]; }
+	static void freeGlobal(const STRING var) { m_heap.erase(lcase(var)); }
 	static void freeGlobals() { m_heap.clear(); m_objects.clear(); }
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
 	static void freePlugins();

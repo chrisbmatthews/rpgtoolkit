@@ -1699,7 +1699,7 @@ void operators::member(CALL_DATA &call)
 void operators::array(CALL_DATA &call)
 {
 	call.ret().udt = UDT_ID;
-	call.ret().lit = call[0].lit + _T('[');
+	/**call.ret().lit = call[0].lit + _T('[');
 	if (call[1].getType() == UDT_NUM)
 	{
 		call.ret().lit += call[1].getLit();
@@ -1708,7 +1708,8 @@ void operators::array(CALL_DATA &call)
 	{
 		call.ret().lit += _T('"') + call[1].getLit() + _T('"');
 	}
-	call.ret().lit += _T(']');
+	call.ret().lit += _T(']');**/
+	call.ret().lit = call[0].lit + _T('[') + call[1].getLit() + _T(']');
 }
 
 // If...else control structure.

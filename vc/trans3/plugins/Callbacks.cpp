@@ -49,6 +49,7 @@ static HDC g_hScreenDc = NULL;
 std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 STRING g_menuGraphic, g_fightMenuGraphic;
 SPCMOVE g_spc;
+std::vector<STRING> g_specials;
 CProgram *g_prg = NULL;
 
 template <class T>
@@ -364,13 +365,13 @@ STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSl
 			*pRet = !pData->smYN;
 			break;
 		case PLAYER_SM_MIN_EXPS:
-			*pRet = pData->spcMinExp[bounds(arrayPos, 0, 200)];
+			*pRet = pData->spcMinExp[bounds(arrayPos, 0, int(pData->spcMinExp.size() - 1))];
 			break;
 		case PLAYER_SM_MIN_LEVELS:
-			*pRet = pData->spcMinLevel[bounds(arrayPos, 0, 200)];
+			*pRet = pData->spcMinLevel[bounds(arrayPos, 0, int(pData->spcMinLevel.size() - 1))];
 			break;
 		case PLAYER_ARMOURS:
-			*pRet = pData->armorType[bounds(arrayPos, 0, 6)];
+			*pRet = pData->armorType[bounds(arrayPos, 0, int(pData->armorType.size() - 1))];
 			break;
 		case PLAYER_LEVELTYPE:
 			*pRet = pData->levelType;
@@ -462,19 +463,19 @@ STDMETHODIMP CCallbacks::CBGetPlayerString(int infoCode, int arrayPos, int playe
 			str = pData->profilePic;
 			break;
 		case PLAYER_SM_FILENAMES:
-			str = pData->smlist[bounds(arrayPos, 0, 200)];
+			str = pData->smlist[bounds(arrayPos, 0, int(pData->smlist.size() - 1))];
 			break;
 		case PLAYER_SM_NAME:
 			str = pData->specialMoveName;
 			break;
 		case PLAYER_SM_CONDVARS:
-			str = pData->spcVar[bounds(arrayPos, 0, 200)];
+			str = pData->spcVar[bounds(arrayPos, 0, int(pData->spcVar.size() - 1))];
 			break;
 		case PLAYER_SM_CONDVARSEQ:
-			str = pData->spcEquals[bounds(arrayPos, 0, 200)];
+			str = pData->spcEquals[bounds(arrayPos, 0, int(pData->spcEquals.size() - 1))];
 			break;
 		case PLAYER_ACCESSORIES:
-			str = pData->accessoryName[bounds(arrayPos, 0, 10)];
+			str = pData->accessoryName[bounds(arrayPos, 0, int(pData->accessoryName.size() - 1))];
 			break;
 		case PLAYER_SWORDSOUND:
 		case PLAYER_DEFENDSOUND:
@@ -665,8 +666,10 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			if (pPlayer) bstr = getString(pPlayer->getPlayer()->fileName);
 			break;
 		case GEN_PLYROTHERHANDLES:
+			// TBD.
 			break;
 		case GEN_PLYROTHERFILES:
+			// TBD.
 			break;
 		case GEN_INVENTORY_FILES:
 			bstr = getString(g_inv.getFileAt(arrayPos));
@@ -995,6 +998,64 @@ STDMETHODIMP CCallbacks::CBDebugMessage(BSTR message)
 
 STDMETHODIMP CCallbacks::CBGetPathString(int infoCode, BSTR *pRet)
 {
+	extern STRING g_projectPath;
+
+	STRING str;
+	switch (infoCode)
+	{
+		case PATH_TILE:
+			str = TILE_PATH;
+			break;
+		case PATH_BOARD:
+			str = BRD_PATH;
+			break;
+		case PATH_CHAR:
+			str = TEM_PATH;
+			break;
+		case PATH_SPC:
+			str = SPC_PATH;
+			break;
+		case PATH_BKG:
+			str = BKG_PATH;
+			break;
+		case PATH_MEDIA:
+			str = MEDIA_PATH;
+			break;
+		case PATH_PRG:
+			str = PRG_PATH;
+			break;
+		case PATH_FONT:
+			str = FONT_PATH;
+			break;
+		case PATH_ITEM:
+			str = ITM_PATH;
+			break;
+		case PATH_ENEMY:
+			str = ENE_PATH;
+			break;
+		case PATH_MAIN:
+			str = GAM_PATH;
+			break;
+		case PATH_BITMAP:
+			str = BMP_PATH;
+			break;
+		case PATH_STATUSFX:
+			str = STATUS_PATH;
+			break;
+		case PATH_MISC:
+			str = MISC_PATH;
+			break;
+		case PATH_SAVE:
+			// TBD.
+			break;
+		case PATH_PROJECT:
+			str = g_projectPath;
+			break;
+	}
+
+	BSTR bstr = getString(str);
+	SysReAllocString(pRet, bstr);
+	SysFreeString(bstr);
 	return S_OK;
 }
 
@@ -1563,11 +1624,45 @@ STDMETHODIMP CCallbacks::CBFileDialog(BSTR initialPath, BSTR fileFilter, BSTR *p
 
 STDMETHODIMP CCallbacks::CBDetermineSpecialMoves(BSTR playerHandle, int *pRet)
 {
+	const STRING handle = getString(playerHandle);
+	// Locate the payer with this handle.
+	std::vector<CPlayer *>::const_iterator i = g_players.begin();
+	CPlayer *pPlayer = NULL;
+	for (; i != g_players.end(); ++i)
+	{
+		if ((*i)->name() == handle)
+		{
+			pPlayer = *i;
+			break;
+		}
+	}
+	if (pPlayer)
+	{
+		// Determine the moves.
+		g_specials.clear();
+		pPlayer->getLearnedMoves(g_specials);
+		*pRet = g_specials.size();
+	}
+	else
+	{
+		// Couldn't find the player.
+		*pRet = 0;
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetSpecialMoveListEntry(int idx, BSTR *pRet)
 {
+	if (g_specials.size() > idx)
+	{
+		BSTR bstr = getString(g_specials[idx]);
+		SysReAllocString(pRet, bstr);
+		SysFreeString(bstr);
+	}
+	else
+	{
+		SysReAllocString(pRet, L"");
+	}
 	return S_OK;
 }
 
