@@ -33,11 +33,7 @@ CSprite(show)				// Is the player visible?
 	LPPLAYER_STATS pStats = &m_playerMem.stats;
 
 	experience(pStats->experience);
-
-	LPSTACK_FRAME pLevelVar = CProgram::getGlobal(m_playerMem.leVar);
-	pLevelVar->udt = UDT_NUM;
-	pLevelVar->num = double(pStats->level);
-
+	level(pStats->level);
 	health(pStats->health);
 	maxHealth(pStats->maxHealth);
 	defence(pStats->defense);
@@ -68,6 +64,19 @@ void CPlayer::experience(const int val)
 int CPlayer::experience() const
 {
 	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.experienceVar);
+	return int(pVar->getNum());
+}
+
+void CPlayer::level(const int val)
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.leVar);
+	pVar->udt = UDT_NUM;
+	pVar->num = double(val);
+}
+
+int CPlayer::level() const
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.leVar);
 	return int(pVar->getNum());
 }
 
@@ -167,9 +176,7 @@ STRING CPlayer::name() const
  */
 void CPlayer::giveExperience(const int amount)
 {
-	int exp = experience();
-	exp += amount;
-	experience(exp);
+	experience(experience() + amount);
 
 	m_playerMem.nextLevel -= amount;
 
@@ -196,13 +203,9 @@ void CPlayer::levelUp()
 	}
 
 	// Level up.
-	{
-		LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.leVar);
-		int level = int(pVar->getNum());
-		if (level >= m_playerMem.maxLevel) return;
-		pVar->udt = UDT_NUM;
-		pVar->num = level + 1;
-	}
+	const int lev = level();
+	if (lev >= m_playerMem.maxLevel) return;
+	level(lev + 1);
 
 	if (m_playerMem.charLevelUpType == 0)
 	{
@@ -280,7 +283,7 @@ void CPlayer::levelUp()
 void CPlayer::getLearnedMoves(std::vector<STRING> &moves) const
 {
 	const int exp = experience();
-	const int level = int(CProgram::getGlobal(m_playerMem.leVar)->getNum());
+	const int lev = level();
 
 	std::vector<STRING>::const_iterator i = m_playerMem.smlist.begin();
 	for (unsigned int j = 0; i != m_playerMem.smlist.end(); ++i, ++j)
@@ -295,7 +298,7 @@ void CPlayer::getLearnedMoves(std::vector<STRING> &moves) const
 		// Check level.
 		if (!learned)
 		{
-			if (level >= m_playerMem.spcMinLevel[j]) learned = true;
+			if (lev >= m_playerMem.spcMinLevel[j]) learned = true;
 		}
 
 		// Check activation variable.

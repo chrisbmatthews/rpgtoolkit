@@ -39,6 +39,8 @@ public:
 	void name(const STRING str);
 	STRING name() const;
 	STRING getStanceAnimation(const STRING anim) { return m_attr.getStanceAnm(anim); }
+	void level(const int val);
+	int level() const;
 
 	void giveExperience(const int exp);
 	void levelUp();

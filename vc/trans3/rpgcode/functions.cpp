@@ -3597,13 +3597,30 @@ void underArrow(CALL_DATA &params)
 }
 
 /*
- * getlevel(...)
+ * int getLevel(string handle[, int &ret])
  * 
- * Description.
+ * Get the level of a player.
  */
 void getlevel(CALL_DATA &params)
 {
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError("GetLevel() requires one or two parameters.");
+	}
 
+	CPlayer *pPlayer = (CPlayer *)getFighter(params[0].getLit());
+	if (!pPlayer)
+	{
+		throw CError("GetLevel(): player not found.");
+	}
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(pPlayer->level());
+
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
