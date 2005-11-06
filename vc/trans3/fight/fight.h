@@ -82,11 +82,17 @@ typedef struct tagBattle
 // Can we run away?
 bool canRunFromFight();
 
+// Are we currently fighting?
+bool isFighting();
+
 // Run a fight.
 void runFight(const std::vector<STRING> enemies, const STRING background);
 
 // Get a fighter.
 LPFIGHTER getFighter(const unsigned int party, const unsigned int idx);
+
+// Get a fighter's indices.
+void getFighterIndices(const IFighter *pFighter, int &party, int &idx);
 
 // Advance the state of a fight.
 void fightTick();
@@ -96,6 +102,9 @@ int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int 
 
 // Perform a special move.
 void performSpecialMove(const int sourcePartyIdx, const int sourceFightIdx, const int targetPartyIdx, const int targetFightIdx, const STRING moveFile);
+
+// Utilise the internal AI.
+void performFightAi(const int ai, const int idx);
 
 // Start a fight based on skill level.
 void skillFight(const int skill, const STRING bkg);

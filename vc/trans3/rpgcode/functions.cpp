@@ -1141,7 +1141,9 @@ void hp(CALL_DATA &params)
 	IFighter *p = getFighter(params[0].getLit());
 	if (p)
 	{
-		p->health((params[0].getNum() <= p->maxHealth()) ? params[0].getNum() : p->maxHealth());
+		const int max = p->maxHealth();
+		const int hp = int(params[1].getNum());
+		p->health((hp <= max) ? hp : max);
 	}
 }
 
@@ -1152,6 +1154,8 @@ void hp(CALL_DATA &params)
  */
 void giveHp(CALL_DATA &params)
 {
+	extern IPlugin *g_pFightPlugin;
+
 	if (params.params != 2)
 	{
 		throw CError(_T("GiveHP() requires two parameters."));
@@ -1159,12 +1163,22 @@ void giveHp(CALL_DATA &params)
 	IFighter *p = getFighter(params[0].getLit());
 	if (p)
 	{
-		const int hp = p->health() + params[0].getNum();
-		p->health((hp <= p->maxHealth()) ? ((hp > 0) ? hp : 0) : p->maxHealth());
-		// TBD: if (fighting)
-		// {
-		//		...
-		// }
+		const int given = int(params[1].getNum());
+		const int hp = p->health() + given;
+		const int max = p->maxHealth();
+		p->health((hp <= max) ? ((hp > 0) ? hp : 0) : max);
+		if (isFighting())
+		{
+			// Get the fighter's indices.
+			int party, idx;
+			getFighterIndices(p, party, idx);
+
+			if ((party != -1) && (idx != -1))
+			{
+				// Inform the fight plugin that health was modified.
+				g_pFightPlugin->fightInform(-1, -1, party, idx, 0, 0, -given, 0, _T(""), INFORM_REMOVE_HP);
+			}
+		}
 	}
 }
 
@@ -1264,7 +1278,9 @@ void smp(CALL_DATA &params)
 	IFighter *p = getFighter(params[0].getLit());
 	if (p)
 	{
-		p->smp((params[0].getNum() <= p->maxSmp()) ? params[0].getNum() : p->maxSmp());
+		const int max = int(p->maxSmp());
+		const int mana = int(params[1].getNum());
+		p->smp((mana <= max) ? mana : max);
 	}
 }
 
@@ -1275,6 +1291,8 @@ void smp(CALL_DATA &params)
  */
 void giveSmp(CALL_DATA &params)
 {
+	extern IPlugin *g_pFightPlugin;
+
 	if (params.params != 2)
 	{
 		throw CError(_T("GiveSMP() requires two parameters."));
@@ -1282,12 +1300,22 @@ void giveSmp(CALL_DATA &params)
 	IFighter *p = getFighter(params[0].getLit());
 	if (p)
 	{
-		const int hp = p->smp() + params[0].getNum();
-		p->smp((hp <= p->maxSmp()) ? ((hp > 0) ? hp : 0) : p->maxSmp());
-		// if (fighting)
-		// {
-		//		...
-		// }
+		const int given = int(params[1].getNum());
+		const int smp = p->smp() + given;
+		const int max = p->maxSmp();
+		p->smp((smp <= max) ? ((smp > 0) ? smp : 0) : max);
+		if (isFighting())
+		{
+			// Get the fighter's indices.
+			int party, idx;
+			getFighterIndices(p, party, idx);
+
+			if ((party != -1) && (idx != -1))
+			{
+				// Inform the fight plugin that health was modified.
+				g_pFightPlugin->fightInform(-1, -1, party, idx, 0, 0, 0, -given, _T(""), INFORM_REMOVE_SMP);
+			}
+		}
 	}
 }
 
@@ -3212,23 +3240,93 @@ void clearBuffer(CALL_DATA &params)
 }
 
 /*
- * attackall(...)
+ * void attackAll(int fp)
  * 
- * Description.
+ * Deal the specified amount in HP to all the members
+ * of the target's party.
  */
 void attackall(CALL_DATA &params)
 {
+	extern IPlugin *g_pFightPlugin;
 
+	if (params.params != 1)
+	{
+		throw CError("AttackAll() requires one parameter.");
+	}
+
+	if (!isFighting())
+	{
+		throw CError("AttackAll() cannot be used outside of a battle.");
+	}
+
+	// Get the target party.
+	int party = -1;
+	if (g_targetType == TT_ENEMY) party = ENEMY_PARTY;
+	else if (g_targetType == TT_PLAYER) party = PLAYER_PARTY;
+	else
+	{
+		throw CError("AttackAll(): inappropriate target.");
+	}
+
+	const int damage = int(params[0].getNum());
+
+	int idx = -1;
+	LPFIGHTER pFighter = NULL;
+	while (pFighter = getFighter(party, ++idx))
+	{
+		// Deal the damage to this fighter.
+		int hp = pFighter->pFighter->health() - damage;
+		if (hp < 0) hp = 0;
+		pFighter->pFighter->health(hp);
+
+		// Inform the plugin.
+		g_pFightPlugin->fightInform(-1, -1, party, idx, 0, 0, damage, 0, _T(""), INFORM_REMOVE_HP);
+	}
 }
 
 /*
- * drainall(...)
+ * void drainAll(int fp)
  * 
- * Description.
+ * Deal the specified amount in SMP to all the members
+ * of the target's party.
  */
 void drainall(CALL_DATA &params)
 {
+	extern IPlugin *g_pFightPlugin;
 
+	if (params.params != 1)
+	{
+		throw CError("DrainAll() requires one parameter.");
+	}
+
+	if (!isFighting())
+	{
+		throw CError("DrainAll() cannot be used outside of a battle.");
+	}
+
+	// Get the target party.
+	int party = -1;
+	if (g_targetType == TT_ENEMY) party = ENEMY_PARTY;
+	else if (g_targetType == TT_PLAYER) party = PLAYER_PARTY;
+	else
+	{
+		throw CError("DrainAll(): inappropriate target.");
+	}
+
+	const int damage = int(params[0].getNum());
+
+	int idx = -1;
+	LPFIGHTER pFighter = NULL;
+	while (pFighter = getFighter(party, ++idx))
+	{
+		// Deal the damage to this fighter.
+		int smp = pFighter->pFighter->smp() - damage;
+		if (smp < 0) smp = 0;
+		pFighter->pFighter->smp(smp);
+
+		// Inform the plugin.
+		g_pFightPlugin->fightInform(-1, -1, party, idx, 0, 0, 0, damage, _T(""), INFORM_REMOVE_SMP);
+	}
 }
 
 /*
@@ -3509,13 +3607,41 @@ void getlevel(CALL_DATA &params)
 }
 
 /*
- * ai(...)
+ * void ai(int level)
  * 
- * Description.
+ * Have the source enemy use the internal AI.
  */
 void ai(CALL_DATA &params)
 {
+	if (params.params != 1)
+	{
+		throw CError("AI() requires one parameter.");
+	}
 
+	if (!isFighting())
+	{
+		throw CError("AI() cannot be used outside of a battle.");
+	}
+
+	if (g_sourceType != TT_ENEMY)
+	{
+		throw CError("AI(): inappropriate source.");
+	}
+
+	const int level = int(params[0].getNum());
+	if ((level < 0) || (level > 4))
+	{
+		throw CError("AI(): level must be from zero to four.");
+	}
+
+	LPENEMY pEnemy = LPENEMY(g_pSource);
+	int party = -1, idx = -1;
+	getFighterIndices(pEnemy, party, idx);
+	if ((party != -1) && (idx != -1))
+	{
+		// Use the AI.
+		performFightAi(level, idx);
+	}
 }
 
 /*

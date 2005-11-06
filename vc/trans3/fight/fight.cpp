@@ -20,6 +20,7 @@
 
 IPlugin *g_pFightPlugin = NULL;		// The fight plugin.
 BATTLE g_battle;					// The current battle.
+bool g_fighting = false;			// Are we currently fighting?
 
 // ::first = move file
 // ::second = curative?
@@ -41,6 +42,14 @@ bool canRunFromFight()
 }
 
 /*
+ * Are we currently fighting?
+ */
+bool isFighting()
+{
+	return g_fighting;
+}
+
+/*
  * Get a fighter.
  */
 LPFIGHTER getFighter(const unsigned int party, const unsigned int idx)
@@ -50,6 +59,31 @@ LPFIGHTER getFighter(const unsigned int party, const unsigned int idx)
 		return &g_battle.parties[party][idx];
 	}
 	return NULL;
+}
+
+/*
+ * Get a fighter's indices.
+ */
+void getFighterIndices(const IFighter *pFighter, int &party, int &idx)
+{
+	std::vector<VECTOR_FIGHTER>::iterator i = g_battle.parties.begin();
+	for (; i != g_battle.parties.end(); ++i)
+	{
+		VECTOR_FIGHTER::iterator j = i->begin();
+		for (; j != i->end(); ++j)
+		{
+			if (j->pFighter == pFighter)
+			{
+				// Found the fighter.
+				party = i - g_battle.parties.begin();
+				idx = j - i->begin();
+				return;
+			}
+		}
+	}
+
+	// Could not find the fighter.
+	party = idx = -1;
 }
 
 /*
@@ -548,17 +582,18 @@ void rewardPlayers(const int gp, const int exp, const STRING prg)
 {
 	extern STRING g_projectPath;
 	extern unsigned long g_gp;
+	extern std::vector<CPlayer *> g_players;
+
 	g_gp += gp;
 
 	if (exp > 0)
 	{
 		TCHAR str[255];
 		_itot(exp, str, 10);
-		messageBox(STRING(_T("Gained ")) + str + " experience points.");
+		messageBox(STRING(_T("Gained ")) + str + _T(" experience points."));
 	}
 
 	// Give the experience.
-	extern std::vector<CPlayer *> g_players;
 	std::vector<CPlayer *>::const_iterator i = g_players.begin();
 	for (; i != g_players.end(); ++i)
 	{
@@ -570,7 +605,7 @@ void rewardPlayers(const int gp, const int exp, const STRING prg)
 	{
 		TCHAR str[255];
 		_itot(gp, str, 10);
-		messageBox(STRING(_T("Gained ")) + str + " GP.");
+		messageBox(STRING(_T("Gained ")) + str + _T(" GP."));
 	}
 
 	// Run RPGCode program.
@@ -585,9 +620,15 @@ void rewardPlayers(const int gp, const int exp, const STRING prg)
  */
 void runFight(const std::vector<STRING> enemies, const STRING background)
 {
-	if (!g_pFightPlugin) return;
 	extern STRING g_projectPath;
+	extern std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
+	extern CAllocationHeap<CAudioSegment> g_music;
+	extern CAudioSegment *g_bkgMusic;
+	extern std::vector<CPlayer *> g_players;
 
+	if (!g_pFightPlugin) return;
+
+	g_fighting = true;
 	g_battle = BATTLE(); // Redundant, but takes so little time that it's worth being paranoid.
 
 	std::vector<VECTOR_FIGHTER> *pParties = &g_battle.parties;
@@ -599,8 +640,7 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 	int gp = 0, exp = 0;
 	g_battle.bRun = true;
 
-	extern std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
-
+	// Add the enemies.
 	std::vector<STRING>::const_iterator i = enemies.begin();
 	for (unsigned int pos = 0; i != enemies.end(); ++i, ++pos)
 	{
@@ -633,7 +673,7 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 	pParties->push_back(VECTOR_FIGHTER());
 	VECTOR_FIGHTER &rPlayers = pParties->back();
 
-	extern std::vector<CPlayer *> g_players;
+	// Add the players.
 	std::vector<CPlayer *>::const_iterator j = g_players.begin();
 	for (; j != g_players.end(); ++j)
 	{
@@ -648,11 +688,11 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 		rPlayers.push_back(fighter);
 	}
 
+	// Open the background.
 	BACKGROUND bkg;
 	bkg.open(g_projectPath + BKG_PATH + background);
 
-	extern CAllocationHeap<CAudioSegment> g_music;
-	extern CAudioSegment *g_bkgMusic;
+	// Play the new music.
 	CAudioSegment *pOldMusic = g_bkgMusic;
 	pOldMusic->stop(); // A pause would be better.
 
@@ -660,10 +700,16 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 	g_bkgMusic->open(bkg.bkgMusic);
 	g_bkgMusic->play(true);
 
+	// Execute the fight.
 	const int outcome = g_pFightPlugin->fight(enemies.size(), -1, background, g_battle.bRun);
+
+	// Handle the aftermath of the fight.
 	if (outcome == FIGHT_RUN_AUTO)
 	{
-		CProgram(g_projectPath + PRG_PATH + runPrg).run();
+		if (!runPrg.empty())
+		{
+			CProgram(g_projectPath + PRG_PATH + runPrg).run();
+		}
 	}
 	else if (outcome == FIGHT_WON_AUTO)
 	{
@@ -675,11 +721,15 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 		// Do game over stuff.
 	}
 
+	// Revert back to the previous music.
 	g_bkgMusic->stop();
 	g_music.free(g_bkgMusic);
 	(g_bkgMusic = pOldMusic)->play(true);
 
+	// Render the scene.
 	renderNow(NULL, true);
 
+	// Clean up.
 	g_battle = BATTLE();
+	g_fighting = false;
 }
