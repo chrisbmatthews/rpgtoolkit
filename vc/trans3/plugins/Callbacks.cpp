@@ -422,7 +422,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerString(int infoCode, int arrayPos, int playe
 	CPlayer *pPlayer = g_players[playerSlot];
 	LPPLAYER pData = pPlayer->getPlayer();
 
-	std::string str;
+	STRING str;
 
 	switch (infoCode)
 	{
@@ -581,7 +581,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerString(int infoCode, int arrayPos, BSTR newV
 	CPlayer *pPlayer = g_players[playerSlot];
 	LPPLAYER pData = pPlayer->getPlayer();
 
-	const std::string str = getString(newVal);
+	const STRING str = getString(newVal);
 
 	switch (infoCode)
 	{
@@ -1892,10 +1892,10 @@ STDMETHODIMP CCallbacks::CBAnimationFrameImage(int idx, int frame, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBGetPartySize(int partyIdx, int *pRet)
 {
-	extern std::vector<VECTOR_FIGHTER> g_parties;
-	if (partyIdx < g_parties.size())
+	extern BATTLE g_battle;
+	if (partyIdx < g_battle.parties.size())
 	{
-		*pRet = g_parties[partyIdx].size();
+		*pRet = g_battle.parties[partyIdx].size();
 	}
 	else
 	{

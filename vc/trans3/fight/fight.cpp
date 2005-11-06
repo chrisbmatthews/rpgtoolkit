@@ -17,16 +17,15 @@
 #include "../rpgcode/CProgram.h"
 #include <vector>
 
-IPlugin *g_pFightPlugin = NULL;			// The fight plugin.
-std::vector<VECTOR_FIGHTER> g_parties;	// Parties.
-static bool g_bCanRun = false;			// Can we run away from this fight?
+IPlugin *g_pFightPlugin = NULL;		// The fight plugin.
+BATTLE g_battle;					// The current battle.
 
 /*
  * Can we run away from this fight?
  */
 bool canRunFromFight()
 {
-	return g_bCanRun;
+	return g_battle.bRun;
 }
 
 /*
@@ -34,9 +33,9 @@ bool canRunFromFight()
  */
 LPFIGHTER getFighter(const unsigned int party, const unsigned int idx)
 {
-	if ((party < g_parties.size()) && (idx < g_parties[party].size()))
+	if ((party < g_battle.parties.size()) && (idx < g_battle.parties[party].size()))
 	{
-		return &g_parties[party][idx];
+		return &g_battle.parties[party][idx];
 	}
 	return NULL;
 }
@@ -82,8 +81,10 @@ int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int 
  */
 void fightTick(void)
 {
-	std::vector<VECTOR_FIGHTER>::iterator i = g_parties.begin();
-	for (; i != g_parties.end(); ++i)
+	std::vector<VECTOR_FIGHTER> *pParties = &g_battle.parties;
+
+	std::vector<VECTOR_FIGHTER>::iterator i = pParties->begin();
+	for (; i != pParties->end(); ++i)
 	{
 		VECTOR_FIGHTER::iterator j = i->begin();
 		for (; j != i->end(); ++j)
@@ -101,7 +102,7 @@ void fightTick(void)
 				// Charged.
 				if (j->pFighter->health() <= 0) continue;
 
-				const unsigned int party = i - g_parties.begin(), idx = j - i->begin();
+				const unsigned int party = i - pParties->begin(), idx = j - i->begin();
 
 				// Status effects.
 				std::map<STRING, STATUS_EFFECT>::iterator k = j->statuses.begin();
@@ -213,8 +214,8 @@ void skillFight(const int skill, const STRING bkg)
 		const STRING enemy = getEnemy(skill);
 		if (enemy.empty())
 		{
-			char num[255];
-			itoa(skill, num, 10);
+			TCHAR num[255];
+			_itot(skill, num, 10);
 			messageBox(STRING(_T("No enemies of skill level ")) + num + _T(" found."));
 			return;
 		}
@@ -269,6 +270,45 @@ void fightTest(const int moveSize)
 }
 
 /*
+ * Hand out rewards.
+ */
+void rewardPlayers(const int gp, const int exp, const STRING prg)
+{
+	extern STRING g_projectPath;
+	extern unsigned long g_gp;
+	g_gp += gp;
+
+	if (exp > 0)
+	{
+		TCHAR str[255];
+		_itot(exp, str, 10);
+		messageBox(STRING(_T("Gained ")) + str + " experience points.");
+	}
+
+	// Give the experience.
+	extern std::vector<CPlayer *> g_players;
+	std::vector<CPlayer *>::const_iterator i = g_players.begin();
+	for (; i != g_players.end(); ++i)
+	{
+		if (!*i) continue;
+		(*i)->giveExperience(exp);
+	}
+
+	if (gp > 0)
+	{
+		TCHAR str[255];
+		_itot(gp, str, 10);
+		messageBox(STRING(_T("Gained ")) + str + " GP.");
+	}
+
+	// Run RPGCode program.
+	if (!prg.empty())
+	{
+		CProgram(g_projectPath + PRG_PATH + prg).run();
+	}
+}
+
+/*
  * Run a fight.
  */
 void runFight(const std::vector<STRING> enemies, const STRING background)
@@ -276,12 +316,16 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 	if (!g_pFightPlugin) return;
 	extern STRING g_projectPath;
 
-	g_parties.clear(); // Redundant, but takes so little time that it's worth being paranoid.
-	g_parties.push_back(VECTOR_FIGHTER());
-	VECTOR_FIGHTER &rEnemies = g_parties.back();
+	g_battle = BATTLE(); // Redundant, but takes so little time that it's worth being paranoid.
+
+	std::vector<VECTOR_FIGHTER> *pParties = &g_battle.parties;
+
+	pParties->push_back(VECTOR_FIGHTER());
+	VECTOR_FIGHTER &rEnemies = pParties->back();
 
 	STRING runPrg, rewardPrg;
-	g_bCanRun = true;
+	int gp = 0, exp = 0;
+	g_battle.bRun = true;
 
 	extern std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 
@@ -299,12 +343,14 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 		}
 		if (fighter.pEnemy->run == 0)
 		{
-			g_bCanRun = false;
+			g_battle.bRun = false;
 		}
 		if (!fighter.pEnemy->winPrg.empty())
 		{
 			rewardPrg = fighter.pEnemy->winPrg;
 		}
+		gp += fighter.pEnemy->gp;
+		exp += fighter.pEnemy->exp;
 		fighter.chargeMax = 41; // (Not fair to enemies!)
 		fighter.charge = rand() % fighter.chargeMax;
 		fighter.bFrozenCharge = false;
@@ -312,8 +358,8 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 		rEnemies.push_back(fighter);
 	}
 
-	g_parties.push_back(VECTOR_FIGHTER());
-	VECTOR_FIGHTER &rPlayers = g_parties.back();
+	pParties->push_back(VECTOR_FIGHTER());
+	VECTOR_FIGHTER &rPlayers = pParties->back();
 
 	extern std::vector<CPlayer *> g_players;
 	std::vector<CPlayer *>::const_iterator j = g_players.begin();
@@ -342,7 +388,7 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 	g_bkgMusic->open(bkg.bkgMusic);
 	g_bkgMusic->play(true);
 
-	const int outcome = g_pFightPlugin->fight(enemies.size(), -1, background, g_bCanRun);
+	const int outcome = g_pFightPlugin->fight(enemies.size(), -1, background, g_battle.bRun);
 	if (outcome == FIGHT_RUN_AUTO)
 	{
 		CProgram(g_projectPath + PRG_PATH + runPrg).run();
@@ -350,6 +396,7 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 	else if (outcome == FIGHT_WON_AUTO)
 	{
 		// Hand out rewards.
+		rewardPlayers(gp, exp, rewardPrg);
 	}
 	else if (outcome == FIGHT_LOST)
 	{
@@ -362,6 +409,5 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 
 	renderNow(NULL, true);
 
-	g_parties.clear();
-
+	g_battle = BATTLE();
 }

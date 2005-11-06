@@ -40,6 +40,9 @@ public:
 	STRING name() const;
 	STRING getStanceAnimation(const STRING anim) { return m_attr.getStanceAnm(anim); }
 
+	void giveExperience(const int exp);
+	void levelUp();
+
 	int equipmentDP() const { return m_equipment.mDP; }
 	int equipmentFP() const { return m_equipment.mFP; }
 	int equipmentHP() const { return m_equipment.mHP; }
@@ -69,6 +72,8 @@ private:
 	{
 		int mDP, mFP, mHP, mSM;		// Cumulative attribute modifiers.
 		std::vector<EQ_SLOT> data;
+		tagEquipment():
+			mDP(0), mFP(0), mHP(0), mSM(0) { }
 	} m_equipment;
 
 	PLAYER m_playerMem;			// Player-specific data.

@@ -13,6 +13,7 @@
 #include "../../common/CInventory.h"
 #include "../../common/item.h"
 #include "../../common/paths.h"
+#include "../../common/mbox.h"
 #include "../../rpgcode/CProgram.h"
 #include "../../fight/fight.h"
 
@@ -154,6 +155,118 @@ STRING CPlayer::name() const
 {
 	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.nameVar);
 	return pVar->getLit();
+}
+
+/*
+ * Give experience and level up as required.
+ */
+void CPlayer::giveExperience(const int amount)
+{
+	int exp = experience();
+	exp += amount;
+	experience(exp);
+
+	m_playerMem.nextLevel -= amount;
+
+	if (m_playerMem.nextLevel <= 0)
+	{
+		// Level up.
+		const int nextLev = m_playerMem.nextLevel;
+		levelUp();
+		m_playerMem.nextLevel += nextLev;
+	}
+}
+
+/*
+ * Level up the player.
+ */
+void CPlayer::levelUp()
+{
+	extern STRING g_projectPath;
+
+	// Run the level up program.
+	if (!m_playerMem.charLevelUpRPGCode.empty())
+	{
+		CProgram(g_projectPath + PRG_PATH + m_playerMem.charLevelUpRPGCode).run();
+	}
+
+	// Level up.
+	{
+		LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.leVar);
+		int level = int(pVar->getNum());
+		if (level >= m_playerMem.maxLevel) return;
+		pVar->udt = UDT_NUM;
+		pVar->num = level + 1;
+	}
+
+	if (m_playerMem.charLevelUpType == 0)
+	{
+		m_playerMem.levelProgression += m_playerMem.levelProgression * int(m_playerMem.experienceIncrease / 100.0);
+	}
+	else
+	{
+		m_playerMem.levelProgression += m_playerMem.experienceIncrease;
+	}
+	m_playerMem.nextLevel = m_playerMem.levelProgression;
+
+	// HP.
+	{
+		int hp = maxHealth();
+		if (m_playerMem.charLevelUpType == 0)
+		{
+			hp += (hp - m_equipment.mHP) * m_playerMem.levelHp / 100.0;
+		}
+		else
+		{
+			hp += m_playerMem.levelHp;
+		}
+		maxHealth(hp);
+	}
+
+	// DP.
+	{
+		int dp = defence();
+		if (m_playerMem.charLevelUpType == 0)
+		{
+			dp += (dp - m_equipment.mDP) * m_playerMem.levelDp / 100.0;
+		}
+		else
+		{
+			dp += m_playerMem.levelDp;
+		}
+		defence(dp);
+	}
+
+	// FP.
+	{
+		int fp = fight();
+		if (m_playerMem.charLevelUpType == 0)
+		{
+			fp += (fp - m_equipment.mFP) * m_playerMem.levelFp / 100.0;
+		}
+		else
+		{
+			fp += m_playerMem.levelFp;
+		}
+		fight(fp);
+	}
+
+	// SMP.
+	{
+		int sm = maxSmp();
+		if (m_playerMem.charLevelUpType == 0)
+		{
+			sm += (sm - m_equipment.mSM) * m_playerMem.levelSm / 100.0;
+		}
+		else
+		{
+			sm += m_playerMem.levelSm;
+		}
+		maxSmp(sm);
+	}
+
+	// Inform the player.
+	messageBox(name() + " gained a level.");
 }
 
 /*

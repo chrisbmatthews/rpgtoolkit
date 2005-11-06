@@ -70,6 +70,15 @@ typedef struct tagPluginEnemy
 // A party.
 typedef std::vector<FIGHTER> VECTOR_FIGHTER;
 
+// A battle.
+typedef struct tagBattle
+{
+	std::vector<VECTOR_FIGHTER> parties;	// The parties involved.
+	bool bRun;								// Can we run?
+	tagBattle():
+			bRun(false) { }
+} BATTLE, *LPBATTLE;
+
 // Can we run away?
 bool canRunFromFight();
 
