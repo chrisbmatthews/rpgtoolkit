@@ -154,7 +154,7 @@ void getUsableEnemyMoves(LPENEMY pEnemy, std::vector<SPCMOVE_PAIR> &moves)
 {
 	extern STRING g_projectPath;
 
-	const int health = pEnemy->health();
+	const int mana = pEnemy->smp();
 
 	std::vector<STRING>::const_iterator i = pEnemy->specials.begin();
 	for (; i != pEnemy->specials.end(); ++i)
@@ -163,7 +163,7 @@ void getUsableEnemyMoves(LPENEMY pEnemy, std::vector<SPCMOVE_PAIR> &moves)
 		{
 			SPCMOVE spc;
 			spc.open(g_projectPath + SPC_PATH + *i);
-			if (spc.smp <= health)
+			if (spc.smp <= mana)
 			{
 				// The enemy can use this move.
 				const bool curative = (spc.fp < 0);
