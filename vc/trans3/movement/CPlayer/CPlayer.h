@@ -21,35 +21,25 @@ class CPlayer : public CSprite, public IFighter
 public:
 
 	// IFighter.
-	// Keep this first in the vtable.
 	//------------------------------------------------------------------
-	void experience(const int val) { m_playerMem.stats.experience = val; }
-	int experience() { return m_playerMem.stats.experience; }
-	void health(const int val) { m_playerMem.stats.health = val; }
-	int health() { return m_playerMem.stats.health; }
-	void maxHealth(const int val) { m_playerMem.stats.maxHealth = val; }
-	int maxHealth() { return m_playerMem.stats.maxHealth; }
-	void defence(const int val) { m_playerMem.stats.defense = val; }
-	int defence() { return m_playerMem.stats.defense; }
-	void fight(const int val) { m_playerMem.stats.fight = val; }
-	int fight() { return m_playerMem.stats.fight; }
-	void smp(const int val) { m_playerMem.stats.sm = val; }
-	int smp() { return m_playerMem.stats.sm; }
-	void maxSmp(const int val) { m_playerMem.stats.smMax = val; }
-	int maxSmp() { return m_playerMem.stats.smMax; }
-	void name(const STRING str) { m_playerMem.charname = str; }
-	STRING name() { return m_playerMem.charname; }
+	void experience(const int val);
+	int experience() const;
+	void health(const int val);
+	int health() const;
+	void maxHealth(const int val);
+	int maxHealth() const;
+	void defence(const int val);
+	int defence() const;
+	void fight(const int val);
+	int fight() const;
+	void smp(const int val);
+	int smp() const;
+	void maxSmp(const int val);
+	int maxSmp() const;
+	void name(const STRING str);
+	STRING name() const;
 	STRING getStanceAnimation(const STRING anim) { return m_attr.getStanceAnm(anim); }
 
-	// Delano: This is ridiculous! Make them public!
-	//
-	// Colin:	Be my guest! IFigher is using functions because it
-	//			is implemented differently in players and enemies, not
-	//			because I love pointless functions!
-	//
-	//			In this specific case, we could even do without the
-	//			setting, or at least having one general case for both
-	//			set and get (i.e. one set and one get function).
 	int equipmentDP() const { return m_equipment.mDP; }
 	int equipmentFP() const { return m_equipment.mFP; }
 	int equipmentHP() const { return m_equipment.mHP; }
@@ -70,9 +60,8 @@ public:
 
 	void calculateLevels(const bool init);
 
-	// For the callbacks...
+	// For the callbacks.
 	LPPLAYER getPlayer() { return &m_playerMem; }
-	LPPLAYER_STATS getInitialStats() { return &m_initStats; }
 
 private:
 
@@ -83,7 +72,6 @@ private:
 	} m_equipment;
 
 	PLAYER m_playerMem;			// Player-specific data.
-	PLAYER_STATS m_initStats;	// Initial stats.
 
 };
 

@@ -49,6 +49,12 @@ std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 STRING g_menuGraphic, g_fightMenuGraphic;
 CProgram *g_prg = NULL;
 
+template <class T>
+inline T bounds(const T val, const T low, const T high)
+{
+	return ((val < low) ? low : ((val > high) ? high : val));
+}
+
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
 	CProgram prg;
@@ -324,100 +330,73 @@ STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSl
 
 	CPlayer *pPlayer = g_players[playerSlot];
 	LPPLAYER pData = pPlayer->getPlayer();
-	LPPLAYER_STATS pInitStats = pPlayer->getInitialStats();
+	LPPLAYER_STATS pInitStats = &pPlayer->getPlayer()->stats;
 
 	switch (infoCode)
 	{
 		case PLAYER_INITXP:
 			*pRet = pInitStats->experience;
 			break;
-
 		case PLAYER_INITHP:
 			*pRet = pInitStats->health;
 			break;
-
 		case PLAYER_INITMAXHP:
 			*pRet = pInitStats->maxHealth;
 			break;
-
 		case PLAYER_INITDP:
 			*pRet = pInitStats->defense;
 			break;
-
 		case PLAYER_INITFP:
 			*pRet = pInitStats->fight;
 			break;
-
 		case PLAYER_INITSMP:
 			*pRet = pInitStats->sm;
 			break;
-
 		case PLAYER_INITMAXSMP:
 			*pRet = pInitStats->smMax;
 			break;
-
 		case PLAYER_INITLEVEL:
 			*pRet = pInitStats->level;
 			break;
-
 		case PLAYER_DOES_SM:
 			*pRet = !pData->smYN;
 			break;
-
 		case PLAYER_SM_MIN_EXPS:
-			if (arrayPos < 0) arrayPos = 0;
-			else if (arrayPos > 200) arrayPos = 200;
-			*pRet = pData->spcMinExp[arrayPos];
+			*pRet = pData->spcMinExp[bounds(arrayPos, 0, 200)];
 			break;
-
 		case PLAYER_SM_MIN_LEVELS:
-			if (arrayPos < 0) arrayPos = 0;
-			else if (arrayPos > 200) arrayPos = 200;
-			*pRet = pData->spcMinLevel[arrayPos];
+			*pRet = pData->spcMinLevel[bounds(arrayPos, 0, 200)];
 			break;
-
 		case PLAYER_ARMOURS:
-			if (arrayPos < 0) arrayPos = 0;
-			else if (arrayPos > 6) arrayPos = 6;
-			*pRet = pData->armorType[arrayPos];
+			*pRet = pData->armorType[bounds(arrayPos, 0, 6)];
 			break;
-
 		case PLAYER_LEVELTYPE:
 			*pRet = pData->levelType;
 			break;
-
 		case PLAYER_XP_INCREASE:
 			*pRet = pData->experienceIncrease;
 			break;
-
 		case PLAYER_MAXLEVEL:
 			*pRet = pData->maxLevel;
 			break;
-
 		case PLAYER_HP_INCREASE:
 			*pRet = pData->levelHp;
 			break;
-
 		case PLAYER_DP_INCREASE:
 			*pRet = pData->levelDp;
 			break;
-
 		case PLAYER_FP_INCREASE:
 			*pRet = pData->levelFp;
 			break;
-
 		case PLAYER_SMP_INCREASE:
 			*pRet = pData->levelSm;
 			break;
-
 		case PLAYER_LEVELUP_TYPE:
 			*pRet = pData->charLevelUpType;
 			break;
-
 		case PLAYER_DIR_FACING:
 			// TBD.
 			break;
-
 		case PLAYER_NEXTLEVEL:
 		{
 			unsigned double levelStart = 0.0, perc = 0.0;
@@ -425,7 +404,6 @@ STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSl
 			perc = (pData->stats.experience - levelStart) / (pData->nextLevel - levelStart) * 100.0;
 			*pRet = int(perc);
 		} break;
-
 		default:
 			*pRet = 0;
 			break;
@@ -435,6 +413,81 @@ STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSl
 
 STDMETHODIMP CCallbacks::CBGetPlayerString(int infoCode, int arrayPos, int playerSlot, BSTR *pRet)
 {
+	if (playerSlot >= g_players.size())
+	{
+		SysReAllocString(pRet, L"");
+		return S_OK;
+	}
+
+	CPlayer *pPlayer = g_players[playerSlot];
+	LPPLAYER pData = pPlayer->getPlayer();
+
+	std::string str;
+
+	switch (infoCode)
+	{
+		case PLAYER_NAME:
+			str = pData->charname;
+			break;
+		case PLAYER_XP_VAR:
+			str = pData->experienceVar;
+			break;
+		case PLAYER_DP_VAR:
+			str = pData->defenseVar;
+			break;
+		case PLAYER_FP_VAR:
+			str = pData->fightVar;
+			break;
+		case PLAYER_HP_VAR:
+			str = pData->healthVar;
+			break;
+		case PLAYER_MAXHP_VAR:
+			str = pData->maxHealthVar;
+			break;
+		case PLAYER_NAME_VAR:
+			str = pData->nameVar;
+			break;
+		case PLAYER_SMP_VAR:
+			str = pData->smVar;
+			break;
+		case PLAYER_MAXSMP_VAR:
+			str = pData->smMaxVar;
+			break;
+		case PLAYER_LEVEL_VAR:
+			str = pData->leVar;
+			break;
+		case PLAYER_PROFILE:
+			str = pData->profilePic;
+			break;
+		case PLAYER_SM_FILENAMES:
+			str = pData->smlist[bounds(arrayPos, 0, 200)];
+			break;
+		case PLAYER_SM_NAME:
+			str = pData->specialMoveName;
+			break;
+		case PLAYER_SM_CONDVARS:
+			str = pData->spcVar[bounds(arrayPos, 0, 200)];
+			break;
+		case PLAYER_SM_CONDVARSEQ:
+			str = pData->spcEquals[bounds(arrayPos, 0, 200)];
+			break;
+		case PLAYER_ACCESSORIES:
+			str = pData->accessoryName[bounds(arrayPos, 0, 10)];
+			break;
+		case PLAYER_SWORDSOUND:
+		case PLAYER_DEFENDSOUND:
+		case PLAYER_SMSOUND:
+		case PLAYER_DEATHSOUND:
+			// Obsolete.
+			break;
+		case PLAYER_RPGCODE_LEVUP:
+			str = pData->charLevelUpRPGCode;
+			break;
+	}
+
+	BSTR bstr = getString(str);
+	SysReAllocString(pRet, bstr);
+	SysFreeString(bstr);
 	return S_OK;
 }
 
@@ -447,96 +500,70 @@ STDMETHODIMP CCallbacks::CBSetPlayerNum(int infoCode, int arrayPos, int newVal, 
 
 	CPlayer *pPlayer = g_players[playerSlot];
 	LPPLAYER pData = pPlayer->getPlayer();
-	LPPLAYER_STATS pInitStats = pPlayer->getInitialStats();
+	LPPLAYER_STATS pInitStats = &pPlayer->getPlayer()->stats;
 
 	switch (infoCode)
 	{
 		case PLAYER_INITXP:
 			pInitStats->experience = newVal;
 			break;
-
 		case PLAYER_INITHP:
 			pInitStats->health = newVal;
 			break;
-
 		case PLAYER_INITMAXHP:
 			pInitStats->maxHealth = newVal;
 			break;
-
 		case PLAYER_INITDP:
 			pInitStats->defense = newVal;
 			break;
-
 		case PLAYER_INITFP:
 			pInitStats->fight = newVal;
 			break;
-
 		case PLAYER_INITSMP:
 			pInitStats->sm = newVal;
 			break;
-
 		case PLAYER_INITMAXSMP:
 			pInitStats->smMax = newVal;
 			break;
-
 		case PLAYER_INITLEVEL:
 			pInitStats->level = newVal;
 			break;
-
 		case PLAYER_DOES_SM:
 			pData->smYN = !newVal;
 			break;
-
 		case PLAYER_SM_MIN_EXPS:
-			if (arrayPos < 0) arrayPos = 0;
-			else if (arrayPos > 200) arrayPos = 200;
-			pData->spcMinExp[arrayPos] = newVal;
+			pData->spcMinExp[bounds(arrayPos, 0, 200)] = newVal;
 			break;
-
 		case PLAYER_SM_MIN_LEVELS:
-			if (arrayPos < 0) arrayPos = 0;
-			else if (arrayPos > 200) arrayPos = 200;
-			pData->spcMinLevel[arrayPos] = newVal;
+			pData->spcMinLevel[bounds(arrayPos, 0, 200)] = newVal;
 			break;
-
 		case PLAYER_ARMOURS:
-			if (arrayPos < 0) arrayPos = 0;
-			else if (arrayPos > 6) arrayPos = 6;
-			pData->armorType[arrayPos] = newVal;
+			pData->armorType[bounds(arrayPos, 0, 6)] = newVal;
 			break;
-
 		case PLAYER_LEVELTYPE:
 			pData->levelType = newVal;
 			break;
-
 		case PLAYER_XP_INCREASE:
 			pData->experienceIncrease = newVal;
 			break;
-
 		case PLAYER_MAXLEVEL:
 			pData->maxLevel = newVal;
 			break;
-
 		case PLAYER_HP_INCREASE:
 			pData->levelHp = newVal;
 			break;
-
 		case PLAYER_DP_INCREASE:
 			pData->levelDp = newVal;
 			break;
-
 		case PLAYER_FP_INCREASE:
 			pData->levelFp = newVal;
 			break;
-
 		case PLAYER_SMP_INCREASE:
 			pData->levelSm = newVal;
 			break;
-
 		case PLAYER_LEVELUP_TYPE:
 			pData->charLevelUpType = newVal;
 			break;
-
 		case PLAYER_DIR_FACING:
 			// TBD.
 			break;
@@ -546,6 +573,76 @@ STDMETHODIMP CCallbacks::CBSetPlayerNum(int infoCode, int arrayPos, int newVal, 
 
 STDMETHODIMP CCallbacks::CBSetPlayerString(int infoCode, int arrayPos, BSTR newVal, int playerSlot)
 {
+	if (playerSlot >= g_players.size())
+	{
+		return S_OK;
+	}
+
+	CPlayer *pPlayer = g_players[playerSlot];
+	LPPLAYER pData = pPlayer->getPlayer();
+
+	const std::string str = getString(newVal);
+
+	switch (infoCode)
+	{
+		case PLAYER_NAME:
+			pData->charname = str;
+			break;
+		case PLAYER_XP_VAR:
+			pData->experienceVar = str;
+			break;
+		case PLAYER_DP_VAR:
+			pData->defenseVar = str;
+			break;
+		case PLAYER_FP_VAR:
+			pData->fightVar = str;
+			break;
+		case PLAYER_HP_VAR:
+			pData->healthVar = str;
+			break;
+		case PLAYER_MAXHP_VAR:
+			pData->maxHealthVar = str;
+			break;
+		case PLAYER_NAME_VAR:
+			pData->nameVar = str;
+			break;
+		case PLAYER_SMP_VAR:
+			pData->smVar = str;
+			break;
+		case PLAYER_MAXSMP_VAR:
+			pData->smMaxVar = str;
+			break;
+		case PLAYER_LEVEL_VAR:
+			pData->leVar = str;
+			break;
+		case PLAYER_PROFILE:
+			pData->profilePic = str;
+			break;
+		case PLAYER_SM_FILENAMES:
+			pData->smlist[bounds(arrayPos, 0, 200)] = str;
+			break;
+		case PLAYER_SM_NAME:
+			pData->specialMoveName = str;
+			break;
+		case PLAYER_SM_CONDVARS:
+			pData->spcVar[bounds(arrayPos, 0, 200)] = str;
+			break;
+		case PLAYER_SM_CONDVARSEQ:
+			pData->spcEquals[bounds(arrayPos, 0, 200)] = str;
+			break;
+		case PLAYER_ACCESSORIES:
+			pData->accessoryName[bounds(arrayPos, 0, 10)] = str;
+			break;
+		case PLAYER_SWORDSOUND:
+		case PLAYER_DEFENDSOUND:
+		case PLAYER_SMSOUND:
+		case PLAYER_DEATHSOUND:
+			// Obsolete.
+			break;
+		case PLAYER_RPGCODE_LEVUP:
+			pData->charLevelUpRPGCode = str;
+			break;
+	}
 	return S_OK;
 }
 
@@ -614,14 +711,19 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			bstr = getString(g_enemies[playerSlot].enemy.winPrg);
 			break;
 		case GEN_ENE_STATUS:
+			// TBD.
 			break;
 		case GEN_PLYR_STATUS:
+			// TBD.
 			break;
 		case GEN_CURSOR_MOVESOUND:
+			// TBD.
 			break;
 		case GEN_CURSOR_SELSOUND:
+			// TBD.
 			break;
 		case GEN_CURSOR_CANCELSOUND:
+			// TBD.
 			break;
 	}
 	if (bstr)

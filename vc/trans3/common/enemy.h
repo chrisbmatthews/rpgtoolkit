@@ -46,21 +46,21 @@ typedef struct tagEnemy : public IFighter
     std::map<STRING, STRING> customAnims;
 	// IFighter.
 	void experience(const int val) { exp = val; }
-	int experience() { return exp; }
+	int experience() const { return exp; }
 	void health(const int val) { iHp = val; }
-	int health() { return iHp; }
+	int health() const { return iHp; }
 	void maxHealth(const int val) { iMaxHp = val; }
-	int maxHealth() { return iMaxHp; }
+	int maxHealth() const { return iMaxHp; }
 	void defence(const int val) { dp = val; }
-	int defence() { return dp; }
+	int defence() const { return dp; }
 	void fight(const int val) { fp = val; }
-	int fight() { return fp; }
+	int fight() const { return fp; }
 	void smp(const int val) { iSmp = val; }
-	int smp() { return iSmp; }
+	int smp() const { return iSmp; }
 	void maxSmp(const int val) { iMaxSmp = val; }
-	int maxSmp() { return iMaxSmp; }
+	int maxSmp() const { return iMaxSmp; }
 	void name(const STRING str) { strName = str; }
-	STRING name() { return strName; }
+	STRING name() const { return strName; }
 	STRING getStanceAnimation(const STRING anim);
 	//----------------------------------------------------------
 	bool open(const STRING strFile);

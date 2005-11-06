@@ -563,7 +563,7 @@ void fade(CALL_DATA &params)
 	
 	// TBD: delays?
 
-	switch(type)
+	switch (type)
 	{
 	case 0:
 		{
@@ -636,21 +636,20 @@ void fade(CALL_DATA &params)
 			const int pxStep = 4;
 
 			// Create a gradient for the leading edge.
-			CCanvas *cnv = new CCanvas();
-			cnv->CreateBlank(NULL, 128, height, TRUE);
-			cnv->ClearScreen(0);
+			CCanvas cnv;
+			cnv.CreateBlank(NULL, 128, height, TRUE);
+			cnv.ClearScreen(0);
 			for (int i = 0; i != 128; i += pxStep)
 			{
-				cnv->DrawFilledRect(i, 0, i + pxStep, height, RGB(i,i,i));
+				cnv.DrawFilledRect(i, 0, i + pxStep, height, RGB(i,i,i));
 			}
 			// Copy over the gradient, shifting it right.
 			for (i = -128; i != width; i += pxStep)
 			{
 				// Overflow handled in BltPart().
-				cnv->Blt(g_cnvRpgCode, i, 0, SRCCOPY);
+				cnv.Blt(g_cnvRpgCode, i, 0, SRCCOPY);
 				renderRpgCodeScreen();
 			}
-			delete cnv;
 		} break;
 	case 4:
 		{
@@ -673,20 +672,18 @@ void fade(CALL_DATA &params)
 	case 5:
 		{
 			// Image fade.
-			CCanvas *cnv = new CCanvas();
-			cnv->CreateBlank(NULL, width, height, TRUE);
-			cnv->ClearScreen(g_color);
+			CCanvas cnv;
+			cnv.CreateBlank(NULL, width, height, TRUE);
+			cnv.ClearScreen(g_color);
 
-			CCanvas *cnvScr = new CCanvas(*g_cnvRpgCode);
+			CCanvas cnvScr = *g_cnvRpgCode;
 
 			for (double i = 0.1; i <= 1.0; i += 0.1)
 			{
-				cnvScr->Blt(g_cnvRpgCode, 0, 0, SRCCOPY);
-				cnv->BltTranslucent(g_cnvRpgCode, 0, 0, i, -1, -1);
+				cnvScr.Blt(g_cnvRpgCode, 0, 0, SRCCOPY);
+				cnv.BltTranslucent(g_cnvRpgCode, 0, 0, i, -1, -1);
                 renderRpgCodeScreen();
 			}
-			delete cnv;
-			delete cnvScr;
 		} break;
 	}
 }
@@ -3431,7 +3428,7 @@ void playavismall(CALL_DATA &params)
 	// Stop music.
 	g_bkgMusic->stop();
 
-	// Don't bother checking extension, in case it doesn)t match
+	// Don't bother checking extension, in case it doesn't match
 	// the actual type of movie. Playing an invalid file will do
 	// no harm.
 	CVideo vid;
@@ -5104,26 +5101,21 @@ void fileEof(CALL_DATA &params)
 }
 
 /*
- * int len(string str, [int &ret])
+ * int len(string str[, int &ret])
  * 
  * Get the length of a string.
  */
 void len(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		params.ret().udt = UDT_NUM;
-		params.ret().num = params[0].getLit().length();
-	}
-	else if (params.params == 2)
-	{
-		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-		var->udt = UDT_NUM;
-		var->num = params[0].getLit().length();
-	}
-	else
+	if ((params.params != 1) && (params.params != 2))
 	{
 		throw CError(_T("Len() requires one or two parameters."));
+	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = params[0].getLit().length();
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
 	}
 }
 
@@ -5323,26 +5315,21 @@ void split(CALL_DATA &params)
 }
 
 /*
- * int asc(string chr, [int &ret])
+ * int asc(string chr[, int &ret])
  * 
  * Get the ASCII value of a character.
  */
 void asc(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		params.ret().udt = UDT_NUM;
-		params.ret().num = (double)params[0].getLit()[0];
-	}
-	else if (params.params == 2)
-	{
-		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
-		var->udt = UDT_NUM;
-		var->num = (double)params[0].getLit()[0];
-	}
-	else
+	if ((params.params != 1) && (params.params != 2))
 	{
 		throw CError(_T("Asc() requires one or two parameters."));
+	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = (double)params[0].getLit()[0];
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
 	}
 }
 
@@ -5408,7 +5395,7 @@ void right(CALL_DATA &params)
 }
 
 /*
- * string left(string str, int amount, [string &ret])
+ * string left(string str, int amount[, string &ret])
  * 
  * Get characters from the left of a string.
  */

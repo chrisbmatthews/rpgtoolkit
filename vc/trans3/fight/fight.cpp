@@ -305,7 +305,7 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 		{
 			rewardPrg = fighter.pEnemy->winPrg;
 		}
-		fighter.chargeMax = 130; // (Not fair to enemies!)
+		fighter.chargeMax = 41; // (Not fair to enemies!)
 		fighter.charge = rand() % fighter.chargeMax;
 		fighter.bFrozenCharge = false;
 		fighter.freezes = 0;
@@ -323,7 +323,7 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 		FIGHTER fighter;
 		fighter.bPlayer = true;
 		fighter.pFighter = fighter.pPlayer = *j;
-		fighter.chargeMax = 80;
+		fighter.chargeMax = 25;
 		fighter.charge = rand() % fighter.chargeMax;
 		fighter.bFrozenCharge = false;
 		fighter.freezes = 0;

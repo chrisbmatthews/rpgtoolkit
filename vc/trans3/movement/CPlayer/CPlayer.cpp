@@ -15,7 +15,6 @@
 #include "../../common/paths.h"
 #include "../../rpgcode/CProgram.h"
 #include "../../fight/fight.h"
-//#include "../../rpgcode/globals.h"
 
 /*
  * Constructor
@@ -29,26 +28,132 @@ CSprite(show)				// Is the player visible?
 		m_attr.createVectors(SPR_STEP);
 	}
 
-	m_initStats = m_playerMem.stats;
-	calculateLevels(true);
+	// Set initial stats.
+	LPPLAYER_STATS pStats = &m_playerMem.stats;
 
-	// This seemingly innocent block just loves to crash
-	// for no reason. Crashing annoys me, so I'm commenting this
-	// out until such time as I fix it.
-	/** createNumGlobal(m_playerMem.defenseVar, m_playerMem.defense);
-	createNumGlobal(m_playerMem.fightVar, m_playerMem.fight);
-	createNumGlobal(m_playerMem.healthVar, m_playerMem.health);
-	createNumGlobal(m_playerMem.maxHealthVar, m_playerMem.maxHealth);
-	createNumGlobal(m_playerMem.smVar, m_playerMem.sm);
-	createNumGlobal(m_playerMem.smMaxVar, m_playerMem.smMax);
-	createNumGlobal(m_playerMem.leVar, m_playerMem.level);
-	createNumGlobal(m_playerMem.experienceVar, m_playerMem.experience);
-	createLitGlobal(m_playerMem.nameVar, m_playerMem.charname); **/
+	experience(pStats->experience);
+	health(pStats->health);
+	maxHealth(pStats->maxHealth);
+	defence(pStats->defense);
+	fight(pStats->fight);
+	smp(pStats->sm);
+	maxSmp(pStats->smMax);
+	name(m_playerMem.charname);
+
+	calculateLevels(true);
 
 	// Get these into milliseconds!
 	m_attr.speed *= MILLISECONDS;
 	m_attr.idleTime *= MILLISECONDS;
+}
 
+/*
+ * Stat functions.
+ * These need to be done this way because the vars used can be changed.
+ */
+
+void CPlayer::experience(const int val)
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.experienceVar);
+	pVar->udt = UDT_NUM;
+	pVar->num = double(val);
+}
+
+int CPlayer::experience() const
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.experienceVar);
+	return int(pVar->getNum());
+}
+
+void CPlayer::health(const int val)
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.healthVar);
+	pVar->udt = UDT_NUM;
+	pVar->num = double(val);
+}
+
+int CPlayer::health() const
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.healthVar);
+	return int(pVar->getNum());
+}
+
+void CPlayer::maxHealth(const int val)
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.maxHealthVar);
+	pVar->udt = UDT_NUM;
+	pVar->num = double(val);
+}
+
+int CPlayer::maxHealth() const
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.maxHealthVar);
+	return int(pVar->getNum());
+}
+
+void CPlayer::defence(const int val)
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.defenseVar);
+	pVar->udt = UDT_NUM;
+	pVar->num = double(val);
+}
+
+int CPlayer::defence() const
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.defenseVar);
+	return int(pVar->getNum());
+}
+
+void CPlayer::fight(const int val)
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.fightVar);
+	pVar->udt = UDT_NUM;
+	pVar->num = double(val);
+}
+
+int CPlayer::fight() const
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.fightVar);
+	return int(pVar->getNum());
+}
+
+void CPlayer::smp(const int val)
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.smVar);
+	pVar->udt = UDT_NUM;
+	pVar->num = double(val);
+}
+
+int CPlayer::smp() const
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.smVar);
+	return int(pVar->getNum());
+}
+
+void CPlayer::maxSmp(const int val)
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.smMaxVar);
+	pVar->udt = UDT_NUM;
+	pVar->num = double(val);
+}
+
+int CPlayer::maxSmp() const
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.smMaxVar);
+	return int(pVar->getNum());
+}
+
+void CPlayer::name(const STRING str)
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.nameVar);
+	pVar->udt = UDT_LIT;
+	pVar->lit = str;
+}
+
+STRING CPlayer::name() const
+{
+	LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.nameVar);
+	return pVar->getLit();
 }
 
 /*
@@ -59,15 +164,15 @@ void CPlayer::calculateLevels(const bool init)
 	if (init)
 	{
 		m_playerMem.nextLevel = m_playerMem.levelType;
-		m_playerMem.levelProgression = m_playerMem.levelType - m_initStats.experience;
+		m_playerMem.levelProgression = m_playerMem.levelType - m_playerMem.stats.experience;
 	}
 
-	unsigned int numLevels = m_playerMem.maxLevel - m_initStats.level + 1;
+	unsigned int numLevels = m_playerMem.maxLevel - m_playerMem.stats.level + 1;
 
 	std::vector<double> *pLevels = &m_playerMem.levelStarts;
 	pLevels->clear();
 	pLevels->reserve(numLevels);
-	pLevels->push_back(double(m_initStats.experience));
+	pLevels->push_back(double(m_playerMem.stats.experience));
 
 	unsigned double exp = double(m_playerMem.levelType);
 	for (unsigned int i = 1; i < numLevels; ++i)
