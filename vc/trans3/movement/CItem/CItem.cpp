@@ -104,22 +104,19 @@ CItemThread *CItemThread::create(const STRING str, CItem *pItem)
  */
 bool CItemThread::execute()
 {
-	extern void *g_pTarget, *g_pSource;
-	extern TARGET_TYPE g_targetType, g_sourceType;
+	extern ENTITY g_target, g_source;
 
 	if (!m_pItem->isActive() || (m_i == m_units.end())) return false;
 
-	void *const target = g_pTarget, *const source = g_pSource;
-	const TARGET_TYPE tt = g_targetType, st = g_sourceType;
+	ENTITY t = g_target, s = g_source;
 
-	g_pTarget = g_pSource = m_pItem;
-	g_targetType = g_sourceType = TT_ITEM;
+	g_target.p = g_source.p = m_pItem;
+	g_target.type = g_source.type = ET_ITEM;
 
 	m_i->execute(this);
 	++m_i;
 
-	g_pTarget = target; g_pSource = source;
-	g_targetType = tt; g_sourceType = st;
+	g_target = t; g_source = s;
 
 	return true;
 }

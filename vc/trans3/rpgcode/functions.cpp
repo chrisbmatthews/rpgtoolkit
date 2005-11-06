@@ -59,10 +59,7 @@ STRING g_mwinBkg;						// MWin() background image.
 COLORREF g_mwinColor = 0;					// Mwin() background colour.
 CAllocationHeap<CCanvas> g_canvases;		// Allocated canvases.
 CAllocationHeap<CCursorMap> g_cursorMaps;	// Cursor maps.
-void *g_pTarget = NULL;						// Targetted entity.
-TARGET_TYPE g_targetType = TI_EMPTY;		// Type of target entity.
-void *g_pSource = NULL;						// Source entity.
-TARGET_TYPE g_sourceType = TI_EMPTY;		// Type of source entity.
+ENTITY g_target, g_source;					// Target and source.
 CInventory g_inv;							// Inventory.
 unsigned long g_gp = 0;						// Amount of gold.
 std::map<STRING, CFile> g_files;		// Files opened using RPGCode.
@@ -143,9 +140,9 @@ IFighter *getFighter(const STRING name)
 	// Check for "target".
 	if (_ftcsicmp(_T("target"), name.c_str()) == 0)
 	{
-		if (g_targetType == TT_PLAYER || g_targetType == TT_ENEMY)
+		if ((g_target.type == ET_PLAYER) || (g_target.type == ET_ENEMY))
 		{
-			return (IFighter *)g_pTarget;
+			return (IFighter *)g_target.p;
 		}
 		else
 		{
@@ -155,9 +152,9 @@ IFighter *getFighter(const STRING name)
 	// Check for "source".
 	if (_ftcsicmp(_T("source"), name.c_str()) == 0)
 	{
-		if (g_sourceType == TT_PLAYER || g_sourceType == TT_ENEMY)
+		if ((g_source.type == ET_PLAYER) || (g_source.type == ET_ENEMY))
 		{
-			return (IFighter *)g_pSource;
+			return (IFighter *)g_source.p;
 		}
 		else
 		{
@@ -187,7 +184,7 @@ CPlayer *getPlayerPointer(STACK_FRAME &param)
 
 	if (param.getType() & UDT_LIT)
 	{
-		// Handle, _T("target"), _T("source").
+		// Handle, "target", "source".
 		return (CPlayer *)getFighter(param.getLit());
 	}
 
@@ -224,11 +221,11 @@ CItem *getItemPointer(STACK_FRAME &param)
 	const STRING str = param.getLit();
 	if (_ftcsicmp(str.c_str(), _T("target")) == 0)
 	{
-		return (CItem *)g_pTarget;
+		return (CItem *)g_target.p;
 	}
 	else if (_ftcsicmp(str.c_str(), _T("source")) == 0)
 	{
-		return (CItem *)g_pSource;
+		return (CItem *)g_source.p;
 	}
 	else
 	{
@@ -2684,7 +2681,7 @@ void sourcelocation(CALL_DATA &params)
 
 	int dx = 0, dy = 0;
 
-	if (g_sourceType == TT_ENEMY)
+	if (g_source.type == ET_ENEMY)
 	{
 		/** TBD: get enemy location. **/
 	}
@@ -2699,7 +2696,7 @@ void sourcelocation(CALL_DATA &params)
 		else
 		**/
 		{
-			const CSprite *p = (CSprite *)g_pSource;
+			const CSprite *p = (CSprite *)g_source.p;
 			const SPRITE_POSITION s = p->getPosition();
 			dx = int(s.x);
 			dy = int(s.y);
@@ -2733,7 +2730,7 @@ void targetlocation(CALL_DATA &params)
 
 	int dx = 0, dy = 0;
 
-	if (g_targetType == TT_ENEMY)
+	if (g_target.type == ET_ENEMY)
 	{
 		/** TBD: get enemy location. **/
 	}
@@ -2748,7 +2745,7 @@ void targetlocation(CALL_DATA &params)
 		else
 		**/
 		{
-			const CSprite *p = (CSprite *)g_pTarget;
+			const CSprite *p = (CSprite *)g_target.p;
 			const SPRITE_POSITION s = p->getPosition();
 			dx = int(s.x);
 			dy = int(s.y);
@@ -2770,17 +2767,17 @@ void sourcehandle(CALL_DATA &params)
 	extern LPBOARD g_pBoard;
 
 	STRING str;
-	if (g_sourceType == TT_PLAYER)
+	if (g_source.type == ET_PLAYER)
 	{
-		CPlayer *p = (CPlayer *)g_pSource;
+		CPlayer *p = (CPlayer *)g_source.p;
 		str = p->name();
 	}
-	else if (g_sourceType == TT_ITEM)
+	else if (g_source.type == ET_ITEM)
 	{
 		// Return the item index...(!)
 		int i = 0;
 		str = _T("ITEM");
-		CItem *p = (CItem *)g_pSource;
+		CItem *p = (CItem *)g_source.p;
 		std::vector<CItem *>::iterator j = g_pBoard->items.begin();
 		for (; j != g_pBoard->items.end(); ++j)
 		{
@@ -2789,7 +2786,7 @@ void sourcehandle(CALL_DATA &params)
 		char c[8];
 		str += itoa(i, c, 8);
 	}
-	else if (g_sourceType == TT_ENEMY)
+	else if (g_source.type == ET_ENEMY)
 	{
 		/** TBD: return enemy index... (?) 
 		str = _T("ENEMY") + i; **/
@@ -2817,17 +2814,17 @@ void targethandle(CALL_DATA &params)
 	extern LPBOARD g_pBoard;
 
 	STRING str;
-	if (g_targetType == TT_PLAYER)
+	if (g_target.type == ET_PLAYER)
 	{
-		CPlayer *p = (CPlayer *)g_pTarget;
+		CPlayer *p = (CPlayer *)g_target.p;
 		str = p->name();
 	}
-	else if (g_targetType == TT_ITEM)
+	else if (g_target.type == ET_ITEM)
 	{
 		// Return the item index...(!)
 		int i = 0;
 		str = _T("ITEM");
-		CItem *p = (CItem *)g_pTarget;
+		CItem *p = (CItem *)g_target.p;
 		std::vector<CItem *>::iterator j = g_pBoard->items.begin();
 		for (; j != g_pBoard->items.end(); ++j)
 		{
@@ -2836,7 +2833,7 @@ void targethandle(CALL_DATA &params)
 		char c[8];
 		str += itoa(i, c, 8);
 	}
-	else if (g_targetType == TT_ENEMY)
+	else if (g_target.type == ET_ENEMY)
 	{
 		/** TBD: return enemy index... (?) 
 		str = _T("ENEMY") + i; **/
@@ -3251,21 +3248,21 @@ void attackall(CALL_DATA &params)
 
 	if (params.params != 1)
 	{
-		throw CError("AttackAll() requires one parameter.");
+		throw CError(_T("AttackAll() requires one parameter."));
 	}
 
 	if (!isFighting())
 	{
-		throw CError("AttackAll() cannot be used outside of a battle.");
+		throw CError(_T("AttackAll() cannot be used outside of a battle."));
 	}
 
 	// Get the target party.
 	int party = -1;
-	if (g_targetType == TT_ENEMY) party = ENEMY_PARTY;
-	else if (g_targetType == TT_PLAYER) party = PLAYER_PARTY;
+	if (g_target.type == ET_ENEMY) party = ENEMY_PARTY;
+	else if (g_target.type == ET_PLAYER) party = PLAYER_PARTY;
 	else
 	{
-		throw CError("AttackAll(): inappropriate target.");
+		throw CError(_T("AttackAll(): inappropriate target."));
 	}
 
 	const int damage = int(params[0].getNum());
@@ -3296,21 +3293,21 @@ void drainall(CALL_DATA &params)
 
 	if (params.params != 1)
 	{
-		throw CError("DrainAll() requires one parameter.");
+		throw CError(_T("DrainAll() requires one parameter."));
 	}
 
 	if (!isFighting())
 	{
-		throw CError("DrainAll() cannot be used outside of a battle.");
+		throw CError(_T("DrainAll() cannot be used outside of a battle."));
 	}
 
 	// Get the target party.
 	int party = -1;
-	if (g_targetType == TT_ENEMY) party = ENEMY_PARTY;
-	else if (g_targetType == TT_PLAYER) party = PLAYER_PARTY;
+	if (g_target.type == ET_ENEMY) party = ENEMY_PARTY;
+	else if (g_target.type == ET_PLAYER) party = PLAYER_PARTY;
 	else
 	{
-		throw CError("DrainAll(): inappropriate target.");
+		throw CError(_T("DrainAll(): inappropriate target."));
 	}
 
 	const int damage = int(params[0].getNum());
@@ -3605,13 +3602,13 @@ void getlevel(CALL_DATA &params)
 {
 	if ((params.params != 1) && (params.params != 2))
 	{
-		throw CError("GetLevel() requires one or two parameters.");
+		throw CError(_T("GetLevel() requires one or two parameters."));
 	}
 
 	CPlayer *pPlayer = (CPlayer *)getFighter(params[0].getLit());
 	if (!pPlayer)
 	{
-		throw CError("GetLevel(): player not found.");
+		throw CError(_T("GetLevel(): player not found."));
 	}
 
 	params.ret().udt = UDT_NUM;
@@ -3632,26 +3629,26 @@ void ai(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
-		throw CError("AI() requires one parameter.");
+		throw CError(_T("AI() requires one parameter."));
 	}
 
 	if (!isFighting())
 	{
-		throw CError("AI() cannot be used outside of a battle.");
+		throw CError(_T("AI() cannot be used outside of a battle."));
 	}
 
-	if (g_sourceType != TT_ENEMY)
+	if (g_source.type != ET_ENEMY)
 	{
-		throw CError("AI(): inappropriate source.");
+		throw CError(_T("AI(): inappropriate source."));
 	}
 
 	const int level = int(params[0].getNum());
 	if ((level < 0) || (level > 3))
 	{
-		throw CError("AI(): level must be from zero to three.");
+		throw CError(_T("AI(): level must be from zero to three."));
 	}
 
-	LPENEMY pEnemy = LPENEMY(g_pSource);
+	LPENEMY pEnemy = LPENEMY(g_source.p);
 	int party = -1, idx = -1;
 	getFighterIndices(pEnemy, party, idx);
 	if ((party != -1) && (idx != -1))
@@ -3845,23 +3842,74 @@ void internalmenu(CALL_DATA &params)
 }
 
 /*
- * applystatus(...)
+ * void applyStatus(string target, string file)
  * 
- * Description.
+ * Apply a status effect to a fighter.
  */
 void applystatus(CALL_DATA &params)
 {
+	if (params.params != 2)
+	{
+		throw CError(_T("ApplyStatus() requires two parameters."));
+	}
 
+	if (!isFighting()) return;
+
+	IFighter *pInnerFighter = getFighter(params[0].getLit());
+
+	// Get the fighter's indices.
+	int party = -1, idx = -1;
+	getFighterIndices(pInnerFighter, party, idx);
+
+	if ((party == -1) || (idx == -1))
+	{
+		throw CError(_T("ApplyStatus(): target not found."));
+	}
+
+	// Get the outer fighter.
+	LPFIGHTER pFighter = getFighter(party, idx);
+
+	// Apply the status effect.
+	applyStatusEffect(params[1].getLit(), pFighter);
 }
 
 /*
- * removestatus(...)
+ * void removeStatus(string target, string file)
  * 
- * Description.
+ * Remove a status effect from a fighter.
  */
 void removestatus(CALL_DATA &params)
 {
+	if (params.params != 2)
+	{
+		throw CError(_T("RemoveStatus() requires two parameters."));
+	}
 
+	if (!isFighting()) return;
+
+	IFighter *pInnerFighter = getFighter(params[0].getLit());
+
+	// Get the fighter's indices.
+	int party = -1, idx = -1;
+	getFighterIndices(pInnerFighter, party, idx);
+
+	if ((party == -1) || (idx == -1))
+	{
+		throw CError(_T("RemoveStatus(): target not found."));
+	}
+
+	// Get the outer fighter.
+	LPFIGHTER pFighter = getFighter(party, idx);
+
+	// Remove the status effect.
+	std::map<STRING, STATUS_EFFECT>::iterator i =
+		pFighter->statuses.find(parser::uppercase(params[1].getLit()));
+
+	if (i != pFighter->statuses.end())
+	{
+		removeStatusEffect(&i->second, pFighter);
+		pFighter->statuses.erase(i);
+	}
 }
 
 /*

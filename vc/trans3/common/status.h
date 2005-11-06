@@ -10,6 +10,9 @@
 
 #include "../../tkCommon/strings.h"
 
+// Amount fast and slow statuses alter speed.
+#define SPEED_MODIFIER 2
+
 typedef struct tagStatusEffect
 {
 	STRING name;

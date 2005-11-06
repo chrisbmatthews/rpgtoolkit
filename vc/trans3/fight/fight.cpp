@@ -26,6 +26,10 @@ bool g_fighting = false;			// Are we currently fighting?
 // ::second = curative?
 typedef std::pair<STRING, bool> SPCMOVE_PAIR;
 
+// ::first = status file
+// ::second = the effect
+typedef std::pair<STRING const, STATUS_EFFECT> STATUS_PAIR, *LPSTATUS_PAIR;
+
 // A target class.
 typedef enum tagTargetClass
 {
@@ -128,8 +132,7 @@ int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int 
 void performSpecialMove(const int sourcePartyIdx, const int sourceFightIdx, const int targetPartyIdx, const int targetFightIdx, const STRING moveFile)
 {
 	extern STRING g_projectPath;
-	extern void *g_pTarget, *g_pSource;
-	extern TARGET_TYPE g_targetType, g_sourceType;
+	extern ENTITY g_target, g_source;
 
 	LPFIGHTER pSource = getFighter(sourcePartyIdx, sourceFightIdx);
 	LPFIGHTER pTarget = getFighter(targetPartyIdx, targetFightIdx);
@@ -166,10 +169,10 @@ void performSpecialMove(const int sourcePartyIdx, const int sourceFightIdx, cons
 	}
 
 	// Set target and source.
-	g_pTarget = pTarget->pFighter;
-	g_pSource = pSource->pFighter;
-	g_targetType = pTarget->bPlayer ? TT_PLAYER : TT_ENEMY;
-	g_sourceType = pSource->bPlayer ? TT_PLAYER : TT_ENEMY;
+	g_target.p = pTarget->pFighter;
+	g_source.p = pSource->pFighter;
+	g_target.type = pTarget->bPlayer ? ET_PLAYER : ET_ENEMY;
+	g_source.type = pSource->bPlayer ? ET_PLAYER : ET_ENEMY;
 
 	// Inform the plugin.
 	g_pFightPlugin->fightInform(
@@ -360,8 +363,7 @@ void performFightAi(const int ai, const int idx)
 void enemyAttack(const int idx)
 {
 	extern STRING g_projectPath;
-	extern void *g_pTarget, *g_pSource;
-	extern TARGET_TYPE g_targetType, g_sourceType;
+	extern ENTITY g_target, g_source;
 
 	LPENEMY pEnemy = getFighter(ENEMY_PARTY, idx)->pEnemy;
 
@@ -369,10 +371,10 @@ void enemyAttack(const int idx)
 	if (pEnemy->useCode)
 	{
 		int target = randomPartyMember(PLAYER_PARTY);
-		g_pTarget = getFighter(PLAYER_PARTY, target)->pPlayer;
-		g_targetType = TT_PLAYER;
-		g_pSource = pEnemy;
-		g_sourceType = TT_ENEMY;
+		g_target.p = getFighter(PLAYER_PARTY, target)->pPlayer;
+		g_target.type = ET_PLAYER;
+		g_source.p = pEnemy;
+		g_source.type = ET_ENEMY;
 
 		CProgram(g_projectPath + PRG_PATH + pEnemy->prg).run();
 		return;
@@ -380,6 +382,115 @@ void enemyAttack(const int idx)
 
 	// Use internal AI.
 	performFightAi(pEnemy->ai, idx);
+}
+
+/*
+ * Apply a status effect.
+ */
+void applyStatusEffect(const STRING file, LPFIGHTER pFighter)
+{
+	extern STRING g_projectPath;
+
+	TCHAR *const str = _tcsupr(_tcsdup(file.c_str()));
+
+	LPSTATUS_EFFECT pEffect = NULL;
+
+	std::map<STRING, STATUS_EFFECT>::iterator i = pFighter->statuses.find(str);
+	if (i != pFighter->statuses.end())
+	{
+		// This status is already applied; restart its effects.
+		pEffect = &i->second;
+		removeStatusEffect(pEffect, pFighter);
+	}
+	else
+	{
+		pEffect = &pFighter->statuses.insert(STATUS_PAIR(str, STATUS_EFFECT())).first->second;
+	}
+
+	free(str);
+
+	pEffect->open(g_projectPath + STATUS_PATH + file);
+	if (pEffect->speed)
+	{
+		pFighter->speed += SPEED_MODIFIER;
+	}
+	if (pEffect->slow)
+	{
+		pFighter->speed -= SPEED_MODIFIER;
+	}
+	if (pEffect->disable)
+	{
+		++pFighter->freezes;
+		pFighter->bFrozenCharge = true;
+		if (pFighter->charge >= pFighter->chargeMax)
+		{
+			// Unlikely, but just in case.
+			pFighter->charge = pFighter->chargeMax - 1;
+		}
+	}
+}
+
+/*
+ * Remove a status effect.
+ */
+void removeStatusEffect(LPSTATUS_EFFECT pEffect, LPFIGHTER pFighter)
+{
+	if (pEffect->speed)
+	{
+		pFighter->speed -= SPEED_MODIFIER;
+	}
+	if (pEffect->slow)
+	{
+		pFighter->speed += SPEED_MODIFIER;
+	}
+	if (pEffect->disable && !--pFighter->freezes)
+	{
+		// Unfreeze.
+		pFighter->bFrozenCharge = false;
+	}
+}
+
+/*
+ * Invoke a status effect.
+ */
+int statusEffectTick(LPSTATUS_PAIR pEffectPair, LPFIGHTER pOuterFighter)
+{
+	extern STRING g_projectPath;
+	extern ENTITY g_target, g_source;
+
+	IFighter *const pFighter = pOuterFighter->pFighter;
+
+	// Get the fighter's indices.
+	int party = -1, idx = -1;
+	getFighterIndices(pFighter, party, idx);
+
+	const STRING file = pEffectPair->first;
+	LPSTATUS_EFFECT pEffect = &pEffectPair->second;
+
+	if (pEffect->hp != 0)
+	{
+		int hp = pFighter->health() - pEffect->hpAmount;
+		if (hp < 0) hp = 0;
+		pFighter->health(hp);
+		g_pFightPlugin->fightInform(-1, -1, party, idx, 0, 0, pEffect->hpAmount, 0, file, INFORM_REMOVE_HP);
+	}
+
+	if (pEffect->smp != 0)
+	{
+		int mana = pFighter->smp() - pEffect->smpAmount;
+		if (mana < 0) mana = 0;
+		pFighter->smp(mana);
+		g_pFightPlugin->fightInform(-1, -1, party, idx, 0, 0, 0, pEffect->smpAmount, file, INFORM_REMOVE_SMP);
+	}
+
+	if (pEffect->code)
+	{
+		g_target.type = g_source.type = pOuterFighter->bPlayer ? ET_PLAYER : ET_ENEMY;
+		g_target.p = g_source.p = pFighter;
+		CProgram(g_projectPath + PRG_PATH + pEffect->prg).run();
+	}
+
+	return --pEffect->rounds;
 }
 
 /*
@@ -400,7 +511,7 @@ void fightTick()
 				// Not charged.
 				if (!j->bFrozenCharge && (j->pFighter->health() > 0))
 				{
-					j->charge++;
+					j->charge += j->speed;
 				}
 			}
 			else
@@ -408,71 +519,40 @@ void fightTick()
 				// Charged.
 				if (j->pFighter->health() <= 0) continue;
 
-				const unsigned int party = i - pParties->begin(), idx = j - i->begin();
-
 				// Status effects.
 				std::map<STRING, STATUS_EFFECT>::iterator k = j->statuses.begin();
 				for (; k != j->statuses.end(); ++k)
 				{
-					LPSTATUS_EFFECT pEffect = &k->second;
-					if (pEffect->hp)
+					if (statusEffectTick(&*k, j) == 0)
 					{
-						j->pFighter->health(j->pFighter->health() - pEffect->hpAmount);
-						if (j->pFighter->health() < 0) j->pFighter->health(0);
-						g_pFightPlugin->fightInform(-1, -1, party, idx, 0, 0, pEffect->hpAmount, 0, k->first, INFORM_REMOVE_HP);
-					}
-
-					if (pEffect->smp)
-					{
-						j->pFighter->smp(j->pFighter->smp() - pEffect->smpAmount);
-						if (j->pFighter->smp() < 0) j->pFighter->smp(0);
-						g_pFightPlugin->fightInform(-1, -1, party, idx, 0, 0, 0, pEffect->smpAmount, k->first, INFORM_REMOVE_SMP);
-					}
-
-					if (pEffect->code)
-					{
-						extern void *g_pTarget, *g_pSource;
-						extern TARGET_TYPE g_targetType, g_sourceType;
-						g_targetType = g_sourceType = j->bPlayer ? TT_PLAYER : TT_ENEMY;
-						g_pTarget = g_pSource = j->pFighter;
-						extern STRING g_projectPath;
-						CProgram(g_projectPath + PRG_PATH + pEffect->prg).run();
-					}
-
-					if (--pEffect->rounds == 0)
-					{
-						if (k->second.speed) j->chargeMax += 20;
-						if (k->second.slow) j->chargeMax -= 20;
-						if (k->second.disable && !--j->freezes) j->bFrozenCharge = false;
-						// Position the iterator one behind the next item, so that
-						// the ++k in the for loop makes the next iteration be
-						// over the first item after the one that was removed.
-						(k = j->statuses.erase(k))--;
+						removeStatusEffect(&k->second, j);
+						k = j->statuses.erase(k);
+						--k;
 					}
 				}
+
+				const unsigned int party = i - pParties->begin(), idx = j - i->begin();
 
 				if (j->bPlayer)
 				{
 					if (!j->bFrozenCharge)
 					{
-						j->bFrozenCharge = true; // This *must* be done before the informing.
+						j->bFrozenCharge = true;
 						g_pFightPlugin->fightInform(party, idx, -1, -1, 0, 0, 0, 0, _T(""), INFORM_SOURCE_CHARGED);
 					}
 				}
 				else
 				{
+					// An enemy's turn.
 					g_pFightPlugin->fightInform(party, idx, -1, -1, 0, 0, 0, 0, _T(""), INFORM_SOURCE_CHARGED);
 					enemyAttack(idx);
 					j->charge = 0;
 				}
-			} // if (j->charge < j->chargeMax)
-		} // for (j)
-	} // for (i)
+			}
+		}
+	}
 
-	// TBD: Check for dead parties.
-	// Amazingly stupid thing to do here, but CBM did it here,
-	// and even one small change *will* be found by all the
-	// idiots who notice irrelevant things.
+	// TBD: Check for dead parties here.
 }
 
 /*
@@ -663,8 +743,9 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 		}
 		gp += fighter.pEnemy->gp;
 		exp += fighter.pEnemy->exp;
-		fighter.chargeMax = 41; // (Not fair to enemies!)
+		fighter.chargeMax = 123; // (Not fair to enemies!)
 		fighter.charge = rand() % fighter.chargeMax;
+		fighter.speed = 3;
 		fighter.bFrozenCharge = false;
 		fighter.freezes = 0;
 		rEnemies.push_back(fighter);
@@ -681,8 +762,9 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 		FIGHTER fighter;
 		fighter.bPlayer = true;
 		fighter.pFighter = fighter.pPlayer = *j;
-		fighter.chargeMax = 25;
+		fighter.chargeMax = 75;
 		fighter.charge = rand() % fighter.chargeMax;
+		fighter.speed = 3;
 		fighter.bFrozenCharge = false;
 		fighter.freezes = 0;
 		rPlayers.push_back(fighter);

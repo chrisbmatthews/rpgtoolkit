@@ -34,14 +34,24 @@
 #define FIGHT_WON_MANUAL		3		// Player party won - tell trans that the plugin has already given rewards
 #define FIGHT_LOST				4		// Player party lost
 
-// Target.
-typedef enum tagTargetType
+// Entity type.
+typedef enum tagEntityType
 {
-	TI_EMPTY,		// Empty!
-	TT_PLAYER,		// Player is targetted.
-	TT_ITEM,		// Item is targetted.
-	TT_ENEMY		// Enemy is targetted.
-} TARGET_TYPE;
+	ET_EMPTY,
+	ET_PLAYER,
+	ET_ITEM,
+	ET_ENEMY
+} ENTITY_TYPE;
+
+// An entity.
+typedef struct tagEntity
+{
+	ENTITY_TYPE type;
+	void *p;
+
+	tagEntity():
+		type(ET_EMPTY), p(0) { }
+} ENTITY, *LPENTITY;
 
 // A fighter.
 typedef struct tagFighter
@@ -53,8 +63,8 @@ typedef struct tagFighter
 		LPENEMY pEnemy;
 	};
 	IFighter *pFighter;
-	int charge;
-	int chargeMax;
+	int charge, chargeMax;
+	int speed;
 	bool bFrozenCharge;
 	unsigned int freezes;
 	std::map<STRING, STATUS_EFFECT> statuses;
@@ -93,6 +103,12 @@ LPFIGHTER getFighter(const unsigned int party, const unsigned int idx);
 
 // Get a fighter's indices.
 void getFighterIndices(const IFighter *pFighter, int &party, int &idx);
+
+// Apply a status effect.
+void applyStatusEffect(const STRING file, LPFIGHTER pFighter);
+
+// Remove a status effect.
+void removeStatusEffect(LPSTATUS_EFFECT pEffect, LPFIGHTER pFighter);
 
 // Advance the state of a fight.
 void fightTick();

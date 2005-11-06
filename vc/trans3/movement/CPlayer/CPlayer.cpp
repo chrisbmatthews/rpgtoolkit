@@ -361,8 +361,7 @@ void CPlayer::calculateLevels(const bool init)
 void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 {
 	extern STRING g_projectPath;
-	extern void *g_pTarget;
-	extern TARGET_TYPE g_targetType;
+	extern ENTITY g_target;
 
 	if (!CFile::fileExists(file)) return;
 
@@ -406,14 +405,14 @@ void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 	// Run equip program.
 
 	// Preserve current target pointer.
-	void *const target = g_pTarget;
-	const TARGET_TYPE tt = g_targetType;
+	ENTITY t = g_target;
 
-	g_pTarget = this;	g_targetType = TT_PLAYER;
+	g_target.p = this;
+	g_target.type = ET_PLAYER;
 
 	CProgram(g_projectPath + PRG_PATH + item.prgEquip).run();
 
-	g_pTarget = target;	g_targetType = tt;
+	g_target = t;
 }
 
 /*
@@ -422,8 +421,7 @@ void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 void CPlayer::removeEquipment(const unsigned int slot)
 {
 	extern STRING g_projectPath;
-	extern void *g_pTarget;
-	extern TARGET_TYPE g_targetType;
+	extern ENTITY g_target;
 	extern CInventory g_inv;
 
 	if (slot > m_equipment.data.size()) return;
@@ -435,14 +433,14 @@ void CPlayer::removeEquipment(const unsigned int slot)
 	// Run dequip program.
 
 	// Preserve current target pointer.
-	void *const target = g_pTarget;
-	const TARGET_TYPE tt = g_targetType;
+	ENTITY t = g_target;
 
-	g_pTarget = this;	g_targetType = TT_PLAYER;
+	g_target.p = this;
+	g_target.type = ET_PLAYER;
 
 	CProgram(g_projectPath + PRG_PATH + item.prgRemove).run();
 
-	g_pTarget = target;	g_targetType = tt;
+	g_target = t;
 
 	// Return item to inventory.
 	g_inv.give(m_equipment.data[slot].first);

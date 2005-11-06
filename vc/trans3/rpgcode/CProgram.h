@@ -187,7 +187,7 @@ typedef MACHINE_UNITS::iterator POS;
 // Get a lowercase string.
 inline STRING lcase(const STRING str)
 {
-	char *const pstr = _tcslwr(_tcsdup(str.c_str()));
+	TCHAR *const pstr = _tcslwr(_tcsdup(str.c_str()));
 	const STRING ret = pstr;
 	free(pstr);
 	return ret;

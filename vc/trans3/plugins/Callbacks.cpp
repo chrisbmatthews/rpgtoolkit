@@ -2211,8 +2211,7 @@ STDMETHODIMP CCallbacks::CBFightDoAttack(int sourcePartyIdx, int sourceFightIdx,
 STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, BSTR itemFile)
 {
 	extern STRING g_projectPath;
-	extern void *g_pTarget, *g_pSource;
-	extern TARGET_TYPE g_targetType, g_sourceType;
+	extern ENTITY g_target, g_source;
 	extern CInventory g_inv;
 	extern IPlugin *g_pFightPlugin;
 
@@ -2231,31 +2230,35 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 
 	// HP.
 	pTarget->pFighter->health(pTarget->pFighter->health() + itm.fgtHPup);
-	if (pTarget->pFighter->health() > pTarget->pFighter->maxHealth())
+	const int hp = pTarget->pFighter->health();
+	const int maxHp = pTarget->pFighter->maxHealth();
+	if (hp > maxHp)
 	{
-		pTarget->pFighter->health(pTarget->pFighter->maxHealth());
+		pTarget->pFighter->health(maxHp);
 	}
-	if (pTarget->pFighter->health() < 0)
+	else if (hp < 0)
 	{
 		pTarget->pFighter->health(0);
 	}
 
 	// SMP.
 	pTarget->pFighter->smp(pTarget->pFighter->smp() + itm.fgtSMup);
-	if (pTarget->pFighter->smp() > pTarget->pFighter->maxSmp())
+	const int mana = pTarget->pFighter->smp();
+	const int maxMana = pTarget->pFighter->maxSmp();
+	if (mana > maxMana)
 	{
-		pTarget->pFighter->smp(pTarget->pFighter->maxSmp());
+		pTarget->pFighter->smp(maxMana);
 	}
-	if (pTarget->pFighter->smp() < 0)
+	else if (mana < 0)
 	{
 		pTarget->pFighter->smp(0);
 	}
 
 	// Set target and source.
-	g_pTarget = pTarget->pFighter;
-	g_pSource = pSource->pFighter;
-	g_targetType = pTarget->bPlayer ? TT_PLAYER : TT_ENEMY;
-	g_sourceType = pSource->bPlayer ? TT_PLAYER : TT_ENEMY;
+	g_target.p = pTarget->pFighter;
+	g_source.p = pSource->pFighter;
+	g_target.type = pTarget->bPlayer ? ET_PLAYER : ET_ENEMY;
+	g_source.type = pSource->bPlayer ? ET_PLAYER : ET_ENEMY;
 
 	g_inv.take(fullPath);
 
@@ -2282,27 +2285,7 @@ STDMETHODIMP CCallbacks::CBFighterAddStatusEffect(int partyIdx, int fightIdx, BS
 	if (p)
 	{
 		const STRING file = getString(statusFile);
-		extern STRING g_projectPath;
-		LPSTATUS_EFFECT pEffect = &p->statuses[parser::uppercase(file)];
-		pEffect->open(g_projectPath + STATUS_PATH + file);
-		if (pEffect->speed)
-		{
-			p->chargeMax -= 20;
-		}
-		if (pEffect->slow)
-		{
-			p->chargeMax += 20;
-		}
-		if (pEffect->disable)
-		{
-			p->freezes++;
-			p->bFrozenCharge = true;
-			if (p->charge >= p->chargeMax)
-			{
-				// Unlikely, but just in case.
-				p->charge = p->chargeMax - 1;
-			}
-		}
+		applyStatusEffect(file, p);
 	}
 	return S_OK;
 }
@@ -2314,18 +2297,7 @@ STDMETHODIMP CCallbacks::CBFighterRemoveStatusEffect(int partyIdx, int fightIdx,
 	{
 		const STRING file = parser::uppercase(getString(statusFile));
 		LPSTATUS_EFFECT pEffect = &p->statuses[file];
-		if (pEffect->speed)
-		{
-			p->chargeMax += 20;
-		}
-		if (pEffect->slow)
-		{
-			p->chargeMax -= 20;
-		}
-		if (pEffect->disable && !--p->freezes)
-		{
-			p->bFrozenCharge = false;
-		}
+		removeStatusEffect(pEffect, p);
 		p->statuses.erase(p->statuses.find(file));
 	}
 	return S_OK;
