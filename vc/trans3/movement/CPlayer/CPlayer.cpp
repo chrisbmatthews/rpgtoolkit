@@ -348,10 +348,10 @@ void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 	m_equipment.mSM += item.equipSM;
 
 	// Player variables.
-	m_playerMem.stats.defense += item.equipDP;
-	m_playerMem.stats.fight += item.equipFP;
-	m_playerMem.stats.maxHealth += item.equipHP;
-	m_playerMem.stats.smMax += item.equipSM;
+	defence(defence() + item.equipDP);
+	fight(fight() + item.equipFP);
+	maxHealth(maxHealth() + item.equipHP);
+	maxSmp(maxSmp() + item.equipSM);
 
 	// Run equip program.
 
@@ -408,12 +408,14 @@ void CPlayer::removeEquipment(const unsigned int slot)
 	m_equipment.mSM -= item.equipSM;
 
 	// Player variables.
-	m_playerMem.stats.defense -= item.equipDP;
-	m_playerMem.stats.fight -= item.equipFP;
-	m_playerMem.stats.maxHealth -= item.equipHP;
-	m_playerMem.stats.smMax -= item.equipSM;
+	defence(defence() - item.equipDP);
+	fight(fight() - item.equipFP);
+	maxHealth(maxHealth() - item.equipHP);
+	maxSmp(maxSmp() - item.equipSM);
 
 	// Cap health, smp.
-	if (m_playerMem.stats.health > m_playerMem.stats.maxHealth) m_playerMem.stats.health = m_playerMem.stats.maxHealth;
-	if (m_playerMem.stats.sm > m_playerMem.stats.smMax) m_playerMem.stats.sm = m_playerMem.stats.smMax;
+	const int maxHp = maxHealth();
+	if (health() > maxHp) health(maxHp);
+	const int maxSm = maxSmp();
+	if (smp() > maxSm) smp(maxSm);
 }
