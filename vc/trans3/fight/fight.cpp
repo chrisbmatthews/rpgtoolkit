@@ -253,7 +253,7 @@ void fightTest(const int moveSize)
 	// moveSize is the number of pixels per move for the player.
 	if (g_stepsTaken % ((64 + (32 % moveSize)) / 2)) return;
 
-	if (!(((g_mainFile.fightType == 0) ? rand() : (g_stepsTaken / 32)) % g_mainFile.chances))
+	//if (!(((g_mainFile.fightType == 0) ? rand() : (g_stepsTaken / 32)) % g_mainFile.chances))
 	{
 		// Start a fight.
 		if (g_mainFile.fprgYn)

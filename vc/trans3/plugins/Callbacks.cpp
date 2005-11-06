@@ -1828,7 +1828,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int f
 	LPANIMATION p = g_animations.cast(idx);
 	if (p)
 	{
-		if (frame >= p->animFrames) frame = 0;
+		if (frame > p->animFrames) frame = 0;
 		p->currentAnmFrame = frame;
 		CCanvas *pCnv = g_canvases.cast(canvasID);
 		if (pCnv)
@@ -1856,7 +1856,7 @@ STDMETHODIMP CCallbacks::CBAnimationCurrentFrame(int idx, int *pRet)
 STDMETHODIMP CCallbacks::CBAnimationMaxFrames(int idx, int *pRet)
 {
 	LPANIMATION p = g_animations.cast(idx);
-	*pRet = (p ? (p->animFrames - 1) : -1);
+	*pRet = (p ? p->animFrames : -1);
 	return S_OK;
 }
 

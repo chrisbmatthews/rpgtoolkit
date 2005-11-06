@@ -62,7 +62,7 @@ bool tagAnimation::open(const STRING fileName)
 					animSound.push_back(strB);
 				}
 			}
-			// Effective _T("UBound").
+			// Effective "UBound".
 			animFrames = animFrame.size() - 1;
 			file >> animPause;
 		}
