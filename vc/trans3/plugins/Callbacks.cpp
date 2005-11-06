@@ -1808,7 +1808,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int
 			if ((!(p->timerFrame++ % int(80 * p->animPause))) || (p->currentAnmFrame == -1))
 			{
 				p->currentAnmFrame++;
-				if (p->currentAnmFrame >= p->animFrames) p->currentAnmFrame = 0;
+				if (p->currentAnmFrame > p->animFrames) p->currentAnmFrame = 0;
 			}
 			if (forceTransp)
 			{
