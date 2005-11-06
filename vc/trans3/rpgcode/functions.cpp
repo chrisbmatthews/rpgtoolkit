@@ -563,6 +563,10 @@ void fade(CALL_DATA &params)
 	
 	// TBD: delays?
 
+	// Colin:	This function is terrible -- just terrible.
+	//			I was going to do something different, but I suppose
+	//			I don't feel like it anymore.
+
 	switch (type)
 	{
 	case 0:
@@ -590,6 +594,7 @@ void fade(CALL_DATA &params)
 					width / 2 - i, (y1 < 0 ? 0 : y1),
 					width / 2 + i, (y2 > height ? height : y2),
 					g_color);
+				processEvent();
 				renderRpgCodeScreen();
 			}
 		} break;
@@ -606,6 +611,7 @@ void fade(CALL_DATA &params)
 				{
 					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
 					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
+					processEvent();
 					renderRpgCodeScreen();
 				}
 				// Fill in gaps.
@@ -613,12 +619,14 @@ void fade(CALL_DATA &params)
 				{
 					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
 					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
+					processEvent();
 					renderRpgCodeScreen();
 				}
 				// Repeat once with black.
 				color = 0;
 			}
 			g_cnvRpgCode->ClearScreen(g_color);
+			processEvent();
 			renderRpgCodeScreen();
 		} break;
 	case 2:
@@ -627,6 +635,7 @@ void fade(CALL_DATA &params)
 			for (int i = 128; i >= 0; i -= 4)
 			{
 				g_cnvRpgCode->ClearScreen(RGB(i,i,i));
+				processEvent();
 				renderRpgCodeScreen();
 			}
 		} break;
@@ -648,6 +657,7 @@ void fade(CALL_DATA &params)
 			{
 				// Overflow handled in BltPart().
 				cnv.Blt(g_cnvRpgCode, i, 0, SRCCOPY);
+				processEvent();
 				renderRpgCodeScreen();
 			}
 		} break;
@@ -666,6 +676,7 @@ void fade(CALL_DATA &params)
 			for (; radius > 0; radius -= 1)
 			{
 				g_cnvRpgCode->DrawEllipse(x - radius, y - radius, x + radius, y + radius, 0);
+				processEvent();
                 renderRpgCodeScreen();
 			}
 		} break;
@@ -682,6 +693,7 @@ void fade(CALL_DATA &params)
 			{
 				cnvScr.Blt(g_cnvRpgCode, 0, 0, SRCCOPY);
 				cnv.BltTranslucent(g_cnvRpgCode, 0, 0, i, -1, -1);
+				processEvent();
                 renderRpgCodeScreen();
 			}
 		} break;
