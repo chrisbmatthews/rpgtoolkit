@@ -8,6 +8,7 @@
 #include "../common/background.h"
 #include "../common/paths.h"
 #include "../common/mainfile.h"
+#include "../common/spcmove.h"
 #include "../common/board.h"
 #include "../common/mbox.h"
 #include "../common/CAllocationHeap.h"
@@ -19,6 +20,17 @@
 
 IPlugin *g_pFightPlugin = NULL;		// The fight plugin.
 BATTLE g_battle;					// The current battle.
+
+// ::first = move file
+// ::second = curative?
+typedef std::pair<STRING, bool> SPCMOVE_PAIR;
+
+// A target class.
+typedef enum tagTargetClass
+{
+	TC_RANDOM,
+	TC_WEAKEST
+} TARGET_CLASS;
 
 /*
  * Can we run away from this fight?
@@ -77,9 +89,269 @@ int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int 
 }
 
 /*
+ * Perform a special move.
+ */
+void performSpecialMove(const int sourcePartyIdx, const int sourceFightIdx, const int targetPartyIdx, const int targetFightIdx, const STRING moveFile)
+{
+	extern STRING g_projectPath;
+	extern void *g_pTarget, *g_pSource;
+	extern TARGET_TYPE g_targetType, g_sourceType;
+
+	LPFIGHTER pSource = getFighter(sourcePartyIdx, sourceFightIdx);
+	LPFIGHTER pTarget = getFighter(targetPartyIdx, targetFightIdx);
+	if (!pSource || !pTarget || (pSource->pFighter->health() < 1)) return;
+
+	SPCMOVE spc;
+	spc.open(g_projectPath + SPC_PATH + moveFile);
+
+	const int hp = spc.fp;
+	const int smp = spc.targSmp;
+	const int sourceSmp = spc.smp;
+
+	IFighter *pTargetFighter = pTarget->pFighter;
+
+	// Set health.
+	{
+		int health = pTargetFighter->health() - hp;
+		if (health < 0) health = 0;
+		pTargetFighter->health(health);
+	}
+
+	// Set SMP.
+	{
+		int mana = pTargetFighter->smp() - smp;
+		if (mana < 0) mana = 0;
+		pTargetFighter->smp(mana);
+	}
+
+	// Remove SMP from source.
+	{
+		int mana = pSource->pFighter->smp() - sourceSmp;
+		if (mana < 0) mana = 0;
+		pSource->pFighter->smp(mana);
+	}
+
+	// Set target and source.
+	g_pTarget = pTarget->pFighter;
+	g_pSource = pSource->pFighter;
+	g_targetType = pTarget->bPlayer ? TT_PLAYER : TT_ENEMY;
+	g_sourceType = pSource->bPlayer ? TT_PLAYER : TT_ENEMY;
+
+	// Inform the plugin.
+	g_pFightPlugin->fightInform(
+		sourcePartyIdx, sourceFightIdx,
+		targetPartyIdx, targetFightIdx,
+		0, sourceSmp,
+		hp, smp,
+		moveFile, INFORM_SOURCE_SMP
+	);
+}
+
+/*
+ * Get a list of moves that an enemy can use.
+ */
+void getUsableEnemyMoves(LPENEMY pEnemy, std::vector<SPCMOVE_PAIR> &moves)
+{
+	extern STRING g_projectPath;
+
+	const int health = pEnemy->health();
+
+	std::vector<STRING>::const_iterator i = pEnemy->specials.begin();
+	for (; i != pEnemy->specials.end(); ++i)
+	{
+		if (i->length())
+		{
+			SPCMOVE spc;
+			spc.open(g_projectPath + SPC_PATH + *i);
+			if (spc.smp <= health)
+			{
+				// The enemy can use this move.
+				const bool curative = (spc.fp < 0);
+				moves.push_back(SPCMOVE_PAIR(*i, curative));
+			}
+		}
+	}
+}
+
+/*
+ * Get the index of a random living party member.
+ */
+int randomPartyMember(const int idx)
+{
+	VECTOR_FIGHTER &party = g_battle.parties[idx];
+	VECTOR_FIGHTER::iterator i = party.begin();
+	std::vector<int> choices;
+	for (; i != party.end(); ++i)
+	{
+		if (i->pFighter->health() > 0)
+		{
+			choices.push_back(i - party.begin());
+		}
+	}
+	return choices[rand() % choices.size()];
+}
+
+/*
+ * Get the index of the party member with the lowest health.
+ */
+int weakestPartyMember(const int idx)
+{
+	VECTOR_FIGHTER &party = g_battle.parties[idx];
+	VECTOR_FIGHTER::iterator i = party.begin();
+	int lowest = -1, target = 0;
+	for (; i != party.end(); ++i)
+	{
+		const int health = i->pFighter->health();
+		if (health <= 0) continue;
+		if ((lowest == -1) || (health < lowest))
+		{
+			lowest = health;
+			target = i - party.begin();
+		}
+	}
+	return target;
+}
+
+/*
+ * Get a target of the specified class.
+ */
+int getTarget(const int party, const TARGET_CLASS target)
+{
+	switch (target)
+	{
+		case TC_RANDOM:
+			return randomPartyMember(party);
+		case TC_WEAKEST:
+			return weakestPartyMember(party);
+	}
+	return 0;
+}
+
+/*
+ * Cause an enemy to use a special move.
+ */
+void performEnemySpecialMove(const int idx, SPCMOVE_PAIR move, const TARGET_CLASS target)
+{
+	if (!move.second)
+	{
+		const int player = getTarget(PLAYER_PARTY, target);
+		performSpecialMove(ENEMY_PARTY, idx, PLAYER_PARTY, player, move.first);
+	}
+	else
+	{
+		// This is a curative move.
+		const int enemy = getTarget(ENEMY_PARTY, target);
+		performSpecialMove(ENEMY_PARTY, idx, ENEMY_PARTY, enemy, move.first);
+	}
+}
+
+/*
+ * Cause an enemy to attack a target with a random special.
+ */
+void performRandomEnemySpecial(const int idx, const TARGET_CLASS target)
+{
+	LPENEMY pEnemy = getFighter(ENEMY_PARTY, idx)->pEnemy;
+
+	// Attempt to perform special move.
+	std::vector<SPCMOVE_PAIR> moves;
+	getUsableEnemyMoves(pEnemy, moves);
+	if (moves.size())
+	{
+		// Use a special move.
+		const SPCMOVE_PAIR move = moves[rand() % moves.size()];
+		performEnemySpecialMove(idx, move, target);
+	}
+	else
+	{
+		// Fall back to physical attack.
+		const int player = getTarget(PLAYER_PARTY, target);
+		performAttack(ENEMY_PARTY, idx, PLAYER_PARTY, player, pEnemy->fp, false);
+	}
+}
+
+/*
+ * Cause an enemy to attack a target with a random move.
+ */
+void performRandomEnemyMove(const int idx, const TARGET_CLASS target)
+{
+	if (!(rand() % 2))
+	{
+		// Use physical attack.
+		LPENEMY pEnemy = getFighter(ENEMY_PARTY, idx)->pEnemy;
+		const int player = getTarget(PLAYER_PARTY, target);
+		performAttack(ENEMY_PARTY, idx, PLAYER_PARTY, player, pEnemy->fp, false);
+	}
+	else
+	{
+		// Attempt to perform special move.
+		performRandomEnemySpecial(idx, target);
+	}
+}
+
+/*
+ * Utilise the internal AI.
+ */
+void performFightAi(const int ai, const int idx)
+{
+	switch (ai)
+	{
+		case 0:
+			// Low - Enemy attacks random players with a random
+			// combination of standard (physical) attacks and special
+			// moves (if it can make these).
+			performRandomEnemyMove(idx, TC_RANDOM);
+			break;
+		case 1:
+			// Medium - Enemy attacks random players, but uses special
+			// moves (if it has any) until its SMP is exhausted, at which
+			// point it reverts to normal attacks.
+			performRandomEnemySpecial(idx, TC_RANDOM);
+			break;
+		case 2:
+			// High - Enemy attacks the weakest player with a random
+			// combination of standard attacks and special moves.
+			performRandomEnemyMove(idx, TC_WEAKEST);
+			break;
+		case 3:
+			// Very High - Enemy attacks the weakest player with special
+			// moves until SMP is exhausted.
+			performRandomEnemySpecial(idx, TC_WEAKEST);
+			break;
+	}
+}
+
+/*
+ * Cause an enemy to attack.
+ */
+void enemyAttack(const int idx)
+{
+	extern STRING g_projectPath;
+	extern void *g_pTarget, *g_pSource;
+	extern TARGET_TYPE g_targetType, g_sourceType;
+
+	LPENEMY pEnemy = getFighter(ENEMY_PARTY, idx)->pEnemy;
+
+	// Run the AI program if one has been set.
+	if (pEnemy->useCode)
+	{
+		int target = randomPartyMember(PLAYER_PARTY);
+		g_pTarget = getFighter(PLAYER_PARTY, target)->pPlayer;
+		g_targetType = TT_PLAYER;
+		g_pSource = pEnemy;
+		g_sourceType = TT_ENEMY;
+
+		CProgram(g_projectPath + PRG_PATH + pEnemy->prg).run();
+		return;
+	}
+
+	// Use internal AI.
+	performFightAi(pEnemy->ai, idx);
+}
+
+/*
  * Advance the state of a fight.
  */
-void fightTick(void)
+void fightTick()
 {
 	std::vector<VECTOR_FIGHTER> *pParties = &g_battle.parties;
 
@@ -156,7 +428,7 @@ void fightTick(void)
 				else
 				{
 					g_pFightPlugin->fightInform(party, idx, -1, -1, 0, 0, 0, 0, _T(""), INFORM_SOURCE_CHARGED);
-					// TBD: Enemy attack here.
+					enemyAttack(idx);
 					j->charge = 0;
 				}
 			} // if (j->charge < j->chargeMax)
@@ -254,7 +526,7 @@ void fightTest(const int moveSize)
 	// moveSize is the number of pixels per move for the player.
 	if (g_stepsTaken % ((64 + (32 % moveSize)) / 2)) return;
 
-	//if (!(((g_mainFile.fightType == 0) ? rand() : (g_stepsTaken / 32)) % g_mainFile.chances))
+	if (!(((g_mainFile.fightType == 0) ? rand() : (g_stepsTaken / 32)) % g_mainFile.chances))
 	{
 		// Start a fight.
 		if (g_mainFile.fprgYn)

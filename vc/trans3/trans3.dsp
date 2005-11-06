@@ -684,6 +684,10 @@ SOURCE=.\common\player.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\spcmove.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\sprite.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -823,6 +827,10 @@ SOURCE=.\common\paths.h
 # Begin Source File
 
 SOURCE=.\common\player.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\spcmove.h
 # End Source File
 # Begin Source File
 

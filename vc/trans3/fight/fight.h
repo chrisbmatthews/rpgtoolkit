@@ -94,6 +94,9 @@ void fightTick();
 // Cause one fighter to attack another.
 int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int targetPartyIdx, const int targetFightIdx, const int damage, const bool toSmp);
 
+// Perform a special move.
+void performSpecialMove(const int sourcePartyIdx, const int sourceFightIdx, const int targetPartyIdx, const int targetFightIdx, const STRING moveFile);
+
 // Start a fight based on skill level.
 void skillFight(const int skill, const STRING bkg);
 

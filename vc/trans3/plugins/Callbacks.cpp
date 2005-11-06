@@ -30,6 +30,7 @@
 #include "../common/enemy.h"
 #include "../common/background.h"
 #include "../common/item.h"
+#include "../common/spcmove.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/locate.h"
 #include "../images/FreeImage.h"
@@ -47,6 +48,7 @@ static CAllocationHeap<ANIMATION> g_animations;
 static HDC g_hScreenDc = NULL;
 std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 STRING g_menuGraphic, g_fightMenuGraphic;
+SPCMOVE g_spc;
 CProgram *g_prg = NULL;
 
 template <class T>
@@ -998,16 +1000,62 @@ STDMETHODIMP CCallbacks::CBGetPathString(int infoCode, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBLoadSpecialMove(BSTR file)
 {
+	extern STRING g_projectPath;
+	g_spc.open(g_projectPath + SPC_PATH + getString(file));
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetSpecialMoveString(int infoCode, BSTR *pRet)
 {
+	STRING str;
+	switch (infoCode)
+	{
+		case SPC_NAME:
+			str = g_spc.name;
+			break;
+		case SPC_PRG_FILE:
+			str = g_spc.prg;
+			break;
+		case SPC_STATUSFX:
+			str = g_spc.status;
+			break;
+		case SPC_ANIMATION:
+			str = g_spc.animation;
+			break;
+		case SPC_DESCRIPTION:
+			str = g_spc.description;
+			break;
+	}
+
+	BSTR bstr = getString(str);
+	SysReAllocString(pRet, bstr);
+	SysFreeString(bstr);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetSpecialMoveNum(int infoCode, int *pRet)
 {
+	switch (infoCode)
+	{
+		case SPC_FP:
+			*pRet = g_spc.fp;
+			break;
+		case SPC_SMP:
+			*pRet = g_spc.smp;
+			break;
+		case SPC_TARGET_SMP:
+			*pRet = g_spc.targSmp;
+			break;
+		case SPC_BATTLEDRIVEN:
+			*pRet = g_spc.battle;
+			break;
+		case SPC_MENUDRIVEN:
+			*pRet = g_spc.menu;
+			break;
+		default:
+			*pRet = 0;
+			break;
+	}
 	return S_OK;
 }
 
@@ -2067,6 +2115,12 @@ STDMETHODIMP CCallbacks::CBFightDoAttack(int sourcePartyIdx, int sourceFightIdx,
 
 STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, BSTR itemFile)
 {
+	extern STRING g_projectPath;
+	extern void *g_pTarget, *g_pSource;
+	extern TARGET_TYPE g_targetType, g_sourceType;
+	extern CInventory g_inv;
+	extern IPlugin *g_pFightPlugin;
+
 	LPFIGHTER pSource = getFighter(sourcePartyIdx, sourceFightIdx);
 	LPFIGHTER pTarget = getFighter(targetPartyIdx, targetFightIdx);
 	if (!pSource || !pTarget || (pSource->pFighter->health() < 1))
@@ -2076,7 +2130,6 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	}
 
 	ITEM itm;
-	extern STRING g_projectPath;
 	const STRING strItemFile = getString(itemFile);
 	const STRING fullPath = g_projectPath + ITM_PATH + strItemFile;
 	if (!itm.open(fullPath, NULL)) return S_OK;
@@ -2104,23 +2157,20 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	}
 
 	// Set target and source.
-	extern void *g_pTarget, *g_pSource;
-	extern TARGET_TYPE g_targetType, g_sourceType;
 	g_pTarget = pTarget->pFighter;
 	g_pSource = pSource->pFighter;
 	g_targetType = pTarget->bPlayer ? TT_PLAYER : TT_ENEMY;
 	g_sourceType = pSource->bPlayer ? TT_PLAYER : TT_ENEMY;
 
-	extern CInventory g_inv;
 	g_inv.take(fullPath);
 
-	extern IPlugin *g_pFightPlugin;
 	g_pFightPlugin->fightInform(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, 0, 0, -itm.fgtHPup, -itm.fgtSMup, strItemFile, INFORM_SOURCE_ITEM);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBFightUseSpecialMove(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, BSTR moveFile)
 {
+	performSpecialMove(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, getString(moveFile));
 	return S_OK;
 }
 
