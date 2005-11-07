@@ -50,12 +50,29 @@ std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 STRING g_menuGraphic, g_fightMenuGraphic;
 SPCMOVE g_spc;
 std::vector<STRING> g_specials;
+std::vector<ITEM> g_items;
 CProgram *g_prg = NULL;
 
 template <class T>
 inline T bounds(const T val, const T low, const T high)
 {
 	return ((val < low) ? low : ((val > high) ? high : val));
+}
+
+template <class T>
+inline T advance(T i, unsigned int j)
+{
+	for (unsigned int k = 0; k < j; ++k, ++i);
+	return i;
+}
+
+inline STRING addExtension(const STRING file, const STRING ext)
+{
+	if (getExtension(file).empty())
+	{
+		return (file + _T('.') + ext);
+	}
+	return file;
 }
 
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
@@ -672,7 +689,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			// TBD.
 			break;
 		case GEN_INVENTORY_FILES:
-			bstr = getString(g_inv.getFileAt(arrayPos));
+			bstr = getString(removePath(g_inv.getFileAt(arrayPos)));
 			break;
 		case GEN_INVENTORY_HANDLES:
 			bstr = getString(g_inv.getHandleAt(arrayPos));
@@ -716,10 +733,31 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			bstr = getString(g_enemies[playerSlot].enemy.winPrg);
 			break;
 		case GEN_ENE_STATUS:
-			// TBD.
-			break;
 		case GEN_PLYR_STATUS:
-			// TBD.
+			int party, idx;
+			if (infoCode == GEN_PLYR_STATUS)
+			{
+				getFighterIndices(pPlayer, party, idx);
+			}
+			else
+			{
+				party = ENEMY_PARTY;
+				idx = playerSlot;
+			}
+			if ((party != -1) && (idx != -1))
+			{
+				LPFIGHTER pFighter = getFighter(party, idx);
+				if (pFighter)
+				{
+					std::map<STRING, STATUS_EFFECT>::iterator i = pFighter->statuses.begin();
+					if (arrayPos < 0) arrayPos = 0;
+					if (pFighter->statuses.size() > arrayPos)
+					{
+						i = advance(i, arrayPos);
+						bstr = getString(i->first);
+					}
+				}
+			}
 			break;
 		case GEN_CURSOR_MOVESOUND:
 			// TBD.
@@ -1122,16 +1160,167 @@ STDMETHODIMP CCallbacks::CBGetSpecialMoveNum(int infoCode, int *pRet)
 
 STDMETHODIMP CCallbacks::CBLoadItem(BSTR file, int itmSlot)
 {
+	extern LPBOARD g_pBoard;
+	extern STRING g_projectPath;
+
+	const STRING path = g_projectPath + ITM_PATH + addExtension(getString(file), _T("itm"));
+
+	if (itmSlot < 0)
+	{
+		itmSlot = -itmSlot;
+		g_items.resize(itmSlot + 1);
+		g_items[itmSlot].open(path, NULL);
+	}
+	else
+	{
+		g_pBoard->items.resize(itmSlot + 1, NULL);
+		CItem **ppItem = &g_pBoard->items[itmSlot];
+		delete *ppItem;
+		*ppItem = new CItem();
+		(*ppItem)->open(path);
+	}
+
 	return S_OK;
+}
+
+LPITEM getItemFromSlot(int itmSlot)
+{
+	extern LPBOARD g_pBoard;
+
+	if (itmSlot < 0)
+	{
+		itmSlot = -itmSlot;
+		if (g_items.size() > itmSlot)
+		{
+			return &g_items[itmSlot];
+		}
+	}
+	else if (g_pBoard->items.size() > itmSlot)
+	{
+		return g_pBoard->items[itmSlot]->getItem();
+	}
+	return NULL;
 }
 
 STDMETHODIMP CCallbacks::CBGetItemString(int infoCode, int arrayPos, int itmSlot, BSTR *pRet)
 {
+	LPITEM pItem = getItemFromSlot(itmSlot);
+
+	if (!pItem)
+	{
+		SysReAllocString(pRet, L"");
+		return S_OK;
+	}
+
+	STRING str;
+	switch (infoCode)
+	{
+		case ITM_NAME:
+			str = pItem->itemName;
+			break;
+		case ITM_ACCESSORY:
+			str = pItem->accessory;
+			break;
+		case ITM_EQUIP_PRG:
+			str = pItem->prgEquip;
+			break;
+		case ITM_REMOVE_PRG:
+			str = pItem->prgRemove;
+			break;
+		case ITM_MENU_PRG:
+			str = pItem->mnuUse;
+			break;
+		case ITM_FIGHT_PRG:
+			str = pItem->fgtUse;
+			break;
+		case ITM_ONBOARD_PRG:
+			str = pItem->itmPrgOnBoard;
+			break;
+		case ITM_PICKEDUP_PRG:
+			str = pItem->itmPrgPickUp;
+			break;
+		case ITM_CHARACTERS:
+			arrayPos = bounds(arrayPos, 0, int(pItem->itmChars.size() - 1));
+			str = pItem->itmChars[arrayPos];
+			break;
+		case ITM_DESCRIPTION:
+			str = pItem->itmDescription;
+			break;
+		case ITM_ANIMATION:
+			str = pItem->itmAnimation;
+			break;
+	}
+
+	BSTR bstr = getString(str);
+	SysReAllocString(pRet, bstr);
+	SysFreeString(bstr);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetItemNum(int infoCode, int arrayPos, int itmSlot, int *pRet)
 {
+	LPITEM pItem = getItemFromSlot(itmSlot);
+	if (!pItem)
+	{
+		*pRet = 0;
+		return S_OK;
+	}
+
+	switch (infoCode)
+	{
+		case ITM_EQUIP_YN:
+			*pRet = pItem->equipYN;
+			break;
+		case ITM_MENU_YN:
+			*pRet = pItem->menuYN;
+			break;
+		case ITM_BOARD_YN:
+			*pRet = pItem->boardYN;
+			break;
+		case ITM_FIGHT_YN:
+			*pRet = pItem->fightYN;
+			break;
+		case ITM_EQUIP_LOCATION:
+			arrayPos = bounds(arrayPos, 0, int(pItem->itemArmor.size() - 1));
+			*pRet = pItem->itemArmor[arrayPos];
+			break;
+		case ITM_EQUIP_HPUP:
+			*pRet = pItem->equipHP;
+			break;
+		case ITM_EQUIP_DPUP:
+			*pRet = pItem->equipDP;
+			break;
+		case ITM_EQUIP_FPUP:
+			*pRet = pItem->equipFP;
+			break;
+		case ITM_EQUIP_SMPUP:
+			*pRet = pItem->equipSM;
+			break;
+		case ITM_MENU_HPUP:
+			*pRet = pItem->mnuHPup;
+			break;
+		case ITM_MENU_SMPUP:
+			*pRet = pItem->mnuSMup;
+			break;
+		case ITM_FIGHT_HPUP:
+			*pRet = pItem->fgtHPup;
+			break;
+		case ITM_FIGHT_SMPUP:
+			*pRet = pItem->fgtSMup;
+			break;
+		case ITM_USEDBY:
+			*pRet = pItem->usedBy;
+			break;
+		case ITM_BUYING_PRICE:
+			*pRet = pItem->buyPrice;
+			break;
+		case ITM_SELLING_PRICE:
+			*pRet = pItem->sellPrice;
+			break;
+		case ITM_KEYITEM:
+			*pRet = pItem->keyItem;
+			break;
+	}
 	return S_OK;
 }
 

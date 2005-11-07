@@ -55,6 +55,6 @@ typedef struct tagItem
 	STRING itmPrgPickUp;					// Program to run when picked up.
 
 	short open(const STRING fileName, SPRITE_ATTR *pAttr);
-} ITEM;
+} ITEM, *LPITEM;
 
 #endif

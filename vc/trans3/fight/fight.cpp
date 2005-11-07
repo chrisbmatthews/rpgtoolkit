@@ -625,7 +625,7 @@ void fightTest(const int moveSize)
 	if (g_mainFile.fightGameYn || !g_pBoard->fightingYN) return;
 
 	// The goal here is to test for a fight only after walking
-	// a whole tile. The introduction of _T('true') pixel movement,
+	// a whole tile. The introduction of 'true' pixel movement,
 	// however, allows a user to set the movement size to a
 	// distance that is not a factor of 32, making it impossible
 	// for us to be in this function when the player has walked

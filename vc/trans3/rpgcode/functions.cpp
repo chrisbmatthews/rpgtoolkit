@@ -24,6 +24,7 @@
 #include "../common/CAllocationHeap.h"
 #include "../common/CInventory.h"
 #include "../common/CFile.h"
+#include "../common/mbox.h"
 #include "../movement/locate.h"
 #include "../movement/CSprite/CSprite.h"
 #include "../movement/CPlayer/CPlayer.h"
@@ -738,7 +739,7 @@ void get(CALL_DATA &params)
 }
 
 /*
- * Gone()
+ * void gone()
  * 
  * Remove the currently running program from the board
  * until the board has been left.
@@ -830,14 +831,11 @@ void viewbrd(CALL_DATA &params)
  */
 void bold(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		g_bold = params[0].getBool();
-	}
-	else
+	if (params.params != 1)
 	{
 		throw CError(_T("Bold() requires one parameter."));
 	}
+	g_bold = params[0].getBool();
 }
 
 /*
@@ -847,14 +845,11 @@ void bold(CALL_DATA &params)
  */
 void italics(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		g_italic = params[0].getBool();
-	}
-	else
+	if (params.params != 1)
 	{
 		throw CError(_T("Italics() requires one parameter."));
 	}
+	g_italic = params[0].getBool();
 }
 
 /*
@@ -866,12 +861,9 @@ void underline(CALL_DATA &params)
 {
 	if (params.params == 1)
 	{
-		g_underline = params[0].getBool();
-	}
-	else
-	{
 		throw CError(_T("Underline() requires one parameter."));
 	}
+	g_underline = params[0].getBool();
 }
 
 /*
@@ -930,17 +922,14 @@ void winColorRgb(CALL_DATA &params)
  */
 void color(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		int color = params[0].getNum();
-		if (color < 0) color = 0;
-		else if (color > 255) color = 255;
-		g_color = CTile::getDOSColor(color);
-	}
-	else
+	if (params.params != 1)
 	{
 		throw CError(_T("Color() requires one parameter."));
 	}
+	int color = params[0].getNum();
+	if (color < 0) color = 0;
+	else if (color > 255) color = 255;
+	g_color = CTile::getDOSColor(color);
 }
 
 /*
@@ -995,18 +984,6 @@ void move(CALL_DATA &params)
 		p->vBase.move(x, y);
 		p->layer = z;
 	}
-}
-
-/*
- * void over()
- * 
- * Displays a game over message and resets the game. Because
- * you can (and should) set a game over program, this function
- * is pointless.
- */
-void over(CALL_DATA &params)
-{
-
 }
 
 /*
@@ -1085,6 +1062,30 @@ void put(CALL_DATA &params)
 void reset(CALL_DATA &params)
 {
 
+}
+
+/*
+ * void over()
+ * 
+ * Displays a game over message and resets the game. Because
+ * you can (and should) set a game over program, this function
+ * is pointless.
+ */
+void over(CALL_DATA &params)
+{
+	extern MAIN_FILE g_mainFile;
+	extern STRING g_projectPath;
+
+	if (g_mainFile.gameOverPrg.empty())
+	{
+		messageBox(_T("Game over."));
+		reset(params);
+	}
+	else
+	{
+		params.prg->end();
+		CProgram(g_projectPath + PRG_PATH + g_mainFile.gameOverPrg).run();
+	}
 }
 
 /*
@@ -1304,7 +1305,7 @@ void giveSmp(CALL_DATA &params)
 		if (isFighting())
 		{
 			// Get the fighter's indices.
-			int party, idx;
+			int party = -1, idx = -1;
 			getFighterIndices(p, party, idx);
 
 			if ((party != -1) && (idx != -1))
@@ -4564,12 +4565,10 @@ void getBoardTileType(CALL_DATA &params)
 				break;
 
 			case NORTH_SOUTH:
-				// TBD: Differentiate between NW and NE?
 				type = _T("NS");
 				break;
 
 			case EAST_WEST:
-				// TBD: Differentiate between NW and NE?
 				type = _T("EW");
 				break;
 

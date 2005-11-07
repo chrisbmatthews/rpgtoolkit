@@ -32,6 +32,9 @@ public:
 	// Open the item's file.
 	short open(const STRING file) throw(CInvalidItem);
 
+	// Extract the ITEM struct.
+	LPITEM getItem() { return &m_itemMem; }
+
 	~CItem();
 
 private:

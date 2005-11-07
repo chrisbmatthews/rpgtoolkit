@@ -274,7 +274,7 @@ void CPlayer::levelUp()
 	}
 
 	// Inform the player.
-	messageBox(name() + " gained a level.");
+	messageBox(name() + _T(" gained a level."));
 }
 
 /*
