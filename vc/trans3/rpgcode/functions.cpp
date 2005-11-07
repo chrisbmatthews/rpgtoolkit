@@ -567,6 +567,11 @@ void fade(CALL_DATA &params)
 
 	// I don't know why I fucking bother if that's your attitude.
 
+	// If it's not terrible, how would you describe it? It takes
+	// almost a minute for these fades to run and none of them is
+	// actually a fade. It's CBM's fault, not yours; we shouldn't
+	// have reproduced it exactly.
+
 	switch (type)
 	{
 	case 0:
