@@ -565,6 +565,8 @@ void fade(CALL_DATA &params)
 	//			I was going to do something different, but I suppose
 	//			I don't feel like it anymore.
 
+	// I don't know why I fucking bother if that's your attitude.
+
 	switch (type)
 	{
 	case 0:
