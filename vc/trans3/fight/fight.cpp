@@ -371,7 +371,7 @@ void enemyAttack(const int idx)
 	if (pEnemy->useCode)
 	{
 		int target = randomPartyMember(PLAYER_PARTY);
-		g_target.p = getFighter(PLAYER_PARTY, target)->pPlayer;
+		g_target.p = getFighter(PLAYER_PARTY, target)->pFighter;
 		g_target.type = ET_PLAYER;
 		g_source.p = pEnemy;
 		g_source.type = ET_ENEMY;
