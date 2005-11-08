@@ -521,13 +521,23 @@ void fightTick()
 
 				// Status effects.
 				std::map<STRING, STATUS_EFFECT>::iterator k = j->statuses.begin();
+				std::vector<std::map<STRING, STATUS_EFFECT>::iterator> finished;
 				for (; k != j->statuses.end(); ++k)
 				{
 					if (statusEffectTick(&*k, j) == 0)
 					{
 						removeStatusEffect(&k->second, j);
-						k = j->statuses.erase(k);
-						--k;
+						finished.push_back(k);
+					}
+				}
+
+				if (finished.size())
+				{
+					std::vector<std::map<STRING, STATUS_EFFECT>::iterator>::iterator l =
+						finished.begin();
+					for (; l != finished.end(); ++l)
+					{
+						j->statuses.erase(*l);
 					}
 				}
 
