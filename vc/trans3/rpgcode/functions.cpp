@@ -4730,7 +4730,7 @@ void giveexp(CALL_DATA &params)
 {
 	if (params.params != 2)
 	{
-		throw CError("GiveExp() requires two parameters.");
+		throw CError(_T("GiveExp() requires two parameters."));
 	}
 
 	CPlayer *p = getPlayerPointer(params[0]);
