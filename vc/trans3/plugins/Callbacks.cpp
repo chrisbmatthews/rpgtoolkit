@@ -1862,13 +1862,49 @@ STDMETHODIMP CCallbacks::CBRunProgram(BSTR prgFile)
 	return S_OK;
 }
 
+void setEntity(LPENTITY p, int idx, int type)
+{
+	extern LPBOARD g_pBoard;
+
+	p->type = ET_EMPTY;
+	if (type == TYPE_PLAYER)
+	{
+		if (g_players.size() > idx)
+		{
+			p->type = ET_PLAYER;
+			p->p = &g_players[idx];
+		}
+	}
+	else if (type == TYPE_ITEM)
+	{
+		if ((idx >= 0) && (g_pBoard->items.size() > idx))
+		{
+			p->type = ET_ITEM;
+			p->p = g_pBoard->items[idx];
+		}
+	}
+	else if (type == TYPE_ENEMY)
+	{
+		std::map<unsigned int, PLUGIN_ENEMY>::iterator i = g_enemies.find(idx);
+		if (i != g_enemies.end())
+		{
+			p->type = ET_ENEMY;
+			p->p = &i->second.enemy;
+		}
+	}
+}
+
 STDMETHODIMP CCallbacks::CBSetTarget(int targetIdx, int ttype)
 {
+	extern ENTITY g_target;
+	setEntity(&g_target, targetIdx, ttype);
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBSetSource(int sourceIdx, int sType)
+STDMETHODIMP CCallbacks::CBSetSource(int sourceIdx, int stype)
 {
+	extern ENTITY g_source;
+	setEntity(&g_source, sourceIdx, stype);
 	return S_OK;
 }
 
