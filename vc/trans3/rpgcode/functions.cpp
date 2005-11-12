@@ -44,6 +44,7 @@
 #include <iostream>
 #include <shellapi.h>
 #include <objbase.h>
+#include <typeinfo.h>
 
 /*
  * Globals.
@@ -186,7 +187,7 @@ CPlayer *getPlayerPointer(STACK_FRAME &param)
 	if (param.getType() & UDT_LIT)
 	{
 		// Handle, "target", "source".
-		return (CPlayer *)getFighter(param.getLit());
+		return dynamic_cast<CPlayer *>(getFighter(param.getLit()));
 	}
 
 	// g_players index.
@@ -3613,7 +3614,7 @@ void getlevel(CALL_DATA &params)
 		throw CError(_T("GetLevel() requires one or two parameters."));
 	}
 
-	CPlayer *pPlayer = (CPlayer *)getFighter(params[0].getLit());
+	CPlayer *pPlayer = dynamic_cast<CPlayer *>(getFighter(params[0].getLit()));
 	if (!pPlayer)
 	{
 		throw CError(_T("GetLevel(): player not found."));
@@ -4721,13 +4722,22 @@ void parallax(CALL_DATA &params)
 }
 
 /*
- * giveexp(...)
+ * void giveExp(string handle, int amount)
  * 
- * Description.
+ * Give experience to a player.
  */
 void giveexp(CALL_DATA &params)
 {
+	if (params.params != 2)
+	{
+		throw CError("GiveExp() requires two parameters.");
+	}
 
+	CPlayer *p = getPlayerPointer(params[0]);
+	if (p)
+	{
+		p->giveExperience(int(params[1].getNum()));
+	}
 }
 
 /*
