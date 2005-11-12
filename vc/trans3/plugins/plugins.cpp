@@ -17,8 +17,8 @@ static ICallbacks *g_pCallbacks = NULL;
 static std::vector<int> g_oldCallbacks;
 static std::set<IPluginInput *> g_inputPlugins;
 
-// Locate of MEMBERIDs in a CComPlugin::m_members array.
-// These are arbitrary.
+// Locatation of MEMBERIDs in a CComPlugin::m_members array.
+// The order is arbitrary.
 #define MEMBER_SETCALLBACKS	0
 #define MEMBER_INITIALIZE	1
 #define MEMBER_TERMINATE	2
