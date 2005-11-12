@@ -17,15 +17,25 @@ static ICallbacks *g_pCallbacks = NULL;
 static std::vector<int> g_oldCallbacks;
 static std::set<IPluginInput *> g_inputPlugins;
 
+// Locate of MEMBERIDs in a CComPlugin::m_members array.
+// These are arbitrary.
+#define MEMBER_SETCALLBACKS	0
+#define MEMBER_INITIALIZE	1
+#define MEMBER_TERMINATE	2
+#define MEMBER_VERSION		3
+#define MEMBER_DESCRIPTION	4
+#define MEMBER_TYPE			5
+#define MEMBER_QUERY		6
+#define MEMBER_EXECUTE		7
+#define MEMBER_MENU			8
+#define MEMBER_FIGHT		9
+#define MEMBER_FIGHTINFORM	10
+
 /*
  * Load a plugin.
  */
 IPlugin *loadPlugin(const STRING file)
 {
-	const int backslash = file.find_last_of(_T('\\')) + 1;
-	const STRING name = file.substr(backslash, file.length() - 4 - backslash);
-	if (name.empty()) return NULL;
-
 	HMODULE mod = LoadLibrary(file.c_str());
 	if (!mod)
 	{
@@ -57,18 +67,28 @@ IPlugin *loadPlugin(const STRING file)
 
 	FreeLibrary(mod);
 
+	ITypeLib *pTypeLib = NULL;
+	if (FAILED(LoadTypeLib(getUnicodeString(file).c_str(), &pTypeLib)))
+	{
+		messageBox(_T("Failed to load the type library of ") + file + _T("."));
+		return NULL;
+	}
+
+	const int types = pTypeLib->GetTypeInfoCount();
+
 	CComPlugin *p = new CComPlugin();
 
-#ifndef _UNICODE
-	// Ascii.
-	wchar_t *str = new wchar_t[name.length() + 1];
-	MultiByteToWideChar(CP_ACP, 0, name.c_str(), -1, str, name.length() + 1);
-	const bool bLoaded = p->load(str + std::wstring(L".cls") + str);
-	delete [] str;
-#else
-	// Unicode.
-	const bool bLoaded = p->load(name + std::wstring(L".cls") + name);
-#endif
+	// Check all the types in the library.
+	bool bLoaded = false;
+	for (unsigned int i = 0; i < types; ++i)
+	{
+		ITypeInfo *pTypeInfo = NULL;
+		pTypeLib->GetTypeInfo(i, &pTypeInfo);
+		if (bLoaded = p->load(pTypeInfo)) break;
+	}
+
+	// Release the type library.
+	pTypeLib->Release();
 
 	if (!bLoaded)
 	{
@@ -268,10 +288,10 @@ COldPlugin::COldPlugin()
  *
  * cls (in) - class ID to construct
  */
-CComPlugin::CComPlugin(const std::wstring cls)
+CComPlugin::CComPlugin(ITypeInfo *pTypeInfo)
 {
 	m_plugin = NULL;
-	load(cls);
+	load(pTypeInfo);
 }
 
 COldPlugin::COldPlugin(const STRING file)
@@ -285,24 +305,49 @@ COldPlugin::COldPlugin(const STRING file)
  *
  * cls (in) - class ID to construct
  */
-bool CComPlugin::load(const std::wstring cls)
+bool CComPlugin::load(ITypeInfo *pTypeInfo)
 {
 	if (m_plugin || !g_pCallbacks) return false;
-	CLSID id;
-	if (FAILED(CLSIDFromProgID(cls.c_str(), &id))) return false;
-	if (FAILED(CoCreateInstance(id, NULL, CLSCTX_INPROC_SERVER, IID_IDispatch, (LPVOID *)&m_plugin)))
+
+	// Create an instance of the plugin's class.
+	HRESULT hr = pTypeInfo->CreateInstance(NULL, IID_IDispatch, (LPVOID *)&m_plugin);
+	if (FAILED(hr)) return false;
+
+	// I regret this arbitrary naming scheme, but it's too
+	// late to change it now.
+	LPOLESTR names[] = {
+		L"SetCallbacks",
+		L"Plugin_Initialize",
+		L"Plugin_Terminate",
+		L"Plugin_Version",
+		L"Plugin_Description",
+		L"PlugType",
+		L"RPGCode_Query",
+		L"RPGCode_Execute",
+		L"Menu",
+		L"Fight",
+		L"FightInform"
+	};
+
+	// Get the MEMBERIDs of members of the class.
+	for (unsigned int i = 0; i < MEMBER_COUNT; ++i)
 	{
+		pTypeInfo->GetIDsOfNames(names + i, 1, m_members + i);
+	}
+
+	// Get the DISPIP of the setCallbacks() member.
+	const DISPID disp = m_members[MEMBER_SETCALLBACKS];
+
+	// Some methods might validly be missing, but setCallbacks()
+	// should be here for all valid plugins.
+	if (disp == DISPID_UNKNOWN)
+	{
+		unload();
 		return false;
 	}
-	DISPID disp;
-	{
-		const wchar_t *const str = L"setCallbacks";
-		if (FAILED(m_plugin->GetIDsOfNames(IID_NULL, (LPOLESTR *)&str, 1, LOCALE_USER_DEFAULT, &disp)))
-		{
-			unload();
-			return false;
-		}
-	}
+
+	// Provide the plugin with a pointer to an instance of
+	// CCallbacks, via the setCallbacks() function.
 	DISPPARAMS params = {NULL, NULL, 1, 1};
 	VARIANT var;
 	var.vt = VT_DISPATCH;
@@ -319,6 +364,7 @@ bool CComPlugin::load(const std::wstring cls)
 			return false;
 		}
 	}
+
 	return true;
 }
 
@@ -362,7 +408,22 @@ bool COldPlugin::load(const STRING file)
 void CComPlugin::initialize()
 {
 	if (!m_plugin) return;
-	m_plugin->initialize();
+
+	const MEMBERID member = m_members[MEMBER_INITIALIZE];
+	if (member == DISPID_UNKNOWN) return;
+
+	DISPPARAMS params = {NULL, NULL, 0, 0};
+
+	m_plugin->Invoke(
+		member,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&params,
+		NULL,
+		NULL,
+		NULL
+	);
 }
 
 void COldPlugin::initialize()
@@ -377,7 +438,22 @@ void COldPlugin::initialize()
 void CComPlugin::terminate()
 {
 	if (!m_plugin) return;
-	m_plugin->terminate();
+
+	const MEMBERID member = m_members[MEMBER_TERMINATE];
+	if (member == DISPID_UNKNOWN) return;
+
+	DISPPARAMS params = {NULL, NULL, 0, 0};
+
+	m_plugin->Invoke(
+		member,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&params,
+		NULL,
+		NULL,
+		NULL
+	);
 }
 
 void COldPlugin::terminate()
@@ -392,11 +468,25 @@ void COldPlugin::terminate()
 bool CComPlugin::query(const STRING function)
 {
 	if (!m_plugin) return false;
-	BSTR bstr = getString(function);
-	VARIANT_BOOL toRet = VARIANT_FALSE;
-	m_plugin->query(bstr, &toRet);
-	SysFreeString(bstr);
-	return (toRet == VARIANT_TRUE);
+
+	const MEMBERID member = m_members[MEMBER_QUERY];
+	if (member == DISPID_UNKNOWN) return false;
+
+	CComVariant vars[] = {function.c_str()}, ret;
+	DISPPARAMS params = {vars, NULL, 1, 0};
+
+	m_plugin->Invoke(
+		member,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&params,
+		&ret,
+		NULL,
+		NULL
+	);
+
+	return (ret.boolVal == VARIANT_TRUE);
 }
 
 bool COldPlugin::query(const STRING function)
@@ -413,14 +503,39 @@ bool COldPlugin::query(const STRING function)
 bool CComPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn)
 {
 	if (!m_plugin) return false;
-	BSTR bstrLine = getString(line);
-	BSTR retLit = SysAllocString(L"");
-	VARIANT_BOOL toRet = VARIANT_FALSE;
-	m_plugin->execute(bstrLine, &retValDt, &retLit, &retValNum, usingReturn, &toRet);
-	retValLit = getString(retLit);
-	SysFreeString(retLit);
-	SysFreeString(bstrLine);
-	return (toRet == VARIANT_TRUE);
+
+	const MEMBERID member = m_members[MEMBER_EXECUTE];
+	if (member == DISPID_UNKNOWN) return false;
+
+	// Arguments in *reverse* order.
+	CComVariant vars[5], ret;
+	vars[4] = line.c_str();
+	vars[3].vt = VT_I4 | VT_BYREF;
+	vars[3].plVal = (long *)&retValDt;
+	vars[2].vt = VT_BSTR | VT_BYREF;
+	BSTR bstr = SysAllocString(L"");
+	vars[2].pbstrVal = &bstr;
+	vars[1].vt = VT_R8 | VT_BYREF;
+	vars[1].pdblVal = &retValNum;
+	vars[0] = bool(usingReturn);
+
+	DISPPARAMS params = {vars, NULL, 5, 0};
+
+	HRESULT hr = m_plugin->Invoke(
+		member,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&params,
+		&ret,
+		NULL,
+		NULL
+	);
+
+	retValLit = getString(bstr);
+	SysFreeString(bstr);
+
+	return (ret.boolVal == VARIANT_TRUE);
 }
 
 bool COldPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn)
@@ -439,11 +554,26 @@ bool COldPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, do
 int CComPlugin::fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun)
 {
 	if (!m_plugin) return 0;
-	int toRet = 0;
-	BSTR bstr = getString(background);
-	m_plugin->fight(enemyCount, skillLevel, bstr, canRun, &toRet);
-	SysFreeString(bstr);
-	return toRet;
+
+	const MEMBERID member = m_members[MEMBER_FIGHT];
+	if (member == DISPID_UNKNOWN) return 0;
+
+	// Arguments in *reverse* order.
+	CComVariant vars[] = {int(canRun), background.c_str(), skillLevel, enemyCount}, ret;
+	DISPPARAMS params = {vars, NULL, 4, 0};
+
+	HRESULT hr = m_plugin->Invoke(
+		member,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&params,
+		&ret,
+		NULL,
+		NULL
+	);
+
+	return ret.intVal;
 }
 
 int COldPlugin::fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun)
@@ -458,11 +588,26 @@ int COldPlugin::fight(const int enemyCount, const int skillLevel, const STRING b
 int CComPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode)
 {
 	if (!m_plugin) return 0;
-	int toRet = 0;
-	BSTR bstr = getString(strMessage);
-	m_plugin->fightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, sourceHpLost, sourceSmpLost, targetHpLost, targetSmpLost, bstr, attackCode, &toRet);
-	SysFreeString(bstr);
-	return toRet;
+
+	const MEMBERID member = m_members[MEMBER_FIGHTINFORM];
+	if (member == DISPID_UNKNOWN) return 0;
+
+	// Arguments in *reverse* order.
+	CComVariant vars[] = {attackCode, strMessage.c_str(), targetSmpLost, targetHpLost, sourceSmpLost, sourceHpLost, targetFighterIndex, targetPartyIndex, sourceFighterIndex, sourcePartyIndex}, ret;
+	DISPPARAMS params = {vars, NULL, 10, 0};
+
+	HRESULT hr = m_plugin->Invoke(
+		member,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&params,
+		&ret,
+		NULL,
+		NULL
+	);
+
+	return ret.intVal;
 }
 
 int COldPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode)
@@ -477,9 +622,25 @@ int COldPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterI
 int CComPlugin::menu(const int request)
 {
 	if (!m_plugin) return 0;
-	int toRet = 0;
-	m_plugin->menu(request, &toRet);
-	return toRet;
+
+	const MEMBERID member = m_members[MEMBER_MENU];
+	if (member == DISPID_UNKNOWN) return 0;
+
+	CComVariant vars[] = {request}, ret;
+	DISPPARAMS params = {vars, NULL, 1, 0};
+
+	HRESULT hr = m_plugin->Invoke(
+		member,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&params,
+		&ret,
+		NULL,
+		NULL
+	);
+
+	return ret.intVal;
 }
 
 int COldPlugin::menu(const int request)
@@ -493,10 +654,26 @@ int COldPlugin::menu(const int request)
  */
 bool CComPlugin::plugType(const int request)
 {
-	if (!m_plugin) return 0;
-	VARIANT_BOOL toRet = VARIANT_FALSE;
-	m_plugin->type(request, &toRet);
-	return (toRet == VARIANT_TRUE);
+	if (!m_plugin) return false;
+
+	const MEMBERID member = m_members[MEMBER_TYPE];
+	if (member == DISPID_UNKNOWN) return false;
+
+	CComVariant vars[] = {request}, ret;
+	DISPPARAMS params = {vars, NULL, 1, 0};
+
+	HRESULT hr = m_plugin->Invoke(
+		member,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&params,
+		&ret,
+		NULL,
+		NULL
+	);
+
+	return (ret.boolVal == VARIANT_TRUE);
 }
 
 bool COldPlugin::plugType(const int request)

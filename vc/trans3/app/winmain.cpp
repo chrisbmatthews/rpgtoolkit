@@ -110,6 +110,7 @@ void setUpGame()
 	std::vector<STRING>::iterator i = g_mainFile.plugins.begin();
 	for (; i != g_mainFile.plugins.end(); ++i)
 	{
+		if (i->empty()) continue;
 		IPlugin *p = loadPlugin(g_projectPath + PLUG_PATH + *i);
 		if (!p) continue;
 		if (p->plugType(PT_RPGCODE))
@@ -121,7 +122,9 @@ void setUpGame()
 			delete p;
 		}
 	}
+
 	// Menu plugin.
+	if (!g_mainFile.menuPlugin.empty())
 	{
 		IPlugin *p = loadPlugin(g_projectPath + PLUG_PATH + g_mainFile.menuPlugin);
 		if (p && p->plugType(PT_MENU))
@@ -134,7 +137,9 @@ void setUpGame()
 			delete p;
 		}
 	}
+
 	// Fight plugin.
+	if (!g_mainFile.fightPlugin.empty())
 	{
 		IPlugin *p = loadPlugin(g_projectPath + PLUG_PATH + g_mainFile.fightPlugin);
 		if (p && p->plugType(PT_FIGHT))

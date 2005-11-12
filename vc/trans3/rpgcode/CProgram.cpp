@@ -503,7 +503,7 @@ void CProgram::pluginCall(CALL_DATA &call)
 	CProgram *const prg = g_prg;
 	g_prg = call.prg;
 	int dt = PLUG_DT_VOID; STRING lit; double num = 0.0;
-	pPlugin->execute(line, dt, lit, num, (call.prg->m_i->udt & UDT_LINE) ? VARIANT_FALSE : VARIANT_TRUE);
+	pPlugin->execute(line, dt, lit, num, !(call.prg->m_i->udt & UDT_LINE));
 	g_prg = prg;
 
 	if (dt == PLUG_DT_NUM)

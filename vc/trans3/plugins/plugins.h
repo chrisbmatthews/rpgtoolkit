@@ -45,22 +45,6 @@ public:
 	virtual ~IPlugin() { }
 };
 
-// Interface of a COM plugin.
-interface __declspec(novtable) IComPlugin : public IDispatch
-{
-	virtual HRESULT STDMETHODCALLTYPE initialize() = 0;
-	virtual HRESULT STDMETHODCALLTYPE terminate() = 0;
-	virtual HRESULT STDMETHODCALLTYPE version(BSTR __RPC_FAR *) = 0;
-	virtual HRESULT STDMETHODCALLTYPE description(BSTR __RPC_FAR *) = 0;
-	virtual HRESULT STDMETHODCALLTYPE type(int, VARIANT_BOOL __RPC_FAR *) = 0;
-	virtual HRESULT STDMETHODCALLTYPE query(BSTR, VARIANT_BOOL __RPC_FAR *) = 0;    
-	virtual HRESULT STDMETHODCALLTYPE execute(BSTR, int __RPC_FAR *, BSTR __RPC_FAR *, double __RPC_FAR *, int, VARIANT_BOOL __RPC_FAR *) = 0;
-	virtual HRESULT STDMETHODCALLTYPE menu(int, int __RPC_FAR *) = 0;
-	virtual HRESULT STDMETHODCALLTYPE fight(int, int, BSTR, int, int __RPC_FAR *) = 0;
-	virtual HRESULT STDMETHODCALLTYPE fightInform(int, int, int, int, int, int, int, int, BSTR, int, int __RPC_FAR *) = 0;
-	virtual HRESULT STDMETHODCALLTYPE put_setCallbacks(IDispatch __RPC_FAR *) = 0;
-};
-
 // A plugin that accepts input using the special methods.
 interface IPluginInput
 {
@@ -68,14 +52,17 @@ interface IPluginInput
 	virtual bool eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const STRING key, const int type) = 0;
 };
 
+// Number of members in a COM-based plugin's interface.
+#define MEMBER_COUNT 11
+
 // A COM based plugin.
 class CComPlugin : public IPlugin
 {
 public:
 	CComPlugin();
-	CComPlugin(const std::wstring cls);
+	CComPlugin(ITypeInfo *pTypeInfo);
 	~CComPlugin() { unload(); }
-	bool load(const std::wstring cls);
+	bool load(ITypeInfo *pTypeInfo);
 	void unload();
 
 	void initialize();
@@ -90,7 +77,8 @@ public:
 private:
 	CComPlugin(const CComPlugin &rhs);
 	CComPlugin &operator=(const CComPlugin &rhs);
-	IComPlugin *m_plugin;
+	IDispatch *m_plugin;
+	MEMBERID m_members[MEMBER_COUNT];
 };
 
 // Typedefs for old plugins.
