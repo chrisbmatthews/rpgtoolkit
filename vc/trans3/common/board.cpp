@@ -685,7 +685,7 @@ void tagBoardVector::createCanvas(BOARD &board)
 	delete cnv;
 }
 
-#include _T("../images/FreeImage.h")
+#include "../images/FreeImage.h"
 
 /*
  * Load images attached to layers into separate canvases.
@@ -968,7 +968,7 @@ void tagBoard::freeVectors(const int layer)
 	if (layer)
 	{
 		// Delete vectors on the given layer.
-		while(true)
+		while (true)
 		{
 			for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
 			{

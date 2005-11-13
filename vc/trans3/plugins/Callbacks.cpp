@@ -31,6 +31,7 @@
 #include "../common/background.h"
 #include "../common/item.h"
 #include "../common/spcmove.h"
+#include "../input/input.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/locate.h"
 #include "../images/FreeImage.h"
@@ -1677,6 +1678,61 @@ STDMETHODIMP CCallbacks::CBCanvasDrawText(int canvasID, BSTR text, BSTR font, in
 
 STDMETHODIMP CCallbacks::CBCanvasPopup(int canvasID, int x, int y, int stepSize, int popupType, int *pRet)
 {
+	#define POPUP_NOFX			0
+	#define POPUP_VERTICAL		1
+	#define POPUP_HORIZONTAL	2
+
+	CCanvas *p = g_canvases.cast(canvasID);
+	if (!p)
+	{
+		*pRet = FALSE;
+		return S_OK;
+	}
+
+	switch (popupType)
+	{
+		case POPUP_NOFX:
+			// Nothing required.
+			break;
+		case POPUP_VERTICAL:
+		{
+			const int w = p->GetWidth();
+			const int h = p->GetHeight();
+			int cnt = 0;
+			CCanvas temp = *g_pDirectDraw->getBackBuffer();
+			for (int i = int(h / 2); i >= 0; i -= stepSize)
+			{
+				g_pDirectDraw->DrawCanvas(&temp, 0, 0);
+				g_pDirectDraw->DrawCanvasPartial(p, x, y + i, 0, 0, w, h / 2 - i);
+				g_pDirectDraw->DrawCanvasPartial(p, x, y + h / 2, 0, h - cnt, w, h / 2 - i);
+				g_pDirectDraw->Refresh();
+				cnt += stepSize;
+				processEvent();
+			}
+		} break;
+		case POPUP_HORIZONTAL:
+		{
+			const int w = p->GetWidth();
+			const int h = p->GetHeight();
+			int cnt = 0;
+			CCanvas temp = *g_pDirectDraw->getBackBuffer();
+			for (int i = int(w / 2); i >= 0; i -= stepSize)
+			{
+				g_pDirectDraw->DrawCanvas(&temp, 0, 0);
+				g_pDirectDraw->DrawCanvasPartial(p, x + i, y, 0, 0, w / 2 - i, h);
+				g_pDirectDraw->DrawCanvasPartial(p, x + w / 2, y, w - cnt, 0, w / 2 - i, h);
+				g_pDirectDraw->Refresh();
+				cnt += stepSize;
+				processEvent();
+			}
+		} break;
+	}
+
+	// Render the canvas.
+	g_pDirectDraw->DrawCanvas(p, x, y);
+	g_pDirectDraw->Refresh();
+
+	*pRet = TRUE;
 	return S_OK;
 }
 
@@ -1798,6 +1854,10 @@ STDMETHODIMP CCallbacks::CBCheckKey(BSTR keyPressed, int *pRet)
 
 STDMETHODIMP CCallbacks::CBPlaySound(BSTR soundFile, int *pRet)
 {
+	extern STRING g_projectPath;
+	const STRING file = g_projectPath + MEDIA_PATH + getString(soundFile);
+	CAudioSegment::playSoundEffect(file);
+	*pRet = TRUE;
 	return S_OK;
 }
 
@@ -2499,7 +2559,6 @@ STDMETHODIMP CCallbacks::CBFightUseSpecialMove(int sourcePartyIdx, int sourceFig
 
 STDMETHODIMP CCallbacks::CBDoEvents()
 {
-	extern void processEvent();
 	processEvent();
 	return S_OK;
 }
