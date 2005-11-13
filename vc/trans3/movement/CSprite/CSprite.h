@@ -128,6 +128,9 @@ public:
 		// Vector bases also?
 	}
 
+	// Get the board sprite.
+	const BRD_SPRITE *getBoardSprite() const { return &m_brdData; }
+
 protected:
 	SPRITE_ATTR m_attr;				// Sprite attributes (common file data).
 	bool m_bActive;					// Is the sprite visible?

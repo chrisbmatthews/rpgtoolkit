@@ -1328,6 +1328,27 @@ STDMETHODIMP CCallbacks::CBGetItemNum(int infoCode, int arrayPos, int itmSlot, i
 STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos2, int arrayPos3, int *pRet)
 {
 	extern LPBOARD g_pBoard;
+
+	LPBRD_PROGRAM pPrg = NULL;
+	CItem *pItem = NULL;
+
+	if ((infoCode >= BRD_PRG_X) && (infoCode <= BRD_PRG_ACTIV_TYPE))
+	{
+		try
+		{
+			pPrg = g_pBoard->programs[bounds(arrayPos1, 0, int(g_pBoard->programs.size() - 1))];
+		}
+		catch (...) { }
+	}
+	else if ((infoCode >= BRD_ITM_X) && (infoCode <= BRD_ITM_ACTIV_TYPE))
+	{
+		try
+		{
+			pItem = g_pBoard->items[bounds(arrayPos1, 0, int(g_pBoard->items.size() - 1))];
+		}
+		catch (...) { }
+	}
+
 	switch (infoCode)
 	{
 		case BRD_SIZEX:
@@ -1337,16 +1358,44 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			*pRet = g_pBoard->bSizeY;
 			break;
 		case BRD_AMBIENTRED:
-			*pRet = g_pBoard->ambientRed[arrayPos1][arrayPos2][arrayPos3];
+			try
+			{
+				*pRet = g_pBoard->ambientRed[arrayPos1][arrayPos2][arrayPos3];
+			}
+			catch (...)
+			{
+				*pRet = 0;
+			}
 			break;
 		case BRD_AMBIENTGREEN:
-			*pRet = g_pBoard->ambientGreen[arrayPos1][arrayPos2][arrayPos3];
+			try
+			{
+				*pRet = g_pBoard->ambientGreen[arrayPos1][arrayPos2][arrayPos3];
+			}
+			catch (...)
+			{
+				*pRet = 0;
+			}
 			break;
 		case BRD_AMBIENTBLUE:
-			*pRet = g_pBoard->ambientBlue[arrayPos1][arrayPos2][arrayPos3];
+			try
+			{
+				*pRet = g_pBoard->ambientBlue[arrayPos1][arrayPos2][arrayPos3];
+			}
+			catch (...)
+			{
+				*pRet = 0;
+			}
 			break;
 		case BRD_TILETYPE:
-			*pRet = g_pBoard->tiletype[arrayPos1][arrayPos2][arrayPos3];
+			try
+			{
+				*pRet = g_pBoard->tiletype[arrayPos1][arrayPos2][arrayPos3];
+			}
+			catch (...)
+			{
+				*pRet = 0;
+			}
 			break;
 		case BRD_BACKCOLOR:
 			*pRet = g_pBoard->brdColor;
@@ -1361,16 +1410,157 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			*pRet = g_pBoard->fightingYN;
 			break;
 		case BRD_PRG_X:
-			// [...]
+		case BRD_PRG_Y:
+		{
+			if (pPrg)
+			{
+				DB_POINT pt = pPrg->vBase[0];
+				int x = int(pt.x), y = int(pt.y);
+				tileCoordinate(x, y, TILE_NORMAL);
+				*pRet = ((infoCode == BRD_PRG_X) ? x : y);
+			}
+			else
+			{
+				*pRet = 0;
+			}
+		} break;
+		case BRD_PRG_LAYER:
+			*pRet = pPrg ? pPrg->layer : 0;
+			break;
+		case BRD_PRG_ACTIVATION:
+			*pRet = pPrg ? pPrg->activate : 0;
+			break;
+		case BRD_PRG_ACTIV_TYPE:
+			*pRet = pPrg ? (pPrg->activationType & PRG_KEYPRESS) : 0;
+			break;
+		case BRD_ITM_X:
+		case BRD_ITM_Y:
+			// TBD.
+			// Delano, do we throw these away? (The answer is yes.)
+			// What do you think we should do?
+			break;
+		case BRD_ITM_LAYER:
+			// TBD, as above.
+			break;
+		case BRD_ITM_ACTIVATION:
+			*pRet = pItem ? pItem->getBoardSprite()->activate : 0;
+			break;
+		case BRD_ITM_ACTIV_TYPE:
+			*pRet = pItem ? (pItem->getBoardSprite()->activationType & PRG_KEYPRESS) : 0;
+			break;
+		case BRD_PLAYERX:
+			*pRet = g_pBoard->playerX;
+			break;
+		case BRD_PLAYERY:
+			*pRet = g_pBoard->playerY;
+			break;
+		case BRD_PLAYERLAYER:
+			*pRet = g_pBoard->playerLayer;
+			break;
+		case BRD_SAVING_DISABLED:
+			*pRet = g_pBoard->brdSavingYN;
 			break;
 	}
-	// THIS IS NOT FINISHED!
-	//////////////////////////////////////////////
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int arrayPos2, int arrayPos3, BSTR *pRet)
 {
+	extern LPBOARD g_pBoard;
+
+	LPBRD_PROGRAM pPrg = NULL;
+	CItem *pItem = NULL;
+
+	if ((infoCode >= BRD_PRG) && (infoCode <= BRD_PRG_DONE_INIT))
+	{
+		try
+		{
+			pPrg = g_pBoard->programs[bounds(arrayPos1, 0, int(g_pBoard->programs.size() - 1))];
+		}
+		catch (...) { }
+	}
+	else if ((infoCode >= BRD_ITM) && (infoCode <= BRD_ITM_MULTI))
+	{
+		try
+		{
+			pItem = g_pBoard->items[bounds(arrayPos1, 0, int(g_pBoard->items.size() - 1))];
+		}
+		catch (...) { }
+	}
+
+	STRING str;
+
+	switch (infoCode)
+	{
+		case BRD_TILE:
+			try
+			{
+				str = g_pBoard->tileIndex[g_pBoard->board[arrayPos1][arrayPos2][arrayPos3]];
+			}
+			catch (...) { }
+			break;
+		case BRD_BACK_IMAGE:
+			str = g_pBoard->brdBack;
+			break;
+		case BRD_BORDER_IMAGE:
+			str = g_pBoard->borderBack;
+			break;
+		case BRD_DIR_LINK:
+			str = g_pBoard->dirLink[bounds(arrayPos1, 0, int(g_pBoard->dirLink.size() - 1))];
+			break;
+		case BRD_FIGHT_BKG:
+			str = g_pBoard->boardBackground;
+			break;
+		case BRD_MUSIC:
+			str = g_pBoard->boardMusic;
+			break;
+		case BRD_LAYER_NAME:
+			str = g_pBoard->boardTitle[bounds(arrayPos1, 0, int(g_pBoard->boardTitle.size() - 1))];
+			break;
+		case BRD_PRG:
+			if (pPrg) str = pPrg->fileName;
+			break;
+		case BRD_PRG_GFX:
+			if (pPrg) str = pPrg->graphic;
+			break;
+		case BRD_PRG_ACTIVE_VAR:
+			if (pPrg) str = pPrg->initialVar;
+			break;
+		case BRD_PRG_DONE_VAR:
+			if (pPrg) str = pPrg->finalVar;
+			break;
+		case BRD_PRG_ACTIVE_INIT:
+			if (pPrg) str = pPrg->initialValue;
+			break;
+		case BRD_PRG_DONE_INIT:
+			if (pPrg) str = pPrg->finalValue;
+			break;
+		case BRD_ITM:
+			if (pItem) str = pItem->getBoardSprite()->fileName;
+			break;
+		case BRD_ITM_ACTIVE_VAR:
+			if (pItem) str = pItem->getBoardSprite()->initialVar;
+			break;
+		case BRD_ITM_DONE_VAR:
+			if (pItem) str = pItem->getBoardSprite()->finalVar;
+			break;
+		case BRD_ITM_ACTIVE_INIT:
+			if (pItem) str = pItem->getBoardSprite()->initialValue;
+			break;
+		case BRD_ITM_DONE_INIT:
+			if (pItem) str = pItem->getBoardSprite()->finalValue;
+			break;
+		case BRD_ITM_PROGRAM:
+			if (pItem) str = pItem->getBoardSprite()->prgActivate;
+			break;
+		case BRD_ITM_MULTI:
+			if (pItem) str = pItem->getBoardSprite()->prgMultitask;
+			break;
+	}
+
+	BSTR bstr = getString(str);
+	SysReAllocString(pRet, bstr);
+	SysFreeString(bstr);
 	return S_OK;
 }
 

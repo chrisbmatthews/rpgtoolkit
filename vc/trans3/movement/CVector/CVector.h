@@ -146,6 +146,9 @@ public:
 	// Return number of points in vector.
 	int size(void) const { return m_p.size(); };
 
+	// Get a vector point.
+	DB_POINT operator[](const int i) const { return ((m_p.size() > i) ? m_p[i] : m_p.back()); }
+
 //	void changePoint(int i, double x, double y) { m_p[i].x = x; m_p[i].y = y; };
 
 	// Estimate the "curl" of a polygon (closed vector).

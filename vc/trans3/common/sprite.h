@@ -189,6 +189,6 @@ typedef struct tagBoardSprite
 		activate(SPR_ACTIVE),
 		activationType(SPR_STEP) {};
 
-} BRD_SPRITE;
+} BRD_SPRITE, *LPBRD_SPRITE;
 
 #endif
