@@ -10,6 +10,7 @@
 
 IDirectMusicLoader8 *CAudioSegment::m_pLoader = NULL;
 HANDLE CAudioSegment::m_notify = NULL;
+static CAudioSegment *g_pSoundEffect = NULL;
 
 /*
  * Construct and load a file.
@@ -164,6 +165,13 @@ DWORD WINAPI CAudioSegment::eventManager(LPVOID lpv)
  */
 void CAudioSegment::playSoundEffect(const STRING file)
 {
+	// Crappy -- but anything better will take a while
+	// to implement, and I'd like to have some form
+	// of sound effects done.
+	g_pSoundEffect->open(file);
+	g_pSoundEffect->play(false);
+
+#if 0
 	CAudioSegment *pSeg = new CAudioSegment();
 	if (!pSeg->open(file))
 	{
@@ -188,6 +196,7 @@ void CAudioSegment::playSoundEffect(const STRING file)
 	}
 
 	pSeg->play(false);
+#endif
 }
 
 /*
@@ -209,6 +218,7 @@ void CAudioSegment::initLoader()
 
 	// Not loader related, but I don't feel like making another function.
 	m_notify = CreateEvent(NULL, FALSE, FALSE, NULL);
+	g_pSoundEffect = new CAudioSegment();
 }
 
 /*
@@ -219,6 +229,7 @@ void CAudioSegment::freeLoader()
 	if (!m_pLoader) return;
 	m_pLoader->Release();
 	m_pLoader = NULL;
+	delete g_pSoundEffect;
 }
 
 /*
