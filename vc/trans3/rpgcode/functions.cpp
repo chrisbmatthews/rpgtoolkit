@@ -187,7 +187,7 @@ CPlayer *getPlayerPointer(STACK_FRAME &param)
 	if (param.getType() & UDT_LIT)
 	{
 		// Handle, "target", "source".
-		return dynamic_cast<CPlayer *>(getFighter(param.getLit()));
+		return (CPlayer *)(getFighter(param.getLit()));
 	}
 
 	// g_players index.
@@ -2215,7 +2215,7 @@ void addPlayer(CALL_DATA &params)
 
 	if (CFile::fileExists(file))
 	{
-		CPlayer *p = new CPlayer(file, false);
+		CPlayer *p = new CPlayer(file, false, true);
 		g_players.push_back(p);
 	}
 }
@@ -2280,13 +2280,98 @@ void eraseplayer(CALL_DATA &params)
 }
 
 /*
+ * void destroyPlayer(string handle)
+ * 
+ * Permanently remove a player from the party.
+ */
+void destroyplayer(CALL_DATA &params)
+{
+	extern std::vector<CPlayer *> g_players;
+	extern ZO_VECTOR g_sprites;
+
+	if (params.params != 1)
+	{
+		throw CError(_T("DestroyPlayer() requires one parameter."));
+	}
+
+	CPlayer *p = getPlayerPointer(params[0]);
+	if (!p) throw CError(_T("DestroyPlayer(): player not found"));
+
+	// Remove the player from the z-ordered vector.
+	g_sprites.remove(p);
+
+	// TBD: free globals?
+
+	// Remove from the party.
+	std::vector<CPlayer *>::iterator i = g_players.begin();
+	for (; i != g_players.end(); ++i)
+	{
+		if (*i == p)
+		{
+			g_players.erase(i);
+			break;
+		}
+	}
+	delete p;
+
+	renderNow(g_cnvRpgCode, true);
+	renderRpgCodeScreen();
+}
+
+/*
  * void removePlayer(string handle)
  * 
- * Remove a player from the party to an old player list.
+ * Remove a player from the party [to an old player list].
  */
 void removePlayer(CALL_DATA &params)
 {
+	if (params.params != 1)
+	{
+		throw CError(_T("RemovePlayer() requires one parameter."));
+	}
 
+	CSprite *p = getPlayerPointer(params[0]);
+	if (!p) throw CError(_T("RemovePlayer(): player not found"));
+
+	// Player was placed in "other players" list.
+	// List was saved to game state, so the players could be restored.
+	// However, variables were never used to restore player, only for 
+	// callbacks - and probably served little use.
+	// Stats are are reconstructed using RPGCode variables and
+	// restoreCharacter()... rather dubiously (and also meant that
+	// destroyed players could be restored).
+
+	// TBD: implement other player lists if needed. Otherwise
+	// this is identical to destroyPlayer() if destroyPlayer() does
+	// not free stats (and then destroyed players can be restored too).
+	destroyplayer(params);
+}
+
+/*
+ * void restorePlayer(string handle)
+ * 
+ * Restore a player who was previously on the team.
+ */
+void restoreplayer(CALL_DATA &params)
+{
+	extern std::vector<CPlayer *> g_players;
+	extern STRING g_projectPath;
+
+	if (params.params != 1)
+	{
+		throw CError(_T("RestorePlayer() requires one parameter."));
+	}
+
+	const STRING file = g_projectPath + TEM_PATH + params[0].getLit();
+
+	if (CFile::fileExists(file))
+	{
+		// Do not create global variables - these should already
+		// exist if the player was previously removed.
+		CPlayer *p = new CPlayer(file, false, false);
+		g_players.push_back(p);
+		p->restore(true);
+	}
 }
 
 /*
@@ -2310,7 +2395,7 @@ void newPlyr(CALL_DATA &params)
 	if (_ftcsicmp(ext.c_str(), _T("TEM")) == 0)
 	{
 		// Load new sprite graphics from this character.
-		CPlayer p(g_projectPath + TEM_PATH + params[0].getLit(), false);
+		CPlayer p(g_projectPath + TEM_PATH + params[0].getLit(), false, false);
 		g_pSelectedPlayer->swapGraphics(&p);
 	}
 	else if (_ftcsicmp(ext.c_str(), _T("GPH")) == 0)
@@ -3215,16 +3300,6 @@ void fightEnemy(CALL_DATA &params)
 }
 
 /*
- * restoreplayer(...)
- * 
- * Description.
- */
-void restoreplayer(CALL_DATA &params)
-{
-
-}
-
-/*
  * callshop(...)
  * 
  * Description.
@@ -3458,16 +3533,6 @@ void itemcount(CALL_DATA &params)
 }
 
 /*
- * destroyplayer(...)
- * 
- * Description.
- */
-void destroyplayer(CALL_DATA &params)
-{
-
-}
-
-/*
  * callplayerswap(...)
  * 
  * Description.
@@ -3614,7 +3679,7 @@ void getlevel(CALL_DATA &params)
 		throw CError(_T("GetLevel() requires one or two parameters."));
 	}
 
-	CPlayer *pPlayer = dynamic_cast<CPlayer *>(getFighter(params[0].getLit()));
+	CPlayer *pPlayer = (CPlayer *)(getFighter(params[0].getLit()));
 	if (!pPlayer)
 	{
 		throw CError(_T("GetLevel(): player not found."));
