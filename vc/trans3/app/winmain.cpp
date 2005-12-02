@@ -201,12 +201,9 @@ void setUpGame()
 	g_players.reserve(5);			// Reserve places for 5 players (can be expanded).
 	if (!g_mainFile.initChar.empty())
 	{
-		g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true));
+		g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true, true));
 		g_pSelectedPlayer = g_players.front();
 	}
-
-// Testing!
-//	g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true));
 
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())
@@ -239,9 +236,7 @@ void setUpGame()
 		{
 			CProgram(g_projectPath + PRG_PATH + g_pBoard->enterPrg).run();
 		}
-// Testing!
-//		g_players[1]->setPosition(10 * 32, 5 * 32, 1);
-	g_pSelectedPlayer->createVectors();	// Temporary.
+		g_pSelectedPlayer->createVectors();	// Temporary.
 
 	}
 }
@@ -495,8 +490,8 @@ int mainEventLoop()
  */
 int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, const LPTSTR lpCmdLine, const int nCmdShow)
 {
-	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
-	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
+	// #define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
+	#define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
 	set_terminate(termFunc);
 
