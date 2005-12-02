@@ -59,17 +59,18 @@ public:
 	void getLearnedMoves(std::vector<STRING> &moves) const;
 
 	// Constructor
-	CPlayer(const STRING file, const bool show);
+	CPlayer(const STRING file, const bool show, const bool createGlobals);
 
 	void addEquipment(const unsigned int slot, const STRING file);
 	void removeEquipment(const unsigned int slot);
 
-	void calculateLevels(const bool init);
+	void restore(const bool bDoLevels);
 
 	// For the callbacks.
 	LPPLAYER getPlayer() { return &m_playerMem; }
 
 private:
+	void calculateLevels(const bool init);
 
 	struct tagEquipment
 	{

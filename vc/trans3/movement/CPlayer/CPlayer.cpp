@@ -20,7 +20,7 @@
 /*
  * Constructor
  */
-CPlayer::CPlayer(const STRING file, const bool show):
+CPlayer::CPlayer(const STRING file, const bool show, const bool createGlobals):
 CSprite(show)				// Is the player visible?
 {
 	if (m_playerMem.open(file, m_attr) <= PRE_VECTOR_PLAYER)
@@ -30,19 +30,23 @@ CSprite(show)				// Is the player visible?
 	}
 
 	// Set initial stats.
-	LPPLAYER_STATS pStats = &m_playerMem.stats;
+	if (createGlobals)
+	{
+		// Stats need not be created for restoring players.
+		LPPLAYER_STATS pStats = &m_playerMem.stats;
 
-	experience(pStats->experience);
-	level(pStats->level);
-	health(pStats->health);
-	maxHealth(pStats->maxHealth);
-	defence(pStats->defense);
-	fight(pStats->fight);
-	smp(pStats->sm);
-	maxSmp(pStats->smMax);
-	name(m_playerMem.charname);
+		experience(pStats->experience);
+		level(pStats->level);
+		health(pStats->health);
+		maxHealth(pStats->maxHealth);
+		defence(pStats->defense);
+		fight(pStats->fight);
+		smp(pStats->sm);
+		maxSmp(pStats->smMax);
+		name(m_playerMem.charname);
 
-	calculateLevels(true);
+		calculateLevels(true);
+	}
 
 	// Get these into milliseconds!
 	m_attr.speed *= MILLISECONDS;
@@ -180,7 +184,7 @@ void CPlayer::giveExperience(const int amount)
 
 	m_playerMem.nextLevel -= amount;
 
-	if (m_playerMem.nextLevel <= 0)
+	while (m_playerMem.nextLevel <= 0)
 	{
 		// Level up.
 		const int nextLev = m_playerMem.nextLevel;
@@ -320,7 +324,7 @@ void CPlayer::getLearnedMoves(std::vector<STRING> &moves) const
 }
 
 /*
- * Calculate level up information.
+ * Calculate level up information (for callbacks only...).
  */
 void CPlayer::calculateLevels(const bool init)
 {
@@ -330,7 +334,7 @@ void CPlayer::calculateLevels(const bool init)
 		m_playerMem.levelProgression = m_playerMem.levelType - m_playerMem.stats.experience;
 	}
 
-	unsigned int numLevels = m_playerMem.maxLevel - m_playerMem.stats.level + 1;
+	unsigned int numLevels = abs(m_playerMem.maxLevel - m_playerMem.stats.level + 1);
 
 	std::vector<double> *pLevels = &m_playerMem.levelStarts;
 	pLevels->clear();
@@ -343,13 +347,13 @@ void CPlayer::calculateLevels(const bool init)
 		pLevels->push_back((*pLevels)[i - 1] + exp);
 		if (m_playerMem.charLevelUpType == 0)
 		{
-			// Linear increase.
-			exp += m_playerMem.experienceIncrease;
+			// Exponential increase.
+			exp *= 1 + m_playerMem.experienceIncrease;
 		}
 		else
 		{
-			// Exponential increase.
-			exp *= 1 + m_playerMem.experienceIncrease;
+			// Linear increase.
+			exp += m_playerMem.experienceIncrease;
 		}
 	}
 }
@@ -466,4 +470,46 @@ void CPlayer::removeEquipment(const unsigned int slot)
 	if (health() > maxHp) health(maxHp);
 	const int maxSm = maxSmp();
 	if (smp() > maxSm) smp(maxSm);
+}
+
+/*
+ * Restore a player, reconstructing their level.
+ */
+void CPlayer::restore(const bool bDoLevels)
+{
+	if (bDoLevels)
+	{
+		// Calculate level progressions.
+		const int levels = level() - m_playerMem.stats.level;
+		if (levels == 0)
+		{
+			// Player just started out.
+			m_playerMem.nextLevel = m_playerMem.levelType;
+			m_playerMem.levelProgression = m_playerMem.levelType - m_playerMem.stats.experience;
+		}
+		else
+		{
+			int exp = 0;
+			double levelUp = double(m_playerMem.levelType);
+			for (int i = 0; i != levels; ++i)
+			{
+				if (m_playerMem.charLevelUpType == 0)
+				{
+					// Exponential increase.
+					levelUp *= 1 + m_playerMem.experienceIncrease * 0.01;
+					exp += int(levelUp);
+				}
+				else
+				{
+					// Linear increase.
+					levelUp += m_playerMem.experienceIncrease;
+					exp += levelUp;
+				}
+			}
+			m_playerMem.nextLevel = exp - experience();
+			m_playerMem.levelProgression = int(levelUp);
+		}
+	}
+	// Calculate all levels for callback use.
+    calculateLevels(false);
 }
