@@ -57,14 +57,15 @@ BOOL g_bold = FALSE;						// Bold enabled?
 BOOL g_italic = FALSE;						// Italics enabled?
 BOOL g_underline = FALSE;					// Underline enabled?
 unsigned long g_mwinY = 0;					// MWin() y position.
-STRING g_mwinBkg;						// MWin() background image.
+STRING g_mwinBkg;							// MWin() background image.
 COLORREF g_mwinColor = 0;					// Mwin() background colour.
 CAllocationHeap<CCanvas> g_canvases;		// Allocated canvases.
 CAllocationHeap<CCursorMap> g_cursorMaps;	// Cursor maps.
 ENTITY g_target, g_source;					// Target and source.
 CInventory g_inv;							// Inventory.
 unsigned long g_gp = 0;						// Amount of gold.
-std::map<STRING, CFile> g_files;		// Files opened using RPGCode.
+std::map<STRING, CFile> g_files;			// Files opened using RPGCode.
+double g_textX = 0.0, g_textY = 0.0;		// Last position text() was used at.
 
 /*
  * Become ready to run a program.
@@ -385,6 +386,8 @@ void text(CALL_DATA &params)
 	}
 	if (count == 3)
 	{
+		g_textX = params[0].getNum();
+		g_textY = params[1].getNum();
 		renderRpgCodeScreen();
 	}
 }
@@ -3104,7 +3107,13 @@ void mem(CALL_DATA &params)
  */
 void print(CALL_DATA &params)
 {
-
+	if (params.params != 1)
+	{
+		throw CError(_T("Print() requires one parameter."));
+	}
+	g_textY += 1.0;
+	g_cnvRpgCode->DrawText(g_textX * g_fontSize - g_fontSize, g_textY * g_fontSize - g_fontSize, params[0].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+	renderRpgCodeScreen();
 }
 
 /*
@@ -3114,16 +3123,13 @@ void print(CALL_DATA &params)
  */
 void rpgCode(CALL_DATA &params)
 {
-	if (params.params == 1)
-	{
-		CProgramChild prg(*params.prg);
-		prg.loadFromString(params[0].getLit());
-		prg.run();
-	}
-	else
+	if (params.params != 1)
 	{
 		throw CError(_T("RPGCode() requires one parameter."));
 	}
+	CProgramChild prg(*params.prg);
+	prg.loadFromString(params[0].getLit());
+	prg.run();
 }
 
 /*
