@@ -466,7 +466,7 @@ void tagBoard::vectorize(const unsigned int layer)
 		double x = bSizeX, y = bSizeY;
 		isoCoordTransform(x, y, x, y);
 
-		// New iso board is effectively _T("square"), but with many empty entries.
+		// New iso board is effectively square, but with many empty entries.
 		width = height = x;
 	}
 
@@ -757,11 +757,12 @@ void tagBoardImage::createCanvas(BOARD &board)
 			pCnv->Lock();
 			for (std::vector<LPBRD_PROGRAM>::iterator b = board.programs.begin(); b != board.programs.end(); ++b)
 			{
-				(*b)->vBase.draw(RGB(128, 255, 255), true, 0, 0, pCnv);
+				(*b)->vBase.draw(RGB(255, 255, 0), true, 0, 0, pCnv);
 			}
 			for (std::vector<BRD_VECTOR>::iterator c = board.vectors.begin(); c != board.vectors.end(); ++c)
 			{
-				c->pV->draw(RGB(255, 255, 255), true, 0, 0, pCnv);
+				int r = (c->type == TT_UNDER ? RGB(0,255,0) : RGB(255, 255, 255));
+				c->pV->draw(r, true, 0, 0, pCnv);
 			}
 			pCnv->Unlock();
 		}

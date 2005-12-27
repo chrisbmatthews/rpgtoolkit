@@ -20,15 +20,61 @@ void tagSpriteAttr::completeStances(GFX_MAP &gfx)
 {
 	// Complete diagonal movements with EAST / WEST.
 	// Note EAST / WEST may also be empty, but this is checked when using.
-	if (gfx[MV_NW].empty())	gfx[MV_NW] = gfx[MV_W];
-	if (gfx[MV_SW].empty())	gfx[MV_SW] = gfx[MV_W];
-	if (gfx[MV_NE].empty())	gfx[MV_NE] = gfx[MV_E];
-	if (gfx[MV_SE].empty())	gfx[MV_SE] = gfx[MV_E];
+	if (gfx[MV_NW].file.empty()) gfx[MV_NW] = gfx[MV_W];
+	if (gfx[MV_SW].file.empty()) gfx[MV_SW] = gfx[MV_W];
+	if (gfx[MV_NE].file.empty()) gfx[MV_NE] = gfx[MV_E];
+	if (gfx[MV_SE].file.empty()) gfx[MV_SE] = gfx[MV_E];
 
 	// Initialise the MV_IDLE entry too for safety, 
 	// although it should never be called.
 	gfx[MV_IDLE] = gfx[MV_S];
 }
+
+/*
+ * Load animations.
+ */
+void tagSpriteAttr::loadAnimations(const bool bRenderFrames)
+{
+	for (std::vector<GFX_MAP>::iterator i = mapGfx.begin(); i != mapGfx.end(); ++i)
+	{
+		completeStances(*i);
+
+		for (GFX_MAP::iterator j = i->begin(); j != i->end(); ++j)
+		{
+			// Enter the animation into the global shared animation vector.
+			// If this animation is being used by another sprite,
+			// they will share the same object.
+			j->second.pAnm = CSharedAnimation::insert(j->second.file);
+			if (bRenderFrames) j->second.pAnm->m_pAnm->render();
+		}
+	}
+
+	for (GFX_CUSTOM_MAP::iterator j = mapCustomGfx.begin(); j != mapCustomGfx.end(); ++j)
+	{
+		j->second.pAnm = CSharedAnimation::insert(j->second.file);
+		if (bRenderFrames) j->second.pAnm->m_pAnm->render();
+	}
+}
+
+/*
+ * Deconstructor
+ */
+tagSpriteAttr::~tagSpriteAttr()
+{
+	// Free the map animations.
+	for (std::vector<GFX_MAP>::iterator i = mapGfx.begin(); i != mapGfx.end(); ++i)
+	{
+		for (GFX_MAP::iterator j = i->begin(); j != i->end(); ++j)
+		{
+			CSharedAnimation::free(j->second.pAnm);
+		}
+	}
+
+	for (GFX_CUSTOM_MAP::iterator j = mapCustomGfx.begin(); j != mapCustomGfx.end(); ++j)
+	{
+		CSharedAnimation::free(j->second.pAnm);
+	}
+} 
 
 /*
  * Redundant in movement animations - to be modified for battle plugin.
@@ -48,79 +94,78 @@ STRING tagSpriteAttr::getStanceAnm(STRING stance)
 
 	if (stance == _T("STAND_S"))
 	{
-		return mapGfx[GFX_IDLE][MV_S];
+		return mapGfx[GFX_IDLE][MV_S].file;
 	}
 	else if (stance == _T("STAND_N"))
 	{
-		return mapGfx[GFX_IDLE][MV_N];
+		return mapGfx[GFX_IDLE][MV_N].file;
 	}
 	else if (stance == _T("STAND_E"))
 	{
-		return mapGfx[GFX_IDLE][MV_E];
+		return mapGfx[GFX_IDLE][MV_E].file;
 	}
 	else if (stance == _T("STAND_W"))
 	{
-		return mapGfx[GFX_IDLE][MV_W];
+		return mapGfx[GFX_IDLE][MV_W].file;
 	}
 	else if (stance == _T("STAND_NW"))
 	{
-		return mapGfx[GFX_IDLE][MV_NW];
+		return mapGfx[GFX_IDLE][MV_NW].file;
 	}
 	else if (stance == _T("STAND_NE"))
 	{
-		return mapGfx[GFX_IDLE][MV_NE];
+		return mapGfx[GFX_IDLE][MV_NE].file;
 	}
 	else if (stance == _T("STAND_SW"))
 	{
-		return mapGfx[GFX_IDLE][MV_SW];
+		return mapGfx[GFX_IDLE][MV_SW].file;
 	}
 	else if (stance == _T("STAND_SE"))
 	{
-		return mapGfx[GFX_IDLE][MV_SE];
+		return mapGfx[GFX_IDLE][MV_SE].file;
 	}
 	else if (stance == _T("WALK_S"))
 	{
-		return mapGfx[GFX_MOVE][MV_S];
+		return mapGfx[GFX_MOVE][MV_S].file;
 	}
 	else if (stance == _T("WALK_N"))
 	{
-		return mapGfx[GFX_MOVE][MV_N];
+		return mapGfx[GFX_MOVE][MV_N].file;
 	}
 	else if (stance == _T("WALK_E"))
 	{
-		return mapGfx[GFX_MOVE][MV_E];
+		return mapGfx[GFX_MOVE][MV_E].file;
 	}
 	else if (stance == _T("WALK_W"))
 	{
-		return mapGfx[GFX_MOVE][MV_W];
+		return mapGfx[GFX_MOVE][MV_W].file;
 	}
 	else if (stance == _T("WALK_NW"))
 	{
-		return mapGfx[GFX_MOVE][MV_NW];
+		return mapGfx[GFX_MOVE][MV_NW].file;
 	}
 	else if (stance == _T("WALK_NE"))
 	{
-		return mapGfx[GFX_MOVE][MV_NE];
+		return mapGfx[GFX_MOVE][MV_NE].file;
 	}
 	else if (stance == _T("WALK_SW"))
 	{
-		return mapGfx[GFX_MOVE][MV_SW];
+		return mapGfx[GFX_MOVE][MV_SW].file;
 	}
 	else if (stance == _T("WALK_SE"))
 	{
-		return mapGfx[GFX_MOVE][MV_SE];
+		return mapGfx[GFX_MOVE][MV_SE].file;
 	}
 	else if (stance == _T("FIGHT") || stance == _T("ATTACK"))
 	{
-		return mapCustomGfx[GFX_FIGHT];
+		return mapCustomGfx[GFX_FIGHT].file;
 	}
 	else if (stance == _T("SPC") || stance == _T("SPECIAL MOVE"))
 	{
-		return mapCustomGfx[GFX_SPC];
+		return mapCustomGfx[GFX_SPC].file;
 	}
-	return mapCustomGfx[stance];
+	return mapCustomGfx[stance].file;
 }
-
 
 void offset(DB_POINT pts[], const int size, const int x, const int y)
 {

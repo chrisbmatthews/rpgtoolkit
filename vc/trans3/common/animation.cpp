@@ -98,7 +98,7 @@ bool tagAnimation::open(const STRING fileName)
 	}
 
 	animFile = removePath(fileName);
-	currentAnmFrame = -1;
+//	currentAnmFrame = -1;
 	return true;
 }
 

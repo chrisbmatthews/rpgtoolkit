@@ -544,6 +544,27 @@ SOURCE=.\common\board.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\CAnimation.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# SUBTRACT CPP /YX
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\CFile.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -795,6 +816,10 @@ SOURCE=.\common\board.h
 # Begin Source File
 
 SOURCE=.\common\CAllocationHeap.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\CAnimation.h
 # End Source File
 # Begin Source File
 

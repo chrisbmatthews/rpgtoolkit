@@ -18,6 +18,7 @@
 #include <map>
 #include "../../tkCommon/strings.h"
 #include "../movement/CVector/CVector.h"
+#include "CAnimation.h"
 
 /*
  * Definitions.
@@ -119,15 +120,28 @@ const STRING GFX_REST		= _T("REST");
  * Common attributes of players and items:
  * animation sets, speed variables.
  */
-typedef std::map<MV_ENUM, STRING> GFX_MAP;
+
+// A sprite animation - store the file separately (or use a union?).
+typedef struct tagGfxAnm
+{
+	STRING file;
+	CSharedAnimation *pAnm;
+	tagGfxAnm(): pAnm(NULL) {};
+
+} GFX_ANM;
+
+// A set of direction animations.
+typedef std::map<MV_ENUM, GFX_ANM> GFX_MAP;
+// A set of handle-indexed custom animations.
+typedef std::map<STRING, GFX_ANM> GFX_CUSTOM_MAP;
 
 typedef struct tagSpriteAttr
 {
 	// Provision for multiple sets of movement-indexed graphics.
-	std::vector<GFX_MAP> mapGfx;	
+	std::vector<GFX_MAP> mapGfx;
 
 	// Map of custom animations, indexed by string handles.
-	std::map<STRING, STRING> mapCustomGfx;
+	GFX_CUSTOM_MAP mapCustomGfx;
 
 	double idleTime;							// Seconds to wait prior to switching to idle graphics.
 	double speed;								// Seconds between each frame increase.
@@ -140,11 +154,16 @@ typedef struct tagSpriteAttr
 		vActivate (),
 		vBase () {};
 
+	~tagSpriteAttr();
+
 	// Get the animation filename corresponding to stance.
 	STRING getStanceAnm(STRING stance);
 
 	// Fill out diagonal movement entries with axial entries.
 	void completeStances(GFX_MAP &gfx);
+
+	// Load animations in the GFX_MAPs.
+	void loadAnimations(const bool bRenderFrames);	
 
 	// Create some default vectors for old versions of players, items.
 	void createVectors(const int activationType);

@@ -29,6 +29,9 @@ CSprite(show)				// Is the player visible?
 		m_attr.createVectors(SPR_STEP);
 	}
 
+	// Load animations, but do not render frames.
+	m_attr.loadAnimations(false);
+
 	// Set initial stats.
 	if (createGlobals)
 	{

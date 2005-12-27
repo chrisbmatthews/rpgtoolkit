@@ -188,23 +188,21 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 		// Load standard graphics - saved in a different order!
 		GFX_MAP gfx;
 		gfx.clear();
-		file >> gfx[MV_S];
-		file >> gfx[MV_N];
-		file >> gfx[MV_E];
-		file >> gfx[MV_W];
-		file >> gfx[MV_NW];
-		file >> gfx[MV_NE];
-		file >> gfx[MV_SW];
-		file >> gfx[MV_SE];
+		file >> gfx[MV_S].file;
+		file >> gfx[MV_N].file;
+		file >> gfx[MV_E].file;
+		file >> gfx[MV_W].file;
+		file >> gfx[MV_NW].file;
+		file >> gfx[MV_NE].file;
+		file >> gfx[MV_SW].file;
+		file >> gfx[MV_SE].file;
 
 		STRING strItemRest, strUnused;
 		file >> strItemRest;				// Hold this for minorVer < 6.
 		file >> strUnused;
 
-		// Complete diagonal directions with east/west graphics.
-		pAttr->completeStances(gfx);
-
 		// Push graphics onto the gfx vector.
+		// Map completed in loadAnimations().
 		pAttr->mapGfx.clear();
 		pAttr->mapGfx.push_back(gfx);
 
@@ -213,26 +211,26 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 		if (minorVer >= 5)
 		{
 			// Idle graphics - saved in a different order!
-			file >> gfx[MV_S];
-			file >> gfx[MV_N];
-			file >> gfx[MV_E];
-			file >> gfx[MV_W];
-			file >> gfx[MV_NW];
-			file >> gfx[MV_NE];
-			file >> gfx[MV_SW];
-			file >> gfx[MV_SE];
+			file >> gfx[MV_S].file;
+			file >> gfx[MV_N].file;
+			file >> gfx[MV_E].file;
+			file >> gfx[MV_W].file;
+			file >> gfx[MV_NW].file;
+			file >> gfx[MV_NE].file;
+			file >> gfx[MV_SW].file;
+			file >> gfx[MV_SE].file;
 
 			file >> pAttr->speed;
 			file >> pAttr->idleTime;
 		}
 
 		// Push idle graphics onto vector (empty for minorVer = 4).
-		pAttr->completeStances(gfx);
+		// Map completed in loadAnimations().
 		pAttr->mapGfx.push_back(gfx);
 
 		if (minorVer < 6)
 		{
-			pAttr->mapGfx[GFX_IDLE][MV_S] = strItemRest;
+			pAttr->mapGfx[GFX_IDLE][MV_S].file = strItemRest;
 		}
 
 		// Custom stances - place in a map with handles as keys.
@@ -246,7 +244,7 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 			file >> handle;
 			if (!handle.empty() && !anim.empty())
 			{
-				pAttr->mapCustomGfx[handle] = anim;
+				pAttr->mapCustomGfx[handle].file = anim;
 			}
 		}
 	}
@@ -309,27 +307,27 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 			{
 				walkFix = _T("E");
 				anm.save(anmName);
-				gfx[MV_S] = removePath(anmName);
+				gfx[MV_S].file = removePath(anmName);
 				xx = -1;
 			}
 			else if (x == 7)
 			{
 				walkFix = _T("N");
 				anm.save(anmName);
-				gfx[MV_E] = removePath(anmName);
+				gfx[MV_E].file = removePath(anmName);
 				xx = -1;
 			}
 			else if (x == 11)
 			{
 				walkFix = _T("W");
 				anm.save(anmName);
-				gfx[MV_N] = removePath(anmName);
+				gfx[MV_N].file = removePath(anmName);
 				xx = -1;
 			}
 			else if (x == 15)
 			{
 				anm.save(anmName);
-				gfx[MV_W] = removePath(anmName);
+				gfx[MV_W].file = removePath(anmName);
 				xx = -1;
 			}
 			if (xx++ == -1)
@@ -340,10 +338,8 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 			}
 		} // for (x)
 
-		// Complete diagonal directions with east/west graphics.
-		pAttr->completeStances(gfx);
-
 		// Push graphics onto the gfx vector.
+		// Map completed in loadAnimations().
 		pAttr->mapGfx.clear();
 		pAttr->mapGfx.push_back(gfx);
 
@@ -370,10 +366,10 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 		anm.save(anmName);
 
 		gfx.clear();
-		gfx[MV_S] = removePath(anmName);
+		gfx[MV_S].file = removePath(anmName);
 
 		// Push graphics onto the gfx vector.
-		pAttr->completeStances(gfx);
+		// Map completed in loadAnimations().
 		pAttr->mapGfx.push_back(gfx);
 
 	} // if (minorVer >= 4)

@@ -52,6 +52,9 @@ short CItem::open(const STRING file) throw(CInvalidItem)
 		throw CInvalidItem();
 	}
 
+	// Load animations, but do not render frames.
+	m_attr.loadAnimations(false);
+
 	/* Variable stuff ? */
 
 	// Get these into milliseconds!

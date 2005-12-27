@@ -22,19 +22,23 @@
  */
 typedef struct tagAnimation
 {
+	STRING animFile;					// Filename (no path).
 	int animSizeX;						// Width.
 	int animSizeY;						// Height.
 	int animFrames;						// Total number of frames.
-	std::vector<STRING> animFrame;	// Filenames of each image in animation.
+	std::vector<STRING> animFrame;		// Filenames of each image in animation.
 	std::vector<int> animTransp;		// Transparent color for frame.
-	std::vector<STRING> animSound;	// Sounds for each frame.
+	std::vector<STRING> animSound;		// Sounds for each frame.
 	double animPause;					// Pause length (sec) between each frame.
-	short animGetTransp;				// Currently getting transparent color?
-	int timerFrame;						// This number will be 0 to 29 to indicate how many times the timer has clicked.
-	int currentAnmFrame;				// Currently animating frame.
-	STRING animFile;				// Filename (no path).
+
+// Moved to csharedanimation.
+//	int timerFrame;						// This number will be 0 to 29 to indicate how many times the timer has clicked.
+//	int currentAnmFrame;				// Currently animating frame.
+
 	bool open(const STRING fileName);
 	void save(const STRING fileName) const;
+	tagAnimation(): animFrames(0), animSizeX(1), animSizeY(1), animPause(0) {}
+
 } ANIMATION, *LPANIMATION;
 
 /*

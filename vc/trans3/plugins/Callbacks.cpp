@@ -25,7 +25,7 @@
 #include "../common/CInventory.h"
 #include "../common/paths.h"
 #include "../common/CFile.h"
-#include "../common/animation.h"
+#include "../common/CAnimation.h"
 #include "../common/board.h"
 #include "../common/enemy.h"
 #include "../common/background.h"
@@ -45,7 +45,6 @@
 extern CAllocationHeap<CCanvas> g_canvases;
 extern CDirectDraw *g_pDirectDraw;
 extern std::vector<CPlayer *> g_players;
-static CAllocationHeap<ANIMATION> g_animations;
 static HDC g_hScreenDc = NULL;
 std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 STRING g_menuGraphic, g_fightMenuGraphic;
@@ -2402,40 +2401,39 @@ STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int 
 
 STDMETHODIMP CCallbacks::CBCreateAnimation(BSTR file, int *pRet)
 {
-	LPANIMATION p = g_animations.allocate();
-	extern STRING g_projectPath;
-	p->open(g_projectPath + MISC_PATH + getString(file));
+	CSharedAnimation *p = CSharedAnimation::insert(getString(file));
 	*pRet = (int)p;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBDestroyAnimation(int idx)
 {
-	g_animations.free((LPANIMATION)idx);
+	CSharedAnimation::free((CSharedAnimation *)idx);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int y, int forceDraw, int forceTransp)
 {
-	LPANIMATION p = g_animations.cast(idx);
-	if (p)
+	CSharedAnimation *anm = CSharedAnimation::cast(idx);
+	if (anm)
 	{
+		LPANIMATION p = anm->m_pAnm->data();
+		int *const i = &(anm->m_frame);
 		CCanvas *pCnv = g_canvases.cast(canvasID);
 		if (pCnv)
 		{
-			if ((!(p->timerFrame++ % int(80 * p->animPause))) || (p->currentAnmFrame == -1))
+			// This is a bit dubious!
+			if ((!(anm->m_tick++ % int(80 * p->animPause))) || (*i == -1))
 			{
-				p->currentAnmFrame++;
-				if (p->currentAnmFrame > p->animFrames) p->currentAnmFrame = 0;
+				++(*i);
+				if (*i > p->animFrames) *i = 0;
+				anm->m_pAnm->playFrameSound(*i);
 			}
 			if (forceTransp)
 			{
 				pCnv->ClearScreen(TRANSP_COLOR);
 			}
-			CCanvas cnvTemp;
-			cnvTemp.CreateBlank(NULL, p->animSizeX, p->animSizeY, TRUE);
-			renderAnimationFrame(&cnvTemp, p->animFile, p->currentAnmFrame, 0, 0);
-			cnvTemp.BltTransparent(pCnv, x, y, TRANSP_COLOR);
+			anm->m_pAnm->getFrame(*i)->BltTransparent(pCnv, x, y, TRANSP_COLOR);
 		}
 	}
 	return S_OK;
@@ -2443,22 +2441,26 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int
 
 STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int frame, int x, int y, int forceTranspFill)
 {
-	LPANIMATION p = g_animations.cast(idx);
-	if (p)
+	CSharedAnimation *anm = CSharedAnimation::cast(idx);
+	if (anm)
 	{
-		if (frame > p->animFrames) frame = 0;
-		p->currentAnmFrame = frame;
+		LPANIMATION p = anm->m_pAnm->data();
 		CCanvas *pCnv = g_canvases.cast(canvasID);
+		if (frame > p->animFrames) frame = 0;
+
+		// Play sound on transitions.
+		if (frame != anm->m_frame) 
+		{
+			anm->m_frame = frame;
+			anm->m_pAnm->playFrameSound(frame);
+		}
 		if (pCnv)
 		{
 			if (forceTranspFill)
 			{
 				pCnv->ClearScreen(TRANSP_COLOR);
 			}
-			CCanvas cnvTemp;
-			cnvTemp.CreateBlank(NULL, p->animSizeX, p->animSizeY, TRUE);
-			renderAnimationFrame(&cnvTemp, p->animFile, frame, 0, 0);
-			cnvTemp.BltTransparent(pCnv, x, y, TRANSP_COLOR);
+			anm->m_pAnm->getFrame(anm->m_frame)->BltTransparent(pCnv, x, y, TRANSP_COLOR);
 		}
 	}
 	return S_OK;
@@ -2466,38 +2468,38 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int f
 
 STDMETHODIMP CCallbacks::CBAnimationCurrentFrame(int idx, int *pRet)
 {
-	LPANIMATION p = g_animations.cast(idx);
-	*pRet = (p ? p->currentAnmFrame : 0);
+	CSharedAnimation *p = CSharedAnimation::cast(idx);
+	*pRet = (p ? p->m_frame : 0);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAnimationMaxFrames(int idx, int *pRet)
 {
-	LPANIMATION p = g_animations.cast(idx);
-	*pRet = (p ? p->animFrames : -1);
+	CSharedAnimation *p = CSharedAnimation::cast(idx);
+	*pRet = (p ? p->m_pAnm->data()->animFrames : -1);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAnimationSizeX(int idx, int *pRet)
 {
-	LPANIMATION p = g_animations.cast(idx);
-	*pRet = (p ? p->animSizeX : 0);
+	CSharedAnimation *p = CSharedAnimation::cast(idx);
+	*pRet = (p ? p->m_pAnm->data()->animSizeX : 0);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAnimationSizeY(int idx, int *pRet)
 {
-	LPANIMATION p = g_animations.cast(idx);
-	*pRet = (p ? p->animSizeY : 0);
+	CSharedAnimation *p = CSharedAnimation::cast(idx);
+	*pRet = (p ? p->m_pAnm->data()->animSizeY : 0);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAnimationFrameImage(int idx, int frame, BSTR *pRet)
 {
-	LPANIMATION p = g_animations.cast(idx);
-	if (p && (p->animFrames >= frame))
+	CSharedAnimation *p = CSharedAnimation::cast(idx);
+	if (p && (p->m_pAnm->data()->animFrames >= frame))
 	{
-		BSTR bstr = getString(p->animFrame[frame]);
+		BSTR bstr = getString(p->m_pAnm->data()->animFrame[frame]);
 		SysReAllocString(pRet, bstr);
 		SysFreeString(bstr);
 	}

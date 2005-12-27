@@ -16,6 +16,7 @@
 #include "../common/player.h"
 #include "../common/mbox.h"
 #include "../common/CAllocationHeap.h"
+#include "../common/CAnimation.h"
 #include "../common/board.h"
 #include "../common/CFile.h"
 #include "../render/render.h"
@@ -295,7 +296,6 @@ void closeSystems()
 	}
 	g_players.clear();
 
-	// Items... currently freed by the board destructor.
 
 	g_music.free(g_bkgMusic);
 	g_bkgMusic = NULL;
@@ -303,9 +303,12 @@ void closeSystems()
 
 	FreeImage_DeInitialise();
 
+	// Items... currently freed by the board destructor.
 	g_boards.free(g_pBoard);
 	g_pBoard = NULL;
 
+	CThreadAnimation::destroyAll();
+	CSharedAnimation::freeAll();
 }
 
 /*

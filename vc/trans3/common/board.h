@@ -124,7 +124,7 @@ typedef struct tagBoardImage
 	CCanvas *pCnv;
 	RECT r;								// Board pixel co-ordinates.
 	DB_POINT scroll;					// Scrolling factors (x,y).
-	CONST LONG transpColor;				// Transparent colour on the image.
+	LONG transpColor;					// Transparent colour on the image.
 
 	tagBoardImage():
 		type(BI_NORMAL), 

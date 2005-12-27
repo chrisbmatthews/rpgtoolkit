@@ -168,30 +168,28 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 			// Load standard graphics - saved in a different order!
 			GFX_MAP gfx;
 			gfx.clear();
-			file >> gfx[MV_S];
-			file >> gfx[MV_N];
-			file >> gfx[MV_E];
-			file >> gfx[MV_W];
-			file >> gfx[MV_NW];
-			file >> gfx[MV_NE];
-			file >> gfx[MV_SW];
-			file >> gfx[MV_SE];
-
-			// Complete diagonal directions with east/west graphics.
-			spriteAttr.completeStances(gfx);
+			file >> gfx[MV_S].file;
+			file >> gfx[MV_N].file;
+			file >> gfx[MV_E].file;
+			file >> gfx[MV_W].file;
+			file >> gfx[MV_NW].file;
+			file >> gfx[MV_NE].file;
+			file >> gfx[MV_SW].file;
+			file >> gfx[MV_SE].file;
 
 			// Push graphics onto the gfx vector.
+			// Map completed in loadAnimations().
 			spriteAttr.mapGfx.clear();
 			spriteAttr.mapGfx.push_back(gfx);
 
 			// Store battle animations in the custom map with
 			// pre-defined keys.
 			spriteAttr.mapCustomGfx.clear();
-			file >> spriteAttr.mapCustomGfx[GFX_FIGHT];
-			file >> spriteAttr.mapCustomGfx[GFX_DEFEND];
-			file >> spriteAttr.mapCustomGfx[GFX_SPC];
-			file >> spriteAttr.mapCustomGfx[GFX_DIE];
-			file >> spriteAttr.mapCustomGfx[GFX_REST];
+			file >> spriteAttr.mapCustomGfx[GFX_FIGHT].file;
+			file >> spriteAttr.mapCustomGfx[GFX_DEFEND].file;
+			file >> spriteAttr.mapCustomGfx[GFX_SPC].file;
+			file >> spriteAttr.mapCustomGfx[GFX_DIE].file;
+			file >> spriteAttr.mapCustomGfx[GFX_REST].file;
 
 			STRING strUnused;
 			file >> strUnused;
@@ -201,19 +199,19 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 			if (minorVer >= 6)
 			{
 				// Idle graphics - saved in a different order!
-				file >> gfx[MV_S];
-				file >> gfx[MV_N];
-				file >> gfx[MV_E];
-				file >> gfx[MV_W];
-				file >> gfx[MV_NW];
-				file >> gfx[MV_NE];
-				file >> gfx[MV_SW];
-				file >> gfx[MV_SE];
+				file >> gfx[MV_S].file;
+				file >> gfx[MV_N].file;
+				file >> gfx[MV_E].file;
+				file >> gfx[MV_W].file;
+				file >> gfx[MV_NW].file;
+				file >> gfx[MV_NE].file;
+				file >> gfx[MV_SW].file;
+				file >> gfx[MV_SE].file;
 			}
 
 			// Push idle graphics onto vector. In the case minorVer = 5
 			// push a set of blank strings onto the gfx vector.
-			spriteAttr.completeStances(gfx);
+			// Map completed in loadAnimations().
 			spriteAttr.mapGfx.push_back(gfx);
 
 			if (minorVer >= 7)
@@ -233,7 +231,7 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 				file >> handle;
 				if (!handle.empty() && !anim.empty())
 				{
-					spriteAttr.mapCustomGfx[handle] = anim;
+					spriteAttr.mapCustomGfx[handle].file = anim;
 				}
 			}
 			return minorVer;

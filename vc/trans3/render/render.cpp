@@ -52,7 +52,7 @@ std::vector<CCanvas *> g_cnvRpgScans;	// Scan() array...
 
 bool g_bShowMessageWindow = false;			// Show the message window?
 double g_messageWindowTranslucency = 0.5;	// Message window translucency.
-double g_translucentOpacity = 0.30;			// Opacity to draw translucent sprites at.
+double g_translucentOpacity = 0.4;			// Opacity to draw translucent sprites at.
 
 RECT g_screen = {0, 0, 0, 0};				// = {g_topX, g_topY, g_resX + g_topX, g_resY + g_topY}
 SCROLL_CACHE g_scrollCache;					// The scroll cache.
@@ -215,6 +215,7 @@ bool drawTileMask (const STRING fileName,
 		}
 	}
 /*
+TBD: reinstate this in some form!
 	//see if we need to clear the tile cache...
 	if (gvTiles.size() > TILE_CACHE_SIZE)
 		GFXClearTileCache();
@@ -624,11 +625,11 @@ void tagScrollCache::render(const bool bForceRedraw)
 		pCnv->Lock();
 		for (std::vector<LPBRD_PROGRAM>::iterator b = g_pBoard->programs.begin(); b != g_pBoard->programs.end(); ++b)
 		{
-			(*b)->vBase.draw(RGB(128, 255, 255), true, r.left, r.top, pCnv);
+			(*b)->vBase.draw(RGB(255, 255, 0), true, r.left, r.top, pCnv);
 		}
 		for (std::vector<BRD_VECTOR>::iterator c = g_pBoard->vectors.begin(); c != g_pBoard->vectors.end(); ++c)
 		{
-			int color = c->type == TT_SOLID ? RGB(255, 255, 255) : RGB(255, 128, 128);
+			int color = c->type == TT_SOLID ? RGB(255, 255, 255) : RGB(0, 255, 0);
 			c->pV->draw(color, true, r.left, r.top, pCnv);
 		}
 		pCnv->Unlock();
@@ -688,7 +689,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 		// Draw tiles on higher layers over the sprites.
 		if (g_pBoard->bLayerOccupied[layer])
 		{
-			// _T('rects') are the sprite frames located on the board,
+			// rects are the sprite frames located on the board,
 			// which are only added when the sprite is encountered in the loop.
 			for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
 			{
@@ -725,10 +726,10 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 			}
 			else continue;
 
-			// Draw any _T("under") vectors this sprite is standing on.
+			// Draw any "under" vectors this sprite is standing on.
 			for (std::vector<BRD_VECTOR>::iterator k = g_pBoard->vectors.begin(); k != g_pBoard->vectors.end(); ++k)
 			{
-				// Check if this is an _T("under") vector, is on the same layer and has a canvas.
+				// Check if this is an "under" vector, is on the same layer and has a canvas.
 				if (!k->pCnv || k->layer != layer || !(k->type & TT_UNDER)) 
 					continue;
 
@@ -740,8 +741,8 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 				RECT r = {0, 0, 0, 0};
 				DB_POINT p = {0, 0};
 
-				// Place the intersection of the sprite_T('s *frame* and the under vector')s
-				// bounds in _T('r') - this is the area to draw.
+				// Place the intersection of the sprite's *frame* and the under vector's
+				// bounds in 'r' - this is the area to draw.
 				if (IntersectRect(&r, &rect, &rBounds) && k->pV->contains(v, p))
 				{
 					k->pCnv->BltTransparentPart(cnv, 
@@ -758,6 +759,10 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 		} // for (sprites)
 
 	} // for (layer)
+
+	// Render multitasking animations.
+	CThreadAnimation::renderAll(cnv);
+
 
 	cnv->Lock();
 

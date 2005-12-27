@@ -1005,7 +1005,6 @@ void CSprite::send(void)
 	{
 		CProgram(g_projectPath + PRG_PATH + g_pBoard->enterPrg).run();
 	}
-
 }
 
 /*
@@ -1243,7 +1242,6 @@ bool CSprite::programTest(void)
 				var->lit = finalValue;
 			}
 		}
-
 		return true;
 	}
 	return false;
@@ -1324,24 +1322,37 @@ void CSprite::drawVector(CCanvas *const cnv)
 void CSprite::drawPath(CCanvas *const cnv)
 {
 	extern RECT g_screen;
+	extern LPBOARD g_pBoard;
+	CONST LONG color = RGB(255, 0, 0);
 
-	if (m_pend.path.empty() || !m_pos.bIsPath) return;
+	if (!m_pos.bIsPath ||
+		(round(m_pos.x) == m_pend.xTarg &&
+		round(m_pos.y) == m_pend.yTarg)) return;
 
-	std::deque<DB_POINT>::iterator i = m_pend.path.begin();
+	int x = m_pend.xTarg - g_screen.left, 
+		y = m_pend.yTarg - g_screen.top,
+		dx = 12,
+		dy = g_pBoard->isIsometric() ? 6: 12;
 
 	cnv->DrawLine(round(m_pos.x) - g_screen.left, round(m_pos.y) - g_screen.top, 
-		m_pend.xTarg - g_screen.left, m_pend.yTarg - g_screen.top, RGB(255, 255, 128));
-	cnv->DrawLine(m_pend.xTarg - g_screen.left, m_pend.yTarg - g_screen.top, 
-		i->x - g_screen.left, i->y - g_screen.top, RGB(255, 255, 128));
+		m_pend.xTarg - g_screen.left, m_pend.yTarg - g_screen.top, color);
 
-
-	for (; i != m_pend.path.end() - 1; ++i)
+	if (!m_pend.path.empty())
 	{
-		cnv->DrawLine(i->x - g_screen.left, i->y - g_screen.top, 
-			(i + 1)->x - g_screen.left, (i + 1)->y - g_screen.top, RGB(255, 255, 128));
+		std::deque<DB_POINT>::iterator i = m_pend.path.begin();
+		cnv->DrawLine(m_pend.xTarg - g_screen.left, m_pend.yTarg - g_screen.top, 
+			i->x - g_screen.left, i->y - g_screen.top, color);
+
+		for (; i != m_pend.path.end() - 1; ++i)
+		{
+			cnv->DrawLine(i->x - g_screen.left, i->y - g_screen.top, 
+				(i + 1)->x - g_screen.left, (i + 1)->y - g_screen.top, color);
+		}
+		x = i->x - g_screen.left;
+		y = i->y - g_screen.top;
 	}
 
-	// To be done: draw a circle around the target.
+	cnv->DrawEllipse(x - dx, y - dy, x + dx, y + dy, color);
 }
 
 /*
@@ -1447,7 +1458,6 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 /*
  * Determine the current sprite frame to use, and render if the current
  * frame requires updating.
- * Returns: true if frame requires redrawing.
  */
 bool CSprite::render(void) 
 {
@@ -1456,14 +1466,14 @@ bool CSprite::render(void)
 	// Check idleness.
 	if (m_pos.loopFrame < LOOP_MOVE && m_pend.path.empty())
 	{
-		// We_T('re idle, and we')re not about to start moving.
+		// We're idle, and we're not about to start moving.
 
 		if ((m_pos.loopFrame == LOOP_WAIT) && (GetTickCount() - m_pos.idle.time >= m_attr.idleTime))
 		{
 			// Push into idle graphics if not already.
 
 			// Check that a standing graphic for this direction exists.
-			if (!m_attr.mapGfx[GFX_IDLE][m_pos.facing].empty())
+			if (m_attr.mapGfx[GFX_IDLE][m_pos.facing].pAnm)
 			{
 				// Put the loop counter into idling status.
 				m_pos.loopFrame = LOOP_IDLE;
@@ -1476,12 +1486,8 @@ bool CSprite::render(void)
 				// Set the timer for idleness.
 				m_pos.idle.frameTime = GetTickCount();
 
-// Must be better way to do this!
-				// Load the frame delay for the idle animation.
-				ANIMATION idleAnim;
-				idleAnim.open(g_projectPath + MISC_PATH + m_attr.mapGfx[GFX_IDLE][m_pos.facing]);
-				// Get into milliseconds.
-				m_pos.idle.frameDelay = idleAnim.animPause * MILLISECONDS;
+				// Frame delay for the idle animation.
+				m_pos.idle.frameDelay = m_attr.mapGfx[GFX_IDLE][m_pos.facing].pAnm->m_pAnm->data()->animPause * MILLISECONDS;
 			}
 		} // if (time player has been idle > idle time)
 
@@ -1521,56 +1527,45 @@ bool CSprite::render(void)
 
 	} // if (player is not moving)
 
-	STRING strAnm;
+	// Get a pointer to the current animation.
+	CAnimation *anm = NULL;
 
-	// Get the animation filename to use.
 	switch (m_pos.loopFrame)
 	{
 		case LOOP_CUSTOM_STANCE:
 		{
 			// Custom stance. RPGCode call has inserted m_pos.stance.
-			std::map<STRING, STRING>::iterator i = m_attr.mapCustomGfx.find(m_pos.stance);
+			GFX_CUSTOM_MAP::iterator i = m_attr.mapCustomGfx.find(m_pos.stance);
 
 			if (i != m_attr.mapCustomGfx.end())
 			{
 				// Iterator moves to end() if not found.
-				strAnm = i->second;
+				anm = i->second.pAnm->m_pAnm;
 			}
 			break;
 		}
 
 		case LOOP_IDLE:
 			// Idle. Use the idle animation of the facing direction.
-			strAnm = m_attr.mapGfx[GFX_IDLE][m_pos.facing];
+			anm = m_attr.mapGfx[GFX_IDLE][m_pos.facing].pAnm->m_pAnm;
 			break;
 
 		default:
 			// Walking graphics.
-			strAnm = m_attr.mapGfx[GFX_MOVE][m_pos.facing];
+			anm = m_attr.mapGfx[GFX_MOVE][m_pos.facing].pAnm->m_pAnm;
 	}
-
+	
 	// The animation frame to draw: increment every (loopSpeed * 2) renders.
 	const int frame = int(m_pos.frame / (m_pos.loopSpeed * 2)); 
 
-	if (m_lastRender.canvas == &m_canvas 
-		&& m_lastRender.frame == frame 
-		&& m_lastRender.stance == strAnm 
-		&& m_lastRender.x == m_pos.x 
-		&& m_lastRender.y == m_pos.y)
+	// Get the canvas for the current frame.
+	if (anm)
 	{
-		// We_T('ve just rendered this frame so we don')t need to again.
-		return false;
+		CCanvas *p = anm->getFrame(frame);
+		if (p != m_pCanvas) anm->playFrameSound(frame);
+		m_pCanvas = p;
 	}
-
-	// Update the last render.
-	m_lastRender.canvas = &m_canvas;
-	m_lastRender.frame = frame;
-	m_lastRender.stance = strAnm;
-	m_lastRender.x = m_pos.x;
-	m_lastRender.y = m_pos.y;
-
-	// Render the frame to the sprite's canvas, at location (0, 0).
-	renderAnimationFrame(&m_canvas, strAnm, frame, 0, 0);
+	else m_pCanvas = NULL;
 
 	return true;
 }
@@ -1591,6 +1586,8 @@ bool CSprite::putSpriteAt(const CCanvas *cnvTarget,
 
 	// Render the frame here (but not when rendering translucently).
 	if (m_pos.l == layer) this->render();
+	// Check a frame was rendered / found.
+	if (!m_pCanvas) return false;
 
 	// Screen location on board.
 	// Referencing with m_pos at the bottom-centre of the tile for
@@ -1603,14 +1600,11 @@ bool CSprite::putSpriteAt(const CCanvas *cnvTarget,
   
 	// Sprite location on screen and board.
 	RECT screen = {0, 0, 0, 0},
-		 board = { centreX - int(m_canvas.GetWidth() * 0.5), centreY - m_canvas.GetHeight(),
-				   centreX + int(m_canvas.GetWidth() * 0.5), centreY };
+		 board = { centreX - int(m_pCanvas->GetWidth() * 0.5), centreY - m_pCanvas->GetHeight(),
+				   centreX + int(m_pCanvas->GetWidth() * 0.5), centreY };
 
-	if (!IntersectRect(&screen, &board, &g_screen))
-	{
-		// Off the screen!
-		return false;
-	}
+	// Off the screen!
+	if (!IntersectRect(&screen, &board, &g_screen)) return false;
 
 	// screen holds the portion of the frame we need to draw.
 	// Put the board co-ordinates into rect.
@@ -1619,7 +1613,7 @@ bool CSprite::putSpriteAt(const CCanvas *cnvTarget,
 	// Blt the player to the target.
 	if (m_pos.l == layer)
 	{
-		m_canvas.BltTransparentPart(cnvTarget,
+		m_pCanvas->BltTransparentPart(cnvTarget,
 								screen.left - g_screen.left,	// destination coord
 								screen.top - g_screen.top,
 								screen.left - board.left,		// source coord
@@ -1634,7 +1628,7 @@ bool CSprite::putSpriteAt(const CCanvas *cnvTarget,
 	// (Should really do this separately right before flipping).
 	if (layer == g_pBoard->bSizeL && m_pos.l != layer)
 	{
-		m_canvas.BltTranslucentPart(cnvTarget,
+		m_pCanvas->BltTranslucentPart(cnvTarget,
 								screen.left - g_screen.left,	// destination coord
 								screen.top - g_screen.top,
 								screen.left - board.left,		// source coord
