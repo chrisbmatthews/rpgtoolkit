@@ -384,11 +384,12 @@ int CVector::containsPoint(const DB_POINT p)
 			// Calculate intersection point of the subvector and a
 			// vertical vector from the point to the top of the board.
 			const double y = gradient(i) * p.x + intercept(i);
-			const bool dir = ((i + 1)->x > i->x);
+			const bool	dir = ((i + 1)->x > i->x),
+						sameY = (dAbs(y - lastY) < CV_PRECISION);
 
 			// Check the point is on the test vector.
-			if ((y < p.y) &&
-			   (((y == lastY) && (dir != lastDir)) || (y != lastY)))
+			if (y < p.y &&
+			   ((sameY && dir != lastDir) || !sameY))
 			{
 				// Check that if we are at a corner, we make the correct
 				// number of counts (depending on direction of the two 
@@ -444,10 +445,10 @@ bool CVector::createMask(CCanvas *cnv, const int x, const int y, CONST LONG colo
 	// is not on the outline (if GetPixel returns the same colour as
 	// we're flooding with, the flood won't work.
 
-	DB_POINT p = {(m_bounds.left + m_bounds.right) / 2, m_bounds.top};
+	DB_POINT p = {int((m_bounds.left + m_bounds.right) / 2), m_bounds.top};
 	for (; p.y != m_bounds.bottom; ++p.y)
 	{
-		if ((containsPoint(p) % 2) && GetPixel(hdc, p.x - x, p.y - y) != color)
+		if ((containsPoint(p) % 2) && (GetPixel(hdc, int(p.x - x), int(p.y - y)) != color))
 		{
 			ExtFloodFill(hdc, p.x - x, p.y - y, color, FLOODFILLBORDER);
 			break;
