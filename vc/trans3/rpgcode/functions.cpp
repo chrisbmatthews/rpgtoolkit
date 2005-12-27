@@ -17,7 +17,7 @@
 #include "../input/input.h"
 #include "../render/render.h"
 #include "../audio/CAudioSegment.h"
-#include "../common/animation.h"
+#include "../common/CAnimation.h"
 #include "../common/board.h"
 #include "../common/mainfile.h"
 #include "../common/paths.h"
@@ -4678,23 +4678,95 @@ void setimageadditive(CALL_DATA &params)
 }
 
 /*
- * animation(...)
+ * int id = animation(string file, int x, int y [, bool loop])
  * 
- * Description.
+ * Play an animation at pixel x,y. If animation() is called in a 
+ * thread, it may be looped using the last parameter and returns
+ * an id that can be used to end the animation.
  */
 void animation(CALL_DATA &params)
 {
+	extern STRING g_projectPath;
+
+	if ((params.params != 3) && (params.params != 4))
+	{
+		throw CError(_T("Animation() requires three or four parameters."));
+	}
+
+	if (params.prg->isThread())
+	{
+		// Multitask the animation.
+		CThreadAnimation *p = CThreadAnimation::create(
+			params[0].getLit(),
+			int(params[1].getNum()), 
+			int(params[2].getNum()),
+			0, 0,
+			(params.params == 4 ? params[3].getBool() : false));
+
+		params.ret().udt = UDT_NUM;
+		params.ret().num = int(p);
+	}
+	else
+	{
+		// Run the animation immediately.
+		CAnimation anm(params[0].getLit());
+		anm.render();
+		anm.animate(int(params[1].getNum()), int(params[2].getNum()));
+	}
+}
+
+/*
+ * int id = sizedAnimation(string file, int x, int y, int height, int width [, bool loop])
+ * 
+ * Play a resized animation at pixel x,y. If sizedAnimation() is 
+ * called  in a thread, it may be looped using the last parameter
+ * and returns an id that can be used to end the animation.
+ */
+void sizedanimation(CALL_DATA &params)
+{
+	extern STRING g_projectPath;
+
+	if ((params.params != 5) && (params.params != 6))
+	{
+		throw CError(_T("SizedAnimation() requires five or six parameters."));
+	}
+
+	if (params.prg->isThread())
+	{
+		// Multitask the animation.
+		CThreadAnimation *p = CThreadAnimation::create(
+			params[0].getLit(),
+			int(params[1].getNum()), 
+			int(params[2].getNum()), 
+			int(params[3].getNum()), 
+			int(params[4].getNum()),
+			(params.params == 6 ? params[5].getBool() : false));
+
+		params.ret().udt = UDT_NUM;
+		params.ret().num = int(p);
+	}
+	else
+	{
+		// Run the animation immediately.
+		CAnimation anm(params[0].getLit());
+		anm.resize(int(params[3].getNum()), int(params[4].getNum()));
+		anm.render();
+		anm.animate(int(params[1].getNum()), int(params[2].getNum()));
+	}
 
 }
 
 /*
- * sizedanimation(...)
+ * endAnimation(int animationID)
  * 
- * Description.
+ * End a multitasking animation.
  */
-void sizedanimation(CALL_DATA &params)
+void endanimation(CALL_DATA &params)
 {
-
+	if (params.params == 1)
+	{
+		CThreadAnimation::destroy((CThreadAnimation *)int(params[0].getNum()));
+	}
 }
 
 /*
@@ -5967,16 +6039,6 @@ void replace(CALL_DATA &params)
 	{
 		*params.prg->getVar(params[3].lit) = params.ret();
 	}
-}
-
-/*
- * endanimation(...)
- * 
- * Description.
- */
-void endanimation(CALL_DATA &params)
-{
-
 }
 
 /*
