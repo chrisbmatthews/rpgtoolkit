@@ -49,26 +49,4 @@ int getBottomCentreX(const double boardX, const double boardY);
  */
 int getBottomCentreY(const double boardX, const double boardY);
 
-/*
- * Increment a player's position on the board.
- */
-void incrementPosition(SPRITE_POSITION &pos, PENDING_MOVEMENT &pend, const double moveFraction);
-
-/*
- * Fill in tile target coordinates from pending movement.
- */
-void insertTarget(PENDING_MOVEMENT &pend);
-
-/*
- * Round player coords.
- */
-SPRITE_POSITION roundCoords(SPRITE_POSITION &passPos, const int direction);
-
-/*
- * Increment the player co-ords one tile from the direction they are facing, to test
- * if items or programs lie directly in front of them.
- * Called by programTest only.
- */
-SPRITE_POSITION activationCoords(SPRITE_POSITION &passPos, SPRITE_POSITION &roundPos);
-
 #endif
