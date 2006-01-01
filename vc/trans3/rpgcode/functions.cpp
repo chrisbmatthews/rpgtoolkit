@@ -706,6 +706,7 @@ void fade(CALL_DATA &params)
                 renderRpgCodeScreen();
 			}
 		} break;
+
 	}
 }
 
@@ -2065,7 +2066,6 @@ void itemstep(CALL_DATA &params)
 void push(CALL_DATA &params)
 {
 	extern CSprite *g_pSelectedPlayer;
-	extern std::vector<CPlayer *> g_players;
 
 	if ((params.params != 1) && (params.params != 2))
 	{
@@ -2881,7 +2881,7 @@ void sourcehandle(CALL_DATA &params)
 			if (p == *j) i = j - g_pBoard->items.begin();
 		}
 		char c[8];
-		str += itoa(i, c, 8);
+		str += itoa(i, c, 10);
 	}
 	else if (g_source.type == ET_ENEMY)
 	{
@@ -2928,7 +2928,7 @@ void targethandle(CALL_DATA &params)
 			if (p == *j) i = j - g_pBoard->items.begin();
 		}
 		char c[8];
-		str += itoa(i, c, 8);
+		str += itoa(i, c, 10);
 	}
 	else if (g_target.type == ET_ENEMY)
 	{
@@ -3433,16 +3433,6 @@ void inn(CALL_DATA &params)
 }
 
 /*
- * posture(...)
- * 
- * Description.
- */
-void posture(CALL_DATA &params)
-{
-
-}
-
-/*
  * setbutton(...)
  * 
  * Description.
@@ -3778,16 +3768,6 @@ void fightMenuGraphic(CALL_DATA &params)
 void fightStyle(CALL_DATA &params)
 {
 	throw CError(_T("FightStyle() is obsolete."));
-}
-
-/*
- * stance(...)
- * 
- * Description.
- */
-void stance(CALL_DATA &params)
-{
-
 }
 
 /*
@@ -4490,10 +4470,9 @@ void drawEnemy(CALL_DATA &params)
 	ENEMY enemy;
 	if (enemy.open(g_projectPath + ENE_PATH + params[0].getLit()))
 	{
-		CCanvas c;
-		c.CreateBlank(NULL, 1, 1, TRUE);
-		renderAnimationFrame(&c, enemy.gfx[EN_REST], 0, 0, 0);
-		c.BltTransparent(cnv, int(params[1].getNum()), int(params[2].getNum()), TRANSP_COLOR);
+		CAnimation anm(enemy.gfx[EN_REST]);
+		CCanvas *p = anm.getFrame(0);
+		if (p) p->BltTransparent(cnv, int(params[1].getNum()), int(params[2].getNum()), TRANSP_COLOR);
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -4767,6 +4746,76 @@ void endanimation(CALL_DATA &params)
 	{
 		CThreadAnimation::destroy((CThreadAnimation *)int(params[0].getNum()));
 	}
+}
+
+/*
+ * itemstance(handle item, string stance)
+ * 
+ * Animate an item's custom stance.
+ */
+void itemstance(CALL_DATA &params)
+{
+	if (params.params != 2)
+	{
+		throw CError(_T("ItemStance() requires two parameters."));
+	}
+
+	CItem *p = getItemPointer(params[0]);
+	if (!p) throw CError(_T("ItemStance(): item not found"));
+
+	p->customStance(params[1].getLit(), params.prg->isThread());
+}
+
+/*
+ * playerstance(handle player, string stance)
+ * 
+ * Animate a player's custom stance.
+ */
+void playerstance(CALL_DATA &params)
+{
+	if (params.params != 2)
+	{
+		throw CError(_T("PlayerStance() requires two parameters."));
+	}
+
+	CPlayer *p = getPlayerPointer(params[0]);
+	if (!p) throw CError(_T("PlayerStance(): player not found"));
+
+	p->customStance(params[1].getLit(), params.prg->isThread());
+}
+
+/*
+ * posture(int id [, handle player])
+ * 
+ * Show a custom player animation named "Custom" + str(id) (e.g. "Custom1")
+ * This command is obselete - use playerStance() instead.
+ */
+void posture(CALL_DATA &params)
+{
+	extern CSprite *g_pSelectedPlayer;
+
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError(_T("Posture() requires one or two parameters."));
+	}
+
+	CSprite *p = (params.params == 2 ? getPlayerPointer(params[1]) : g_pSelectedPlayer);
+	if (!p) throw CError(_T("Posture(): player not found"));
+
+	STRING str = _T("Custom");
+	char ch[255]; itoa(params[0].getNum(), ch, 10);
+	p->customStance(str + ch, params.prg->isThread());
+}
+
+/*
+ * stance(int id [, handle player])
+ * 
+ * Show a player stance.
+ * This command is obselete - use playerStance() instead.
+ */
+void stance(CALL_DATA &params)
+{
+	throw CWarning(_T("Stance() is obselete - use playerStance() instead."));
 }
 
 /*
@@ -6139,26 +6188,6 @@ void iif(CALL_DATA &params)
 {
 	operators::tertiary(params);
 	throw CWarning(_T("IIf() is obsolete. Use the ?: operator."));
-}
-
-/*
- * itemstance(...)
- * 
- * Description.
- */
-void itemstance(CALL_DATA &params)
-{
-
-}
-
-/*
- * playerstance(...)
- * 
- * Description.
- */
-void playerstance(CALL_DATA &params)
-{
-
 }
 
 /*
