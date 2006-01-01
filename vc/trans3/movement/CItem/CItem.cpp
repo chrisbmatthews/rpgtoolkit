@@ -54,6 +54,7 @@ short CItem::open(const STRING file) throw(CInvalidItem)
 
 	// Load animations, but do not render frames.
 	m_attr.loadAnimations(false);
+	setAnm(MV_S);
 
 	/* Variable stuff ? */
 

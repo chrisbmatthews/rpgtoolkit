@@ -8,16 +8,6 @@
  * Implementation of a base sprite class.
  */
 
-/*
- * What this file includes / needs:
- * - Basic movement variables - location, frame, etc.
- * - Movement functions.
- * - Rendering functions.
- *
- * What this file doesn't include:
- * Player- / item-specific functions.
- */
-
 #include "CSprite.h"
 #include "../CPlayer/CPlayer.h"
 #include "../CItem/CItem.h"
@@ -42,19 +32,15 @@ int CSprite::m_loopOffset = 0;
  * Constructor
  */
 CSprite::CSprite(const bool show):
+m_facing(this),
 m_attr(),
 m_bActive(show),
-m_lastRender(),
 m_pathFind(),
 m_pend(),
 m_pos(),
 m_tileType(TT_NORMAL)				// Tiletype at location, NOT sprite's type.
 {
 	m_v.x = m_v.y = 0;
-
-	// Create canvas.
-	m_canvas.CreateBlank(NULL, 32, 32, TRUE);
-	m_canvas.ClearScreen(0);
 }
 
 /*
@@ -69,10 +55,6 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 {
 	extern LPBOARD g_pBoard;
 	extern GAME_STATE g_gameState;
-
-	// Is the sprite active (visible).
-	/** Unrequired, since all sprites in g_sprites must be active. 
-	if (!m_bActive) return false; **/
 
 	// Is this the selected player?
 	const bool isUser = (this == selectedPlayer);
@@ -102,7 +84,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 
 			// Set the player to face the direction of movement (direction
 			// may change if we slide).
-			m_pos.facing = getDirection();
+			m_facing.assign(getDirection());
 
 			// Get the tiletype at the target.
 			m_tileType = TILE_TYPE(boardCollisions(g_pBoard) | 
@@ -160,7 +142,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			sgn(m_pend.yTarg - m_pos.y) != sgn(m_v.y) ||
 			(m_tileType & TT_SOLID))
 		{
-			// If we_T('ve moved past one of the targets or we')re
+			// If we've moved past one of the targets or we're
 			// walking against a wall, stop.
 
 			if (!(m_tileType & TT_SOLID))
@@ -281,7 +263,7 @@ MV_ENUM CSprite::getDirection(void)
 
 	double angle = 90.0;
 
-	// Convert the isometric angle to a _T("face down") angle
+	// Convert the isometric angle to a "face down" angle
 	// that corresponds to the implied direction, and that can 
 	// be used along with non-iso boards.
 	// arctan returns -pi/2 to +pi/2 radians (-90 to +90 degrees).
@@ -325,7 +307,7 @@ void CSprite::setTarget(MV_ENUM direction)
 	// Pixels travelled this move.
 	const int step = moveSize();
 
-	// The _T("movement vector") - a unit-like vector in the current direction.
+	// The "movement vector" - a unit-like vector in the current direction.
 	// g_directions[isIsometric()][MV_CODE][x OR y].
 	m_v.x = g_directions[nIso][direction][0];
 	m_v.y = g_directions[nIso][direction][1];
@@ -340,7 +322,6 @@ void CSprite::setTarget(MV_ENUM direction)
 	m_pend.xTarg = m_pend.xOrig + m_v.x * step;
 	m_pend.yTarg = m_pend.yOrig + m_v.y * step;
 	m_pend.lTarg = m_pend.lOrig;
-
 }
 
 /*
@@ -354,7 +335,7 @@ void CSprite::setPathTarget(void)
 
 	const double dx = m_pend.xTarg - m_pend.xOrig,
 				 dy = m_pend.yTarg - m_pend.yOrig;
-	const double dmax = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+	const double dmax = dAbs(dx) > dAbs(dy) ? dAbs(dx) : dAbs(dy);
 
 	// Scale the vector.
 	m_v.x = dx / dmax;
@@ -618,7 +599,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 			// by crossing it with the sprite's movement vector. 
 			if (p.x * m_v.y - p.y * m_v.x >= 0)
 			{
-				// Crossing boundary from the _T("solid") side.
+				// Crossing boundary from the solid side.
 				tt = TT_SOLID;
 			}
 			else
@@ -676,16 +657,15 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 				const double normal = (p.x * m_v.y - p.y * m_v.x);
 
 				// If angle and normal are both positive or negative,
-				// p is to the _T("right") of m_v (negative being the flipped case).
-				// Otherwise, p is to the _T("left") of m_v.
+				// p is to the "right" of m_v (negative being the flipped case).
+				// Otherwise, p is to the "left" of m_v.
 
 				if ((angle > 0) == (normal > 0))
 					// Rotate right. Reinsert the target and test again.
-					// Overloaded postfix returns a new object.
-					setTarget(m_pos.facing++);
+					setTarget(m_facing.right());
 				else
 					// Rotate left.
-					setTarget(m_pos.facing--);
+					setTarget(m_facing.left());
 
 				// Recurse on the new target - evaluate all vectors and
 				// return, rather than pausing as it has here.
@@ -696,15 +676,15 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 
 					// Recurse once more in the opposite direction.
 					if ((angle > 0) == (normal > 0))
-						setTarget(m_pos.facing--);
+						setTarget(m_facing.left());
 					else
-						setTarget(m_pos.facing++);
+						setTarget(m_facing.right());
 
 					tt = boardCollisions(board, true);
 					if (tt & TT_SOLID) 
 					{
 						// Restore.
-						setTarget(m_pos.facing);
+						setTarget(m_facing.dir());
 						tt = TT_SOLID;
 					}
 					else return tt;
@@ -723,7 +703,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 	{
 		tileTypes = TT_NORMAL;
 		// Remove any sliding that may have occurred.
-		setTarget(m_pos.facing);
+		setTarget(m_facing.dir());
 	}
 
 	// Move the player to the target layer (if stairs were encountered).
@@ -1050,6 +1030,7 @@ bool CSprite::programTest(void)
 		// Some item entries may be NULL since users
 		// can insert items at any slot number.
 		if (!*j || this == *j || m_pos.l != (*j)->m_pos.l) continue;
+		if ((*j)->m_brdData.prgActivate.empty()) continue;
 
 		DB_POINT pt = {(*j)->m_pos.x, (*j)->m_pos.y};
 
@@ -1102,7 +1083,7 @@ bool CSprite::programTest(void)
 	if (itm)
 	{
 		// Make the item look at this sprite.
-		(itm->m_pos.facing = m_pos.facing) += 4;
+		(itm->m_facing = m_facing) += 4;
 		renderNow(NULL, false);
 
 		// If we go to a new board in this program, we kill
@@ -1251,7 +1232,7 @@ bool CSprite::programTest(void)
  * Deactivate any programs the player is standing on.
  * Specifically designed for moving to a new board and arriving on a
  * warp tile / other program. If users need to run programs when boards
- * load, they can use the _T("program to run on entering board").
+ * load, they can use the "program to run on entering board".
  */
 void CSprite::deactivatePrograms(void)
 {
@@ -1456,14 +1437,61 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
  */
 
 /*
- * Determine the current sprite frame to use, and render if the current
- * frame requires updating.
+ * Run a custom stance.
  */
-bool CSprite::render(void) 
+void CSprite::customStance(const STRING stance, const bool bThread)
 {
-	extern STRING g_projectPath;
+	extern CCanvas *g_cnvRpgCode;
+	extern void processEvent();
 
-	// Check idleness.
+	GFX_CUSTOM_MAP::iterator i = m_attr.mapCustomGfx.find(stance);
+	if (i == m_attr.mapCustomGfx.end()) return;
+
+	m_pos.pAnm = i->second.pAnm->m_pAnm;
+	m_pos.idle.frameDelay = m_pos.pAnm->data()->animPause * MILLISECONDS;
+	
+	// Set idle.time to hold the *number of frames this will run for*.
+	m_pos.idle.time = m_pos.pAnm->data()->animFrames + 1;
+	m_pos.idle.frameTime = GetTickCount();
+
+	m_pos.loopFrame = LOOP_STANCE;
+	m_pos.frame = 0;
+
+	if (!bThread)
+	{
+		// Animate now!
+		while (m_pos.loopFrame == LOOP_STANCE)
+		{
+			renderNow(g_cnvRpgCode, true);
+			renderRpgCodeScreen();
+			processEvent();
+		}
+	}
+}
+
+// Set the animation based on direction and idle status.
+void CSprite::setAnm(MV_ENUM dir)
+{
+	switch (m_pos.loopFrame)
+	{
+		case LOOP_STANCE:
+			// String stance is released upon loading.
+		case LOOP_IDLE:
+			if (m_attr.mapGfx[GFX_IDLE][dir].pAnm)
+			{
+				m_pos.pAnm = m_attr.mapGfx[GFX_IDLE][dir].pAnm->m_pAnm;
+				break;
+			}
+		default:
+			m_pos.pAnm = m_attr.mapGfx[GFX_MOVE][dir].pAnm->m_pAnm;
+	}
+}
+
+/*
+ * Process idle and custom animations.
+ */
+void CSprite::checkIdling(void) 
+{
 	if (m_pos.loopFrame < LOOP_MOVE && m_pend.path.empty())
 	{
 		// We're idle, and we're not about to start moving.
@@ -1473,121 +1501,91 @@ bool CSprite::render(void)
 			// Push into idle graphics if not already.
 
 			// Check that a standing graphic for this direction exists.
-			if (m_attr.mapGfx[GFX_IDLE][m_pos.facing].pAnm)
+			if (m_attr.mapGfx[GFX_IDLE][m_facing.dir()].pAnm)
 			{
+				m_pos.pAnm = m_attr.mapGfx[GFX_IDLE][m_facing.dir()].pAnm->m_pAnm;
+				
 				// Put the loop counter into idling status.
 				m_pos.loopFrame = LOOP_IDLE;
 
 				// Recalculate loopSpeed.
 				m_pos.loopSpeed = calcLoops();
 
-//				frame = 0;
+				m_pos.frame = 0;
 
 				// Set the timer for idleness.
 				m_pos.idle.frameTime = GetTickCount();
 
 				// Frame delay for the idle animation.
-				m_pos.idle.frameDelay = m_attr.mapGfx[GFX_IDLE][m_pos.facing].pAnm->m_pAnm->data()->animPause * MILLISECONDS;
+				m_pos.idle.frameDelay = m_pos.pAnm->data()->animPause * MILLISECONDS;
 			}
 		} // if (time player has been idle > idle time)
 
-		if (m_pos.loopFrame == LOOP_IDLE)
+		// Run idle and custom animations. Custom animations utilise
+		// the idle object.
+		if (m_pos.loopFrame == LOOP_IDLE || m_pos.loopFrame == LOOP_STANCE)
 		{
 			if (GetTickCount() - m_pos.idle.frameTime >= m_pos.idle.frameDelay)
 			{
 				// Increment the animation frame when the delay is up.
-				m_pos.frame += m_pos.loopSpeed;
+				++m_pos.frame;
 
 				// Start the timer for this frame.
 				m_pos.idle.frameTime = GetTickCount();
+
+				// End custom stances. idle.time stores the number of frames
+				// to run for, rather than time in stance instances!
+				if (m_pos.loopFrame == LOOP_STANCE && --m_pos.idle.time == 0)
+				{
+					// Animation has finished.
+					m_pos.loopFrame = LOOP_WAIT;
+					m_pos.idle.time = GetTickCount();
+					setAnm(m_facing.dir());
+				}
 			}
 		}
-
-/* To do.
-		// Also deal with custom stances here!
-		// Use the idle frameTime and frameDelay properties to time
-		// frames for the custom stance only.
-		// NOTE: Custom animation delay cannot currently be loaded here
-		// by this setup - must be done through the RPGCode call.
-		if (m_pos.loopFrame == LOOP_CUSTOM_STANCE)
-		{
-			if (GetTickCount() - m_pos.idle.frameTime >= m_pos.idle.frameDelay)
-			{
-				// if (m_pos.frame > m_pos.idle.frames)
-				//	m_pos.loopFrame = LOOP_WAIT;
-
-				// Increment the animation frame when the delay is up.
-				m_pos.frame++;
-
-				// Start the timer for this frame.
-				m_pos.idle.frameTime = GetTickCount();
-			}
-		}
-*/
-
 	} // if (player is not moving)
-
-	// Get a pointer to the current animation.
-	CAnimation *anm = NULL;
-
-	switch (m_pos.loopFrame)
-	{
-		case LOOP_CUSTOM_STANCE:
-		{
-			// Custom stance. RPGCode call has inserted m_pos.stance.
-			GFX_CUSTOM_MAP::iterator i = m_attr.mapCustomGfx.find(m_pos.stance);
-
-			if (i != m_attr.mapCustomGfx.end())
-			{
-				// Iterator moves to end() if not found.
-				anm = i->second.pAnm->m_pAnm;
-			}
-			break;
-		}
-
-		case LOOP_IDLE:
-			// Idle. Use the idle animation of the facing direction.
-			anm = m_attr.mapGfx[GFX_IDLE][m_pos.facing].pAnm->m_pAnm;
-			break;
-
-		default:
-			// Walking graphics.
-			anm = m_attr.mapGfx[GFX_MOVE][m_pos.facing].pAnm->m_pAnm;
-	}
-	
-	// The animation frame to draw: increment every (loopSpeed * 2) renders.
-	const int frame = int(m_pos.frame / (m_pos.loopSpeed * 2)); 
-
-	// Get the canvas for the current frame.
-	if (anm)
-	{
-		CCanvas *p = anm->getFrame(frame);
-		if (p != m_pCanvas) anm->playFrameSound(frame);
-		m_pCanvas = p;
-	}
-	else m_pCanvas = NULL;
-
-	return true;
 }
 
 /*
  * Calculate sprite location and place on destination canvas.
  */
-bool CSprite::putSpriteAt(const CCanvas *cnvTarget, 
-						  const int layer,
-						  RECT &rect)
+bool CSprite::render(const CCanvas *cnv, const int layer, RECT &rect)
 {
 	extern LPBOARD g_pBoard;
 	extern RECT g_screen;
 	extern double g_translucentOpacity;
 
 	// If we're rendering the top layer, draw the translucent sprite.
-	if (m_pos.l != layer && layer != g_pBoard->bSizeL) return false;
+	if (layer != m_pos.l && 
+		(layer != g_pBoard->bSizeL || !g_translucentOpacity)
+		) return false;
 
 	// Render the frame here (but not when rendering translucently).
-	if (m_pos.l == layer) this->render();
-	// Check a frame was rendered / found.
-	if (!m_pCanvas) return false;
+	if (m_pos.l == layer)
+	{
+		// Update idle and custom animations.
+		checkIdling();
+
+		// Get a pointer to the current animation.
+		const int frame =  (m_pos.loopFrame == LOOP_STANCE || 
+							m_pos.loopFrame == LOOP_IDLE) ?
+							m_pos.frame :
+							int(m_pos.frame / (m_pos.loopSpeed * 2));
+		// Get the canvas for the current frame.
+		if (m_pos.pAnm)
+		{
+			CCanvas *p = m_pos.pAnm->getFrame(frame);
+			if (p != m_pCanvas) m_pos.pAnm->playFrameSound(frame);
+			m_pCanvas = p;
+		}
+		else 
+		{
+			m_pCanvas = NULL;
+			return false;
+		}
+	}
+	else if (!m_pCanvas) return false;
 
 	// Screen location on board.
 	// Referencing with m_pos at the bottom-centre of the tile for
@@ -1613,7 +1611,7 @@ bool CSprite::putSpriteAt(const CCanvas *cnvTarget,
 	// Blt the player to the target.
 	if (m_pos.l == layer)
 	{
-		m_pCanvas->BltTransparentPart(cnvTarget,
+		m_pCanvas->BltTransparentPart(cnv,
 								screen.left - g_screen.left,	// destination coord
 								screen.top - g_screen.top,
 								screen.left - board.left,		// source coord
@@ -1625,20 +1623,17 @@ bool CSprite::putSpriteAt(const CCanvas *cnvTarget,
 	}
 
 	// Blt the translucent player, unless they're on the top layer.
-	// (Should really do this separately right before flipping).
-	if (layer == g_pBoard->bSizeL && m_pos.l != layer)
-	{
-		m_pCanvas->BltTranslucentPart(cnvTarget,
-								screen.left - g_screen.left,	// destination coord
-								screen.top - g_screen.top,
-								screen.left - board.left,		// source coord
-								screen.top - board.top,
-								screen.right - screen.left,		// width / height
-								screen.bottom - screen.top,
-								g_translucentOpacity,
-								-1,
-								TRANSP_COLOR);
-	}
+	m_pCanvas->BltTranslucentPart(cnv,
+							screen.left - g_screen.left,	// destination coord
+							screen.top - g_screen.top,
+							screen.left - board.left,		// source coord
+							screen.top - board.top,
+							screen.right - screen.left,		// width / height
+							screen.bottom - screen.top,
+							g_translucentOpacity,
+							-1,
+							TRANSP_COLOR);
+
 	// Return false on translucentBlt to prevent excessive queuing in renderNow().
 	return false;
 }

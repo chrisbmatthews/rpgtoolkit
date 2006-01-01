@@ -21,17 +21,11 @@
 const int MILLISECONDS	= 1000;			// Milliseconds in a second.
 const double PX_FACTOR	= 4.0;			// Movement scaler factor.
 										// Note: Possibly out by a factor of 2.
-/*
-// m_pos.loopFrame idle states. Only condition: must be negative.
-const int LOOP_WAIT				= -1;	// Waiting to begin idle animations.
-const int LOOP_IDLE				= -2;	// Running idle animations.
-const int LOOP_CUSTOM_STANCE	= -3;	// Running a custom stance?
-*/
 
 // m_pos.loopFrame idle states. Only condition: must be negative.
 enum
 {
-	LOOP_CUSTOM_STANCE = -4,			// Running a custom stance.
+	LOOP_STANCE = -4,					// Running a custom stance.
 	LOOP_IDLE,							// Running idle animations.
 	LOOP_WAIT,							// Waiting to begin idle animations.
 	LOOP_DONE,							// Just finished moving.
@@ -49,19 +43,6 @@ enum GAME_STATE
 /*
  * Movement definitions.
  */
-
-/* Unneeded - to be removed 
-#define MV_IDLE		0
-#define MV_NORTH	1
-#define MV_SOUTH	2
-#define MV_EAST		3
-#define MV_WEST		4
-#define MV_NE		5
-#define MV_NW		6
-#define MV_SE		7
-#define MV_SW		8
-*/
-
 #define MVQ_IDLE _T("0")
 #define MVQ_NORTH _T("1")
 #define MVQ_SOUTH _T("2")
@@ -72,7 +53,7 @@ enum GAME_STATE
 #define MVQ_SE _T("7")
 #define MVQ_SW _T("8")
 
-/* In the process of being depreciated */
+/* In the process of being depreciated.. SpriteAttr::getStanceAnm? */
 #define WALK_N _T("walk_n")
 #define WALK_S _T("walk_s")
 #define WALK_E _T("walk_e")
@@ -135,8 +116,7 @@ typedef struct tagIdleInfo
  */
 typedef struct tagSpritePosition
 {
-    STRING stance;		// Current stance.
-	MV_ENUM facing;			// Which direction are we facing? May be different from .direction!
+    CAnimation *pAnm;		// Current animation in use.
     int frame;				// Animation frame.
     double x;				// Current board x position (PIXEL co-ord).
     double y;				// Current board y position (PIXEL co-ord).
@@ -145,14 +125,13 @@ typedef struct tagSpritePosition
 							// Also denotes idle status (when negative):
 							//		= LOOP_WAIT - just finished moving.
 							//		= LOOP_IDLE - started idle animations.
-							//		= LOOP_CUSTOM_STANCE - running a custom stance through the mainloop.
+							//		= LOOP_STANCE - running a custom stance through the mainloop.
 	int loopSpeed;			// speed converted to loops.
     IDLE_INFO idle;
 	bool bIsPath;			// Is the current movement part of a path?
 
 	tagSpritePosition(void): 
-		stance(STRING()),
-		facing(MV_S),
+		pAnm(NULL),
 		frame(0),
 		x(0), y(0), l(1),
 		loopFrame(LOOP_WAIT),
@@ -173,17 +152,12 @@ typedef struct tagPendingMovement
     double xTarg;			// Target PIXEL co-ordinates.
     double yTarg;
     int lTarg;
-//	std::deque<int> queue;	// The pending movements of the player/item.
 	std::deque<DB_POINT> path;
 
 	tagPendingMovement(void):
-//		direction(MV_IDLE),
 		xOrig(0), yOrig(0), lOrig(1),
 		xTarg(0), yTarg(0), lTarg(1),
 		path() {};
-
-	/* TO BE REMOVED */
-    MV_ENUM direction;		// MV_ direction code.
 
 } PENDING_MOVEMENT;
 

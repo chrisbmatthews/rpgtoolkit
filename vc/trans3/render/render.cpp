@@ -718,7 +718,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 			// Check the sprite's layer and draw if match. Pass back
 			// a RECT that is the intersection of the sprite and screen.
 			RECT rect = {0, 0, 0, 0};
-			if ((*j)->putSpriteAt(cnv, layer, rect))
+			if ((*j)->render(cnv, layer, rect))
 			{
 				// Sprite is on this layer and has been drawn.
 				// Store this area for tiles on higher layers.
@@ -743,16 +743,23 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 
 				// Place the intersection of the sprite's *frame* and the under vector's
 				// bounds in 'r' - this is the area to draw.
-				if (IntersectRect(&r, &rect, &rBounds) && k->pV->contains(v, p))
+				if (IntersectRect(&r, &rect, &rBounds))
 				{
-					k->pCnv->BltTransparentPart(cnv, 
-								r.left - g_screen.left,
-								r.top - g_screen.top,
-								r.left - rBounds.left, 
-								r.top - rBounds.top, 
-								r.right - r.left, 
-								r.bottom - r.top,
-								TRANSP_COLOR);
+					// If the under tile is "simple rect" intersection draw straight
+					// off, else check for vector collision.
+					RECT sr = v.getBounds();
+					if(((k->attributes & TA_RECT_INTERSECT) && IntersectRect(&sr, &sr, &rBounds))
+						|| k->pV->contains(v, p))
+					{
+						k->pCnv->BltTransparentPart(cnv, 
+									r.left - g_screen.left,
+									r.top - g_screen.top,
+									r.left - rBounds.left, 
+									r.top - rBounds.top, 
+									r.right - r.left, 
+									r.bottom - r.top,
+									TRANSP_COLOR);
+					}
 				}
 			} // for (under tile canvases)
 

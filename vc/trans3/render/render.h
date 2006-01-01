@@ -16,25 +16,9 @@
 /*
  * Typedefs.
  */
-typedef struct tagSpriteRender
-{
-    CCanvas *canvas;		// Canvas used for this render.
-	STRING stance;		// Stance player was rendered in.
-    unsigned int frame;		// Frame of this stance.
-    double x;				// X position the render occured in.
-    double y;				// Y position the render occured in.
-
-	tagSpriteRender():
-		canvas(NULL),
-		stance(STRING()),
-		frame(0),
-		x(0), y(0) {};
-
-} SPRITE_RENDER;
-
 typedef struct tagScrollCache
 {
-	CCanvas *pCnv;		// Canvas for each layer.
+	CCanvas *pCnv;			// Canvas for each layer.
 	RECT r;					// Bounds of graphics on this layer (board co-ords).
 
 	tagScrollCache(): 

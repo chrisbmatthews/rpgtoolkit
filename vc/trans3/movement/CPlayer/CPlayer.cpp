@@ -31,6 +31,7 @@ CSprite(show)				// Is the player visible?
 
 	// Load animations, but do not render frames.
 	m_attr.loadAnimations(false);
+	setAnm(MV_S);
 
 	// Set initial stats.
 	if (createGlobals)

@@ -38,34 +38,19 @@ typedef enum tagMovementCodes
 	MV_NE
 } MV_ENUM;
 
-// Postfix increment - rotate the movement "right", return a new object.
-inline MV_ENUM operator++ (MV_ENUM lhs, int)
-{
-	if (lhs == MV_NE) return MV_E; 
-	if (lhs == MV_IDLE) return MV_IDLE;
-	return MV_ENUM(lhs + 1);
-}
-
-inline MV_ENUM operator-- (MV_ENUM lhs, int)
-{
-	if (lhs == MV_E) return MV_NE;
-	if (lhs == MV_IDLE) return MV_IDLE;
-	return MV_ENUM(lhs - 1);
-}
-
 // Prefix increment - rotate the movement "right".
-inline void operator++ (MV_ENUM &lhs)
+inline MV_ENUM &operator++ (MV_ENUM &lhs)
 {
-	if (lhs == MV_NE) { lhs = MV_E; return; }
-	if (lhs == MV_IDLE) return;
-	lhs = MV_ENUM(lhs + 1);
+	if (lhs == MV_NE) { lhs = MV_E; }
+	else if (lhs != MV_IDLE) { lhs = MV_ENUM(lhs + 1); }
+	return lhs;
 }
 
-inline void operator-- (MV_ENUM &lhs)
+inline MV_ENUM &operator-- (MV_ENUM &lhs)
 {
-	if (lhs == MV_E) { lhs = MV_NE; return; }
-	if (lhs == MV_IDLE) return;
-	lhs = MV_ENUM(lhs - 1);
+	if (lhs == MV_E) { lhs = MV_NE; }
+	else if (lhs != MV_IDLE) { lhs = MV_ENUM(lhs - 1); }
+	return lhs;
 }
 
 inline MV_ENUM &operator+=(MV_ENUM &lhs, unsigned int inc)
@@ -73,7 +58,6 @@ inline MV_ENUM &operator+=(MV_ENUM &lhs, unsigned int inc)
 	for (unsigned int i = 0; i < inc; ++i) ++lhs;
 	return lhs;
 }
-
 
 /*
  * Movement vector values - increments for insertTarget().
