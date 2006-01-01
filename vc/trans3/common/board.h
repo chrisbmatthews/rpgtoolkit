@@ -65,6 +65,7 @@ typedef struct tagBoardProgram
 // Tile-type attributes.
 #define TA_BRD_BACKGROUND		1		// Under vector uses background image.
 #define TA_ALL_LAYERS_BELOW		2		// Under vector applies to all layers below.
+#define TA_RECT_INTERSECT		4		// Under vector activated by bounding rect intersection.
 
 /*
  * A board vector collision object.
