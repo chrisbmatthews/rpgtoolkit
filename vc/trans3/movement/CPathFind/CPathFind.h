@@ -21,11 +21,6 @@
 #include <windows.h>				// RECT only.
 #include <math.h>
 
-/*
- * Defines
- */
-const int PF_MAX_STEPS = 1000;		// Maximum number of steps in a path.
-
 // Distance measurements.
 enum PF_HEURISTIC
 {
@@ -46,7 +41,7 @@ typedef struct tagNode
 	tagNode(): pos(), cost(0), direction(MV_IDLE), dist(0), parent(NULL) {};
 	tagNode(DB_POINT p): pos(p), cost(0), direction(MV_IDLE), dist(0), parent (NULL) {};
 
-	int fValue(void) { return (cost + dist); };
+	int fValue(void) const { return (cost + dist); };
 
 } NODE;
 
@@ -103,13 +98,13 @@ private:
 	bool getChild(DB_POINT &child, const DB_POINT &parent);
 
 	// Re-initialise the search.
-	void initialize(const int layer, const RECT &r, const int type, const void *pSprite);
+	void initialize(const int layer, const RECT &r, const int type);
 
 	// Determine if a node can be directly reached from another node.
 	bool isChild(NODE &child, NODE &parent);
 
 	// Reset the points at the start of a search.
-	void reset(DB_POINT start, DB_POINT goal, const RECT &r);
+	void reset(DB_POINT start, DB_POINT goal, const RECT &r, const void *pSprite);
 
 	std::vector<DB_POINT> m_points;				// All node coords.
 	std::vector<NODE> m_openNodes;

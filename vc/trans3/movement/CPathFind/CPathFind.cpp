@@ -9,8 +9,9 @@
  */
 
 /*
- * TO DO:
+ * TBD:
  *		CENTRE SPRITE BASES IN 2D MODE.
+ *		Goals in multiple vectors.
  */
 
 #include "CPathFind.h"
@@ -18,86 +19,11 @@
 #include "../../common/board.h"
 #include "../locate.h"
 
-/*----- VECTOR PATHFINDING -----*
-
-// Create nodes. Find connected nodes, distances (straight line, diagonal map, "manhattan").
-// Pointer to parent.
-
-// Create OPEN and CLOSED sets.
-
-// OPEN set: nodes to be examined (initially the starting node).
-
-// CLOSED set: visited nodes (initially empty).
-
-// g(n) = cost (e.g. distance) of traversing the path from start to node n.
-// h(n) = estimate of cost to goal (using heuristic).
-// f(n) = g(n) + h(n)
-// heuristic = distance evaluation (straight line, terrain modifiers).
-
-{
-	while(OPEN has nodes)
-	{
-		// Take best node in OPEN (lowest f-value).
-
-		if (best == goal)
-		{
-			return path;
-		}
-		
-		// Add node to CLOSED.
-		
-		// Examine neighbours.
-		for (each neighbour)
-		{
-
-			g(neighbour) = g(best) + distance (best -> neighbour)
-
-			if (neighbour is already in CLOSED)
-			{
-				// compare CLOSED entry's g() to this g()
-
-				if (this g() > old g())
-				{
-					// This route is longer, disregard node.
-				}
-				else
-				{
-					// New node is better, remove old and add new.
-				}
-			}
-			else
-			{
-				// Calculate heuristic for this neighbour.
-				h(neighbour) = distance (neighbour -> goal)
-				f(neighbour) = g(neighbour) + h(neighbour)
-
-				if (neighbour is already in OPEN)
-				{
-
-					if (old f() > this f())
-					{
-						// This route is longer, disregard node.
-					}
-					else
-					{
-						// New node is better, remove old and add new to OPEN.
-					}
-				}
-				else { add node to OPEN }.
-				
-			}
-		} // for neighbours.
-
-		Add best to CLOSED.
-
-	}
-
-	// Construct path.
-	Map through parents in CLOSED.
-
-}
-
-*----- VECTOR PATHFINDING -----*/
+/*
+ * Defines
+ */
+const int PF_MAX_STEPS = 1000;		// Maximum number of steps in a path.
+const DB_POINT SEPARATOR = {-1, -1};// Invalid point to separate board and sprites in m_points.
 
 /*
  * Default constructor.
@@ -217,6 +143,14 @@ bool CPathFind::getChild(DB_POINT &child, const DB_POINT &parent)
 			m_u.v = m_points.begin();
 			return false;
 		}
+		if (*m_u.v == SEPARATOR)
+		{
+			if (++m_u.v == m_points.end())
+			{
+				m_u.v = m_points.begin();
+				return false;
+			}
+		}
 		child = *m_u.v;
 		++m_u.v;
 	}
@@ -240,10 +174,9 @@ bool CPathFind::getChild(DB_POINT &child, const DB_POINT &parent)
 /*
  * Re-initialise the search.
  */
-void CPathFind::initialize(const int layer, const RECT &r, const int type, const void *pSprite)
+void CPathFind::initialize(const int layer, const RECT &r, const int type)
 {
 	extern LPBOARD g_pBoard;
-	extern ZO_VECTOR g_sprites;
 
 	m_layer = layer;
 	m_heuristic = PF_HEURISTIC(type);
@@ -264,10 +197,14 @@ void CPathFind::initialize(const int layer, const RECT &r, const int type, const
 			  y = abs(r.top) > abs(r.bottom) ? r.top : r.bottom;
 	const int size = x > y ? x : y; //sqrt(x * x + y * y);
 
-	// Add collidable nodes.
+	// Pushback two empty points to act as the first goal and start. Do this first!
+	m_points.push_back(DB_POINT());
+	m_points.push_back(DB_POINT());
+
+	// Add collidable nodes from the board.
 	for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
 	{
-		if (i->layer != layer || i->type != TT_SOLID) continue;
+		if (i->layer != m_layer || i->type != TT_SOLID) continue;
 
 		// The board vectors have to be "grown" to make sure the sprites
 		// can move around them without colliding.
@@ -277,23 +214,10 @@ void CPathFind::initialize(const int layer, const RECT &r, const int type, const
 		m_obstructions.push_back(vector);
 		vector->createNodes(m_points, limits);					
 	}
-
-	/* TBD Note to self: shouldn't this be in reset()? */
-	for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
-	{
-		if ((*j)->getPosition().l != layer || *j == (CSprite *)pSprite) continue;
-		CVector *vector = new CVector((*j)->getVectorBase());
-		// Extra clearance for sprites...
-		vector->grow(size + 1);
-
-		m_obstructions.push_back(vector);
-		vector->createNodes(m_points, limits);					
-	}
-
-	// Pushback two empty points to act as the first goal and start.
-	m_points.push_back(DB_POINT());
-	m_points.push_back(DB_POINT());
-
+	// Pushback a NULL pointer to separate the board vectors from sprite vectors.
+	m_obstructions.push_back(NULL);
+	// Pushback an "invalid" point to separate board and sprite in m_points.
+	m_points.push_back(SEPARATOR);
 }
 
 /*
@@ -317,7 +241,7 @@ bool CPathFind::isChild(NODE &child, NODE &parent)
 		for (std::vector<CVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
 		{
 			// Collision against a solid vector: not a child node.
-			if ((*i)->pfContains(v)) return false;		
+			if ((*i) && (*i)->pfContains(v)) return false;		
 		}
 	}
 	else
@@ -346,9 +270,9 @@ PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
 							const int type, const void *pSprite)
 {
 	// Recreate m_obstructions if running on a new board or changing layers.
-	if (layer != m_layer || m_obstructions.empty()) initialize(layer, r, type, pSprite);
+	if (layer != m_layer || m_obstructions.empty()) initialize(layer, r, type);
 
-	reset(start, goal, r);
+	reset(start, goal, r, pSprite);
 	if (m_start.pos == m_goal.pos) return PF_PATH();
 
 	while (!m_openNodes.empty())
@@ -439,16 +363,49 @@ PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
 /*
  * Reset the points at the start of a search.
  */
-void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r)
+void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r, const void *pSprite)
 {
 	extern LPBOARD g_pBoard;
+	extern ZO_VECTOR g_sprites;
 
 	if (m_heuristic == PF_VECTOR)
 	{
+		// Remove old sprite bases up to board separator.
+		while (m_obstructions.back())
+		{
+			delete m_obstructions.back();
+			m_obstructions.pop_back();
+		}
+
+		// Remove old sprite base nodes up to board separator.
+		while (m_points.back() != SEPARATOR)
+		{
+			m_points.pop_back();
+		}
+
+		const DB_POINT limits = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
+		// Grow by longest diagonal.
+		const int x = abs(r.left) > abs(r.right) ? r.left : r.right,
+				  y = abs(r.top) > abs(r.bottom) ? r.top : r.bottom;
+		const int size = x > y ? x : y; //sqrt(x * x + y * y);
+
+		// Re-add the sprite bases each time.
+		for (std::vector<CSprite *>::iterator i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
+		{
+			if ((*i)->getPosition().l != m_layer || *i == (CSprite *)pSprite) continue;
+			CVector *vector = new CVector((*i)->getVectorBase());
+			// Extra clearance for sprites.
+			vector->grow(size + 1);
+
+			m_obstructions.push_back(vector);
+			vector->createNodes(m_points, limits);					
+		}
+
 		// Check if the goal is contained in a solid area.
 		// If so, set the goal to be the closest edge point.
 		for (std::vector<CVector *>::iterator j = m_obstructions.begin(); j != m_obstructions.end(); ++j)
 		{
+			if (!*j) continue;
 			if ((*j)->containsPoint(goal) % 2)
 			{
 				goal = (*j)->nearestPoint(goal);
@@ -472,11 +429,9 @@ void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r)
 			}
 		}
 
-		/* Sprite collisions */
-
 		// Change the previous goal and start.
-		*(m_points.end() - 2) = start;
-		*(m_points.end() - 1) = goal;
+		*m_points.begin() = start;
+		*(m_points.begin() + 1) = goal;
 		m_u.v = m_points.begin();
 	}
 	else
