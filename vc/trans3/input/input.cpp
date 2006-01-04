@@ -23,6 +23,12 @@
 std::vector<char> g_keys;
 IDirectInput8A *g_lpdi = NULL;
 IDirectInputDevice8A *g_lpdiKeyboard = NULL;
+IDirectInputDevice8A *g_lpdiMouse = NULL;
+struct tagMOUSE
+{
+	POINT move;
+	POINT click;
+} g_mouse;
 
 /*
  * Process an event from the message queue.
@@ -87,6 +93,35 @@ STRING waitForKey()
 }
 
 /*
+ * Get last mouse click / wait for mouse.
+ */
+POINT getMouseClick(const bool bWait)
+{
+	if (bWait)
+	{
+		g_mouse.click.x = -1;
+		while (g_mouse.click.x == -1)
+		{
+			processEvent();
+		}
+	}
+	return g_mouse.click;
+}
+
+/*
+ * Get last mouse move.
+ */
+POINT getMouseMove(void)
+{
+	const int x = g_mouse.move.x;
+	while (g_mouse.move.x == x)
+	{
+		processEvent();
+	}
+	return g_mouse.move;
+}
+
+/*
  * Enumerate keyboards.
  */
 BOOL CALLBACK diEnumKeyboardProc(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
@@ -106,14 +141,22 @@ void initInput()
 {
 	if (g_lpdi) return;
 	extern HINSTANCE g_hInstance;
+	extern HWND g_hHostWnd;
 	DirectInput8Create(g_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8A, (void **)&g_lpdi, NULL);
+	
 	GUID kbGuid = GUID_SysKeyboard;
 	g_lpdi->EnumDevices(DI8DEVTYPE_KEYBOARD, diEnumKeyboardProc, &kbGuid, DIEDFL_ATTACHEDONLY);
 	g_lpdi->CreateDevice(kbGuid, &g_lpdiKeyboard, NULL);
-	extern HWND g_hHostWnd;
 	g_lpdiKeyboard->SetCooperativeLevel(g_hHostWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 	g_lpdiKeyboard->SetDataFormat(&c_dfDIKeyboard);
 	g_lpdiKeyboard->Acquire();
+
+	GUID msGuid = GUID_SysMouse;
+	// No need to enumerate the mouse.
+	g_lpdi->CreateDevice(msGuid, &g_lpdiMouse, NULL);
+	g_lpdiMouse->SetCooperativeLevel(g_hHostWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+	g_lpdiMouse->SetDataFormat(&c_dfDIMouse);
+	g_lpdiMouse->Acquire();
 }
 
 /*
@@ -125,6 +168,11 @@ void freeInput()
 	g_lpdiKeyboard->Unacquire();
 	g_lpdiKeyboard->Release();
 	g_lpdiKeyboard = NULL;
+
+	g_lpdiMouse->Unacquire();
+	g_lpdiMouse->Release();
+	g_lpdiMouse = NULL;
+
 	g_lpdi->Release();
 	g_lpdi = NULL;
 }
@@ -145,7 +193,7 @@ void scanKeys()
 
 	MV_ENUM queue = MV_IDLE;
 
-	// General actication key.
+	// General activation key.
 	if (SCAN_KEY_DOWN(g_mainFile.key))
 	{
 		if (g_pSelectedPlayer->programTest()) return;
@@ -213,6 +261,34 @@ void scanKeys()
 		// Queue up the movement, and clear any currently queued movements.
 		g_pSelectedPlayer->setQueuedMovement(queue, true);
 		g_gameState = GS_MOVEMENT;
+		return;
+	}
+
+	// Process mouse-driven movement.
+	// Use DI to get the status of the mousebuttons at this point.
+	extern RECT g_screen;
+	extern HWND g_hHostWnd;
+
+	DIMOUSESTATE dims;
+	memset(&dims, 0, sizeof(dims));
+	if (FAILED(g_lpdiMouse->GetDeviceState(sizeof(dims), &dims))) return;
+
+	if (dims.rgbButtons[0] & 0x80)
+	{
+		// Left button.
+		// Use the API to get the location to avoid having to deal with
+		// DI's relative co-ordinates.
+		POINT p = {0, 0};
+		if (GetCursorPos(&p))
+		{
+			ScreenToClient(g_hHostWnd, &p);
+			PF_PATH pf = g_pSelectedPlayer->pathFind(p.x + g_screen.left, p.y + g_screen.top, PF_VECTOR);
+			if (pf.size())
+			{
+				g_pSelectedPlayer->clearQueue();
+				g_pSelectedPlayer->setQueuedPath(pf);
+			}
+		}
 	}
 }
 
@@ -270,18 +346,18 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_MOUSEMOVE:
 		{
 			// Handle the mouse move event.
-			
+			g_mouse.move.x = LOWORD(lParam);
+			g_mouse.move.y = HIWORD(lParam);
+
 		} break;
 
 		// Left mouse button clicked.
 		case WM_LBUTTONDOWN:
 		{
-			const int x = LOWORD(lParam), y = HIWORD(lParam);
-			g_pSelectedPlayer->clearQueue();
-			PF_PATH p = g_pSelectedPlayer->pathFind(x + g_screen.left, y + g_screen.top, PF_VECTOR);
-			g_pSelectedPlayer->setQueuedPath(p);
+			g_mouse.click.x = LOWORD(lParam);
+			g_mouse.click.y = HIWORD(lParam);
 
-			informPluginEvent(-1, x, y, 1, /*shift*/0, _T(""), INPUT_MOUSEDOWN);
+			informPluginEvent(-1, g_mouse.click.x, g_mouse.click.y, 1, /*shift*/0, _T(""), INPUT_MOUSEDOWN);
 		} break;
 
 		// Right mouse button clicked.
@@ -294,14 +370,18 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		// Window activated/deactivated.
 		case WM_ACTIVATE:
 		{
+			extern GAME_STATE g_gameState;
 			if (wParam != WA_INACTIVE)
 			{
 				// Window is being activated,
 				if (g_lpdiKeyboard) g_lpdiKeyboard->Acquire();
+				if (g_lpdiMouse) g_lpdiMouse->Acquire();
+				g_gameState = GS_IDLE;
 			}
 			else
 			{
 				// Window is being deactivated.
+				g_gameState = GS_PAUSE;
 			}
 		} break;
 

@@ -30,6 +30,16 @@ STRING getName(char chr);
 STRING waitForKey();
 
 /*
+ * Get last mouse click / wait for mouse.
+ */
+POINT getMouseClick(const bool bWait);
+
+/*
+ * Get last mouse move.
+ */
+POINT getMouseMove(void);
+
+/*
  * Host window event processor.
  *
  * hwnd (in) - handle of window

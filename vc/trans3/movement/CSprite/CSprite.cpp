@@ -488,14 +488,19 @@ void CSprite::setQueuedPath(PF_PATH &path)
  */
 PF_PATH CSprite::pathFind(const int x, const int y, const int type)
 {
-	const DB_POINT start = {m_pos.x, m_pos.y}, goal = {x, y};
+	extern LPBOARD g_pBoard;
+	if (x > 0 && x < g_pBoard->pxWidth() && y > 0 && y < g_pBoard->pxHeight())
+	{
+		const DB_POINT start = {m_pos.x, m_pos.y}, goal = {x, y};
 
-	return m_pathFind.pathFind (start, 
-								goal, 
-								m_pos.l, 
-								m_attr.vBase.getBounds(), 
-								type,
-								this);
+		return m_pathFind.pathFind (start, 
+			goal, 
+			m_pos.l, 
+			m_attr.vBase.getBounds(), 
+			type,
+			this);
+	}
+	return PF_PATH();
 }
 
 /*
