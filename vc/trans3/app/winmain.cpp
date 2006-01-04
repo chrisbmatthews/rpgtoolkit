@@ -385,7 +385,6 @@ GAME_STATE gameLogic()
 
 		case GS_MOVEMENT:
 		{
-
 			extern HWND g_hHostWnd;
 			STRINGSTREAM ss;
 			ss <<	g_mainFile.gameTitle.c_str()
@@ -415,9 +414,11 @@ GAME_STATE gameLogic()
 			renderNow();
 		} break;
 
+		case GS_PAUSE:
+			// Relinquish some CPU time.
+			Sleep(100);
 		case GS_QUIT:
 		default:
-			// Close down.
 			break;
 	}
 
