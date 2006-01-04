@@ -66,6 +66,8 @@ CInventory g_inv;							// Inventory.
 unsigned long g_gp = 0;						// Amount of gold.
 std::map<STRING, CFile> g_files;			// Files opened using RPGCode.
 double g_textX = 0.0, g_textY = 0.0;		// Last position text() was used at.
+typedef std::pair<STRING, RECT> RPG_BUTTON;	// Rpgcode button <image, position>
+std::map<int, RPG_BUTTON> g_buttons;		// setButton(), checkButton().
 
 /*
  * Become ready to run a program.
@@ -3433,53 +3435,138 @@ void inn(CALL_DATA &params)
 }
 
 /*
- * setbutton(...)
+ * setbutton(string file, int slot, int x, int y, int width, int height)
  * 
- * Description.
+ * Create and draw a clickable button at screen pixel co-ords x, y 
+ * that persists until clearButtons() is called.
  */
 void setbutton(CALL_DATA &params)
 {
+	extern STRING g_projectPath;
 
+	if (params.params != 6)
+	{
+		throw CError(_T("SetButton() requires six parameters."));
+	}
+
+	const int slot = int(params[1].getNum()),
+		x = int(params[2].getNum()), 
+		y = int(params[3].getNum()),
+		w = int(params[4].getNum()), 
+		h = int(params[5].getNum());
+	RECT r = {x, y, x + w, y + h};
+	const STRING file = params[0].getLit();
+
+	g_buttons[slot] = RPG_BUTTON(file, r);
+
+	// Draw. This image will not persist though!
+	if (CFile::fileExists(g_projectPath + BMP_PATH + file))
+	{
+		drawImage(g_projectPath + BMP_PATH + file, g_cnvRpgCode, x, y, w, h);
+		renderRpgCodeScreen();
+	}
 }
 
 /*
- * checkbutton(...)
+ * int = checkbutton(int x, int y)
  * 
- * Description.
+ * Check if any SetButton()s were clicked at screen pixel co-ords x, y.
+ * If two buttons exist at x,y, the lower slot number is returned.
+ * If no button exists at x,y, -1 is returned. 
  */
 void checkbutton(CALL_DATA &params)
 {
+	if (params.params != 2)
+	{
+		throw CError(_T("CheckButton() requires two parameters."));
+	}
+	const int x = int(params[0].getNum()), y = int(params[1].getNum()); 
 
+	params.ret().udt = UDT_NUM;
+
+	std::map<int, RPG_BUTTON>::iterator i = g_buttons.begin();
+	for(; i != g_buttons.end(); ++i)
+	{
+		const RECT r = i->second.second;
+		if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom)
+		{
+			params.ret().num = double(i->first);
+			return;
+		}
+	}
+	params.ret().num = -1.0;
 }
 
 /*
- * clearbuttons(...)
+ * clearbuttons([int slot1, int slot2...])
  * 
- * Description.
+ * Clear buttons set by SetButton(). Clear specific slot(s) if supplied,
+ * else clear all slots.
  */
 void clearbuttons(CALL_DATA &params)
 {
-
+	// TBD: update rpgcode reference.
+	if (params.params)
+	{
+		for (unsigned int i = 0; i != params.params; ++i)
+		{
+			std::map<int, RPG_BUTTON>::iterator j = g_buttons.find(int(params[i].getNum()));
+			if (j != g_buttons.end()) g_buttons.erase(j);
+		}
+		return;
+	}
+	g_buttons.clear();
 }
 
 /*
- * mouseclick(...)
+ * mouseclick(int &x, int &y [, bool noWait])
  * 
- * Description.
+ * Wait for a mouseclick or immediately retrieve the last and
+ * return the x, y location (pixel values relative to the window).
  */
 void mouseclick(CALL_DATA &params)
 {
-
+	if (params.params != 2 && params.params != 3)
+	{
+		throw CError(_T("MouseClick() requires two or three parameters."));
+	}
+	CONST POINT p = getMouseClick(params.params == 3 ? !(params[2].getBool()) : true);
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
+		var->udt = UDT_NUM;
+		var->num = p.x;
+	}
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
+		var->udt = UDT_NUM;
+		var->num = p.y;
+	}
 }
 
 /*
- * mousemove(...)
+ * mousemove(int &x, int &y)
  * 
- * Description.
+ * Wait for the mouse to move and return the x,y location in pixels
+ * from the window corner.
  */
 void mousemove(CALL_DATA &params)
 {
+	if (params.params != 2)
+	{
+		throw CError(_T("MouseMove() requires two parameters."));
+	}
 
+	CONST POINT p = getMouseMove();
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
+		var->udt = UDT_NUM;
+		var->num = p.x;
+	}
+	{
+		LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
+		var->udt = UDT_NUM;
+		var->num = p.y;
+	}
 }
 
 /*
@@ -4815,6 +4902,7 @@ void posture(CALL_DATA &params)
  */
 void stance(CALL_DATA &params)
 {
+	// TBD: update rpgcode reference.
 	throw CWarning(_T("Stance() is obselete - use playerStance() instead."));
 }
 
