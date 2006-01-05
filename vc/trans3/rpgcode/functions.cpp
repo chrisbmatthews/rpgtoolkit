@@ -68,6 +68,7 @@ std::map<STRING, CFile> g_files;			// Files opened using RPGCode.
 double g_textX = 0.0, g_textY = 0.0;		// Last position text() was used at.
 typedef std::pair<STRING, RECT> RPG_BUTTON;	// Rpgcode button <image, position>
 std::map<int, RPG_BUTTON> g_buttons;		// setButton(), checkButton().
+int g_mwinSize = 0;							// Width of message window.
 
 /*
  * Become ready to run a program.

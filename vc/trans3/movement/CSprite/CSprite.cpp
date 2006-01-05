@@ -1488,7 +1488,10 @@ void CSprite::setAnm(MV_ENUM dir)
 				break;
 			}
 		default:
-			m_pos.pAnm = m_attr.mapGfx[GFX_MOVE][dir].pAnm->m_pAnm;
+			try
+			{
+				m_pos.pAnm = m_attr.mapGfx[GFX_MOVE][dir].pAnm->m_pAnm;
+			} catch (...) { }
 	}
 }
 

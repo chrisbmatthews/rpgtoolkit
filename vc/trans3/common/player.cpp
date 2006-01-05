@@ -12,6 +12,7 @@
 #include "paths.h"
 #include "CFile.h"
 #include "mbox.h"
+#include "../misc/misc.h"
 
 /*
  * Definitions.
@@ -71,15 +72,15 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 		file >> minorVer;
 
 		file >> charname;
-		file >> experienceVar;
-		file >> defenseVar;
-		file >> fightVar;
-		file >> healthVar;
-		file >> maxHealthVar;
-		file >> nameVar;
-		file >> smVar;
-		file >> smMaxVar;
-		file >> leVar;
+		file >> experienceVar; replace(experienceVar, _T("!"), _T(""));
+		file >> defenseVar; replace(defenseVar, _T("!"), _T(""));
+		file >> fightVar; replace(fightVar, _T("!"), _T(""));
+		file >> healthVar; replace(healthVar, _T("!"), _T(""));
+		file >> maxHealthVar; replace(maxHealthVar, _T("!"), _T(""));
+		file >> nameVar; replace(nameVar, _T("$"), _T(""));
+		file >> smVar; replace(smVar, _T("!"), _T(""));
+		file >> smMaxVar; replace(smMaxVar, _T("!"), _T(""));
+		file >> leVar; replace(leVar, _T("!"), _T(""));
 		file >> stats.experience;
 		file >> stats.health;
 		file >> stats.maxHealth;

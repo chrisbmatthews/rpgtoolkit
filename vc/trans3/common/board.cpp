@@ -15,6 +15,7 @@
 #include "mbox.h"
 #include "../movement/locate.h"
 #include "../rpgcode/CProgram.h"
+#include "../misc/misc.h"
 #include <malloc.h>
 
 /*
@@ -248,8 +249,8 @@ lutEnd:
 		file >> prg->layer;
 		file >> prg->graphic;
 		file >> prg->activate;
-		file >> prg->initialVar;
-		file >> prg->finalVar;
+		file >> prg->initialVar; replace(replace(prg->initialVar, _T("!"), _T("")), _T("$"), _T(""));
+		file >> prg->finalVar; replace(replace(prg->finalVar, _T("!"), _T("")), _T("$"), _T(""));
 		file >> prg->initialValue;
 		file >> prg->finalValue;
 		file >> prg->activationType;
@@ -296,10 +297,10 @@ lutEnd:
 		file >> pos.layer;
 
 		file >> spr.activate;
-		file >> spr.initialVar;
-		file >> spr.finalVar;
+		file >> spr.initialVar; replace(replace(spr.initialVar, _T("!"), _T("")), _T("$"), _T(""));
+		file >> spr.finalVar; replace(replace(spr.finalVar, _T("!"), _T("")), _T("$"), _T(""));
 		file >> spr.initialValue;
-		file >> spr.finalVar;
+		file >> spr.finalValue;
 		file >> spr.activationType;
 		file >> spr.prgActivate;
 		file >> spr.prgMultitask;

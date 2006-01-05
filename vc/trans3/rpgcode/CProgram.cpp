@@ -531,7 +531,7 @@ void CProgram::returnVal(CALL_DATA &call)
 
 #define YYSTACKSIZE 50000
 #define YYSTYPE CVariant
-#include "y.tab.c"	// Yacc parser.
+#include "y.tab.c"
 #ifdef STRING
 #undef STRING
 #endif

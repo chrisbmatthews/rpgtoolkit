@@ -16,7 +16,7 @@ class CInventory
 {
 public:
 	typedef std::pair<STRING, unsigned int> DATA_PAIR, *LPDATA_PAIR;
-	void give(const STRING file)
+	void give(const STRING file, const int number = 1)
 	{
 		// file contains complete path.
 		LPDATA_PAIR p = &m_data[parser::uppercase(file)];
@@ -25,11 +25,11 @@ public:
 			ITEM itm;
 			if (!itm.open(file, NULL)) return;
 			p->first = itm.itemName;
-			p->second = 1;
+			p->second = number;
 		}
 		else
 		{
-			++p->second;
+			p->second += number;
 		}
 	}
 	unsigned int getQuantity(const STRING file)

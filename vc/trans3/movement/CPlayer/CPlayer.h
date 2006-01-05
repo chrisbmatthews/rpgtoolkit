@@ -49,10 +49,10 @@ public:
 	int equipmentFP() const { return m_equipment.mFP; }
 	int equipmentHP() const { return m_equipment.mHP; }
 	int equipmentSM() const { return m_equipment.mSM; }
-	int equipmentDP(const int val) { m_equipment.mDP = val; }
-	int equipmentFP(const int val) { m_equipment.mFP = val; }
-	int equipmentHP(const int val) { m_equipment.mHP = val; }
-	int equipmentSM(const int val) { m_equipment.mSM = val; }
+	void equipmentDP(const int val) { m_equipment.mDP = val; }
+	void equipmentFP(const int val) { m_equipment.mFP = val; }
+	void equipmentHP(const int val) { m_equipment.mHP = val; }
+	void equipmentSM(const int val) { m_equipment.mSM = val; }
 	EQ_SLOT equipment(const int i) const { return (m_equipment.data.size() > abs(i) ? m_equipment.data[i] : EQ_SLOT()); }
 	void equipment(const EQ_SLOT eq, const int i) { if(m_equipment.data.size() > abs(i)) m_equipment.data[i] = eq; }
 

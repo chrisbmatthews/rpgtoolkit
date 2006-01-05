@@ -732,6 +732,10 @@ SOURCE=.\common\sprite.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\state.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\status.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -860,6 +864,10 @@ SOURCE=.\common\spcmove.h
 # Begin Source File
 
 SOURCE=.\common\sprite.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\state.h
 # End Source File
 # Begin Source File
 

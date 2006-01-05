@@ -494,8 +494,8 @@ int mainEventLoop()
  */
 int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, const LPTSTR lpCmdLine, const int nCmdShow)
 {
-	// #define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
-	#define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
+	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
+	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
 	set_terminate(termFunc);
 

@@ -229,6 +229,7 @@ public:
 	static void initialize();
 	static void addFunction(const STRING name, const MACHINE_FUNC func);
 	static STRING getFunctionName(const MACHINE_FUNC func);
+	static void setRedirect(const STRING oldFunc, const STRING newFunc) { /* tbd */ }
 	static void debugger(const STRING str);
 	static LPSTACK_FRAME getGlobal(const STRING var) { return &m_heap[lcase(var)]; }
 	static void freeGlobal(const STRING var) { m_heap.erase(lcase(var)); }
