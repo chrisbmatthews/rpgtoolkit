@@ -138,7 +138,7 @@ typedef struct tagSpriteAttr
 		vActivate (),
 		vBase () {};
 
-	~tagSpriteAttr();
+	~tagSpriteAttr() { freeAnimations(); }
 
 	// Get the animation filename corresponding to stance.
 	STRING getStanceAnm(STRING stance);
@@ -148,6 +148,7 @@ typedef struct tagSpriteAttr
 
 	// Load animations in the GFX_MAPs.
 	void loadAnimations(const bool bRenderFrames);	
+	void freeAnimations(void);
 
 	// Create some default vectors for old versions of players, items.
 	void createVectors(const int activationType);

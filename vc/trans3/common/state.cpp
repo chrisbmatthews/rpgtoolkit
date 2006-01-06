@@ -21,7 +21,7 @@ extern std::vector<CPlayer *> g_players;
 extern CInventory g_inv;
 extern STRING g_projectPath;
 extern int g_selectedPlayer;
-extern CSprite *g_pSelectedPlayer;
+extern CPlayer *g_pSelectedPlayer;
 extern unsigned long g_gp;
 extern COLORREF g_mwinColor;
 extern STRING g_mwinBkg;
@@ -152,24 +152,33 @@ void loadSaveState(const STRING str)
 	{
 		for (unsigned int j = 0; j < 5; ++j)
 		{
-			// tbd: equipment
-			// playerEquip$(t, z) = BinReadString(num)   'What is equipped on each player (filename)
-			// equipList$(t, z) = BinReadString(num)   'What is equipped on each player (handle)
-
 			STRING fileName, handle;
 			file >> fileName >> handle;
+
+			if (j < g_players.size())
+			{
+				CPlayer *p = g_players[j];
+				if (p) p->equipment(EQ_SLOT(fileName, handle), i);
+			}
 		}
 	}
 
-	for (i = 0; i < g_players.size(); ++i)
+	for (i = 0; i < 5; ++i)
 	{
-		CPlayer *p = g_players[i];
 		int hp, sm, dp, fp;
 		file >> hp >> sm >> dp >> fp;
-		p->equipmentHP(hp);
-		p->equipmentSM(sm);
-		p->equipmentDP(dp);
-		p->equipmentFP(fp);
+
+		if (i < g_players.size())
+		{
+			CPlayer *p = g_players[i];
+			if (p)
+			{
+				p->equipmentHP(hp);
+				p->equipmentSM(sm);
+				p->equipmentDP(dp);
+				p->equipmentFP(fp);
+			}
+		}
 	}
 
 	int unused;
@@ -240,16 +249,19 @@ void loadSaveState(const STRING str)
 
 	for (i = 0; i < 26; ++i)
 	{
-		// Other player list isn't currently used.
+		// Other player list isn't currently used:
+		// not needed for player restoration.
 		STRING otherPlayer, otherPlayerHandle;
 		file >> otherPlayer >> otherPlayerHandle;
 	}
 
 	file >> g_menuGraphic >> g_fightMenuGraphic;
 	file >> g_mwinSize;
-	STRING newPlyrName;
-	file >> newPlyrName;
-	// tbd - call a new player routine (i.e. not the RPGCode function)
+
+	// Change the player's graphics to any previous NewPlayer() character.
+	STRING newPlayerName;
+	file >> newPlayerName;
+	g_pSelectedPlayer->swapGraphics(newPlayerName);
 
 	// Restore threads.
 	file >> count;
@@ -316,8 +328,10 @@ void loadSaveState(const STRING str)
 		}
 	}
 
-	// Movement size.
-	file >> g_movementSize;
+	// Movement size (probably unneeded unless changed halfway through game).
+	double movementSize;
+	file >> movementSize;
+	CSprite::m_bPxMovement = (movementSize != 1.0);
 
 	// Partially obsolete OOP information.
 	if (minorVer >= 1)
@@ -340,12 +354,11 @@ void loadSaveState(const STRING str)
 		}
 	}
 
-	// Loop offset - 3.0.7 equivalent?
-	// tbd - have Delano look at this
 	if (minorVer >= 2)
 	{
 		int loopOffset;
 		file >> loopOffset;
+		CSprite::setLoopOffset(loopOffset);
 	}
 
 	// Currently obsolete garbage collection information. But

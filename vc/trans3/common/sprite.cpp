@@ -57,9 +57,9 @@ void tagSpriteAttr::loadAnimations(const bool bRenderFrames)
 }
 
 /*
- * Deconstructor
+ * Free animations.
  */
-tagSpriteAttr::~tagSpriteAttr()
+void tagSpriteAttr::freeAnimations(void)
 {
 	// Free the map animations.
 	for (std::vector<GFX_MAP>::iterator i = mapGfx.begin(); i != mapGfx.end(); ++i)
