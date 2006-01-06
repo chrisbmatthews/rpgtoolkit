@@ -54,7 +54,14 @@ public:
 	void equipmentHP(const int val) { m_equipment.mHP = val; }
 	void equipmentSM(const int val) { m_equipment.mSM = val; }
 	EQ_SLOT equipment(const int i) const { return (m_equipment.data.size() > abs(i) ? m_equipment.data[i] : EQ_SLOT()); }
-	void equipment(const EQ_SLOT eq, const int i) { if(m_equipment.data.size() > abs(i)) m_equipment.data[i] = eq; }
+	void equipment(const EQ_SLOT eq, const int i) 
+	{ 
+		while (abs(i) >= m_equipment.data.size())
+		{
+			m_equipment.data.push_back(EQ_SLOT());
+		}
+		m_equipment.data[abs(i)] = eq; 
+	}
 
 	void getLearnedMoves(std::vector<STRING> &moves) const;
 
@@ -69,6 +76,9 @@ public:
 	// For the callbacks.
 	LPPLAYER getPlayer() { return &m_playerMem; }
 
+	// Swap the graphics of this player for those of another.
+	void swapGraphics(const STRING file);
+
 private:
 	void calculateLevels(const bool init);
 
@@ -80,7 +90,10 @@ private:
 			mDP(0), mFP(0), mHP(0), mSM(0) { }
 	} m_equipment;
 
-	PLAYER m_playerMem;			// Player-specific data.
+	PLAYER m_playerMem;				// Player-specific data.
+	STRING m_anmReplacement;		// Filename of player whose graphics
+									// have replaced this player's through
+									// NewPlayer().
 
 };
 

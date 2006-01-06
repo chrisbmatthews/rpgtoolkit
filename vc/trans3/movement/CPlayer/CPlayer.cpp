@@ -517,3 +517,27 @@ void CPlayer::restore(const bool bDoLevels)
 	// Calculate all levels for callback use.
     calculateLevels(false);
 }
+
+// Swap the graphics of this player for those of another.
+void CPlayer::swapGraphics(const STRING file)
+{
+	extern STRING g_projectPath;
+	if (CFile::fileExists(g_projectPath + TEM_PATH + file))
+	{
+		m_anmReplacement = file;
+		CPlayer p(g_projectPath + TEM_PATH + file, false, false);
+
+		// Swap the maps instead of copying them, because each instance
+		// corresponds to an owner in SharedAnimations().
+		std::vector<GFX_MAP>::iterator  i = m_attr.mapGfx.begin(),
+										j = p.m_attr.mapGfx.begin();
+		for (; i != m_attr.mapGfx.end(), j != p.m_attr.mapGfx.end(); ++i, ++j)
+		{
+			i->swap(*j);
+		}
+		m_attr.mapCustomGfx.swap(p.m_attr.mapCustomGfx);
+		// Update the current pointer.
+		setAnm(m_facing.dir());
+		// tbd: Vector bases also?
+	}
+}
