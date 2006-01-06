@@ -363,7 +363,7 @@ void send(CALL_DATA &params)
 		y = 1;
 	}
 
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 
 	g_pSelectedPlayer->setPosition(x, y, layer, g_pBoard->coordType);
 
@@ -676,7 +676,7 @@ void fade(CALL_DATA &params)
 	case 4:
 		{
 			// Circle in on player.
-			extern CSprite *g_pSelectedPlayer;
+			extern CPlayer *g_pSelectedPlayer;
 			const SPRITE_POSITION p = g_pSelectedPlayer->getPosition();
 			const int x = int(p.x) - g_screen.left,// - 16,
 					  y = int(p.y) - g_screen.top - 16;
@@ -1925,7 +1925,7 @@ void pixelmovement(CALL_DATA &params)
  */
 void pathfind(CALL_DATA &params)
 {
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 	extern LPBOARD g_pBoard;
 
 	if (params.params < 4 || params.params > 6)
@@ -2068,7 +2068,7 @@ void itemstep(CALL_DATA &params)
  */
 void push(CALL_DATA &params)
 {
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 
 	if ((params.params != 1) && (params.params != 2))
 	{
@@ -2109,7 +2109,7 @@ void push(CALL_DATA &params)
  */
 void pushItem(CALL_DATA &params)
 {
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 
 	if (params.params != 2)
 	{
@@ -2381,45 +2381,28 @@ void restoreplayer(CALL_DATA &params)
 }
 
 /*
- * void newPlyr(string file)
+ * void newPlayer(string file)
  * 
  * Change the graphics of the main player to that of the
- * file passed in. The file can be a character file (*.tem)
- * or that of a tile (*.gph, *.tstxxx, *.tbm).
+ * file passed in. The file must be a character file (*.tem)
  */
-void newPlyr(CALL_DATA &params)
+void newPlayer(CALL_DATA &params)
 {
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 	extern STRING g_projectPath;
 
 	if (params.params != 1)
 	{
-		throw CError(_T("newPlyr() requires one parameter."));
+		throw CError(_T("newPlayer() requires one parameter."));
 	}
 	STRING ext = getExtension(params[0].getLit());
 
-	if (_ftcsicmp(ext.c_str(), _T("TEM")) == 0)
+	if (_ftcsicmp(ext.c_str(), _T("TEM")) != 0)
 	{
-		// Load new sprite graphics from this character.
-		CPlayer p(g_projectPath + TEM_PATH + params[0].getLit(), false, false);
-		g_pSelectedPlayer->swapGraphics(&p);
+		throw CError(_T("newPlayer() requires a tem file."));
 	}
-	else if (_ftcsicmp(ext.c_str(), _T("GPH")) == 0)
-	{
-		/** TBD: Construct anm... / depreciate **/
-	}
-	else if (_ftcsicmp(ext.substr(0, 3).c_str(), _T("TST")) == 0)
-	{
-		/** TBD: Construct anm... / not in 3.0.6 **/
-	}
-	else if (_ftcsicmp(ext.c_str(), _T("TBM")) == 0)
-	{
-		/** TBD: Construct anm... / not in 3.0.6 **/
-	}
-	else
-	{
-		throw CError(_T("newPlyr() requires a tem, tst or tbm file."));
-	}
+	// Load new sprite graphics from this character.
+	g_pSelectedPlayer->swapGraphics(params[0].getLit());
 }
 
 /*
@@ -4880,7 +4863,7 @@ void playerstance(CALL_DATA &params)
  */
 void posture(CALL_DATA &params)
 {
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 
 	if ((params.params != 1) && (params.params != 2))
 	{
@@ -6468,7 +6451,8 @@ void initRpgCode()
 	CProgram::addFunction(_T("color"), color);
 	CProgram::addFunction(_T("colorrgb"), colorRgb);
 	CProgram::addFunction(_T("move"), move);
-	CProgram::addFunction(_T("newplyr"), newPlyr);
+	CProgram::addFunction(_T("newplyr"), newPlayer);
+	CProgram::addFunction(_T("newplayer"), newPlayer);
 	CProgram::addFunction(_T("over"), over);
 	CProgram::addFunction(_T("prg"), prg);
 	CProgram::addFunction(_T("prompt"), prompt);
