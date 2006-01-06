@@ -91,14 +91,6 @@ public:
 	static void setLoopOffset(const int offset) { m_loopOffset = offset; }
 	void setSpeed(const double delay) { m_attr.speed = delay * MILLISECONDS; }
 
-	// Swap the graphics of this sprite for those of another.
-	void swapGraphics(CSprite *rhs)
-	{
-		m_attr.mapGfx = rhs->m_attr.mapGfx;
-		m_attr.mapCustomGfx = rhs->m_attr.mapCustomGfx;
-		// Vector bases also?
-	}
-
 	// The facing direction - tie changes to alter the animation.
 	class CFacing
 	{
@@ -136,6 +128,7 @@ protected:
 	DB_POINT m_v;							// Position vector in movement direction
 	CPathFind m_pathFind;					// Sprite-specific pathfinding information.
 	CFacing m_facing;						// Facing direction.
+
 
 private:
 	static bool m_bDoneMove;				// Record whether we need to run playerDoneMove().

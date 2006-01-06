@@ -441,7 +441,7 @@ void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int
  */
 void CSprite::runQueuedMovements(void) 
 {
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 	extern CCanvas *g_cnvRpgCode;
 
 	while (move(g_pSelectedPlayer, true))
@@ -1276,7 +1276,7 @@ void CSprite::deactivatePrograms(void)
 void CSprite::drawVector(CCanvas *const cnv)
 {
 	extern RECT g_screen;
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 
 	// Draw the target base one colour.
 	DB_POINT p = getTarget();

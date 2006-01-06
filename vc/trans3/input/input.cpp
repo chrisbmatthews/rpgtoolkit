@@ -15,7 +15,7 @@
 #include "../common/mainfile.h"
 #include "../plugins/plugins.h"
 #include "../plugins/constants.h"
-#include "../movement/CSprite/CSprite.h"
+#include "../movement/CPlayer/CPlayer.h"
 
 /*
  * Globals.
@@ -183,7 +183,7 @@ void freeInput()
 void scanKeys()
 {
 	extern GAME_STATE g_gameState;
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 	extern MAIN_FILE g_mainFile;
 	extern STRING g_projectPath;
 
@@ -301,7 +301,7 @@ void scanKeys()
  */
 LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 	extern RECT g_screen;
 
 	// Switch on the message we're to process.

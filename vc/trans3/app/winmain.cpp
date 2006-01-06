@@ -48,7 +48,7 @@ CAudioSegment *g_bkgMusic = NULL;		// Playing background music.
 
 std::vector<CPlayer *> g_players;		// Loaded players.
 ZO_VECTOR g_sprites;					// z-ordered players and items.
-CSprite *g_pSelectedPlayer = NULL;		// Pointer to selected player?
+CPlayer *g_pSelectedPlayer = NULL;		// Pointer to selected player?
 
 HINSTANCE g_hInstance = NULL;			// Handle to application.
 double g_renderCount = 0;				// Count of GS_MOVEMENT state loops.
@@ -494,8 +494,8 @@ int mainEventLoop()
  */
 int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, const LPTSTR lpCmdLine, const int nCmdShow)
 {
-	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
-	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
+	// #define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
+	#define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
 	set_terminate(termFunc);
 

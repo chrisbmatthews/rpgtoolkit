@@ -590,7 +590,7 @@ void showScreen(const int width, const int height)
 void tagScrollCache::render(const bool bForceRedraw)
 {
 	extern LPBOARD g_pBoard;
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 
 	if (g_screen.left < r.left || g_screen.top < r.top ||
 		g_screen.right > r.right ||	g_screen.bottom > r.bottom ||
@@ -648,7 +648,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 {
 	extern ZO_VECTOR g_sprites;
 	extern LPBOARD g_pBoard;
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 
 	const bool bScreen = (cnv == NULL);
 	if (!cnv) cnv = g_pDirectDraw->getBackBuffer();

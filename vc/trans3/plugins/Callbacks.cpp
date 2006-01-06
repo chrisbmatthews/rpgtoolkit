@@ -783,7 +783,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 
 STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerSlot, int *pRet)
 {
-	extern CSprite *g_pSelectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
 	extern std::vector<CPlayer *> g_players;
 	extern LPBOARD g_pBoard;
 
