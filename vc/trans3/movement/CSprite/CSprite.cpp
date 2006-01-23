@@ -841,7 +841,10 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 	extern GAME_STATE g_gameState;
 	extern CAllocationHeap<BOARD> g_boards;
 
-	// This corresponds to the order links are stored in the board format.
+	// Return normal for npcs and assume the user knows what
+	// they are doing. Wandering sprites are constrained
+	// in Wander(), so this isn't a problem for them.
+	if (!bSend) return TT_NORMAL;
 
 	LK_ENUM link = LK_NONE;
 	const RECT r = m_attr.vBase.getBounds();
@@ -855,9 +858,8 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 
 	// Not off an edge.
 	if (link == LK_NONE) return TT_NORMAL;
-	// Off an edge - return solid if we don't want to send.
-	else if (!bSend) return TT_SOLID;
 
+	// This corresponds to the order links are stored in the board format.
 	const STRING &fileName = g_pBoard->dirLink[link];
 
 	// No board exists.

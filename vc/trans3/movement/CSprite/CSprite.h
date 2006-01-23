@@ -37,7 +37,7 @@ public:
 		const bool bClearQueue, 
 		int step = 0);
 	void setQueuedPath(PF_PATH &path);		// Queue up a path-finding path.
-	void setQueuedPoint(DB_POINT pt)		// Queue just one point to create a path.
+	void setQueuedPoint(const DB_POINT pt)	// Queue just one point to create a path.
 	{
 		if (!m_pend.path.empty() || m_pos.loopFrame > LOOP_MOVE) return;
 		m_pend.path.push_back(pt);
