@@ -460,15 +460,15 @@ void tagBoard::vectorize(const unsigned int layer)
 
 	if (coordType & ISO_STACKED)
 	{
-		// For old isometrics, transform the layer to the rotated
-		// co-ordinate system, so we can apply the same routine.
+		// For old isometrics transform the layer to the rotated
+		// co-ordinate system so we can apply the same routine.
 
 		// Determine the transformed dimensions.
-		double x = bSizeX, y = bSizeY;
-		isoCoordTransform(x, y, x, y);
+		double x = 0.0, y = 0.0;
+		isoCoordTransform(double(bSizeX), double(bSizeY), x, y);
 
-		// New iso board is effectively square, but with many empty entries.
-		width = height = x;
+		// New iso board is effectively square but with many empty entries.
+		width = height = (unsigned int)x;
 	}
 
 	bool *const pFinished = (bool *)_alloca(width * height);
@@ -486,15 +486,15 @@ void tagBoard::vectorize(const unsigned int layer)
 			if (coordType & ISO_STACKED)
 			{
 				// Transform this co-ordinate.
-				double x = 0, y = 0;
-				isoCoordTransform(i + 1, j + 1, x, y);
+				double x = 0.0, y = 0.0;
+				isoCoordTransform(double(i + 1), double(j + 1), x, y);
 				// Enter its type in the new array.
-				pTypes[height * int(x) + int(y)] = tiletype[i + 1][j + 1][layer];
+				pTypes[height * int(x - 1) + int(y - 1)] = tiletype[i + 1][j + 1][layer];
 			}
 			else
 			{
 				// Just copy the value across.
-				pTypes[height * (i + 1) + (j + 1)] = tiletype[i + 1][j + 1][layer];
+				pTypes[height * i + j] = tiletype[i + 1][j + 1][layer];
 			}
 		}
 	}
@@ -506,26 +506,26 @@ void tagBoard::vectorize(const unsigned int layer)
 		 * the first tile that is neither "normal" nor included
 		 * in any vector.
 		 */
-		unsigned int x = 0, y, i, j;
+		int x = -1, y, i, j;
 		for (i = 0; i < width; ++i)
 		{
 			for (j = 0; j < height; ++j)
 			{
-				if (!pFinished[height * i + j] && pTypes[height * (i + 1) + (j + 1)])
+				if (!pFinished[height * i + j] && pTypes[height * i + j])
 				{
 					// More effective method?
-					x = i + 1;
-					y = j + 1;
+					x = i;
+					y = j;
 					i = width + 1;
 					break;
 				}
 			}
 		}
 		// If there are none left, exit.
-		if (x == 0) break;
+		if (x == -1) break;
 
 		// Store current x and y, and the tile type as this position.
-		const unsigned int type = pTypes[height * x + y], origX = x, origY = y;
+		int type = pTypes[height * x + y], origX = x, origY = y;
 
 		// Find the lowest point where this type stops.
 		while ((y < height) && (pTypes[height * x + y + 1] == type)) y++;
@@ -551,10 +551,13 @@ void tagBoard::vectorize(const unsigned int layer)
 			x++;
 		}
 
+		// Increment to set up for vector creation.
+		x++; y++;
+
 		// Mark off the tiles in this rectangle as in a vector.
-		for (i = origX - 1; i < x; i++)
+		for (i = origX; i < x; i++)
 		{
-			memset(pFinished + height * i + origY - 1, 1, y - origY + 1);
+			memset(pFinished + height * i + origY, 1, y - origY);
 		}
 
 		// Create the vector and add it to the board's list.
@@ -562,18 +565,18 @@ void tagBoard::vectorize(const unsigned int layer)
 		if (coordType & ISO_STACKED)
 		{
 			// Order: top, left, bottom, right.
-			vector.pV = new CVector(((origX - 1) - (origY - 1) + bSizeX) * 32, ((origX - 1) + (origY - 1) - bSizeX) * 16, 4);
-			vector.pV->push_back(((origX - 1) - y + bSizeX) * 32, ((origX - 1) + y - bSizeX) * 16);
+			vector.pV = new CVector((origX - origY + bSizeX) * 32, (origX + origY - bSizeX) * 16, 4);
+			vector.pV->push_back((origX - y + bSizeX) * 32, (origX + y - bSizeX) * 16);
 			vector.pV->push_back((x - y + bSizeX) * 32, (x + y - bSizeX) * 16);
-			vector.pV->push_back((x - (origY - 1) + bSizeX) * 32, (x + (origY - 1) - bSizeX) * 16);
+			vector.pV->push_back((x - origY + bSizeX) * 32, (x + origY - bSizeX) * 16);
 		}
 		else
 		{
 			// Order: top-left, bot-left, bot-right, top-right.
-			vector.pV = new CVector((origX - 1) * 32, (origY - 1) * 32, 4);
-			vector.pV->push_back((origX - 1) * 32, y * 32);
+			vector.pV = new CVector(origX * 32, origY * 32, 4);
+			vector.pV->push_back(origX * 32, y * 32);
 			vector.pV->push_back(x * 32, y * 32);
-			vector.pV->push_back(x * 32, (origY - 1) * 32);
+			vector.pV->push_back(x * 32, origY * 32);
 		}
 		vector.pV->close(true);
 		vector.layer = layer;
@@ -878,7 +881,6 @@ void tagBoard::render(CCanvas *cnv,
 		}
 
 	} // for i
-
 }
 
 /*
