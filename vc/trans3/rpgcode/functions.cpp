@@ -2191,14 +2191,15 @@ void wander(CALL_DATA &params)
 
 	DB_POINT d;
 	p->getDestination(d);
-
-	DB_POINT pt = {d.x + g_directions[isIso][direction][0] * 32, d.y + g_directions[isIso][direction][1] * 32};
-	p->setQueuedPoint(pt);
-
-	if (!params.prg->isThread())
+	const DB_POINT pt = {d.x + g_directions[isIso][direction][0] * 32, d.y + g_directions[isIso][direction][1] * 32};
+	if (pt.x > 0 && pt.x < g_pBoard->pxWidth() && pt.y > 0 && pt.y < g_pBoard->pxHeight())
 	{
-		// If not a thread, move now.
-		p->runQueuedMovements();
+		p->setQueuedPoint(pt);
+		if (!params.prg->isThread())
+		{
+			// If not a thread, move now.
+			p->runQueuedMovements();
+		}
 	}
 }
 
