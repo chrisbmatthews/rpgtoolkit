@@ -394,11 +394,7 @@ void createCanvases()
 	g_anmCache.clear();
 //	g_anmCache.reserve(128);
 
-	RECT rect = {0, 0, g_resX * 2, g_resY * 2};
-	g_scrollCache.pCnv = new CCanvas();
-	g_scrollCache.pCnv->CreateBlank(NULL, rect.right, rect.bottom, TRUE);
-	g_scrollCache.pCnv->ClearScreen(0);
-	g_scrollCache.r = rect;
+	g_scrollCache.createCanvas(g_resX * 2, g_resY * 2);
 
 	g_cnvCursor = new CCanvas();
 	g_cnvCursor->CreateBlank(NULL, 32, 32, TRUE);
@@ -423,7 +419,6 @@ void destroyCanvases()
 {
 	delete g_cnvRpgCode;
 	delete g_cnvMessageWindow;
-	delete g_scrollCache.pCnv;
 	delete g_cnvCursor;
 
 	std::vector<CCanvas *>::iterator i = g_cnvRpgScreens.begin();
@@ -592,12 +587,28 @@ void tagScrollCache::render(const bool bForceRedraw)
 	extern LPBOARD g_pBoard;
 	extern CPlayer *g_pSelectedPlayer;
 
-	if (g_screen.left < r.left || g_screen.top < r.top ||
-		g_screen.right > r.right ||	g_screen.bottom > r.bottom ||
+	// Reduce cache size if the board is smaller than the maximum.
+	if (bForceRedraw)
+	{
+		const int w = (g_pBoard->pxWidth() < maxWidth ? g_pBoard->pxWidth() : maxWidth);
+		const int h = (g_pBoard->pxHeight() < maxHeight ? g_pBoard->pxHeight() : maxHeight);
+		if (w != cnv.GetWidth() || h != cnv.GetHeight())
+		{
+			cnv.Resize(NULL, w, h);
+		}
+		r.left = r.top = 0;
+		r.right = w;
+		r.bottom = h;
+	}
+
+	if ((g_screen.left >= 0 && g_screen.left < r.left) || 
+		(g_screen.top >= 0 && g_screen.top < r.top) ||
+		(g_screen.left >= 0 && g_screen.right > r.right) ||	
+		(g_screen.top >= 0 && g_screen.bottom > r.bottom) ||
 		bForceRedraw)
 	{
 		// The screen is off the scrollcache area.
-
+		// (>= 0 for caches smaller than the screen.)
 		const int width = r.right - r.left, height = r.bottom - r.top;
 
 		// Align to player.
@@ -609,9 +620,9 @@ void tagScrollCache::render(const bool bForceRedraw)
 		r.right = r.left + width;
 		r.bottom = r.top + height;
 
-		pCnv->ClearScreen(TRANSP_COLOR);
+		cnv.ClearScreen(TRANSP_COLOR);
 
-		g_pBoard->render(pCnv, 
+		g_pBoard->render(&cnv, 
 				  0, 0, 
 				  1, g_pBoard->bSizeL,
 				  r.left, 
@@ -622,17 +633,17 @@ void tagScrollCache::render(const bool bForceRedraw)
 
 #ifdef DEBUG_VECTORS
 		// Draw program and tile vectors.
-		pCnv->Lock();
+		cnv.Lock();
 		for (std::vector<LPBRD_PROGRAM>::iterator b = g_pBoard->programs.begin(); b != g_pBoard->programs.end(); ++b)
 		{
-			(*b)->vBase.draw(RGB(255, 255, 0), true, r.left, r.top, pCnv);
+			(*b)->vBase.draw(RGB(255, 255, 0), true, r.left, r.top, &cnv);
 		}
 		for (std::vector<BRD_VECTOR>::iterator c = g_pBoard->vectors.begin(); c != g_pBoard->vectors.end(); ++c)
 		{
 			int color = c->type == TT_SOLID ? RGB(255, 255, 255) : RGB(0, 255, 0);
-			c->pV->draw(color, true, r.left, r.top, pCnv);
+			c->pV->draw(color, true, r.left, r.top, &cnv);
 		}
-		pCnv->Unlock();
+		cnv.Unlock();
 #endif
 	}
 }
@@ -668,13 +679,13 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 		g_scrollCache.render(false);
 
 		// Draw flattened layers.
-		g_scrollCache.pCnv->BltTransparentPart(cnv, 
-									g_scrollCache.r.left - g_screen.left,
-									g_scrollCache.r.top - g_screen.top,
-									0, 0, 
-									g_scrollCache.r.right - g_scrollCache.r.left, 
-									g_scrollCache.r.bottom - g_scrollCache.r.top,
-									TRANSP_COLOR);
+		g_scrollCache.cnv.BltTransparentPart(cnv, 
+			g_scrollCache.r.left - g_screen.left,
+			g_scrollCache.r.top - g_screen.top,
+			0, 0, 
+			g_scrollCache.r.right - g_scrollCache.r.left, 
+			g_scrollCache.r.bottom - g_scrollCache.r.top,
+			TRANSP_COLOR);
 	}
 
 	/*

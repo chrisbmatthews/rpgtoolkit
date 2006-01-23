@@ -18,14 +18,21 @@
  */
 typedef struct tagScrollCache
 {
-	CCanvas *pCnv;			// Canvas for each layer.
-	RECT r;					// Bounds of graphics on this layer (board co-ords).
+	CCanvas cnv;				// Canvas for all layers.
+	RECT r;						// Bounds of graphics (board co-ords).
+	int maxWidth, maxHeight;	// Maximum size of cache.
 
-	tagScrollCache(): 
-		pCnv(NULL)
-		{ r.top = r.bottom = r.left = r.right = 0; };
+	tagScrollCache(): cnv()
+	{ r.top = r.bottom = r.left = r.right = 0; };
 
 	void render(const bool bForceRedraw);
+	void createCanvas(const int w, const int h)
+	{
+		cnv.CreateBlank(NULL, w, h, TRUE);
+		cnv.ClearScreen(0);
+		maxWidth = r.right = w;
+		maxHeight = r.bottom = h;
+	}
 
 } SCROLL_CACHE;
 
