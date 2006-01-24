@@ -494,6 +494,8 @@ int mainEventLoop()
  */
 int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, const LPTSTR lpCmdLine, const int nCmdShow)
 {
+	extern STRING g_savePath;
+
 	// #define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
 	#define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
@@ -504,6 +506,9 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	_tchdir(WORKING_DIRECTORY);
 
 	_tfreopen(_T("log.txt"), _T("w"), stderr); // Destination for std::cerr.
+
+	// Make the default save game folder before pak file stuff.
+	_tmkdir(g_savePath.c_str());
 
 	const STRING fileName = getMainFileName(lpCmdLine);
 	_tchdir(WORKING_DIRECTORY);

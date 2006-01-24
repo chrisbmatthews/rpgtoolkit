@@ -1036,7 +1036,7 @@ STDMETHODIMP CCallbacks::CBDebugMessage(BSTR message)
 
 STDMETHODIMP CCallbacks::CBGetPathString(int infoCode, BSTR *pRet)
 {
-	extern STRING g_projectPath;
+	extern STRING g_projectPath, g_savePath;
 
 	STRING str;
 	switch (infoCode)
@@ -1084,7 +1084,7 @@ STDMETHODIMP CCallbacks::CBGetPathString(int infoCode, BSTR *pRet)
 			str = MISC_PATH;
 			break;
 		case PATH_SAVE:
-			// TBD.
+			str = g_savePath;
 			break;
 		case PATH_PROJECT:
 			str = g_projectPath;

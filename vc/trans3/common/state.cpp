@@ -57,7 +57,8 @@ void loadSaveState(const STRING str)
 	}
 
 	// tbd:	- clear redirects
-	//		- hide players
+	//		- hide players - default to hidden. No record of whether
+	//						 they were active or hidden. Use position?
 
 	short majorVer, minorVer;
 	file >> majorVer >> minorVer;
@@ -81,6 +82,8 @@ void loadSaveState(const STRING str)
 		{
 			// Remove type definition character.
 			replace(varName, _T("!"), _T(""));
+			// Remove quotes from maps.
+			replace(varName, _T("\""), _T(""));
 			LPSTACK_FRAME pVar = CProgram::getGlobal(varName);
 			pVar->udt = UDT_NUM;
 			pVar->num = varValue;
@@ -96,6 +99,8 @@ void loadSaveState(const STRING str)
 		{
 			// Remove type definition character.
 			replace(varName, _T("$"), _T(""));
+			// Remove quotes from maps.
+			replace(varName, _T("\""), _T(""));
 			LPSTACK_FRAME pVar = CProgram::getGlobal(varName);
 			pVar->udt = UDT_LIT;
 			pVar->lit = varString;
@@ -129,33 +134,35 @@ void loadSaveState(const STRING str)
 		file >> name >> fileName;
 		if (!fileName.empty())
 		{
-			CPlayer *p = new CPlayer(g_projectPath + TEM_PATH + fileName, false, false);
+			CPlayer *p = new CPlayer(g_projectPath + TEM_PATH + removePath(fileName), false, false);
 			p->name(name);
 			g_players.push_back(p);
 		}
 	}
 
 	g_inv.clear();
-	file >> count;
-	for (i = 0; i <= count; ++i)
+	short itemCount;					// VB recorded this as a short.
+	file >> itemCount;
+	for (i = 0; i <= itemCount; ++i)
 	{
 		STRING fileName, handle;
 		int quantity;
 		file >> fileName >> handle >> quantity;
 		if (!fileName.empty())
 		{
-			g_inv.give(fileName, quantity);
+			g_inv.give(g_projectPath + ITM_PATH + removePath(fileName), quantity);
 		}
 	}
 
-	for (i = 0; i < 16; ++i)
+	// Equipment - slot numbers run from 1.
+	for (i = 1; i <= 16; ++i)
 	{
 		for (unsigned int j = 0; j < 5; ++j)
 		{
 			STRING fileName, handle;
 			file >> fileName >> handle;
 
-			if (j < g_players.size())
+			if (!fileName.empty() && j < g_players.size())
 			{
 				CPlayer *p = g_players[j];
 				if (p) p->equipment(EQ_SLOT(fileName, handle), i);
@@ -163,6 +170,7 @@ void loadSaveState(const STRING str)
 		}
 	}
 
+	// Equipment stat modifiers.
 	for (i = 0; i < 5; ++i)
 	{
 		int hp, sm, dp, fp;
@@ -211,7 +219,7 @@ void loadSaveState(const STRING str)
 	g_stepsTaken = steps;
 	STRING mainFile;
 	file >> mainFile;
-	g_mainFile.open(GAM_PATH + mainFile);
+	g_mainFile.open(GAM_PATH + removePath(mainFile));
 	STRING board;
 	file >> board;
 	g_pBoard->open(g_projectPath + BRD_PATH + removePath(board));
@@ -290,14 +298,17 @@ void loadSaveState(const STRING str)
 		// thread will not be the same as the id of the original
 		// thread rendering variables holding old thread ids
 		// useless.
-		CThread *pThread = CThread::create(fileName);
-		if (!bPersist)
+		if (!fileName.empty())
 		{
-			g_pBoard->threads.push_back(pThread);
-		}
-		if (bSleep)
-		{
-			pThread->sleep(int(duration * 1000.0));
+			CThread *pThread = CThread::create(fileName);
+			if (!bPersist)
+			{
+				g_pBoard->threads.push_back(pThread);
+			}
+			if (bSleep)
+			{
+				pThread->sleep(int(duration * 1000.0));
+			}
 		}
 
 		// Read local variables but don't actually attempt to set
@@ -306,24 +317,27 @@ void loadSaveState(const STRING str)
 		// position.
 		int heaps;
 		file >> heaps;
-		unsigned int j;
-		for (j = 0; j <= heaps; ++j)
+		if (heaps >= 0)
 		{
-			// Create local heaps...
-			int nums;
-			file >> nums;
-			for (j = 0; j < nums; ++j)
+			unsigned int j;
+			for (j = 0; j <= heaps; ++j)
 			{
-				STRING varName; double varValue;
-				file >> varName >> varValue;
-			}
+				// Create local heaps...
+				int nums;
+				file >> nums;
+				for (j = 0; j < nums; ++j)
+				{
+					STRING varName; double varValue;
+					file >> varName >> varValue;
+				}
 
-			int lits;
-			file >> lits;
-			for (j = 0; j < lits; ++j)
-			{
-				STRING varName, varString;
-				file >> varName >> varString;
+				int lits;
+				file >> lits;
+				for (j = 0; j < lits; ++j)
+				{
+					STRING varName, varString;
+					file >> varName >> varString;
+				}
 			}
 		}
 	}

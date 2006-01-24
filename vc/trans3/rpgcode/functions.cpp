@@ -25,6 +25,7 @@
 #include "../common/CInventory.h"
 #include "../common/CFile.h"
 #include "../common/mbox.h"
+#include "../common/state.h"
 #include "../movement/locate.h"
 #include "../movement/CSprite/CSprite.h"
 #include "../movement/CPlayer/CPlayer.h"
@@ -3006,7 +3007,12 @@ void save(CALL_DATA &params)
  */
 void load(CALL_DATA &params)
 {
-
+	extern STRING g_savePath;
+	if (params.params != 1)
+	{
+		throw CError(_T("Load() requires one parameter."));
+	}
+	loadSaveState(g_savePath + params[0].getLit());
 }
 
 /*

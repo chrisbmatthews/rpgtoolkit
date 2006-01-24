@@ -13,3 +13,4 @@
  * Globals.
  */
 STRING g_projectPath;
+STRING g_savePath = _T("Saved\\");	// May be altered for pack files.
