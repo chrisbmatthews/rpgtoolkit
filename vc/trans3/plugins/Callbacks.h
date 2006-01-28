@@ -90,7 +90,7 @@ public:
 	STDMETHOD(CBCanvas2CanvasBltTranslucent) (int cnvSrc, int cnvDest, int destX, int destY, double dIntensity, int crUnaffectedColor, int crTransparentColor, int *pRet);
 	STDMETHOD(CBCanvasGetScreen) (int cnvDest, int *pRet);
 	STDMETHOD(CBLoadString) (int id, BSTR defaultString, BSTR *pRet);
-	STDMETHOD(CBCanvasDrawText) (int canvasID, BSTR text, BSTR font, int size, double x, double y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int *pRet);
+	STDMETHOD(CBCanvasDrawText) (int canvasID, BSTR text, BSTR font, int size, double x, double y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int isOutlined, int *pRet);
 	STDMETHOD(CBCanvasPopup) (int canvasID, int x, int y, int stepSize, int popupType, int *pRet);
 	STDMETHOD(CBCanvasWidth) (int canvasID, int *pRet);
 	STDMETHOD(CBCanvasHeight) (int canvasID, int *pRet);
@@ -152,7 +152,7 @@ public:
 	STDMETHOD(CBGetFighterAnimation) (int partyIdx, int fighterIdx, BSTR animationName, BSTR *pRet);
 	STDMETHOD(CBGetFighterChargePercent) (int partyIdx, int fighterIdx, int *pRet);
 	STDMETHOD(CBFightTick) ();
-	STDMETHOD(CBDrawTextAbsolute) (BSTR text, BSTR font, int size, int x, int y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int *pRet);
+	STDMETHOD(CBDrawTextAbsolute) (BSTR text, BSTR font, int size, int x, int y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int isOutlined, int *pRet);
 	STDMETHOD(CBReleaseFighterCharge) (int partyIdx, int fighterIdx);
 	STDMETHOD(CBFightDoAttack) (int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, int amount, int toSMP, int *pRet);
 	STDMETHOD(CBFightUseItem) (int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, BSTR itemFile);

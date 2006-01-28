@@ -418,10 +418,10 @@ BSTR __stdcall CBLoadString(int id, BSTR defaultString)
 	return toRet;
 }
 
-int __stdcall CBCanvasDrawText(int canvasID, BSTR Text, BSTR font, int size, double x, double y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred)
+int __stdcall CBCanvasDrawText(int canvasID, BSTR Text, BSTR font, int size, double x, double y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int isOutlined)
 {
 	int toRet = 0;
-	g_pCallbacks->CBCanvasDrawText(canvasID, Text, font, size, x, y, crColor, isBold, isItalics, isUnderline, isCentred, &toRet);
+	g_pCallbacks->CBCanvasDrawText(canvasID, Text, font, size, x, y, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined, &toRet);
 	return toRet;
 }
 
@@ -816,10 +816,10 @@ void __stdcall CBFightTick(void)
 	g_pCallbacks->CBFightTick();
 }
 
-int __stdcall CBDrawTextAbsolute(BSTR text, BSTR font, int size, int x, int y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred)
+int __stdcall CBDrawTextAbsolute(BSTR text, BSTR font, int size, int x, int y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int isOutlined)
 {
 	int toRet = 0;
-	g_pCallbacks->CBDrawTextAbsolute(text, font, size, x, y, crColor, isBold, isItalics, isUnderline, isCentred, &toRet);
+	g_pCallbacks->CBDrawTextAbsolute(text, font, size, x, y, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined, &toRet);
 	return toRet;
 }
 

@@ -2,7 +2,7 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Tue Oct 18 17:13:38 2005
+/* at Sat Jan 28 15:32:57 2006
  */
 /* Compiler settings for C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\trans3.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
@@ -425,6 +425,7 @@ EXTERN_C const IID IID_ICallbacks;
             int isItalics,
             int isUnderline,
             int isCentred,
+            int isOutlined,
             /* [retval][out] */ int __RPC_FAR *pRet) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CBCanvasPopup( 
@@ -728,6 +729,7 @@ EXTERN_C const IID IID_ICallbacks;
             int isItalics,
             int isUnderline,
             int isCentred,
+            int isOutlined,
             /* [retval][out] */ int __RPC_FAR *pRet) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE CBReleaseFighterCharge( 
@@ -1245,6 +1247,7 @@ EXTERN_C const IID IID_ICallbacks;
             int isItalics,
             int isUnderline,
             int isCentred,
+            int isOutlined,
             /* [retval][out] */ int __RPC_FAR *pRet);
         
         HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBCanvasPopup )( 
@@ -1610,6 +1613,7 @@ EXTERN_C const IID IID_ICallbacks;
             int isItalics,
             int isUnderline,
             int isCentred,
+            int isOutlined,
             /* [retval][out] */ int __RPC_FAR *pRet);
         
         HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBReleaseFighterCharge )( 
@@ -1904,8 +1908,8 @@ EXTERN_C const IID IID_ICallbacks;
 #define ICallbacks_CBLoadString(This,id,defaultString,pRet)	\
     (This)->lpVtbl -> CBLoadString(This,id,defaultString,pRet)
 
-#define ICallbacks_CBCanvasDrawText(This,canvasID,text,font,size,x,y,crColor,isBold,isItalics,isUnderline,isCentred,pRet)	\
-    (This)->lpVtbl -> CBCanvasDrawText(This,canvasID,text,font,size,x,y,crColor,isBold,isItalics,isUnderline,isCentred,pRet)
+#define ICallbacks_CBCanvasDrawText(This,canvasID,text,font,size,x,y,crColor,isBold,isItalics,isUnderline,isCentred,isOutlined,pRet)	\
+    (This)->lpVtbl -> CBCanvasDrawText(This,canvasID,text,font,size,x,y,crColor,isBold,isItalics,isUnderline,isCentred,isOutlined,pRet)
 
 #define ICallbacks_CBCanvasPopup(This,canvasID,x,y,stepSize,popupType,pRet)	\
     (This)->lpVtbl -> CBCanvasPopup(This,canvasID,x,y,stepSize,popupType,pRet)
@@ -2090,8 +2094,8 @@ EXTERN_C const IID IID_ICallbacks;
 #define ICallbacks_CBFightTick(This)	\
     (This)->lpVtbl -> CBFightTick(This)
 
-#define ICallbacks_CBDrawTextAbsolute(This,text,font,size,x,y,crColor,isBold,isItalics,isUnderline,isCentred,pRet)	\
-    (This)->lpVtbl -> CBDrawTextAbsolute(This,text,font,size,x,y,crColor,isBold,isItalics,isUnderline,isCentred,pRet)
+#define ICallbacks_CBDrawTextAbsolute(This,text,font,size,x,y,crColor,isBold,isItalics,isUnderline,isCentred,isOutlined,pRet)	\
+    (This)->lpVtbl -> CBDrawTextAbsolute(This,text,font,size,x,y,crColor,isBold,isItalics,isUnderline,isCentred,isOutlined,pRet)
 
 #define ICallbacks_CBReleaseFighterCharge(This,partyIdx,fighterIdx)	\
     (This)->lpVtbl -> CBReleaseFighterCharge(This,partyIdx,fighterIdx)
@@ -3052,6 +3056,7 @@ HRESULT STDMETHODCALLTYPE ICallbacks_CBCanvasDrawText_Proxy(
     int isItalics,
     int isUnderline,
     int isCentred,
+    int isOutlined,
     /* [retval][out] */ int __RPC_FAR *pRet);
 
 
@@ -3913,6 +3918,7 @@ HRESULT STDMETHODCALLTYPE ICallbacks_CBDrawTextAbsolute_Proxy(
     int isItalics,
     int isUnderline,
     int isCentred,
+    int isOutlined,
     /* [retval][out] */ int __RPC_FAR *pRet);
 
 
