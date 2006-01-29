@@ -914,7 +914,7 @@ INT FAST_CALL CCanvas::BltStretch(
 
 	CONST HDC srcHdc = OpenDC();
 	CONST INT toRet = StretchBlt(hdc, x, y, newWidth, newHeight, srcHdc, xSrc, ySrc, width, height, lRasterOp);
-	CloseDC(hdc);
+	CloseDC(srcHdc);
 	return toRet;
 
 }
