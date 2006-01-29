@@ -70,6 +70,7 @@ double g_textX = 0.0, g_textY = 0.0;		// Last position text() was used at.
 typedef std::pair<STRING, RECT> RPG_BUTTON;	// Rpgcode button <image, position>
 std::map<int, RPG_BUTTON> g_buttons;		// setButton(), checkButton().
 int g_mwinSize = 0;							// Width of message window.
+const int MISC_DELAY = 5;					// Miscellaneous delay (millisecond).
 
 /*
  * Become ready to run a program.
@@ -544,174 +545,6 @@ void fontSize(CALL_DATA &params)
 		throw CError(_T("FontSize() requires one parameter."));
 	}
 	g_fontSize = int(params[0].getNum());
-}
-
-/*
- * void fade(int type)
- * 
- * Perform a fade using the current colour. There are several
- * different types of fades.
- *
- * 0 - the screen is blotted out by a growing and shrinking box
- * 1 - blots out with vertical lines
- * 2 - fades from white to black
- * 3 - line sweeps across the screen
- * 4 - black circle swallows the player
- * 5 - image fade to black
- */
-void fade(CALL_DATA &params)
-{
-	extern RECT g_screen;
-
-	const int type = (!params.params ? 0 : int(params[0].getNum())), 
-			  width = g_cnvRpgCode->GetWidth(),
-			  height = g_cnvRpgCode->GetHeight();
-	
-	// TBD: delays?
-
-	// Colin:	This function is terrible -- just terrible.
-	//			I was going to do something different, but I suppose
-	//			I don't feel like it anymore.
-
-	// I don't know why I fucking bother if that's your attitude.
-
-	// If it's not terrible, how would you describe it? It takes
-	// almost a minute for these fades to run and none of them is
-	// actually a fade. It's CBM's fault, not yours; we shouldn't
-	// have reproduced it exactly.
-
-	switch (type)
-	{
-	case 0:
-		{
-			// Box grows from centre to fill screen.
-			const int pxStep = 5;
-
-			for (unsigned int i = 0; i != width / 2; i += pxStep)
-			{
-				int y1 = height / 2 - i, y2 = height / 2 + i;
-
-				g_cnvRpgCode->DrawFilledRect(
-					width / 2 - i, (y1 < 0 ? 0 : y1),
-					width / 2 + i, (y2 > height ? height : y2),
-					g_color);
-				renderRpgCodeScreen();
-			}
-			// Shrink box back to centre on a black background.
-			for (; i != 0; i -= pxStep)
-			{
-				g_cnvRpgCode->ClearScreen(0);
-				int y1 = height / 2 - i, y2 = height / 2 + i;
-
-				g_cnvRpgCode->DrawFilledRect(
-					width / 2 - i, (y1 < 0 ? 0 : y1),
-					width / 2 + i, (y2 > height ? height : y2),
-					g_color);
-				processEvent();
-				renderRpgCodeScreen();
-			}
-		} break;
-	case 1:
-		{
-			// Vertical lines sweep across screen.
-			const int pxStep = 5;
-			int color = g_color;
-
-			for (int j = 0; j != 2; ++j)
-			{
-				// First sweep.
-				for (unsigned int i = 0; i != width / 2; i += pxStep * 2)
-				{
-					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
-					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
-					processEvent();
-					renderRpgCodeScreen();
-				}
-				// Fill in gaps.
-				for (i = pxStep; i < width / 2; i += pxStep * 2)
-				{
-					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
-					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
-					processEvent();
-					renderRpgCodeScreen();
-				}
-				// Repeat once with black.
-				color = 0;
-			}
-			g_cnvRpgCode->ClearScreen(g_color);
-			processEvent();
-			renderRpgCodeScreen();
-		} break;
-	case 2:
-		{
-			// "Fade" from solid grey to solid black.
-			for (int i = 128; i >= 0; i -= 4)
-			{
-				g_cnvRpgCode->ClearScreen(RGB(i,i,i));
-				processEvent();
-				renderRpgCodeScreen();
-			}
-		} break;
-	case 3:
-		{
-			// Swipe left to right.
-			const int pxStep = 4;
-
-			// Create a gradient for the leading edge.
-			CCanvas cnv;
-			cnv.CreateBlank(NULL, 128, height, TRUE);
-			cnv.ClearScreen(0);
-			for (int i = 0; i != 128; i += pxStep)
-			{
-				cnv.DrawFilledRect(i, 0, i + pxStep, height, RGB(i,i,i));
-			}
-			// Copy over the gradient, shifting it right.
-			for (i = -128; i != width; i += pxStep)
-			{
-				// Overflow handled in BltPart().
-				cnv.Blt(g_cnvRpgCode, i, 0, SRCCOPY);
-				processEvent();
-				renderRpgCodeScreen();
-			}
-		} break;
-	case 4:
-		{
-			// Circle in on player.
-			extern CPlayer *g_pSelectedPlayer;
-			const SPRITE_POSITION p = g_pSelectedPlayer->getPosition();
-			const int x = int(p.x) - g_screen.left,// - 16,
-					  y = int(p.y) - g_screen.top - 16;
-			// Use the longest diagonal as the radius.
-			const int rX = (width - x > x ? width - x: x),
-					  rY = (height - y > y ? height - y: y);
-			int radius = sqrt(rX * rX + rY * rY);
-
-			for (; radius > 0; radius -= 1)
-			{
-				g_cnvRpgCode->DrawEllipse(x - radius, y - radius, x + radius, y + radius, 0);
-				processEvent();
-                renderRpgCodeScreen();
-			}
-		} break;
-	case 5:
-		{
-			// Image fade.
-			CCanvas cnv;
-			cnv.CreateBlank(NULL, width, height, TRUE);
-			cnv.ClearScreen(g_color);
-
-			CCanvas cnvScr = *g_cnvRpgCode;
-
-			for (double i = 0.1; i <= 1.0; i += 0.1)
-			{
-				cnvScr.Blt(g_cnvRpgCode, 0, 0, SRCCOPY);
-				cnv.BltTranslucent(g_cnvRpgCode, 0, 0, i, -1, -1);
-				processEvent();
-                renderRpgCodeScreen();
-			}
-		} break;
-
-	}
 }
 
 /*
@@ -3561,23 +3394,396 @@ void mousemove(CALL_DATA &params)
 }
 
 /*
- * zoom(...)
+ * void fade(int type)
  * 
- * Description.
+ * Perform a fade using the current colour. There are several
+ * different types of fades.
+ *
+ * 0 - the screen is blotted out by a growing and shrinking box
+ * 1 - blots out with vertical lines
+ * 2 - fades from white to black
+ * 3 - line sweeps across the screen
+ * 4 - black circle swallows the player
+ * 5 - image fade to black
  */
-void zoom(CALL_DATA &params)
+void fade(CALL_DATA &params)
 {
+	extern RECT g_screen;
 
+	const int type = (!params.params ? 0 : int(params[0].getNum())), 
+			  width = g_cnvRpgCode->GetWidth(),
+			  height = g_cnvRpgCode->GetHeight();
+	
+	// TBD: delays?
+
+	switch (type)
+	{
+	case 0:
+		{
+			// Box grows from centre to fill screen.
+			const int pxStep = 5;
+
+			for (unsigned int i = 0; i != width / 2; i += pxStep)
+			{
+				int y1 = height / 2 - i, y2 = height / 2 + i;
+
+				g_cnvRpgCode->DrawFilledRect(
+					width / 2 - i, (y1 < 0 ? 0 : y1),
+					width / 2 + i, (y2 > height ? height : y2),
+					g_color);
+				renderRpgCodeScreen();
+			}
+			// Shrink box back to centre on a black background.
+			for (; i != 0; i -= pxStep)
+			{
+				g_cnvRpgCode->ClearScreen(0);
+				int y1 = height / 2 - i, y2 = height / 2 + i;
+
+				g_cnvRpgCode->DrawFilledRect(
+					width / 2 - i, (y1 < 0 ? 0 : y1),
+					width / 2 + i, (y2 > height ? height : y2),
+					g_color);
+				processEvent();
+				renderRpgCodeScreen();
+			}
+		} break;
+	case 1:
+		{
+			// Vertical lines sweep across screen.
+			const int pxStep = 5;
+			int color = g_color;
+
+			for (int j = 0; j != 2; ++j)
+			{
+				// First sweep.
+				for (unsigned int i = 0; i != width / 2; i += pxStep * 2)
+				{
+					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
+					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
+					processEvent();
+					renderRpgCodeScreen();
+				}
+				// Fill in gaps.
+				for (i = pxStep; i < width / 2; i += pxStep * 2)
+				{
+					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
+					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
+					processEvent();
+					renderRpgCodeScreen();
+				}
+				// Repeat once with black.
+				color = 0;
+			}
+			g_cnvRpgCode->ClearScreen(g_color);
+			processEvent();
+			renderRpgCodeScreen();
+		} break;
+	case 2:
+		{
+			// "Fade" from solid grey to solid black.
+			for (int i = 128; i >= 0; i -= 4)
+			{
+				g_cnvRpgCode->ClearScreen(RGB(i,i,i));
+				processEvent();
+				renderRpgCodeScreen();
+			}
+		} break;
+	case 3:
+		{
+			// Swipe left to right.
+			const int pxStep = 4;
+
+			// Create a gradient for the leading edge.
+			CCanvas cnv;
+			cnv.CreateBlank(NULL, 128, height, TRUE);
+			cnv.ClearScreen(0);
+			for (int i = 0; i != 128; i += pxStep)
+			{
+				cnv.DrawFilledRect(i, 0, i + pxStep, height, RGB(i,i,i));
+			}
+			// Copy over the gradient, shifting it right.
+			for (i = -128; i != width; i += pxStep)
+			{
+				// Overflow handled in BltPart().
+				cnv.Blt(g_cnvRpgCode, i, 0, SRCCOPY);
+				processEvent();
+				renderRpgCodeScreen();
+			}
+		} break;
+	case 4:
+		{
+			// Circle in on player.
+			extern CPlayer *g_pSelectedPlayer;
+			const SPRITE_POSITION p = g_pSelectedPlayer->getPosition();
+			const int x = int(p.x) - g_screen.left,// - 16,
+					  y = int(p.y) - g_screen.top - 16;
+			// Use the longest diagonal as the radius.
+			const int rX = (width - x > x ? width - x: x),
+					  rY = (height - y > y ? height - y: y);
+			int radius = sqrt(rX * rX + rY * rY);
+
+			for (; radius > 0; radius -= 1)
+			{
+				g_cnvRpgCode->DrawEllipse(x - radius, y - radius, x + radius, y + radius, 0);
+				processEvent();
+                renderRpgCodeScreen();
+			}
+		} break;
+	case 5:
+		{
+			// Image fade.
+			CCanvas cnv;
+			cnv.CreateBlank(NULL, width, height, TRUE);
+			cnv.ClearScreen(g_color);
+
+			CCanvas cnvScr = *g_cnvRpgCode;
+
+			for (double i = 0.1; i <= 1.0; i += 0.1)
+			{
+				cnvScr.Blt(g_cnvRpgCode, 0, 0, SRCCOPY);
+				cnv.BltTranslucent(g_cnvRpgCode, 0, 0, i, -1, -1);
+				processEvent();
+                renderRpgCodeScreen();
+			}
+		} break;
+
+	}
 }
 
 /*
- * earthquake(...)
+ * zoom(int percent)
  * 
- * Description.
+ * Zoom into the centre of the board by the specified percent.
+ */
+void zoom(CALL_DATA &params)
+{
+	extern RECT g_screen;
+	extern double g_renderCount, g_renderTime;
+
+	const int width = g_screen.right - g_screen.left,
+			  height = g_screen.bottom - g_screen.top;
+
+	if (params.params != 1)
+	{
+		throw CError(_T("Zoom() requires one parameter."));
+	}
+	CCanvas cnv(*g_cnvRpgCode);
+	const double percent = 1.0 - params[0].getNum() / 100;
+	const double speed = (g_renderTime / g_renderCount) * 0.05;
+
+	for (double i = 1.0; i > percent; i -= 0.01 * speed)
+	{
+		const int w = width * i, h = height * i;
+
+		cnv.BltStretch(
+			g_cnvRpgCode,
+			0, 0,
+			(width - w) * 0.5, (height - h) * 0.5,
+			w, h,
+			width, height,
+			SRCCOPY);
+
+		renderRpgCodeScreen();
+		Sleep(MISC_DELAY);
+		processEvent();
+	}
+}
+
+/*
+ * earthquake(int intensity)
+ * 
+ * Shake the screen.
  */
 void earthquake(CALL_DATA &params)
 {
+	extern RECT g_screen;
+	extern LPBOARD g_pBoard;
 
+	const int width = g_screen.right - g_screen.left,
+			  height = g_screen.bottom - g_screen.top;
+
+	if (params.params != 1)
+	{
+		throw CError(_T("Earthquake() requires one parameter."));
+	}
+	const CCanvas cnv(*g_cnvRpgCode);
+	const int intensity = int(params[0].getNum());
+
+	for (int i = 1; i <= intensity; ++i)
+	{
+		g_cnvRpgCode->ClearScreen(g_pBoard->brdColor);
+		cnv.BltPart(g_cnvRpgCode, 0, 0, i, i, width - i, height - i, SRCCOPY);
+		renderRpgCodeScreen();
+		Sleep(MISC_DELAY);
+
+		g_cnvRpgCode->ClearScreen(g_pBoard->brdColor);
+		cnv.BltPart(g_cnvRpgCode, i, 0, 0, i, width - i, height - i, SRCCOPY);
+		renderRpgCodeScreen();
+		Sleep(MISC_DELAY);
+
+		g_cnvRpgCode->ClearScreen(g_pBoard->brdColor);
+		cnv.BltPart(g_cnvRpgCode, 0, i, i, 0, width - i, height - i, SRCCOPY);
+		renderRpgCodeScreen();
+		Sleep(MISC_DELAY);
+
+		g_cnvRpgCode->ClearScreen(g_pBoard->brdColor);
+		cnv.BltPart(g_cnvRpgCode, i, i, 0, 0, width - i, height - i, SRCCOPY);
+		renderRpgCodeScreen();
+		Sleep(MISC_DELAY);
+
+		processEvent();
+	}
+	cnv.Blt(g_cnvRpgCode, 0, 0, SRCCOPY);
+	renderRpgCodeScreen();
+}
+
+/*
+ * wipe(string file, int effect [, int speed])
+ * 
+ *'Wipe' a graphic to the screen.
+ * file: filename of the image to wipe to.
+ * effect: numeric value between 1 and 12. The valid types are:
+ * 1  - Right
+ * 2  - Left
+ * 3  - Down
+ * 4  - Up
+ * 5  - NW to SE
+ * 6  - NE to SW
+ * 7  - SW to NE
+ * 8  - SE to NW
+ * 9  - Right 'zelda' style
+ * 10 - Left 'zelda' style
+ * 11 - Down 'zelda' style
+ * 12 - Up 'zelda' style
+ * speed: default is 1, set higher to increase wipe speed.
+ */
+void wipe(CALL_DATA &params)
+{
+	extern RECT g_screen;
+	extern STRING g_projectPath;
+	extern double g_renderCount, g_renderTime;
+
+	const int width = g_screen.right - g_screen.left,
+			  height = g_screen.bottom - g_screen.top;
+
+	if (params.params != 2 && params.params != 3)
+	{
+		throw CError(_T("Wipe() requires two or three parameters."));
+	}
+	CCanvas cnv, cnvScr(*g_cnvRpgCode);
+	cnv.CreateBlank(NULL, width, height, TRUE);
+	drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &cnv, 0, 0, width, height);
+
+	int speed = (params.params == 3 ? abs(params[2].getNum()) : 1);
+
+	// Skip pixels for low fps. Factor by 20th of millisecond frametime.
+	const int factor = round((g_renderTime / g_renderCount) * 0.05);
+	speed *= (!factor ? 1 : factor);
+
+	int x = 0, y = 0;
+	double dy = 0.0;
+	const double dspeed = double(speed * height) / double(width);
+
+	switch(int(params[1].getNum()))
+	{
+	case 1:	// Right
+		for (x = 0; x < width; x += speed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, 0, 0, 0, x, height, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, x, 0, 0, 0, width - x, height, SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 2:	// Left
+		for (x = width; x > 0; x -= speed)
+		{
+			cnv.BltPart(g_cnvRpgCode, x, 0, x, 0, width - x, height, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, 0, 0, width - x, 0, x, height, SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 3:	// Down
+		for (y = 0; y < height; y += speed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, 0, 0, 0, width, y, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, 0, y, 0, 0, width, height - y, SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 4:	// Up
+		for (y = height; y > 0; y -= speed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, y, 0, y, width, height - y, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, 0, 0, 0,  height - y, width, y, SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 5:	// Down-right
+		for (; x < width; x += speed, dy += dspeed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, 0, 0, 0, width, height, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, x, round(dy), 0, 0, width - x, height - round(dy), SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 6:	// Down-left
+		for (x = width; x > 0; x -= speed, dy += dspeed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, 0, 0, 0, width, height, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, 0, round(dy), width - x, 0, x, height - round(dy), SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 7:	// Up-right
+		for (dy = double(height); x < width; x += speed, dy -= dspeed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, 0, 0, 0, width, height, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, x, 0, 0, height - round(dy), width - x, round(dy), SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 8:	// Up-left
+		for (dy = double(height), x = width; x > 0; x -= speed, dy -= dspeed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, 0, 0, 0, width, height, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, 0, 0, width - x, height - round(dy), x, round(dy), SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 9:	// Right / Zelda
+		for (x = 0; x < width; x += speed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, 0, width - x, 0, x, height, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, x, 0, 0, 0, width - x, height, SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 10:// Left / Zelda
+		for (x = width; x > 0; x -= speed)
+		{
+			cnv.BltPart(g_cnvRpgCode, x, 0, 0, 0, width - x, height, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, 0, 0, width - x, 0, x, height, SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 11:// Down / Zelda
+		for (y = 0; y < height; y += speed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, 0, 0, height - y, width, y, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, 0, y, 0, 0, width, height - y, SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+	case 12:// Up / Zelda
+		for (y = height; y > 0; y -= speed)
+		{
+			cnv.BltPart(g_cnvRpgCode, 0, y, 0, 0, width, height - y, SRCCOPY);
+			cnvScr.BltPart(g_cnvRpgCode, 0, 0, 0,  height - y, width, y, SRCCOPY);
+			renderRpgCodeScreen();
+			processEvent();
+		} break;
+
+	}
 }
 
 /*
@@ -3869,13 +4075,13 @@ void textSpeed(CALL_DATA &params)
 }
 
 /*
- * mwinsize(...)
+ * mwinsize(int percent)
  * 
- * Description.
+ * Obsolete.
  */
 void mwinsize(CALL_DATA &params)
 {
-
+	throw CError(_T("MWinSize() is obsolete."));
 }
 
 /*
@@ -4906,16 +5112,6 @@ void forceRedraw(CALL_DATA &params)
 {
 	renderNow(g_cnvRpgCode, true);
 	renderRpgCodeScreen();
-}
-
-/*
- * wipe(...)
- * 
- * Description.
- */
-void wipe(CALL_DATA &params)
-{
-
 }
 
 /*
