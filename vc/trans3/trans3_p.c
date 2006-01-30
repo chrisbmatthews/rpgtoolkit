@@ -2,7 +2,7 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Sat Jan 28 15:32:57 2006
+/* at Sun Jan 29 17:30:50 2006
  */
 /* Compiler settings for C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\trans3.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
@@ -1588,7 +1588,7 @@ HRESULT STDMETHODCALLTYPE ICallbacks_CBCanvasDrawText_Proxy(
     int isItalics,
     int isUnderline,
     int isCentred,
-    int isOutlined,
+    /* [defaultvalue][in] */ int isOutlined,
     /* [retval][out] */ int __RPC_FAR *pRet)
 {
 CLIENT_CALL_RETURN _RetVal;
@@ -3933,7 +3933,7 @@ HRESULT STDMETHODCALLTYPE ICallbacks_CBDrawTextAbsolute_Proxy(
     int isItalics,
     int isUnderline,
     int isCentred,
-    int isOutlined,
+    /* [defaultvalue][in] */ int isOutlined,
     /* [retval][out] */ int __RPC_FAR *pRet)
 {
 CLIENT_CALL_RETURN _RetVal;
