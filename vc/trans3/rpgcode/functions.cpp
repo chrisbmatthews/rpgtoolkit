@@ -910,7 +910,8 @@ void put(CALL_DATA &params)
  */
 void reset(CALL_DATA &params)
 {
-
+	extern void reset();
+	reset();
 }
 
 /*
@@ -924,11 +925,12 @@ void over(CALL_DATA &params)
 {
 	extern MAIN_FILE g_mainFile;
 	extern STRING g_projectPath;
+	extern void reset();
 
 	if (g_mainFile.gameOverPrg.empty())
 	{
 		messageBox(_T("Game over."));
-		reset(params);
+		reset();
 	}
 	else
 	{
@@ -1358,13 +1360,9 @@ void random(CALL_DATA &params)
 void tileType(CALL_DATA &params)
 {
 	/* Better solution: regenerate vectors from tagBoard.tiletype */
+	// See movement.h for old tiletype defines.
 
 	extern LPBOARD g_pBoard;
-
-	#define NORTH_SOUTH 3
-	#define EAST_WEST 4
-	#define STAIRS1 11
-	#define STAIRS8 18
 
 	if (params.params != 3 && params.params != 4)
 	{
@@ -1376,11 +1374,11 @@ void tileType(CALL_DATA &params)
 			  z = (params.params == 4 ? int(params[3].getNum()) : 1);
 
 	const STRING type = params[2].getLit();
-	int tile = TT_NORMAL;
+	int tile = NORMAL;
 
 	// "tile" to be recognised in tagBoard::vectorize()
-	if (_ftcsicmp(type.c_str(), _T("SOLID")) == 0) tile = TT_SOLID;
-	else if (_ftcsicmp(type.c_str(), _T("UNDER")) == 0) tile = TT_UNDER;
+	if (_ftcsicmp(type.c_str(), _T("SOLID")) == 0) tile = SOLID;
+	else if (_ftcsicmp(type.c_str(), _T("UNDER")) == 0) tile = UNDER;
 	else if (_ftcsicmp(type.substr(0, 6).c_str(), _T("STAIRS")) == 0)
 	{
 		tile = 10 + atoi(type.substr(6).c_str());
@@ -2808,7 +2806,17 @@ void bitmap(CALL_DATA &params)
  */
 void mainFile(CALL_DATA &params)
 {
+	extern MAIN_FILE g_mainFile;
+	extern void reset();
 
+	if (params.params != 1)
+	{
+		throw CError(_T("MainFile() requires one parameter."));
+	}
+	if (g_mainFile.open(GAM_PATH + params[0].getLit()))
+	{
+		reset();
+	}
 }
 
 /*
@@ -5179,13 +5187,13 @@ void killallredirects(CALL_DATA &params)
 }
 
 /*
- * parallax(...)
+ * parallax(int setting)
  * 
- * Description.
+ * Obselete.
  */
 void parallax(CALL_DATA &params)
 {
-
+	throw CError(_T("Parallax() is obsolete."));
 }
 
 /*

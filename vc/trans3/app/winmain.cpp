@@ -98,13 +98,10 @@ void termFunc()
  */
 void setUpGame()
 {
-
 	extern int g_selectedPlayer;
 	extern STRING g_projectPath;
 	extern RECT g_screen;
 	extern SCROLL_CACHE g_scrollCache;
-
-	g_pBoard = g_boards.allocate();
 
 	// Load plugins.
 	CProgram::freePlugins();
@@ -198,8 +195,12 @@ void setUpGame()
 	g_renderTime *= g_renderCount;
 
 	// Create and load start player.
+	for (std::vector<CPlayer *>::const_iterator j = g_players.begin(); j != g_players.end(); ++j)
+	{
+		delete *j;
+	}
 	g_players.clear();
-	g_players.reserve(5);			// Reserve places for 5 players (can be expanded).
+
 	if (!g_mainFile.initChar.empty())
 	{
 		g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true, true));
@@ -237,7 +238,7 @@ void setUpGame()
 		{
 			CProgram(g_projectPath + PRG_PATH + g_pBoard->enterPrg).run();
 		}
-		g_pSelectedPlayer->createVectors();	// Temporary.
+		g_pSelectedPlayer->createVectors();	// TBD: Temporary.
 
 	}
 }
@@ -257,6 +258,18 @@ void openSystems()
 	CAudioSegment::initLoader();
 	g_bkgMusic = g_music.allocate();
 	//createRpgCodeGlobals();
+	g_pBoard = g_boards.allocate();
+	setUpGame();
+}
+
+/*
+ * Reset the game (for RPGCode functions and default battle loss).
+ */
+void reset()
+{
+	CProgram::freeGlobals();
+	CThread::destroyAll();
+	// Other plugin stuff?
 	setUpGame();
 }
 
@@ -496,8 +509,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 {
 	extern STRING g_savePath;
 
-	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
-	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
+	// #define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
+	#define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
 	set_terminate(termFunc);
 

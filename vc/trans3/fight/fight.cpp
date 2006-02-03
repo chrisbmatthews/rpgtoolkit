@@ -715,6 +715,8 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 	extern CAllocationHeap<CAudioSegment> g_music;
 	extern CAudioSegment *g_bkgMusic;
 	extern std::vector<CPlayer *> g_players;
+	extern MAIN_FILE g_mainFile;
+	extern void reset();
 
 	if (!g_pFightPlugin) return;
 
@@ -810,7 +812,16 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 	}
 	else if (outcome == FIGHT_LOST)
 	{
-		// Do game over stuff.
+		// Reset or run gameover program.
+		if (g_mainFile.gameOverPrg.empty())
+		{
+			messageBox(_T("Game over."));
+			reset();
+		}
+		else
+		{
+			CProgram(g_projectPath + PRG_PATH + g_mainFile.gameOverPrg).run();
+		}
 	}
 
 	// Revert back to the previous music.
