@@ -448,14 +448,6 @@ void tagBoard::createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const
  */
 void tagBoard::vectorize(const unsigned int layer)
 {
-	// TBD: n/s e/w types (2D only, no iso support).
-
-	// Some old tiletype defines for this function.
-	#define NORTH_SOUTH 3
-	#define EAST_WEST 4
-	#define STAIRS1 11
-	#define STAIRS8 18
-
 	unsigned int i, j, width = bSizeX, height = bSizeY;
 
 	if (coordType & ISO_STACKED)
@@ -562,23 +554,6 @@ void tagBoard::vectorize(const unsigned int layer)
 
 		// Create the vector and add it to the board's list.
 		BRD_VECTOR vector;
-		if (coordType & ISO_STACKED)
-		{
-			// Order: top, left, bottom, right.
-			vector.pV = new CVector((origX - origY + bSizeX) * 32, (origX + origY - bSizeX) * 16, 4);
-			vector.pV->push_back((origX - y + bSizeX) * 32, (origX + y - bSizeX) * 16);
-			vector.pV->push_back((x - y + bSizeX) * 32, (x + y - bSizeX) * 16);
-			vector.pV->push_back((x - origY + bSizeX) * 32, (x + origY - bSizeX) * 16);
-		}
-		else
-		{
-			// Order: top-left, bot-left, bot-right, top-right.
-			vector.pV = new CVector(origX * 32, origY * 32, 4);
-			vector.pV->push_back(origX * 32, y * 32);
-			vector.pV->push_back(x * 32, y * 32);
-			vector.pV->push_back(x * 32, origY * 32);
-		}
-		vector.pV->close(true);
 		vector.layer = layer;
 		vector.type = TILE_TYPE(type);
 
@@ -589,9 +564,54 @@ void tagBoard::vectorize(const unsigned int layer)
 			vector.type = TT_STAIRS;
 		}
 
-		vectors.push_back(vector);
+		if (coordType & ISO_STACKED)
+		{
+			// Order: top, left, bottom, right.
+			vector.pV = new CVector((origX - origY + bSizeX) * 32, (origX + origY - bSizeX) * 16, 4);
+			vector.pV->push_back((origX - y + bSizeX) * 32, (origX + y - bSizeX) * 16);
+			vector.pV->push_back((x - y + bSizeX) * 32, (x + y - bSizeX) * 16);
+			vector.pV->push_back((x - origY + bSizeX) * 32, (x + origY - bSizeX) * 16);
+			vector.pV->close(true);
+			vectors.push_back(vector);
+		}
+		else
+		{
+			if (type == NORTH_SOUTH)
+			{
+				vector.type = TT_SOLID;
+				// Vertical lines.
+				for (i = origX; i <= x; ++i)
+				{
+					vector.pV = new CVector(i * 32, origY * 32, 2);
+					vector.pV->push_back(i * 32, y * 32);
+					vector.pV->close(false);
+					vectors.push_back(vector);
+				}
+			}
+			else if (type == EAST_WEST)
+			{
+				vector.type = TT_SOLID;
+				// Horizontal lines.
+				for (i = origY; i <= y; ++i)
+				{
+					vector.pV = new CVector(origX * 32, i * 32, 2);
+					vector.pV->push_back(x * 32, i * 32);
+					vector.pV->close(false);
+					vectors.push_back(vector);
+				}
+			}
+			else
+			{
+				// Order: top-left, bot-left, bot-right, top-right.
+				vector.pV = new CVector(origX * 32, origY * 32, 4);
+				vector.pV->push_back(origX * 32, y * 32);
+				vector.pV->push_back(x * 32, y * 32);
+				vector.pV->push_back(x * 32, origY * 32);
+				vector.pV->close(true);
+				vectors.push_back(vector);
+			}
+		}
 	}
-
 }
 
 /*
