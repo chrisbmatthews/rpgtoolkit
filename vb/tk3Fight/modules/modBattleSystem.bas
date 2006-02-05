@@ -558,7 +558,7 @@ Private Sub renderParty(ByVal cnv As Long)
                                      curX + 75 + 2, 11 * 4 + FONT_SIZE + 7, _
                                      curX + 75 + 2 + width, 11 * 4 + FONT_SIZE + 15 + 7, _
                                      RGB(192, 192, 192))
-        ElseIf charge <= 100 Then
+        ElseIf charge < 100 Then
             Call CBCanvasFillRect( _
                                      cnv, _
                                      curX + 75 + 2, 11 * 4 + FONT_SIZE + 7, _

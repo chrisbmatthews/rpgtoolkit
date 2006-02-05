@@ -506,7 +506,7 @@ void fightTick()
 		VECTOR_FIGHTER::iterator j = i->begin();
 		for (; j != i->end(); ++j)
 		{
-			if (j->charge <= j->chargeMax)
+			if (j->charge < j->chargeMax)
 			{
 				// Not charged.
 				if (!j->bFrozenCharge && (j->pFighter->health() > 0))
