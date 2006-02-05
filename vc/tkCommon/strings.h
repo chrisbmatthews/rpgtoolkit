@@ -10,8 +10,9 @@
 #include <string>
 #include <sstream>
 #include <tchar.h>
-#define WIN32_LEAN_AND_MEAN
+//#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <oleauto.h>
 
 #if !defined(STRING_DEFINED)
 typedef std::basic_string<TCHAR> STRING;
@@ -50,6 +51,33 @@ inline std::wstring getUnicodeString(const std::basic_string<T> istr)
 	return toRet;
 #else
 	return istr;
+#endif
+}
+
+inline STRING getString(const BSTR bstr)
+{
+#ifndef _UNICODE
+	const int length = SysStringLen(bstr) + 1;
+	char *const str = new char[length];
+	WideCharToMultiByte(CP_ACP, 0, bstr, -1, str, length, NULL, NULL);
+	const STRING toRet = str;
+	delete [] str;
+	return toRet;
+#else
+	return (wchar_t *)bstr;
+#endif
+}
+
+inline BSTR getString(const STRING rhs)
+{
+#ifndef _UNICODE
+	wchar_t *str = new wchar_t[rhs.length() + 1];
+	MultiByteToWideChar(CP_ACP, 0, rhs.c_str(), -1, str, rhs.length() + 1);
+	const BSTR toRet = SysAllocString(str);
+	delete [] str;
+	return toRet;
+#else
+	return SysAllocString(rhs.c_str());
 #endif
 }
 
