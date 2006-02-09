@@ -137,6 +137,14 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance,
 
     if (bRun)
     {
+
+		// Register this ActiveX server -- somewhat redundant, but I
+		// think it's better done here than in any installer so that
+		// trans3 can be given to people without those people needing
+		// to register it manually.
+		_Module.UpdateRegistryFromResource(IDR_Trans3, TRUE);
+		_Module.RegisterServer(TRUE);
+
         _Module.StartMonitor();
 #if _WIN32_WINNT >= 0x0400 & defined(_ATL_FREE_THREADED)
         hRes = _Module.RegisterClassObjects(CLSCTX_LOCAL_SERVER, 
