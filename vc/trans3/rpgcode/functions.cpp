@@ -6443,23 +6443,51 @@ void mousecursor(CALL_DATA &params)
 }
 
 /*
- * gettextwidth(...)
+ * int = gettextwidth(string text)
  * 
- * Description.
+ * Get the width of a string of text in pixels, 
+ * relative to the current font and size.
  */
 void gettextwidth(CALL_DATA &params)
 {
+	if (params.params != 1)
+	{
+		throw CError(_T("GetTextWidth() requires one parameter."));
+	}
 
+	CONST SIZE size = g_cnvRpgCode->GetTextSize(
+		params[0].getLit(),
+		g_fontFace,
+		g_fontSize,
+		g_bold,
+		g_italic);
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = size.cx;
 }
 
 /*
- * gettextheight(...)
+ * int = gettextheight(string text)
  * 
- * Description.
+ * Get the height of a string of text in pixels, 
+ * relative to the current font and size.
  */
 void gettextheight(CALL_DATA &params)
 {
+	if (params.params != 1)
+	{
+		throw CError(_T("GetTextHeight() requires one parameter."));
+	}
 
+	CONST SIZE size = g_cnvRpgCode->GetTextSize(
+		params[0].getLit(),
+		g_fontFace,
+		g_fontSize,
+		g_bold,
+		g_italic);
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = size.cy;
 }
 
 /*
