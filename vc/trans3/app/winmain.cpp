@@ -128,6 +128,11 @@ void setUpGame()
 		if (p && p->plugType(PT_MENU))
 		{
 			extern IPlugin *g_pMenuPlugin;
+			if (g_pMenuPlugin)
+			{
+				g_pMenuPlugin->terminate();
+				delete g_pMenuPlugin;
+			}
 			g_pMenuPlugin = p;
 		}
 		else
@@ -143,6 +148,11 @@ void setUpGame()
 		if (p && p->plugType(PT_FIGHT))
 		{
 			extern IPlugin *g_pFightPlugin;
+			if (g_pFightPlugin)
+			{
+				g_pFightPlugin->terminate();
+				delete g_pFightPlugin;
+			}
 			g_pFightPlugin = p;
 		}
 		else
@@ -509,8 +519,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 {
 	extern STRING g_savePath;
 
-	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
-	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
+	// #define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
+	#define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
 	set_terminate(termFunc);
 
