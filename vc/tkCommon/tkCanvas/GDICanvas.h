@@ -356,6 +356,19 @@ public:
 		CONST BOOL bInRam
 	) CONST;
 
+	BOOL FAST_CALL BltStretchMask(
+		CONST CCanvas *cnvMask,
+		CONST CCanvas *cnvTarget,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST INT newWidth,
+		CONST INT newHeight
+	) CONST;
+
 	VOID FAST_CALL ClearScreen(
 		CONST LONG crColor
 	);
@@ -372,6 +385,14 @@ public:
 		CONST BOOL underline = FALSE,
 		CONST BOOL centred = FALSE,
 		CONST BOOL outlined = FALSE
+	);
+
+	SIZE FAST_CALL GetTextSize(
+		CONST STRING strText,
+		CONST STRING strTypeFace,
+		CONST INT size,
+		CONST BOOL bold,
+		CONST BOOL italics
 	);
 
 	BOOL FAST_CALL DrawLine(

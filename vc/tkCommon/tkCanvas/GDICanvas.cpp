@@ -262,6 +262,61 @@ BOOL FAST_CALL CCanvas::DrawText(
 }
 
 //------------------------------------------------------------------------
+// Get dimensions of a string
+//------------------------------------------------------------------------
+SIZE FAST_CALL CCanvas::GetTextSize(
+	CONST STRING strText,
+	CONST STRING strTypeFace,
+	CONST INT size,
+	CONST BOOL bold,
+	CONST BOOL italics
+		)
+{
+	SIZE sz = {0, 0};
+	UINT len = 0;
+
+	// Create a font
+	CONST HFONT hFont = CreateFont(
+		size,
+		0,
+		0,
+		0,
+		bold ? FW_BOLD : FW_NORMAL,
+		italics,
+		0,
+		0,
+		DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		DEFAULT_PITCH,
+		strTypeFace.c_str()
+	);
+
+	if (hFont)
+	{
+		CONST HDC hdc = OpenDC();
+		SetBkMode(hdc, TRANSPARENT);
+
+		// Select out old font.
+		CONST HGDIOBJ hOld = SelectObject(hdc, hFont);
+
+		len = strlen(strText.c_str());
+		if (len)
+		{
+			GetTextExtentPoint32(hdc, strText.c_str(), len, &sz);
+		}
+
+		// Clean up.
+		SelectObject(hdc, hOld);
+		DeleteObject(hFont);
+		CloseDC(hdc);
+	}
+
+	return sz;
+}
+
+//------------------------------------------------------------------------
 // Draw a rectangle.
 //------------------------------------------------------------------------
 BOOL FAST_CALL CCanvas::DrawRect(
@@ -954,6 +1009,70 @@ INT FAST_CALL CCanvas::BltStretch(
 
 	}
 
+}
+
+//
+// Stretch a masked canvas.
+//
+BOOL FAST_CALL CCanvas::BltStretchMask(
+	CONST CCanvas *cnvMask,
+	CONST CCanvas *cnvTarget,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST INT newWidth,
+	CONST INT newHeight) CONST
+{
+	if (TRUE)
+	{
+		// Use GDI BitBlt and StretchBlt.
+	    CONST HDC hdc = OpenDC();
+        CONST HDC hdcMask = cnvMask->OpenDC();
+        CONST HDC hdcTarget = cnvTarget->OpenDC();
+
+		if (width == newWidth && height == newHeight)
+		{
+			// No need to use StretchBlt.
+            BitBlt(hdcTarget, x, y, width, height, hdcMask, xSrc, ySrc, SRCAND);
+            BitBlt(hdcTarget, x, y, width, height, hdc, xSrc, ySrc, SRCPAINT);
+		}
+        else
+		{
+			// Need to use StretchBlt, may fail on Win9x machines.
+            StretchBlt(
+				hdcTarget, 
+				x, y, 
+				newWidth, newHeight,
+				hdcMask, 
+				xSrc, ySrc, 
+				width, height, 
+				SRCAND
+			);
+            StretchBlt(
+				hdcTarget, 
+				x, y, 
+				newWidth, newHeight,
+				hdc,
+				xSrc, ySrc, 
+				width, height, 
+				SRCPAINT
+			);
+        } // if (requires stretching).
+
+        cnvTarget->CloseDC(hdcTarget);
+		cnvMask->CloseDC(hdcMask);
+        CloseDC(hdc);
+	}
+	else
+	{
+		// Use Dx.
+		cnvMask->BltStretch(cnvTarget, x, y, xSrc, ySrc, width, height, newWidth, newHeight, SRCAND);
+		this->BltStretch(cnvTarget, x, y, xSrc, ySrc, width, height, newWidth, newHeight, SRCPAINT);
+	}
+	return TRUE;
 }
 
 //
