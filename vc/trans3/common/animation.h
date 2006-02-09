@@ -55,29 +55,9 @@ typedef struct tagAnimationFrame
 } ANIMATION_FRAME;
 
 /*
- * Render "frame" of animation "file" at location "x,y" at canvas "cnv".
- * Checks through the animation cache for previous renderings of this frame,
- * if not found, it is rendered here and copied to the animation cache.
- */
-bool renderAnimationFrame(CCanvas *cnv,
-						  STRING file, 
-						  int frame, 
-						  const int x, 
-						  const int y);
-
-/*
  * Clear the animation cache.
  */
 void clearAnmCache(void);
-
-bool canvasMaskBltStretchTransparent(const CCanvas *cnvSource,
-									  const CCanvas *cnvMask,
-									  const int destX,
-									  const int destY,
-									  const int newWidth,
-									  const int newHeight, 
-									  const CCanvas *cnvTarget,
-									  const int crTranspColor);
 
 void drawImage(const STRING strFile, const HDC hdc, const int x, const int y, const int width, const int height);
 

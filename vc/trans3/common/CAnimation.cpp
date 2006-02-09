@@ -157,40 +157,58 @@ bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
 		}
 
         // Draw the tilebitmap and mask to new canvases.
-		CCanvas *cnvTbm = new CCanvas();
-		CCanvas *cnvMaskTbm = new CCanvas();
-		cnvTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, TRUE);
-		cnvMaskTbm->CreateBlank(NULL, tbm.width * 32, tbm.height * 32, TRUE);
+		const int w = tbm.width * 32, h = tbm.height * 32;
+		CCanvas cnvTbm, cnvMaskTbm;
+		cnvTbm.CreateBlank(NULL, w, h, TRUE);
+		cnvMaskTbm.CreateBlank(NULL, w, h, TRUE);
 
-		if (tbm.draw(cnvTbm, cnvMaskTbm, 0, 0))
+		if (tbm.draw(&cnvTbm, &cnvMaskTbm, 0, 0))
 		{
-			//Stretch the tbm canvas to the required size and draw it to the canvas.
-			canvasMaskBltStretchTransparent(cnvTbm,
-											cnvMaskTbm,
-											0, 0,
-											m_data.animSizeX,
-											m_data.animSizeY,
-											cnv,
-											m_data.animTransp[frame]);
-		}
+			// Stretch the canvas and mask to an intermediate canvas.
+			CCanvas cnvInt;
+			cnvInt.CreateBlank(NULL, w, h, TRUE);
+			cnvInt.ClearScreen(m_data.animTransp[frame]);
 
-		// Clean up.
-        delete cnvTbm;
-        delete cnvMaskTbm;
+			cnvTbm.BltStretchMask(
+				&cnvMaskTbm,
+				&cnvInt,
+				0, 0, 
+				0, 0,
+				w, h, 
+				m_data.animSizeX, m_data.animSizeY
+			);
+			// Blt to the target canvas.
+			cnvInt.BltTransparent(cnv, 0, 0, m_data.animTransp[frame]);
+		}
 	}
 	else
 	{
 		// Image file.
-        CCanvas *c2 = new CCanvas();
-		c2->CreateBlank(NULL, m_data.animSizeX, m_data.animSizeY, TRUE);
 		const STRING strFile = g_projectPath + BMP_PATH + frameFile;
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), getAsciiString(strFile).c_str());
-		const HDC hdc = c2->OpenDC();
-		StretchDIBits(hdc, 0, 0, m_data.animSizeX, m_data.animSizeY, 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
-		c2->CloseDC(hdc);
+		FIBITMAP *bmp = FreeImage_Load(
+			FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), 
+			getAsciiString(strFile).c_str()
+		);
+
+        CCanvas cnvImg;
+		cnvImg.CreateBlank(NULL, m_data.animSizeX, m_data.animSizeY, TRUE);
+		
+		CONST HDC hdc = cnvImg.OpenDC();
+		StretchDIBits(
+			hdc, 
+			0, 0, 
+			m_data.animSizeX, m_data.animSizeY, 
+			0, 0, 
+			FreeImage_GetWidth(bmp), 
+			FreeImage_GetHeight(bmp), 
+			FreeImage_GetBits(bmp), 
+			FreeImage_GetInfo(bmp), 
+			DIB_RGB_COLORS, 
+			SRCCOPY
+		);
 		FreeImage_Unload(bmp);
-		c2->BltTransparent(cnv, 0, 0, m_data.animTransp[frame]);
-		delete c2;
+		cnvImg.CloseDC(hdc);
+		cnvImg.BltTransparent(cnv, 0, 0, m_data.animTransp[frame]);
 
     } // if (ext == TBM)
 	return true;
