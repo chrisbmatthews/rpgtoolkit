@@ -6411,9 +6411,14 @@ void rendernow(CALL_DATA &params)
  * 
  * Description.
  */
-void multirun(CALL_DATA &params)
+void multiRunBegin(CALL_DATA &params)
 {
+	messageBox("multiRunBegin()");
+}
 
+void multiRunEnd()
+{
+	messageBox("multiRunEnd()");
 }
 
 /*
@@ -6930,7 +6935,7 @@ void initRpgCode()
 	CProgram::addFunction(_T("replace"), replace);
 	CProgram::addFunction(_T("endanimation"), endanimation);
 	CProgram::addFunction(_T("rendernow"), rendernow);
-	CProgram::addFunction(_T("multirun"), multirun);
+	CProgram::addFunction(_T("multirun"), multiRunBegin);
 	CProgram::addFunction(_T("shopcolors"), shopcolors);
 	CProgram::addFunction(_T("itemspeed"), itemspeed);
 	CProgram::addFunction(_T("playerspeed"), playerspeed);

@@ -1268,6 +1268,14 @@ void tagMachineUnit::execute(CProgram *prg) const
 					prg->m_i = prg->m_units.begin() + int((i + 1)->num) - 1;
 				}
 			}
+			else
+			{
+				extern void multiRunBegin(CALL_DATA &params), multiRunEnd();
+				if (func == multiRunBegin)
+				{
+					multiRunEnd();
+				}
+			}
 		}
 	}
 	else if (!(udt & UDT_OPEN))
