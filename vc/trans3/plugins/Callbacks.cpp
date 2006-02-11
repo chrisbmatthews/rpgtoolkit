@@ -31,7 +31,9 @@
 #include "../common/background.h"
 #include "../common/item.h"
 #include "../common/spcmove.h"
+#include "../common/mainfile.h"
 #include "../input/input.h"
+#include "../misc/misc.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/locate.h"
 #include "../images/FreeImage.h"
@@ -415,7 +417,8 @@ STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSl
 			*pRet = pData->charLevelUpType;
 			break;
 		case PLAYER_DIR_FACING:
-			// TBD.
+			// TBD: warn users of direction index changes.
+			*pRet = int(pPlayer->getFacing()->dir());
 			break;
 		case PLAYER_NEXTLEVEL:
 		{
@@ -585,7 +588,8 @@ STDMETHODIMP CCallbacks::CBSetPlayerNum(int infoCode, int arrayPos, int newVal, 
 			pData->charLevelUpType = newVal;
 			break;
 		case PLAYER_DIR_FACING:
-			// TBD.
+			// TBD: warn users of direction index changes.
+			pPlayer->getFacing()->assign(MV_ENUM(newVal));
 			break;
 	}
 	return S_OK;
@@ -669,6 +673,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerString(int infoCode, int arrayPos, BSTR newV
 STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int playerSlot, BSTR *pRet)
 {
 	extern CInventory g_inv;
+	extern MAIN_FILE g_mainFile;
 
 	CPlayer *pPlayer = NULL;
 	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
@@ -683,16 +688,16 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			if (pPlayer) bstr = getString(pPlayer->getPlayer()->fileName);
 			break;
 		case GEN_PLYROTHERHANDLES:
-			// TBD.
+			// TBD. [Not currently held.]
 			break;
 		case GEN_PLYROTHERFILES:
-			// TBD.
+			// TBD. [Not currently held.]
 			break;
 		case GEN_INVENTORY_FILES:
-			bstr = getString(removePath(g_inv.getFileAt(arrayPos)));
+			bstr = getString(removePath(g_inv.fileAt(arrayPos)));
 			break;
 		case GEN_INVENTORY_HANDLES:
-			bstr = getString(g_inv.getHandleAt(arrayPos));
+			bstr = getString(g_inv.handleAt(arrayPos));
 			break;
 		case GEN_EQUIP_FILES:
 			{
@@ -760,13 +765,13 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			}
 			break;
 		case GEN_CURSOR_MOVESOUND:
-			// TBD.
+			bstr = getString(g_mainFile.cursorMoveSound);
 			break;
 		case GEN_CURSOR_SELSOUND:
-			// TBD.
+			bstr = getString(g_mainFile.cursorSelectSound);
 			break;
 		case GEN_CURSOR_CANCELSOUND:
-			// TBD.
+			bstr = getString(g_mainFile.cursorCancelSound);
 			break;
 	}
 	if (bstr)
@@ -794,7 +799,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 	{
 		case GEN_INVENTORY_NUM:
 			extern CInventory g_inv;
-			*pRet = g_inv.getQuantityAt(arrayPos);
+			*pRet = g_inv.quantityAt(arrayPos);
 			break;
 		case GEN_EQUIP_HPADD:
 			if (pPlayer) *pRet = pPlayer->equipmentHP();
@@ -849,13 +854,19 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			*pRet = g_color;
 			break;
 		case GEN_PREV_TIME:
-			// TBD!
+			// Total game runtime prior to this session (seconds).
+			extern GAME_TIME g_gameTime;
+			*pRet = g_gameTime.runTime;
 			break;
 		case GEN_START_TIME:
-			// TBD!
+			// Processor "time" at start of this session (seconds).
+			extern GAME_TIME g_gameTime;
+			*pRet = g_gameTime.startTime;
 			break;
 		case GEN_GAME_TIME:
-			// TBD!
+			// Total game runtime including this session (seconds).
+			extern GAME_TIME g_gameTime;
+			*pRet = g_gameTime.gameTime();
 			break;
 		case GEN_STEPS:
 			extern unsigned long g_stepsTaken;
@@ -887,11 +898,115 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 
 STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int playerSlot, BSTR newVal)
 {
+	extern CInventory g_inv;
+
+	switch (infoCode)
+	{
+		case GEN_PLAYERHANDLES:
+			break;
+		case GEN_PLAYERFILES:
+			break;
+		case GEN_PLYROTHERHANDLES:
+			break;
+		case GEN_PLYROTHERFILES:
+			break;
+		case GEN_INVENTORY_FILES:
+			g_inv.fileAt(arrayPos, getString(newVal));
+			break;
+		case GEN_INVENTORY_HANDLES:
+			g_inv.handleAt(arrayPos, getString(newVal));
+			break;
+		case GEN_EQUIP_FILES:
+			break;
+		case GEN_EQUIP_HANDLES:
+			break;
+		case GEN_MUSICPLAYING:
+			break;
+		case GEN_CURRENTBOARD:
+			break;
+		case GEN_MENUGRAPHIC:
+			break;
+		case GEN_FIGHTMENUGRAPHIC:
+			break;
+		case GEN_MWIN_PIC_FILE:
+			break;
+		case GEN_FONTFILE:
+			break;
+		case GEN_ENE_FILE:
+			break;
+		case GEN_ENE_WINPROGRAMS:
+			break;
+		case GEN_ENE_STATUS:
+		case GEN_PLYR_STATUS:
+		case GEN_CURSOR_MOVESOUND:
+			break;
+		case GEN_CURSOR_SELSOUND:
+			break;
+		case GEN_CURSOR_CANCELSOUND:
+			break;
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerSlot, int newVal)
 {
+	switch (infoCode)
+	{
+		case GEN_INVENTORY_NUM:
+			extern CInventory g_inv;
+			g_inv.quantityAt(arrayPos, (unsigned int)newVal);
+			break;
+		case GEN_EQUIP_HPADD:
+			break;
+		case GEN_EQUIP_SMPADD:
+			break;
+		case GEN_EQUIP_DPADD:
+			break;
+		case GEN_EQUIP_FPADD:
+			break;
+		case GEN_CURX:
+		case GEN_CURY:
+			break;
+		case GEN_CURLAYER:
+			break;
+		case GEN_CURRENT_PLYR:
+			break;
+		case GEN_TILESX:
+			break;
+		case GEN_TILESY:
+			break;
+		case GEN_RESX:
+			break;
+		case GEN_RESY:
+			break;
+		case GEN_GP:
+			break;
+		case GEN_FONTCOLOR:
+			break;
+		case GEN_PREV_TIME:
+			break;
+		case GEN_START_TIME:
+			break;
+		case GEN_GAME_TIME:
+			break;
+		case GEN_STEPS:
+			break;
+		case GEN_ENE_RUN:
+			break;
+		case GEN_TRANSPARENTCOLOR:
+			break;
+		case GEN_BATTLESPEED:
+		case GEN_TEXTSPEED:
+		case GEN_CHARACTERSPEED:
+		case GEN_SCROLLINGOFF:
+		case GEN_ENEX:
+		case GEN_ENEY:
+		case GEN_FIGHT_OFFSETX:
+		case GEN_FIGHT_OFFSETY:
+			// Obsolete.
+			break;
+	}
 	return S_OK;
 }
 
@@ -1565,11 +1680,13 @@ STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int array
 
 STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos2, int arrayPos3, int nValue)
 {
+	// TBD
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int arrayPos2, int arrayPos3, BSTR newVal)
 {
+	// TBD
 	return S_OK;
 }
 
@@ -2052,11 +2169,13 @@ STDMETHODIMP CCallbacks::CBPlaySound(BSTR soundFile, int *pRet)
 
 STDMETHODIMP CCallbacks::CBMessageWindow(BSTR text, int textColor, int bgColor, BSTR bgPic, int mbtype, int *pRet)
 {
+	// TBD
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBFileDialog(BSTR initialPath, BSTR fileFilter, BSTR *pRet)
 {
+	// TBD
 	return S_OK;
 }
 
