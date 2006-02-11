@@ -20,14 +20,14 @@
  * Transform a char to an STRING, converting
  * common characters to string representations.
  */
-STRING getName(char chr);
+STRING getName(const char chr, const bool bCapital);
 
 /*
  * Wait for a key.
  *
  * return (out) - the key pressed
  */
-STRING waitForKey();
+STRING waitForKey(const bool bCapital);
 
 /*
  * Get last mouse click / wait for mouse.

@@ -60,7 +60,7 @@ void processEvent()
  * Transform a char to an STRING, converting
  * common characters to string representations.
  */
-STRING getName(char chr)
+STRING getName(const char chr, const bool bCapital)
 {
 	switch (chr)
 	{
@@ -71,7 +71,7 @@ STRING getName(char chr)
 		case 38: return _T("UP");
 		case 40: return _T("DOWN");
 	}
-	const TCHAR toRet[] = {TCHAR(chr), _T('\0')};
+	const TCHAR toRet[] = {bCapital ? toupper(TCHAR(chr)) : TCHAR(chr), _T('\0')};
 	return toRet;
 }
 
@@ -80,7 +80,7 @@ STRING getName(char chr)
  *
  * return (out) - the key pressed
  */
-STRING waitForKey()
+STRING waitForKey(const bool bCapital)
 {
 	g_keys.clear();
 	while (g_keys.size() == 0)
@@ -89,7 +89,7 @@ STRING waitForKey()
 	}
 	const char chr = g_keys.front();
 	g_keys.erase(g_keys.begin());
-	return getName(chr);
+	return getName(chr, bCapital);
 }
 
 /*
@@ -332,13 +332,13 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		} break;
 
 		// Key down.
-		case WM_KEYDOWN:
+		case WM_CHAR:
 		{
 			// Queue the key.
 			const char key = char(wParam);
 			g_keys.push_back(key);
 
-			const STRING strKey = getName(key);
+			const STRING strKey = getName(key, true);
 			informPluginEvent(key, -1, -1, -1, /*shift*/0, strKey, INPUT_KB);
 		} break;
 

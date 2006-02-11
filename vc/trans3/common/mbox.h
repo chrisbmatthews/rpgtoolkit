@@ -12,4 +12,7 @@
 // Show a message box.
 void messageBox(const STRING str);
 
+// Prompt for a response.
+STRING prompt(const STRING question);
+
 #endif

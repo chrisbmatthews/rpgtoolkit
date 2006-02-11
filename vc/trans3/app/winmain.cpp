@@ -522,8 +522,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 {
 	extern STRING g_savePath;
 
-	// #define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
-	#define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
+	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
+	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
 	set_terminate(termFunc);
 

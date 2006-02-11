@@ -300,7 +300,7 @@ void mwin(CALL_DATA &params)
 void wait(CALL_DATA &params)
 {
 	params.ret().udt = UDT_LIT;
-	params.ret().lit = waitForKey();
+	params.ret().lit = waitForKey(true);
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
@@ -577,7 +577,7 @@ void get(CALL_DATA &params)
 	}
 	const char chr = g_keys.front();
 	g_keys.erase(g_keys.begin());
-	const STRING toRet = getName(chr);
+	const STRING toRet = getName(chr, true);
 	if (params.params == 1)
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
@@ -880,11 +880,20 @@ void prg(CALL_DATA &params)
 /*
  * string prompt(string question, [string &ret])
  * 
- * Ask the player a question, and return the result.
+ * Ask the player a question and return the result.
  */
 void prompt(CALL_DATA &params)
 {
-
+	if ((params.params != 1) && (params.params != 2))
+	{
+		throw CError(_T("Prompt() requires one or two parameters."));
+	}
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = prompt(params[0].getLit());
+	if (params.params == 2)
+	{
+		*params.prg->getVar(params[1].lit) = params.ret();
+	}
 }
 
 /*
