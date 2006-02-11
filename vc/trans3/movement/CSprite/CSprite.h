@@ -67,16 +67,16 @@ public:
 		RECT &rect,
 		const bool bAllowNegatives);
 	void getDestination(DB_POINT &p) const;
-	SPRITE_POSITION getPosition() const { return m_pos; }
+	SPRITE_POSITION getPosition(void) const { return m_pos; }
 	bool isActive(void) const { return m_bActive; }
 	void setActive(const bool bActive) { m_bActive = bActive; }
 	void setPosition(int x, int y, const int l, const COORD_TYPE coord);
-	const BRD_SPRITE *getBoardSprite() const { return &m_brdData; }
+	const BRD_SPRITE *getBoardSprite(void) const { return &m_brdData; }
 
 	// Create default vectors, overwriting any user-defined (PRE_VECTOR_ITEMs).
 	void createVectors(void) { m_attr.createVectors(m_brdData.activationType); };
 	// Determine if the sprite's base intersects a RECT.
-	CVector getVectorBase()
+	CVector getVectorBase(void)
 	{
 		const DB_POINT p = { m_pos.x, m_pos.y };
 		return (m_attr.vBase + p);
@@ -99,7 +99,7 @@ public:
 		void assign(MV_ENUM dir) { m_dir = dir; m_owner->setAnm(m_dir); }
 		MV_ENUM right(void) { MV_ENUM dir = m_dir; return ++dir; }
 		MV_ENUM left(void) { MV_ENUM dir = m_dir; return --dir; }
-		MV_ENUM dir(void) { return m_dir; }
+		MV_ENUM dir(void) const { return m_dir; }
 		CFacing &operator+= (unsigned int i) 
 		{ 
 			m_dir += i; 
@@ -116,6 +116,7 @@ public:
 		MV_ENUM m_dir;
 		CSprite *m_owner;
 	};
+	CFacing *getFacing(void) { return &m_facing; }
 
 protected:
 	SPRITE_ATTR m_attr;						// Sprite attributes (common file data).

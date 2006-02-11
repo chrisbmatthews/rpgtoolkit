@@ -62,30 +62,36 @@ public:
 	{
 		m_data.clear();
 	}
-
-	STRING getFileAt(const int i)
+	STRING fileAt(const int i)
 	{
-		if (m_data.size() > i)
-		{
-			return at(i)->first;
-		}
-		return _T("");
+		return (m_data.size() > i ? at(i)->first : _T(""));
 	}
-	STRING getHandleAt(const int i)
+	void fileAt(const int i, const STRING value)
 	{
+		// Problems changing the key since it is const in a map.
 		if (m_data.size() > i)
 		{
-			return at(i)->second.first;
+			std::map<STRING, DATA_PAIR>::iterator j = at(i);	
+			DATA_PAIR p = j->second;
+			m_data.erase(j);
+			m_data[parser::uppercase(value)] = p;
 		}
-		return _T("");
 	}
-	unsigned int getQuantityAt(const int i)
+	STRING handleAt(const int i)
 	{
-		if (m_data.size() > i)
-		{
-			return at(i)->second.second;
-		}
-		return 0;
+		return (m_data.size() > i ? at(i)->second.first : _T(""));
+	}
+	void handleAt(const int i, const STRING value)
+	{
+		if (m_data.size() > i) at(i)->second.first = value;
+	}
+	unsigned int quantityAt(const int i)
+	{
+		return (m_data.size() > i ? at(i)->second.second : 0);
+	}
+	void quantityAt(const int i, const unsigned int value)
+	{
+		if (m_data.size() > i) at(i)->second.second = value;
 	}
 private:
 	std::map<STRING, DATA_PAIR>::iterator at(const int j)
