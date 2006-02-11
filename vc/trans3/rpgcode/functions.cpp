@@ -4939,13 +4939,36 @@ void getBoardTileType(CALL_DATA &params)
 }
 
 /*
- * setimageadditive(...)
+ * void setImageAdditive(string file, int x, int y, int width, int height, double percent[, canvas cnv])
  * 
- * Description.
+ * Set an image with a tint of the specified percent.
  */
 void setimageadditive(CALL_DATA &params)
 {
+	extern STRING g_projectPath;
 
+	if ((params.params != 6) && (params.params != 7))
+	{
+		throw CError(_T("SetImageAdditive() requires six or seven parameters."));
+	}
+	CCanvas *pTarget = g_cnvRpgCode;
+	if (params.params == 7)
+	{
+		if (!(pTarget = g_canvases.cast(int(params[6].getNum()))))
+		{
+			pTarget = g_cnvRpgCode;
+		}
+	}
+	CCanvas cnv;
+	cnv.CreateBlank(NULL, int(params[3].getNum()), int(params[4].getNum()), TRUE);
+
+	CONST STRING strFile = g_projectPath + BMP_PATH + params[0].getLit();
+
+	drawImage(strFile, &cnv, 0, 0, int(params[3].getNum()), int(params[4].getNum()));
+
+	cnv.BltAdditivePart(pTarget->GetDXSurface(), int(params[1].getNum()), int(params[2].getNum()), 0, 0, int(params[3].getNum()), int(params[4].getNum()), params[5].getNum(), -1, -1);
+
+	if (pTarget == g_cnvRpgCode) renderRpgCodeScreen();
 }
 
 /*
@@ -6443,7 +6466,7 @@ void mousecursor(CALL_DATA &params)
 }
 
 /*
- * int = gettextwidth(string text)
+ * int gettextwidth(string text)
  * 
  * Get the width of a string of text in pixels, 
  * relative to the current font and size.
@@ -6467,7 +6490,7 @@ void gettextwidth(CALL_DATA &params)
 }
 
 /*
- * int = gettextheight(string text)
+ * int gettextheight(string text)
  * 
  * Get the height of a string of text in pixels, 
  * relative to the current font and size.

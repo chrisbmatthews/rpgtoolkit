@@ -287,7 +287,7 @@ public:
 		CONST DOUBLE dIntensity,
 		CONST LONG crUnaffectedColor,
 		CONST LONG crTransparentColor
-			) CONST;
+	) CONST;
 
 	INT FAST_CALL BltTranslucent(
 		CONST HDC hdcTarget,
@@ -450,6 +450,19 @@ public:
 	INT FAST_CALL ShiftDown(
 		CONST INT nPixels
 	);
+
+	INT FAST_CALL BltAdditivePart(
+		CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+		CONST INT x,
+		CONST INT y,
+		CONST INT xSrc,
+		CONST INT ySrc,
+		CONST INT width,
+		CONST INT height,
+		CONST DOUBLE percent,
+		CONST LONG crUnaffectedColor,
+		CONST LONG crTransparentColor
+	) CONST;
 
 	LPDIRECTDRAWSURFACE7 GetDXSurface(
 		VOID

@@ -1899,6 +1899,278 @@ INT FAST_CALL CCanvas::ShiftDown(
 
 }
 
+//
+// Additive blit.
+//
+INT FAST_CALL CCanvas::BltAdditivePart(
+	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
+	CONST INT x,
+	CONST INT y,
+	CONST INT xSrc,
+	CONST INT ySrc,
+	CONST INT width,
+	CONST INT height,
+	CONST DOUBLE percent,
+	CONST LONG crUnaffectedColor,
+	CONST LONG crTransparentColor
+		) CONST
+{
+
+	// If we have a valid surface ptr and we're using DirectX
+	if (!(lpddsSurface && usingDX()))
+	{
+		return FALSE;
+	}
+
+	// Lock the destination surface
+	DDSURFACEDESC2 destSurface;
+	DD_INIT_STRUCT(destSurface);
+	HRESULT hr = lpddsSurface->Lock(NULL, &destSurface, DDLOCK_SURFACEMEMORYPTR | DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
+
+	if (FAILED(hr))
+	{
+		// Return failed
+		return FALSE;
+	}
+
+	// Lock the source surface
+	DDSURFACEDESC2 srcSurface;
+	DD_INIT_STRUCT(srcSurface);
+	hr = GetDXSurface()->Lock(NULL, &srcSurface, DDLOCK_SURFACEMEMORYPTR | DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
+
+	if (FAILED(hr))
+	{
+
+		// Unlock destination surface
+		lpddsSurface->Unlock(NULL);
+
+		// Failed
+		return FALSE;
+
+	}
+
+	// Obtain the pixel format
+	DDPIXELFORMAT ddpfDest;
+	DD_INIT_STRUCT(ddpfDest);
+	lpddsSurface->GetPixelFormat(&ddpfDest);
+
+	// (Could kill this check by saving color depth and using function pointer?)
+
+	// Switch on pixel format
+	switch (ddpfDest.dwRGBBitCount)
+	{
+
+		// 32-bit color depth
+		case 32:
+		{
+
+			// Calculate pixels per row
+			CONST INT nDestPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+			CONST INT nSrcPixelsPerRow = srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+
+			// Obtain pointers to the surfaces
+			LPDWORD CONST pSurfDest = reinterpret_cast<LPDWORD>(destSurface.lpSurface);
+			LPDWORD CONST pSurfSrc = reinterpret_cast<LPDWORD>(srcSurface.lpSurface);
+
+			// For the y axis
+			for (INT yy = 0; yy < height; yy++)
+			{
+
+				// Calculate index into destination and source, respectively
+				INT idxd = (yy + y) * nDestPixelsPerRow + x;
+				INT idx = (yy + ySrc) * nSrcPixelsPerRow + xSrc;
+
+				// For the x axis
+				for (INT xx = 0; xx < width; xx++)
+				{
+
+					// Obtain a pixel in RGB format
+					CONST LONG srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
+
+					// Check for unaffected color
+					if (srcRGB == crUnaffectedColor)
+					{
+						// Directly copy
+						pSurfDest[idxd] = ConvertColorRef(srcRGB, &ddpfDest);
+					}
+
+					// Check for opaque color
+					else if (srcRGB != crTransparentColor)
+					{
+
+						// Obtain destination RGB
+						CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
+
+						// Calculate translucent rgb value
+						CONST INT r = GetRValue(srcRGB) * (percent + 1.0);
+						CONST INT g = GetGValue(srcRGB) * (percent + 1.0);
+						CONST INT b = GetBValue(srcRGB) * (percent + 1.0);
+
+						// Lay down translucently
+						pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
+
+					}
+
+					// Increment position on surfaces
+					idx++;
+					idxd++;
+
+				} // x axis
+			} // y axis
+		} break; // 32 bit blt
+
+		// 24 bit color depth
+		case 24:
+		{
+
+			// Modify RGB params by setting and getting a pixel
+			CONST LONG crTemp = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
+			LONG rgbUnaffectedColor = -1, rgbTransparentColor = -1;
+			if (crUnaffectedColor != -1)
+			{
+				// Modify unaffected color
+				SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crUnaffectedColor);
+				rgbUnaffectedColor = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
+			}
+			if (crTransparentColor != -1)
+			{
+				// Modify transparent color
+				SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTransparentColor);
+				rgbTransparentColor = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
+			}
+			// Set back down pixel
+			SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTemp);
+
+			// For the y axis
+			for (INT yy = 0; yy < height; yy++)
+			{
+
+				// For the x axis
+				for (INT xx = 0; xx < width; xx++)
+				{
+
+					// Get pixel on source surface
+					CONST LONG srcRGB = GetRGBPixel(&srcSurface, &ddpfDest, xSrc + xx, ySrc + yy);
+
+					// Check for unaffected color
+					if (srcRGB == rgbUnaffectedColor)
+					{
+						// Just copy over
+						SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, srcRGB);
+					}
+
+					// If color is not transparent
+					else if (srcRGB != rgbTransparentColor)
+					{
+
+						// Obtain destination pixel
+						CONST LONG destRGB = GetRGBPixel(&destSurface, &ddpfDest, xx + x, yy + y);
+
+						// Calculate new rgb color
+						CONST INT r = GetRValue(srcRGB) * (percent + 1.0);
+						CONST INT g = GetGValue(srcRGB) * (percent + 1.0);
+						CONST INT b = GetBValue(srcRGB) * (percent + 1.0);
+
+						// Set the pixel
+						SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, RGB(r, g, b));
+
+					}
+
+				} // x axis
+			} // y axis
+		} break; // 24 bit blt
+
+		// 16 bit color depth
+		case 16:
+		{
+
+			// Calculate pixels per row
+			CONST INT nDestPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+			CONST INT nSrcPixelsPerRow = srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
+
+			// Obtain pointers to the surfaces
+			LPWORD CONST pSurfDest = reinterpret_cast<LPWORD>(destSurface.lpSurface);
+			LPWORD CONST pSurfSrc = reinterpret_cast<LPWORD>(srcSurface.lpSurface);
+
+			// For the y axis
+			for (INT yy = 0; yy < height; yy++)
+			{
+
+				// Calculate index into destination and source, respectively
+				INT idxd = (yy + y) * nDestPixelsPerRow + x;
+				INT idx = (yy + ySrc) * nSrcPixelsPerRow + xSrc;
+
+				// For the x axis
+				for (INT xx = 0; xx < width; xx++)
+				{
+
+					// Obtain a pixel in RGB format
+					CONST LONG srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
+
+					// Check for unaffected color
+					if (srcRGB == crUnaffectedColor)
+					{
+						// Directly copy
+						pSurfDest[idxd] = ConvertColorRef(srcRGB, &ddpfDest);
+					}
+
+					// Check for opaque color
+					else if (srcRGB != crTransparentColor)
+					{
+
+						// Obtain destination RGB
+						CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
+
+						// Calculate translucent rgb value
+						CONST INT r = GetRValue(srcRGB) * (percent + 1.0);
+						CONST INT g = GetGValue(srcRGB) * (percent + 1.0);
+						CONST INT b = GetBValue(srcRGB) * (percent + 1.0);
+
+						// Lay down translucently
+						pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
+
+					}
+
+					// Increment position on surfaces
+					idx++;
+					idxd++;
+
+				} // x axis
+			} // y axis
+		} break; // 16 bit blt
+
+		// Unsupported color depth
+		default:
+		{
+
+			// Unlock surfaces
+			GetDXSurface()->Unlock(NULL);
+			lpddsSurface->Unlock(NULL);
+
+			// If a transp color is not set
+			if (crTransparentColor == -1)
+			{
+				// Just do direct blt
+				return Blt(lpddsSurface, x, y);
+			}
+			else
+			{
+				// Else, do transp blt
+				return BltTransparent(lpddsSurface, x, y, crTransparentColor);
+			}
+
+		} break;
+
+	} // Color depth switch
+
+	// Unlock the surfaces
+	GetDXSurface()->Unlock(NULL);
+	lpddsSurface->Unlock(NULL);
+
+	// All's good
+	return TRUE;
+
+}
 
 //--------------------------------------------------------------------------
 // Convert a DirectX color to RGB

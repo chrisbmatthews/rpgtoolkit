@@ -6,58 +6,7 @@
 --------------------Configuration: trans3 - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP361.tmp" with contents
-[
-/nologo /MLd /w /W0 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\app\winmain.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\rpgcode\CCursorMap.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\animation.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\background.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\board.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\CAnimation.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\CFile.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\enemy.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\item.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\mainfile.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\paths.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\player.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\sprite.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\status.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\tileanim.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\tilebitmap.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\input\input.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\movement\CItem\CItem.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\movement\CPlayer\CPlayer.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\movement\CSprite\CSprite.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\movement\CVector\CVector.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\movement\locate.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\movement\movement.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\render\render.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\misc\misc.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\tkCommon\tkDirectX\platform.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\tkCommon\tkCanvas\CCanvasPool.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\tkCommon\tkCanvas\GDICanvas.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\tkCommon\tkGfx\CTile.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\plugins\plugins.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\audio\CAudioSegment.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\fight\fight.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP361.tmp" 
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP362.tmp" with contents
-[
-/nologo /MLd /w /W0 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Debug/trans3.pch" /YX"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\rpgcode\CProgram.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\rpgcode\functions.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\rpgcode\parser\parser.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\mbox.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\spcmove.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\common\state.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\movement\CPathFind\CPathFind.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\plugins\Callbacks.cpp"
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\trans3\video\CVideo.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP362.tmp" 
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP363.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPB24.tmp" with contents
 [
 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/trans3.pdb" /debug /machine:I386 /out:"Debug/trans3.exe" /pdbtype:sept 
 ".\Debug\StdAfx.obj"
@@ -108,62 +57,15 @@ ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib 
 ".\audio\audiere.lib"
 ".\images\FreeImage.lib"
 ]
-Creating command line "link.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP363.tmp"
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP364.bat" with contents
+Creating command line "link.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPB24.tmp"
+Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPB25.bat" with contents
 [
 @echo off
 ".\Debug\trans3.exe" /RegServer
 echo regsvr32 exec. time > ".\Debug\regsvr32.trg"
 echo Server registration done!
 ]
-Creating command line "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP364.bat"
-Compiling...
-winmain.cpp
-CCursorMap.cpp
-animation.cpp
-background.cpp
-board.cpp
-CAnimation.cpp
-CFile.cpp
-enemy.cpp
-item.cpp
-mainfile.cpp
-paths.cpp
-player.cpp
-sprite.cpp
-status.cpp
-tileanim.cpp
-tilebitmap.cpp
-CItem.cpp
-CPlayer.cpp
-CSprite.cpp
-CVector.cpp
-Generating Code...
-Compiling...
-locate.cpp
-movement.cpp
-render.cpp
-misc.cpp
-platform.cpp
-CCanvasPool.cpp
-GDICanvas.cpp
-CTile.cpp
-plugins.cpp
-CAudioSegment.cpp
-fight.cpp
-Generating Code...
-Skipping... (no relevant changes detected)
-input.cpp
-Compiling...
-CProgram.cpp
-functions.cpp
-parser.cpp
-mbox.cpp
-spcmove.cpp
-state.cpp
-CPathFind.cpp
-Callbacks.cpp
-CVideo.cpp
+Creating command line "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSPB25.bat"
 Linking...
 <h3>Output Window</h3>
 Performing registration
