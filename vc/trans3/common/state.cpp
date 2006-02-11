@@ -37,6 +37,7 @@ extern LPBOARD g_pBoard;
 extern STRING g_menuGraphic, g_fightMenuGraphic;
 extern int g_mwinSize;
 extern double g_movementSize;
+extern GAME_TIME g_gameTime;
 
 void loadSaveState(const STRING str)
 {
@@ -213,7 +214,7 @@ void loadSaveState(const STRING str)
 	file >> g_bold >> g_underline >> g_italic;
 	int gameTime;
 	file >> gameTime;
-	// tbd - use 'gameTime'
+	g_gameTime.reset(gameTime);
 	int steps;
 	file >> steps;
 	g_stepsTaken = steps;

@@ -11,7 +11,26 @@
  * Inclusions.
  */
 #include "../../tkCommon/strings.h"
+#include "../movement/movement.h"
 #include <vector>
+
+/*
+ * Defines
+ */
+
+/*
+ * Record of current session and total game runtime (reset on state load).
+ * Storing as seconds rather than milliseconds for ease of interface.
+ */
+typedef struct tagGameTime
+{
+	void reset(const int gameTime) { startTime = (GetTickCount() / MILLISECONDS); runTime = gameTime; }
+	int gameTime(void) const { return (runTime + (GetTickCount() / MILLISECONDS) - startTime); }
+
+	int startTime;			// Seconds at start of session.
+	int runTime;				// Total seconds of this game or save file prior to this session.
+
+} GAME_TIME;
 
 /*
  * Split a string.

@@ -45,6 +45,7 @@ CAllocationHeap<BOARD> g_boards;		// All boards.
 LPBOARD g_pBoard = NULL;				// The active board.
 CAllocationHeap<CAudioSegment> g_music;	// All music.
 CAudioSegment *g_bkgMusic = NULL;		// Playing background music.
+GAME_TIME g_gameTime;					// Length of game info.
 
 std::vector<CPlayer *> g_players;		// Loaded players.
 ZO_VECTOR g_sprites;					// z-ordered players and items.
@@ -259,6 +260,7 @@ void setUpGame()
 void openSystems()
 {
 	extern void initRpgCode();
+	extern GAME_TIME g_gameTime;
 	initPluginSystem();
 	FreeImage_Initialise();
 	srand(GetTickCount());
@@ -269,6 +271,7 @@ void openSystems()
 	g_bkgMusic = g_music.allocate();
 	//createRpgCodeGlobals();
 	g_pBoard = g_boards.allocate();
+	g_gameTime.reset(0);
 	setUpGame();
 }
 
@@ -519,8 +522,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 {
 	extern STRING g_savePath;
 
-	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
-	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
+	// #define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
+	#define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
 	set_terminate(termFunc);
 
