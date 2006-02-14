@@ -44,6 +44,10 @@ bool canRunFromFight()
 {
 	return g_battle.bRun;
 }
+void canRunFromFight(const bool bRun)
+{
+	g_battle.bRun = bRun;
+}
 
 /*
  * Are we currently fighting?
@@ -625,7 +629,7 @@ void skillFight(const int skill, const STRING bkg)
  */
 void fightTest(const int moveSize)
 {
-	extern unsigned long g_stepsTaken;
+	extern unsigned long g_pxStepsTaken;
 	extern MAIN_FILE g_mainFile;
 	extern LPBOARD g_pBoard;
 
@@ -648,9 +652,9 @@ void fightTest(const int moveSize)
 	// be adapted by changing (a % b) to the slower expression
 	// ((a / b - int(a / b)) * b).
 	// moveSize is the number of pixels per move for the player.
-	if (g_stepsTaken % ((64 + (32 % moveSize)) / 2)) return;
+	if (g_pxStepsTaken % ((64 + (32 % moveSize)) / 2)) return;
 
-	if (!(((g_mainFile.fightType == 0) ? rand() : (g_stepsTaken / 32)) % g_mainFile.chances))
+	if (!(((g_mainFile.fightType == 0) ? rand() : (g_pxStepsTaken / 32)) % g_mainFile.chances))
 	{
 		// Start a fight.
 		if (g_mainFile.fprgYn)

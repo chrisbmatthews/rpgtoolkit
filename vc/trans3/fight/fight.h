@@ -91,6 +91,7 @@ typedef struct tagBattle
 
 // Can we run away?
 bool canRunFromFight();
+void canRunFromFight(const bool bRun);
 
 // Are we currently fighting?
 bool isFighting();
