@@ -45,11 +45,15 @@ CAllocationHeap<BOARD> g_boards;		// All boards.
 LPBOARD g_pBoard = NULL;				// The active board.
 CAllocationHeap<CAudioSegment> g_music;	// All music.
 CAudioSegment *g_bkgMusic = NULL;		// Playing background music.
+
 GAME_TIME g_gameTime;					// Length of game info.
+unsigned long g_pxStepsTaken = 0;		// Number of PIXELs the player has moved.
 
 std::vector<CPlayer *> g_players;		// Loaded players.
 ZO_VECTOR g_sprites;					// z-ordered players and items.
 CPlayer *g_pSelectedPlayer = NULL;		// Pointer to selected player?
+int g_selectedPlayer = 0;				// Index of current player.
+
 
 HINSTANCE g_hInstance = NULL;			// Handle to application.
 double g_renderCount = 0;				// Count of GS_MOVEMENT state loops.
@@ -522,8 +526,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 {
 	extern STRING g_savePath;
 
-	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
-	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
+	// #define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
+	#define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
 
 	set_terminate(termFunc);
 

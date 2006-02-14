@@ -37,16 +37,4 @@ void isoCoordTransform(const double oldX, const double oldY, double &newX, doubl
  */
 void invIsoCoordTransform(const double newX, const double newY, double &oldX, double &oldY);
 
-/*
- * Get the x coord at the bottom center of a board.
- * Called by putSpriteAt, checkScrollEast, checkScrollWest.
- */
-int getBottomCentreX(const double boardX, const double boardY);
-
-/*
- * Get the y coord at the bottom center of a board.
- * Called by putSpriteAt, checkScrollNorth, checkScrollSouth.
- */
-int getBottomCentreY(const double boardX, const double boardY);
-
 #endif

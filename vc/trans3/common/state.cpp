@@ -31,12 +31,11 @@ extern COLORREF g_color;
 extern BOOL g_bold;
 extern BOOL g_italic;
 extern BOOL g_underline;
-extern unsigned long g_stepsTaken;
+extern unsigned long g_pxStepsTaken;
 extern MAIN_FILE g_mainFile;
 extern LPBOARD g_pBoard;
 extern STRING g_menuGraphic, g_fightMenuGraphic;
 extern int g_mwinSize;
-extern double g_movementSize;
 extern GAME_TIME g_gameTime;
 
 void loadSaveState(const STRING str)
@@ -217,7 +216,7 @@ void loadSaveState(const STRING str)
 	g_gameTime.reset(gameTime);
 	int steps;
 	file >> steps;
-	g_stepsTaken = steps;
+	g_pxStepsTaken = steps * 32;
 	STRING mainFile;
 	file >> mainFile;
 	g_mainFile.open(GAM_PATH + removePath(mainFile));

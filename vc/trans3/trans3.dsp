@@ -1047,29 +1047,6 @@ SOURCE=.\movement\locate.cpp
 !ENDIF 
 
 # End Source File
-# Begin Source File
-
-SOURCE=.\movement\movement.cpp
-
-!IF  "$(CFG)" == "trans3 - Win32 Debug"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
-
-!ENDIF 
-
-# End Source File
 # End Group
 # Begin Group "movement - headers"
 

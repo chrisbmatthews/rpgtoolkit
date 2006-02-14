@@ -35,20 +35,13 @@
 CDirectDraw *g_pDirectDraw = NULL;			// Access to DirectDraw.
 HWND g_hHostWnd = NULL;						// Handle to the host window.
 int g_resX = 0, g_resY = 0;					// Size of screen.
-double g_tilesX = 0, g_tilesY = 0;			// Size of screen in tiles.
-double g_isoTilesX = 0, g_isoTilesY = 0;	// Size of screen in isometric tiles.
-double g_topX = 0, g_topY = 0;				// Offset of a scrolled board.
-double scTopX = 0.0;						// Horizonal offset of the scroll cache
-double scTopY = 0.0;						// Vertical offset of the scroll cache
-int scTilesX = 0;							// Maximum scroll cache capacity, on width
-int scTilesY = 0;							// Maximum scroll cache capacity, on height
 std::vector<CTile *> g_tiles;				// Cache of tiles.
 
-CCanvas *g_cnvRpgCode = NULL;			// RPGCode canvas.
-CCanvas *g_cnvMessageWindow = NULL;		// RPGCode message window.
+CCanvas *g_cnvRpgCode = NULL;				// RPGCode canvas.
+CCanvas *g_cnvMessageWindow = NULL;			// RPGCode message window.
 CCanvas *g_cnvCursor = NULL;				// Cursor used on maps &c.
-std::vector<CCanvas *> g_cnvRpgScreens;	// SaveScreen() array.
-std::vector<CCanvas *> g_cnvRpgScans;	// Scan() array...
+std::vector<CCanvas *> g_cnvRpgScreens;		// SaveScreen() array.
+std::vector<CCanvas *> g_cnvRpgScans;		// Scan() array...
 
 bool g_bShowMessageWindow = false;			// Show the message window?
 double g_messageWindowTranslucency = 0.5;	// Message window translucency.
@@ -68,11 +61,11 @@ void renderRpgCodeScreen()
 		extern COLORREF g_color;
 		if (g_messageWindowTranslucency != 1.0)
 		{
-			g_pDirectDraw->DrawCanvasTranslucent(g_cnvMessageWindow, (g_tilesX * 32.0 - 600.0) * 0.5, 0, g_messageWindowTranslucency, g_color, -1);
+			g_pDirectDraw->DrawCanvasTranslucent(g_cnvMessageWindow, (g_resX - 600.0) * 0.5, 0, g_messageWindowTranslucency, g_color, -1);
 		}
 		else
 		{
-			g_pDirectDraw->DrawCanvas(g_cnvMessageWindow, (g_tilesX * 32.0 - 600.0) * 0.5, 0);
+			g_pDirectDraw->DrawCanvas(g_cnvMessageWindow, (g_resX - 600.0) * 0.5, 0);
 		}
 	}
 	g_pDirectDraw->Refresh();
@@ -505,10 +498,6 @@ void showScreen(const int width, const int height)
 
 	g_resX = width;
 	g_resY = height;
-	g_tilesX = width / 32.0;
-	g_tilesY = height / 32.0;
-	g_isoTilesX = g_tilesX / 2.0; // = 10.0 (640 res) = 12.5 (800 res)
-	g_isoTilesY = g_tilesY * 2.0; // = 30 (640 res) = 36 (800 res)
 
 	// Create a windows class.
 	CONST WNDCLASSEX wnd = {

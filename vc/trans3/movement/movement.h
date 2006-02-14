@@ -64,12 +64,8 @@ enum GAME_STATE
 #define WALK_SW _T("walk_sw")
 
 /*
- * Tile type definitions.
- *
- * Stairs are in the form _T("stairs + layer number"); i.e., layer = stairs - 10
+ * Pre-3.0.7 defines - for board conversion.
  */
-
-/* Unneeded. - to be removed */
 #define NORMAL 0
 #define SOLID 1
 #define UNDER 2

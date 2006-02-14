@@ -513,11 +513,11 @@ void CSprite::playerDoneMove(void)
 	m_bDoneMove = false;
 
 	extern GAME_STATE g_gameState;
-	extern unsigned long g_stepsTaken;
+	extern unsigned long g_pxStepsTaken;
 
-	// Update the step count.
+	// Update the step count (number of pixels moved).
 	const int step = moveSize();
-	g_stepsTaken += step;
+	g_pxStepsTaken += step;
 
 	// Movement in a program should not trigger other programs.
 	programTest();
