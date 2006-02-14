@@ -701,13 +701,13 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			break;
 		case GEN_EQUIP_FILES:
 			{
-				EQ_SLOT eq = pPlayer->equipment(arrayPos);
-				bstr = getString(eq.first);
+				EQ_SLOT *pEq = pPlayer->equipment(arrayPos);
+				bstr = getString(pEq->first);
 			} break;
 		case GEN_EQUIP_HANDLES:
 			{
-				EQ_SLOT eq = pPlayer->equipment(arrayPos);
-				bstr = getString(eq.second);
+				EQ_SLOT *pEq = pPlayer->equipment(arrayPos);
+				bstr = getString(pEq->second);
 			} break;
 		case GEN_MUSICPLAYING:
 			extern CAudioSegment *g_bkgMusic;
@@ -789,8 +789,9 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerSlot, int *pRet)
 {
 	extern CPlayer *g_pSelectedPlayer;
-	extern std::vector<CPlayer *> g_players;
 	extern LPBOARD g_pBoard;
+	extern GAME_TIME g_gameTime;
+	extern RECT g_screen;
 
 	CPlayer *pPlayer = NULL;
 	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
@@ -817,7 +818,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 		case GEN_CURY:
 			if (pPlayer)
 			{
-				SPRITE_POSITION p = pPlayer->getPosition();
+				const SPRITE_POSITION p = pPlayer->getPosition();
 				int x = p.x, y = p.y;
 				tileCoordinate(x, y, g_pBoard->coordType);
 				*pRet = (infoCode == GEN_CURX ? x : y);
@@ -830,19 +831,17 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			*pRet = g_selectedPlayer;
 			break;
 		case GEN_TILESX:
-			extern double g_tilesX;
-			*pRet = int(g_tilesX);
+			// Unused.
+			*pRet = (g_screen.right - g_screen.left) / 32.0;
 			break;
 		case GEN_TILESY:
-			extern double g_tilesY;
-			*pRet = int(g_tilesY);
+			// Unused.
+			*pRet = (g_screen.bottom - g_screen.top) / 32.0;
 			break;
 		case GEN_RESX:
-			extern RECT g_screen;
 			*pRet = g_screen.right - g_screen.left;
 			break;
 		case GEN_RESY:
-			extern RECT g_screen;
 			*pRet = g_screen.bottom - g_screen.top;
 			break;
 		case GEN_GP:
@@ -855,22 +854,20 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			break;
 		case GEN_PREV_TIME:
 			// Total game runtime prior to this session (seconds).
-			extern GAME_TIME g_gameTime;
 			*pRet = g_gameTime.runTime;
 			break;
 		case GEN_START_TIME:
 			// Processor "time" at start of this session (seconds).
-			extern GAME_TIME g_gameTime;
 			*pRet = g_gameTime.startTime;
 			break;
 		case GEN_GAME_TIME:
 			// Total game runtime including this session (seconds).
-			extern GAME_TIME g_gameTime;
 			*pRet = g_gameTime.gameTime();
 			break;
 		case GEN_STEPS:
-			extern unsigned long g_stepsTaken;
-			*pRet = g_stepsTaken / 32.0;
+			// Value in TILEs.
+			extern unsigned long g_pxStepsTaken;
+			*pRet = int(g_pxStepsTaken / 32.0);
 			break;
 		case GEN_ENE_RUN:
 			*pRet = int(canRunFromFight());
@@ -899,16 +896,30 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int playerSlot, BSTR newVal)
 {
 	extern CInventory g_inv;
+	extern MAIN_FILE g_mainFile;
+	extern STRING g_projectPath;
+
+	CPlayer *pPlayer = NULL;
+	playerSlot = abs(playerSlot);
+	if (playerSlot < g_players.size()) pPlayer = g_players[playerSlot]; 
 
 	switch (infoCode)
 	{
 		case GEN_PLAYERHANDLES:
+			if (pPlayer) pPlayer->name(getString(newVal));
 			break;
 		case GEN_PLAYERFILES:
-			break;
+			// Change a player.
+			if (playerSlot < g_players.size())
+			{
+				delete pPlayer;
+				g_players[playerSlot] = new CPlayer(g_projectPath + TEM_PATH + removePath(getString(newVal)), false, true);
+			} break;
 		case GEN_PLYROTHERHANDLES:
+			// TBD. [Not currently held.]
 			break;
 		case GEN_PLYROTHERFILES:
+			// TBD. [Not currently held.]
 			break;
 		case GEN_INVENTORY_FILES:
 			g_inv.fileAt(arrayPos, getString(newVal));
@@ -917,40 +928,99 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 			g_inv.handleAt(arrayPos, getString(newVal));
 			break;
 		case GEN_EQUIP_FILES:
-			break;
+			{
+				EQ_SLOT *pEq = pPlayer->equipment(arrayPos);
+				pEq->first = getString(newVal);
+			} break;		
 		case GEN_EQUIP_HANDLES:
-			break;
+			{
+				EQ_SLOT *pEq = pPlayer->equipment(arrayPos);
+				pEq->second = getString(newVal);
+			} break;
 		case GEN_MUSICPLAYING:
+			extern CAudioSegment *g_bkgMusic;
+			g_bkgMusic->open(getString(newVal));
+			g_bkgMusic->play(true);
 			break;
 		case GEN_CURRENTBOARD:
+			extern LPBOARD g_pBoard;
+			extern CPlayer *g_pSelectedPlayer;
+			g_pBoard->open(g_projectPath + BRD_PATH + getString(newVal));
+			g_pSelectedPlayer->send();
 			break;
 		case GEN_MENUGRAPHIC:
+			g_menuGraphic = getString(newVal);
 			break;
 		case GEN_FIGHTMENUGRAPHIC:
+			g_fightMenuGraphic = getString(newVal);
 			break;
 		case GEN_MWIN_PIC_FILE:
+			extern STRING g_mwinBkg;
+			g_mwinBkg = getString(newVal);
 			break;
 		case GEN_FONTFILE:
+			extern STRING g_fontFace;
+			g_fontFace = getString(newVal);
 			break;
 		case GEN_ENE_FILE:
+			g_enemies[playerSlot].fileName = getString(newVal);
+			g_enemies[playerSlot].enemy.open(g_projectPath + ENE_PATH + g_enemies[playerSlot].fileName);
 			break;
 		case GEN_ENE_WINPROGRAMS:
+			g_enemies[playerSlot].enemy.winPrg = getString(newVal);
 			break;
 		case GEN_ENE_STATUS:
 		case GEN_PLYR_STATUS:
+			// Replace a status effect file.
+			int party, idx;
+			if (infoCode == GEN_PLYR_STATUS)
+			{
+				getFighterIndices(pPlayer, party, idx);
+			}
+			else
+			{
+				party = ENEMY_PARTY;
+				idx = playerSlot;
+			}
+			if ((party != -1) && (idx != -1))
+			{
+				LPFIGHTER pFighter = getFighter(party, idx);
+				if (pFighter)
+				{
+					std::map<STRING, STATUS_EFFECT>::iterator i = pFighter->statuses.begin();
+					if (arrayPos < 0) arrayPos = 0;
+					if (pFighter->statuses.size() > arrayPos)
+					{
+						i = advance(i, arrayPos);
+
+						// Map key is const, new arrayPos is unlikely to be the same.
+						pFighter->statuses.erase(i);
+						pFighter->statuses[getString(newVal)] = STATUS_EFFECT();
+					}
+				}
+			} break;
 		case GEN_CURSOR_MOVESOUND:
+			g_mainFile.cursorMoveSound = getString(newVal);
 			break;
 		case GEN_CURSOR_SELSOUND:
+			g_mainFile.cursorSelectSound = getString(newVal);
 			break;
 		case GEN_CURSOR_CANCELSOUND:
+			g_mainFile.cursorCancelSound = getString(newVal);
 			break;
 	}
-
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerSlot, int newVal)
 {
+	extern CPlayer *g_pSelectedPlayer;
+	extern LPBOARD g_pBoard;
+	extern GAME_TIME g_gameTime;
+
+	CPlayer *pPlayer = NULL;
+	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
+
 	switch (infoCode)
 	{
 		case GEN_INVENTORY_NUM:
@@ -958,44 +1028,74 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 			g_inv.quantityAt(arrayPos, (unsigned int)newVal);
 			break;
 		case GEN_EQUIP_HPADD:
+			if (pPlayer) pPlayer->equipmentHP(newVal);
 			break;
 		case GEN_EQUIP_SMPADD:
+			if (pPlayer) pPlayer->equipmentSM(newVal);
 			break;
 		case GEN_EQUIP_DPADD:
+			if (pPlayer) pPlayer->equipmentDP(newVal);
 			break;
 		case GEN_EQUIP_FPADD:
+			if (pPlayer) pPlayer->equipmentFP(newVal);
 			break;
 		case GEN_CURX:
 		case GEN_CURY:
-			break;
+			if (pPlayer)
+			{
+				// Get current x and y in board coordinates.
+				const SPRITE_POSITION p = pPlayer->getPosition();
+				int x = p.x, y = p.y;
+				tileCoordinate(x, y, g_pBoard->coordType);
+
+				// Pass board coordinates to CSprite to convert back to pixel.
+				(infoCode == GEN_CURX ? x = newVal : y = newVal);
+				pPlayer->setPosition(x, y, p.l, g_pBoard->coordType);
+			} break;
 		case GEN_CURLAYER:
-			break;
+			if (pPlayer)
+			{
+				const SPRITE_POSITION p = pPlayer->getPosition();
+				pPlayer->setPosition(int(p.x), int(p.y), newVal, PX_ABSOLUTE);
+			} break;
 		case GEN_CURRENT_PLYR:
-			break;
-		case GEN_TILESX:
-			break;
-		case GEN_TILESY:
-			break;
+			extern int g_selectedPlayer;
+			if (abs(newVal) < g_players.size())
+			{
+				g_selectedPlayer = abs(newVal);
+				g_pSelectedPlayer = g_players[g_selectedPlayer];
+			} break;
 		case GEN_RESX:
-			break;
 		case GEN_RESY:
+			// *Really* bad idea to change these here.
 			break;
 		case GEN_GP:
+			extern unsigned long g_gp;
+			g_gp = (unsigned long)newVal;
 			break;
 		case GEN_FONTCOLOR:
+			extern COLORREF g_color;
+			g_color = COLORREF(newVal);
 			break;
 		case GEN_PREV_TIME:
+			g_gameTime.runTime = newVal;
 			break;
 		case GEN_START_TIME:
+			g_gameTime.startTime = newVal;
 			break;
 		case GEN_GAME_TIME:
+			// Meaningless to set a new game time. Use START_TIME or PREV_TIME.
 			break;
 		case GEN_STEPS:
+			// newVal in TILEs.
+			extern unsigned long g_pxStepsTaken;
+			g_pxStepsTaken = newVal * 32;
 			break;
 		case GEN_ENE_RUN:
+			canRunFromFight(newVal);
 			break;
-		case GEN_TRANSPARENTCOLOR:
-			break;
+		case GEN_TILESX:
+		case GEN_TILESY:
 		case GEN_BATTLESPEED:
 		case GEN_TEXTSPEED:
 		case GEN_CHARACTERSPEED:
