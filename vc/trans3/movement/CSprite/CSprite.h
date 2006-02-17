@@ -71,7 +71,7 @@ public:
 	bool isActive(void) const { return m_bActive; }
 	void setActive(const bool bActive) { m_bActive = bActive; }
 	void setPosition(int x, int y, const int l, const COORD_TYPE coord);
-	const BRD_SPRITE *getBoardSprite(void) const { return &m_brdData; }
+	BRD_SPRITE *getBoardSprite(void) { return &m_brdData; }
 
 	// Create default vectors, overwriting any user-defined (PRE_VECTOR_ITEMs).
 	void createVectors(void) { m_attr.createVectors(m_brdData.activationType); };
