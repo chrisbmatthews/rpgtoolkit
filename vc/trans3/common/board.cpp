@@ -1172,3 +1172,40 @@ bool tagBoard::hasProgram(LPBRD_PROGRAM p) const
 	}
 	return false;
 }
+
+/*
+ * Insert a tile onto the board for the duration the board is loaded.
+ */
+bool tagBoard::insertTile(const STRING tile, const int x, const int y, const int z)
+{
+	int index = 0;
+
+	// Search the table for the tile.
+	std::vector<STRING>::iterator i = tileIndex.begin(), j = i;
+	for (; i != tileIndex.end(); ++i)
+	{
+		if (_ftcsicmp(tile.c_str(), i->c_str()) == 0)
+		{
+			index = i - j;
+			break;
+		}
+	}
+	if (!index)
+	{
+		// Insert it onto the end.
+		index = tileIndex.size();
+		tileIndex.push_back(tile);
+	}
+
+	try
+	{
+		board[x][y][z] = index;
+		bLayerOccupied[z] = true;
+		bLayerOccupied[0] = true;			// Any layer occupied.
+	}
+	catch (...) 
+	{
+		return false;
+	}
+	return true;
+}

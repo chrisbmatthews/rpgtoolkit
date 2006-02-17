@@ -78,8 +78,7 @@ typedef struct tagBoardVector
 	TILE_TYPE type;
 	int attributes;						// Various attributes for each tile type.
 										// TT_STAIRS: layer to move to.
-										// TT_UNDER:  TA_BRD_BACKGROUND
-										//			  TA_ALL_LAYERS_BELOW
+										// TT_UNDER:  see TA_ above.
 
 	tagBoardVector():
 		layer(0),
@@ -162,7 +161,7 @@ typedef struct tagBoard
 	short bSizeX;									// Board size x.
 	short bSizeY;									// Board size y.
 	short bSizeL;									// Board size layer.	
-	std::vector<STRING> tileIndex;				// Lookup table for tiles.
+	std::vector<STRING> tileIndex;					// Lookup table for tiles.
 	typedef std::vector<short> VECTOR_SHORT;
 	typedef std::vector<VECTOR_SHORT> VECTOR_SHORT2D;
 	typedef std::vector<VECTOR_SHORT2D> VECTOR_SHORT3D;
@@ -173,23 +172,23 @@ typedef struct tagBoard
 	typedef std::vector<char> VECTOR_CHAR;
 	typedef std::vector<VECTOR_CHAR> VECTOR_CHAR2D;
 	std::vector<VECTOR_CHAR2D> tiletype;			// Tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8.
-	STRING brdBack;							// Board background img (parallax layer).
-	STRING brdFore;							// Board foreground image (parallax).
-	STRING borderBack;							// Border background img.
+	STRING brdBack;									// Board background img (parallax layer).
+	STRING brdFore;									// Board foreground image (parallax).
+	STRING borderBack;								// Border background img. (TBD: obselete).
 	int brdColor;									// Board color.
-	int borderColor;								// Border color.
+	int borderColor;								// Border color. (TBD: obselete)
 	short ambientEffect;							// BoardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery.
-	std::vector<STRING> dirLink;				// Direction links 1- N, 2- S, 3- E, 4-W.
+	std::vector<STRING> dirLink;					// Direction links 1- N, 2- S, 3- E, 4-W.
 	short boardSkill;								// Board skill level.
-	STRING boardBackground;					// Fighting background.
+	STRING boardBackground;							// Fighting background.
 	short fightingYN;								// Fighting on boardYN (1- yes, 0- no).
 	short boardDayNight;							// Board is affected by day/night? 0=no, 1=yes.
 	short boardNightBattleOverride;					// Use custom battle options at night? 0=no, 1=yes.
 	short boardSkillNight;							// Board skill level at night.
-	STRING boardBackgroundNight;				// Fighting background at night.
+	STRING boardBackgroundNight;					// Fighting background at night.
 	std::vector<short> brdConst;					// Board Constants (1-10).
-	STRING boardMusic;							// Background music file.
-	std::vector<STRING> boardTitle;			// Board title (layer).
+	STRING boardMusic;								// Background music file.
+	std::vector<STRING> boardTitle;					// Board title (layer).
 
 	std::vector<LPBRD_PROGRAM> programs;
 
@@ -213,7 +212,7 @@ typedef struct tagBoard
 	std::vector<BOARD_TILEANIM> animatedTile;		// Animated tiles associated with this board.
 	std::vector<int> anmTileLUTIndices;				// Indices into LUT of animated tiles.
 
-	STRING strFilename;						// Filename of the board.
+	STRING strFilename;								// Filename of the board.
 	std::vector<BRD_VECTOR> vectors;				// Vectors.
 	std::vector<CItem *> items;						// Items.
 
@@ -234,6 +233,7 @@ typedef struct tagBoard
 	void freeImages();
 	void freeThreads();
 	void addAnimTile(const STRING fileName, const int x, const int y, const int z);
+	bool insertTile(const STRING tile, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
 
 	void render(CCanvas *cnv,
