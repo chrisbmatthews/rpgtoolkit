@@ -343,7 +343,7 @@ void send(CALL_DATA &params)
 
 	unsigned int x = params[1].getNum(), y = params[2].getNum();
 
-	/* Co-ordinate system stuff... */
+	/* TBD: Co-ordinate system stuff... */
 	if (x > g_pBoard->bSizeX)
 	{
 		CProgram::debugger(_T("Send() location exceeds target board x-dimension."));
@@ -1365,6 +1365,7 @@ void random(CALL_DATA &params)
  * 
  * Change a tile's type. Valid types for the string parameter
  * are "NORMAL", "SOLID", "UNDER", "NS", "EW", "STAIRS#".
+ * Do not use when using vectors - use vector tools instead.
  */
 void tileType(CALL_DATA &params)
 {
@@ -4808,37 +4809,7 @@ void layerput(CALL_DATA &params)
 	
 	// Instead of drawing onto the scrollcache (which seems quite
 	// useless), enter the tile into the tile lookup table.
-	const int x = int(params[0].getNum()), 
-			  y = int(params[1].getNum()),
-			  l = int(params[2].getNum());
-	const STRING tile = params[3].getLit();
-	int index = 0;
-
-	// Search the table for the tile.
-	std::vector<STRING>::iterator i = g_pBoard->tileIndex.begin(),
-									   j = i;
-	for (; i != g_pBoard->tileIndex.end(); ++i)
-	{
-		if (_ftcsicmp(tile.c_str(), i->c_str()) == 0)
-		{
-			index = i - j;
-			break;
-		}
-	}
-	if (!index)
-	{
-		// Insert it onto the end.
-		index = g_pBoard->tileIndex.size();
-		g_pBoard->tileIndex.push_back(tile);
-	}
-
-	try
-	{
-		g_pBoard->board[x][y][l] = index;
-		g_pBoard->bLayerOccupied[l] = true;
-		g_pBoard->bLayerOccupied[0] = true;			// Any layer occupied.
-	}
-	catch (...)
+	if (!g_pBoard->insertTile(params[3].getLit(), int(params[0].getNum()), int(params[1].getNum()),	int(params[2].getNum())))
 	{
 		throw CError(_T("LayerPut(): tile co-ordinates out of bounds."));
 	}
