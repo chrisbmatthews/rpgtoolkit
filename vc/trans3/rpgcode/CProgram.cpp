@@ -79,6 +79,7 @@ void CThread::multitask()
 }
 
 // Put a thread to sleep.
+// 0 milliseconds = indefinite sleep
 void CThread::sleep(const unsigned long milliseconds)
 {
 	m_bSleeping = true;
@@ -89,7 +90,7 @@ void CThread::sleep(const unsigned long milliseconds)
 // Is a thread sleeping?
 bool CThread::isSleeping() const
 {
-	if (!m_bSleeping) return false;
+	if (!m_bSleeping || !m_sleepDuration) return false;
 
 	if ((GetTickCount() - m_sleepBegin) >= m_sleepDuration)
 	{
