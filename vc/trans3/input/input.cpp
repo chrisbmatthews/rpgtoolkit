@@ -285,8 +285,7 @@ void scanKeys()
 			PF_PATH pf = g_pSelectedPlayer->pathFind(p.x + g_screen.left, p.y + g_screen.top, PF_VECTOR);
 			if (pf.size())
 			{
-				g_pSelectedPlayer->clearQueue();
-				g_pSelectedPlayer->setQueuedPath(pf);
+				g_pSelectedPlayer->setQueuedPath(pf, true);
 			}
 		}
 	}
