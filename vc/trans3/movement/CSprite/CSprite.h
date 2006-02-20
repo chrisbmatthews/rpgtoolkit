@@ -16,6 +16,7 @@
 #include "../../render/render.h"
 #include "../CVector/CVector.h"
 #include "../CPathFind/CPathFind.h"
+#include "../../rpgcode/CProgram.h"
 
 class CSprite  
 {
@@ -25,8 +26,13 @@ public:
 	static bool m_bPxMovement;				// Using pixel/tile movement (whole engine).
 
 	void clearQueue(void);					// Clear the queue.
+	void doMovement(						// Initiate rpgcode movements.
+		const CProgram *prg, 
+		const bool bPauseThread);
 	void freePath(void) { m_pathFind.freeVectors(); }
-	void parseQueuedMovements(STRING str);	// Parse a Push() string and pass to setQueuedMovement().
+	void parseQueuedMovements(				// Parse a Push() string and pass to setQueuedMovement().
+		const STRING str, 
+		const bool bClearQueue);	
 	PF_PATH pathFind( 						// Pathfind to pixel position x, y (same layer).
 		const int x,
 		const int y, 
@@ -36,7 +42,9 @@ public:
 		const int queue,
 		const bool bClearQueue, 
 		int step = 0);
-	void setQueuedPath(PF_PATH &path);		// Queue up a path-finding path.
+	void setQueuedPath(						// Queue up a path-finding path.
+		PF_PATH &path, 
+		const bool bClearQueue);	
 	void setQueuedPoint(const DB_POINT pt)	// Queue just one point to create a path.
 	{
 		if (!m_pend.path.empty() || m_pos.loopFrame > LOOP_MOVE) return;
@@ -51,8 +59,9 @@ public:
 		RECT &rect);
 	void setAnm(MV_ENUM dir);				// Set the facing animation.
 	void customStance( 						// Start a custom stance.
-		const STRING stance,
-		const bool bThread);
+		const STRING stance, 
+		const CProgram *prg, 
+		const bool bPauseThread);
 
 	bool move(								// Evaluate the current movement state.
 		const CSprite *selectedPlayer,
@@ -129,7 +138,7 @@ protected:
 	DB_POINT m_v;							// Position vector in movement direction
 	CPathFind m_pathFind;					// Sprite-specific pathfinding information.
 	CFacing m_facing;						// Facing direction.
-
+	CThread *m_thread;						// Sleeping thread id if moving in a thread.
 
 private:
 	static bool m_bDoneMove;				// Record whether we need to run playerDoneMove().

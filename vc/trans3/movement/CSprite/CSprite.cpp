@@ -16,7 +16,6 @@
 #include "../../common/board.h"
 #include "../../common/paths.h"
 #include "../../common/CAllocationHeap.h"
-#include "../../rpgcode/CProgram.h"
 #include "../../fight/fight.h"
 #include "../../audio/CAudioSegment.h"
 #include "../locate.h"
@@ -38,6 +37,7 @@ m_bActive(show),
 m_pathFind(),
 m_pend(),
 m_pos(),
+m_thread(NULL),
 m_tileType(TT_NORMAL)				// Tiletype at location, NOT sprite's type.
 {
 	m_v.x = m_v.y = 0;
@@ -62,22 +62,15 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 	// Negative value indicates idle status.
 	if (m_pos.loopFrame < LOOP_MOVE)
 	{
-		if (!m_pend.path.empty())
+		// If movements are queued or there is a board-set path.
+		if (!m_pend.path.empty() || m_brdData.boardPath())
 		{
-			/*
-			 * Determine the number of frames we need to draw to make
-			 * the sprite move at the requested speed, considering the fps.
-			 * Scale the offset (GameSpeed() setting) to correspond to an
-			 * increment of 10%.
-			 */
+			// Determine the number of frames for required speed
 			m_pos.loopSpeed = calcLoops();
 
-			if (m_bPxMovement && m_pos.loopFrame != LOOP_DONE)
-			{
-				// Increment the animation frame if movement did not 
-				// finish the previous loop (pixel movement only).
-				m_pos.frame += m_pos.loopSpeed * 2 - 1;
-			}
+			// Increment the animation frame if movement did not 
+			// finish the previous loop (pixel movement only).
+			if (m_bPxMovement && m_pos.loopFrame != LOOP_DONE) m_pos.frame += m_pos.loopSpeed * 2 - 1;
 
 			// Insert target co-ordinates.
 			setPathTarget();
@@ -87,14 +80,10 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			m_facing.assign(getDirection());
 
 			// Get the tiletype at the target.
-			m_tileType = TILE_TYPE(boardCollisions(g_pBoard) | 
-								   spriteCollisions());
+			m_tileType = TILE_TYPE(boardCollisions(g_pBoard) | spriteCollisions());
 
-			if (!(m_tileType & TT_SOLID) || isUser)
-			{
-				// Start the render frame counter.
-				m_pos.loopFrame = LOOP_MOVE;
-			}
+			// Start the render frame counter.
+			if (!(m_tileType & TT_SOLID) || isUser) m_pos.loopFrame = LOOP_MOVE;
 
 			// Do this after the above if, to prevent walking on the target board.
 			m_tileType = TILE_TYPE(m_tileType | boardEdges(isUser));
@@ -118,22 +107,19 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 	{
 		// Movement is occurring.
 
+		// Push the sprite only when the tiletype is passable.
+		// Items will not have entered this block if their target is solid.
+		if (!(m_tileType & TT_SOLID)) push(isUser);
+
 		if (m_pos.bIsPath)
 		{
 			// Re-test for sprite collisions. The path was calculated
 			// to avoid sprites but cannot account for moving sprites.
 			if (spriteCollisions() & TT_SOLID)
 			{
-				DB_POINT goal = {0, 0};
-				getDestination(goal);
-				clearQueue();
-				setQueuedPath(pathFind(goal.x, goal.y, PF_VECTOR));
+				setQueuedPath(pathFind(m_pend.xTarg, m_pend.yTarg, PF_VECTOR), true);
 			}
 		}
-
-		// Push the sprite only when the tiletype is passable.
-		// Items will not have entered this block if their target is solid.
-		if (!(m_tileType & TT_SOLID)) push(isUser);
 
 		++m_pos.loopFrame;				// Count of this movement's renders.
 		++m_pos.frame;					// Total frame count (for animation frames).
@@ -144,6 +130,9 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 		{
 			// If we've moved past one of the targets or we're
 			// walking against a wall, stop.
+
+			// Do not pop until the movement has finished.
+			if (!m_pend.path.empty()) m_pend.path.pop_front();
 
 			if (!(m_tileType & TT_SOLID))
 			{
@@ -160,15 +149,22 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			// (for pixel movement).
 			m_pos.loopFrame = LOOP_DONE;
 
+			// Wake up any thread that this sprite has control over
+			// if the path is empty (i.e. a thread-set movement has just finished).
+			if (m_thread && m_pend.path.empty())
+			{
+				m_thread->wakeUp();
+				m_thread = NULL;
+			}
+
 			// Finish the move for the selected player.
-			if (this == selectedPlayer && !bRunningProgram) 
+			if (isUser && !bRunningProgram) 
 			{
 				// Programs cannot be run from within the 
 				// main movement loop (gameLogic()) because
 				// they may add or erase players from g_sprites.
 				// Instead, hold the result until after.
 
-				// playerDoneMove();
 				m_bDoneMove = true;
 
 				// Back to idle state (accepting input)
@@ -178,13 +174,14 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 		else
 		{
 			// Do program/fight tests every move for sprites on a path.
-			if (m_pos.bIsPath && this == selectedPlayer && !bRunningProgram) 
+			if (m_pos.bIsPath && isUser && !bRunningProgram) 
 			{
-				// playerDoneMove();
 				m_bDoneMove = true;
 			}
 		} // if (movement ended)
-		return true;
+
+		// Return true for a set path only (not a board path).
+		if (!m_pend.path.empty()) return true;
 
 	} // if (movement occurred)
 
@@ -199,10 +196,6 @@ bool CSprite::push(const bool bScroll)
 {
 	extern RECT g_screen;
 	extern LPBOARD g_pBoard;
-
-	// The pixel difference between the last frame and this frame.
-//	const int stepSize = round(PX_FACTOR * (m_pos.loopFrame + 1) / m_pos.loopSpeed)
-//					   - round(PX_FACTOR * m_pos.loopFrame / m_pos.loopSpeed);
 
 	// Pixels per frame.
 	const double stepSize = PX_FACTOR / m_pos.loopSpeed;
@@ -280,6 +273,10 @@ MV_ENUM CSprite::getDirection(void)
 	return MV_ENUM((round(angle / 45.0) % 8) + 1);
 }
 
+/*
+ * Get the target coordinates - either the next point on a path
+ * or the ultimate target.
+ */
 DB_POINT CSprite::getTarget(void)
 {
 	if (m_pos.bIsPath)
@@ -329,32 +326,56 @@ void CSprite::setTarget(MV_ENUM direction)
  */
 void CSprite::setPathTarget(void)
 {
-	m_pend.xTarg = m_pend.path.front().x;
-	m_pend.yTarg = m_pend.path.front().y;
-	m_pend.path.pop_front();
+	if (!m_pend.path.empty())
+	{
+		m_pend.xTarg = m_pend.path.front().x;
+		m_pend.yTarg = m_pend.path.front().y;
+
+		// Null the board path if one exists and it is set to run
+		// only until interrupted (do not delete the vector since
+		// it belongs to the board).
+		if (m_brdData.boardPath.attributes & BP_STOP_ON_INTERRUPT)
+		{
+			m_brdData.boardPath.pVector = NULL;
+		}
+	}
+	else if (m_brdData.boardPath())
+	{
+		DB_POINT pt = m_brdData.boardPath.getNextNode();
+		m_pend.xTarg = pt.x;
+		m_pend.yTarg = pt.y;
+		m_pos.bIsPath = true;
+	}
+	else return;
 
 	const double dx = m_pend.xTarg - m_pend.xOrig,
 				 dy = m_pend.yTarg - m_pend.yOrig;
 	const double dmax = dAbs(dx) > dAbs(dy) ? dAbs(dx) : dAbs(dy);
 
 	// Scale the vector.
-	m_v.x = dx / dmax;
-	m_v.y = dy / dmax;
+	if (dmax)
+	{
+		m_v.x = dx / dmax;
+		m_v.y = dy / dmax;
+	}
 }
 
 /*
  * Parse a Push() string and pass to setQueuedMovement().
  */
-void CSprite::parseQueuedMovements(STRING str)
+void CSprite::parseQueuedMovements(const STRING str, const bool bClearQueue)
 {
 	extern MAIN_FILE g_mainFile;
 	STRING s;
+
+	// Break out of the current movement.
+	if (bClearQueue) clearQueue();
 
 	// Should step = 8 for pixel push?
 	const int step = (g_mainFile.pixelMovement == MF_PUSH_PIXEL ? moveSize() : 32);
 
 	// Include str.end() in the loop to catch the last movement.
-	for (STRING::iterator i = str.begin(); i <= str.end(); ++i)
+	for (STRING::const_iterator i = str.begin(); i <= str.end(); ++i)
 	{
 		if (i == str.end() || i[0] == _T(','))
 		{
@@ -404,11 +425,8 @@ void CSprite::clearQueue(void)
  */
 void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int step)
 {
-	if (bClearQueue)
-	{
-		// Break out of the current movement.
-		clearQueue();
-	}
+	// Break out of the current movement.
+	if (bClearQueue) clearQueue();
 
 	extern LPBOARD g_pBoard;
 	extern const double g_directions[2][9][2];
@@ -418,7 +436,7 @@ void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int
 	// Pixels travelled this move, optionally overriden for rpgcode commands.
 	if (!step) step = moveSize();
 
-	// The _T("movement vector").
+	// The "movement vector".
 	// g_directions[isIsometric()][MV_CODE][x OR y].
 	m_v.x = g_directions[nIso][direction][0];
 	m_v.y = g_directions[nIso][direction][1];
@@ -458,11 +476,14 @@ void CSprite::getDestination(DB_POINT &p) const
 {
 	if (m_pend.path.empty())
 	{
+		// The origin of the current movement or the target
+		// of the previous movement (origin = target on arrival).
 		p.x = m_pend.xOrig;
 		p.y = m_pend.yOrig;
 	}
 	else
 	{
+		// The "final" destination.
 		p = m_pend.path.back();
 	}
 }
@@ -470,11 +491,12 @@ void CSprite::getDestination(DB_POINT &p) const
 /*
  * Queue up a path-finding path.
  */
-void CSprite::setQueuedPath(PF_PATH &path)
+void CSprite::setQueuedPath(PF_PATH &path, const bool bClearQueue)
 {
-	// PF_PATH is a std::vector<DB_POINT> with the points stored
-	// in *reverse*.
 	if (path.empty()) return;
+	if (bClearQueue) clearQueue();
+
+	// PF_PATH is a std::vector<DB_POINT> with the points stored in reverse.
 	PF_PATH::reverse_iterator i = path.rbegin();
 	for (; i != path.rend(); ++i)
 	{
@@ -542,6 +564,44 @@ void CSprite::setPosition(int x, int y, const int l, const COORD_TYPE coord)
 	m_pos.loopFrame = LOOP_DONE;
 	m_pos.bIsPath = false;
 
+}
+
+/*
+ * Initiate movement by program type.
+ */
+void CSprite::doMovement(const CProgram *prg, const bool bPauseThread)
+{
+	extern bool g_multirunning;
+
+	if (prg->isThread())
+	{
+		if (bPauseThread)
+		{
+			// Hold thread execution until this command is finished.
+
+			// Free any current thread.
+			if (m_thread) m_thread->wakeUp();
+			// Give thread control to the sprite.
+			m_thread = (CThread *)prg;
+			// Pause the thread indefinitely (until movement ends).
+			m_thread->sleep(0);
+		}
+		else
+		{
+			// Continue program execution, run movements concurrently.
+		}
+	}
+	else
+	{
+		if (!g_multirunning)
+		{
+			runQueuedMovements();
+		}
+		else 
+		{
+			// Hold movement until MultiRun closes, then run.
+		}
+	}
 }
 
 /*
@@ -702,14 +762,6 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 		tileTypes = TILE_TYPE(tileTypes | tt);
 
 	} // for (i)
-
-	// A normal-type override nullifies a TT_SOLID.
-	if (tileTypes & TT_N_OVERRIDE)
-	{
-		tileTypes = TT_NORMAL;
-		// Remove any sliding that may have occurred.
-		setTarget(m_facing.dir());
-	}
 
 	// Move the player to the target layer (if stairs were encountered).
 	m_pos.l = layer;
@@ -1446,7 +1498,7 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 /*
  * Run a custom stance.
  */
-void CSprite::customStance(const STRING stance, const bool bThread)
+void CSprite::customStance(const STRING stance, const CProgram *prg, const bool bPauseThread)
 {
 	extern CCanvas *g_cnvRpgCode;
 	extern void processEvent();
@@ -1464,7 +1516,21 @@ void CSprite::customStance(const STRING stance, const bool bThread)
 	m_pos.loopFrame = LOOP_STANCE;
 	m_pos.frame = 0;
 
-	if (!bThread)
+	if (prg->isThread())
+	{
+		if (bPauseThread)
+		{
+			// Hold thread execution until this command is finished.
+
+			// Free any current thread.
+			if (m_thread) m_thread->wakeUp();
+			// Give thread control to the sprite.
+			m_thread = (CThread *)prg;
+			// Pause the thread indefinitely (until movement ends).
+			m_thread->sleep(0);
+		}
+	}
+	else
 	{
 		// Animate now!
 		while (m_pos.loopFrame == LOOP_STANCE)
@@ -1487,13 +1553,12 @@ void CSprite::setAnm(MV_ENUM dir)
 			if (m_attr.mapGfx[GFX_IDLE][dir].pAnm)
 			{
 				m_pos.pAnm = m_attr.mapGfx[GFX_IDLE][dir].pAnm->m_pAnm;
-				break;
-			}
+			} break;
 		default:
-			try
+			if (m_attr.mapGfx[GFX_MOVE][dir].pAnm)
 			{
 				m_pos.pAnm = m_attr.mapGfx[GFX_MOVE][dir].pAnm->m_pAnm;
-			} catch (...) { }
+			}
 	}
 }
 
@@ -1551,9 +1616,17 @@ void CSprite::checkIdling(void)
 					m_pos.loopFrame = LOOP_WAIT;
 					m_pos.idle.time = GetTickCount();
 					setAnm(m_facing.dir());
+
+					// Free any thread that is waiting for the custom
+					// animation to finish.
+					if (m_thread)
+					{
+						m_thread->wakeUp();
+						m_thread = NULL;
+					}
 				}
 			}
-		}
+		} // if (running custom or idle animation)
 	} // if (player is not moving)
 }
 
