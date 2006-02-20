@@ -155,6 +155,7 @@ typedef struct tagSpriteAttr
 
 } SPRITE_ATTR;
 
+
 /*
  * A board-set sprite.
  */
@@ -167,26 +168,65 @@ typedef struct tagSpriteAttr
 #define SPR_ACTIVE		0				// Program is always active.
 #define SPR_CONDITIONAL	1				// Program's running depends on RPGCode variables.
 
+/*
+ * A sprite path set in the board editor.
+ */
+typedef struct tagSpriteBoardPath
+{
+	CVector *pVector;					// Path in tagBoard::paths.
+	int attributes;
+	int cycles;
+	int nextNode;						// Node currently travelling to.
+
+	tagSpriteBoardPath(): pVector(NULL), attributes(0), cycles(0), nextNode(0) {}
+	DB_POINT getNextNode()
+	{
+		DB_POINT pt = {0, 0};
+		if (pVector)
+		{
+			pt = (*pVector)[nextNode];
+			if (++nextNode >= pVector->size())
+			{
+				nextNode = 0;
+				// Check if we need to finish.
+				if (!--cycles) 
+				{
+					// Done. Null the pointer but do not delete the
+					// path (since it belongs to the board).
+					pVector = NULL;
+				}
+			}
+		}
+		return pt;
+	}
+	bool operator() (void) { return pVector; }
+
+} SPR_BRDPATH, *LPSPR_BRDPATH;
+
+/*
+ * Board path attributes (flags).
+ */
+#define BP_STOP_ON_INTERRUPT	1		// Making other movements stops the path.
+
+
 typedef struct tagBoardSprite
 {
-	STRING fileName;				// Filename of item.
-//	short x;
-//	short y;
-//	short layer;
-
+	STRING fileName;					// Filename of item.
 	short activate;						// SPR_ACTIVE - always active.
 										// SPR_CONDITIONAL - conditional activation.
-	STRING initialVar;				// Activation variable.
-	STRING finalVar;				// Activation variable at end of sprite prg.
-	STRING initialValue;			// Initial value of activation variable.
-	STRING finalValue;				// Value of variable after sprite prg runs.
+	STRING initialVar;					// Activation variable.
+	STRING finalVar;					// Activation variable at end of sprite prg.
+	STRING initialValue;				// Initial value of activation variable.
+	STRING finalValue;					// Value of variable after sprite prg runs.
 	short activationType;				// Activation type: (flags)
 										// SPR_STEP - walk in vector.
 										// SPR_KEYPRESS - hit general activation key inside vector.
-										// SPR_REPEAT - Whether sprite must leave vector to before
+										// SPR_REPEAT - Whether player must leave vector before
 										//				program can retrigger or not.
-	STRING prgActivate;			// Program to run when sprite is activated.
-	STRING prgMultitask;			// Multitask program for sprite.
+	STRING prgActivate;					// Program to run when sprite is activated.
+	STRING prgMultitask;				// Multitask program for sprite.
+
+	SPR_BRDPATH boardPath;				// Path from the board that the sprite is moving along.
 
 	// The item will have its own vectors.
 	tagBoardSprite(void): 

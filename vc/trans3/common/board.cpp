@@ -305,6 +305,13 @@ lutEnd:
 		file >> spr.prgActivate;
 		file >> spr.prgMultitask;
 
+/*		CVector *v = new CVector();
+		DB_POINT pts[] = {{180, 50}, {360, 50}, {360, 200}, {200, 200}};
+		v->push_back(pts, 4);
+		v->close(false);
+		paths.push_back(v);
+		spr.boardPath.pVector = v;
+*/
 		if (!spr.fileName.empty() && (this == g_pBoard))
 		{
 			try
@@ -1066,6 +1073,18 @@ void tagBoard::freeThreads()
 		CThread::destroy(*i);
 	}
 	threads.clear();
+}
+
+/*
+ * Free paths.
+ */
+void tagBoard::freePaths()
+{
+	for (std::vector<CVector *>::iterator i = paths.begin(); i != paths.end(); ++i)
+	{
+		delete *i;
+	}
+	paths.clear();
 }
 
 /*

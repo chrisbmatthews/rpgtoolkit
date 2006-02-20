@@ -219,10 +219,11 @@ typedef struct tagBoard
 	COORD_TYPE coordType;							// Co-ordinate system type.
 	std::vector<bool> bLayerOccupied;				// Do layers contain tiles?
 
-	/* Either keep the background image separate or put it
-	   on the front of images. */
-	LPBRD_IMAGE bkgImage;
-	std::vector<LPBRD_IMAGE> images;
+	LPBRD_IMAGE bkgImage;							// Background image.
+	std::vector<LPBRD_IMAGE> images;				// Layered images.
+
+	std::vector<CVector *> paths;					// Board-defined paths that can be
+													// assigned to sprites.
 
 	bool open(const STRING fileName);
 	void vectorize(const unsigned int layer);
@@ -232,6 +233,7 @@ typedef struct tagBoard
 	void freeItems();
 	void freeImages();
 	void freeThreads();
+	void freePaths();
 	void addAnimTile(const STRING fileName, const int x, const int y, const int z);
 	bool insertTile(const STRING tile, const int x, const int y, const int z);
 	void setSize(const int width, const int height, const int depth);
@@ -256,7 +258,7 @@ typedef struct tagBoard
 	bool hasProgram(LPBRD_PROGRAM p) const;
 
 	tagBoard(): coordType(TILE_NORMAL), bkgImage(NULL) { }
-	~tagBoard() { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); }
+	~tagBoard() { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); freePaths(); }
 
 private:
 	tagBoard &operator=(tagBoard &rhs);
