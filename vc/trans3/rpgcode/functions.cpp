@@ -71,6 +71,15 @@ typedef std::pair<STRING, RECT> RPG_BUTTON;	// Rpgcode button <image, position>
 std::map<int, RPG_BUTTON> g_buttons;		// setButton(), checkButton().
 int g_mwinSize = 0;							// Width of message window.
 const int MISC_DELAY = 5;					// Miscellaneous delay (millisecond).
+bool g_multirunning = false;				// Are we in multirun()'s scope (non-thread only). 
+
+/*
+ * Rpgcode flags.
+ */
+// Movement functions (Push(), ItemStep()...)
+// Feel free to rename these.
+#define tkMV_PAUSE_THREAD	1
+#define tkMV_CLEAR_QUEUE	2
 
 /*
  * Become ready to run a program.
@@ -327,6 +336,10 @@ void mwinCls(CALL_DATA &params)
  */
 void send(CALL_DATA &params)
 {
+	extern STRING g_projectPath;
+	extern LPBOARD g_pBoard;
+	extern CPlayer *g_pSelectedPlayer;
+
 	unsigned int layer = 1;
 	if (params.params != 3)
 	{
@@ -337,38 +350,23 @@ void send(CALL_DATA &params)
 		layer = params[3].getNum();
 	}
 
-	extern STRING g_projectPath;
-	extern LPBOARD g_pBoard;
 	g_pBoard->open(g_projectPath + BRD_PATH + params[0].getLit());
 
-	unsigned int x = params[1].getNum(), y = params[2].getNum();
+	int x = int(params[1].getNum()), y = int(params[2].getNum());
+	pixelCoordinate(x, y, g_pBoard->coordType, false);
 
-	/* TBD: Co-ordinate system stuff... */
-	if (x > g_pBoard->bSizeX)
+	if (x < 1 || x > g_pBoard->pxWidth())
 	{
-		CProgram::debugger(_T("Send() location exceeds target board x-dimension."));
-		x = g_pBoard->bSizeX;
+		CProgram::debugger(_T("Send() location exceeds target board x-dimensions."));
+		x = 32;
 	}
-	if (x < 1)
+	if (y < 1 || y > g_pBoard->pxHeight())
 	{
-		CProgram::debugger(_T("Send() x location is less than one."));
-		x = 1;
-	}
-	if (y > g_pBoard->bSizeY)
-	{
-		CProgram::debugger(_T("Send() location exceeds target board y-dimension."));
-		y = g_pBoard->bSizeY;
-	}
-	if (y < 1)
-	{
-		CProgram::debugger(_T("Send() y location is less than one."));
-		y = 1;
+		CProgram::debugger(_T("Send() location exceeds target board y-dimensions."));
+		y = 32;
 	}
 
-	extern CPlayer *g_pSelectedPlayer;
-
-	g_pSelectedPlayer->setPosition(x, y, layer, g_pBoard->coordType);
-
+	g_pSelectedPlayer->setPosition(x, y, layer, PX_ABSOLUTE);
 	g_pSelectedPlayer->send();
 }
 
@@ -1411,90 +1409,6 @@ void tileType(CALL_DATA &params)
 	g_pBoard->vectorize(z);
 }
 
-#if(0)
-/*
- * Old method: vector brute force.
- *
- * Using vector collision, square vectors are added to the board with 
- * corresponding types. If an identical vector exists at the point,
- * alter its type rather than adding another.
- * Note: Overriding with "normal" may now not work as intended - users
- * should use vector tools instead.
- */
-void tileType(CALL_DATA &params)
-{
-	// TBD: unidirectionals
-	extern LPBOARD g_pBoard;
-
-	if (params.params != 3 && params.params != 4)
-	{
-		throw CError(_T("TileType() requires three or four parameters."));
-	}
-
-	// Construct new vector. v.type defaults to TT_SOLID.
-	BRD_VECTOR v;
-	v.pV = new CVector();
-
-	const STRING type = params[2].getLit();
-	if (_ftcsicmp(type.c_str(), _T("NORMAL")) == 0) v.type = TT_N_OVERRIDE;
-	else if (_ftcsicmp(type.c_str(), _T("UNDER")) == 0) v.type = TT_UNDER;
-	else if (_ftcsicmp(type.substr(0, 6).c_str(), _T("STAIRS")) == 0)
-	{
-		v.type = TT_STAIRS;
-		v.attributes = atoi(type.substr(6).c_str());
-	}
-	else if (_ftcsicmp(type.c_str(), _T("NS")) == 0) v.type = TT_UNIDIRECTIONAL;
-	else if (_ftcsicmp(type.c_str(), _T("EW")) == 0) v.type = TT_UNIDIRECTIONAL;
-
-	// Transform to pixel co-ordinates.
-	int x = params[0].getNum(), y = params[1].getNum();
-	pixelCoordinate(x, y, g_pBoard->coordType, false);
-
-	if (g_pBoard->isIsometric())
-	{
-		// Isometric diamond. See tagBoard::vectorize() for order.
-		DB_POINT p[] = {{x, y - 16}, {x - 32, y}, {x, y + 16}, {x + 32, y}};
-		v.pV->push_back(p, 4);
-	}
-	else
-	{
-		// 2D square. See tagBoard::vectorize() for order.
-		DB_POINT p[] = {{x, y}, {x, y + 32}, {x + 32, y + 32}, {x + 32, y}};
-		v.pV->push_back(p, 4);
-	}
-	v.pV->close(true);
-	v.layer = (params.params == 4 ? params[3].getNum() : 1);
-
-	std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin();
-	for (; i != g_pBoard->vectors.end(); ++i)
-	{
-		if (i->layer != v.layer) continue;
-		if (i->pV->compare(*v.pV))
-		{
-			// Found a matching vector.
-			if (v.type == TT_N_OVERRIDE)
-			{
-				// Delete this vector.
-				delete i->pV;
-				delete i->pCnv;
-				g_pBoard->vectors.erase(i);
-			}
-			else
-			{
-				i->type = v.type;
-				i->attributes = v.attributes;
-				if (v.type == TT_UNDER) i->createCanvas(*g_pBoard);
-			}
-			return;
-		}
-	}
-
-	// Didn't find a match.
-	g_pBoard->vectors.push_back(v);
-	if (v.type == TT_UNDER) g_pBoard->vectors.back().createCanvas(*g_pBoard);
-}
-#endif
-
 /*
  * void mediaPlay(string file)
  * 
@@ -1822,24 +1736,27 @@ void pathfind(CALL_DATA &params)
 }
 
 /*
- * void playerstep(string handle, int x, int y)
+ * void playerstep(string handle, int x, int y [, int flags])
  * 
  * Causes the player to take one step in the direction of x, y
  * following a route determined by pathFind.
+ *
+ * TBD: update for flags.
  */
 void playerstep(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
 
-	if (params.params != 3)
+	if (params.params != 3 && params.params != 4)
 	{
-		throw CError(_T("PlayerStep() requires three parameters."));
+		throw CError(_T("PlayerStep() requires three or four parameters."));
 	}
 
 	CSprite *p = getPlayerPointer(params[0]);
 	if (!p) throw CError(_T("PlayerStep(): player not found"));
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
+	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
 	pixelCoordinate(x, y, g_pBoard->coordType, true);
 
 	PF_PATH path = p->pathFind(x, y, PF_AXIAL);
@@ -1848,35 +1765,35 @@ void playerstep(CALL_DATA &params)
 		// Prune to the last element.
 		path.front() = path.back();		
 		path.resize(1);
-		p->setQueuedPath(path);
 
-		if (!params.prg->isThread())
-		{
-			// If not a thread, move now.
-			p->runQueuedMovements();
-		}
+		// Initiate movement by program type.
+		p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+		p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 	}
 }
 
 /*
- * void itemstep(variant handle, int x, int y)
+ * void itemstep(variant handle, int x, int y [, int flags])
  * 
  * Causes the item to take one step in the direction of x, y
  * following a route determined by pathFind.
+ *
+ * TBD: update for flags.
  */
 void itemstep(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
 
-	if (params.params != 3)
+	if (params.params != 3 && params.params != 4)
 	{
-		throw CError(_T("ItemStep() requires three parameters."));
+		throw CError(_T("ItemStep() requires three or four parameters."));
 	}
 
-	CSprite *p = getItemPointer(params[0]);
+	CItem *p = getItemPointer(params[0]);
 	if (!p) throw CError(_T("ItemStep(): item not found"));
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
+	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
 	pixelCoordinate(x, y, g_pBoard->coordType, true);
 
 	PF_PATH path = p->pathFind(x, y, PF_AXIAL);
@@ -1885,18 +1802,15 @@ void itemstep(CALL_DATA &params)
 		// Prune to the last element.
 		path.front() = path.back();		
 		path.resize(1);
-		p->setQueuedPath(path);
 
-		if (!params.prg->isThread())
-		{
-			// If not a thread, move now.
-			p->runQueuedMovements();
-		}
+		// Initiate movement by program type.
+		p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+		p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 	}
 }
 
 /*
- * void push(string direction[, string handle])
+ * void push(string direction[, string handle [, int flags]])
  * 
  * Push the player with the specified handle, or the default player
  * if no handle is specified, along the given directions. The direction
@@ -1907,55 +1821,48 @@ void itemstep(CALL_DATA &params)
  * - N, S, E, W, NE, NW, SE, SW
  * - NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST
  * - 1, 2, 3, 4, 5, 6, 7, 8
+ *
+ * TBD: update for flags.
  */
 void push(CALL_DATA &params)
 {
 	extern CPlayer *g_pSelectedPlayer;
 
-	if ((params.params != 1) && (params.params != 2))
+	if ((params.params < 1) || (params.params > 3))
 	{
-		throw CError(_T("Push() requires one or two parameters."));
+		throw CError(_T("Push() requires one, two or three parameters."));
 	}
 
-	CSprite *p = NULL;
-
-	if (params.params == 2)
-	{
-		p = getPlayerPointer(params[1]);
-	}
-	else
-	{
-		p = g_pSelectedPlayer;
-	}
+	CSprite *p = (params.params > 1 ? getPlayerPointer(params[1]) : g_pSelectedPlayer);
 	if (!p) throw CError(_T("Push(): player not found"));
 
 	// Backwards compatibility.
 	STRING str = formatDirectionString(params[0].getLit());
 
-	// Parse and set queued movements.
-	p->parseQueuedMovements(str);
+	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
 
-	if (!params.prg->isThread())
-	{
-		// If not a thread, move now.
-		p->runQueuedMovements();
-	}
+	// Parse and set queued movements.
+	p->parseQueuedMovements(str, flags & tkMV_CLEAR_QUEUE);
+	// Initiate movement by program type.
+	p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 }
 
 /*
- * void pushItem(variant item, string direction)
+ * void pushItem(variant item, string direction [, int flags])
  * 
  * The first parameter accepts either a string that can be either
  * "target" or "source" direction or the number of an item. The
  * syntax of the directional string is the same as for [[push()]].
+ *
+ * TBD: update for flags.
  */
 void pushItem(CALL_DATA &params)
 {
 	extern CPlayer *g_pSelectedPlayer;
 
-	if (params.params != 2)
+	if (params.params != 2 && params.params != 3)
 	{
-		throw CError(_T("PushItem() requires two parameters."));
+		throw CError(_T("PushItem() requires two or three parameters."));
 	}
 
 	CSprite *p = getItemPointer(params[0]);
@@ -1964,14 +1871,12 @@ void pushItem(CALL_DATA &params)
 	// Backwards compatibility.
 	STRING str = formatDirectionString(params[1].getLit());
 
-	// Parse and set queued movements.
-	p->parseQueuedMovements(str);
+	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
 
-	if (!params.prg->isThread())
-	{
-		// If not a thread, move now.
-		p->runQueuedMovements();
-	}
+	// Parse and set queued movements.
+	p->parseQueuedMovements(str, flags & tkMV_CLEAR_QUEUE);
+	// Initiate movement by program type.
+	p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 }
 
 /*
@@ -2037,11 +1942,8 @@ void wander(CALL_DATA &params)
 	if (pt.x > 0 && pt.x < g_pBoard->pxWidth() && pt.y > 0 && pt.y < g_pBoard->pxHeight())
 	{
 		p->setQueuedPoint(pt);
-		if (!params.prg->isThread())
-		{
-			// If not a thread, move now.
-			p->runQueuedMovements();
-		}
+		// Initiate movement by program type.
+		p->doMovement(params.prg, false);
 	}
 }
 
@@ -2335,7 +2237,7 @@ void createitem(CALL_DATA &params)
 	catch (CInvalidItem) { return; }
 
 	// If two parameters were provided and the second parameter is
-	// a cosntant, load the item into that position.
+	// a constant, load the item into that position.
 	if ((params.params == 2) && !(params[1].udt & UDT_ID))
 	{
 		const int i = params[1].getNum();
@@ -2557,7 +2459,6 @@ void characterSpeed(CALL_DATA &params)
 void itemlocation(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
-	/** TBD: Multitasking considerations **/
 
 	if (params.params != 4)
 	{
@@ -2586,6 +2487,42 @@ void itemlocation(CALL_DATA &params)
 }
 
 /*
+ * void playerlocation(variant handle, int &x, int &y, int &layer)
+ * 
+ * Get the location of a player.
+ * TBD: update rpgcode reference/sort resevered variables.
+ */
+void playerlocation(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	if (params.params != 4)
+	{
+		throw CError(_T("PlayerLocation() requires four parameters."));
+	}
+	
+	LPSTACK_FRAME x = params.prg->getVar(params[1].lit),
+				  y = params.prg->getVar(params[2].lit),
+				  l = params.prg->getVar(params[3].lit);
+	x->udt = UDT_NUM;
+	y->udt = UDT_NUM;
+	l->udt = UDT_NUM;
+
+	const CSprite *p = getPlayerPointer(params[0]);
+	if (!p) throw CError(_T("PlayerLocation(): player not found"));
+
+	const SPRITE_POSITION s = p->getPosition();
+
+	// Transform from pixel to board type (e.g. tile).
+	int dx = int(s.x), dy = int(s.y);
+	tileCoordinate(dx, dy, g_pBoard->coordType);
+
+	x->num = dx;
+	y->num = dy;
+	l->num = s.l;
+}
+
+/*
  * void sourcelocation(int &x, &int y)
  * 
  * Get the location of the source object.
@@ -2593,7 +2530,6 @@ void itemlocation(CALL_DATA &params)
 void sourcelocation(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
-	/** TBD: Multitasking considerations **/
 
 	if (params.params != 2)
 	{
@@ -2642,7 +2578,6 @@ void sourcelocation(CALL_DATA &params)
 void targetlocation(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
-	/** TBD: Multitasking considerations **/
 
 	if (params.params != 2)
 	{
@@ -4882,7 +4817,6 @@ void getBoardTileType(CALL_DATA &params)
 		switch (p->type)
 		{
 			case TT_NORMAL:
-			case TT_N_OVERRIDE:
 				type = _T("NORMAL");
 				break;
 
@@ -4970,6 +4904,7 @@ void animation(CALL_DATA &params)
 	if (params.prg->isThread())
 	{
 		// Multitask the animation.
+		// TBD: update for pausethread?
 		CThreadAnimation *p = CThreadAnimation::create(
 			params[0].getLit(),
 			int(params[1].getNum()), 
@@ -5008,6 +4943,7 @@ void sizedanimation(CALL_DATA &params)
 	if (params.prg->isThread())
 	{
 		// Multitask the animation.
+		// TBD: update for pausethread?
 		CThreadAnimation *p = CThreadAnimation::create(
 			params[0].getLit(),
 			int(params[1].getNum()), 
@@ -5044,39 +4980,45 @@ void endanimation(CALL_DATA &params)
 }
 
 /*
- * itemstance(handle item, string stance)
+ * itemstance(handle item, string stance [, int flags])
  * 
  * Animate an item's custom stance.
+ * TBD: update for flags.
  */
 void itemstance(CALL_DATA &params)
 {
-	if (params.params != 2)
+	if (params.params != 2 && params.params != 3)
 	{
-		throw CError(_T("ItemStance() requires two parameters."));
+		throw CError(_T("ItemStance() requires two or three parameters."));
 	}
 
 	CItem *p = getItemPointer(params[0]);
 	if (!p) throw CError(_T("ItemStance(): item not found"));
 
-	p->customStance(params[1].getLit(), params.prg->isThread());
+	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
+
+	p->customStance(params[1].getLit(), params.prg, flags & tkMV_PAUSE_THREAD);
 }
 
 /*
- * playerstance(handle player, string stance)
+ * playerstance(handle player, string stance [, int flags])
  * 
  * Animate a player's custom stance.
+ * TBD: update for flags.
  */
 void playerstance(CALL_DATA &params)
 {
-	if (params.params != 2)
+	if (params.params != 2 && params.params != 3)
 	{
-		throw CError(_T("PlayerStance() requires two parameters."));
+		throw CError(_T("PlayerStance() requires two or three parameters."));
 	}
 
 	CPlayer *p = getPlayerPointer(params[0]);
 	if (!p) throw CError(_T("PlayerStance(): player not found"));
 
-	p->customStance(params[1].getLit(), params.prg->isThread());
+	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
+
+	p->customStance(params[1].getLit(), params.prg, flags & tkMV_PAUSE_THREAD);
 }
 
 /*
@@ -5099,7 +5041,7 @@ void posture(CALL_DATA &params)
 
 	STRING str = _T("Custom");
 	char ch[255]; itoa(params[0].getNum(), ch, 10);
-	p->customStance(str + ch, params.prg->isThread());
+	p->customStance(str + ch, params.prg, false);
 }
 
 /*
@@ -6387,18 +6329,54 @@ void rendernow(CALL_DATA &params)
 }
 
 /*
- * multirun(...)
+ * multirun()
  * 
- * Description.
+ * Multirun()'s behaviour depends on the program's context.
+ * In a thread: No action.
+ * In a program (non-thread): All sprite movements called
+ * are queued up and movement begins after the closing brace
+ * of the function, thereby allowing simultaneous movement.
+ * Previously occurring movements are cleared.
  */
 void multiRunBegin(CALL_DATA &params)
 {
-	messageBox("multiRunBegin()");
-}
+	extern ZO_VECTOR g_sprites;
+	extern CPlayer *g_pSelectedPlayer;
 
-void multiRunEnd()
+	if (!params.prg->isThread())
+	{
+		g_multirunning = true;
+
+		// Clear pending movements (TBD: do we really want to do this?)
+		std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
+		for (; i != g_sprites.v.end(); ++i)
+		{
+			(*i)->clearQueue();
+		}
+	}
+}
+void multiRunEnd(CProgram *prg)
 {
-	messageBox("multiRunEnd()");
+	extern ZO_VECTOR g_sprites;
+	extern CPlayer *g_pSelectedPlayer;
+
+	g_multirunning = false;
+	if (!prg->isThread())
+	{
+		// Run all sprite movements until all sprites have finished moving. 
+		bool moving = true;
+		while (moving)
+		{
+			moving = false;
+			std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
+			for (; i != g_sprites.v.end(); ++i)
+			{
+				if ((*i)->move(g_pSelectedPlayer, true)) moving = true;
+			}
+			renderNow(g_cnvRpgCode, true);
+			renderRpgCodeScreen();
+		}
+	}
 }
 
 /*
@@ -6932,4 +6910,5 @@ void initRpgCode()
 	CProgram::addFunction(_T("killtimer"), killtimer);
 	CProgram::addFunction(_T("setmwintranslucency"), setmwintranslucency);
 	CProgram::addFunction(_T("regexpreplace"), regExpReplace);
+	CProgram::addFunction(_T("playerlocation"), playerlocation);
 }

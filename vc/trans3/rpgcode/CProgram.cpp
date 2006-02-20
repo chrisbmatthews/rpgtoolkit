@@ -90,9 +90,9 @@ void CThread::sleep(const unsigned long milliseconds)
 // Is a thread sleeping?
 bool CThread::isSleeping() const
 {
-	if (!m_bSleeping || !m_sleepDuration) return false;
+	if (!m_bSleeping) return false;
 
-	if ((GetTickCount() - m_sleepBegin) >= m_sleepDuration)
+	if (m_sleepDuration && (GetTickCount() - m_sleepBegin >= m_sleepDuration))
 	{
 		m_bSleeping = false;
 		return false;
@@ -1271,10 +1271,10 @@ void tagMachineUnit::execute(CProgram *prg) const
 			}
 			else
 			{
-				extern void multiRunBegin(CALL_DATA &params), multiRunEnd();
+				extern void multiRunBegin(CALL_DATA &params), multiRunEnd(CProgram *prg);
 				if (func == multiRunBegin)
 				{
-					multiRunEnd();
+					multiRunEnd(prg);
 				}
 			}
 		}
