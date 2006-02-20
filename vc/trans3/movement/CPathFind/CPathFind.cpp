@@ -187,8 +187,14 @@ void CPathFind::initialize(const int layer, const RECT &r, const int type)
 	// Prevent reallocation. Alternatively make .parent the offset from .begin().
 	m_closedNodes.reserve(PF_MAX_STEPS);
 
-	// Nothing else to do for tile pathfinding.
-	if (m_heuristic != PF_VECTOR) return;
+	if (m_heuristic != PF_VECTOR)
+	{
+		// Pushback a NULL to create a single entry that prevents
+		// initialisation each run in tile mode, but is otherwise unused.
+		m_obstructions.push_back(NULL);
+		// Nothing else to do for tile pathfinding.
+		return;
+	}
 
 	const DB_POINT limits = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
 
