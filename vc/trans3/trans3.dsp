@@ -163,8 +163,8 @@ SOURCE="$(InputPath)"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /W4 /WX /GX /O1 /Ob2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /FD /c
-# SUBTRACT CPP /Fr
+# ADD CPP /nologo /W4 /GX /O1 /Ob2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /FD /c
+# SUBTRACT CPP /WX /Fr
 # ADD BASE RSC /l 0x1009 /d "NDEBUG"
 # ADD RSC /l 0x1009 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -1352,7 +1352,8 @@ SOURCE=.\plugins\Callbacks.cpp
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
-# ADD CPP /Yu"stdafx.h"
+# ADD CPP /W2
+# SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
 

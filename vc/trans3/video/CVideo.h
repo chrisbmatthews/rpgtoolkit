@@ -9,10 +9,10 @@
 
 #include "../../tkCommon/strings.h"
 
-class IGraphBuilder;
-class IMediaControl;
-class IMediaPosition;
-class IVideoWindow;
+struct IGraphBuilder;
+struct IMediaControl;
+struct IMediaPosition;
+struct IVideoWindow;
 
 // A video.
 class CVideo
