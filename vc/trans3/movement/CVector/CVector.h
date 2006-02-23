@@ -28,8 +28,8 @@ const double RADIAN = 180 / PI;
 const double GRAD_INF = 0x00100000;	// Something big.
 
 #define CURL_NDEF	0
-#define CURL_LEFT	1
-#define CURL_RIGHT -1
+#define CURL_LEFT	1				// Clockwise movement of subvectors.
+#define CURL_RIGHT -1				// Anti-clockwise movement of subvectors.
 
 // Sprite z-order flags.
 typedef enum tagZOrder
@@ -48,7 +48,7 @@ typedef enum tagTileType
 	TT_UNDER = 2,
 	TT_UNIDIRECTIONAL = 4,
 	TT_STAIRS = 8,
-	TT_N_OVERRIDE = 16				// Normal type to override solid.
+	TT_TERRAIN = 16			// TBD: speed modifier!
 
 } TILE_TYPE;
 
@@ -77,16 +77,19 @@ public:
 	CVector(void);
 
 	// (x, y) point Constructor.
-	CVector(const double x, const double y, const int reserve);
+	CVector(const double x, const double y);
 
 	// (x, y) point Constructor.
-	CVector(const DB_POINT p, const int reserve);
+	CVector(const DB_POINT p);
 
 	// Addition operator (moves entire vector).
 	CVector operator+ (const DB_POINT p) { return (CVector(*this) += p); }
 
 	// Addition assignment operator (moves entire vector).
 	CVector &operator+= (const DB_POINT p);
+
+	// Comparison of the points of two vectors.
+	bool operator== (const CVector &rhs) const;
 
 	// Push a point onto the back of the vector.
 	void push_back(DB_POINT p);
@@ -98,31 +101,26 @@ public:
 	void push_back(const DB_POINT pts[], const short size);
 
 	// Seal the vector to create a polygon.
-	bool close(const bool isClosed/*, const int curl*/);
-
-	// Compare the points of two vectors.
-	bool compare(const CVector &rhs) const;
+	bool close(const bool isClosed);
 
 	// Determine if a vector intersects or contains another vector.
-	bool contains(CVector &rhs, DB_POINT &ref);
+	virtual bool contains(CVector &rhs, DB_POINT &ref);
 
 	// Determine intersect and z-ordering.
-	ZO_ENUM contains(CVector &rhs/*, DB_POINT &ref*/);
+	virtual ZO_ENUM contains(CVector &rhs/*, DB_POINT &ref*/);
 
 	// Determine if a polygon contains a point.
-	int containsPoint(const DB_POINT p);
+	bool containsPoint(const DB_POINT p)
+	{
+		return (windingNumber(p) % 2);
+	}
+	int windingNumber(const DB_POINT p);
 
 	// Create a mask from a closed vector.
 	bool createMask(CCanvas *cnv, const int x, const int y, CONST LONG color);
 
-	// Construct nodes from a CVector and add to the nodes vector.
-	void createNodes(std::vector<DB_POINT> &points, const DB_POINT max);
-
 	// Get the bounding box.
 	RECT getBounds(void) const { return m_bounds; };
-
-	// Expand the vector radially outwards by a number of pixels.
-	void grow(const int offset);
 
 	// Determine if a vector intersects another vector.
 	bool intersect(CVector &rhs, DB_POINT &ref);
@@ -134,14 +132,8 @@ public:
 		*this += p;
 	}
 
-	// Find the nearest point on the edge of a vector to a point.
-	DB_POINT nearestPoint(const DB_POINT start);
-
 	// Draw the vector to the screen (testing purposes).
 	void draw(CONST LONG color, const bool drawText, const int x, const int y, CCanvas *const cnv);
-
-	// Path-find ::contains() equivalent.
-	bool pfContains(CVector &rhs);
 
 	// Return number of points in vector.
 	int size(void) const { return m_p.size(); };
@@ -154,13 +146,10 @@ public:
 	// Estimate the "curl" of a polygon (closed vector).
 	int estimateCurl(void);
 
-private:
+protected:
 
 	// Calculate the bounding box of the vector.
 	void boundingBox(RECT &rect);
-
-	// Extend a point 'a' at the end of a (position) vector 'd' by 'offset' pixels.
-	void extendPoint(DB_POINT &a, const DB_POINT &d, const int offset);
 
 	// Calculate gradient of a sub-vector.
 	double gradient(const DB_ITR &i) const;
@@ -172,7 +161,7 @@ private:
 	bool intersect(DB_ITR &i, CVector &rhs, DB_POINT &ref);
 
 	// Determine if a sub-vector is vertical.
-	inline bool isVertical(const DB_ITR &i) const { return (i->x == (i + 1)->x); };
+	bool isVertical(const DB_ITR &i) const { return (i->x == (i + 1)->x); };
 	
 	// Determine if a point lies on a sub-vector.
 	bool pointOnLine(const DB_ITR &i, const DB_POINT &p) const;
@@ -182,6 +171,33 @@ private:
 	bool m_closed;				// Closed to form a polygon.
 	int m_curl;					// Clockwise or Anti-clockwise subvector movement.
 
+};
+
+class CPfVector: public CVector
+{
+public:
+	// Default constructor.
+	CPfVector(const CVector &rhs): CVector(rhs) {};
+	
+	// Point CVector constructor.
+	CPfVector(const DB_POINT p): CVector(p) {};
+
+	// Path-find ::contains() equivalent.
+	bool contains(CPfVector &rhs);
+
+	// Expand the vector radially outwards by a number of pixels.
+	void grow(const int offset);
+
+	// Find the nearest point on the edge of a vector to a point.
+	DB_POINT nearestPoint(const DB_POINT start);
+
+	// Construct nodes from a CVector and add to the nodes vector.
+	void createNodes(std::vector<DB_POINT> &points, const DB_POINT max);
+
+private:
+	// Extend a point 'a' at the end of a (position) vector 'd' by 'offset' pixels.
+	void extendPoint(DB_POINT &a, const DB_POINT &d, const int offset);
+	
 };
 
 #endif
