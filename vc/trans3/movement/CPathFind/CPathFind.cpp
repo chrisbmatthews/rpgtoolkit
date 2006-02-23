@@ -76,7 +76,7 @@ PF_PATH CPathFind::constructPath(NODE node, const RECT &r)
 	{
 		// Pushback the goal without modification.
 		path.push_back(node.pos);
-		node = *node.parent;
+		node = *(m_closedNodes.begin() + node.parent);
 	}
 
 	while(node.pos != m_start.pos)
@@ -84,7 +84,7 @@ PF_PATH CPathFind::constructPath(NODE node, const RECT &r)
 		node.pos.x += dx;
 		node.pos.y += dy;
 		path.push_back(node.pos);
-		node = *node.parent;
+		node = *(m_closedNodes.begin() + node.parent);
 	}
 	return path;
 }
@@ -102,7 +102,7 @@ std::vector<MV_ENUM> CPathFind::directionalPath(void)
 		while(node.pos != m_start.pos)
 		{
 			path.push_back(node.direction);
-			node = *node.parent;
+			node = *(m_closedNodes.begin() + node.parent);
 		}
 	}
 	return path;
@@ -184,9 +184,6 @@ void CPathFind::initialize(const int layer, const RECT &r, const int type)
 	m_points.clear();
 	freeVectors();					// m_obstructions.
 
-	// Prevent reallocation. Alternatively make .parent the offset from .begin().
-	m_closedNodes.reserve(PF_MAX_STEPS);
-
 	if (m_heuristic != PF_VECTOR)
 	{
 		// Pushback a NULL to create a single entry that prevents
@@ -214,7 +211,7 @@ void CPathFind::initialize(const int layer, const RECT &r, const int type)
 
 		// The board vectors have to be "grown" to make sure the sprites
 		// can move around them without colliding.
-		CVector *vector = new CVector(*(i->pV));
+		CPfVector *vector = new CPfVector(*(i->pV));
 		vector->grow(size);
 
 		m_obstructions.push_back(vector);
@@ -236,7 +233,7 @@ bool CPathFind::isChild(NODE &child, NODE &parent)
 
 	if (child.pos == parent.pos) return false;
 
-	CVector v(parent.pos, 2);
+	CPfVector v(parent.pos);
 	v.push_back(child.pos);
 	v.close(false);
 
@@ -244,10 +241,10 @@ bool CPathFind::isChild(NODE &child, NODE &parent)
 	{
 
 		// Check for board collisions along the path.
-		for (std::vector<CVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
+		for (std::vector<CPfVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
 		{
 			// Collision against a solid vector: not a child node.
-			if ((*i) && (*i)->pfContains(v)) return false;		
+			if ((*i) && (*i)->contains(v)) return false;		
 		}
 	}
 	else
@@ -262,7 +259,6 @@ bool CPathFind::isChild(NODE &child, NODE &parent)
 			if (i->layer != m_layer || i->type != TT_SOLID) continue;
 			DB_POINT ref = {0, 0};
 			if (i->pV->contains(v, ref)) return false;
-//			if (i->pV->containsPoint(child.pos) % 2) return false;
 		}
 	}
 	return true;
@@ -310,7 +306,9 @@ PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
 			// *via this parent*, and the straight-line estimate to the goal (heuristic).
 			child.cost = parent->cost + distance(*parent, child);
 			child.dist = distance(child, m_goal);
-			child.parent = parent;
+
+			// m_closedNodes and parent are both constant in this while().
+			child.parent = parent - m_closedNodes.begin();
 			if (m_heuristic != PF_VECTOR) 
 			{
 				// m_u.i will have incremented - the previous value is needed.
@@ -399,7 +397,7 @@ void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r, const void *
 		for (std::vector<CSprite *>::iterator i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
 		{
 			if ((*i)->getPosition().l != m_layer || *i == (CSprite *)pSprite) continue;
-			CVector *vector = new CVector((*i)->getVectorBase());
+			CPfVector *vector = new CPfVector((*i)->getVectorBase());
 			// Extra clearance for sprites.
 			vector->grow(size + 1);
 
@@ -409,10 +407,10 @@ void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r, const void *
 
 		// Check if the goal is contained in a solid area.
 		// If so, set the goal to be the closest edge point.
-		for (std::vector<CVector *>::iterator j = m_obstructions.begin(); j != m_obstructions.end(); ++j)
+		for (std::vector<CPfVector *>::iterator j = m_obstructions.begin(); j != m_obstructions.end(); ++j)
 		{
 			if (!*j) continue;
-			if ((*j)->containsPoint(goal) % 2)
+			if ((*j)->containsPoint(goal))
 			{
 				goal = (*j)->nearestPoint(goal);
 				
@@ -428,7 +426,7 @@ void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r, const void *
 
 				/* Consider goals contained in multiple vectors! */
 			}
-			if ((*j)->containsPoint(start) % 2)
+			if ((*j)->containsPoint(start))
 			{
 				start = (*j)->nearestPoint(start);
 				/* Consider starts contained in multiple vectors! */

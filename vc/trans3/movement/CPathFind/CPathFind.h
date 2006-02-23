@@ -35,7 +35,7 @@ typedef struct tagNode
 	DB_POINT pos;					// Location of the node.
 	int cost;						// Cost to reach this node from start via parents (g).
 	int dist;						// Estimate to destination (h).
-	tagNode *parent;				// Node's parent in m_closedNodes.
+	int parent;						// Node's parent in m_closedNodes (offset from .begin()).
 	MV_ENUM direction;				// Directional relationship to parent.
 
 	tagNode(): pos(), cost(0), direction(MV_IDLE), dist(0), parent(NULL) {};
@@ -66,7 +66,7 @@ public:
 
 	void freeVectors(void)
 	{
-		for (std::vector<CVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
+		for (std::vector<CPfVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
 		{
 			delete *i;
 		}
@@ -109,7 +109,7 @@ private:
 	std::vector<DB_POINT> m_points;				// All node coords.
 	std::vector<NODE> m_openNodes;
 	std::vector<NODE> m_closedNodes;
-	std::vector<CVector *> m_obstructions;		// Obstructions on the layer.
+	std::vector<CPfVector *> m_obstructions;	// Obstructions on the layer.
 
 	PF_HEURISTIC m_heuristic;					// Estimate method.
 	int m_layer;

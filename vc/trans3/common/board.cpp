@@ -574,7 +574,7 @@ void tagBoard::vectorize(const unsigned int layer)
 		if (coordType & ISO_STACKED)
 		{
 			// Order: top, left, bottom, right.
-			vector.pV = new CVector((origX - origY + bSizeX) * 32, (origX + origY - bSizeX) * 16, 4);
+			vector.pV = new CVector((origX - origY + bSizeX) * 32, (origX + origY - bSizeX) * 16);
 			vector.pV->push_back((origX - y + bSizeX) * 32, (origX + y - bSizeX) * 16);
 			vector.pV->push_back((x - y + bSizeX) * 32, (x + y - bSizeX) * 16);
 			vector.pV->push_back((x - origY + bSizeX) * 32, (x + origY - bSizeX) * 16);
@@ -589,7 +589,7 @@ void tagBoard::vectorize(const unsigned int layer)
 				// Vertical lines.
 				for (i = origX; i <= x; ++i)
 				{
-					vector.pV = new CVector(i * 32, origY * 32, 2);
+					vector.pV = new CVector(i * 32, origY * 32);
 					vector.pV->push_back(i * 32, y * 32);
 					vector.pV->close(false);
 					vectors.push_back(vector);
@@ -601,7 +601,7 @@ void tagBoard::vectorize(const unsigned int layer)
 				// Horizontal lines.
 				for (i = origY; i <= y; ++i)
 				{
-					vector.pV = new CVector(origX * 32, i * 32, 2);
+					vector.pV = new CVector(origX * 32, i * 32);
 					vector.pV->push_back(x * 32, i * 32);
 					vector.pV->close(false);
 					vectors.push_back(vector);
@@ -610,7 +610,7 @@ void tagBoard::vectorize(const unsigned int layer)
 			else
 			{
 				// Order: top-left, bot-left, bot-right, top-right.
-				vector.pV = new CVector(origX * 32, origY * 32, 4);
+				vector.pV = new CVector(origX * 32, origY * 32);
 				vector.pV->push_back(origX * 32, y * 32);
 				vector.pV->push_back(x * 32, y * 32);
 				vector.pV->push_back(x * 32, origY * 32);
@@ -1166,7 +1166,7 @@ const BRD_VECTOR *tagBoard::getVectorFromTile(const int x, const int y, const in
 	{
 		if (i->layer == z)
 		{
-			if (i->pV->containsPoint(pt) % 2)
+			if (i->pV->containsPoint(pt))
 			{
 				return &*i;
 			}
