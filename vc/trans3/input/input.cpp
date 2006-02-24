@@ -203,7 +203,7 @@ void scanKeys()
 	if (SCAN_KEY_DOWN(g_mainFile.menuKey))
 	{
 		extern IPlugin *g_pMenuPlugin;
-		g_pMenuPlugin->menu(MNU_MAIN);
+		if (g_pMenuPlugin) g_pMenuPlugin->menu(MNU_MAIN);
 		renderNow(NULL, true);
 
 		// Delay to prevent the menu from immediately reopening.
