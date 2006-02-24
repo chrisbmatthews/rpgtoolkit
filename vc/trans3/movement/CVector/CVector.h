@@ -14,10 +14,9 @@
 /*
  * Includes
  */
-#include "../../../tkCommon/tkDirectx/platform.h"
-#include <vector>
-#define WIN32_LEAN_AND_MEAN
+//#define WIN32_LEAN_AND_MEAN
 #include <windows.h>				// RECT only.
+#include <vector>
 
 /*
  * Defines
@@ -69,6 +68,8 @@ inline bool operator!= (const DB_POINT &a, const DB_POINT &b)
 {
 	return ((a.x != b.x) || (a.y != b.y));
 }
+
+class CCanvas;
 
 class CVector  
 {

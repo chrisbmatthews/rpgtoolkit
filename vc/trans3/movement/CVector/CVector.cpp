@@ -12,6 +12,7 @@
 #include <math.h>
 #include "../movement.h"
 #include "../../../tkCommon/strings.h"
+#include "../../../tkCommon/tkCanvas/GDICanvas.h"
 
 /*
  * Default constructor.
@@ -352,7 +353,7 @@ int CVector::windingNumber(const DB_POINT p)
 	if	(p.y > m_bounds.bottom) return 2;
 
 	int count = 0; 
-	for (DB_ITR i = m_p.begin(), j = m_p.end() - 1; i != m_p.end() - 1; j = i++)	
+	for (DB_ITR i = m_p.begin(), j = m_p.end() - 2; i != m_p.end() - 1; j = i++)	
 	{
 		// Check the point is in the column created by the vector.
 		// Node intersections and vertical lines are handled by these conditions.
