@@ -13,10 +13,11 @@
 #include "../../../tkCommon/strings.h"
 #include "../movement.h"
 #include "../../common/sprite.h"
-#include "../../render/render.h"
 #include "../CVector/CVector.h"
 #include "../CPathFind/CPathFind.h"
-#include "../../rpgcode/CProgram.h"
+
+class CProgram;
+class CThread;
 
 class CSprite  
 {

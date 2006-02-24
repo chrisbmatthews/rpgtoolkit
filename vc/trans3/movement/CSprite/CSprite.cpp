@@ -18,11 +18,10 @@
 #include "../../common/CAllocationHeap.h"
 #include "../../fight/fight.h"
 #include "../../audio/CAudioSegment.h"
+#include "../../rpgcode/CProgram.h"
 #include "../locate.h"
 #include <math.h>
 #include <vector>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 bool CSprite::m_bDoneMove = false;
 int CSprite::m_loopOffset = 0;
@@ -511,7 +510,7 @@ void CSprite::setQueuedPath(PF_PATH &path, const bool bClearQueue)
 PF_PATH CSprite::pathFind(const int x, const int y, const int type)
 {
 	extern LPBOARD g_pBoard;
-	if (x > 0 && x < g_pBoard->pxWidth() && y > 0 && y < g_pBoard->pxHeight())
+	if (x > 0 && x <= g_pBoard->pxWidth() && y > 0 && y <= g_pBoard->pxHeight())
 	{
 		const DB_POINT start = {m_pos.x, m_pos.y}, goal = {x, y};
 
@@ -636,7 +635,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 
 		// Check that the board vector contains the player,
 		// *not* the other way round!
-		// Disregard _T("under") type, it has no effect in collisions.
+		// Disregard Under type, it has no effect in collisions.
 		if (i->type != TT_UNDER && i->pV->contains(sprBase, p))
 		{
 			tt = i->type;
