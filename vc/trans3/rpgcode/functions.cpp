@@ -353,7 +353,7 @@ void send(CALL_DATA &params)
 	g_pBoard->open(g_projectPath + BRD_PATH + params[0].getLit());
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
-	pixelCoordinate(x, y, g_pBoard->coordType, false);
+	pixelCoordinate(x, y, g_pBoard->coordType, true);
 
 	if (x < 1 || x > g_pBoard->pxWidth())
 	{
@@ -1558,7 +1558,7 @@ void fillRect(CALL_DATA &params)
  */
 void debug(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -2773,7 +2773,7 @@ void mainFile(CALL_DATA &params)
  */
 void dirSav(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -2783,7 +2783,7 @@ void dirSav(CALL_DATA &params)
  */
 void save(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -3052,7 +3052,7 @@ void getGp(CALL_DATA &params)
  */
 void wavstop(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -3091,7 +3091,7 @@ void fightEnemy(CALL_DATA &params)
  */
 void callshop(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -3772,7 +3772,7 @@ void itemcount(CALL_DATA &params)
  */
 void callplayerswap(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -4724,7 +4724,7 @@ void drawEnemy(CALL_DATA &params)
  */
 void mp3pause(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -5108,7 +5108,7 @@ void staticText(CALL_DATA &params)
  */
 void redirect(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -5118,7 +5118,7 @@ void redirect(CALL_DATA &params)
  */
 void killredirect(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -5128,7 +5128,7 @@ void killredirect(CALL_DATA &params)
  */
 void killallredirects(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -5905,7 +5905,7 @@ void getitemsellprice(CALL_DATA &params)
  */
 void splicevariables(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -6164,7 +6164,7 @@ void resumeNext(CALL_DATA &params)
  */
 void msgbox(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -6174,7 +6174,7 @@ void msgbox(CALL_DATA &params)
  */
 void setconstants(CALL_DATA &params)
 {
-
+	throw CError(_T("SetConstants() is obsolete."));
 }
 
 /*
@@ -6184,7 +6184,7 @@ void setconstants(CALL_DATA &params)
  */
 void autolocal(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -6325,7 +6325,7 @@ void replace(CALL_DATA &params)
  */
 void rendernow(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -6386,7 +6386,7 @@ void multiRunEnd(CProgram *prg)
  */
 void shopcolors(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -6554,7 +6554,7 @@ void getTickCount(CALL_DATA &params)
  */
 void setvolume(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -6564,7 +6564,7 @@ void setvolume(CALL_DATA &params)
  */
 void createtimer(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
@@ -6574,7 +6574,7 @@ void createtimer(CALL_DATA &params)
  */
 void killtimer(CALL_DATA &params)
 {
-
+// TBD
 }
 
 /*
