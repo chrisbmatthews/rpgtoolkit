@@ -31,22 +31,16 @@ typedef struct tagBoard BOARD, *LPBOARD;
 
 typedef struct tagBoardProgram
 {
-	STRING fileName;				// Board program filename.
-//	short x;							// Co-ordinates.
-//	short y;							
+	STRING fileName;					// Board program filename.
 	short layer;						// Layer.
-	STRING graphic;				// Associated graphic.
+	STRING graphic;						// Associated graphic.
 	short activate;						// PRG_ACTIVE - always active.
 										// PRG_CONDITIONAL - conditional activation.
-	STRING initialVar;				// Activation variable.
-	STRING finalVar;				// Activation variable at end of prg.
-	STRING initialValue;			// Initial value of activation variable.
-	STRING finalValue;				// Value of variable after program runs.
-	short activationType;				// Activation type: (flags)
-										// PRG_STEP - walk in vector.
-										// PRG_KEYPRESS - hit general activation key inside vector.
-										// PRG_REPEAT - Whether player must leave vector to before
-										//				program can retrigger or not.
+	STRING initialVar;					// Activation variable.
+	STRING finalVar;					// Activation variable at end of prg.
+	STRING initialValue;				// Initial value of activation variable.
+	STRING finalValue;					// Value of variable after program runs.
+	short activationType;				// Activation type (see 1st set of flags above).
 
 	CVector vBase;						// The activation area.
 	double distanceRepeat;				// Distance to travel between activations within the vector.
@@ -81,6 +75,7 @@ typedef struct tagBoardVector
 										// TT_UNDER:  see TA_ above.
 
 	tagBoardVector():
+		attributes(0),
 		layer(0),
 		pCnv(NULL),
 		pV(NULL),
@@ -249,8 +244,8 @@ typedef struct tagBoard
 
 	bool isIsometric() const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	// Board dimensions in pixels.
-	inline int pxWidth ();
-	inline int pxHeight();
+	int pxWidth ();
+	int pxHeight();
 
 	void createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const;
 	const BRD_VECTOR *getVectorFromTile(const int x, const int y, const int z) const;

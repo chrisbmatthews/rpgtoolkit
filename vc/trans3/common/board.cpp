@@ -373,6 +373,14 @@ lutEnd:
 	{
 		// Required only for the active board.
 
+		// Create program bases.
+		std::vector<LPBRD_PROGRAM>::iterator p = programs.begin();
+		std::vector<OBJ_POSITION>::iterator pos = prgPos.begin();
+		for (; p != programs.end(); ++p, ++pos)
+		{
+			createProgramBase(*p, pos);
+		}
+
 		// Setup the background image as an attached image.
 		if (!brdBack.empty())
 		{
@@ -390,14 +398,6 @@ lutEnd:
 			(*i)->createCanvas(*this);
 		}
 		createVectorCanvases();
-
-		// Create program bases.
-		std::vector<LPBRD_PROGRAM>::iterator p = programs.begin();
-		std::vector<OBJ_POSITION>::iterator pos = prgPos.begin();
-		for (; p != programs.end(); ++p, ++pos)
-		{
-			createProgramBase(*p, pos);
-		}
 
 		// Set the positions of and create vectors for old items.
 		std::vector<CItem *>::iterator itm = items.begin();
@@ -977,14 +977,14 @@ void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 
 }
 
-inline int tagBoard::pxWidth() 
+int tagBoard::pxWidth() 
 {
 	if (coordType & ISO_STACKED) return bSizeX * 64 - 32;
 	if (coordType & ISO_ROTATED) return 0;
 	return bSizeX * 32;			// TILE_NORMAL.
 }
 
-inline int tagBoard::pxHeight() 
+int tagBoard::pxHeight() 
 { 
 	if (coordType & ISO_STACKED) return bSizeY * 16 - 16;
 	if (coordType & ISO_ROTATED) return 0;
