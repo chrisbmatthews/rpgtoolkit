@@ -75,7 +75,7 @@ bool tagAnimation::open(const STRING fileName)
 	else
 	{
 		file.seek(0);
-		if (file.line() != _T("RPGTLKIT ANIM"))
+		if (_tcsicmp(file.line().c_str(), _T("RPGTLKIT ANIM")) != 0)
 		{
 			messageBox(_T("This is not a valid animaton file. ") + fileName);
 			return false;
