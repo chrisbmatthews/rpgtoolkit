@@ -726,6 +726,10 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 			}
 			else continue;
 
+			// Get the sprite's vector base to test for collisions with the under vector.
+			CVector v = (*j)->getVectorBase();
+			RECT sr = v.getBounds();
+
 			// Draw any "under" vectors this sprite is standing on.
 			for (std::vector<BRD_VECTOR>::iterator k = g_pBoard->vectors.begin(); k != g_pBoard->vectors.end(); ++k)
 			{
@@ -733,8 +737,6 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 				if (!k->pCnv || k->layer != layer || !(k->type & TT_UNDER)) 
 					continue;
 
-				// Get the sprite's vector base to test for collisions with the under vector.
-				CVector v = (*j)->getVectorBase();
 				// Under vector's bounds.
 				const RECT rBounds = k->pV->getBounds();
 
@@ -747,7 +749,6 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 				{
 					// If the under tile is "simple rect" intersection draw straight
 					// off, else check for vector collision.
-					RECT sr = v.getBounds();
 					if(((k->attributes & TA_RECT_INTERSECT) && IntersectRect(&sr, &sr, &rBounds))
 						|| k->pV->contains(v, p))
 					{
