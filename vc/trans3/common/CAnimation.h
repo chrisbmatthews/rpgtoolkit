@@ -16,11 +16,12 @@
  */
 #include "animation.h"
 #include "paths.h"
-#include "../../tkCommon/tkCanvas/GDICanvas.h"
 #include <mmsystem.h>
 #include <vector>
 #include <set>
 #include <map>
+
+class CCanvas;
 
 /*
  * Standalone animations.

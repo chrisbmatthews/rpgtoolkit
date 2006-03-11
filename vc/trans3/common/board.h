@@ -10,7 +10,10 @@
 
 struct tagBoard;
 typedef struct tagBoard BOARD, *LPBOARD;
+class CItem;
+class CThread;
 
+#include "../../tkCommon/movement/coords.h"
 #include "../../tkCommon/strings.h"
 #include "../movement/CVector/CVector.h"
 #include "../movement/movement.h"
@@ -95,7 +98,6 @@ typedef enum tagDirectionalLinks
 	LK_W
 } LK_ENUM;
 
-#include "../movement/CItem/CItem.h"
 #include "tileanim.h"
 
 /*

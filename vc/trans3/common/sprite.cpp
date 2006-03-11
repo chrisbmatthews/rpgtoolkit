@@ -11,6 +11,7 @@
 #include "sprite.h"
 #include "board.h"
 #include "../rpgcode/parser/parser.h"
+#include "../movement/CSprite/CSprite.h"
 
 /*
  * Fill out unoccupied stances with occupied stances.

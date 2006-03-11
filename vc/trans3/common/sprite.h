@@ -82,13 +82,6 @@ const double g_directions[2][9][2] =
 				}
 			};
 
-// Base-point of a square tile, with 0,0 at the top-left corner.
-const int BASE_POINT_X = 16;
-const int BASE_POINT_Y = 32;
-// Iso tile, 0,0 at centre.
-const int BASE_POINT_ISO_X = 0;
-const int BASE_POINT_ISO_Y = 0;
-
 // Vector indices for mapGfx.
 #define GFX_MOVE 0
 #define GFX_IDLE 1

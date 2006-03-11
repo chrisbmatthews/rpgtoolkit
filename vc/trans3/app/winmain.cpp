@@ -26,7 +26,7 @@
 #include "../input/input.h"
 #include "../misc/misc.h"
 #include "../audio/CAudioSegment.h"
-#include "../images/FreeImage.h"
+#include "../../tkCommon/images/FreeImage.h"
 #include "../resource.h"
 #include "winmain.h"
 #define WIN32_LEAN_AND_MEAN
@@ -103,6 +103,7 @@ void termFunc()
  */
 void setUpGame()
 {
+	std::cerr << "setUpGame()\n";
 	extern int g_selectedPlayer;
 	extern STRING g_projectPath;
 	extern RECT g_screen;
@@ -166,6 +167,8 @@ void setUpGame()
 		}
 	}
 
+	std::cerr << "- done plugins\n";
+
 	CSprite::m_bPxMovement = g_mainFile.pixelMovement;
 	CSprite::setLoopOffset(g_mainFile.getGameSpeed());
 	g_selectedPlayer = 0;
@@ -228,6 +231,8 @@ void setUpGame()
 		CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg).run();
 	}
 
+	std::cerr << "- done player load\n";
+
 	if (!g_mainFile.initBoard.empty())
 	{
 		g_pBoard->open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
@@ -263,6 +268,7 @@ void setUpGame()
  */
 void openSystems()
 {
+	std::cerr << "openSystems()\n";
 	extern void initRpgCode();
 	extern GAME_TIME g_gameTime;
 	initPluginSystem();
@@ -460,6 +466,7 @@ GAME_STATE gameLogic()
  */
 int mainEventLoop()
 {
+	std::cerr << "MainEventLoop()\n";
 
 	// Calculate how long one frame should take, in milliseconds
 	#define FPS_CAP 120.0
@@ -526,14 +533,18 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 {
 	extern STRING g_savePath;
 
-	#define WORKING_DIRECTORY _T("C:\\Program Files\\Toolkit3\\")
-	// #define WORKING_DIRECTORY _T("C:\\CVS\\Tk3 Dev\\")
+	TCHAR buffer [_MAX_PATH], *path = buffer;
+	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
+
+	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+	path = dev;
 
 	set_terminate(termFunc);
 
 	g_hInstance = hInstance;
 
-	_tchdir(WORKING_DIRECTORY);
+	_tchdir(path);
 
 	_tfreopen(_T("log.txt"), _T("w"), stderr); // Destination for std::cerr.
 
@@ -541,7 +552,7 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	_tmkdir(g_savePath.c_str());
 
 	const STRING fileName = getMainFileName(lpCmdLine);
-	_tchdir(WORKING_DIRECTORY);
+	_tchdir(path);
 
 	if (fileName.empty()) return EXIT_SUCCESS;
 

@@ -13,9 +13,11 @@
 #include "paths.h"
 #include "CFile.h"
 #include "mbox.h"
-#include "../movement/locate.h"
+#include "../movement/CItem/CItem.h"
 #include "../rpgcode/CProgram.h"
 #include "../misc/misc.h"
+#include "../../tkCommon/images/FreeImage.h"
+#include "../../tkCommon/tkgfx/CTile.h"
 #include <malloc.h>
 
 /*
@@ -463,8 +465,8 @@ void tagBoard::vectorize(const unsigned int layer)
 		// co-ordinate system so we can apply the same routine.
 
 		// Determine the transformed dimensions.
-		double x = 0.0, y = 0.0;
-		isoCoordTransform(double(bSizeX), double(bSizeY), x, y);
+		double x = double(bSizeX), y = double(bSizeY);
+		coords::isometricTransform(x, y, ISO_STACKED, ISO_ROTATED, bSizeX);
 
 		// New iso board is effectively square but with many empty entries.
 		width = height = (unsigned int)x;
@@ -485,8 +487,8 @@ void tagBoard::vectorize(const unsigned int layer)
 			if (coordType & ISO_STACKED)
 			{
 				// Transform this co-ordinate.
-				double x = 0.0, y = 0.0;
-				isoCoordTransform(double(i + 1), double(j + 1), x, y);
+				double x = double(i + 1), y = double(j + 1);
+				coords::isometricTransform(x, y, ISO_STACKED, ISO_ROTATED, bSizeX);
 				// Enter its type in the new array.
 				pTypes[height * int(x - 1) + int(y - 1)] = tiletype[i + 1][j + 1][layer];
 			}
@@ -716,8 +718,6 @@ void tagBoardVector::createCanvas(BOARD &board)
 	delete cnv;
 }
 
-#include "../images/FreeImage.h"
-
 /*
  * Load images attached to layers into separate canvases.
  */
@@ -804,12 +804,14 @@ void tagBoardImage::createCanvas(BOARD &board)
  * Render the board to a canvas.
  */
 void tagBoard::render(CCanvas *cnv,
-			   int destX, const int destY,			// canvas destination.
-			   const int lLower, const int lUpper,	// layer bounds. 
-			   int topX, int topY,					// pixel location on board to start from. 
-			   int width, int height,				// pixel dimensions to draw. 
-			   const int aR, const int aG, const int aB)
+	int destX, const int destY,			// canvas destination.
+	const int lLower, const int lUpper,	// layer bounds. 
+	int topX, int topY,					// pixel location on board to start from. 
+	int width, int height,				// pixel dimensions to draw. 
+	const int aR, const int aG, const int aB)
 {
+	extern STRING g_projectPath;
+
 	// Tile dimensions.
 	const int tWidth = (isIsometric() ? 64 : 32),
 			  tHeight = (isIsometric() ? 16 : 32);
@@ -868,16 +870,19 @@ void tagBoard::render(CCanvas *cnv,
 					if (!strTile.empty())
 					{
 						// Tile exists at this location.
-						drawTile(strTile, 
-								 j, k, 
-								 ambientRed[x][y][i] + aR,
-								 ambientGreen[x][y][i] + aG,
-								 ambientBlue[x][y][i] + aB,
-								 cnv, 
-								 destX, destY,
-								 isIsometric(), 
-								 parity);
-
+						CTile::drawByBoardCoord(
+							g_projectPath + TILE_PATH + strTile, 
+							j, k, 
+							ambientRed[x][y][i] + aR,
+							ambientGreen[x][y][i] + aG,
+							ambientBlue[x][y][i] + aB,
+							cnv, 
+							TM_NONE,
+							destX, destY,
+							coordType,
+							bSizeX,
+							parity
+						);
 					} // if (!strTile.empty())
 				} // if (brd.board[x][y][i])
 			} // for k
@@ -949,7 +954,8 @@ void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 			rect.top = img.scroll.y * g_screen.top;
 		}
 
-		img.pCnv->BltTransparentPart(cnv, 
+		img.pCnv->BltTransparentPart(
+			cnv, 
 			destX, 
 			destY, 
 			rect.left, 
@@ -980,14 +986,14 @@ void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 int tagBoard::pxWidth() 
 {
 	if (coordType & ISO_STACKED) return bSizeX * 64 - 32;
-	if (coordType & ISO_ROTATED) return 0;
+	if (coordType & ISO_ROTATED) return bSizeX * 64 - 32;
 	return bSizeX * 32;			// TILE_NORMAL.
 }
 
 int tagBoard::pxHeight() 
 { 
 	if (coordType & ISO_STACKED) return bSizeY * 16 - 16;
-	if (coordType & ISO_ROTATED) return 0;
+	if (coordType & ISO_ROTATED) return bSizeY * 32;
 	return bSizeY * 32;			// TILE_NORMAL.
 }
 
@@ -1157,7 +1163,7 @@ const BRD_VECTOR *tagBoard::getVectorFromTile(const int x, const int y, const in
 {
 	// Convert the point to pixels.
 	int px = x, py = y;
-	pixelCoordinate(px, py, coordType, false);
+	coords::tileToPixel(px, py, coordType, false, bSizeX);
 	DB_POINT pt = {px + 1.0, py + 1.0};
 
 	// Locate the vector.

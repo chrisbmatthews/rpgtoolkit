@@ -12,7 +12,7 @@
 #include "paths.h"
 #include "CFile.h"
 #include "../rpgcode/parser/parser.h"
-#include "../images/FreeImage.h"
+#include "../../tkCommon/images/FreeImage.h"
 #include "mbox.h"
 #include <mmsystem.h>
 

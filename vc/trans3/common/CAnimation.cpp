@@ -9,9 +9,10 @@
  */
 #include "CAnimation.h"
 #include "CFile.h"
-#include "../images/FreeImage.h"
+#include "../../tkCommon/images/FreeImage.h"
 #include "../movement/movement.h"
 #include "../rpgcode/parser/parser.h"
+#include "../../tkCommon/tkCanvas/GDICanvas.h"
 
 /*
  * Defines
