@@ -163,8 +163,8 @@ SOURCE="$(InputPath)"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /W4 /GX /O1 /Ob2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /FD /c
-# SUBTRACT CPP /WX /Fr
+# ADD CPP /nologo /W4 /GX /O1 /Ob2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /Fr /FD /c
+# SUBTRACT CPP /WX
 # ADD BASE RSC /l 0x1009 /d "NDEBUG"
 # ADD RSC /l 0x1009 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -953,7 +953,46 @@ SOURCE=.\movement\CItem\CItem.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\tkCommon\movement\coords.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# ADD CPP /FR
+# SUBTRACT CPP /YX
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\movement\CPathFind\CPathFind.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# SUBTRACT CPP /YX
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -1024,29 +1063,6 @@ SOURCE=.\movement\CVector\CVector.cpp
 !ENDIF 
 
 # End Source File
-# Begin Source File
-
-SOURCE=.\movement\locate.cpp
-
-!IF  "$(CFG)" == "trans3 - Win32 Debug"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
-
-!ENDIF 
-
-# End Source File
 # End Group
 # Begin Group "movement - headers"
 
@@ -1054,6 +1070,10 @@ SOURCE=.\movement\locate.cpp
 # Begin Source File
 
 SOURCE=.\movement\CItem\CItem.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\movement\coords.h
 # End Source File
 # Begin Source File
 
@@ -1070,10 +1090,6 @@ SOURCE=.\movement\CSprite\CSprite.h
 # Begin Source File
 
 SOURCE=.\movement\CVector\CVector.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\movement\locate.h
 # End Source File
 # Begin Source File
 
@@ -1471,11 +1487,11 @@ SOURCE=.\audio\audiere.lib
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\images\FreeImage.h
+SOURCE=..\tkCommon\images\FreeImage.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\images\FreeImage.lib
+SOURCE=..\tkCommon\images\FreeImage.lib
 # End Source File
 # End Group
 # Begin Group "fight"
