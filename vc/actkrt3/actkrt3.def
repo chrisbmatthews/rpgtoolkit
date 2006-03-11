@@ -52,6 +52,15 @@ EXPORTS
 	IMGBlt				@45
 	IMGStretchBlt		@46
 
+	;CBoard
+	BRDNewCBoard		@51
+	BRDFree				@52
+	BRDDraw				@53
+	BRDRender			@54
+	BRDRenderTile		@55	
+	BRDPixelToTile		@56
+	BRDTileToPixel		@57
+
 	;tkzip...
 	ZIPTest				@61
 	ZIPCreate			@62

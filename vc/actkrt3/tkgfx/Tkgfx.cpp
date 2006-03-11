@@ -210,7 +210,7 @@ int APIENTRY GFXdrawboard ( CBoard *brd, int hdc,
 														int nIsometric )
 
 {
-	brd->drawHdc(hdc, maskhdc, layer, topx, topy, tilesX, tilesY, nBsizex, nBsizey, nBsizel, ar, ag, ab, nIsometric);
+//	brd->drawHdc(hdc, layer, topx, topy, tilesX, tilesY, nBsizex, nBsizey, nBsizel, ar, ag, ab, nIsometric);
 	return TRUE;
 }
 
@@ -256,7 +256,7 @@ int APIENTRY GFXDrawBoardCNV ( CBoard *brd, CNV_HANDLE cnv,
 														int nIsometric )
 
 {
-	brd->draw(cnv, /*maskcnv,*/ layer, topx, topy, tilesX, tilesY, nBsizex, nBsizey, nBsizel, ar, ag, ab, nIsometric);
+//	brd->draw(cnv, /*maskcnv,*/ layer, topx, topy, tilesX, tilesY, nBsizex, nBsizey, nBsizel, ar, ag, ab, nIsometric);
 	return 1;
 }
 
@@ -293,8 +293,8 @@ int APIENTRY GFXdrawtile ( const char* fname,
 													 int nIsoEvenOdd ) 
 {
 	std::string strFilename = fname;
-	std::string strPath = "tiles\\";
-	strFilename = strPath + strFilename;
+//	std::string strPath = "tiles\\";
+//	strFilename = strPath + strFilename;
 
 	int xx, yy;
 
@@ -345,6 +345,7 @@ int APIENTRY GFXdrawtile ( const char* fname,
 	//std::vector<RGBSHADE> vShades;
 	//vShades.push_back(rgb);
 
+
 	std::vector<CTile*>::iterator itr = gvTiles.begin();
 	for (; itr != gvTiles.end(); itr++)
 	{
@@ -361,7 +362,7 @@ int APIENTRY GFXdrawtile ( const char* fname,
 					if ((*itr)->isIsometric())
 					{
 						//found a match...
-						(*itr)->gdiDraw(hdc, xx, yy);
+						(*itr)->gdiDraw(HDC(hdc), xx, yy);
 						return 1;			
 					}
 				}
@@ -370,7 +371,7 @@ int APIENTRY GFXdrawtile ( const char* fname,
 					if (!(*itr)->isIsometric())
 					{
 						//found a match...
-						(*itr)->gdiDraw(hdc, xx, yy);
+						(*itr)->gdiDraw(HDC(hdc), xx, yy);
 						return 1;			
 					}
 				}
@@ -378,18 +379,20 @@ int APIENTRY GFXdrawtile ( const char* fname,
 		}
 	}
 
+
 	//wasn't found.
 	//we have to load it...
 	//check if file exists
-	if (!(util::tileExists(strFilename)))
-		return 1;
+	if (!(util::tileExists(strFilename))) return 1;
 
 	CTile* t = new CTile(hdc, strFilename, rgb, SHADE_UNIFORM, (bool)nIsometric);
 	gvTiles.push_back(t);
 	//t->gdiDraw(hdc, xx, yy, vShades, SHADE_UNIFORM);
-	t->gdiDraw(hdc, xx, yy);
+	t->gdiDraw(HDC(hdc), xx, yy);
 	return 1;
 }
+
+
 
 
 ///////////////////////////////////////////////////////
@@ -499,7 +502,9 @@ int APIENTRY GFXDrawTileCNV ( const char* fname,
 		}
 	}
 
+
 	if (!(util::tileExists(strFilename))) return 1;
+
 
 	// Load the tile
 	CONST HDC hdc = canvas->OpenDC();
@@ -617,11 +622,11 @@ int APIENTRY GFXdrawtilemask ( const char *fname,
 					//match!
 					if (nDirectBlt)
 					{
-						(*itr)->gdiDrawAlpha(hdc, xx, yy);
+						(*itr)->gdiDrawAlpha(HDC(hdc), xx, yy);
 					}
 					else
 					{
-						(*itr)->gdiRenderAlpha(hdc, xx, yy);
+						(*itr)->gdiRenderAlpha(HDC(hdc), xx, yy);
 					}
 					return 1;
 				}
@@ -633,11 +638,11 @@ int APIENTRY GFXdrawtilemask ( const char *fname,
 					//match!
 					if (nDirectBlt)
 					{
-						(*itr)->gdiDrawAlpha(hdc, xx, yy);
+						(*itr)->gdiDrawAlpha(HDC(hdc), xx, yy);
 					}
 					else
 					{
-						(*itr)->gdiRenderAlpha(hdc, xx, yy);
+						(*itr)->gdiRenderAlpha(HDC(hdc), xx, yy);
 					}
 					return 1;
 				}
@@ -655,11 +660,11 @@ int APIENTRY GFXdrawtilemask ( const char *fname,
 	gvTiles.push_back(t);
 	if (nDirectBlt)
 	{
-		t->gdiDrawAlpha(hdc, xx, yy);
+		t->gdiDrawAlpha(HDC(hdc), xx, yy);
 	}
 	else
 	{
-		t->gdiRenderAlpha(hdc, xx, yy);
+		t->gdiRenderAlpha(HDC(hdc), xx, yy);
 	}
 	return 1;
 }

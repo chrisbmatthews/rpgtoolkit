@@ -1,5 +1,6 @@
 //--------------------------------------------------------------------------
-// All contents copyright 2004, Colin James Fitzpatrick
+// All contents copyright 2004 - 2006 
+// Colin James Fitzpatrick & Jonathan D. Hughes
 // All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
 // Read LICENSE.txt for licensing info
 //--------------------------------------------------------------------------
@@ -18,9 +19,14 @@
 //--------------------------------------------------------------------------
 // Inclusions
 //--------------------------------------------------------------------------
+#include <vector>
+#include <set>
 #define WIN32_MEAN_AND_LEAN			// Obtain lean version of windows
 #include <windows.h>				// Windows headers
 #include <string>					// String class
+#include "stdafx.h"
+#include "../../tkCommon/strings.h"
+#include "../../tkCommon/movement/coords.h"
 
 //--------------------------------------------------------------------------
 // Definitions
@@ -38,89 +44,51 @@
 typedef INT CNV_HANDLE;
 #endif
 
+class CCanvas;
+class CBoard;
+
+#pragma pack(4) // Align UDTs to 4-byte packing for VB.
+
 //--------------------------------------------------------------------------
-// Definition of an RPGToolkit board
+// An image placed on a layer.
 //--------------------------------------------------------------------------
-class CBoard
+typedef struct tagVBBoardImage
 {
+	LONG drawType;						// Drawing option.
+	LONG layer;
+	RECT bounds;						// Board pixel co-ordinates.
+	LONG transpColor;					// Transparent colour on the image.
+	CCanvas *pCnv;
+	DOUBLE scrollx;						// Scrolling factors (x,y).
+	DOUBLE scrolly;
+	BSTR file;
 
-//
-// Public visibility
-//
-public:
+	void draw(
+		CONST CCanvas &cnv, 
+		CONST RECT screen, 
+		CONST LONG brdWidth, 
+		CONST LONG brdHeight
+	);
 
-	// Get ambient red of a tile
-	INT ambientRed(
-		CONST INT x,
-		CONST INT y,
-		CONST INT z
-	) CONST;
+	CCanvas *render(
+		CONST STRING projectPath, 
+		CONST HDC hdcCompat
+	);
 
-	// Get ambient green of a tile
-	INT ambientGreen(
-		CONST INT x,
-		CONST INT y,
-		CONST INT z
-	) CONST;
+} VB_BRDIMAGE, *LPVB_BRDIMAGE;
 
-	// Get ambient blue of a tile
-	INT ambientBlue(
-		CONST INT x,
-		CONST INT y,
-		CONST INT z
-	) CONST;
-
-	// Get the filename of a tile
-	std::string tile(
-		CONST INT x,
-		CONST INT y,
-		CONST INT z
-	) CONST;
-
-	// Draw the board to a canvas
-	VOID FAST_CALL draw(
-		CONST CNV_HANDLE cnv,
-		CONST INT layer,
-		CONST INT topX,
-		CONST INT topY,
-		CONST INT tilesX,
-		CONST INT tilesY,
-		CONST INT nBsizeX,
-		CONST INT nBsizeY,
-		CONST INT nBsizeL,
-		CONST INT aR,
-		CONST INT aG,
-		CONST INT aB,
-		CONST BOOL bIsometric
-	) CONST;
-
-	// Draw the board to a HDC
-	VOID FAST_CALL CBoard::drawHdc(
-		CONST INT hdc,
-		CONST INT maskHdc,
-		CONST INT layer,
-		CONST INT topX,
-		CONST INT topY,
-		CONST INT tilesX,
-		CONST INT tilesY,
-		CONST INT nBsizeX,
-		CONST INT nBsizeY,
-		CONST INT nBsizeL,
-		CONST INT aR,
-		CONST INT aG,
-		CONST INT aB,
-		CONST BOOL bIsometric
-	) CONST;
-
-//
-// Private visibility
-//
-private:
-
+typedef struct tagVBBoard
+{
 	//
 	// Attributes of a board - most are unused
 	// but (obviously) required to be here.
 	//
+	// 3.0.7
+	SHORT m_coordType;
+	VB_BRDIMAGE m_bkgImage;				// Background image.
+	LPSAFEARRAY m_images;				// Array of tagVBBoardImages
+
+	// Pre 3.0.7
 	SHORT m_bSizeX;						// Board size x
 	SHORT m_bSizeY;						// Board size y
 	SHORT m_bSizeL;						// Board size layer
@@ -180,15 +148,134 @@ private:
 	CHAR m_isIsometric;					// Is it an isometric board? (0- no, 1-yes)
 	LPSAFEARRAY m_threads;				// Filenames of threads on board
 	VARIANT_BOOL m_hasAnmTiles;			// Does board have anim tiles?
-	LPSAFEARRAY m_animatedTile;			// Animated tiles associated with this board
+//	LPSAFEARRAY m_animatedTile;			// Animated tiles associated with this board
 	INT m_anmTileInsertIdx;				// Index of animated tile insertion
 	LPSAFEARRAY m_anmTileLutIndices;	// Indices into LUT of animated tiles
 	INT m_anmTileLutInsertIdx;			// Index of LUT table insertion
 	BSTR strFilename;					// Filename of the board
+	
+	INT pxWidth() 
+	{
+		if (m_coordType & ISO_STACKED) return m_bSizeX * 64 - 32;
+		if (m_coordType & ISO_ROTATED) return m_bSizeX * 64 - 32;
+		return m_bSizeX * 32;			// TILE_NORMAL.
+	}
+	INT pxHeight() 
+	{ 
+		if (m_coordType & ISO_STACKED) return m_bSizeY * 16 - 16;
+		if (m_coordType & ISO_ROTATED) return m_bSizeY * 32;
+		return m_bSizeY * 32;			// TILE_NORMAL.
+	}
+	BOOL isIsometric()
+	{
+		return (m_coordType & (ISO_STACKED | ISO_ROTATED));
+	}
 
+} VB_BOARD, *LPVB_BOARD;
+
+typedef struct tagVBBoardEditor
+{
+    CBoard *pCBoard;					// pointer to associated CBoard in actkrt
+    LPSAFEARRAY bLayerOccupied;			// layer contains tiles (VARIANT_BOOL)
+    LPSAFEARRAY bLayerVisible;			// layer visibility in the editor
+	VB_BOARD board;
+	/* Fragment... */
+
+} VB_BRDEDITOR, *LPVB_BRDEDITOR;
+
+typedef struct tagEditorLayer
+{
+	CCanvas *cnv;
+	RECT bounds;			// Extent of cnv wrt to board, in pixels.
+
+	tagEditorLayer(): cnv(NULL) { };
+
+} BRD_LAYER, *LPBRD_LAYER;
+
+typedef std::vector<BRD_LAYER>::iterator BL_ITR;
+typedef std::vector<CBoard *>::iterator CB_ITR;
+
+//--------------------------------------------------------------------------
+// Definition of an RPGToolkit board
+//--------------------------------------------------------------------------
+class CBoard
+{
+public:
+	CBoard(CONST STRING path) 
+	{ 
+		m_layers.reserve(8);
+		m_projectPath = path; 
+	}
+	~CBoard();
+
+	// Get ambient red of a tile
+	INT ambientRed(
+		CONST INT x,
+		CONST INT y,
+		CONST INT z
+	) CONST;
+
+	// Get ambient green of a tile
+	INT ambientGreen(
+		CONST INT x,
+		CONST INT y,
+		CONST INT z
+	) CONST;
+
+	// Get ambient blue of a tile
+	INT ambientBlue(
+		CONST INT x,
+		CONST INT y,
+		CONST INT z
+	) CONST;
+
+	// Get the filename of a tile
+	std::string tile(
+		CONST INT x,
+		CONST INT y,
+		CONST INT z
+	) CONST;
+
+	VOID CBoard::draw(
+		CONST LPVB_BRDEDITOR pEditor,
+		CONST HDC hdc,
+		CONST LONG destX, CONST LONG destY,
+		CONST LONG brdX, CONST LONG brdY,
+		CONST LONG width,
+		CONST LONG height,
+		CONST DOUBLE scale
+	);
+
+	VOID render(
+		CONST LPVB_BRDEDITOR pEditor,
+		CONST HDC hdcCompat,
+		CONST LONG layer
+	);
+
+	VOID renderLayer(
+		CONST LONG i, 
+		CONST HDC hdcCompat
+	);
+
+	std::vector<LPVB_BRDIMAGE> getImages(
+		VOID
+	);
+
+	VOID renderTile(
+		CONST LPVB_BOARD pBoard, 
+		CONST LONG x, 
+		CONST LONG y, 
+		CONST LONG z, 
+		CONST HDC hdcCompat
+	);
+
+private:
+	LPVB_BOARD m_pBoard;				// Board data passed from vb.
+	std::vector<BRD_LAYER> m_layers;	// Canvases for layers.
+	std::set<CCanvas *> m_images;		// Canvases for images.
+	STRING m_projectPath;				// \Game\$game$
+
+	void insertCnv(CCanvas *const cnv) { if (cnv) m_images.insert(cnv); }
 };
 
-//--------------------------------------------------------------------------
-// End of the header
-//--------------------------------------------------------------------------
 #endif

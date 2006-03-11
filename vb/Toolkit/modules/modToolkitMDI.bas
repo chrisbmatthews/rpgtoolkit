@@ -95,7 +95,7 @@ Public activeEnemy As editenemy
 Public activeRPGCode As rpgcodeedit
 Public activeItem As EditItem
 Public activePlayer As characteredit
-Public activeBoard As boardedit
+Public activeBoard As frmBoardEdit
 Public activeTile As tileedit
 
 '=========================================================================

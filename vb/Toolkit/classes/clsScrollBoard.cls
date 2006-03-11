@@ -31,7 +31,7 @@ Option Base 0
 '=========================================================================
 ' Win32 API declarations
 '=========================================================================
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal dwrop As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 
 '=========================================================================
 ' Public interface methods
@@ -100,7 +100,7 @@ Private Sub scrollDown(ByVal isIsometric As Long)
     End If
 
     Dim cnt As Long, t As Long, eo As Boolean
-    Dim X As Long, Y As Long, xx As Long
+    Dim x As Long, y As Long, xx As Long
     Dim tName As String, ar As Long, ag As Long, ab As Long, lay As Long
 
     If iso Then
@@ -108,14 +108,14 @@ Private Sub scrollDown(ByVal isIsometric As Long)
         cnt = 1
         For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
             xx = boardList(activeBoardIndex).topX + cnt
-            Y = boardList(activeBoardIndex).topY + 2
+            y = boardList(activeBoardIndex).topY + 2
             lay = boardList(activeBoardIndex).currentLayer
     
-            tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
-            If Y Mod 2 = 0 Then
+            tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
+            ar = boardList(activeBoardIndex).theData.ambientRed(xx, y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, y, lay)
+            If y Mod 2 = 0 Then
                 eo = False
             Else
                 eo = True
@@ -129,14 +129,14 @@ Private Sub scrollDown(ByVal isIsometric As Long)
     cnt = 1
     For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
         xx = boardList(activeBoardIndex).topX + cnt
-        Y = boardList(activeBoardIndex).topY + 1
+        y = boardList(activeBoardIndex).topY + 1
         lay = boardList(activeBoardIndex).currentLayer
 
-        tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
-        If Y Mod 2 = 0 Then
+        tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
+        ar = boardList(activeBoardIndex).theData.ambientRed(xx, y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, y, lay)
+        If y Mod 2 = 0 Then
             eo = True
         Else
             eo = False
@@ -192,7 +192,7 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
         eo = True
     End If
 
-    Dim cnt As Long, t As Long, xx As Long, Y As Long, lay As Long, tName As String
+    Dim cnt As Long, t As Long, xx As Long, y As Long, lay As Long, tName As String
     Dim ar As Long, ag As Long, ab As Long
 
     If iso Then
@@ -200,13 +200,13 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
         cnt = 1
         For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
             xx = boardList(activeBoardIndex).topX + tX - 1
-            Y = boardList(activeBoardIndex).topY + cnt
+            y = boardList(activeBoardIndex).topY + cnt
             lay = boardList(activeBoardIndex).currentLayer
 
-            tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
+            tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
+            ar = boardList(activeBoardIndex).theData.ambientRed(xx, y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, y, lay)
             Call drawTile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName$, tX - 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
@@ -216,13 +216,13 @@ Private Sub scrollLeft(ByVal isIsometric As Long)
     cnt = 1
     For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
         xx = boardList(activeBoardIndex).topX + tX
-        Y = boardList(activeBoardIndex).topY + cnt
+        y = boardList(activeBoardIndex).topY + cnt
         lay = boardList(activeBoardIndex).currentLayer
 
-        tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
+        tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
+        ar = boardList(activeBoardIndex).theData.ambientRed(xx, y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, y, lay)
         Call drawTile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, tX, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
@@ -273,7 +273,7 @@ Private Sub scrollRight(ByVal isIsometric As Long)
         eo = True
     End If
     
-    Dim cnt As Long, t As Long, xx As Long, Y As Long, lay As Long, tName As String
+    Dim cnt As Long, t As Long, xx As Long, y As Long, lay As Long, tName As String
     Dim ar As Long, ag As Long, ab As Long
     
     If iso Then
@@ -281,13 +281,13 @@ Private Sub scrollRight(ByVal isIsometric As Long)
         cnt = 1
         For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
             xx = boardList(activeBoardIndex).topX + 2
-            Y = boardList(activeBoardIndex).topY + cnt
+            y = boardList(activeBoardIndex).topY + cnt
             lay = boardList(activeBoardIndex).currentLayer
     
-            tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
+            tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
+            ar = boardList(activeBoardIndex).theData.ambientRed(xx, y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, y, lay)
             Call drawTile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName$, 2, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
             cnt = cnt + 1
         Next t
@@ -297,13 +297,13 @@ Private Sub scrollRight(ByVal isIsometric As Long)
     cnt = 1
     For t = boardList(activeBoardIndex).topY + 1 To boardList(activeBoardIndex).topY + tY
         xx = boardList(activeBoardIndex).topX + 1
-        Y = boardList(activeBoardIndex).topY + cnt
+        y = boardList(activeBoardIndex).topY + cnt
         lay = boardList(activeBoardIndex).currentLayer
 
-        tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
+        tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
+        ar = boardList(activeBoardIndex).theData.ambientRed(xx, y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, y, lay)
         Call drawTile(vbPicHDC(activeBoard.boardform), projectPath & tilePath & tName, 1, t - boardList(activeBoardIndex).topY, ar, ag, ab, False, True, iso, eo)
         cnt = cnt + 1
     Next t
@@ -322,7 +322,7 @@ Private Sub scrollUp(ByVal isIsometric As Long)
         iso = True
     End If
 
-    Call vbPicAutoRedraw(activeBoard.boardform, True)
+    'Call vbPicAutoRedraw(activeBoard.boardform, True) 'wip
 
     Dim tX As Long, tY As Long
     tX = boardList(activeBoardIndex).tilesX
@@ -348,7 +348,7 @@ Private Sub scrollUp(ByVal isIsometric As Long)
             boardList(activeBoardIndex).theData.brdColor)
     End If
     
-    Dim cnt As Long, t As Long, xx As Long, Y As Long, lay As Long
+    Dim cnt As Long, t As Long, xx As Long, y As Long, lay As Long
     Dim tName As String, ar As Long, ag As Long, ab As Long, eo As Boolean
     
     If iso Then
@@ -356,14 +356,14 @@ Private Sub scrollUp(ByVal isIsometric As Long)
         cnt = 1
         For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
             xx = boardList(activeBoardIndex).topX + cnt
-            Y = boardList(activeBoardIndex).topY + tY - 1
+            y = boardList(activeBoardIndex).topY + tY - 1
             lay = boardList(activeBoardIndex).currentLayer
     
-            tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-            ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
-            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
-            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
-            If Y Mod 2 = 0 Then
+            tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
+            ar = boardList(activeBoardIndex).theData.ambientRed(xx, y, lay)
+            ag = boardList(activeBoardIndex).theData.ambientGreen(xx, y, lay)
+            ab = boardList(activeBoardIndex).theData.ambientBlue(xx, y, lay)
+            If y Mod 2 = 0 Then
                 eo = False
             Else
                 eo = True
@@ -377,14 +377,14 @@ Private Sub scrollUp(ByVal isIsometric As Long)
     cnt = 1
     For t = boardList(activeBoardIndex).topX + 1 To boardList(activeBoardIndex).topX + tX
         xx = boardList(activeBoardIndex).topX + cnt
-        Y = boardList(activeBoardIndex).topY + tY
+        y = boardList(activeBoardIndex).topY + tY
         lay = boardList(activeBoardIndex).currentLayer
 
-        tName = BoardGetTile(xx, Y, lay, boardList(activeBoardIndex).theData)
-        ar = boardList(activeBoardIndex).theData.ambientRed(xx, Y, lay)
-        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, Y, lay)
-        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, Y, lay)
-        If Y Mod 2 = 0 Then
+        tName = BoardGetTile(xx, y, lay, boardList(activeBoardIndex).theData)
+        ar = boardList(activeBoardIndex).theData.ambientRed(xx, y, lay)
+        ag = boardList(activeBoardIndex).theData.ambientGreen(xx, y, lay)
+        ab = boardList(activeBoardIndex).theData.ambientBlue(xx, y, lay)
+        If y Mod 2 = 0 Then
             eo = True
         Else
             eo = False

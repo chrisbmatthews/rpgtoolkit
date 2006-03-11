@@ -40,7 +40,7 @@ Private Const FILE_HEADER = "RPGTLKIT BOARD"
 '=========================================================================
 ' A RPGToolkit board
 '=========================================================================
-Public Type TKBoard
+Public Type uTKBoard
     bSizeX As Integer                     'board size x
     bSizeY As Integer                     'board size y
     bSizeL As Integer                     'board size layer
@@ -585,7 +585,7 @@ Public Sub BoardClear(ByRef theBoard As TKBoard)
         .BoardBackgroundNight = vbNullString
         .isIsometric = 0
         ReDim .Threads(0)
-        ReDim .animatedTile(10)
+        'ReDim .animatedTile(10)
         ReDim .anmTileLUTIndices(10)
         .anmTileLUTInsertIdx = 0
         .anmTileInsertIdx = 0
@@ -739,14 +739,14 @@ End Sub
 '=========================================================================
 ' Open a board
 '=========================================================================
-Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
+Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorData)
 
     On Error GoTo loadBrdErr
     
-    Call BoardClear(theBoard)
-    Call BoardSetSize(50, 50, 8, theBoard)
+    Call BoardClear(ed.board)
+    Call BoardSetSize(50, 50, 8, ed)
 
-    With theBoard
+    With ed.board
 
         .bSizeX = 50
         .bSizeY = 50
@@ -797,7 +797,10 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
             .bSizeX = BinReadInt(num)
             .bSizeY = BinReadInt(num)
             .bSizeL = BinReadInt(num)
-            Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, theBoard)
+            Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed)
+            
+            '3.0.7 wip
+            ReDim ed.bLayerOccupied(.bSizeL + 1)
 
             'now some player and saving info...
             .playerX = BinReadInt(num)            'player x ccord
@@ -819,7 +822,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                 If LenB(Temp$) Then
                     ex$ = GetExt(Temp$)
                     If UCase$(ex$) = "TAN" Then
-                        Call BoardAddTileAnmLUTRef(theBoard, t)
+                        Call BoardAddTileAnmLUTRef(ed.board, t)
                         .hasAnmTiles = True
                     End If
                 End If
@@ -855,6 +858,14 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                             gg = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile green
                             bl = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile blue
                             tt = BinReadByte(num)  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
+                            
+                            'Determine if the layer contains tiles.
+                            '(0) indicates if the whole board contains tiles. 3.0.7 wip
+                            If (bb) Then
+                                ed.bLayerOccupied(l) = True
+                                ed.bLayerOccupied(0) = True
+                            End If
+                    
                             For cnt = 1 To test
                                 .board(x, y, l) = bb   'board tiles -- codes indicating where the tiles are on the board
                                 .ambientRed(x, y, l) = rr 'ambiebnt tile red
@@ -866,7 +877,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                                 For tAnm = 0 To .anmTileLUTInsertIdx - 1
                                     If .board(x, y, l) = .anmTileLUTIndices(tAnm) Then
                                         'this is an animated tile
-                                        Call BoardAddTileAnmRef(theBoard, .tileIndex(.board(x, y, l)), x, y, l)
+                                        Call BoardAddTileAnmRef(ed.board, .tileIndex(.board(x, y, l)), x, y, l)
                                     End If
                                 Next tAnm
                                 x = x + 1
@@ -879,11 +890,18 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                                         If l > .bSizeL Then
                                             GoTo exitTheFor
                                         End If
+                                        'Onto next layer. 3.0.7 wip
+                                        If (bb) Then ed.bLayerOccupied(l) = True
                                     End If
                                 End If
                             Next cnt
                             x = x - 1
                         Else
+                            If (test) Then '3.0.7 wip
+                                ed.bLayerOccupied(l) = True
+                                ed.bLayerOccupied(0) = True
+                            End If
+                            
                             .board(x, y, l) = test   'board tiles -- codes indicating where the tiles are on the board
                             .ambientRed(x, y, l) = BinReadInt(num) 'ambiebnt tile red
                             .ambientGreen(x, y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile green
@@ -894,7 +912,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef theBoard As TKBoard)
                             For tAnm = 0 To .anmTileLUTInsertIdx - 1
                                 If .board(x, y, l) = .anmTileLUTIndices(tAnm) Then
                                     'this is an animated tile
-                                    Call BoardAddTileAnmRef(theBoard, .tileIndex(.board(x, y, l)), x, y, l)
+                                    Call BoardAddTileAnmRef(ed.board, .tileIndex(.board(x, y, l)), x, y, l)
                                 End If
                             Next tAnm
                         End If
@@ -949,7 +967,7 @@ exitTheFor:
             
             'Dimension the arrays of this board *not* the activeboard.
             ReDim .itmName(0)
-            Call dimensionItemArrays(theBoard)
+            Call dimensionItemArrays(ed.board)
             
             numItm = BinReadInt(num)            'The number of written item slots.
             t = 0
@@ -968,7 +986,7 @@ exitTheFor:
                 .itemMulti(t) = BinReadString(num)     'multitask program for item
                 If LenB(.itmName(t)) Then
                     t = t + 1
-                    Call dimensionItemArrays(theBoard)
+                    Call dimensionItemArrays(ed.board)
                 End If
             Next count
 
@@ -985,6 +1003,8 @@ exitTheFor:
 
             'Read in isometrics
             .isIsometric = BinReadByte(num)
+            '3.0.7 wip
+            .coordType = .isIsometric
 
             If (minorVer < 3) Then
                 'Read in threads
@@ -1018,19 +1038,19 @@ ver2oldboard:
             If minorVer = 1 Then
                 .bSizeX = fread(num)        'size x
                 .bSizeY = fread(num)        'size y
-                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, theBoard)
+                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed)
             ElseIf minorVer = 0 Then
                 .bSizeX = 19
                 .bSizeY = 11
                 .bSizeL = 8
-                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, theBoard)
+                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed)
             End If
             Dim lay As Long
             For x = 1 To .bSizeX
                 For y = 1 To .bSizeY
                     For lay = 1 To .bSizeL
                         Temp$ = fread(num)              'Board tiles (the ,8 on the end is 8 layers)
-                        Call BoardSetTile(x, y, lay, Temp$, theBoard)
+                        Call BoardSetTile(x, y, lay, Temp$, ed.board)
                         .ambientRed(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile red
                         .ambientGreen(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile green
                         .ambientBlue(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile blue
@@ -1071,7 +1091,7 @@ ver2oldboard:
             Next loopControl
             ReDim boardList(activeBoardIndex).theData.itmName(0)
             For loopControl = 0 To 10
-                Call dimensionItemArrays(theBoard)
+                Call dimensionItemArrays(ed.board)
                 .itmName(loopControl) = fread(num)   'filenames of items
                 .itmX(loopControl) = fread(num)        'x coord
                 .itmY(loopControl) = fread(num)             'y coord
@@ -1105,7 +1125,7 @@ Ver1Board:
 
         'We come here if we (apparently) have a version 1 board.
 
-        Call BoardSetSize(19, 11, 8, theBoard)
+        Call BoardSetSize(19, 11, 8, ed)
         .bSizeX = 19
         .bSizeY = 11
         .bSizeL = 8
@@ -1131,7 +1151,7 @@ Ver1Board:
                     Temp$ = fread(num)
                     If Temp$ = "VOID" Then Temp$ = vbNullString
                     Temp$ = pth & Temp$
-                    Call BoardSetTile(x, y, 1, Temp$, theBoard)
+                    Call BoardSetTile(x, y, 1, Temp$, ed.board)
                 Next x
             Next y
             Call fread(num)
@@ -1200,19 +1220,20 @@ End Sub
 '=========================================================================
 ' Size a board losing its current contents
 '=========================================================================
-Public Sub BoardSetSize(ByVal sizex As Integer, ByVal sizey As Integer, ByVal sizeLayer As Integer, ByRef theBoard As TKBoard)
+Public Sub BoardSetSize(ByVal x As Integer, ByVal y As Integer, ByVal z As Integer, ByRef ed As TKBoardEditorData)
 
     On Error Resume Next
     
-    ReDim theBoard.board(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientRed(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientGreen(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientBlue(sizex, sizey, sizeLayer)
-    ReDim theBoard.tiletype(sizex, sizey, sizeLayer)
+    ReDim ed.board.board(x, y, z)
+    ReDim ed.board.ambientRed(x, y, z)
+    ReDim ed.board.ambientGreen(x, y, z)
+    ReDim ed.board.ambientBlue(x, y, z)
+    ReDim ed.board.tiletype(x, y, z)
+    ReDim ed.bLayerOccupied(z)
 
-    theBoard.bSizeX = sizex
-    theBoard.bSizeY = sizey
-    theBoard.bSizeL = sizeLayer
+    ed.board.bSizeX = x
+    ed.board.bSizeY = y
+    ed.board.bSizeL = z
 End Sub
 
 '=========================================================================
@@ -1276,42 +1297,32 @@ Public Sub BoardSetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As I
 
     On Error Resume Next
     
-    'first scan the look up table for filenames...
-    Dim bWasSet As Boolean, t As Long
-    bWasSet = False
+    'Look for an existing matching entry.
+    Dim t As Long
     For t = 0 To UBound(theBoard.tileIndex)
         If LCase$(filename) = theBoard.tileIndex(t) Then
             'found it in lookup table...
             theBoard.board(x, y, layer) = t
-            bWasSet = True
-            Exit For
+            Exit Sub
         End If
     Next t
     
-    Dim bFoundPos As Boolean
-    bFoundPos = False
-    If Not (bWasSet) Then
-        'it wasn't found in the lookup table.
-        'we have to add it to the lookup table...
-        'first, find an empty slot...
-        For t = 1 To UBound(theBoard.tileIndex)
-            If (LenB(theBoard.tileIndex(t)) = 0) Then
-                'found a position!
-                theBoard.tileIndex(t) = LCase$(filename)
-                theBoard.board(x, y, layer) = t
-                bFoundPos = True
-                Exit For
-            End If
-        Next t
-        
-        If Not (bFoundPos) Then
-            'no empty slots found-- make the array bigger!
-            Dim newSize As Long, insertPos As Long
-            newSize = UBound(theBoard.tileIndex) * 2
-            insertPos = UBound(theBoard.tileIndex) + 1
-            ReDim Preserve theBoard.tileIndex(newSize)
-            theBoard.tileIndex(insertPos) = LCase$(filename)
-            theBoard.board(x, y, layer) = insertPos
+    'Not found, look for an empty slot.
+    For t = 1 To UBound(theBoard.tileIndex)
+        If (LenB(theBoard.tileIndex(t)) = 0) Then
+            'found a position!
+            theBoard.tileIndex(t) = LCase$(filename)
+            theBoard.board(x, y, layer) = t
+            Exit Sub
         End If
-    End If
+    Next t
+    
+    'Not found, create a new slot.
+    Dim newSize As Long, insertPos As Long
+    newSize = UBound(theBoard.tileIndex) * 2
+    insertPos = UBound(theBoard.tileIndex) + 1
+    ReDim Preserve theBoard.tileIndex(newSize)
+    theBoard.tileIndex(insertPos) = LCase$(filename)
+    theBoard.board(x, y, layer) = insertPos
+
 End Sub

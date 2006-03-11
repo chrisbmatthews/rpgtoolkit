@@ -125,6 +125,19 @@ SOURCE=.\StdAfx.h
 # Begin Source File
 
 SOURCE=.\tkgfx\CBoard.cpp
+
+!IF  "$(CFG)" == "actkrt3 - Win32 Release"
+
+# ADD CPP /YX
+
+!ELSEIF  "$(CFG)" == "actkrt3 - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\movement\coords.cpp
 # End Source File
 # Begin Source File
 
@@ -149,6 +162,10 @@ SOURCE=.\tkgfx\Tkgfx.cpp
 # Begin Source File
 
 SOURCE=.\tkgfx\CBoard.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\movement\coords.h
 # End Source File
 # Begin Source File
 
