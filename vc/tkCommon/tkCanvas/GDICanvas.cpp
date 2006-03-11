@@ -620,7 +620,7 @@ INLINE VOID CCanvas::Destroy(VOID)
 //--------------------------------------------------------------------------
 // Set a pixel using GDI
 //--------------------------------------------------------------------------
-INLINE VOID CCanvas::SetPixel(
+VOID CCanvas::SetPixel(
 	CONST INT x,
 	CONST INT y,
 	CONST LONG crColor
@@ -1345,7 +1345,7 @@ INT FAST_CALL CCanvas::BltTranslucent(
 //
 // Surface target
 //
-INLINE INT CCanvas::BltTranslucent(
+INT CCanvas::BltTranslucent(
 	CONST LPDIRECTDRAWSURFACE7 lpddsSurface,
 	CONST INT x,
 	CONST INT y,
@@ -2198,7 +2198,7 @@ INLINE LONG CCanvas::GetSurfaceColor(
 //--------------------------------------------------------------------------
 // Obtain the canvas' HDC
 //--------------------------------------------------------------------------
-INLINE HDC CCanvas::OpenDC(VOID) CONST
+HDC CCanvas::OpenDC(VOID) CONST
 {
 	if (m_hdcLocked)
 	{
@@ -2224,7 +2224,7 @@ INLINE HDC CCanvas::OpenDC(VOID) CONST
 //--------------------------------------------------------------------------
 // Close the canvas' HDC
 //--------------------------------------------------------------------------
-INLINE VOID CCanvas::CloseDC(
+VOID CCanvas::CloseDC(
 	CONST HDC hdc
 		) CONST
 {
@@ -2233,24 +2233,6 @@ INLINE VOID CCanvas::CloseDC(
 		// Release the DC
 		m_lpddsSurface->ReleaseDC(hdc);
 	}
-}
-
-//--------------------------------------------------------------------------
-// Lock the canvas
-//--------------------------------------------------------------------------
-INLINE VOID CCanvas::Lock(VOID)
-{
-	m_hdcLocked = OpenDC();
-}
-
-//--------------------------------------------------------------------------
-// Unlock the canvas
-//--------------------------------------------------------------------------
-INLINE VOID CCanvas::Unlock(VOID)
-{
-	CONST HDC hdc = m_hdcLocked;
-	m_hdcLocked = NULL;
-	CloseDC(hdc);
 }
 
 //--------------------------------------------------------------------------

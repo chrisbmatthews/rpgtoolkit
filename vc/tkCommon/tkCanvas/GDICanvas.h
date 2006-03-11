@@ -44,6 +44,8 @@ typedef double DOUBLE;
 #define STATIC static
 #endif
 
+const long TRANSP_COLOR = 16711935;	// Magic pink
+
 //--------------------------------------------------------------------------
 // Definition of the CCanvas class
 //--------------------------------------------------------------------------
@@ -118,11 +120,11 @@ public:
 
 	VOID Lock(
 		VOID
-	);
+	) { m_hdcLocked = OpenDC(); }
 
 	VOID Unlock(
 		VOID
-	);
+	) {	CONST HDC hdc = m_hdcLocked; m_hdcLocked = NULL; CloseDC(hdc); }
 
 	VOID FAST_CALL SetPixels(
 		CONST LPLONG p_crPixelArray,
