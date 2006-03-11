@@ -54,8 +54,14 @@ inline std::wstring getUnicodeString(const std::basic_string<T> istr)
 #endif
 }
 
+inline bool isVbNullString(const BSTR bstr)
+{
+	return (bstr == NULL);
+}
+
 inline STRING getString(const BSTR bstr)
 {
+	if (isVbNullString(bstr)) return STRING();
 #ifndef _UNICODE
 	const int length = SysStringLen(bstr) + 1;
 	char *const str = new char[length];
