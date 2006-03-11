@@ -41,7 +41,8 @@ typedef double DOUBLE;
 //-------------------------------------------------------------------
 #include <string>
 #include <vector>
-#include "../tkCanvas/CCanvasPool.h"
+#include "../../tkCommon/tkCanvas/CCanvasPool.h"
+#include "../movement/coords.h"
 
 //-------------------------------------------------------------------
 // A tileset header
@@ -55,9 +56,7 @@ struct tilesetHeader
 
 #define SHADE_UNIFORM 0
 
-/*
- * A colour shade.
- */
+// A colour shade.
 typedef struct tagColorShade
 {
 	int r;
@@ -65,15 +64,20 @@ typedef struct tagColorShade
 	int b;
 } RGBSHADE;
 
+// Options for CTile::drawByBoardCoord.
+enum tagTileMaskEnum
+{
+	TM_NONE,			// No mask.
+	TM_COPY,			// Render mask opaquely.
+	TM_AND				// Render mask transparently.
+};
+
 //-------------------------------------------------------------------
 // CTile - a tile
 //-------------------------------------------------------------------
 class CTile
 {
-
-	// Public visibility
 	public:
-
 		// Construct with little information
 		CTile(
 			CONST INT nCompatibleDC,
@@ -113,7 +117,7 @@ class CTile
 
 		// Draw the tile
 		VOID FAST_CALL gdiDraw(
-			CONST INT hdc,
+			CONST HDC hdc,
 			CONST INT x,
 			CONST INT y
 		);
@@ -134,14 +138,14 @@ class CTile
 
 		// Draw the tile's alpha portion
 		VOID FAST_CALL gdiDrawAlpha(
-			CONST INT hdc,
+			CONST HDC hdc,
 			CONST INT x,
 			CONST INT y
 		);
 
 		// Render the tile's alpha's portion
 		VOID FAST_CALL gdiRenderAlpha(
-			CONST INT hdc,
+			CONST HDC hdc,
 			CONST INT x,
 			CONST INT y
 		);
@@ -167,7 +171,6 @@ class CTile
 
 		// Create a shading mask for this tile
 		VOID FAST_CALL createShading(
-			CONST INT hdc,
 			CONST RGBSHADE rgb,
 			CONST INT nShadeType,
 			CONST INT nSetType
@@ -198,12 +201,52 @@ class CTile
 			VOID
 		);
 
-	// Private visibility
-	private:
+		STATIC BOOL drawByBoardCoord(
+			CONST STRING filename, 
+			INT x, INT y, 
+			CONST INT r, CONST INT g, CONST INT b, 
+			CCanvas *cnv, 
+			CONST INT eMaskValue,
+			CONST INT pxOffsetX, CONST INT pxOffsetY, 
+			CONST COORD_TYPE coordType, 
+			CONST INT brdSizeX,
+			CONST INT nIsoEvenOdd
+		);
 
+		STATIC BOOL CTile::drawByBoardCoordHdc(
+			CONST STRING filename, 
+			INT x, INT y, 
+			CONST INT r, CONST INT g, CONST INT b, 
+			CONST HDC hdc,
+			CONST INT eMaskValue,
+			CONST INT pxOffsetX, CONST INT pxOffsetY, 
+			CONST COORD_TYPE coordType,
+			CONST INT brdSizeX,
+			CONST INT nIsoEvenOdd
+		);
+
+		STATIC CTile *findCacheMatch(
+			CONST STRING filename, 
+			CONST INT eMask, 
+			CONST RGBSHADE rgb, 
+			CONST BOOL bIsometric,
+			CONST HDC hdcCompat
+		);
+
+		STATIC VOID clearTileCache(
+			VOID
+		);
+
+	private:
 		// Create an isometric mask
 		VOID FAST_CALL createIsometricMask(
 			VOID
+		);
+
+		// Convert source 32x32 pixel array to 64x32 pixel array.
+		VOID toIsometric(
+			LONG *dest, 
+			CONST LONG *src
 		);
 
 		// Open a tile
@@ -274,10 +317,6 @@ class CTile
 		// Indices into canvas pools
 		INT m_nFgIdx, m_nAlphaIdx, m_nMaskIdx;
 		INT m_nFgIdxIso, m_nAlphaIdxIso, m_nMaskIdxIso;
-
 };
 
-//-------------------------------------------------------------------
-// End of the header
-//-------------------------------------------------------------------
 #endif

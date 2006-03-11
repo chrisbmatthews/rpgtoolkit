@@ -34,6 +34,11 @@ BOOL CTile::bCTileCreateIsoMaskOnce = FALSE;
 LONG CTile::isoMaskCTile[64][32] = {NULL};
 
 //-------------------------------------------------------------------
+// actkrt3 and trans3 globals
+//-------------------------------------------------------------------
+std::vector<CTile *> g_tiles;				// Cache of tiles.
+
+//-------------------------------------------------------------------
 // Big DOS palette of doom
 //-------------------------------------------------------------------
 CONST UINT CTile::g_pnDosPalette[] = 
@@ -310,8 +315,6 @@ CONST UINT CTile::g_pnDosPalette[] =
 // Returns: NA
 //-------------------------------------------------------------------
 CTile::CTile(CONST INT nCompatibleDC, CONST std::string strFilename, CONST RGBSHADE rgb, CONST INT nShadeType, CONST BOOL bIsometric):
-
-// Colin: Has nobody ever heard of member initialization lists? :P
  m_strFilename(strFilename),
  m_bIsTransparent(FALSE),
  m_nCompatibleDC(nCompatibleDC),
@@ -368,8 +371,6 @@ CTile::CTile(CONST INT nCompatibleDC, CONST std::string strFilename, CONST RGBSH
 // Construct from DC and iso flag
 //-------------------------------------------------------------------
 CTile::CTile(CONST INT nCompatibleDC, CONST BOOL bIsometric):
-
-// Colin: Added real member initialization list
  m_strFilename(""),
  m_nDetail(0),
  m_bIsTransparent(FALSE),
@@ -387,10 +388,6 @@ CTile::CTile(CONST INT nCompatibleDC, CONST BOOL bIsometric):
 
 	if (m_bIsometric)
 	{
-
-		// Colin says: Delano, the !, logical NOT, operator will check for
-		//			   inequality with NULL.
-
 		if (!m_pCnvForegroundIso)
 			m_pCnvForegroundIso = new CCanvasPool(nCompatibleDC, 64, 32, TILE_CACHE_SIZE * 2);
 		if (!m_pCnvAlphaMaskIso)
@@ -403,16 +400,14 @@ CTile::CTile(CONST INT nCompatibleDC, CONST BOOL bIsometric):
 		m_nMaskIdxIso = m_pCnvMaskMaskIso->getFree();
 
 	}
-
 	else
 	{
-
 		if (!m_pCnvForeground)
-			m_pCnvForeground = new CCanvasPool( nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2 );
+			m_pCnvForeground = new CCanvasPool(nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2 );
 		if (!m_pCnvAlphaMask)
-			m_pCnvAlphaMask = new CCanvasPool( nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2 );
+			m_pCnvAlphaMask = new CCanvasPool(nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2 );
 		if (!m_pCnvMaskMask)
-			m_pCnvMaskMask = new CCanvasPool( nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2 );
+			m_pCnvMaskMask = new CCanvasPool(nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2 );
 
 		m_nFgIdx = m_pCnvForeground->getFree();
 		m_nAlphaIdx = m_pCnvAlphaMask->getFree();
@@ -448,8 +443,6 @@ CTile::~CTile(VOID)
 // Copy Constructor
 //-------------------------------------------------------------------
 CTile::CTile(CONST CTile &rhs):
-
-// Member initialization list
  m_strFilename(rhs.m_strFilename),
  m_bIsTransparent(rhs.m_bIsTransparent),
  m_nDetail(rhs.m_nDetail),
@@ -551,404 +544,132 @@ VOID FAST_CALL CTile::open(CONST std::string strFilename, CONST RGBSHADE rgb, CO
 	if (m_nDetail == 2 || m_nDetail == 4 || m_nDetail == 6) 
 		increaseDetail();
 
-	//now prep the alpha channel...
 	prepAlpha();
-
-	//New! createShading receives nSetType.
-	createShading(m_nCompatibleDC, rgb, nShadeType, nSetType);
+	createShading(rgb, nShadeType, nSetType);
 }
 
-///////////////////////////////////////////////////////
+//-------------------------------------------------------------------
 // CTile::createShading
 //
-// Action: create offscreen canvas for the tile and
-//         prep it with the proper shading...
+// Action: Apply shading and draw to private canvas. Process isometric tiles.
 //
-// Params: vShadeList - list of shadings
-//         nShadeType = type of shading used.
-//
-// Returns: 
+// Params: RGBSHADE rgb:	additional shading to apply.
+//		   INT nShadeType:	shading method (SHADE_UNIFORM).
+//		   INT nSetType:	tileset type (for isometrics).
 //
 // Called by: CTile::open only.
-//
-//=====================================================
-// Edited: Delano 15/06/04 for 3.0.4
-//		   Added support for new isometric tilesets.
-//
-//   Added new parameter, nSetType passed from OpenTile.
-//   nSetType = ISOTYPE for .iso, TSTTYPE else.
-//
-//   This is where the tile is prepared and written to 
-//   the gdi.
-//   This (the CTile class) handles tile drawing for 
-//   trans3 and the board editor. Tileset browsing is
-//   handled by tkpluglocalfns.h and preview boxes by
-//   toolkit3.exe itself.
-//
-//   This function is only called upon first loading the
-//   tile so there isn't a danger of the tile being 
-//   "mistreated" if it's found in the cache since this
-//   routine won't be called.
-//
-//   There was also a bug where perfectly black tiles 
-//   were drawn transparently on isometric boards in 
-//   trans3 (but not the board editor or normal boards).
-//=====================================================
-///////////////////////////////////////////////////////
-
-VOID FAST_CALL CTile::createShading(CONST INT hdc, CONST RGBSHADE rgb, CONST INT nShadeType, CONST INT nSetType)
+//-------------------------------------------------------------------
+VOID FAST_CALL CTile::createShading(
+	CONST RGBSHADE rgb, 
+	CONST INT nShadeType, 
+	CONST INT nSetType)
 {
+	// Local copy of the tile.
+	LONG pnTile[32 * 32];
+	INT x = 0, y = 0;
 
-	//now shade...
-	INT pnTile[32][32];						//Scaled tile in memory.
-
-	// Apply the shading to the tile that is required.
+	// "Shade" the tile.
 	switch (nShadeType)
 	{
 		case SHADE_UNIFORM:
 		{
-
-			// Don't need an isometric version of this since we're
-			// using the same arrays. Added else code though.
-
-			for (INT x = 0; x < 32; x++)
+			for (x = 0; x != 32; ++x)
 			{
-				for (INT y = 0; y < 32; y++)
+				for (y = 0; y != 32; ++y)
 				{
 					if (m_pnAlphaChannel[x][y] != 0)
 					{
-						//If not transparent pixel.
-						INT r = util::red(m_pnTile[x][y]) + rgb.r;
-						INT g = util::green(m_pnTile[x][y]) + rgb.g;
-						INT b = util::blue(m_pnTile[x][y]) + rgb.b;
-						pnTile[x][y] = util::rgb(r, g, b);
+						// If not a transparent pixel.
+						CONST INT r = util::red(m_pnTile[x][y]) + rgb.r,
+								  g = util::green(m_pnTile[x][y]) + rgb.g,
+								  b = util::blue(m_pnTile[x][y]) + rgb.b;
+						INT color = util::rgb(r, g, b);
+
+						// Pure white/black alterations...
+						if (color == RGB(255, 255, 255)) color = RGB(245, 245, 245);
+						if (color == 0) color = RGB(10, 10, 10);
+						
+						// Inverted axes for SetPixels().
+						pnTile[y * 32 + x] = color;
 					}
 					else
 					{
-						//Added: Set the element to transparent.
-						pnTile[x][y] = -1;
+						pnTile[y * 32 + x] = TRANSP_COLOR;
 					}
-				}
-			}
+				} // for (y)
+			} // for (x)
+		} break;
+	} // switch (nShadeType)
 
-		} break;	// SHADE_UNIFORM
-	}	// Close switch(nShadeType)
-
-
-	//now that it's shaded, draw this onto our offscreen buffer...
+	// Draw to buffer.
 	if (!m_bIsometric)
 	{
-		//do 2d tiles...
-		LONG fgPixels[32*32];
-		INT arrayPos = 0;
-
-		//m_pCnvForeground->Lock();
-		for (INT yy = 0; yy<32; yy++)
-		{
-			for (INT xx = 0; xx<32; xx++)
-			{
-				if (m_pnAlphaChannel[xx][yy] == 0)
-				{
-					//m_pCnvForeground->SetPixel(xx, yy, 0, m_nFgIdx);
-					fgPixels[arrayPos] = 0;
-				}
-				else
-				{
-					if (pnTile[xx][yy] == RGB(255, 255, 255))
-					{
-						//m_pCnvForeground->SetPixel(xx, yy, RGB(245, 245, 245), m_nFgIdx);
-						fgPixels[arrayPos] = RGB(245, 245, 245);
-					}
-					else if ( pnTile[xx][yy] == 0 ) 
-					{
-						fgPixels[arrayPos] = RGB(10, 10, 10);
-					}
-					else
-					{
-						//m_pCnvForeground->SetPixel(xx, yy, pnTile[xx][yy], m_nFgIdx);
-						fgPixels[arrayPos] = pnTile[xx][yy];
-					}
-				}
-				arrayPos++;
-			}
-		} // Close for(yy)
-
-
-		//set those pixels...
-		m_pCnvForeground->SetPixels( fgPixels, 0, 0, 32, 32, m_nFgIdx );
-		//m_pCnvForeground->Unlock();
-
+		m_pCnvForeground->SetPixels(pnTile, 0, 0, 32, 32, m_nFgIdx);
 	}
-	else	// if(!m_bIsometric)
+	else
 	{
+		LONG isometricTile[64 * 32];
+		INT xi = 0, yi = 0, i = 0;
+		memset(isometricTile, 0, sizeof(isometricTile));
 
-		//==================================
-		// New isometric tiles start here.
-		INT smalltile[64][32];	// These were declared further down and are used
-		INT x, y;				// by both processes.
-
-		// Set up the count for the tile. Note that all arrays here run from
-		// 0 to 31 whereas in tkpluglocalfns.h they run from 1 o 32.
-		INT xCount = 0, yCount = 0;
-
-		// Value passed in from opentile.
 		if (nSetType == ISOTYPE)
 		{
-			for (x = 0; x < 64; x++)
+			for (x = 0; x != 64; ++x)
 			{
-				for (y = 0; y < 32; y++)
+				for (y = 0; y != 32; ++y)
 				{
-
-					//Loop over isoMaskBmp and insert the tile data INTo the 
-					//black (transparent) pixels.
-					if (isoMaskCTile[x][y] == 0) //Black pixel.
+					// Loop over the mask and insert the tile data into the 
+					// transparent pixels.
+					if (isoMaskCTile[x][y] == 0)
 					{
-						smalltile[x][y] = pnTile[xCount][yCount];
+						isometricTile[x * 32 + y] = pnTile[xi * 32 + yi];
 
-						// Increment the entry in pnTile;
-						yCount++;
-						if (yCount >= 32)
+						// Increment the entry in pnTile.
+						if (++yi == 32)
 						{
-							xCount++;
-							yCount = 0;
+							++xi;
+							yi = 0;
 						}
 					}
 					else
 					{
-						smalltile[x][y] = -1; //Transparent
+						isometricTile[x * 32 + y] = TRANSP_COLOR;
 					}
-
-
-				} // Close for(y)
-			} // Close for(x)
-
+				}
+			} // for(x)
 		}
-		else // if(nSetType == ISOTYPE)
+		else
 		{ 
-			// End new isometric tiles. Further fixes below though!
-			//=======================================================
+			// Rotate 32x32 to 64x32.
+			toIsometric(isometricTile, pnTile);
+		}
 
-			//do isometric tile...
-			INT nQuality = 3;
-			INT isotile[128][64];
-			// INT x, y;						// This declaration has been moved.
-
-			// Initialize the tile array.
-			for (x = 0; x < 128; x++)
-			{
-				for (y = 0; y < 64; y++)
-				{
-					isotile[x][y] = -1;
-				}
-			}
-
-			for (INT tx = 0; tx < 32; tx++)
-			{
-				for (INT ty = 0; ty < 32; ty++)
-				{
-					if (m_pnAlphaChannel[tx][ty])
-					{
-						x = 62 + tx * 2 - ty * 2;
-						y = tx + ty;
-						INT crColor = pnTile[tx][ty];
-						INT crColor2 = pnTile[tx+1][ty];
-						if ((m_pnAlphaChannel[tx][ty] != -1) && (m_pnAlphaChannel[tx+1][ty] != -1) && (nQuality == 1 || nQuality == 2))
-						{
-							INT r1 = util::red(crColor);
-							INT g1 = util::green(crColor);
-							INT b1 = util::blue(crColor);
-
-							INT r2 = util::red(crColor2);
-							INT g2 = util::green(crColor2);
-							INT b2 = util::blue(crColor2);
-
-							INT ra = (r2 - r1) / 4;
-							INT ga = (g2 - g1) / 4;
-							INT ba = (b2 - b1) / 4;
-
-							for (INT tempX = x; tempX < x + 4; tempX++)
-							{
-								INT col = util::rgb(r1, g1, b1);
-								isotile[tempX][y] = col;
-
-								r1 += ra;
-								g1 += ga;
-								b1 += ba;
-							}
-						}
-						else
-						{
-							for (INT tempX = x; tempX < x + 4; tempX++)
-							{
-								isotile[tempX][y] = crColor;
-							}
-						}
-					}
-				}
-			} // Close for(tx)
-    
-			if (nQuality == 3)
-			{
-				//first shrink on x...
-			    INT medTile[64][64];
-			    INT xx = 0;
-					INT yy = 0;
-			    for(x = 0; x < 128; x+=2)
-				{
-					for (y=0; y<64; y++)
-					{
-						INT c1 = isotile[x][y];
-						INT c2 = isotile[x+1][y];
-
-						if (c1 != -1 && c2 != -1)
-						{
-							INT r1 = util::red(c1);
-							INT g1 = util::green(c1);
-							INT b1 = util::blue(c1);
-
-							INT r2 = util::red(c2);
-							INT g2 = util::green(c2);
-							INT b2 = util::blue(c2);
-
-							INT rr = (r1 + r2) / 2;
-							INT gg = (g1 + g2) / 2;
-							INT bb = (b1 + b2) / 2;
-							medTile[xx][yy] = util::rgb(rr, gg, bb);
-						}
-						else
-						{
-							medTile[xx][yy] = c1;
-						}
-						yy++;
-					}
-					xx++;
-					yy=0;
-				} // Close for(x)
-  
-				//now shrink on y...
-				xx = yy = 0;
-				for(x = 0; x<64; x++)
-				{
-					for(y = 0; y < 64; y+= 2)
-					{
-						INT c1 = medTile[x][y];
-						INT c2 = medTile[x][y + 1];
-          
-						if(c1 != -1 && c2 != -1)
-						{
-							INT r1 = util::red(c1);
-							INT g1 = util::green(c1);
-							INT b1 = util::blue(c1);
-
-							INT r2 = util::red(c2);
-							INT g2 = util::green(c2);
-							INT b2 = util::blue(c2);
-
-							INT rr = (r1 + r2) / 2;
-							INT gg = (g1 + g2) / 2;
-							INT bb = (b1 + b2) / 2;
-							smalltile[xx][yy] = util::rgb(rr, gg, bb);
-						}
-						else
-						{
-							smalltile[xx][yy] = c1;
-						}
-						yy++;
-					}
-					xx++;
-					yy = 0;
-				}	// Close for(x)
-
-			}
-			else // if (nQuality == 3)
-			{
-
-				INT xx = 0;
-				INT yy = 0;
-				for (x= 0; x < 128; x+=2)
-				{
-					for (y=0; y<64; y+=2)
-					{
-						INT c1 = isotile[x][y];
-						INT c2 = isotile[x+1][y];
-						if (c1 != -1 && c2 != -1 && nQuality == 2)
-						{
-							INT r1 = util::red(c1);
-							INT g1 = util::green(c1);
-							INT b1 = util::blue(c1);
-
-							INT r2 = util::red(c2);
-							INT g2 = util::green(c2);
-							INT b2 = util::blue(c2);
-
-							INT rr = (r1 + r2) / 2;
-							INT gg = (g1 + g2) / 2;
-							INT bb = (b1 + b2) / 2;
-							smalltile[xx][yy] = util::rgb(rr, gg, bb);
-						}
-						else
-						{
-							smalltile[xx][yy] = c1;
-						}
-						yy++;
-					}
-					xx++;
-					yy=0;
-				} // Close for(x)
-
-			} // Close if(nQuality == 3)
-
-
-		} // Close if(nSetType == ISOTYPE)
-
-
-		// Now, draw the tile, alpha and mask.
-		// Need to change the pure black and white pixels!
-
-		LONG fg[64*32];
-		LONG alpha[64*32];
-		LONG mask[64*32];
-		INT arrayPos = 0;
-
-		//now draw...
-		for (INT yy = 0; yy < 32; yy++)
+		// Now draw the tile, alpha and mask.
+		LONG fg[64 * 32], alpha[64 * 32], mask[64 * 32];
+		for (y = 0; y != 32; ++y)
 		{
-			for (INT xx = 0; xx < 64; xx++)
+			for (x = 0; x != 64; ++x, ++i)
 			{
-				if (smalltile[xx][yy] == -1)
+				if(!isoMaskCTile[x][y])
 				{
-					// If transparent, set the alpha to white.
-
-					fg[arrayPos] = 0;
-					alpha[arrayPos] = RGB(255, 255, 255);
-					mask[arrayPos] = 0;
+					// Pure black = transparent in SRCPAINT.
+					fg[i] = 0;
+					alpha[i] = RGB(255, 255, 255);
+					mask[i] = 0;
 				}
 				else
 				{
-					// Solid. Alter for pure black/white pixels.
-					// Added by Delano.
-					if (smalltile[xx][yy] == RGB(255, 255, 255))
-					{
-						smalltile[xx][yy] = RGB(245, 245, 245);		// Off-white.
-					}
-					else if ( smalltile[xx][yy] == RGB(0, 0, 0))
-					{
-						smalltile[xx][yy] = RGB(10, 10, 10);		// Off-black.
-					}
-
-					fg[arrayPos] = smalltile[xx][yy];
-					alpha[arrayPos] = 0;
-					mask[arrayPos] = RGB(255,255,255);
+					fg[i] = isometricTile[x * 32 + y];
+					alpha[i] = 0;
+					mask[i] = RGB(255, 255, 255);
 				}
-				arrayPos++;
 			}
-		} // Close for(yy)
+		}
+		m_pCnvForegroundIso->SetPixels(fg, 0, 0, 64, 32, m_nFgIdxIso);
+		m_pCnvAlphaMaskIso->SetPixels(alpha, 0, 0, 64, 32, m_nAlphaIdxIso);
+		m_pCnvMaskMaskIso->SetPixels(mask, 0, 0, 64, 32, m_nMaskIdxIso);
 
-		m_pCnvForegroundIso->SetPixels( fg, 0, 0, 64, 32, m_nFgIdxIso );
-		m_pCnvAlphaMaskIso->SetPixels( alpha, 0, 0, 64, 32, m_nAlphaIdxIso );
-		m_pCnvMaskMaskIso->SetPixels( mask, 0, 0, 64, 32, m_nMaskIdxIso );
-
-	} // Close if(!m_bIsometric)
+	} // if(!m_bIsometric)
 }
 
 /////////////////////////////////////////////////
@@ -992,21 +713,26 @@ VOID FAST_CALL CTile::prepAlpha(VOID) /* Use VOID for paramless functions */
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID FAST_CALL CTile::gdiDraw(CONST INT hdc, CONST INT x, CONST INT y)
+VOID FAST_CALL CTile::gdiDraw(CONST HDC hdc, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
+		//m_pCnvForegroundIso->Blt(hdc, x, y, m_nFgIdxIso, SRCCOPY);
+		
 		//blit the alpha channel down...
-		m_pCnvAlphaMaskIso->Blt( ( HDC ) hdc, x, y, m_nAlphaIdxIso, SRCAND );
+		m_pCnvAlphaMaskIso->Blt(hdc, x, y, m_nAlphaIdxIso, SRCAND);
 		//blit the foreground down...
-		m_pCnvForegroundIso->Blt( ( HDC ) hdc, x, y, m_nFgIdxIso, SRCPAINT );
+		m_pCnvForegroundIso->Blt(hdc, x, y, m_nFgIdxIso, SRCPAINT);
 	}
 	else
 	{
+		// SRCCOPY with TRANSP_COLOR is sufficient for 32x32.
+		m_pCnvForeground->Blt(hdc, x, y, m_nFgIdx, SRCCOPY );
+
 		//blit the alpha channel down...
-		m_pCnvAlphaMask->Blt( ( HDC ) hdc, x, y, m_nAlphaIdx, SRCAND );
+		//m_pCnvAlphaMask->Blt(hdc, x, y, m_nAlphaIdx, SRCAND);
 		//blit the foreground down...
-		m_pCnvForeground->Blt( ( HDC ) hdc, x, y, m_nFgIdx, SRCPAINT );
+		//m_pCnvForeground->Blt(hdc, x, y, m_nFgIdx, SRCPAINT);
 	}
 }
 
@@ -1025,11 +751,11 @@ VOID FAST_CALL CTile::cnvDraw(CCanvas *pCanvas, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
-		m_pCnvForegroundIso->BltTransparent( pCanvas, x, y, m_nFgIdxIso, 0 );
+		m_pCnvForegroundIso->BltTransparent(pCanvas, x, y, m_nFgIdxIso, 0);
 	}
 	else
 	{
-		m_pCnvForeground->BltTransparent( pCanvas, x, y, m_nFgIdx, 0 );
+		m_pCnvForeground->BltTransparent(pCanvas, x, y, m_nFgIdx, TRANSP_COLOR);
 	}
 }
 
@@ -1067,15 +793,15 @@ VOID FAST_CALL CTile::gdiDrawFG(CONST INT hdc, CONST INT x, CONST INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID FAST_CALL CTile::gdiDrawAlpha(CONST INT hdc, CONST INT x, CONST INT y)
+VOID FAST_CALL CTile::gdiDrawAlpha(CONST HDC hdc, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
-		m_pCnvAlphaMaskIso->Blt( HDC(hdc), x, y, m_nAlphaIdxIso, SRCCOPY );
+		m_pCnvAlphaMaskIso->Blt(hdc, x, y, m_nAlphaIdxIso, SRCCOPY);
 	}
 	else
 	{
-		m_pCnvAlphaMask->Blt( HDC(hdc), x, y, m_nAlphaIdx, SRCCOPY );
+		m_pCnvAlphaMask->Blt(hdc, x, y, m_nAlphaIdx, SRCCOPY);
 	}
 }
 
@@ -1114,19 +840,18 @@ VOID FAST_CALL CTile::cnvDrawAlpha(CCanvas* pCanvas, CONST INT x, CONST INT y)
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID FAST_CALL CTile::gdiRenderAlpha(INT hdc, CONST INT x, CONST INT y)
+VOID FAST_CALL CTile::gdiRenderAlpha(CONST HDC hdc, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
-		m_pCnvAlphaMaskIso->Blt( HDC(hdc), x, y, m_nAlphaIdxIso, SRCAND );
-		m_pCnvMaskMaskIso->Blt( HDC(hdc), x, y, m_nMaskIdxIso, SRCAND );
+		m_pCnvAlphaMaskIso->Blt(hdc, x, y, m_nAlphaIdxIso, SRCAND);
+		m_pCnvMaskMaskIso->Blt(hdc, x, y, m_nMaskIdxIso, SRCAND);
 	}
 	else
 	{
-		m_pCnvAlphaMask->Blt( HDC(hdc), x, y, m_nAlphaIdx, SRCAND );
-		m_pCnvMaskMask->Blt( HDC(hdc), x, y, m_nMaskIdx, SRCAND );
+		m_pCnvAlphaMask->Blt(hdc, x, y, m_nAlphaIdx, SRCAND);
+		m_pCnvMaskMask->Blt(hdc, x, y, m_nMaskIdx, SRCAND);
 	}
-
 }
 
 /////////////////////////////////////////////////
@@ -1709,7 +1434,7 @@ UINT FAST_CALL CTile::getDOSColor(CONST UCHAR cColor)
 //-------------------------------------------------------------------
 // Kill all canvases
 //-------------------------------------------------------------------
-VOID FAST_CALL CTile::KillPools(VOID) /* Use VOID for paramless functions */
+VOID FAST_CALL CTile::KillPools(VOID)
 {
 	if ( m_pCnvForeground )
 	{
@@ -1744,96 +1469,241 @@ VOID FAST_CALL CTile::KillPools(VOID) /* Use VOID for paramless functions */
 	}
 }
 
-
-//==============================================
-//
-// New function: Added by Delano for 3.0.4
-//
-// Creates isometric mask for .iso tiles.
-// Uses a shortened version of the rotation code
-//
-//==============================================
-
-VOID FAST_CALL CTile::createIsometricMask(VOID) /* Use VOID for paramless functions */
+//-------------------------------------------------------------------
+// Create an isometric mask into CTile::isoMaskCTile
+//-------------------------------------------------------------------
+VOID FAST_CALL CTile::createIsometricMask(VOID)
 {
+	memset(isoMaskCTile, 0, sizeof(isoMaskCTile));
 
-	INT nQuality = 3;
-	INT isotile[128][64];
-	INT x, y;
-
-	// Take a black tile and pass it through the rotation routine.
-
-	INT blackTile[32][32];
-
-	for (x = 0; x < 32; x++)
+	for (INT x = 0; x != 32; ++x)
 	{
-		for (y = 0; y < 32; y++) blackTile[x][y] = 0;
-	}
-
-	// Initialize the mask.
-	for (x = 0; x < 64; x++)
-	{
-		for (y = 0; y < 32; y++) isoMaskCTile[x][y] = -1;
-	}
-
-	for (x = 0; x < 128; x++)
-	{
-		for (y = 0; y < 64; y++) isotile[x][y] = -1;
-	}
-
-	for (INT tx = 0; tx < 32; tx++)
-	{
-		for (INT ty = 0; ty < 32; ty++)
+		for (INT y = 0; y != 16; ++y)
 		{
+			// Conditions carefully chosen. Note y-axis is inverted!
+			// Top left.
+			isoMaskCTile[x][y] = (2 * y < 32 - (x + 1) ? 0 : 1);
+			// Bottom right.
+			isoMaskCTile[x + 32][y + 16] = (2 * y >= 32 - (x + 1) ? 0 : 1);
+			// Top right.
+			isoMaskCTile[x + 32][y] = (2 * y <  x ? 0 : 1);
+			// Bottom left.
+			isoMaskCTile[x][y + 16] = (2 * y >= x ? 0 : 1);
+		}
+	}
+}
 
+//-------------------------------------------------------------------
+// Rotate a src 32x32 tile into a dest 64x32 tile
+//-------------------------------------------------------------------
+VOID CTile::toIsometric(LONG *dest, CONST LONG *src)
+{
+	INT bgTile[128][64];
+	INT x = 0, y = 0, MASK = -1;
+	memset(bgTile, MASK, sizeof(bgTile));
+
+	for (INT tx = 0; tx != 32; ++tx)
+	{
+		for (INT ty = 0; ty != 32; ++ty)
+		{
 			x = 62 + tx * 2 - ty * 2;
 			y = tx + ty;
-			INT crColor = blackTile[tx][ty];
 
-			for (INT tempX = x; tempX < x + 4; tempX++)
+			for (INT i = x; i != x + 4; ++i)
 			{
-				isotile[tempX][y] = crColor;
+				// if (m_pnAlphaChannel[tx][ty])
+				{
+					// Source is inverted for SetPixels()
+					bgTile[i][y] = src[ty * 32 + tx];
+				}
 			}
-
 		}
-	} // next tx
-  
-	//now shrink the iso tile...
-	INT smalltile[64][32];
-
-	//first shrink on x...
-	INT medTile[64][64];
-	INT xx = 0, yy = 0;
-	for (x = 0; x < 128; x += 2)
-	{
-		for (y = 0; y < 64; y++)
-		{
-			INT c1 = isotile[x][y];
-
-			medTile[xx][yy] = c1;
-
-			yy++;
-		}
-		xx++;
-		yy = 0;
 	}
 
-	//now shrink on y...
-	xx = yy = 0;
-	for (x = 0; x<64; x++)
+	// Shrink on x
+	INT mdTile[64][64];
+	memset(mdTile, MASK, sizeof(mdTile));
+
+	for(x = 0; x != 64; ++x)
 	{
-		for (y = 0; y < 64; y+= 2)
+		for (y = 0; y != 64; ++y)
 		{
-			INT c1 = medTile[x][y];
-    		smalltile[xx][yy] = c1;
-			yy++;
+			CONST INT c1 = bgTile[2 * x][y], c2 = bgTile[2 * x + 1][y];
+
+			if (c1 != MASK && c2 != MASK)
+			{
+				CONST INT r = (util::red(c1) + util::red(c2)) / 2,
+						  g = (util::green(c1) + util::green(c2)) / 2,
+						  b = (util::blue(c1) + util::blue(c2)) / 2;
+				mdTile[x][y] = util::rgb(r, g, b);
+			}
+			else
+			{
+				mdTile[x][y] = c1;
+			}
 		}
-		xx++;
-		yy = 0;
 	}
 
-	// Colin says: copy the array over
-	memcpy(isoMaskCTile, smalltile, sizeof(smalltile));
+	// Shrink on y
+	for(x = 0; x != 64; ++x)
+	{
+		for(y = 0; y != 32; ++y)
+		{
+			CONST INT c1 = mdTile[x][2 * y], c2 = mdTile[x][2 * y + 1];
 
-	return;
+			if(c1 != MASK && c2 != MASK)
+			{
+				CONST INT r = (util::red(c1) + util::red(c2)) / 2,
+						  g = (util::green(c1) + util::green(c2)) / 2,
+						  b = (util::blue(c1) + util::blue(c2)) / 2;
+				dest[x * 32 + y] = util::rgb(r, g, b);
+			}
+			else
+			{
+				dest[x * 32 + y] = c1;
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------
+// Draw a tile to a board by board coordinates.
+// CNV and HDC versions - cnv blts by DirectX, hdc by GDI.
+//
+// fileName		- tile to draw, including project path.
+// x, y			- tile co-ordinates to draw.
+// r, g, b		- shade.
+// cnv			- destination canvas.
+// offX, offY	- canvas pixel offset.
+// coordType	- define handling of tile co-ordinates.
+// eMaskValue	- see tagTileMaskEnum
+// brdSizeX		- board width in tiles, for ISO_ROTATED boards.
+// nIsoEvenOdd	- does the canvas corner occur at a tile centre or corner?
+//-------------------------------------------------------------------
+BOOL CTile::drawByBoardCoord(
+	CONST STRING filename, 
+	INT x, INT y, 
+	CONST INT r, CONST INT g, CONST INT b, 
+	CCanvas *cnv,
+	CONST INT eMaskValue,
+	CONST INT pxOffsetX, CONST INT pxOffsetY, 
+	CONST COORD_TYPE coordType,
+	CONST INT brdSizeX,
+	CONST INT nIsoEvenOdd)
+{
+	CONST BOOL bIsometric = coordType & (ISO_STACKED | ISO_ROTATED);
+	coords::tileToPixel(x, y, coordType, FALSE, brdSizeX);
+	if (bIsometric)
+	{
+		// tileToPixel() reports the centre of the tile.
+		x -= 32;
+		y -= 16;
+	}
+	x += pxOffsetX;
+	y += pxOffsetY;
+
+	CONST RGBSHADE rgb = {r, g, b};
+
+	CTile *CONST pTile = findCacheMatch(filename, eMaskValue, rgb, bIsometric, NULL);
+
+	switch (eMaskValue)
+	{
+		case (TM_COPY):
+			pTile->cnvDrawAlpha(cnv, x, y);
+			break;
+		case (TM_AND):
+			pTile->cnvRenderAlpha(cnv, x, y);
+			break;
+		default:
+			pTile->cnvDraw(cnv, x, y);
+	}
+	return TRUE;
+}
+
+//-------------------------------------------------------------------
+// HDC equivalent - transparent blt by gdi.
+//-------------------------------------------------------------------
+BOOL CTile::drawByBoardCoordHdc(
+	CONST STRING filename, 
+	INT x, INT y, 
+	CONST INT r, CONST INT g, CONST INT b, 
+	CONST HDC hdc,
+	CONST INT eMaskValue,
+	CONST INT pxOffsetX, CONST INT pxOffsetY, 
+	CONST COORD_TYPE coordType,
+	CONST INT brdSizeX,
+	CONST INT nIsoEvenOdd)
+{
+	CONST BOOL bIsometric = coordType & (ISO_STACKED | ISO_ROTATED);
+	coords::tileToPixel(x, y, coordType, FALSE, brdSizeX);
+	if (bIsometric)
+	{
+		// tileToPixel() reports the centre of the tile.
+		x -= 32;
+		y -= 16;
+	}
+	x += pxOffsetX;
+	y += pxOffsetY;
+
+	CONST RGBSHADE rgb = {r, g, b};
+
+	CTile *CONST pTile = findCacheMatch(filename, eMaskValue, rgb, bIsometric, hdc);
+	if (pTile)
+	{
+		switch (eMaskValue)
+		{
+			case (TM_COPY):
+				pTile->gdiDrawAlpha(hdc, x, y);
+				break;
+			case (TM_AND):
+				pTile->gdiRenderAlpha(hdc, x, y);
+				break;
+			default:
+				pTile->gdiDraw(hdc, x, y);
+		}
+	}
+	return TRUE;
+}
+
+//-------------------------------------------------------------------
+// Find a tile match in g_tiles by name. If not found, create new.
+//-------------------------------------------------------------------
+CTile *CTile::findCacheMatch(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb, CONST BOOL bIsometric, CONST HDC hdcCompat)
+{
+	if (g_tiles.size() > TILE_CACHE_SIZE) clearTileCache();
+
+	// Check if this tile has already been drawn.
+	for (std::vector<CTile*>::iterator i = g_tiles.begin(); i != g_tiles.end(); ++i)
+	{
+		CONST STRING strVect = (*i)->getFilename();
+		if (strVect.compare(filename) == 0)
+		{
+			if (eMask || (*i)->isShadedAs(rgb, SHADE_UNIFORM))
+			{
+				// Check isometrics match.
+				if (bIsometric == (*i)->isIsometric())
+				{
+					return *i;
+				}
+			}
+		}
+	}
+
+	// Load the tile.
+	CTile *CONST pTile = new CTile(INT(hdcCompat), filename, rgb, SHADE_UNIFORM, bIsometric);
+
+	// Push it into the vector.
+	g_tiles.push_back(pTile);
+
+	return pTile;
+}
+
+
+VOID CTile::clearTileCache(VOID)
+{
+	for (int i = 0; i < g_tiles.size(); ++i)
+	{
+		delete g_tiles[i];
+	}
+	g_tiles.clear();
 }
