@@ -10,6 +10,7 @@
 /*
  * Includes 
  */
+#include "../../../tkCommon/movement/coords.h"
 #include "../../../tkCommon/strings.h"
 #include "../movement.h"
 #include "../../common/sprite.h"

@@ -35,7 +35,6 @@
 CDirectDraw *g_pDirectDraw = NULL;			// Access to DirectDraw.
 HWND g_hHostWnd = NULL;						// Handle to the host window.
 int g_resX = 0, g_resY = 0;					// Size of screen.
-std::vector<CTile *> g_tiles;				// Cache of tiles.
 
 CCanvas *g_cnvRpgCode = NULL;				// RPGCode canvas.
 CCanvas *g_cnvMessageWindow = NULL;			// RPGCode message window.
@@ -72,210 +71,6 @@ void renderRpgCodeScreen()
 }
 
 /*
- * Draw a tile. (GFXDrawTileCNV)
- *
- * fileName		- tile to draw.
- * x, y			- tile co-ordinates to draw.
- * r, g, b		- shade.
- * cnv			- destination canvas.
- * offX, offY	- canvas offset.
- * bIsometric	- draw isometrically?
- * nIsoEvenOdd	- iso is even or odd?
- */
-bool drawTile(const STRING fileName, 
-			  const int x, const int y, 
-			  const int r, const int g, const int b, 
-			  CCanvas *cnv, 
-			  const int offX, const int offY, 
-			  const BOOL bIsometric, 
-			  const int nIsoEvenOdd)
-{
-
-	extern STRING g_projectPath;
-
-	int xx = 0, yy = 0;
-
-	if (!bIsometric)
-	{
-		xx = x * 32 - 32;
-		yy = y * 32 - 32;
-	}
-	else
-	{
-		xx = x * 64 - (nIsoEvenOdd == (y % 2) ? 64 : 96);
-		yy = y * 16 - 32;
-	}
-
-	xx += offX;
-	yy += offY;
-
-/*
-	// See if we need to clear the tile cache
-	if (gvTiles.size() > TILE_CACHE_SIZE)
-		GFXClearTileCache();
-*/
-	const RGBSHADE rgb = {r, g, b};
-	const STRING strFileName = g_projectPath + TILE_PATH + fileName;
-
-	for (std::vector<CTile *>::iterator i = g_tiles.begin(); i != g_tiles.end(); ++i)
-	{
-		const STRING strVect = (*i)->getFilename();
-		if (strVect.compare(strFileName) == 0)
-		{
-			if ((*i)->isShadedAs(rgb, SHADE_UNIFORM))
-			{
-				if (bIsometric == (*i)->isIsometric())
-				{
-					// Found a match.
-					(*i)->cnvDraw(cnv, xx, yy);
-					return true;
-				}
-			}
-		}
-	} // for (i)
-
-	// Load the tile.
-	CTile *const pTile = new CTile(NULL, strFileName, rgb, SHADE_UNIFORM, bIsometric);
-
-	// Push it into the vector.
-	g_tiles.push_back(pTile);
-
-	// Draw the tile.
-	pTile->cnvDraw(cnv, xx, yy);
-	return true;
-}
-
-
-/*
- * Draw a tile mask. (GFXDrawTileMaskCNV)
- *
- * fileName (in) - tile to draw
- * x (in) - board x coordinate to draw at
- * y (in) - board y coordinate to draw at
- * r (in) - red shade
- * g (in) - green shade
- * b (in) - blue shade
- * cnv (in) - destination canvas
- * nDirectBlt - 0: rendered directly (with transparency).
- *				1: blitted.
- * bIsometric (in) - draw isometrically?
- * nIsoEvenOdd (in) - iso is even or odd?
- */
-bool drawTileMask (const STRING fileName, 
-				   const int x, const int y, 
-				   const int r, const int g, const int b, 
-				   CCanvas *cnv,
-				   const int nDirectBlt,
-				   const BOOL bIsometric,
-				   const int nIsoEvenOdd) 
-{
-	extern STRING g_projectPath;
-
-	int xx = 0, yy = 0;
-
-	if (!bIsometric)
-	{
-		xx = x * 32 - 32;
-		yy = y * 32 - 32;
-	}
-	else
-	{
-		if (!nIsoEvenOdd)
-		{
-			if (!(y % 2))
-			{
-				xx = x * 64 - 64;
-				yy = y * 16 - 32;
-			}
-			else
-			{
-				xx = x * 64 - 96;
-				yy = y * 16 - 32;
-			}
-		}
-		else
-		{
-			if (!(y % 2))
-			{
-				xx = x * 64 - 96;
-				yy = y * 16 - 32;
-			}
-			else
-			{
-				xx = x * 64 - 64;
-				yy = y * 16 - 32;
-			}
-		}
-	}
-/*
-TBD: reinstate this in some form!
-	//see if we need to clear the tile cache...
-	if (gvTiles.size() > TILE_CACHE_SIZE)
-		GFXClearTileCache();
-*/
-
-	const RGBSHADE rgb = {r, g, b};
-	const STRING strFileName = g_projectPath + TILE_PATH + fileName;
-
-	// Check if this tile has already been drawn.
-	for (std::vector<CTile*>::iterator i = g_tiles.begin(); i != g_tiles.end(); i++)
-	{
-		const STRING strVect = (*i)->getFilename();
-		if (strVect.compare(strFileName) == 0)
-		{
-			if (bIsometric)
-			{
-				if ((*i)->isIsometric())
-				{
-					// Found a match.
-					if (nDirectBlt)
-					{
-						(*i)->cnvDrawAlpha(cnv, xx, yy);
-					}
-					else
-					{
-						(*i)->cnvRenderAlpha(cnv, xx, yy);
-					}
-					return true;
-				}
-			}
-			else
-			{
-				if (!(*i)->isIsometric())
-				{
-					// Found a match.
-					if (nDirectBlt)
-					{
-						(*i)->cnvDrawAlpha(cnv, xx, yy);
-					}
-					else
-					{
-						(*i)->cnvRenderAlpha(cnv, xx, yy);
-					}
-					return true;
-				}
-			}
-		}
-	} // for (i)
-
-	// Load the tile.
-	CTile *const pTile = new CTile(NULL, strFileName, rgb, SHADE_UNIFORM, bIsometric);
-
-	// Push it into the vector.
-	g_tiles.push_back(pTile);
-
-	if (nDirectBlt)
-	{
-		pTile->cnvDrawAlpha(cnv, xx, yy);
-	}
-	else
-	{
-		pTile->cnvRenderAlpha(cnv, xx, yy);
-	}
-	return true;
-}
-
-/*
  * Draw a tile onto a canvas (CommonTkGfx drawTileCnv)
  */
 bool drawTileCnv(CCanvas *cnv, 
@@ -296,6 +91,7 @@ bool drawTileCnv(CCanvas *cnv,
    
     if (removePath(file).empty()) return false;
     
+	int tileSizeX = 1;		// Width of tbm(or other) in tiles, for ISO_ROTATED.
 	int iso = (bIsometric ? 1 : 0);
 	int isoEO = (isoEvenOdd ? 0 : 1);
 
@@ -323,18 +119,31 @@ bool drawTileCnv(CCanvas *cnv,
         ff = removePath(of);
 		if (!bMask)
 		{
-			drawTile(ff, x, y, r, g, b, cnv, 0, 0, iso, isoEO);
+			CTile::drawByBoardCoord(
+				g_projectPath + TILE_PATH + ff,
+				x, y,
+				r, g, b,
+				cnv,
+				TM_NONE,
+				0, 0,
+				COORD_TYPE(iso),
+				tileSizeX,		// Width of tbm(or other) in tiles, for ISO_ROTATED.
+				isoEO
+			);
 		}
 		else
 		{
-			if (bNonTransparentMask)
-			{
-				drawTileMask(ff, x, y, r, g, b, cnv, 1, iso, isoEO);
-			} 
-			else 
-			{
-				drawTileMask(ff, x, y, r, g, b, cnv, 0, iso, isoEO);
-			}
+			CTile::drawByBoardCoord(
+				g_projectPath + TILE_PATH + ff,
+				x, y,
+				r, g, b,
+				cnv, 
+				bNonTransparentMask ? TM_COPY : TM_AND,
+				0, 0,
+				COORD_TYPE(iso),
+				tileSizeX,		// Width of tbm(or other) in tiles, for ISO_ROTATED.
+				isoEO
+			);
 		}
 //		_chdir (currentDir$);
 
@@ -350,21 +159,34 @@ bool drawTileCnv(CCanvas *cnv,
         }
 //        _chdir(g_projectPath);
         ff = removePath(file);
-        if (!bMask)
+		if (!bMask)
 		{
-            drawTile(ff, x, y, r, g, b, cnv, 0, 0, iso, isoEO);
+			CTile::drawByBoardCoord(
+				g_projectPath + TILE_PATH + ff,
+				x, y,
+				r, g, b,
+				cnv,
+				TM_NONE,
+				0, 0,
+				COORD_TYPE(iso),
+				tileSizeX,		// Width of tbm(or other) in tiles, for ISO_ROTATED.
+				isoEO
+			);
 		}
-        else
+		else
 		{
-            if (bNonTransparentMask)
-			{
-                drawTileMask(ff, x, y, r, g, b, cnv, 1, iso, isoEO);
-            } 
-			else 
-			{
-                drawTileMask(ff, x, y, r, g, b, cnv, 0, iso, isoEO);
-			}
-        }
+			CTile::drawByBoardCoord(
+				g_projectPath + TILE_PATH + ff,
+				x, y,
+				r, g, b,
+				cnv, 
+				bNonTransparentMask ? TM_COPY : TM_AND,
+				0, 0,
+				COORD_TYPE(iso),
+				tileSizeX,		// Width of tbm(or other) in tiles, for ISO_ROTATED.
+				isoEO
+			);
+		}
 //        _chdir(WORKING_DIRECTOY);
     }
 	return true;
@@ -831,11 +653,7 @@ void initGraphics()
  */
 void clearTileCache()
 {
-	for (std::vector<CTile *>::iterator i = g_tiles.begin(); i != g_tiles.end(); ++i)
-	{
-		delete (*i);
-	}
-	g_tiles.clear();
+	CTile::clearTileCache();
 	clearAnmCache();
 }
 

@@ -35,10 +35,11 @@
 #include "../input/input.h"
 #include "../misc/misc.h"
 #include "../movement/CPlayer/CPlayer.h"
-#include "../movement/locate.h"
-#include "../images/FreeImage.h"
+#include "../movement/CItem/CItem.h"
 #include "../fight/fight.h"
 #include "../audio/CAudioSegment.h"
+#include "../../tkCommon/images/FreeImage.h"
+#include "../../tkCommon/movement/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
 #include "../../tkCommon/strings.h"
@@ -820,7 +821,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			{
 				const SPRITE_POSITION p = pPlayer->getPosition();
 				int x = p.x, y = p.y;
-				tileCoordinate(x, y, g_pBoard->coordType);
+				coords::pixelToTile(x, y, g_pBoard->coordType, g_pBoard->bSizeX);
 				*pRet = (infoCode == GEN_CURX ? x : y);
 			} break;
 		case GEN_CURLAYER:
@@ -1046,7 +1047,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 				// Get current x and y in board coordinates.
 				const SPRITE_POSITION p = pPlayer->getPosition();
 				int x = p.x, y = p.y;
-				tileCoordinate(x, y, g_pBoard->coordType);
+				coords::pixelToTile(x, y, g_pBoard->coordType, g_pBoard->bSizeX);
 
 				// Pass board coordinates to CSprite to convert back to pixel.
 				(infoCode == GEN_CURX ? x = newVal : y = newVal);
@@ -1630,7 +1631,7 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			{
 				DB_POINT pt = pPrg->vBase[0];
 				int x = int(pt.x), y = int(pt.y);
-				tileCoordinate(x, y, g_pBoard->coordType);
+				coords::pixelToTile(x, y, g_pBoard->coordType, g_pBoard->bSizeX);
 				*pRet = ((infoCode == BRD_PRG_X) ? x : y);
 			}
 			else
@@ -1857,9 +1858,9 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			{
 				DB_POINT pt = pPrg->vBase[0];
 				int x = int(pt.x), y = int(pt.y);
-				tileCoordinate(x, y, g_pBoard->coordType);
+				coords::pixelToTile(x, y, g_pBoard->coordType, g_pBoard->bSizeX);
 				(infoCode == BRD_PRG_X ? x = nValue : y = nValue);
-				pixelCoordinate(x, y, g_pBoard->coordType, false);
+				coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 				pPrg->vBase.move(x, y);
 			} break;
 		case BRD_PRG_LAYER:

@@ -16,6 +16,7 @@
 #include "../plugins/plugins.h"
 #include "../plugins/constants.h"
 #include "../movement/CPlayer/CPlayer.h"
+#include "../rpgcode/CProgram.h"
 
 /*
  * Globals.

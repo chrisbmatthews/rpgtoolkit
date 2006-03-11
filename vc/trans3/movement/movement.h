@@ -81,17 +81,6 @@ enum GAME_STATE
 #define STAIRS8 18
 
 /*
- * Co-ordinate system types (board member).
- */
-typedef enum tagCoordType
-{
-	TILE_NORMAL = 0,
-	ISO_STACKED = 1,						// (Old) staggered column method.
-	ISO_ROTATED = 2,						// x-y axes rotated by 60 / 30 degrees.
-	PX_ABSOLUTE = 4							// Absolute co-ordinates (iso and 2D).
-} COORD_TYPE;
-
-/*
  * Idle information for sprites.
  */
 typedef struct tagIdleInfo
@@ -137,6 +126,8 @@ typedef struct tagSpritePosition
 
 } SPRITE_POSITION;
 
+
+
 /*
  * A pending movement.
  */
@@ -149,6 +140,7 @@ typedef struct tagPendingMovement
     double yTarg;
     int lTarg;
 	std::deque<DB_POINT> path;
+
 
 	tagPendingMovement(void):
 		xOrig(0), yOrig(0), lOrig(1),

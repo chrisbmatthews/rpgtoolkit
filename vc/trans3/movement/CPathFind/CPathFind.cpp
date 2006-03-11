@@ -17,7 +17,7 @@
 #include "CPathFind.h"
 #include "../CSprite/CSprite.h"
 #include "../../common/board.h"
-#include "../locate.h"
+#include "../../../tkCommon/movement/coords.h"
 
 /*
  * Defines
@@ -452,8 +452,8 @@ void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r, const void *
 		// A solution is to offset the generated path points
 		// by half the base height to centre the base point.
 
-		roundToTile(goal.x, goal.y, isIso, false);
-		roundToTile(start.x, start.y, isIso, false);
+		coords::roundToTile(goal.x, goal.y, isIso, false);
+		coords::roundToTile(start.x, start.y, isIso, false);
 
 		if (!isIso)
 		{

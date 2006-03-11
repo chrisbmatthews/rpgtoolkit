@@ -11,6 +11,7 @@
 /*
  * Inclusions.
  */
+#include "../../tkCommon/movement/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkGfx/CTile.h"
 #include "../../tkCommon/strings.h"
@@ -26,12 +27,11 @@
 #include "../common/CFile.h"
 #include "../common/mbox.h"
 #include "../common/state.h"
-#include "../movement/locate.h"
 #include "../movement/CSprite/CSprite.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
 #include "../movement/CPathFind/CPathFind.h"
-#include "../images/FreeImage.h"
+#include "../../tkCommon/images/FreeImage.h"
 #include "../fight/fight.h"
 #include "../misc/misc.h"
 #include "../plugins/plugins.h"
@@ -353,7 +353,7 @@ void send(CALL_DATA &params)
 	g_pBoard->open(g_projectPath + BRD_PATH + params[0].getLit());
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
-	pixelCoordinate(x, y, g_pBoard->coordType, true);
+	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->bSizeX);
 
 	if (x < 1 || x > g_pBoard->pxWidth())
 	{
@@ -648,10 +648,10 @@ void viewbrd(CALL_DATA &params)
 	{
 		x = params[1].getNum();
 		y = params[2].getNum();
-		pixelCoordinate(x, y, pBoard->coordType, false);
+		coords::tileToPixel(x, y, pBoard->coordType, false, pBoard->bSizeX);
 		if (pBoard->coordType == TILE_NORMAL)
 		{
-			// pixelCoordinate(,,,false) returns at top-left for 2D.
+			// coords::tileToPixel(...false.) returns at top-left for 2D.
 			x += 32;
 			y += 32;
 		}
@@ -814,10 +814,10 @@ void move(CALL_DATA &params)
 	}
 	
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
-	pixelCoordinate(x, y, g_pBoard->coordType, false);
+	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 	if (g_pBoard->isIsometric() && !(g_pBoard->coordType & PX_ABSOLUTE))
 	{
-		// pixelCoordinate() returns the centrepoint of isometric tiles.
+		// coords::tileToPixel() returns the centrepoint of isometric tiles.
 		// If PX_ABSOLUTE is not set, assume programs are tile-based and
 		// require an additional offset.
 		// These programs start on the left of the diamond (see board.cpp)
@@ -853,10 +853,10 @@ void prg(CALL_DATA &params)
 		throw CError(_T("Prg() requires three or four parameters."));
 	}
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
-	pixelCoordinate(x, y, g_pBoard->coordType, false);
+	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 	if (g_pBoard->isIsometric() && !(g_pBoard->coordType & PX_ABSOLUTE))
 	{
-		// pixelCoordinate() returns the centrepoint of isometric tiles.
+		// coords::tileToPixel() returns the centrepoint of isometric tiles.
 		// If PX_ABSOLUTE is not set, assume programs are tile-based and
 		// require an additional offset.
 		// These programs start on the left of the diamond (see board.cpp)
@@ -1697,8 +1697,8 @@ void pathfind(CALL_DATA &params)
 		x2 = int(params[2].getNum()), y2 = int(params[3].getNum());
 
 	// Transform the input co-ordinates based on the board co-ordinate system.
-	pixelCoordinate(x1, y1, g_pBoard->coordType, true);
-	pixelCoordinate(x2, y2, g_pBoard->coordType, true);
+	coords::tileToPixel(x1, y1, g_pBoard->coordType, true, g_pBoard->bSizeX);
+	coords::tileToPixel(x2, y2, g_pBoard->coordType, true, g_pBoard->bSizeX);
 
 	// Parameters. r is unneeded for tile pathfinding.
 	const DB_POINT start = {x1, y1}, goal = {x2, y2};
@@ -1757,7 +1757,7 @@ void playerstep(CALL_DATA &params)
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
-	pixelCoordinate(x, y, g_pBoard->coordType, true);
+	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->bSizeX);
 
 	PF_PATH path = p->pathFind(x, y, PF_AXIAL);
 	if (!path.empty())
@@ -1794,7 +1794,7 @@ void itemstep(CALL_DATA &params)
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
-	pixelCoordinate(x, y, g_pBoard->coordType, true);
+	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->bSizeX);
 
 	PF_PATH path = p->pathFind(x, y, PF_AXIAL);
 	if (!path.empty())
@@ -2479,7 +2479,7 @@ void itemlocation(CALL_DATA &params)
 
 	// Transform from pixel to board type (e.g. tile).
 	int dx = int(s.x), dy = int(s.y);
-	tileCoordinate(dx, dy, g_pBoard->coordType);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, g_pBoard->bSizeX);
 
 	x->num = dx;
 	y->num = dy;
@@ -2515,7 +2515,7 @@ void playerlocation(CALL_DATA &params)
 
 	// Transform from pixel to board type (e.g. tile).
 	int dx = int(s.x), dy = int(s.y);
-	tileCoordinate(dx, dy, g_pBoard->coordType);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, g_pBoard->bSizeX);
 
 	x->num = dx;
 	y->num = dy;
@@ -2565,7 +2565,7 @@ void sourcelocation(CALL_DATA &params)
 		}
 	}
 	// Transform from pixel to board type (e.g. tile).
-	tileCoordinate(dx, dy, g_pBoard->coordType);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, g_pBoard->bSizeX);
 	x->num = dx;
 	y->num = dy;
 }
@@ -2613,7 +2613,7 @@ void targetlocation(CALL_DATA &params)
 		}
 	}
 	// Transform from pixel to board type (e.g. tile).
-	tileCoordinate(dx, dy, g_pBoard->coordType);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, g_pBoard->bSizeX);
 	x->num = dx;
 	y->num = dy;
 }
@@ -2821,7 +2821,7 @@ void scan(CALL_DATA &params)
 	
 	const int i = int(params[2].getNum());
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
-	pixelCoordinate(x, y, g_pBoard->coordType, false);
+	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 
 	while (i >= g_cnvRpgScans.size())
 	{
@@ -2861,7 +2861,7 @@ void mem(CALL_DATA &params)
 
 	const int i = int(params[2].getNum());
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
-	pixelCoordinate(x, y, g_pBoard->coordType, false);
+	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 
 	if (i < g_cnvRpgScans.size() && g_cnvRpgScans[i])
 	{

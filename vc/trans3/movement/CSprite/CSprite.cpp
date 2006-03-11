@@ -19,7 +19,6 @@
 #include "../../fight/fight.h"
 #include "../../audio/CAudioSegment.h"
 #include "../../rpgcode/CProgram.h"
-#include "../locate.h"
 #include <math.h>
 #include <vector>
 
@@ -551,9 +550,9 @@ void CSprite::playerDoneMove(void)
  */
 void CSprite::setPosition(int x, int y, const int l, const COORD_TYPE coord)
 {
+	extern LPBOARD g_pBoard;
 	// Convert the co-ordinates an absolute pixel value.
-	pixelCoordinate(x, y, coord, true);
-
+	coords::tileToPixel(x, y, coord, true, g_pBoard->bSizeX);
 	m_pend.xOrig = m_pend.xTarg = m_pos.x = x;
 	m_pend.yOrig = m_pend.yTarg = m_pos.y = y;
 	m_pend.lOrig = m_pend.lTarg = m_pos.l = l;

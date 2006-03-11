@@ -11,6 +11,7 @@
  * Inclusions.
  */
 #include "../../tkCommon/strings.h"
+#include "../../tkCommon/movement/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 
 /*
@@ -35,12 +36,6 @@ typedef struct tagScrollCache
 	}
 
 } SCROLL_CACHE;
-
-
-/*
- * Constants.
- */
-const long TRANSP_COLOR = 16711935;	// Transparent color (magic pink).
 
 /*
  * Initialize the graphics engine.
@@ -70,22 +65,6 @@ bool renderNow(CCanvas *cnv = NULL, const bool bForce = false);
 
 struct tagBoard;
 typedef struct tagBoard BOARD, *LPBOARD;
-
-bool drawTile(const STRING fileName, 
-			  const int x, const int y, 
-			  const int r, const int g, const int b, 
-			  CCanvas *cnv, 
-			  const int offX, const int offY,
-			  const BOOL bIsometric, 
-			  const int nIsoEvenOdd);
-
-bool drawTileMask (const STRING fileName, 
-				   const int x, const int y, 
-				   const int r, const int g, const int b, 
-				   CCanvas *cnv,
-				   const int nDirectBlt,
-				   const bool bIsometric,
-				   const int nIsoEvenOdd);
 
 bool drawTileCnv(CCanvas *cnv, 
 				 const STRING file, 
