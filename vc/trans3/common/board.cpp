@@ -838,14 +838,10 @@ void tagBoard::render(CCanvas *cnv,
 	topX /= tWidth;
 	topY /= tHeight;
 
-
-/*	// Render the background.
-	if (bkgImage->type != BI_PARALLAX)
-	{
-		// Render the background (layer 0 specific).
-		renderBackground(cnv, bounds);
-	}
-*/	
+	// Effective matrix dimensions.
+	const int effWidth = (coordType & ISO_ROTATED ? bSizeX + bSizeY : bSizeX); 
+	const int effHeight = (coordType & ISO_ROTATED ? bSizeX + bSizeY : bSizeY);
+	
 	// For each layer
 	for (unsigned int i = lLower; i <= lUpper; ++i)
 	{
@@ -855,14 +851,14 @@ void tagBoard::render(CCanvas *cnv,
 		for (unsigned int j = 1; j <= nWidth; ++j)
 		{
 			const int x = j + topX;
-			if (x < 0 || x > bSizeX) continue;
+			if (x < 0 || x > effWidth) continue;
 
 			// For the y axis
 			for (unsigned int k = 1; k <= nHeight; ++k)
 			{
 				// The tile co-ordinates.
 				const int  y = k + topY;
-				if (y < 0 || y > bSizeY) continue;
+				if (y < 0 || y > effHeight) continue;
 
 				if (board[x][y][i])
 				{
