@@ -1587,10 +1587,13 @@ BOOL CTile::drawByBoardCoord(
 	CCanvas *cnv,
 	CONST INT eMaskValue,
 	CONST INT pxOffsetX, CONST INT pxOffsetY, 
-	CONST COORD_TYPE coordType,
+	COORD_TYPE coordType,
 	CONST INT brdSizeX,
 	CONST INT nIsoEvenOdd)
 {
+	// Remove any PX_ABSOLUTE flag - tiles are always given in tile coordinates.
+	coordType = COORD_TYPE(coordType & (TILE_NORMAL | ISO_STACKED | ISO_ROTATED));
+
 	CONST BOOL bIsometric = coordType & (ISO_STACKED | ISO_ROTATED);
 	coords::tileToPixel(x, y, coordType, FALSE, brdSizeX);
 	if (bIsometric)
@@ -1630,10 +1633,13 @@ BOOL CTile::drawByBoardCoordHdc(
 	CONST HDC hdc,
 	CONST INT eMaskValue,
 	CONST INT pxOffsetX, CONST INT pxOffsetY, 
-	CONST COORD_TYPE coordType,
+	COORD_TYPE coordType,
 	CONST INT brdSizeX,
 	CONST INT nIsoEvenOdd)
 {
+	// Remove any PX_ABSOLUTE flag - tiles are always given in tile coordinates.
+	coordType = COORD_TYPE(coordType & (TILE_NORMAL | ISO_STACKED | ISO_ROTATED));
+	
 	CONST BOOL bIsometric = coordType & (ISO_STACKED | ISO_ROTATED);
 	coords::tileToPixel(x, y, coordType, FALSE, brdSizeX);
 	if (bIsometric)

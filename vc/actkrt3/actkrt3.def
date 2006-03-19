@@ -57,9 +57,11 @@ EXPORTS
 	BRDFree				@52
 	BRDDraw				@53
 	BRDRender			@54
-	BRDRenderTile		@55	
-	BRDPixelToTile		@56
-	BRDTileToPixel		@57
+	BRDRenderTileToBoard @55
+	BRDRenderTile		@56	
+	BRDPixelToTile		@57
+	BRDTileToPixel		@58
+	BRDIsometricTransform @59
 
 	;tkzip...
 	ZIPTest				@61

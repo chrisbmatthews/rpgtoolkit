@@ -249,12 +249,14 @@ public:
 	VOID render(
 		CONST LPVB_BRDEDITOR pEditor,
 		CONST HDC hdcCompat,
-		CONST LONG layer
+		CONST LONG layer,
+		CONST BOOL bDestroyCanvas
 	);
 
 	VOID renderLayer(
 		CONST LONG i, 
-		CONST HDC hdcCompat
+		CONST HDC hdcCompat,
+		CONST BOOL bDestroyCanvas
 	);
 
 	std::vector<LPVB_BRDIMAGE> getImages(

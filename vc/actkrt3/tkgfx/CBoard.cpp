@@ -19,7 +19,6 @@
 #include "../../tkCommon/tkGfx/CTile.h"
 
 std::vector<CBoard *> g_boards;
-
 //--------------------------------------------------------------------------
 // Create a new instance and pass it back to VB.
 //--------------------------------------------------------------------------
@@ -33,7 +32,7 @@ LONG APIENTRY BRDNewCBoard(CONST CHAR* projectPath)
 //--------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------
-LONG APIENTRY BRDFree(CBoard *pBoard)
+LONG APIENTRY BRDFree(CONST CBoard *pBoard)
 {
 	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
 	{
@@ -51,13 +50,13 @@ LONG APIENTRY BRDFree(CBoard *pBoard)
 // 
 //--------------------------------------------------------------------------
 LONG APIENTRY BRDDraw(
-	LPVB_BRDEDITOR pEditor,
-	LONG hdc,
-	LONG destX, LONG destY,
-	LONG brdX, LONG brdY,
-	LONG width,
-	LONG height,
-	DOUBLE scale)
+	CONST LPVB_BRDEDITOR pEditor,
+	CONST LONG hdc,
+	CONST LONG destX, LONG destY,
+	CONST LONG brdX, LONG brdY,
+	CONST LONG width,
+	CONST LONG height,
+	CONST DOUBLE scale)
 {
 	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
 		if (*i == pEditor->pCBoard) pEditor->pCBoard->draw(pEditor, reinterpret_cast<HDC>(hdc), destX, destY, brdX, brdY, width, height, scale);
@@ -68,12 +67,13 @@ LONG APIENTRY BRDDraw(
 // 
 //--------------------------------------------------------------------------
 LONG APIENTRY BRDRender(
-	LPVB_BRDEDITOR pEditor,
-	LONG hdcCompat,
-	LONG layer)
+	CONST LPVB_BRDEDITOR pEditor,
+	CONST LONG hdcCompat,
+	CONST SHORT bDestroyCanvas,
+	CONST LONG layer)
 {
 	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
-		if (*i == pEditor->pCBoard) pEditor->pCBoard->render(pEditor, reinterpret_cast<HDC>(hdcCompat), layer);
+		if (*i == pEditor->pCBoard) pEditor->pCBoard->render(pEditor, reinterpret_cast<HDC>(hdcCompat), layer, bDestroyCanvas);
 	return 0;
 }
 
@@ -83,8 +83,8 @@ LONG APIENTRY BRDRender(
 LONG APIENTRY BRDPixelToTile(
 	LONG *x, 
 	LONG *y, 
-	SHORT coordType, 
-	SHORT brdSizeX)
+	CONST SHORT coordType, 
+	CONST SHORT brdSizeX)
 {
 	INT px = *x, py = *y;
 	coords::pixelToTile(px, py, COORD_TYPE(coordType), brdSizeX);
@@ -98,8 +98,8 @@ LONG APIENTRY BRDPixelToTile(
 LONG APIENTRY BRDTileToPixel(
 	LONG *x, 
 	LONG *y, 
-	SHORT coordType, 
-	SHORT brdSizeX)
+	CONST SHORT coordType, 
+	CONST SHORT brdSizeX)
 {
 	INT px = *x, py = *y;
 	coords::tileToPixel(px, py, COORD_TYPE(coordType), false, brdSizeX);
@@ -110,16 +110,61 @@ LONG APIENTRY BRDTileToPixel(
 //--------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------
-LONG APIENTRY BRDRenderTile(
+LONG APIENTRY BRDIsometricTransform(
+	DOUBLE *x, 
+	DOUBLE *y, 
+	CONST SHORT oldType, 
+	CONST SHORT newType,
+	CONST SHORT brdSizeX)
+{
+	DOUBLE dx = *x, dy = *y;
+	coords::isometricTransform(dx, dy, COORD_TYPE(oldType), COORD_TYPE(newType), brdSizeX);
+	*x = dx; *y = dy;
+	return 0;
+}
+
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
+LONG APIENTRY BRDRenderTileToBoard(
 	CBoard *pBoard, 
-	LPVB_BOARD pData,
-	LONG hdcCompat,
-	LONG x,
-	LONG y,
-	LONG z)
+	CONST LPVB_BOARD pData,
+	CONST LONG hdcCompat,
+	CONST LONG x,
+	CONST LONG y,
+	CONST LONG z)
 {
 	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
 		if (*i == pBoard) pBoard->renderTile(pData, x, y, z, reinterpret_cast<HDC>(hdcCompat));
+	return 0;
+}
+
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
+LONG APIENTRY BRDRenderTile(
+	CONST CHAR* filename,
+	CONST SHORT bIsometric,
+	LONG hdc,
+	CONST LONG x,
+	CONST LONG y,
+	CONST LONG backgroundColor)
+{
+	CONST RGBSHADE rgb = {0, 0, 0};
+	CTile *pTile = CTile::findCacheMatch(
+		filename, 
+		TM_NONE, 
+		rgb, 
+		bIsometric, 
+		reinterpret_cast<HDC>(hdc)
+	);
+	if (!pTile) return 1; 
+	CCanvas cnv;
+	cnv.CreateBlank(reinterpret_cast<HDC>(hdc), (bIsometric ? 64 : 32), 32, TRUE);
+	cnv.ClearScreen(backgroundColor);
+	pTile->cnvDraw(&cnv, 0, 0);
+	cnv.Blt(reinterpret_cast<HDC>(hdc), x, y, SRCCOPY);
+	//pTile->gdiDraw(reinterpret_cast<HDC>(hdc), x, y);
 	return 0;
 }
 
@@ -194,7 +239,7 @@ VOID CBoard::draw(
 	LONG z = 1, length = 0;
 	SafeArrayGetUBound(pEditor->bLayerVisible, 1, &length);
 
-	for (BL_ITR i = m_layers.begin() + 1; i != m_layers.end(); ++i, ++z)
+	for (BL_ITR i = m_layers.begin() + 1; i < m_layers.end(); ++i, ++z)
 	{
 		if (z < length)
 		{
@@ -264,12 +309,14 @@ VOID CBoard::draw(
 VOID CBoard::render(
 	CONST LPVB_BRDEDITOR pEditor, 
 	CONST HDC hdcCompat, 
-	CONST LONG layer)
+	CONST LONG layer,
+	CONST BOOL bDestroyCanvas)
 {
 	m_pBoard = &pEditor->board;
 	LONG length = 0;
 	CONST LONG lower = (layer ? layer : 1), upper = (layer ? layer : m_pBoard->m_bSizeL);
 	SafeArrayGetUBound(pEditor->bLayerOccupied, 1, &length);
+
 
 	for (LONG i = lower; i <= upper; ++i)
 	{
@@ -279,7 +326,7 @@ VOID CBoard::render(
 			SafeArrayGetElement(pEditor->bLayerOccupied, &i, LPVOID(&occ));
 			if (!occ) continue;
 		}
-		renderLayer(i, hdcCompat);
+		renderLayer(i, hdcCompat, bDestroyCanvas);
 	}
 }
 
@@ -342,7 +389,8 @@ VOID CBoard::renderTile(
 //--------------------------------------------------------------------------
 VOID CBoard::renderLayer(
 	CONST LONG i, 
-	CONST HDC hdcCompat)
+	CONST HDC hdcCompat,
+	CONST BOOL bDestroyCanvas)
 {
 	// TBD: Shrink canvas to used area.
 	while (i >= m_layers.size()) m_layers.push_back(BRD_LAYER());
@@ -350,6 +398,11 @@ VOID CBoard::renderLayer(
 	
 	CONST INT w = m_pBoard->pxWidth(), h = m_pBoard->pxHeight();
 
+	if (bDestroyCanvas && p->cnv)
+	{
+		delete p->cnv;
+		p->cnv = NULL;
+	}
 	if (!p->cnv)
 	{
 		p->cnv = new CCanvas();
@@ -360,9 +413,17 @@ VOID CBoard::renderLayer(
 	p->cnv->ClearScreen(TRANSP_COLOR);
 	CONST HDC hdc = p->cnv->OpenDC();
 
-	for (INT x = 1; x <= m_pBoard->m_bSizeX; ++x)
+	INT effWidth = m_pBoard->m_bSizeX, effHeight = m_pBoard->m_bSizeY;
+	if (m_pBoard->m_coordType & ISO_ROTATED)
 	{
-		for (INT y = 1; y <= m_pBoard->m_bSizeY; ++y)
+		// Data matrix is square.
+		effWidth += m_pBoard->m_bSizeY;
+		effHeight += m_pBoard->m_bSizeX;
+	}
+
+	for (INT x = 1; x <= effWidth; ++x)
+	{
+		for (INT y = 1; y <= effHeight; ++y)
 		{
 			CONST STRING strTile = tile(x, y, i);
 			if (!strTile.empty())

@@ -208,7 +208,7 @@ class CTile
 			CCanvas *cnv, 
 			CONST INT eMaskValue,
 			CONST INT pxOffsetX, CONST INT pxOffsetY, 
-			CONST COORD_TYPE coordType, 
+			COORD_TYPE coordType, 
 			CONST INT brdSizeX,
 			CONST INT nIsoEvenOdd
 		);
@@ -220,7 +220,7 @@ class CTile
 			CONST HDC hdc,
 			CONST INT eMaskValue,
 			CONST INT pxOffsetX, CONST INT pxOffsetY, 
-			CONST COORD_TYPE coordType,
+			COORD_TYPE coordType,
 			CONST INT brdSizeX,
 			CONST INT nIsoEvenOdd
 		);
