@@ -23,6 +23,43 @@ Public Type TKBoardImage
     file As String
 End Type
 
+Public Enum eTileType
+    TT_NULL = -1                        'To denote empty slot in editor.
+    TT_NORMAL = 0                       'See TILE_TYPE enumeration, CVector.h
+    TT_SOLID = 1
+    TT_UNDER = 2
+    TT_UNIDIRECTIONAL = 4
+    TT_STAIRS = 8
+End Enum
+
+'=========================================================================
+' A board program [tagVBBoardProgram]
+'=========================================================================
+Public Const PRG_STEP = 0                 'Triggers once until player leaves area.
+Public Const PRG_KEYPRESS = 1             'Player must hit activation key.
+Public Const PRG_REPEAT = 2               'Triggers repeatedly after a certain distance or
+                                          'can only be triggered after a certain distance.
+Public Const PRG_STOPS_MOVEMENT = 4       'Running the program clears the movement queue.
+
+Public Const PRG_ACTIVE = 0               'Program is always active.
+Public Const PRG_CONDITIONAL = 1          'Program's running depends on RPGCode variables.
+
+Public Type TKBoardProgram
+    filename As String                    'Board program filename.
+    layer As Long                         'Layer.
+    graphic  As String                    'Associated graphic.
+    activate As Long                      'PRG_ACTIVE - always active.
+                                          'PRG_CONDITIONAL - conditional activation.
+    initialVar As String                  'Activation variable.
+    finalVar As String                    'Activation variable at end of prg.
+    initialValue As String                'Initial value of activation variable.
+    finalValue As String                  'Value of variable after program runs.
+    activationType As Long                'Activation type (see 1st set of flags above).
+
+    vBase As New CVector                  'The activation area.
+    distanceRepeat As Long                'Distance to travel between activations within the vector.
+End Type
+
 '=========================================================================
 ' A RPGToolkit board
 '=========================================================================
@@ -99,6 +136,10 @@ Public Type TKBoard
     anmTileLUTInsertIdx As Long           'index of LUT table insertion
     strFileName As String                 'filename of the board
     
+    '3.0.7
+    vectors() As CVector
+    prgs() As TKBoardProgram
+    
 End Type
 
 '=========================================================================
@@ -117,7 +158,7 @@ Public Enum eBrdTool
     BT_SELECT
     BT_FLOOD
     BT_ERASE
-    BT_MOVE
+    BT_EDIT
     BT_UNUSED
     BT_LIST
 End Enum
@@ -125,22 +166,35 @@ Public Enum eBrdSelectStatus
     SS_NONE
     SS_DRAWING
     SS_FINISHED
+    SS_MOVING
 End Enum
+Public Type brdSelection
+    status As eBrdSelectStatus            'Status of selection.
+    area As RECT                          'Selection area (board px).
+    dragPoint As POINTAPI                 'Mouse point when dragging (board px).
+    color As Long
+End Type
+    
 
 '=========================================================================
 ' A board editor document
 '=========================================================================
 Public Type TKBoardEditorData
     '3.0.7
-    ' Following block used by actkrt
+    ' Following block ordered for actkrt
     pCBoard As Long                       'pointer to associated CBoard in actkrt
     bLayerOccupied() As Boolean           'layer contains tiles
     bLayerVisible() As Boolean            'layer visibility in the editor
     board As TKBoard                      'actual contents of board
+        
+    ' Unordered
     
-    topX As Long                          'top x coord (scaled pixels)
-    topY As Long                          'top y coord (scaled pixels)
-    zoom As Double                        'scaling factor
+    'Data that are required for classes.
+    'topX As Long                          'top x coord (scaled pixels)
+    'topY As Long                          'top y coord (scaled pixels)
+    'zoom As Double                        'scaling factor
+    pCEd As New CBoardEditor
+    
     optSetting As eBrdSetting
     optTool As eBrdTool
     selectedTile As String                'Selected tile
@@ -149,13 +203,16 @@ Public Type TKBoardEditorData
     bRevertToDraw As Boolean              'After flooding revert to draw tool
     gridColor As Long
     currentLayer As Integer               'Current board layer
-    selectStatus As eBrdSelectStatus      'Status of selection
-    selection As RECT                     'selection tool
-    selectionColor As Long
     bHideAllLayers As Boolean
     bShowAllLayers As Boolean
     bNeedUpdate As Boolean                'have any changes been made to the board data?
-    
+        
+    currentVectorSet() As CVector         'References to vectors of current optSetting
+    currentVector As CVector
+    vectorColor As Long
+    programColor As Long
+    waypointColor As Long
+
     'Pre 3.0.7
     boardName As String                   'filename
     tilesX As Long                        'x size
@@ -200,22 +257,22 @@ Public Const PX_ABSOLUTE = 4              ' Absolute co-ordinates (iso and 2D).
 '=========================================================================
 ' Absolute board pixel dimensions
 '=========================================================================
-Public Property Get absWidth(ByRef board As TKBoard) As Integer ': On Error Resume Next
-    If (board.coordType And ISO_STACKED) Then
-        absWidth = board.bSizeX * 64 - 32
-    ElseIf (board.coordType And ISO_ROTATED) Then
-        absWidth = board.bSizeX * 64 - 32
+Public Property Get absWidth(ByVal sizex As Integer, ByVal coordType As Integer) As Integer ': On Error Resume Next
+    If (coordType And ISO_STACKED) Then
+        absWidth = sizex * 64 - 32
+    ElseIf (coordType And ISO_ROTATED) Then
+        absWidth = sizex * 64 - 32
     Else
-        absWidth = board.bSizeX * 32
+        absWidth = sizex * 32
     End If
 End Property
-Public Property Get absHeight(ByRef board As TKBoard) As Integer ': On Error Resume Next
-    If (board.coordType And ISO_STACKED) Then
-        absHeight = board.bSizeY * 16 - 16
-    ElseIf (board.coordType And ISO_ROTATED) Then
-        absHeight = board.bSizeY * 32
+Public Property Get absHeight(ByVal sizey As Integer, ByVal coordType As Integer) As Integer ': On Error Resume Next
+    If (coordType And ISO_STACKED) Then
+        absHeight = sizey * 16 - 16
+    ElseIf (coordType And ISO_ROTATED) Then
+        absHeight = sizey * 32
     Else
-        absHeight = board.bSizeY * 32
+        absHeight = sizey * 32
     End If
 End Property
 
@@ -223,56 +280,60 @@ End Property
 ' Board pixel dimensions relative to zoom
 '=========================================================================
 Public Property Get relWidth(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    relWidth = absWidth(ed.board) * ed.zoom
+    relWidth = absWidth(ed.board.bSizeX, ed.board.coordType) * ed.pCEd.zoom
 End Property
 Public Property Get relHeight(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    relHeight = absHeight(ed.board) * ed.zoom
+    relHeight = absHeight(ed.board.bSizeY, ed.board.coordType) * ed.pCEd.zoom
 End Property
 
 '=========================================================================
 ' Conversion routines
 '=========================================================================
 Public Function screenToBoardPixel(ByVal x As Long, ByVal y As Long, ByRef ed As TKBoardEditorData) As POINTAPI
-    screenToBoardPixel.x = (x + ed.topX) / ed.zoom
-    screenToBoardPixel.y = (y + ed.topY) / ed.zoom
+    Call ed.pCEd.screenToBoardPixel(x, y)
+    screenToBoardPixel.x = x
+    screenToBoardPixel.y = y
 End Function
-Public Function boardPixelToTile(ByVal x As Long, ByVal y As Long, ByRef board As TKBoard) As POINTAPI
-    Call BRDPixelToTile(x, y, board.coordType, board.bSizeX)
+Public Function boardPixelToScreen(ByVal x As Long, ByVal y As Long, ByRef ed As TKBoardEditorData) As POINTAPI
+    Call ed.pCEd.boardPixelToScreen(x, y)
+    boardPixelToScreen.x = x
+    boardPixelToScreen.y = y
+End Function
+Public Function boardPixelToTile(ByVal x As Long, ByVal y As Long, ByVal coordType As Long, ByVal brdSizeX As Long) As POINTAPI
+    ' Remove any PX_ABSOLUTE flag since we specifically want tile values when using this in the editor.
+    Call BRDPixelToTile(x, y, coordType And (TILE_NORMAL Or ISO_ROTATED Or ISO_STACKED), brdSizeX)
     boardPixelToTile.x = x
     boardPixelToTile.y = y
 End Function
-Public Function tileToBoardPixel(ByVal x As Long, ByVal y As Long, ByRef board As TKBoard, Optional ByVal bIsoRenderPoint As Boolean = False) As POINTAPI
-    Call BRDTileToPixel(x, y, board.coordType, board.bSizeX)
+Public Function tileToBoardPixel(ByVal x As Long, ByVal y As Long, ByVal coordType As Long, ByVal brdSizeX As Long, Optional ByVal bIsoRenderPoint As Boolean = False) As POINTAPI
+    Call BRDTileToPixel(x, y, coordType And (TILE_NORMAL Or ISO_ROTATED Or ISO_STACKED), brdSizeX)
     tileToBoardPixel.x = x
     tileToBoardPixel.y = y
-    If isIsometric(board) And bIsoRenderPoint Then
+    If isIsometric(coordType) And bIsoRenderPoint Then
         'BRDTileToPixel() returns the centre of isometric tiles.
         'In rendering instances, the top-left corner of the tile (i.e., the centre of the NW tile) is required.
         tileToBoardPixel.x = x - 32
         tileToBoardPixel.y = y - 16
     End If
 End Function
-Public Function boardPixelToScreen(ByVal x As Long, ByVal y As Long, ByRef ed As TKBoardEditorData) As POINTAPI
-    boardPixelToScreen.x = x * ed.zoom - ed.topX
-    boardPixelToScreen.y = y * ed.zoom - ed.topY
-End Function
 
 '=========================================================================
 ' Tile pixel dimensions relative to zoom
 '=========================================================================
 Public Function tileWidth(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    tileWidth = IIf(isIsometric(ed.board), 64, 32) * ed.zoom
+    tileWidth = IIf(isIsometric(ed.board.coordType), 64, 32) * ed.pCEd.zoom
 End Function
 Public Function tileHeight(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    tileHeight = IIf(isIsometric(ed.board), 32, 32) * ed.zoom
+    tileHeight = IIf(isIsometric(ed.board.coordType), 32, 32) * ed.pCEd.zoom
 End Function
 Public Function scrollUnitWidth(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    scrollUnitWidth = IIf(isIsometric(ed.board), 32, 32) * ed.zoom
+    scrollUnitWidth = IIf(isIsometric(ed.board.coordType), 32, 32) * ed.pCEd.zoom
 End Function
 Public Function scrollUnitHeight(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    scrollUnitHeight = IIf(isIsometric(ed.board), 16, 32) * ed.zoom
+    'ISO_ROTATED board height is (currently) a multiple of 32.
+    scrollUnitHeight = IIf(ed.board.coordType And ISO_STACKED, 16, 32) * ed.pCEd.zoom
 End Function
 
-Public Function isIsometric(ByRef board As TKBoard) As Boolean ': On Error Resume Next
-    isIsometric = (board.coordType And (ISO_ROTATED Or ISO_STACKED))
+Public Function isIsometric(ByVal coordType As Long) As Boolean ': On Error Resume Next
+    isIsometric = (coordType And (ISO_ROTATED Or ISO_STACKED))
 End Function

@@ -42,7 +42,7 @@ Begin VB.Form frmBoardEdit
       Top             =   120
       Width           =   9255
       Begin VB.Line lineSelection 
-         BorderStyle     =   2  'Dash
+         BorderStyle     =   3  'Dot
          DrawMode        =   6  'Mask Pen Not
          Index           =   3
          Visible         =   0   'False
@@ -52,7 +52,7 @@ Begin VB.Form frmBoardEdit
          Y2              =   128
       End
       Begin VB.Line lineSelection 
-         BorderStyle     =   2  'Dash
+         BorderStyle     =   3  'Dot
          DrawMode        =   6  'Mask Pen Not
          Index           =   2
          Visible         =   0   'False
@@ -62,7 +62,7 @@ Begin VB.Form frmBoardEdit
          Y2              =   128
       End
       Begin VB.Line lineSelection 
-         BorderStyle     =   2  'Dash
+         BorderStyle     =   3  'Dot
          DrawMode        =   6  'Mask Pen Not
          Index           =   1
          Visible         =   0   'False
@@ -72,7 +72,7 @@ Begin VB.Form frmBoardEdit
          Y2              =   128
       End
       Begin VB.Line lineSelection 
-         BorderStyle     =   2  'Dash
+         BorderStyle     =   3  'Dot
          DrawMode        =   6  'Mask Pen Not
          Index           =   0
          Visible         =   0   'False
@@ -80,15 +80,6 @@ Begin VB.Form frmBoardEdit
          X2              =   128
          Y1              =   64
          Y2              =   64
-      End
-      Begin VB.Line lineGrid 
-         DrawMode        =   6  'Mask Pen Not
-         Index           =   0
-         Visible         =   0   'False
-         X1              =   32
-         X2              =   128
-         Y1              =   32
-         Y2              =   32
       End
    End
 End
@@ -110,14 +101,17 @@ Private Declare Function ExtFloodFill Lib "gdi32" (ByVal hdc As Long, ByVal x As
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
 
-Private Declare Function BRDRender Lib "actkrt3.dll" (ByVal pEditorData As Long, ByVal hdcCompat As Long, Optional ByVal layer As Long = 0) As Long
-Private Declare Function BRDDraw Lib "actkrt3.dll" (ByVal pEditorData As Long, ByVal hdc As Long, ByVal destX As Long, ByVal destY As Long, ByVal brdX As Long, ByVal brdY As Long, ByVal width As Long, ByVal Height As Long, ByVal zoom As Double) As Long
-Private Declare Function BRDFree Lib "actkrt3.dll" (ByVal pCBoard As Long) As Long
-Private Declare Function BRDRenderTile Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByVal hdcCompat As Long, ByVal x As Long, ByVal y As Long, ByVal z As Long) As Long
 Private Declare Function BRDNewCBoard Lib "actkrt3.dll" (ByVal projectPath As String) As Long
+Private Declare Function BRDFree Lib "actkrt3.dll" (ByVal pCBoard As Long) As Long
+Private Declare Function BRDRender Lib "actkrt3.dll" (ByVal pEditorData As Long, ByVal hdcCompat As Long, ByVal bDestroyCanvas As Boolean, Optional ByVal layer As Long = 0) As Long
+Private Declare Function BRDDraw Lib "actkrt3.dll" (ByVal pEditorData As Long, ByVal hdc As Long, ByVal destX As Long, ByVal destY As Long, ByVal brdX As Long, ByVal brdY As Long, ByVal width As Long, ByVal Height As Long, ByVal zoom As Double) As Long
+Private Declare Function BRDRenderTileToBoard Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByVal hdcCompat As Long, ByVal x As Long, ByVal y As Long, ByVal z As Long) As Long
+Private Declare Function BRDRenderTile Lib "actkrt3.dll" (ByVal filename As String, ByVal bIsometric As Boolean, ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal backColor As Long) As Long
 
-Private m_editorData As TKBoardEditorData
+Private m_ed As TKBoardEditorData
+Private m_sel As CBoardSelection
 
 '=========================================================================
 '=========================================================================
@@ -125,12 +119,20 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
     ' Assign default values.
     Call resetEditor(ed)
     With ed
-        .zoom = 1
+        .pCEd.zoom = 1
         If (.pCBoard) Then Call BRDFree(.pCBoard)
         .pCBoard = BRDNewCBoard(projectPath)
         .bRevertToDraw = True
         .currentLayer = 1
     End With
+    Set m_sel = New CBoardSelection
+    
+    'testing
+    'm_ed.board.brdColor = 0
+    m_ed.vectorColor = RGB(255, 255, 255)
+    m_ed.programColor = RGB(255, 255, 0)
+    m_ed.waypointColor = RGB(255, 0, 0)
+    m_ed.gridColor = RGB(255, 255, 255)
 End Sub
 '=========================================================================
 '=========================================================================
@@ -144,26 +146,45 @@ Private Sub resetEditor(ByRef ed As TKBoardEditorData) ': On Error Resume Next
         Call resetLayerCombos
     End With
 End Sub
+'=========================================================================
+'=========================================================================
+Public Sub newBoard(ByVal x As Long, ByVal y As Long, ByVal z As Long, ByVal coordType As Long, ByVal background As String)
+    m_ed.board.coordType = coordType
+    Call BoardClear(m_ed.board)
+    Call BoardSetSize(x, y, z, m_ed)
+    
+    m_ed.board.bkgImage.file = background
+    Call initializeEditor(m_ed)
+    Call BRDRender(VarPtr(m_ed), picBoard.hdc, True)
+End Sub
 
 '========================================================================
 ' change selected tile {from tkMainForm: currentTilesetForm_MouseDown}
 '========================================================================
-Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
+Public Sub changeSelectedTile(ByVal file As String) ': On Error Resume Next
 
+    tkMainForm.brdPicCurrentTile.Cls
     If (LenB(file) = 0) Then Exit Sub
 
     ' update tileset filename
-    m_editorData.selectedTile = file
+    m_ed.selectedTile = file
     
-    ' change setting/tool to tile/draw
-    If m_editorData.optSetting <> BS_TILE Then
-        m_editorData.optSetting = BS_TILE
-        m_editorData.optTool = BT_DRAW
-        tkMainForm.brdOptSetting(m_editorData.optSetting).value = True
-        tkMainForm.brdOptTool(m_editorData.optTool).value = True
+    ' change setting/tool to tile/draw.
+    If m_ed.optSetting <> BS_TILE Then
+        m_ed.optSetting = BS_TILE
+        m_ed.optTool = BT_DRAW
+        tkMainForm.brdOptSetting(m_ed.optSetting).value = True
+        tkMainForm.brdOptTool(m_ed.optTool).value = True
     End If
     
-    'draw tile... see boardedit.changeselectedtile
+    Call BRDRenderTile( _
+        projectPath & tilePath & file, _
+        isIsometric(m_ed.board.coordType), _
+        tkMainForm.brdPicCurrentTile.hdc, _
+        IIf(isIsometric(m_ed.board.coordType), 0, 16), 0, _
+        GetSysColor(tkMainForm.brdPicCurrentTile.backColor And &HFFFFFF) _
+    )
+    tkMainForm.brdPicCurrentTile.ToolTipText = file
 End Sub
 
 '========================================================================
@@ -185,11 +206,11 @@ Private Sub Form_Activate() ':on error resume next
     'tkMainForm.bBar.Visible = True                      'Bottom bar
     tkMainForm.frmBoardExtras.Visible = True
     
-    tkMainForm.brdOptSetting(m_editorData.optSetting).value = True
-    tkMainForm.brdOptTool(m_editorData.optTool).value = True
-    tkMainForm.brdChkGrid.value = Abs(m_editorData.bGrid)
-    tkMainForm.brdChkIso.value = Abs(isIsometric(m_editorData.board))
-    tkMainForm.brdChkAutotile.value = Abs(m_editorData.bAutotiler)
+    tkMainForm.brdOptSetting(m_ed.optSetting).value = True
+    tkMainForm.brdOptTool(m_ed.optTool).value = True
+    tkMainForm.brdChkGrid.value = Abs(m_ed.bGrid)
+    tkMainForm.brdChkIso.value = Abs(isIsometric(m_ed.board.coordType))
+    tkMainForm.brdChkAutotile.value = Abs(m_ed.bAutotiler)
     
     Call resetLayerCombos
     
@@ -214,60 +235,22 @@ Private Sub Form_Activate() ':on error resume next
     'tkMainForm.animTileTimer.Enabled = m_bAnimating
 
 End Sub
-Private Sub Form_Deactivate() ':on error resume next
+Public Sub Form_Deactivate() ':on error resume next
     'Clear co-ordinate panel.
     tkMainForm.StatusBar1.Panels(3).Text = vbNullString
     'Reset visible layers list.
     Call setVisibleLayersByCombo
 End Sub
+Private Sub Form_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
+    Call picBoard_KeyDown(keyCode, Shift)
+End Sub
 Private Sub Form_Load() ':on error resume next
+    'Board loading performed explicitly through newBoard()
     Set activeBoard = Me
-        
-    'Initialise the board first.
-    Call BoardClear(m_editorData.board)
-    Call BoardSetSize(10, 10, 4, m_editorData)
-    'Initialise the editor settings second.
-    Call initializeEditor(m_editorData)
-    
-    'testing purposes
-#If (0) Then
-    Call openBoard("game\demo\boards\iso8x21.brd", m_editorData.board, m_editorData)
-    ReDim m_editorData.bLayerVisible(m_editorData.board.bSizeL + 1)
-    m_editorData.bLayerVisible(1) = True
-    m_editorData.bLayerVisible(2) = True
-    m_editorData.currentLayer = 2
-    m_editorData.board.brdColor = RGB(255, 0, 0)
-#End If
-    'With m_editorData.board.bkgImage
-    '    .file = "bitmap\bkg.jpg"
-    '    .bounds.Right = 640
-    '    .bounds.Bottom = 480
-    'End With
-    '
-    'ReDim m_editorData.board.Images(1)
-    'With m_editorData.board.Images(0)
-    '    .file = "bitmap\test1.png"
-    '    .bounds.Left = 96
-    '    .bounds.Top = 64
-    '    .bounds.Right = 96 + 224
-    '    .bounds.Bottom = 64 + 206
-    '    .layer = 1
-    '    .transpcolor = 16711935
-    'End With
-    
-    picBoard.currentX = 50
-    picBoard.currentY = 50
-    picBoard.font = "arial"
-    picBoard.FontSize = 10
-    picBoard.ForeColor = RGB(255, 255, 255)
-    
-    Call BRDRender(VarPtr(m_editorData), picBoard.hdc)
     
     'Pixel scaling
     activeBoard.ScaleMode = 3
     picBoard.ScaleMode = 3
-      
-    Call Form_Resize
 End Sub
 Private Sub Form_Resize() ':on error resume next
         
@@ -276,47 +259,49 @@ Private Sub Form_Resize() ':on error resume next
     picBoard.Top = 0
     picBoard.Left = 0
     
-    brdWidth = relWidth(m_editorData)
-    brdHeight = relHeight(m_editorData)
+    brdWidth = relWidth(m_ed)
+    brdHeight = relHeight(m_ed)
     
     ' Available space.
     picBoard.width = activeBoard.ScaleWidth - vScroll.width
     picBoard.Height = activeBoard.ScaleHeight - hScroll.Height
        
     If brdWidth > picBoard.width Then
-        picBoard.width = picBoard.width - (picBoard.width Mod scrollUnitWidth(m_editorData))
+        picBoard.width = picBoard.width - (picBoard.width Mod scrollUnitWidth(m_ed))
         hScroll.Visible = True
         hScroll.Left = picBoard.Left
         hScroll.width = picBoard.width
         hScroll.max = brdWidth - picBoard.width
-        hScroll.LargeChange = picBoard.width - scrollUnitWidth(m_editorData)
+        hScroll.LargeChange = picBoard.width - scrollUnitWidth(m_ed)
     Else
          hScroll.Visible = False
          picBoard.width = brdWidth
-         m_editorData.topX = 0
+         m_ed.pCEd.topX = 0
     End If
          
     If brdHeight > picBoard.Height Then
-        picBoard.Height = picBoard.Height - (picBoard.Height Mod scrollUnitHeight(m_editorData))
+        picBoard.Height = picBoard.Height - (picBoard.Height Mod scrollUnitHeight(m_ed))
         vScroll.Visible = True
         vScroll.Top = picBoard.Top
         vScroll.Left = picBoard.width
         vScroll.Height = picBoard.Height
         vScroll.max = brdHeight - picBoard.Height
-        vScroll.LargeChange = picBoard.Height - scrollUnitHeight(m_editorData)
+        vScroll.LargeChange = picBoard.Height - scrollUnitHeight(m_ed)
     Else
          vScroll.Visible = False
          picBoard.Height = brdHeight
-         m_editorData.topY = 0
+         m_ed.pCEd.topY = 0
     End If
     ' Update for changes in above if()
     hScroll.Top = picBoard.Height
     
-    Call drawAll(True)
+    Call drawAll
 End Sub
 Private Sub Form_Unload(Cancel As Integer) ': On Error Resume Next
-    Call BRDFree(m_editorData.pCBoard)
+    Call BRDFree(m_ed.pCBoard)
+    Call BoardClear(m_ed.board)
     Call hideAllTools
+    Set m_sel = Nothing
     'tbc
 End Sub
 
@@ -326,8 +311,8 @@ Private Sub hScroll_Change() ': On Error Resume Next
     ' exit if opening board
     'If bOpeningBoard Then Exit Sub
     
-    m_editorData.topX = hScroll.value
-    Call drawAll(isIsometric(m_editorData.board))
+    m_ed.pCEd.topX = hScroll.value
+    Call drawAll
 End Sub
 
 '========================================================================
@@ -340,20 +325,65 @@ Public Sub openFile(ByVal file As String) ': On Error Resume Next
     ' copy board to directory
     ' Call FileCopy(filename(1), projectPath & brdPath & antiPath)
     
-    Call openBoard(file, m_editorData)
-    Call resetEditor(m_editorData)
-    Call BRDRender(VarPtr(m_editorData), picBoard.hdc)
+    Call openBoard(file, m_ed)
+    Call resetEditor(m_ed)
+    Call BRDRender(VarPtr(m_ed), picBoard.hdc, True)
     
-    m_editorData.boardName = RemovePath(file)
-    activeBoard.Caption = "Board Editor (" & m_editorData.boardName & ")"
+    m_ed.boardName = RemovePath(file)
+    activeBoard.Caption = "Board Editor (" & m_ed.boardName & ")"
     
     Call Form_Resize
 End Sub
 Public Sub saveFile() ':on error resume next
 
+    ' if no filename exists, we've just created this board, so show dialog.
+    If LenB(boardList(activeBoardIndex).boardName) = 0 Then
+        Call saveFileAs
+        Exit Sub
+    End If
+
+    'Check this isn't read-only.
+    If (fileExists(projectPath & brdPath & boardList(activeBoardIndex).boardName)) Then
+        If (GetAttr(projectPath & brdPath & boardList(activeBoardIndex).boardName) And vbReadOnly) Then
+        
+            Call MsgBox(boardList(activeBoardIndex).boardName & " is read-only, please choose a different filename", vbExclamation)
+            Call saveFileAs
+
+            Exit Sub
+        End If
+    End If
+
+    boardList(activeBoardIndex).boardNeedUpdate = False
+    Call saveBoard(projectPath & brdPath & boardList(activeBoardIndex).boardName, boardList(activeBoardIndex).theData)
+    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & boardList(activeBoardIndex).boardName & ")"
+
 End Sub
+Private Sub saveFileAs() ':on error resume next
+
+    Dim dlg As FileDialogInfo
+
+    dlg.strDefaultFolder = projectPath & brdPath
+    dlg.strTitle = "Save Board As"
+    dlg.strDefaultExt = "brd"
+    dlg.strFileTypes = "RPG Toolkit Board (*.brd)|*.brd|All files(*.*)|*.*"
+
+    ChDir (currentDir)
+    If Not (SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub
+    ChDir (currentDir)
+
+    ' if no filename entered, exit.
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
+
+    boardList(activeBoardIndex).boardName = dlg.strSelectedFileNoPath
+    Call saveBoard(dlg.strSelectedFile, boardList(activeBoardIndex).theData)
+    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & dlg.strSelectedFileNoPath & ")"
+    
+    boardList(activeBoardIndex).boardNeedUpdate = False
+    Call tkMainForm.fillTree("", projectPath)
+End Sub
+
 Private Sub checkSave(): On Error Resume Next
-    If m_editorData.bNeedUpdate Then
+    If m_ed.bNeedUpdate Then
         If MsgBox("Would you like to save your changes to the current board?", vbYesNo, "Save board") = vbYes Then
             Call saveFile
         End If
@@ -362,65 +392,168 @@ End Sub
 
 '========================================================================
 '========================================================================
+Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
+
+    Select Case m_ed.optSetting
+        Case BS_VECTOR, BS_PROGRAM
+            Select Case keyCode
+                Case vbKeyDelete, vbKeyBack, vbKeyD
+                    Call vectorDeleteSelectionAll(m_sel)
+                Case vbKeyS
+                    Call vectorSubdivideSelectionAll(m_sel)
+                Case vbKeyE
+                    Call vectorExtendSelectionAll(m_sel)
+                Case vbKeyEscape
+                    If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) Then
+                        Call m_ed.currentVector.closeVector(Shift, m_ed.currentLayer)
+                        Call m_sel.clear(Me)
+                        Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor)
+                    End If
+            End Select 'Key
+    End Select 'Setting
+End Sub
 Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
     
     Dim pxCoord As POINTAPI
-    pxCoord = screenToBoardPixel(x, y, m_editorData)
+    pxCoord = screenToBoardPixel(x, y, m_ed)
     
     'Process tools common to all settings.
-    Select Case m_editorData.optTool
+    Select Case m_ed.optTool
         Case BT_SELECT
-            If Button = vbLeftButton And m_editorData.optSetting <> BS_GENERAL Then
+            If Button = vbLeftButton And m_ed.optSetting <> BS_GENERAL Then
                 'Making a selection.
-                If m_editorData.selectStatus <> SS_DRAWING Then
-                    m_editorData.selectStatus = SS_DRAWING
-                    '.selection stores board pixel coordinate.
-                    m_editorData.selection.Left = pxCoord.x: m_editorData.selection.Top = pxCoord.y
-                    m_editorData.selection.Right = pxCoord.x: m_editorData.selection.Bottom = pxCoord.y
-                Else
-                    m_editorData.selection.Right = pxCoord.x: m_editorData.selection.Bottom = pxCoord.y
-                    Call selectionDraw(m_editorData.selection)
-                End If
+                Select Case m_sel.status
+                    Case SS_NONE, SS_FINISHED
+                        If m_sel.containsPoint(pxCoord.x, pxCoord.y) And m_sel.status = SS_FINISHED Then
+                            'Move selection.
+                            m_sel.status = SS_MOVING
+                            
+                            Select Case m_ed.optSetting
+                                Case BS_TILE
+                                    'Snap to grid.
+                                    pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                                    pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                                    
+                                    'Initiate copy.
+                                    
+                                    
+                                Case BS_VECTOR, BS_PROGRAM
+                                    'Determine selected points.
+                                    Call vectorSetSelectionAll(m_sel)
+                            End Select
+                            
+                            m_sel.xDrag = pxCoord.x: m_sel.yDrag = pxCoord.y
+                        Else
+                            'Start new selection.
+                            'CBoardSlection stores board pixel coordinate.
+                            Call m_sel.restart(pxCoord.x, pxCoord.y)
+                        End If
+                        
+                    Case SS_DRAWING
+                        m_sel.x2 = pxCoord.x: m_sel.y2 = pxCoord.y
+                        Call m_sel.draw(Me, m_ed.pCEd)
+                        
+                    Case SS_MOVING
+                        Select Case m_ed.optSetting
+                            Case BS_TILE
+                                'Snap to grid.
+                                pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                                pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                            Case BS_VECTOR, BS_PROGRAM
+                        End Select
+                        
+                        Dim dx As Long, dy As Long
+                        dx = pxCoord.x - m_sel.xDrag
+                        dy = pxCoord.y - m_sel.yDrag
+                        m_sel.xDrag = pxCoord.x
+                        m_sel.yDrag = pxCoord.y
+                        
+                        Select Case m_ed.optSetting
+                            Case BS_TILE
+                            Case BS_VECTOR, BS_PROGRAM
+                                Call vectorMoveSelectionAll(dx, dy)
+                                Call drawBoard
+                        End Select
+                        
+                        Call m_sel.move(dx, dy)
+                        Call m_sel.draw(Me, m_ed.pCEd)
+    
+                End Select
             Else
                 'Clear selection.
-                Call selectionClear
+                Call m_sel.clear(Me)
             End If
             Exit Sub
     End Select
     
-    Select Case m_editorData.optSetting
+    Select Case m_ed.optSetting
         Case BS_GENERAL
             'Move the board by dragging
         Case BS_TILE
             Call tileSettingMouseDown(Button, Shift, x, y)
+        Case BS_VECTOR, BS_PROGRAM
+            Call vectorSettingMouseDown(Button, Shift, x, y)
     End Select
 End Sub
 Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
     
     Dim pxCoord As POINTAPI, tileCoord As POINTAPI
-    pxCoord = screenToBoardPixel(x, y, m_editorData)
-    tileCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_editorData.board)
+    pxCoord = screenToBoardPixel(x, y, m_ed)
+    tileCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
     tkMainForm.StatusBar1.Panels(3).Text = str(tileCoord.x) & ", " & str(tileCoord.y)
     
-    If Button <> 0 Then
-        If (m_editorData.optTool = BT_SELECT) And m_editorData.selectStatus = SS_DRAWING Then
-            'Scroll the board to expand selection.
-            If x > picBoard.width - 8 And hScroll.value <> hScroll.max And hScroll.Visible Then hScroll.value = hScroll.value + hScroll.SmallChange
-            If x < 8 And hScroll.value <> hScroll.min Then hScroll.value = hScroll.value - hScroll.SmallChange
-            If y > picBoard.Height - 8 And vScroll.value <> vScroll.max And vScroll.Visible Then vScroll.value = vScroll.value + vScroll.SmallChange
-            If y < 8 And vScroll.value <> vScroll.min Then vScroll.value = vScroll.value - vScroll.SmallChange
-        End If
-        Call picBoard_MouseDown(Button, Shift, x, y)
+     If m_sel.status = SS_DRAWING Or m_sel.status = SS_MOVING Then
+        'Scroll the board to expand selection.
+        If x > picBoard.width - 8 And hScroll.value <> hScroll.max And hScroll.Visible Then hScroll.value = hScroll.value + hScroll.SmallChange
+        If x < 8 And hScroll.value <> hScroll.min Then hScroll.value = hScroll.value - hScroll.SmallChange
+        If y > picBoard.Height - 8 And vScroll.value <> vScroll.max And vScroll.Visible Then vScroll.value = vScroll.value + vScroll.SmallChange
+        If y < 8 And vScroll.value <> vScroll.min Then vScroll.value = vScroll.value - vScroll.SmallChange
     End If
+      
+    Select Case m_ed.optTool
+        Case BT_SELECT
+            If Button <> 0 Then Call picBoard_MouseDown(Button, Shift, x, y)
+            Exit Sub
+    End Select
+    
+    Select Case m_ed.optSetting
+        Case BS_TILE
+            If Button <> 0 Then Call tileSettingMouseDown(Button, Shift, x, y)
+            
+        Case BS_VECTOR, BS_PROGRAM
+            If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) Then
+                
+                'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
+                If ((m_ed.board.coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then
+                    pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                    pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                End If
+
+                m_sel.x2 = pxCoord.x: m_sel.y2 = pxCoord.y
+                Call m_sel.drawLine(Me, m_ed.pCEd)
+            End If
+    End Select
 End Sub
 Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single) ':on error resume next
          
-    Select Case m_editorData.optSetting
-        Case BS_GENERAL
-            'Move the board by dragging
-        Case BS_TILE
-            Call tileSettingMouseUp(Button, Shift, x, y)
+    Select Case m_ed.optTool
+        Case BT_SELECT
+            If Button = vbLeftButton Then
+                If m_ed.optSetting = BS_TILE And m_sel.status = SS_DRAWING Then
+                    Call m_sel.expandToGrid(m_ed.board.coordType, m_ed.board.bSizeX)
+                End If
+                m_sel.status = SS_FINISHED
+                Call m_sel.draw(Me, m_ed.pCEd)
+            End If
     End Select
+         
+    Exit Sub
+    'Select Case m_ed.optSetting
+    '    Case BS_GENERAL
+    '        'Move the board by dragging
+    '    Case BS_TILE
+    '        Call tileSettingMouseUp(Button, Shift, x, y)
+    'End Select
 End Sub
 
 '========================================================================
@@ -430,44 +563,44 @@ Private Sub placeTile(file As String, x As Long, y As Long) ': On Error Resume N
 
     'Get board pixel _drawing_ coordinate from tile.
     Dim brdPt As POINTAPI, scrPt As POINTAPI
-    brdPt = tileToBoardPixel(x, y, m_editorData.board, True)
-    scrPt = boardPixelToScreen(brdPt.x, brdPt.y, m_editorData)
+    brdPt = tileToBoardPixel(x, y, m_ed.board.coordType, m_ed.board.bSizeX, True)
+    scrPt = boardPixelToScreen(brdPt.x, brdPt.y, m_ed)
     
     'Check if this tile is already inserted.
-    If BoardGetTile(x, y, m_editorData.currentLayer, m_editorData.board) = file Then Exit Sub
+    If BoardGetTile(x, y, m_ed.currentLayer, m_ed.board) = file Then Exit Sub
     
     'Insert the selected tile into the board array.
     Call BoardSetTile( _
         x, y, _
-        m_editorData.currentLayer, _
+        m_ed.currentLayer, _
         file, _
-        m_editorData.board _
+        m_ed.board _
     )
     ' set ambient details
-    m_editorData.board.ambientRed(x, y, m_editorData.currentLayer) = m_editorData.ambientR
-    m_editorData.board.ambientGreen(x, y, m_editorData.currentLayer) = m_editorData.ambientG
-    m_editorData.board.ambientBlue(x, y, m_editorData.currentLayer) = m_editorData.ambientB
+    m_ed.board.ambientRed(x, y, m_ed.currentLayer) = m_ed.ambientR
+    m_ed.board.ambientGreen(x, y, m_ed.currentLayer) = m_ed.ambientG
+    m_ed.board.ambientBlue(x, y, m_ed.currentLayer) = m_ed.ambientB
     
     ' set tiletype details (tbd:?)
-    m_editorData.board.tiletype(x, y, m_editorData.currentLayer) = m_editorData.currentTileType
+    m_ed.board.tiletype(x, y, m_ed.currentLayer) = m_ed.currentTileType
     
     'Render the tile to actkrt's layer canvas.
-    Call BRDRenderTile( _
-        m_editorData.pCBoard, _
-        VarPtr(m_editorData.board), _
+    Call BRDRenderTileToBoard( _
+        m_ed.pCBoard, _
+        VarPtr(m_ed.board), _
         picBoard.hdc, _
         x, y, _
-        m_editorData.currentLayer _
+        m_ed.currentLayer _
     )
     'Redraw all board layers at this position.
     Call BRDDraw( _
-        VarPtr(m_editorData), _
+        VarPtr(m_ed), _
         picBoard.hdc, _
         scrPt.x, scrPt.y, _
         brdPt.x, brdPt.y, _
-        tileWidth(m_editorData), _
-        tileHeight(m_editorData), _
-        m_editorData.zoom _
+        tileWidth(m_ed), _
+        tileHeight(m_ed), _
+        m_ed.pCEd.zoom _
     )
     picBoard.Refresh
 End Sub
@@ -477,41 +610,41 @@ End Sub
 Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
 
     Dim tileCoord As POINTAPI, pxCoord As POINTAPI
-    pxCoord = screenToBoardPixel(x, y, m_editorData)
-    tileCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_editorData.board)
+    pxCoord = screenToBoardPixel(x, y, m_ed)
+    tileCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
 
-    Select Case m_editorData.optTool
+    Select Case m_ed.optTool
         Case BT_DRAW
-            If LenB(m_editorData.selectedTile) = 0 Then Exit Sub
+            If LenB(m_ed.selectedTile) = 0 Then Exit Sub
             
-            m_editorData.bLayerOccupied(0) = True
-            m_editorData.bLayerOccupied(m_editorData.currentLayer) = True
+            m_ed.bLayerOccupied(0) = True
+            m_ed.bLayerOccupied(m_ed.currentLayer) = True
                 
-            If (commonRoutines.extention(tilePath & m_editorData.selectedTile) <> "TBM") Then
+            If (commonRoutines.extention(tilePath & m_ed.selectedTile) <> "TBM") Then
                 
                 Dim eo As Long
                 eo = 0 'TBD: isometric even-odd
-                If m_editorData.bAutotiler Then
+                If m_ed.bAutotiler Then
                     Call autoTilerPutTile( _
-                        m_editorData.selectedTile, _
+                        m_ed.selectedTile, _
                         tileCoord.x, tileCoord.y, _
-                        m_editorData.board.coordType, eo, _
+                        m_ed.board.coordType, eo, _
                         ((Shift And vbShiftMask) = vbShiftMask) _
                     )
                 Else
-                    Call placeTile(m_editorData.selectedTile, tileCoord.x, tileCoord.y)
+                    Call placeTile(m_ed.selectedTile, tileCoord.x, tileCoord.y)
                 End If
             Else
-                'Tile bitmap!
+                'Tile bitmap.
                 'TBD: test this; do isometrics. Possible overdraw at edges of picBoard.
                 Dim i As Long, j As Long, width As Long, Height As Long, tbm As TKTileBitmap
-                Call OpenTileBitmap(tilePath & m_editorData.selectedTile, tbm)
+                Call OpenTileBitmap(tilePath & m_ed.selectedTile, tbm)
                 width = UBound(tbm.tiles, 1)
                 Height = UBound(tbm.tiles, 2)
                 
                 'Lose any tiles that go off the board.
-                If (m_editorData.board.bSizeX - 1) < width Then width = (m_editorData.board.bSizeX - 1)
-                If (m_editorData.board.bSizeY - 1) < Height Then Height = (m_editorData.board.bSizeY - 1)
+                If (m_ed.board.bSizeX - 1) < width Then width = (m_ed.board.bSizeX - 1)
+                If (m_ed.board.bSizeY - 1) < Height Then Height = (m_ed.board.bSizeY - 1)
                                    
                 For i = 0 To width
                     For j = 0 To Height
@@ -524,50 +657,51 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
             ' Code is common to settings.
     
         Case BT_FLOOD
-            If m_editorData.bAutotiler Then
+            If m_ed.bAutotiler Then
                 'fill disabled in autotiler mode (unless someone wants to code it)
                 MsgBox "The Fill tool is disabled in AutoTiler mode!"
             Else
                 'Use gdi version as recursive routine crashes on large boards (3.0.6)
                 If GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then
                     'User has enabled recursive flooding - when gdi doesn't work.
-                    Call floodRecursive(tileCoord.x, tileCoord.y, m_editorData.currentLayer, m_editorData.selectedTile)
+                    Call floodRecursive(tileCoord.x, tileCoord.y, m_ed.currentLayer, m_ed.selectedTile)
                 Else
                     'Use gdi if no setting exists (default).
-                    Call floodGdi(tileCoord.x, tileCoord.y, m_editorData.currentLayer, m_editorData.selectedTile)
+                    Call floodGdi(tileCoord.x, tileCoord.y, m_ed.currentLayer, m_ed.selectedTile)
                 End If
             End If
-            If (m_editorData.bRevertToDraw) Then
-                m_editorData.optTool = BT_DRAW
-                tkMainForm.brdOptTool(m_editorData.optTool).value = True
+            If (m_ed.bRevertToDraw) Then
+                m_ed.optTool = BT_DRAW
+                tkMainForm.brdOptTool(m_ed.optTool).value = True
             End If
             
-            Call BRDRender(VarPtr(m_editorData), picBoard, m_editorData.currentLayer)
+            Call BRDRender(VarPtr(m_ed), picBoard, False, m_ed.currentLayer)
             Call drawBoard
             
         Case BT_ERASE
             eo = 0 'TBD: isometric even-odd
-            If m_editorData.bAutotiler Then
-                Call autoTilerPutTile("", tileCoord.x, tileCoord.y, m_editorData.board.coordType, eo, ((Shift And vbShiftMask) = vbShiftMask))
+            If m_ed.bAutotiler Then
+                Call autoTilerPutTile("", tileCoord.x, tileCoord.y, m_ed.board.coordType, eo, ((Shift And vbShiftMask) = vbShiftMask))
             Else
                 Call placeTile("", tileCoord.x, tileCoord.y)
             End If
             
-        Case BT_MOVE
+        Case BT_EDIT
     
     End Select
 End Sub
 Private Sub tileSettingMouseUp(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
 
-    Select Case m_editorData.optTool
-        Case BT_SELECT
-            'Expand to grid
-            If Button = vbLeftButton Then
-                m_editorData.selectStatus = SS_FINISHED
-                Call selectionExpandToGrid(m_editorData.selection)
-                Call selectionDraw(m_editorData.selection)
-            End If
-    End Select
+    ' picBoard_MouseUp
+    'Select Case m_ed.optTool
+    '    Case BT_SELECT
+    '        'Expand to grid
+    '        If Button = vbLeftButton Then
+    '            m_sel.status = SS_FINISHED
+    '            Call selectionExpandToGrid(m_sel)
+    '            Call selectionDraw(m_sel)
+    '        End If
+    'End Select
 End Sub
 
 '========================================================================
@@ -576,8 +710,8 @@ Private Sub vScroll_Change() ': On Error Resume Next
     ' exit if opening board
     'If bOpeningBoard Then Exit Sub
     
-    m_editorData.topY = vScroll.value
-    Call drawAll(isIsometric(m_editorData.board))
+    m_ed.pCEd.topY = vScroll.value
+    Call drawAll
 End Sub
 
 '========================================================================
@@ -586,25 +720,25 @@ Private Sub zoom(ByVal direction As Integer) ': On Error Resume Next
 
     'Record the old zoom.
     Dim oldZoom As Double
-    oldZoom = m_editorData.zoom
+    oldZoom = m_ed.pCEd.zoom
 
     If direction > 0 Then
-        m_editorData.zoom = m_editorData.zoom + IIf(m_editorData.zoom >= 1, 0.5, 0.25)
-        If m_editorData.zoom > 2 Then m_editorData.zoom = 2: Exit Sub
+        m_ed.pCEd.zoom = m_ed.pCEd.zoom + IIf(m_ed.pCEd.zoom >= 1, 0.5, 0.25)
+        If m_ed.pCEd.zoom > 2 Then m_ed.pCEd.zoom = 2: Exit Sub
     Else
-        m_editorData.zoom = m_editorData.zoom - IIf(m_editorData.zoom > 1, 0.5, 0.25)
-        If m_editorData.zoom < 0.25 Then m_editorData.zoom = 0.25: Exit Sub
+        m_ed.pCEd.zoom = m_ed.pCEd.zoom - IIf(m_ed.pCEd.zoom > 1, 0.5, 0.25)
+        If m_ed.pCEd.zoom < 0.25 Then m_ed.pCEd.zoom = 0.25: Exit Sub
     End If
         
-    hScroll.SmallChange = modBoard.scrollUnitWidth(m_editorData)
-    vScroll.SmallChange = modBoard.scrollUnitHeight(m_editorData)
+    hScroll.SmallChange = modBoard.scrollUnitWidth(m_ed)
+    vScroll.SmallChange = modBoard.scrollUnitHeight(m_ed)
     
     'Scale topX,Y via true values using oldZoom.
-    m_editorData.topX = (m_editorData.topX / oldZoom) * m_editorData.zoom
-    m_editorData.topY = (m_editorData.topY / oldZoom) * m_editorData.zoom
+    m_ed.pCEd.topX = (m_ed.pCEd.topX / oldZoom) * m_ed.pCEd.zoom
+    m_ed.pCEd.topY = (m_ed.pCEd.topY / oldZoom) * m_ed.pCEd.zoom
     Call Form_Resize
-    hScroll.value = m_editorData.topX
-    vScroll.value = m_editorData.topY
+    hScroll.value = m_ed.pCEd.topX
+    vScroll.value = m_ed.pCEd.topY
 
 End Sub
 
@@ -613,44 +747,55 @@ End Sub
 Private Sub drawBoard() ': On Error Resume Next
     picBoard.AutoRedraw = True
     Call BRDDraw( _
-        VarPtr(m_editorData), _
+        VarPtr(m_ed), _
         picBoard.hdc, _
         0, 0, _
-        screenToBoardPixel(0, 0, m_editorData).x, _
-        screenToBoardPixel(0, 0, m_editorData).y, _
+        screenToBoardPixel(0, 0, m_ed).x, _
+        screenToBoardPixel(0, 0, m_ed).y, _
         CLng(picBoard.width), _
         CLng(picBoard.Height), _
-        m_editorData.zoom _
+        m_ed.pCEd.zoom _
     )
+    
+    'Draw lines.
+    Call vectorDrawAll
+    Call gridDraw
+    
     picBoard.Refresh
 End Sub
 
 '========================================================================
 '========================================================================
-Public Sub mdiOptSetting(ByVal index As Integer) ': On Error Resume Next
-    m_editorData.optSetting = index
-    Call selectionClear
+Public Sub mdiOptSetting(ByVal Index As Integer) ': On Error Resume Next
+    m_ed.optSetting = Index
+    Call m_sel.clear(Me)
+    'Generate the list of current vectors.
+    Call vectorBuildCurrentSet
 End Sub
-Public Sub mdiOptTool(ByVal index As Integer) ': On Error Resume Next
-    m_editorData.optTool = index
-    If index <> BT_MOVE Then Call selectionClear
+Public Sub mdiOptTool(ByVal Index As Integer) ': On Error Resume Next
+    m_ed.optTool = Index
+    If Index <> BT_SELECT Then Call m_sel.clear(Me)
 End Sub
 Public Sub mdiCmdZoom(ByVal Button As Integer) ': On Error Resume Next
     zoom (IIf(Button = vbLeftButton, 1, -1))
 End Sub
 Public Sub mdiChkGrid(ByVal value As Integer) ': On Error Resume Next
-    m_editorData.bGrid = value
-    Call gridDraw(False)
+    m_ed.bGrid = value
+    Call drawBoard
 End Sub
+Public Sub mdiChkIso(ByVal value As Integer) ': On Error Resume Next
+   ' if msgbox("Warning: all current board data will be erased")
+End Sub
+
 Public Sub mdiChkHideLayers(ByVal value As Integer, ByVal bRedraw As Boolean) ':on error resume next
     Dim i As Integer
     If value Then
-        For i = 1 To m_editorData.board.bSizeL
-            If i <> m_editorData.currentLayer Then m_editorData.bLayerVisible(i) = False
+        For i = 1 To m_ed.board.bSizeL
+            If i <> m_ed.currentLayer Then m_ed.bLayerVisible(i) = False
         Next i
         tkMainForm.brdChkShowLayers.value = 0
-        m_editorData.bShowAllLayers = False
-        m_editorData.bHideAllLayers = True
+        m_ed.bShowAllLayers = False
+        m_ed.bHideAllLayers = True
     Else
         'Revert to combo list.
          Call setVisibleLayersByCombo
@@ -660,12 +805,12 @@ End Sub
 Public Sub mdiChkShowLayers(ByVal value As Integer, ByVal bRedraw As Boolean) ':on error resume next
     Dim i As Integer
     If value Then
-        For i = 1 To m_editorData.board.bSizeL
-            m_editorData.bLayerVisible(i) = True
+        For i = 1 To m_ed.board.bSizeL
+            m_ed.bLayerVisible(i) = True
         Next i
         tkMainForm.brdChkHideLayers.value = 0
-        m_editorData.bHideAllLayers = False
-        m_editorData.bShowAllLayers = True
+        m_ed.bHideAllLayers = False
+        m_ed.bShowAllLayers = True
    Else
          'Revert to combo list.
          Call setVisibleLayersByCombo
@@ -673,7 +818,7 @@ Public Sub mdiChkShowLayers(ByVal value As Integer, ByVal bRedraw As Boolean) ':
     If bRedraw Then Call drawBoard
 End Sub
 Public Sub mdiCmbCurrentLayer(ByVal layer As Long) ':on error resume next
-    m_editorData.currentLayer = layer
+    m_ed.currentLayer = layer
 End Sub
 Public Sub mdiCmbVisibleLayers() ':on error resume next
     'Invert the selected layer.
@@ -683,13 +828,13 @@ Public Sub mdiCmbVisibleLayers() ':on error resume next
             Text = .list(.ListIndex)
             layer = Right$(Text, 1)
             i = IIf(.ListIndex > 0, CInt(val(layer)), 0)
-            If (Left$(Text, 1) = "*" And i <> m_editorData.currentLayer) Then
+            If (Left$(Text, 1) = "*" And i <> m_ed.currentLayer) Then
                 'Do not disable current layer.
                 .list(.ListIndex) = layer
-                m_editorData.bLayerVisible(i) = False
+                m_ed.bLayerVisible(i) = False
             Else
                 .list(.ListIndex) = "* " & layer
-                m_editorData.bLayerVisible(i) = True
+                m_ed.bLayerVisible(i) = True
             End If
         End If
         .ListIndex = -1
@@ -705,25 +850,25 @@ Private Sub setVisibleLayersByCombo() ':on error resume next
         'Zeroth list entry is the background.
         Text = tkMainForm.brdCmbVisibleLayers.list(i)
         layer = CInt(val(Right$(Text, 1)))
-        m_editorData.bLayerVisible(layer) = (Left$(Text, 1) = "*")
+        'm_ed.bLayerVisible(layer) = (Left$(Text, 1) = "*")
     Next i
 End Sub
 
 '=========================================================================
 '=========================================================================
 Private Sub resetLayerCombos() ':on error resume next
-    tkMainForm.brdCmbCurrentLayer.Clear
-    tkMainForm.brdCmbVisibleLayers.Clear
+    tkMainForm.brdCmbCurrentLayer.clear
+    tkMainForm.brdCmbVisibleLayers.clear
     Call tkMainForm.brdCmbVisibleLayers.AddItem("* B", 0)
     Dim i As Integer, Text As String
-    For i = 1 To m_editorData.board.bSizeL
-        Call tkMainForm.brdCmbVisibleLayers.AddItem(IIf(m_editorData.bLayerVisible(i), "* " & i, i))
+    For i = 1 To m_ed.board.bSizeL
+        Call tkMainForm.brdCmbVisibleLayers.AddItem(IIf(m_ed.bLayerVisible(i), "* " & i, i))
         Call tkMainForm.brdCmbCurrentLayer.AddItem(i)
     Next i
     'Combo box is zero-indexed.
-    tkMainForm.brdCmbCurrentLayer.ListIndex = m_editorData.currentLayer - 1
-    Call mdiChkShowLayers(Abs(m_editorData.bHideAllLayers), False)
-    Call mdiChkShowLayers(Abs(m_editorData.bShowAllLayers), False)
+    tkMainForm.brdCmbCurrentLayer.ListIndex = m_ed.currentLayer - 1
+    Call mdiChkShowLayers(Abs(m_ed.bHideAllLayers), False)
+    Call mdiChkShowLayers(Abs(m_ed.bShowAllLayers), False)
 End Sub
 
 '========================================================================
@@ -783,10 +928,10 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
         Call placeTile(currentTileset & CStr(51), tileX, tileY)
     End If
     
-    brdWidth = m_editorData.board.bSizeX
-    brdHeight = m_editorData.board.bSizeY
+    brdWidth = m_ed.board.bSizeX
+    brdHeight = m_ed.board.bSizeY
     
-    currentAutotileset = autoTileset(tilesetFilename(BoardGetTile(tileX, tileY, m_editorData.currentLayer, m_editorData.board)))
+    currentAutotileset = autoTileset(tilesetFilename(BoardGetTile(tileX, tileY, m_ed.currentLayer, m_ed.board)))
     
     If coordType = ISO_STACKED Then
         'iso board [ISO_STACKED only]
@@ -801,7 +946,7 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
         
         For iy = startY To endY
             For ix = startX To endX
-                thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, m_editorData.currentLayer, m_editorData.board)))
+                thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, m_ed.currentLayer, m_ed.board)))
                 
                 'if shift is held down, override updating of other autotiles
                 If (ignoreOthers) And (thisAutoTileset <> currentAutotileset) Then thisAutoTileset = -1
@@ -813,23 +958,23 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
                     'check if the tile should link to the cardinal directions
                     If iy Mod 2 = 0 Then
                         'even row
-                        If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
-                        If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
-                        If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
-                        If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
+                        If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
+                        If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
+                        If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
+                        If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
                     Else
                         'odd row
-                        If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
-                        If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
-                        If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
-                        If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
+                        If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
+                        If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
+                        If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
+                        If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
                     End If
                     
                     'check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
-                    If (ix > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
-                    If (iy > 2) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 2, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
-                    If (iy < brdHeight - 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 2, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
-                    If (ix < brdWidth) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
+                    If (ix > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
+                    If (iy > 2) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 2, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
+                    If (iy < brdHeight - 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 2, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
+                    If (ix < brdWidth) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
                 
                     'draw and set the new tile
                     Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy)
@@ -849,7 +994,7 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
         
         For iy = startY To endY
             For ix = startX To endX
-                thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, m_editorData.currentLayer, m_editorData.board)))
+                thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, m_ed.currentLayer, m_ed.board)))
                 
                 'if shift is held down, override updating of other autotiles
                 If (ignoreOthers) And (thisAutoTileset <> currentAutotileset) Then thisAutoTileset = -1
@@ -859,16 +1004,16 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
     
                 If thisAutoTileset <> -1 Then
                     'check if the tile should link to the cardinal directions
-                    If (ix > 1) And autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_W
-                    If (iy > 1) And autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_N
-                    If (iy < brdHeight) And autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_S
-                    If (ix < brdWidth) And autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_E
+                    If (ix > 1) And autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, m_ed.currentLayer, m_ed.board))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_W
+                    If (iy > 1) And autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_N
+                    If (iy < brdHeight) And autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_S
+                    If (ix < brdWidth) And autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, m_ed.currentLayer, m_ed.board))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_E
                      
                     'check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
-                    If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
-                    If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
-                    If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
-                    If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, m_editorData.currentLayer, m_editorData.board))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
+                    If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
+                    If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
+                    If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
+                    If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, m_ed.currentLayer, m_ed.board))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
                     
                     'draw and set the new tile
                     Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy)
@@ -892,27 +1037,27 @@ End Sub
 Private Sub floodRecursive(ByVal x As Long, ByVal y As Long, ByVal l As Long, ByVal tileFile As String, Optional ByVal lastX As Long = -1, Optional ByVal lastY As Long = -1): On Error Resume Next
     
     Dim replaceTile As Long, newTile As Long
-    replaceTile = m_editorData.board.board(x, y, l)
-    newTile = BoardTileInLUT(tileFile, m_editorData.board)
+    replaceTile = m_ed.board.board(x, y, l)
+    newTile = BoardTileInLUT(tileFile, m_ed.board)
     
     ' check if old and new tile are the same.
     ' also compare rgb ambient levels, in case we're flooding a different shade.
     If replaceTile = newTile _
-        And m_editorData.board.ambientRed(x, y, l) = m_editorData.ambientR _
-        And m_editorData.board.ambientGreen(x, y, l) = m_editorData.ambientG _
-        And m_editorData.board.ambientBlue(x, y, l) = m_editorData.ambientB _
+        And m_ed.board.ambientRed(x, y, l) = m_ed.ambientR _
+        And m_ed.board.ambientGreen(x, y, l) = m_ed.ambientG _
+        And m_ed.board.ambientBlue(x, y, l) = m_ed.ambientB _
         Then Exit Sub
     
     ' enter the tile data of the copying tile.
-    m_editorData.board.board(x, y, l) = newTile
-    m_editorData.board.tiletype(x, y, l) = m_editorData.currentTileType
-    m_editorData.board.ambientRed(x, y, l) = m_editorData.ambientR
-    m_editorData.board.ambientGreen(x, y, l) = m_editorData.ambientG
-    m_editorData.board.ambientBlue(x, y, l) = m_editorData.ambientB
+    m_ed.board.board(x, y, l) = newTile
+    m_ed.board.tiletype(x, y, l) = m_ed.currentTileType
+    m_ed.board.ambientRed(x, y, l) = m_ed.ambientR
+    m_ed.board.ambientGreen(x, y, l) = m_ed.ambientG
+    m_ed.board.ambientBlue(x, y, l) = m_ed.ambientB
     
     Dim sizex As Long, sizey As Long, x2 As Long, y2 As Long
-    sizex = m_editorData.board.bSizeX
-    sizey = m_editorData.board.bSizeY
+    sizex = m_ed.board.bSizeX
+    sizey = m_ed.board.bSizeY
     
     'new x and y position
     x2 = x + 1: y2 = y
@@ -920,22 +1065,22 @@ Private Sub floodRecursive(ByVal x As Long, ByVal y As Long, ByVal l As Long, By
     ' check against boundries of board
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
         ' if old tile is the same as replaced tile
-        If m_editorData.board.board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
+        If m_ed.board.board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
     End If
     
     x2 = x: y2 = y - 1
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
-        If m_editorData.board.board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
+        If m_ed.board.board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
     End If
     
     x2 = x - 1: y2 = y
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
-        If m_editorData.board.board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
+        If m_ed.board.board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
     End If
     
     x2 = x: y2 = y + 1
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
-        If m_editorData.board.board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
+        If m_ed.board.board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
     End If
     
 End Sub
@@ -947,19 +1092,19 @@ Private Sub floodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long
 
     Const MAGIC_NUMBER = 32768
                 
-    With m_editorData.board
+    With m_ed.board
     
         Dim curIdx As Long, newIdx As Long
         'The tile we clicked to flood and the tile we want to flood it with.
         curIdx = .board(xLoc, yLoc, layer)
-        newIdx = BoardTileInLUT(tileFilename, m_editorData.board)
+        newIdx = BoardTileInLUT(tileFilename, m_ed.board)
         
         If curIdx = newIdx Then
             'We're flooding the same tile, but does it have the same attributes?
-            If .ambientRed(xLoc, yLoc, layer) = m_editorData.ambientR And _
-                .ambientGreen(xLoc, yLoc, layer) = m_editorData.ambientG And _
-                .ambientBlue(xLoc, yLoc, layer) = m_editorData.ambientB And _
-                .tiletype(xLoc, yLoc, layer) = m_editorData.currentTileType Then
+            If .ambientRed(xLoc, yLoc, layer) = m_ed.ambientR And _
+                .ambientGreen(xLoc, yLoc, layer) = m_ed.ambientG And _
+                .ambientBlue(xLoc, yLoc, layer) = m_ed.ambientB And _
+                .tiletype(xLoc, yLoc, layer) = m_ed.currentTileType Then
                     Exit Sub
             Else
                 'Give the new tile a different "colour" so these tiles get flooded.
@@ -1009,10 +1154,10 @@ Private Sub floodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long
                     End If
                     
                     'Set attributes.
-                    .tiletype(x, y, layer) = m_editorData.currentTileType
-                    .ambientRed(x, y, layer) = m_editorData.ambientR
-                    .ambientGreen(x, y, layer) = m_editorData.ambientG
-                    .ambientBlue(x, y, layer) = m_editorData.ambientB
+                    .tiletype(x, y, layer) = m_ed.currentTileType
+                    .ambientRed(x, y, layer) = m_ed.ambientR
+                    .ambientGreen(x, y, layer) = m_ed.ambientG
+                    .ambientBlue(x, y, layer) = m_ed.ambientB
                     
                 End If
             Next y
@@ -1025,114 +1170,220 @@ End Sub
 
 '========================================================================
 '========================================================================
-Private Sub gridDraw(ByVal bResize As Boolean): On Error Resume Next
+Private Sub gridDraw() ': On Error Resume Next
     
-    Dim color As Long, offsetY As Long, x As Long, y As Long, i As Integer
-    color = m_editorData.gridColor
+    Dim color As Long, offsetY As Long, x As Long, y As Long, oldMode As Long
+    color = m_ed.gridColor
     
-    If bResize Xor m_editorData.bGrid = False Then
-        'Unable to unload without crashing ("unable to unload within this context")
-        'Do While lineGrid.count > 1
-        '   Unload lineGrid(i)
-        'Loop
-        For i = 1 To lineGrid.count - 1
-            lineGrid(i).Visible = False
-        Next i
-    End If
-    i = 1
-    
-    If m_editorData.bGrid = True Then
-        If isIsometric(m_editorData.board) Then
+    oldMode = picBoard.DrawMode
+    picBoard.DrawMode = vbInvert
         
-            offsetY = IIf(m_editorData.topY Mod 32 = 0, 0, 16)
+    If m_ed.bGrid = True Then
+        If isIsometric(m_ed.board.coordType) Then
+            offsetY = IIf(m_ed.pCEd.topY Mod tileHeight(m_ed) = 0, 0, 16 * m_ed.pCEd.zoom)
             
             ' Top right to bottom left.
             Do While y < picBoard.width / 2 + picBoard.Height
-                'Call vbPicLine(picBoard, 0, y + offsetY, x + offsetY * 2, 0, color)
-                If i > lineGrid.count - 1 Then Load lineGrid(i)
-                lineGrid(i).x1 = 0: lineGrid(i).x2 = x + offsetY * 2: lineGrid(i).y1 = y + offsetY: lineGrid(i).y2 = 0
-                lineGrid(i).Visible = True
-                x = x + 64:  y = y + 32: i = i + 1
+                picBoard.Line (0, y + offsetY)-(x + offsetY * 2, 0), color
+                x = x + tileWidth(m_ed): y = y + tileHeight(m_ed)
             Loop
 
             ' Top left to bottom right.
             x = 0
             y = picBoard.Height
-            Do While y > -picBoard.Height
-                'Call vbPicLine(picBoard, 0, y + offsetY, x, picBoard.Height + offsetY, color)
-                If i > lineGrid.count - 1 Then Load lineGrid(i)
-                lineGrid(i).x1 = 0: lineGrid(i).x2 = x: lineGrid(i).y1 = y + offsetY: lineGrid(i).y2 = picBoard.Height + offsetY
-                lineGrid(i).Visible = True
-                x = x + 64:  y = y - 32: i = i + 1
+            Do While y > -picBoard.width / 2
+                picBoard.Line (0, y + offsetY)-(x, picBoard.Height + offsetY), color
+                x = x + tileWidth(m_ed):  y = y - tileHeight(m_ed)
             Loop
         Else
             Do While x < picBoard.width
-                'Call vbPicLine(picBoard, x, 0, x, picBoard.height, color)
-                If i > lineGrid.count - 1 Then Load lineGrid(i)
-                lineGrid(i).x1 = x: lineGrid(i).x2 = x: lineGrid(i).y1 = 0: lineGrid(i).y2 = picBoard.Height
-                lineGrid(i).Visible = True
-                x = x + 32: i = i + 1
+                picBoard.Line (x, 0)-(x, picBoard.Height), color
+                x = x + tileWidth(m_ed)
             Loop
             Do While y < picBoard.Height
-                'Call vbPicLine(picBoard, 0, y, picBoard.width, y, color)
-                If i > lineGrid.count - 1 Then Load lineGrid(i)
-                lineGrid(i).x1 = 0: lineGrid(i).x2 = picBoard.width: lineGrid(i).y1 = y: lineGrid(i).y2 = y
-                lineGrid(i).Visible = True
-                y = y + 32: i = i + 1
+                picBoard.Line (0, y)-(picBoard.width, y), color
+                y = y + tileHeight(m_ed)
             Loop
         End If 'isIsometric
     End If 'bGrid
-End Sub
-
-'=========================================================================
-'=========================================================================
-Private Sub selectionDraw(ByRef pxBrdCoord As RECT) ':on error resume next
-    If m_editorData.selectStatus <> SS_NONE Then
-        'Call vbPicRect(picBoard, pxBrdCoord.Left, pxBrdCoord.Top, pxBrdCoord.Right, pxBrdCoord.Bottom, m_editorData.selectionColor)
-        Dim pt1 As POINTAPI, pt2 As POINTAPI, i As Integer
-        pt1 = boardPixelToScreen(pxBrdCoord.Left, pxBrdCoord.Top, m_editorData)
-        pt2 = boardPixelToScreen(pxBrdCoord.Right, pxBrdCoord.Bottom, m_editorData)
-        
-        lineSelection(0).x1 = pt1.x: lineSelection(0).x2 = pt2.x: lineSelection(0).y1 = pt1.y: lineSelection(0).y2 = pt1.y
-        lineSelection(1).x1 = pt1.x: lineSelection(1).x2 = pt2.x: lineSelection(1).y1 = pt2.y: lineSelection(1).y2 = pt2.y
-        lineSelection(2).x1 = pt1.x: lineSelection(2).x2 = pt1.x: lineSelection(2).y1 = pt1.y: lineSelection(2).y2 = pt2.y
-        lineSelection(3).x1 = pt2.x: lineSelection(3).x2 = pt2.x: lineSelection(3).y1 = pt1.y: lineSelection(3).y2 = pt2.y
     
-        For i = 0 To 3
-            lineSelection(i).Visible = True
-        Next i
-    End If
-End Sub
-Private Sub selectionExpandToGrid(ByRef pxBrdCoord As RECT) ':on error resume next
-    With pxBrdCoord
-        Dim dx As Integer, dy As Integer, pt As POINTAPI
-        'Is the end point in front of the start point? tbd: isometrics!
-        If .Left > .Right Then dx = 1
-        If .Top > .Bottom Then dy = 1
-        
-        pt = boardPixelToTile(.Left, .Top, m_editorData.board)
-        pt = tileToBoardPixel(pt.x + dx, pt.y + dy, m_editorData.board)
-        .Left = pt.x: .Top = pt.y
-        
-        pt = boardPixelToTile(.Right, .Bottom, m_editorData.board)
-        pt = tileToBoardPixel(pt.x + Abs(dx - 1), pt.y + Abs(dy - 1), m_editorData.board)
-        .Right = pt.x: .Bottom = pt.y
-    End With
-End Sub
-Private Sub selectionClear() ':on error resume next
-    Dim i As Integer
-    m_editorData.selectStatus = SS_NONE
-    For i = 0 To lineSelection.count - 1
-        lineSelection(i).Visible = False
-    Next i
+    picBoard.DrawMode = oldMode
 End Sub
 
 '=========================================================================
 '=========================================================================
-Private Sub drawAll(Optional ByVal bShiftGrid As Boolean = False) ':on error resume next
+Private Sub drawAll() ':on error resume next
     Call drawBoard
     
     'Update line controls.
-    Call gridDraw(bShiftGrid)
-    Call selectionDraw(m_editorData.selection)
+    If m_ed.optTool = BT_SELECT Then Call m_sel.draw(Me, m_ed.pCEd)
+End Sub
+
+'========================================================================
+'========================================================================
+Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
+    
+    Dim tileCoord As POINTAPI, pxCoord As POINTAPI
+    pxCoord = screenToBoardPixel(x, y, m_ed)
+    tileCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+
+    Select Case m_ed.optTool
+        Case BT_DRAW
+              If Button = vbLeftButton Then
+                If m_sel.status <> SS_DRAWING Then
+                    'Start a new vector.
+                    Set m_ed.currentVector = vectorCreate(m_ed.board)
+                Else
+                    'Close the last point.
+                End If
+                        
+                'Start new point.
+                
+                'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
+                If ((m_ed.board.coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then
+                    pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                    pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                End If
+                
+                'CBoardSlection stores board pixel coordinate.
+                Call m_sel.restart(pxCoord.x, pxCoord.y)
+                
+                Call m_ed.currentVector.addPoint(pxCoord.x, pxCoord.y)
+                Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor)
+            Else
+                'Finish the vector.
+                Call m_ed.currentVector.closeVector(Shift, m_ed.currentLayer)
+                Call m_sel.clear(Me)
+                Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor)
+            End If
+    End Select
+
+End Sub
+Private Function vectorCreate(ByRef board As TKBoard) As CVector ':on error resume next
+    Dim i As Integer, bFound As Boolean
+   
+    Select Case m_ed.optSetting
+        Case BS_VECTOR
+            '.vectors is always dimensioned.
+            For i = 0 To UBound(board.vectors)
+                If board.vectors(i) Is Nothing Then
+                    Set board.vectors(i) = New CVector
+                End If
+                If board.vectors(i).tiletype = TT_NULL Then
+                    bFound = True
+                    Exit For
+                End If
+            Next i
+            If Not bFound Then
+                ReDim Preserve board.vectors(i)
+                Set board.vectors(i) = New CVector
+            End If
+            Set vectorCreate = board.vectors(i)
+        Case BS_PROGRAM
+            '.prgs is always dimensioned.
+            For i = 0 To UBound(board.prgs)
+                If board.prgs(i).vBase.tiletype = TT_NULL Then
+                    bFound = True
+                    Exit For
+                End If
+            Next i
+            If Not bFound Then
+                ReDim Preserve board.prgs(i)
+            End If
+            Set vectorCreate = board.prgs(i).vBase
+    End Select
+    
+    'Place into the current set.
+    Call vectorBuildCurrentSet
+End Function
+Private Sub vectorBuildCurrentSet() ':on error resume next
+    Dim i As Long
+    ReDim m_ed.currentVectorSet(0)
+    Select Case m_ed.optSetting
+        Case BS_VECTOR
+            For i = 0 To UBound(m_ed.board.vectors)
+                ReDim Preserve m_ed.currentVectorSet(i)
+                Set m_ed.currentVectorSet(i) = m_ed.board.vectors(i)
+            Next i
+        Case BS_PROGRAM
+            For i = 0 To UBound(m_ed.board.prgs)
+                ReDim Preserve m_ed.currentVectorSet(i)
+                Set m_ed.currentVectorSet(i) = m_ed.board.prgs(i).vBase
+            Next i
+    End Select
+End Sub
+Private Sub vectorDrawAll(): On Error Resume Next
+    Dim i As Long
+    'Vectors
+    For i = 0 To UBound(m_ed.board.vectors)
+        If m_ed.bLayerVisible(m_ed.board.vectors(i).layer) Then
+            Call m_ed.board.vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor)
+        End If
+    Next i
+    'Programs
+    For i = 0 To UBound(m_ed.board.prgs)
+        If m_ed.bLayerVisible(m_ed.board.prgs(i).vBase.layer) Then
+            Call m_ed.board.prgs(i).vBase.draw(picBoard, m_ed.pCEd, m_ed.programColor)
+        End If
+    Next i
+End Sub
+Private Sub vectorDeleteSelectionAll(ByRef sel As CBoardSelection) ':on error resume next
+    Dim i As Long
+    If (m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED) Then
+        For i = 0 To UBound(m_ed.currentVectorSet)
+            '.vectors is always dimensioned.
+            Call m_ed.currentVectorSet(i).deleteSelection(sel)
+        Next i
+        Call drawBoard
+    End If
+End Sub
+Private Sub vectorExtendSelectionAll(ByRef sel As CBoardSelection) ':on error resume next
+    Dim i As Long, x As Long, y As Long
+    If (m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED) Then
+        For i = 0 To UBound(m_ed.currentVectorSet)
+            '.vectors is always dimensioned.
+            If m_ed.currentVectorSet(i).extendSelection(sel, x, y) Then
+                'Extend the first endpoint found.
+                Set m_ed.currentVector = m_ed.currentVectorSet(i)
+                tkMainForm.brdOptTool(BT_DRAW).value = True
+                sel.x1 = x
+                sel.y1 = y
+                sel.status = SS_DRAWING
+                Exit Sub
+            End If
+        Next i
+        Call drawBoard
+    End If
+End Sub
+Private Function vectorGetColor() As Long: On Error Resume Next
+    Select Case m_ed.optSetting
+        Case BS_VECTOR
+            vectorGetColor = m_ed.vectorColor
+        Case BS_PROGRAM
+            vectorGetColor = m_ed.programColor
+    End Select
+End Function
+Private Sub vectorMoveSelectionAll(ByVal dx As Long, ByVal dy As Long) ':on error resume next
+    Dim i As Long
+    For i = 0 To UBound(m_ed.currentVectorSet)
+        '.vectors is always dimensioned.
+        Call m_ed.currentVectorSet(i).moveSelection(dx, dy)
+    Next i
+End Sub
+Private Sub vectorSetSelectionAll(ByRef sel As CBoardSelection) ': on error resume next
+    Dim i As Long
+    For i = 0 To UBound(m_ed.currentVectorSet)
+        '.vectors is always dimensioned.
+        Call m_ed.currentVectorSet(i).setSelection(sel)
+    Next i
+End Sub
+Private Sub vectorSubdivideSelectionAll(ByRef sel As CBoardSelection) ':on error resume next
+    Dim i As Long
+    If (m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED) Then
+        For i = 0 To UBound(m_ed.currentVectorSet)
+            '.vectors is always dimensioned.
+            Call m_ed.currentVectorSet(i).subdivideSelection(sel)
+        Next i
+        Call drawBoard
+    End If
 End Sub

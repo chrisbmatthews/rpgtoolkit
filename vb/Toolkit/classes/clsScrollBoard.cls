@@ -330,20 +330,20 @@ Private Sub scrollUp(ByVal isIsometric As Long)
 
     If iso Then
 
-        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+        'Call BitBlt(vbPicHDC(activeBoard.boardform), _
             0, -16, tX * 64 - 32, tY * 16 - 16, _
             vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
         
-        Call vbPicFillRect(activeBoard.boardform, _
+        'Call vbPicFillRect(activeBoard.boardform, _
             0, tY * 16 - 32, tX * 64 - 32, tY * 16 - 16, _
             boardList(activeBoardIndex).theData.brdColor)
     Else
 
-        Call BitBlt(vbPicHDC(activeBoard.boardform), _
+        'Call BitBlt(vbPicHDC(activeBoard.boardform), _
             0, -32, tX * 32, tY * 32, _
         vbPicHDC(activeBoard.boardform), 0, 0, SRCCOPY)
     
-        Call vbPicFillRect(activeBoard.boardform, _
+        'Call vbPicFillRect(activeBoard.boardform, _
             0, tY * 32 - 32, tX * 32, tY * 32, _
             boardList(activeBoardIndex).theData.brdColor)
     End If
