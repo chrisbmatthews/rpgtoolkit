@@ -111,7 +111,7 @@ Private Declare Function BRDRenderTileToBoard Lib "actkrt3.dll" (ByVal pCBoard A
 Private Declare Function BRDRenderTile Lib "actkrt3.dll" (ByVal filename As String, ByVal bIsometric As Boolean, ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal backColor As Long) As Long
 
 Private m_ed As TKBoardEditorData
-Private m_sel As CBoardSelection
+Private m_sel As New CBoardSelection ' Crappy, but better than nothing.
 
 '=========================================================================
 '=========================================================================
@@ -768,13 +768,15 @@ End Sub
 '========================================================================
 Public Sub mdiOptSetting(ByVal Index As Integer) ': On Error Resume Next
     m_ed.optSetting = Index
-    Call m_sel.clear(Me)
+    If Not (m_sel Is Nothing) Then
+        Call m_sel.clear(Me)
+    End If
     'Generate the list of current vectors.
     Call vectorBuildCurrentSet
 End Sub
 Public Sub mdiOptTool(ByVal Index As Integer) ': On Error Resume Next
     m_ed.optTool = Index
-    If Index <> BT_SELECT Then Call m_sel.clear(Me)
+    If (Index <> BT_SELECT) And Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
 End Sub
 Public Sub mdiCmdZoom(ByVal Button As Integer) ': On Error Resume Next
     zoom (IIf(Button = vbLeftButton, 1, -1))
