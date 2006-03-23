@@ -550,10 +550,10 @@ End Function
 Private Sub boardToolSettings(ByVal draw As Integer, ByVal typel As Integer, ByVal eraser As Integer, ByVal fill As Integer)
     ignore = 1
     ' set appropiate main form control values
-    tkMainForm.boardDrawLock.value = draw
-    tkMainForm.boardTypeLock.value = typel
-    tkMainForm.boardEraser.value = eraser
-    tkMainForm.boardFillTool.value = fill
+    'tkMainForm.boardDrawLock.value = draw
+    'tkMainForm.boardTypeLock.value = typel
+    'tkMainForm.boardEraser.value = eraser
+    'tkMainForm.boardFillTool.value = fill
     ignore = 0
 End Sub
 
@@ -626,13 +626,13 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
 
     tkMainForm.animTileTimer.Enabled = False
     
-    Dim x As Long, y As Long, Buffer(32, 32) As Long
+    Dim x As Long, y As Long, buffer(32, 32) As Long
     
     ' Delano: Temporary fix (3.0.6)
     ' hold the old tile (not in bufTile since drawIsoTile operates on it - crap, I know)
     For x = 1 To 32
         For y = 1 To 32
-            Buffer(x, y) = tileMem(x, y)
+            buffer(x, y) = tileMem(x, y)
         Next y
     Next x
 
@@ -679,7 +679,7 @@ Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     For x = 1 To 32
         For y = 1 To 32
             boardList(activeBoardIndex).BoardTile(x, y) = tileMem(x, y)
-            tileMem(x, y) = Buffer(x, y)
+            tileMem(x, y) = buffer(x, y)
         Next y
     Next x
     
@@ -1679,7 +1679,7 @@ Public Sub boardSelectTile(): On Error Resume Next
 'Edited by Delano for 3.0.4 new isometric tilesets.
 'Added .iso to available tiles.
     
-    Dim x As Long, y As Long, antiPath As String, whichType As String, Buffer(32, 32) As Long
+    Dim x As Long, y As Long, antiPath As String, whichType As String, buffer(32, 32) As Long
     
     bCurrentTileIsTransparent = False
     
@@ -1692,7 +1692,7 @@ Public Sub boardSelectTile(): On Error Resume Next
     ' hold the old tile (not in bufTile since drawIsoTile operates on it - crap, I know)
     For x = 1 To 32
         For y = 1 To 32
-            Buffer(x, y) = tileMem(x, y)
+            buffer(x, y) = tileMem(x, y)
         Next y
     Next x
     
@@ -1769,7 +1769,7 @@ Public Sub boardSelectTile(): On Error Resume Next
         For x = 1 To 32
             For y = 1 To 32
                 boardList(activeBoardIndex).BoardTile(x, y) = tileMem(x, y)
-                tileMem(x, y) = Buffer(x, y)
+                tileMem(x, y) = buffer(x, y)
             Next y
         Next x
 
