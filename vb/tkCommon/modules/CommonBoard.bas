@@ -26,6 +26,7 @@ Public Type TKBoardAnimTile
     layer As Long
 End Type
 
+
 '=========================================================================
 ' Member variables
 '=========================================================================
@@ -506,11 +507,19 @@ End Sub
 '=========================================================================
 ' Clear a board structure. Called by open board only (trans3).
 '=========================================================================
-Public Sub BoardClear(ByRef theBoard As TKBoard)
+Public Sub BoardClear(ByRef theBoard As TKBoard): On Error Resume Next
 
-    On Error Resume Next
-
+    Dim i As Long
+    
     With theBoard
+        '3.0.7
+        For i = 0 To UBound(.vectors)
+            Set .vectors(i) = Nothing
+        Next i
+        ReDim .vectors(0)
+        ReDim .prgs(0)
+    
+        'Pre 3.0.7
         ReDim .tileIndex(5)
         Dim x As Long, y As Long, layer As Long, t As Long
         Call dimensionItemArrays(theBoard)
@@ -1224,6 +1233,16 @@ Public Sub BoardSetSize(ByVal x As Integer, ByVal y As Integer, ByVal z As Integ
 
     On Error Resume Next
     
+    ed.board.bSizeX = x
+    ed.board.bSizeY = y
+    ed.board.bSizeL = z
+    
+    If ed.board.coordType And ISO_ROTATED Then
+        'Board matrix is square.
+        x = x + y
+        y = x
+    End If
+    
     ReDim ed.board.board(x, y, z)
     ReDim ed.board.ambientRed(x, y, z)
     ReDim ed.board.ambientGreen(x, y, z)
@@ -1231,9 +1250,6 @@ Public Sub BoardSetSize(ByVal x As Integer, ByVal y As Integer, ByVal z As Integ
     ReDim ed.board.tiletype(x, y, z)
     ReDim ed.bLayerOccupied(z)
 
-    ed.board.bSizeX = x
-    ed.board.bSizeY = y
-    ed.board.bSizeL = z
 End Sub
 
 '=========================================================================
