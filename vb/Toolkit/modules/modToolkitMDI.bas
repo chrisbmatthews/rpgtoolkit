@@ -124,6 +124,8 @@ Public rpgcodeListOccupied() As Boolean
 Public openTileEditors() As tileedit
 Public openTileEditorDocs() As tileDoc
 
+Public g_boardClipboard As TKBoardClipboard     'One clip for all boards.
+
 '=========================================================================
 ' Editor vector procedures
 '=========================================================================

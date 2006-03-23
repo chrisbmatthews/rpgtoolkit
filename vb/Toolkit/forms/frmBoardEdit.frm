@@ -3,7 +3,7 @@ Begin VB.Form frmBoardEdit
    Caption         =   "frmBoardEdit"
    ClientHeight    =   6465
    ClientLeft      =   60
-   ClientTop       =   450
+   ClientTop       =   750
    ClientWidth     =   10200
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
@@ -80,6 +80,21 @@ Begin VB.Form frmBoardEdit
          X2              =   128
          Y1              =   64
          Y2              =   64
+      End
+   End
+   Begin VB.Menu mnuEdit 
+      Caption         =   "Edit"
+      Begin VB.Menu mnuCopy 
+         Caption         =   "Copy"
+         Shortcut        =   ^C
+      End
+      Begin VB.Menu mnuCut 
+         Caption         =   "Cut"
+         Shortcut        =   ^X
+      End
+      Begin VB.Menu mnuPaste 
+         Caption         =   "Paste"
+         Shortcut        =   ^V
       End
    End
 End
@@ -390,6 +405,20 @@ Private Sub checkSave(): On Error Resume Next
     End If
 End Sub
 
+Private Sub mnuCopy_Click(): On Error Resume Next
+    Call clipCopy(g_boardClipboard, m_sel, True)
+End Sub
+Private Sub mnuCut_Click(): On Error Resume Next
+    Call clipCopy(g_boardClipboard, m_sel, True)
+    Call clipCut(g_boardClipboard, True)
+End Sub
+Private Sub mnuPaste_Click(): On Error Resume Next
+    'Start a move, retaining selection information.
+    m_sel.xDrag = m_sel.x1
+    m_sel.yDrag = m_sel.y1
+    m_sel.status = SS_PASTING
+End Sub
+
 '========================================================================
 '========================================================================
 Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
@@ -410,6 +439,16 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
                         Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor)
                     End If
             End Select 'Key
+        Case BS_TILE
+            Select Case keyCode
+                Case vbKeyDelete, vbKeyBack, vbKeyD
+                    'Create a local clipboard and cut to it.
+                    Dim clip As TKBoardClipboard
+                    Call clipCopy(clip, m_sel, True)
+                    Call clipCut(clip, True)
+                Case vbKeyEscape
+                    Call m_sel.clear(Me)
+            End Select 'Key
     End Select 'Setting
 End Sub
 Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
@@ -420,7 +459,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
     'Process tools common to all settings.
     Select Case m_ed.optTool
         Case BT_SELECT
-            If Button = vbLeftButton And m_ed.optSetting <> BS_GENERAL Then
+            If Button <= vbLeftButton And m_ed.optSetting <> BS_GENERAL Then
                 'Making a selection.
                 Select Case m_sel.status
                     Case SS_NONE, SS_FINISHED
@@ -434,8 +473,9 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                                     pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
                                     pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
                                     
-                                    'Initiate copy.
-                                    
+                                    'Prepare a copy.
+                                    g_boardClipboard.origin.x = m_sel.x1
+                                    g_boardClipboard.origin.y = m_sel.y1
                                     
                                 Case BS_VECTOR, BS_PROGRAM
                                     'Determine selected points.
@@ -453,7 +493,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                         m_sel.x2 = pxCoord.x: m_sel.y2 = pxCoord.y
                         Call m_sel.draw(Me, m_ed.pCEd)
                         
-                    Case SS_MOVING
+                    Case SS_MOVING, SS_PASTING
                         Select Case m_ed.optSetting
                             Case BS_TILE
                                 'Snap to grid.
@@ -512,7 +552,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
       
     Select Case m_ed.optTool
         Case BT_SELECT
-            If Button <> 0 Then Call picBoard_MouseDown(Button, Shift, x, y)
+            If Button <> 0 Or m_sel.status = SS_PASTING Then Call picBoard_MouseDown(Button, Shift, x, y)
             Exit Sub
     End Select
     
@@ -536,15 +576,27 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
 End Sub
 Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single) ':on error resume next
          
+    If Button <> vbLeftButton Then Exit Sub
+            
     Select Case m_ed.optTool
         Case BT_SELECT
-            If Button = vbLeftButton Then
-                If m_ed.optSetting = BS_TILE And m_sel.status = SS_DRAWING Then
-                    Call m_sel.expandToGrid(m_ed.board.coordType, m_ed.board.bSizeX)
-                End If
-                m_sel.status = SS_FINISHED
-                Call m_sel.draw(Me, m_ed.pCEd)
+            If m_ed.optSetting = BS_TILE Then
+                Select Case m_sel.status
+                    Case SS_DRAWING
+                        Call m_sel.expandToGrid(m_ed.board.coordType, m_ed.board.bSizeX)
+                    Case SS_MOVING, SS_PASTING
+                        If m_sel.status = SS_MOVING Then
+                            'Perform a cut/copy-paste when dragging tiles.
+                            Call clipCopy(g_boardClipboard, m_sel, False)
+                            If Shift = 0 Then Call clipCut(g_boardClipboard, False)
+                        End If
+                        m_sel.status = SS_FINISHED
+                        Call clipPaste(g_boardClipboard, m_sel)
+                End Select
             End If
+            Call m_sel.reorientate
+            m_sel.status = SS_FINISHED
+            Call m_sel.draw(Me, m_ed.pCEd)
     End Select
          
     Exit Sub
@@ -1388,4 +1440,108 @@ Private Sub vectorSubdivideSelectionAll(ByRef sel As CBoardSelection) ':on error
         Next i
         Call drawBoard
     End If
+End Sub
+
+'========================================================================
+'========================================================================
+Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelection, ByVal bSetOrigin As Boolean) ':on error resume next
+    Dim t1 As POINTAPI, t2 As POINTAPI, d As POINTAPI, O As POINTAPI
+    Dim i As Long, j As Long, k As Long, file As String
+    
+    'Set the origin of the copy.
+    'Allow for a tile drag-drop: set the origin at the beginning of the drag and recreate the
+    'original area from the selection dimensions.
+    If bSetOrigin Then
+        clip.origin.x = sel.x1
+        clip.origin.y = sel.y1
+    End If
+    O = clip.origin
+    d.x = sel.x2 - sel.x1
+    d.y = sel.y2 - sel.y1
+    
+    Select Case m_ed.optSetting
+        Case BS_TILE
+            ReDim clip.tiles(0)
+            k = 0
+            If isIsometric(m_ed.board.coordType) Then
+                'Find the centres of the contained tiles by pixel coordinates.
+                i = O.x + 32
+                Do While i < O.x + d.x
+                    j = O.y + IIf(i - O.x Mod 64 = 0, 32, 16)
+                    Do While j < O.y + d.y
+                        t1 = boardPixelToTile(i, j, m_ed.board.coordType, m_ed.board.bSizeX)
+                        file = BoardGetTile(t1.x, t1.y, m_ed.currentLayer, m_ed.board)
+                        If file <> vbNullString Then
+                            ReDim Preserve clip.tiles(k)
+                            'Save tile coordinates.
+                            clip.tiles(k).brdCoord.x = t1.x
+                            clip.tiles(k).brdCoord.y = t1.y
+                            clip.tiles(k).file = file
+                            k = k + 1
+                        End If
+                        j = j + 32
+                    Loop
+                    i = i + 32
+                Loop
+            Else
+                t1 = boardPixelToTile(O.x, O.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                t2 = boardPixelToTile(O.x + d.x, O.y + d.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                For i = t1.x To t2.x - 1
+                    For j = t1.y To t2.y - 1
+                        file = BoardGetTile(i, j, m_ed.currentLayer, m_ed.board)
+                        If file <> vbNullString Then
+                            ReDim Preserve clip.tiles(k)
+                            clip.tiles(k).brdCoord.x = i
+                            clip.tiles(k).brdCoord.y = j
+                            clip.tiles(k).file = file
+                            k = k + 1
+                        End If
+                    Next j
+                Next i
+            End If 'isIsometric()
+    End Select
+End Sub
+Private Sub clipCut(ByRef clip As TKBoardClipboard, ByVal bRedraw As Boolean) ':on error resume next
+    Dim i As Long
+    For i = 0 To UBound(clip.tiles)
+        'Cut the current tile.
+        Call BoardSetTile( _
+            clip.tiles(i).brdCoord.x, clip.tiles(i).brdCoord.y, _
+            m_ed.currentLayer, _
+            vbNullString, _
+            m_ed.board _
+        )
+    Next i
+    If bRedraw Then
+        Call BRDRender(VarPtr(m_ed), picBoard, False, m_ed.currentLayer)
+        Call drawBoard
+    End If
+End Sub
+Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelection) ':on error resume next
+    Dim dr As POINTAPI, pt As POINTAPI, i As Long
+    
+    'Displacement of the copied area.
+    dr.x = sel.x1 - clip.origin.x
+    dr.y = sel.y1 - clip.origin.y
+    
+    Select Case m_ed.optSetting
+        Case BS_TILE
+            For i = 0 To UBound(clip.tiles)
+                'Origin.
+                pt = tileToBoardPixel(clip.tiles(i).brdCoord.x, clip.tiles(i).brdCoord.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                'Get new tile from new position in pixels.
+                pt = boardPixelToTile(pt.x + dr.x, pt.y + dr.y, m_ed.board.coordType, m_ed.board.bSizeX)
+                Call BoardSetTile( _
+                    pt.x, pt.y, _
+                    m_ed.currentLayer, _
+                    clip.tiles(i).file, _
+                    m_ed.board _
+                )
+                'm_ed.board.ambientRed(x, y, m_ed.currentLayer) = m_ed.ambientR
+                'm_ed.board.ambientGreen(x, y, m_ed.currentLayer) = m_ed.ambientG
+                'm_ed.board.ambientBlue(x, y, m_ed.currentLayer) = m_ed.ambientB
+            Next i
+            Call BRDRender(VarPtr(m_ed), picBoard, False, m_ed.currentLayer)
+    End Select
+    Call drawBoard
 End Sub

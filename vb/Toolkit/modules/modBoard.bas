@@ -167,6 +167,7 @@ Public Enum eBrdSelectStatus
     SS_DRAWING
     SS_FINISHED
     SS_MOVING
+    SS_PASTING
 End Enum
 Public Type brdSelection
     status As eBrdSelectStatus            'Status of selection.
@@ -244,6 +245,31 @@ Public Type TKBoardEditorData
     itmCondition As Integer               'conditions the item set window- if -1, then we start a new itm.    theData As TKBoard
     autotiler As Integer                  'is autotiler enabled?
     
+End Type
+
+
+'=========================================================================
+' Board clipboard
+'=========================================================================
+Public Type TKBoardClipboardTile
+    file As String
+    brdCoord As POINTAPI
+    'Colour, tiletype.
+End Type
+
+Public Type TKBoardClipboard
+    tiles() As TKBoardClipboardTile
+    origin As POINTAPI
+    vector As CVector
+End Type
+
+
+'=========================================================================
+' Converted vector from actkrt3
+'=========================================================================
+Public Type TKConvertedVector
+    pts() As POINTAPI
+    type As Long
 End Type
 
 '=========================================================================
