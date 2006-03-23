@@ -111,7 +111,7 @@ Private Declare Function BRDRenderTileToBoard Lib "actkrt3.dll" (ByVal pCBoard A
 Private Declare Function BRDRenderTile Lib "actkrt3.dll" (ByVal filename As String, ByVal bIsometric As Boolean, ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal backColor As Long) As Long
 
 Private m_ed As TKBoardEditorData
-Private m_sel As New CBoardSelection ' Crappy, but better than nothing.
+Private m_sel As CBoardSelection
 
 '=========================================================================
 '=========================================================================
