@@ -19,8 +19,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Type TKVectorPoint
-    X As Long
-    Y As Long
+    x As Long
+    y As Long
     bSel As Boolean                     'Editor data: Is the point in a selection?
 End Type
 
@@ -40,8 +40,17 @@ End Sub
 Public Property Get tiletype() As eTileType: On Error Resume Next
     tiletype = m_tiletype
 End Property
+Public Property Let tiletype(ByVal tt As eTileType): On Error Resume Next
+    m_tiletype = tt
+End Property
 Public Property Get layer() As Long: On Error Resume Next
     layer = m_layer
+End Property
+Public Property Get attributes() As Long: On Error Resume Next
+    attributes = m_attributes
+End Property
+Public Property Let attributes(ByVal attr As Long): On Error Resume Next
+    m_attributes = attr
 End Property
 
 '=========================================================================
@@ -57,8 +66,8 @@ Public Sub addPoint(ByVal xPxBrd As Long, ByVal yPxBrd As Long) ': on error resu
         i = UBound(m_pts) + 1
     End If
     ReDim Preserve m_pts(i)
-    m_pts(i).X = xPxBrd
-    m_pts(i).Y = yPxBrd
+    m_pts(i).x = xPxBrd
+    m_pts(i).y = yPxBrd
 End Sub
 
 '=========================================================================
@@ -72,22 +81,22 @@ Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color
     Dim i As Long, pt1 As POINTAPI, pt2 As POINTAPI
     'Straight onto the hdc.
     For i = 0 To UBound(m_pts) - 1
-        pt1.X = m_pts(i).X: pt1.Y = m_pts(i).Y
-        pt2.X = m_pts(i + 1).X: pt2.Y = m_pts(i + 1).Y
-        Call pCEd.boardPixelToScreen(pt1.X, pt1.Y)
-        Call pCEd.boardPixelToScreen(pt2.X, pt2.Y)
-        pic.Line (pt1.X, pt1.Y)-(pt2.X, pt2.Y)
-        pic.currentX = pt1.X
-        pic.currentY = pt1.Y
+        pt1.x = m_pts(i).x: pt1.y = m_pts(i).y
+        pt2.x = m_pts(i + 1).x: pt2.y = m_pts(i + 1).y
+        Call pCEd.boardPixelToScreen(pt1.x, pt1.y)
+        Call pCEd.boardPixelToScreen(pt2.x, pt2.y)
+        pic.Line (pt1.x, pt1.y)-(pt2.x, pt2.y)
+        pic.currentX = pt1.x
+        pic.currentY = pt1.y
         pic.Print str(i)
     Next i
-    pic.currentX = pt2.X
-    pic.currentY = pt2.Y
+    pic.currentX = pt2.x
+    pic.currentY = pt2.y
     pic.Print str(i)
     If m_bClosed Then
-        pt1.X = m_pts(0).X: pt1.Y = m_pts(0).Y
-        Call pCEd.boardPixelToScreen(pt1.X, pt1.Y)
-        pic.Line (pt1.X, pt1.Y)-(pt2.X, pt2.Y)
+        pt1.x = m_pts(0).x: pt1.y = m_pts(0).y
+        Call pCEd.boardPixelToScreen(pt1.x, pt1.y)
+        pic.Line (pt1.x, pt1.y)-(pt2.x, pt2.y)
     End If
     pic.ForeColor = oldColor
 End Sub
@@ -116,7 +125,7 @@ Public Sub deleteSelection(ByRef sel As CBoardSelection) ':on error resume next
 
     ReDim pts(0)
     For i = 0 To UBound(m_pts)
-        If Not sel.containsPoint(m_pts(i).X, m_pts(i).Y) Then
+        If Not sel.containsPoint(m_pts(i).x, m_pts(i).y) Then
             pts(UBound(pts)) = m_pts(i)
             ReDim Preserve pts(UBound(pts) + 1)
         End If
@@ -139,7 +148,7 @@ End Sub
 '=========================================================================
 ' Extend a point in a selection. Point must be an open start/endpoint
 '=========================================================================
-Public Function extendSelection(ByRef sel As CBoardSelection, ByRef X As Long, ByRef Y As Long) As Boolean ':on error resume next
+Public Function extendSelection(ByRef sel As CBoardSelection, ByRef x As Long, ByRef y As Long) As Boolean ':on error resume next
     'Extend the first endpoint found.
     Dim i As Long, j As Long, ub As Long, bEx As Boolean, pts() As TKVectorPoint
     
@@ -148,7 +157,7 @@ Public Function extendSelection(ByRef sel As CBoardSelection, ByRef X As Long, B
     'Only allow extension of open vectors from the back or front.
     ub = UBound(m_pts)
     
-    If sel.containsPoint(m_pts(0).X, m_pts(0).Y) Then
+    If sel.containsPoint(m_pts(0).x, m_pts(0).y) Then
         'Reverse the array to append from the end.
         ReDim pts(ub)
         For j = 0 To ub
@@ -158,14 +167,14 @@ Public Function extendSelection(ByRef sel As CBoardSelection, ByRef X As Long, B
         extendSelection = True
     End If
     
-    If sel.containsPoint(m_pts(ub).X, m_pts(ub).Y) Then
+    If sel.containsPoint(m_pts(ub).x, m_pts(ub).y) Then
         extendSelection = True
     End If
     
     If extendSelection Then
         'Return the start-point of the new vector.
-        X = m_pts(ub).X
-        Y = m_pts(ub).Y
+        x = m_pts(ub).x
+        y = m_pts(ub).y
     End If
         
 End Function
@@ -180,8 +189,8 @@ Public Sub moveSelection(ByVal dx As Long, ByVal dy As Long) ':on error resume n
     For i = 0 To UBound(m_pts)
         If m_pts(i).bSel Then
             ' Don't do a CBoardSelection.containsPoint() test because this may pick up new points on the move.
-            m_pts(i).X = m_pts(i).X + dx
-            m_pts(i).Y = m_pts(i).Y + dy
+            m_pts(i).x = m_pts(i).x + dx
+            m_pts(i).y = m_pts(i).y + dy
         End If
     Next i
 End Sub
@@ -193,7 +202,7 @@ Public Sub setSelection(ByRef sel As CBoardSelection) ': on error resume next
     Dim i As Long
     If m_tiletype = TT_NULL Then Exit Sub
     For i = 0 To UBound(m_pts)
-        m_pts(i).bSel = sel.containsPoint(m_pts(i).X, m_pts(i).Y)
+        m_pts(i).bSel = sel.containsPoint(m_pts(i).x, m_pts(i).y)
     Next i
 End Sub
 
@@ -208,13 +217,13 @@ Public Sub subdivideSelection(ByRef sel As CBoardSelection) ':on error resume ne
     i = UBound(m_pts)
     For j = 0 To UBound(m_pts)
         
-        If sel.containsPoint(m_pts(i).X, m_pts(i).Y) And _
-            sel.containsPoint(m_pts(j).X, m_pts(j).Y) And _
+        If sel.containsPoint(m_pts(i).x, m_pts(i).y) And _
+            sel.containsPoint(m_pts(j).x, m_pts(j).y) And _
             ((i > j And m_bClosed) Or i < j) Then
             
             'Add an extra point in between.
-            pts(UBound(pts)).X = Round((m_pts(i).X + m_pts(j).X) / 2)
-            pts(UBound(pts)).Y = Round((m_pts(i).Y + m_pts(j).Y) / 2)
+            pts(UBound(pts)).x = Round((m_pts(i).x + m_pts(j).x) / 2)
+            pts(UBound(pts)).y = Round((m_pts(i).y + m_pts(j).y) / 2)
             ReDim Preserve pts(UBound(pts) + 1)
         End If
         

@@ -8,6 +8,7 @@ Option Explicit
 
 Private Declare Function BRDPixelToTile Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal brdSizeX As Integer) As Long
 Private Declare Function BRDTileToPixel Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal brdSizeX As Integer) As Long
+Private Declare Function BRDVectorize Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByRef vectors() As TKConvertedVector) As Long
 
 '=========================================================================
 ' A board-set image [tagVBBoardImage]
@@ -270,6 +271,9 @@ End Type
 Public Type TKConvertedVector
     pts() As POINTAPI
     type As Long
+    layer As Long
+    attributes As Long
+    closed As Boolean
 End Type
 
 '=========================================================================
@@ -363,3 +367,56 @@ End Function
 Public Function isIsometric(ByVal coordType As Long) As Boolean ': On Error Resume Next
     isIsometric = (coordType And (ISO_ROTATED Or ISO_STACKED))
 End Function
+
+Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKBoard) As CVector  ':on error resume next
+    Dim i As Integer, bFound As Boolean
+   
+    Select Case optSetting
+        Case BS_VECTOR
+            '.vectors is always dimensioned.
+            For i = 0 To UBound(board.vectors)
+                If board.vectors(i) Is Nothing Then
+                    Set board.vectors(i) = New CVector
+                End If
+                If board.vectors(i).tiletype = TT_NULL Then
+                    bFound = True
+                    Exit For
+                End If
+            Next i
+            If Not bFound Then
+                ReDim Preserve board.vectors(i)
+                Set board.vectors(i) = New CVector
+            End If
+            Set vectorCreate = board.vectors(i)
+        Case BS_PROGRAM
+            '.prgs is always dimensioned.
+            For i = 0 To UBound(board.prgs)
+                If board.prgs(i).vBase.tiletype = TT_NULL Then
+                    bFound = True
+                    Exit For
+                End If
+            Next i
+            If Not bFound Then
+                ReDim Preserve board.prgs(i)
+            End If
+            Set vectorCreate = board.prgs(i).vBase
+    End Select
+    
+End Function
+Public Sub vectorize(ByRef ed As TKBoardEditorData) ': On Error Resume Next
+
+    Dim vects() As TKConvertedVector, i As Long, j As Long, vector As CVector
+    ReDim vects(0)
+    
+    Call BRDVectorize(ed.pCBoard, VarPtr(ed.board), vects())
+    
+    For i = 0 To UBound(vects)
+        Set vector = vectorCreate(BS_VECTOR, ed.board)
+        For j = 0 To UBound(vects(i).pts)
+            Call vector.addPoint(vects(i).pts(j).x, vects(i).pts(j).y)
+        Next j
+        vector.tiletype = vects(i).type
+        Call vector.closeVector(Not vects(i).closed, vects(i).layer)
+        vector.attributes = vects(i).attributes
+    Next i
+End Sub
