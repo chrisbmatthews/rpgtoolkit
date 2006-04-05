@@ -18,7 +18,6 @@
 #include "../misc/misc.h"
 #include "../../tkCommon/images/FreeImage.h"
 #include "../../tkCommon/tkgfx/CTile.h"
-#include <malloc.h>
 
 /*
  * Open a board. Note for old versions, all co-ordinates must be transformed into
@@ -140,7 +139,7 @@ bool tagBoard::open(const STRING fileName)
 						ambientRed[x][y][l] = rr;
 						ambientGreen[x][y][l] = gg;
 						ambientBlue[x][y][l] = bl;
-						tiletype[x][y][l] = tt;
+						tiletype[l][y][x] = tt;
 						std::vector<int>::const_iterator i = anmTileLUTIndices.begin();
 						for (; i != anmTileLUTIndices.end(); ++i)
 						{
@@ -176,7 +175,7 @@ bool tagBoard::open(const STRING fileName)
 					file >> ambientRed[x][y][l];
 					file >> ambientGreen[x][y][l];
 					file >> ambientBlue[x][y][l];
-					file >> tiletype[x][y][l];
+					file >> tiletype[l][y][x];
 					std::vector<int>::const_iterator i = anmTileLUTIndices.begin();
 					for (; i != anmTileLUTIndices.end(); ++i)
 					{
@@ -427,25 +426,12 @@ lutEnd:
 void tagBoard::createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const
 {
 	pPrg->vBase = CVector();
-	if (coordType & ISO_STACKED)
-	{
-		// Column offset (old co-ordinate system).
-		const double dx = (pObj->y % 2 ? 0 : 32);
 
-		// Isometric diamond at the location (3.0-).
-		pPrg->vBase.push_back((pObj->x - 1.0) * 64.0 - dx, (pObj->y - 1.0) * 16.0);
-		pPrg->vBase.push_back((pObj->x - 0.5) * 64.0 - dx, (pObj->y - 2.0) * 16.0);
-		pPrg->vBase.push_back(pObj->x * 64.0 - dx, (pObj->y - 1.0) * 16.0);
-		pPrg->vBase.push_back((pObj->x - 0.5) * 64.0 - dx, pObj->y * 16.0);
-	}
-	else
+	std::vector<CONV_POINT> pts = tileToVector(pObj->x, pObj->y, coordType);
+	std::vector<CONV_POINT>::iterator i = pts.begin();
+	for (; i != pts.end(); ++i)
 	{
-		// Create a 32x32 vector at the location.
-		// Order: top-left, bot-left, bot-right, top-right.
-		pPrg->vBase.push_back((pObj->x - 1.0) * 32.0, (pObj->y - 1.0) * 32.0);
-		pPrg->vBase.push_back((pObj->x - 1.0) * 32.0, pObj->y * 32.0);
-		pPrg->vBase.push_back(pObj->x * 32.0, pObj->y * 32.0);
-		pPrg->vBase.push_back(pObj->x * 32.0, (pObj->y - 1.0) * 32.0);
+		pPrg->vBase.push_back(i->x, i->y);
 	}
 	pPrg->vBase.close(true);
 }
@@ -457,169 +443,52 @@ void tagBoard::createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const
  */
 void tagBoard::vectorize(const unsigned int layer)
 {
-	unsigned int i, j, width = bSizeX, height = bSizeY;
+	std::vector<LPCONV_VECTOR> vects = vectorizeLayer(
+		tiletype[layer],
+		bSizeX,
+		bSizeY,
+		coordType
+	);
 
-	if (coordType & ISO_STACKED)
+	std::vector<LPCONV_VECTOR>::iterator i = vects.begin();
+	for (; i != vects.end(); ++i)
 	{
-		// For old isometrics transform the layer to the rotated
-		// co-ordinate system so we can apply the same routine.
-
-		// Determine the transformed dimensions.
-		double x = double(bSizeX), y = double(bSizeY);
-		coords::isometricTransform(x, y, ISO_STACKED, ISO_ROTATED, bSizeX);
-
-		// New iso board is effectively square but with many empty entries.
-		width = height = (unsigned int)x;
-	}
-
-	bool *const pFinished = (bool *)_alloca(width * height);
-	memset(pFinished, 0, width * height);
-
-	// Local array of the tiletype.
-	int *const pTypes = (int *)_alloca(width * height * sizeof(int));
-	memset(pTypes, 0, width * height * sizeof(int));
-
-	// Create a new array to work from (iso rotated, or the standard 2D).
-	for (i = 0; i < bSizeX; ++i)
-	{
-		for (j = 0; j < bSizeY; ++j)
-		{
-			if (coordType & ISO_STACKED)
-			{
-				// Transform this co-ordinate.
-				double x = double(i + 1), y = double(j + 1);
-				coords::isometricTransform(x, y, ISO_STACKED, ISO_ROTATED, bSizeX);
-				// Enter its type in the new array.
-				pTypes[height * int(x - 1) + int(y - 1)] = tiletype[i + 1][j + 1][layer];
-			}
-			else
-			{
-				// Just copy the value across.
-				pTypes[height * i + j] = tiletype[i + 1][j + 1][layer];
-			}
-		}
-	}
-
-	while (true)
-	{
-		/*
-		 * Working southeast from the top-left corner, locate
-		 * the first tile that is neither "normal" nor included
-		 * in any vector.
-		 */
-		int x = -1, y, i, j;
-		for (i = 0; i < width; ++i)
-		{
-			for (j = 0; j < height; ++j)
-			{
-				if (!pFinished[height * i + j] && pTypes[height * i + j])
-				{
-					// More effective method?
-					x = i;
-					y = j;
-					i = width + 1;
-					break;
-				}
-			}
-		}
-		// If there are none left, exit.
-		if (x == -1) break;
-
-		// Store current x and y, and the tile type as this position.
-		int type = pTypes[height * x + y], origX = x, origY = y;
-
-		// Find the lowest point where this type stops.
-		while ((y < height) && (pTypes[height * x + y + 1] == type)) y++;
-
-		while (x < width)
-		{
-			/*
-			 * Check whether this column, to the height of the first
-			 * one found, contains the type of the current vector.
-			 */
-			bool column = true;
-			for (i = origY; i <= y; i++)
-			{
-				if (pTypes[height * (x + 1) + i] != type)
-				{
-					// It doesn't, so stop here.
-					column = false;
-					break;
-				}
-			}
-			if (!column) break;
-			// Move onto the next column.
-			x++;
-		}
-
-		// Increment to set up for vector creation.
-		x++; y++;
-
-		// Mark off the tiles in this rectangle as in a vector.
-		for (i = origX; i < x; i++)
-		{
-			memset(pFinished + height * i + origY, 1, y - origY);
-		}
-
 		// Create the vector and add it to the board's list.
 		BRD_VECTOR vector;
 		vector.layer = layer;
-		vector.type = TILE_TYPE(type);
+		vector.type = TILE_TYPE((*i)->type);
 
-		if (type >= STAIRS1 && type <= STAIRS8)
+		if ((*i)->type >= STAIRS1 && (*i)->type <= STAIRS8)
 		{
 			// Old stairs are stored as targetLayer + 10.
-			vector.attributes = type - 10;
+			vector.attributes = (*i)->type - 10;
 			vector.type = TT_STAIRS;
 		}
-
-		if (coordType & ISO_STACKED)
+		else if (vector.type == TT_UNDER)
 		{
-			// Order: top, left, bottom, right.
-			vector.pV = new CVector((origX - origY + bSizeX) * 32, (origX + origY - bSizeX) * 16);
-			vector.pV->push_back((origX - y + bSizeX) * 32, (origX + y - bSizeX) * 16);
-			vector.pV->push_back((x - y + bSizeX) * 32, (x + y - bSizeX) * 16);
-			vector.pV->push_back((x - origY + bSizeX) * 32, (x + origY - bSizeX) * 16);
-			vector.pV->close(true);
-			vectors.push_back(vector);
+			// Default for old board loading.
+			vector.attributes = TA_BRD_BACKGROUND;
+		}
+
+		vector.pV = new CVector();
+
+		std::vector<CONV_POINT>::iterator j = (*i)->pts.begin();
+		for (; j != (*i)->pts.end(); ++j)
+		{
+			vector.pV->push_back(j->x, j->y);
+		}
+		if ((*i)->type == NORTH_SOUTH || (*i)->type == EAST_WEST)
+		{
+			vector.type = TT_SOLID;		
+			vector.pV->close(false);
 		}
 		else
 		{
-			if (type == NORTH_SOUTH)
-			{
-				vector.type = TT_SOLID;
-				// Vertical lines.
-				for (i = origX; i <= x; ++i)
-				{
-					vector.pV = new CVector(i * 32, origY * 32);
-					vector.pV->push_back(i * 32, y * 32);
-					vector.pV->close(false);
-					vectors.push_back(vector);
-				}
-			}
-			else if (type == EAST_WEST)
-			{
-				vector.type = TT_SOLID;
-				// Horizontal lines.
-				for (i = origY; i <= y; ++i)
-				{
-					vector.pV = new CVector(origX * 32, i * 32);
-					vector.pV->push_back(x * 32, i * 32);
-					vector.pV->close(false);
-					vectors.push_back(vector);
-				}
-			}
-			else
-			{
-				// Order: top-left, bot-left, bot-right, top-right.
-				vector.pV = new CVector(origX * 32, origY * 32);
-				vector.pV->push_back(origX * 32, y * 32);
-				vector.pV->push_back(x * 32, y * 32);
-				vector.pV->push_back(x * 32, origY * 32);
-				vector.pV->close(true);
-				vectors.push_back(vector);
-			}
+			vector.pV->close(true);
 		}
+		vectors.push_back(vector);
+
+		delete *i;
 	}
 }
 
@@ -1127,6 +996,7 @@ void tagBoard::setSize(const int width, const int height, const int depth)
 	bSizeX = width;
 	bSizeY = height;
 	bSizeL = depth;
+	// tbd Should probably reverse ([z][y][x]) these too.
 	{
 		VECTOR_SHORT row;
 		VECTOR_SHORT2D face;
@@ -1145,10 +1015,10 @@ void tagBoard::setSize(const int width, const int height, const int depth)
 		VECTOR_CHAR row;
 		VECTOR_CHAR2D face;
 		unsigned int i;
-		for (i = 0; i <= bSizeL; i++) row.push_back(_T('\0'));
+		for (i = 0; i <= bSizeX; i++) row.push_back(_T('\0'));
 		for (i = 0; i <= bSizeY; i++) face.push_back(row);
 		tiletype.clear();
-		for (i = 0; i <= bSizeX; i++) tiletype.push_back(face);
+		for (i = 0; i <= bSizeL; i++) tiletype.push_back(face);
 	}
 }
 

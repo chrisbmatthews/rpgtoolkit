@@ -13,6 +13,7 @@ typedef struct tagBoard BOARD, *LPBOARD;
 class CItem;
 class CThread;
 
+#include "../../tkCommon/movement/board conversion.h"
 #include "../../tkCommon/movement/coords.h"
 #include "../../tkCommon/strings.h"
 #include "../movement/CVector/CVector.h"
@@ -168,7 +169,7 @@ typedef struct tagBoard
 	VECTOR_SHORT3D ambientBlue;						// Ambient tile blue.
 	typedef std::vector<char> VECTOR_CHAR;
 	typedef std::vector<VECTOR_CHAR> VECTOR_CHAR2D;
-	std::vector<VECTOR_CHAR2D> tiletype;			// Tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8.
+	std::vector<VECTOR_CHAR2D> tiletype;			// Note order: [z][y][x]
 	STRING brdBack;									// Board background img (parallax layer).
 	STRING brdFore;									// Board foreground image (parallax).
 	STRING borderBack;								// Border background img. (TBD: obselete).
