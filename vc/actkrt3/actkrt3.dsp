@@ -124,6 +124,10 @@ SOURCE=.\StdAfx.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE="..\tkCommon\movement\board conversion.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE=.\tkgfx\CBoard.cpp
 
 !IF  "$(CFG)" == "actkrt3 - Win32 Release"
@@ -159,6 +163,10 @@ SOURCE=.\tkgfx\Tkgfx.cpp
 # Begin Group "tkgfx - header"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE="..\tkCommon\movement\board conversion.h"
+# End Source File
 # Begin Source File
 
 SOURCE=.\tkgfx\CBoard.h
