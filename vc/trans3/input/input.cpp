@@ -114,8 +114,8 @@ POINT getMouseClick(const bool bWait)
  */
 POINT getMouseMove(void)
 {
-	const int x = g_mouse.move.x;
-	while (g_mouse.move.x == x)
+	const int x = g_mouse.move.x, y = g_mouse.move.y;
+	while (g_mouse.move.x == x && y == g_mouse.move.y)
 	{
 		processEvent();
 	}
