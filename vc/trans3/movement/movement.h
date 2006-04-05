@@ -64,23 +64,6 @@ enum GAME_STATE
 #define WALK_SW _T("walk_sw")
 
 /*
- * Pre-3.0.7 defines - for board conversion.
- */
-#define NORMAL 0
-#define SOLID 1
-#define UNDER 2
-#define NORTH_SOUTH 3
-#define EAST_WEST 4
-#define STAIRS1 11
-#define STAIRS2 12
-#define STAIRS3 13
-#define STAIRS4 14
-#define STAIRS5 15
-#define STAIRS6 16
-#define STAIRS7 17
-#define STAIRS8 18
-
-/*
  * Idle information for sprites.
  */
 typedef struct tagIdleInfo
