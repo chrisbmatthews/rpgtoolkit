@@ -1605,7 +1605,7 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_TILETYPE:
 			try
 			{
-				*pRet = g_pBoard->tiletype[arrayPos1][arrayPos2][arrayPos3];
+				*pRet = g_pBoard->tiletype[arrayPos3][arrayPos2][arrayPos1];
 			}
 			catch (...)
 			{
@@ -1833,7 +1833,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			// Only pass pre-C++ tiletypes. Do not use with vectors.
 			try
 			{
-				g_pBoard->tiletype[arrayPos1][arrayPos2][arrayPos3] = nValue;
+				g_pBoard->tiletype[arrayPos3][arrayPos2][arrayPos1] = nValue;
 				// Delete the vectors of this layer and re-generate.
 				g_pBoard->freeVectors(arrayPos3);
 				g_pBoard->vectorize(arrayPos3);
