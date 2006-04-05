@@ -13,6 +13,31 @@
 #include "../rpgcode/parser/parser.h"
 #include "../movement/CSprite/CSprite.h"
 
+
+/*
+ * Define some default sprite bases and activation areas.
+ */
+DB_POINT spriteBases[8][4] = 
+{
+	{{  0, 0}, {30, 0}, {30, 30}, {0, 30}},	// Tile/2D. 31x31.
+	{{  0, 0}, {96, 0}, {96, 96}, {0, 96}},	// Tile/2D activation. 97x97.
+	{{  0, 0}, {30, 0}, {30, 14}, {0, 14}},	// Pixel/2D. 31x15.
+	{{  0, 0}, {48, 0}, {48, 32}, {0, 32}},	// Pixel/2D activation. 49x33.
+	{{-31, 0}, {0, 15}, {31,  0}, {0,-15}},	// Tile/iso. 31x15 diamond.
+	{{-95, 0}, {0, 47}, {95,  0}, {0,-47}},	// Tile/iso activation. 31x15 diamond.
+	{{-15, 0}, {0,  7}, {15,  0}, {0, -7}},	// Pixel/iso. 31x15 diamond.
+	{{-31, 0}, {0, 15}, {31,  0}, {0,-15}}	// Pixel/iso activation. 63x31 diamond.
+};
+
+/*
+ * Offsets for above bases (see BASE_POINT_* constants).
+ */
+DB_POINT spriteBaseOffsets[8] = 
+{
+	{-15,-30}, {-48,-48}, {-15,-15}, {-24,-24},		// Tile (see above).
+	{  0,  0}, {  0,  0}, {  0,  0}, {  0,  0}		// Isometric.
+};
+
 /*
  * Fill out unoccupied stances with occupied stances.
  * *Much* more efficient than ::getStanceAnm!
@@ -168,13 +193,21 @@ STRING tagSpriteAttr::getStanceAnm(STRING stance)
 	return mapCustomGfx[stance].file;
 }
 
-void offset(DB_POINT pts[], const int size, const int x, const int y)
+void offset(DB_POINT *pts, const int size, const int x, const int y)
 {
 	for (int i = 0; i != size; ++i)
 	{
 		pts[i].x += x;
 		pts[i].y += y;
 	}
+}
+
+void tagSpriteAttr::defaultVector(DB_POINT *pts, const bool bIsometric, const bool bPixel, const bool bActivate)
+{
+	const int flags = (bIsometric ? 4:0) | (bPixel ? 2:0) | (bActivate ? 1:0);
+	for (int i = 0; i != sizeof(spriteBases[flags]) / sizeof(DB_POINT); ++i)
+		pts[i] = spriteBases[flags][i];
+	offset(pts, 4, spriteBaseOffsets[flags].x, spriteBaseOffsets[flags].y);
 }
 
 /*
@@ -191,88 +224,12 @@ void tagSpriteAttr::createVectors(const int activationType)
 	// Clear the vectors.
 	vBase = vActivate = CVector();
 
-	if (g_pBoard->isIsometric())
-	{
-		// Referenced with origin at centre of an isometric tile.
-		if (CSprite::m_bPxMovement)
-		{
-			const DB_POINT pts[] = {{-15, 0}, {0, 7}, {15, 0}, {0, -7}};
-			vBase.push_back(pts, 4);
-			vBase.close(true);
+	DB_POINT pts[4];
+	defaultVector(pts, g_pBoard->isIsometric(), CSprite::m_bPxMovement, false);
+	vBase.push_back(pts, 4);
+	vBase.close(true);
 
-			if (activationType & SPR_KEYPRESS)
-			{
-				const DB_POINT pts[] = {{-31, 0}, {0, 15}, {15, 0}, {0, -31}};
-				vActivate.push_back(pts, 4);
-				vActivate.close(true);
-			}
-			else
-			{
-				vActivate = vBase;
-			}
-		}
-		else
-		{
-			const DB_POINT pts[] = {{-31, 0}, {0, 15}, {31, 0}, {0, -15}};
-			vBase.push_back(pts, 4);
-			vBase.close(true);
-
-			if (activationType & SPR_KEYPRESS)
-			{
-				// Create a one tile-wide ring around player.
-				const DB_POINT pts[] = {{-95, 0}, {0, 47}, {95, 0}, {0, -47}};
-				vActivate.push_back(pts, 4);
-				vActivate.close(true);
-			}
-			else
-			{
-				vActivate = vBase;
-			}
-		} // if (pixel movement)
-
-	}
-	else
-	{
-		// Referenced with the origin at bottom-centre of tile.
-		if (CSprite::m_bPxMovement)
-		{
-			// 1/2 height base for pixel movement (or other?).
-			DB_POINT pts[] = {{0, 0}, {30, 0}, {30, 15}, {0, 15}};
-			offset(pts, 4, -15, -15);
-			vBase.push_back(pts, 4);
-			vBase.close(true);
-
-			if (activationType & SPR_KEYPRESS)
-			{
-				DB_POINT pts[] = {{0, 0}, {48, 0}, {48, 32}, {0, 32}};
-				offset(pts, 4, -24, -24);
-				vActivate.push_back(pts, 4);
-				vActivate.close(true);
-			}
-			else
-			{
-				vActivate = vBase;
-			}
-		}
-		else
-		{
-			DB_POINT pts[] = {{0, 0}, {30, 0}, {30, 30}, {0, 30}};
-			offset(pts, 4, -15, -30);
-			vBase.push_back(pts, 4);
-			vBase.close(true);
-
-			if (activationType & SPR_KEYPRESS)
-			{
-				// Create a one tile-wide ring around player.
-				DB_POINT pts[] = {{0, 0}, {96, 0}, {96, 96}, {0, 96}};
-				offset(pts, 4, -48, -48);
-				vActivate.push_back(pts, 4);
-				vActivate.close(true);
-			}
-			else
-			{
-				vActivate = vBase;
-			}
-		} // if (pixel movement)
-	} // if (g_pBoard->isIsometric())
+	defaultVector(pts, g_pBoard->isIsometric(), CSprite::m_bPxMovement, activationType & SPR_KEYPRESS);
+	vActivate.push_back(pts, 4);
+	vActivate.close(true);
 }

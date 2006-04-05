@@ -146,6 +146,14 @@ typedef struct tagSpriteAttr
 	// Create some default vectors for old versions of players, items.
 	void createVectors(const int activationType);
 
+	// Get a default vector.
+	static void defaultVector(
+		DB_POINT *pts, 
+		const bool bIsometric, 
+		const bool bPixel, 
+		const bool bActivate
+	);
+
 } SPRITE_ATTR;
 
 
