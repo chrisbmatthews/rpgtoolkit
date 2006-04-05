@@ -17,6 +17,7 @@
 #include "CTileAnim.h"		// Animated tiles
 #include "../../tkCommon/images/FreeImage.h"
 #include "../../tkCommon/tkGfx/CTile.h"
+#include "../../tkCommon/movement/board conversion.h"
 
 std::vector<CBoard *> g_boards;
 //--------------------------------------------------------------------------
@@ -165,6 +166,19 @@ LONG APIENTRY BRDRenderTile(
 	pTile->cnvDraw(&cnv, 0, 0);
 	cnv.Blt(reinterpret_cast<HDC>(hdc), x, y, SRCCOPY);
 	//pTile->gdiDraw(reinterpret_cast<HDC>(hdc), x, y);
+	return 0;
+}
+
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
+LONG APIENTRY BRDVectorize(
+	CBoard *pBoard, 
+	CONST LPVB_BOARD pData,
+	LPSAFEARRAY FAR *pVectors)
+{
+	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
+		if (*i == pBoard) pBoard->vectorize(pData, pVectors);
 	return 0;
 }
 
@@ -691,3 +705,105 @@ INLINE std::string CBoard::tile(
 	} // if (lut == 0)
 
 }
+
+//--------------------------------------------------------------------------
+//
+//--------------------------------------------------------------------------
+VOID CBoard::vectorize(
+	CONST LPVB_BOARD pBoard,
+	LPSAFEARRAY FAR *vbArray)
+{
+	m_pBoard = pBoard;
+
+	SAFEARRAYBOUND sabound = {1, 0};
+
+	if (SafeArrayRedim(*vbArray, &sabound) != S_OK) return;
+
+	// Start inserting from zero.
+	sabound.cElements = 0;
+
+	// Construct a vector array from the tiletype SAFEARRAY.
+	for (UINT z = 1; z <= m_pBoard->m_bSizeL; ++z)
+	{
+		VECTOR_CHAR row;
+		VECTOR_CHAR2D matrix;
+		 
+		for (UINT x = 0; x <= m_pBoard->m_bSizeY; ++x) row.push_back('\0');
+		for (UINT y = 0; y <= m_pBoard->m_bSizeX; ++y) matrix.push_back(row);
+
+		for (x = 1; x <= m_pBoard->m_bSizeX; ++x)
+		{
+			for (y = 1; y <= m_pBoard->m_bSizeY; ++y)
+			{
+				LONG indices[] = {x, y, z};
+				CHAR type = 0;
+				SafeArrayGetElement(m_pBoard->m_tileType, indices, LPVOID(&type));
+
+				matrix[y][x] = type;
+			}
+		}
+
+		// Make a vector of points for each new board vector.
+		std::vector<LPCONV_VECTOR> vects = vectorizeLayer(
+			matrix,
+			m_pBoard->m_bSizeX,
+			m_pBoard->m_bSizeY,
+			COORD_TYPE(m_pBoard->m_coordType)
+		);
+
+		// Increase the size of the vb array to accomodate.
+		LONG element = sabound.cElements;
+		sabound.cElements += vects.size();
+		if (SafeArrayRedim(*vbArray, &sabound) != S_OK) return;
+
+		// Create a SAFEARRAY for each set of board vector points.
+		std::vector<LPCONV_VECTOR>::iterator j = vects.begin();
+		for (; j != vects.end(); ++j, ++element)
+		{
+			// Get the pointer to the new vector in the vb array.
+			LPVB_CONV_VECTOR pCvVt = NULL;
+			SafeArrayPtrOfIndex(*vbArray, &element, (void **)&pCvVt);
+
+			// Create a new SAFEARRAY for the points.
+			if (SafeArrayAllocDescriptor(1, &pCvVt->pts) != S_OK) continue;
+
+			pCvVt->pts->cbElements = sizeof(CONV_POINT);
+			pCvVt->pts->fFeatures = FADF_EMBEDDED;
+			pCvVt->pts->rgsabound[0].cElements = (*j)->pts.size();
+			pCvVt->pts->rgsabound[0].lLbound = 0;
+
+			if (SafeArrayAllocData(pCvVt->pts) == S_OK)
+			{
+				// Insert the points into the new array.
+				LONG index = 0;
+				std::vector<CONV_POINT>::iterator k = (*j)->pts.begin();
+				for (; k != (*j)->pts.end(); ++k, ++index)
+				{
+					if (SafeArrayPutElement(pCvVt->pts, &index, (void *)k) != S_OK) break;
+				}
+
+				// Set the other properties.
+				pCvVt->closed = -1;					// VB true.
+				pCvVt->type = TILE_TYPE((*j)->type);
+				if ((*j)->type >= STAIRS1 && (*j)->type <= STAIRS8)
+				{
+					// Old stairs are stored as targetLayer + 10.
+					pCvVt->attributes = (*j)->type - 10;
+					pCvVt->type = TT_STAIRS;
+				}
+				else if ((*j)->type == NORTH_SOUTH || (*j)->type == EAST_WEST)
+				{
+					pCvVt->type = TT_SOLID;		
+					pCvVt->closed = 0;
+				}
+				pCvVt->layer = z;
+
+			} // Point array allocated.
+		
+			// VectorizeLayer allocated the points.
+			delete *j;
+
+		} // for (vectors on this layer)
+	} // for (z)
+}
+		

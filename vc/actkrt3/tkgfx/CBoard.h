@@ -195,6 +195,16 @@ typedef struct tagEditorLayer
 typedef std::vector<BRD_LAYER>::iterator BL_ITR;
 typedef std::vector<CBoard *>::iterator CB_ITR;
 
+typedef struct tagVBConvertedVector
+{
+	LPSAFEARRAY pts;
+	LONG type;
+	LONG layer;
+	LONG attributes;
+	VARIANT_BOOL closed;
+
+} VB_CONV_VECTOR, *LPVB_CONV_VECTOR;
+
 //--------------------------------------------------------------------------
 // Definition of an RPGToolkit board
 //--------------------------------------------------------------------------
@@ -269,6 +279,11 @@ public:
 		CONST LONG y, 
 		CONST LONG z, 
 		CONST HDC hdcCompat
+	);
+
+	VOID vectorize(
+		CONST LPVB_BOARD pBoard,
+		LPSAFEARRAY FAR *toRet
 	);
 
 private:
