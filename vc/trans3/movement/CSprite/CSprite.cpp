@@ -105,19 +105,48 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 	{
 		// Movement is occurring.
 
-		// Push the sprite only when the tiletype is passable.
-		// Items will not have entered this block if their target is solid.
-		if (!(m_tileType & TT_SOLID)) push(isUser);
 
 		if (m_pos.bIsPath)
 		{
 			// Re-test for sprite collisions. The path was calculated
 			// to avoid sprites but cannot account for moving sprites.
+
+			// Do sprite collisions before push(), otherwise the two
+			// will operate on different target locations.
+
+			m_tileType = TILE_TYPE(m_tileType | boardEdges(isUser));
+
 			if (spriteCollisions() & TT_SOLID)
 			{
-				setQueuedPath(pathFind(m_pend.xTarg, m_pend.yTarg, PF_VECTOR), true);
+				std::deque<DB_POINT> path = m_pend.path;
+				PF_PATH p = pathFind(m_pend.path.front().x, m_pend.path.front().y, PF_VECTOR);
+				if (p.empty())
+				{
+					// Cannot resume. tbd: try next point in path?
+					clearQueue();
+					m_tileType = TILE_TYPE(m_tileType | TT_SOLID);
+				}
+				else
+				{
+					setQueuedPath(p, true);
+					m_pend.path.insert(m_pend.path.end() - 1, path.begin(), path.end());
+				}
+
+				/*
+				clearQueue();
+				// tbd: set pf type.
+				PF_PATH p = pathFind(m_pend.path.front().x, m_pend.path.front().y, PF_VECTOR);
+				if (!p.empty())
+					setQueuedPath(p, false);
+				else
+					m_tileType = TILE_TYPE(m_tileType | TT_SOLID);
+				*/
 			}
 		}
+
+		// Push the sprite only when the tiletype is passable.
+		// Items will not have entered this block if their target is solid.
+		if (!(m_tileType & TT_SOLID)) push(isUser);
 
 		++m_pos.loopFrame;				// Count of this movement's renders.
 		++m_pos.frame;					// Total frame count (for animation frames).
@@ -195,7 +224,7 @@ bool CSprite::push(const bool bScroll)
 	extern RECT g_screen;
 	extern LPBOARD g_pBoard;
 
-	// Pixels per frame.
+	// Pixels per frame (tile or pixel movement - not moveSize()).
 	const double stepSize = PX_FACTOR / m_pos.loopSpeed;
 	// Integer values to scroll.
 	int scx = -round(m_pos.x), scy = -round(m_pos.y);
@@ -368,6 +397,7 @@ void CSprite::parseQueuedMovements(const STRING str, const bool bClearQueue)
 
 	// Break out of the current movement.
 	if (bClearQueue) clearQueue();
+	m_pos.bIsPath = true;
 
 	// Should step = 8 for pixel push?
 	const int step = (g_mainFile.pixelMovement == MF_PUSH_PIXEL ? moveSize() : 32);
@@ -459,11 +489,13 @@ void CSprite::runQueuedMovements(void)
 {
 	extern CPlayer *g_pSelectedPlayer;
 	extern CCanvas *g_cnvRpgCode;
+	extern void processEvent();
 
 	while (move(g_pSelectedPlayer, true))
 	{
 		renderNow(g_cnvRpgCode, true);
 		renderRpgCodeScreen();
+		processEvent();
 	}
 }
 
@@ -785,11 +817,11 @@ TILE_TYPE CSprite::spriteCollisions(void)
 	 * z-ordered (ZO) sprite pointers are stored in g_sprites.
 	 * Upon board loading, the initial ZO is calculated for all sprites.
 	 * We only need to alter that order when a sprite moves, and then
-	 * we only need to recalculate that sprite_T('s ZO - the others') are preserved.
+	 * we only need to recalculate that sprite's ZO - the others' are preserved.
 	 * Hence we remove the pointer from g_sprites, make the checks
 	 * and reinsert afterwards.
 	 * The position to insert will be the in front of the first pointer
-	 * we find that is _T("below") this sprite.
+	 * we find that is below this sprite.
 	 */
 
 	std::vector<CSprite *>::iterator i = g_sprites.v.begin(), pos = NULL;
@@ -833,7 +865,10 @@ TILE_TYPE CSprite::spriteCollisions(void)
 		}
 
 		// Compare target bases.
-		const DB_POINT pt = (*i)->getTarget();
+		// const DB_POINT pt = (*i)->getTarget();
+
+		// Compare this sprite's target to others' current positions.
+		const DB_POINT pt = {(*i)->m_pos.x, (*i)->m_pos.y};
 		CVector tarBase = (*i)->m_attr.vBase + pt;
 		const RECT tBounds = tarBase.getBounds();
 

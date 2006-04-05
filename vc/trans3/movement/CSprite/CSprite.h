@@ -10,6 +10,7 @@
 /*
  * Includes 
  */
+#include "../../../tkCommon/movement/board conversion.h"
 #include "../../../tkCommon/movement/coords.h"
 #include "../../../tkCommon/strings.h"
 #include "../movement.h"
@@ -49,7 +50,8 @@ public:
 		const bool bClearQueue);	
 	void setQueuedPoint(const DB_POINT pt)	// Queue just one point to create a path.
 	{
-		if (!m_pend.path.empty() || m_pos.loopFrame > LOOP_MOVE) return;
+		//if (!m_pend.path.empty() || m_pos.loopFrame > LOOP_MOVE) return;
+		m_pend.path.clear();
 		m_pend.path.push_back(pt);
 	}
 
@@ -87,10 +89,11 @@ public:
 	// Create default vectors, overwriting any user-defined (PRE_VECTOR_ITEMs).
 	void createVectors(void) { m_attr.createVectors(m_brdData.activationType); };
 	// Determine if the sprite's base intersects a RECT.
-	CVector getVectorBase(void)
+	CVector getVectorBase(const bool bAtLocation) const
 	{
+		if (!bAtLocation) return m_attr.vBase;
 		const DB_POINT p = { m_pos.x, m_pos.y };
-		return (m_attr.vBase + p);
+		return (CVector(m_attr.vBase) + p);
 	}
 
 	// Return the number of pixels for the whole move (e.g. 32, 1, 2).
