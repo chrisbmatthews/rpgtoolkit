@@ -23,7 +23,9 @@
  * Defines
  */
 const int PF_MAX_STEPS = 1000;		// Maximum number of steps in a path.
+const int PF_GRID_SIZE = 16;		// Grid size for non-vector movement (= 32 for tile movement).
 const DB_POINT SEPARATOR = {-1, -1};// Invalid point to separate board and sprites in m_points.
+
 
 /*
  * Default constructor.
@@ -157,13 +159,15 @@ bool CPathFind::getChild(DB_POINT &child, const DB_POINT &parent)
 	else
 	{
 		const int isIso = int(g_pBoard->isIsometric());
+		// tbd: grid-size must be 32 for rpgcode PathFind()
+		const int grid = 32;//(CSprite::m_bPxMovement ? PF_GRID_SIZE : 32);
 		if (m_u.i > MV_NE)
 		{
 			m_u.i = (m_heuristic == PF_AXIAL && isIso ? MV_SE : MV_E);
 			return false;
 		}
-		child.x = g_directions[isIso][m_u.i][0] * 32 + parent.x;
-		child.y = g_directions[isIso][m_u.i][1] * 32 + parent.y;
+		child.x = g_directions[isIso][m_u.i][0] * grid + parent.x;
+		child.y = g_directions[isIso][m_u.i][1] * grid + parent.y;
 
 		// Limit neighbours depending on allowed directions.
 		m_u.i += (m_heuristic == PF_AXIAL ? 2 : 1);
@@ -227,18 +231,19 @@ void CPathFind::initialize(const int layer, const RECT &r, const int type)
  * Determine if a node can be directly reached from another node
  * i.e. is there an unobstructed line between the two?
  */
-bool CPathFind::isChild(NODE &child, NODE &parent)
+bool CPathFind::isChild(const NODE &child, const NODE &parent, const CSprite *pSprite)
 {
 	extern LPBOARD g_pBoard;
+	extern ZO_VECTOR g_sprites;
 
 	if (child.pos == parent.pos) return false;
 
-	CPfVector v(parent.pos);
-	v.push_back(child.pos);
-	v.close(false);
 
 	if (m_heuristic == PF_VECTOR)
 	{
+		CPfVector v(parent.pos);
+		v.push_back(child.pos);
+		v.close(false);
 
 		// Check for board collisions along the path.
 		for (std::vector<CPfVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
@@ -249,16 +254,33 @@ bool CPathFind::isChild(NODE &child, NODE &parent)
 	}
 	else
 	{
+		CVector v;
+		if (pSprite)
+			v = pSprite->getVectorBase(false);
+		else
+		{
+			DB_POINT pts[4];
+			tagSpriteAttr::defaultVector(pts, g_pBoard->isIsometric(), CSprite::m_bPxMovement, false);
+			v.push_back(pts, 4);
+			v.close(true);
+		}
+		v += child.pos;
+
 		const DB_POINT max = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
 		if (child.pos.x <= 0 || child.pos.y <= 0 || child.pos.x >= max.x || child.pos.y >= max.y) 
 			return false;
 				
-		// Tile pathfinding operates directly on the board vectors.
+		// Tile pathfinding operates directly on board/sprite vectors.
 		for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
 		{
 			if (i->layer != m_layer || i->type != TT_SOLID) continue;
-			DB_POINT ref = {0, 0};
-			if (i->pV->contains(v, ref)) return false;
+			if (i->pV->contains(v)) return false;
+		}
+
+		for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
+		{
+			if ((*j)->getPosition().l != m_layer || *j == pSprite) continue;
+			if ((*j)->getVectorBase(true).contains(v)) return false;
 		}
 	}
 	return true;
@@ -267,9 +289,13 @@ bool CPathFind::isChild(NODE &child, NODE &parent)
 /*
  * Main function - apply the algorithm to the input points.
  */
-PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
-							const int layer, const RECT &r, 
-							const int type, const void *pSprite)
+PF_PATH CPathFind::pathFind(
+	const DB_POINT start, 
+	const DB_POINT goal,
+	const int layer, 
+	const RECT &r, 
+	const int type, 
+	const CSprite *pSprite)
 {
 	// Recreate m_obstructions if running on a new board or changing layers.
 	if (layer != m_layer || m_obstructions.empty()) initialize(layer, r, type);
@@ -300,7 +326,7 @@ PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
 			// efficient.
 
 			NODE child(p);
-			if (!isChild(child, *parent)) continue;
+			if (!isChild(child, *parent, pSprite)) continue;
 
 			// Assign total cost of moving from the start to this node
 			// *via this parent*, and the straight-line estimate to the goal (heuristic).
@@ -367,7 +393,7 @@ PF_PATH CPathFind::pathFind(const DB_POINT start, const DB_POINT goal,
 /*
  * Reset the points at the start of a search.
  */
-void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r, const void *pSprite)
+void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r, const CSprite *pSprite)
 {
 	extern LPBOARD g_pBoard;
 	extern ZO_VECTOR g_sprites;
@@ -397,7 +423,7 @@ void CPathFind::reset(DB_POINT start, DB_POINT goal, const RECT &r, const void *
 		for (std::vector<CSprite *>::iterator i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
 		{
 			if ((*i)->getPosition().l != m_layer || *i == (CSprite *)pSprite) continue;
-			CPfVector *vector = new CPfVector((*i)->getVectorBase());
+			CPfVector *vector = new CPfVector((*i)->getVectorBase(true));
 			// Extra clearance for sprites.
 			vector->grow(size + 1);
 

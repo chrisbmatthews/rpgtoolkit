@@ -549,7 +549,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 			else continue;
 
 			// Get the sprite's vector base to test for collisions with the under vector.
-			CVector v = (*j)->getVectorBase();
+			CVector v = (*j)->getVectorBase(true);
 			RECT sr = v.getBounds();
 
 			// Draw any "under" vectors this sprite is standing on.

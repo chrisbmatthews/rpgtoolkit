@@ -32,6 +32,7 @@
 #include "../movement/CItem/CItem.h"
 #include "../movement/CPathFind/CPathFind.h"
 #include "../../tkCommon/images/FreeImage.h"
+#include "../../tkCommon/movement/board conversion.h"
 #include "../fight/fight.h"
 #include "../misc/misc.h"
 #include "../plugins/plugins.h"
@@ -618,6 +619,8 @@ void gone(CALL_DATA &params)
  * 
  * Draw a board to the screen or to a canvas,
  * starting at co-ordinates topX, topY.
+ *
+ * tbd: update reference for canvas
  */
 void viewbrd(CALL_DATA &params)
 {
@@ -1397,7 +1400,7 @@ void tileType(CALL_DATA &params)
 	// Enter the tiletype into the table.
 	try
 	{
-		g_pBoard->tiletype[x][y][z] = tile;
+		g_pBoard->tiletype[z][y][x] = tile;
 	}
 	catch (...)
 	{
@@ -1939,9 +1942,10 @@ void wander(CALL_DATA &params)
 	DB_POINT d;
 	p->getDestination(d);
 	const DB_POINT pt = {d.x + g_directions[isIso][direction][0] * 32, d.y + g_directions[isIso][direction][1] * 32};
-	if (pt.x > 0 && pt.x < g_pBoard->pxWidth() && pt.y > 0 && pt.y < g_pBoard->pxHeight())
+	if (pt.x > 0 && pt.x <= g_pBoard->pxWidth() && pt.y > 0 && pt.y < g_pBoard->pxHeight())
 	{
-		p->setQueuedPoint(pt);
+		//p->setQueuedPoint(pt);
+		p->setQueuedPath(p->pathFind(pt.x, pt.y, PF_DIAGONAL), true);
 		// Initiate movement by program type.
 		p->doMovement(params.prg, false);
 	}
@@ -6591,7 +6595,7 @@ void setmwintranslucency(CALL_DATA &params)
 	{
 		throw CError(_T("SetMwinTranslucency() requires one parameter."));
 	}
-	g_messageWindowTranslucency = params[0].getNum();
+	g_messageWindowTranslucency = params[0].getNum() / 100.0;
 }
 
 /*

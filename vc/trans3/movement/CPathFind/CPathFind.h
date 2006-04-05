@@ -48,6 +48,7 @@ typedef struct tagNode
 typedef std::vector<NODE>::iterator NV_ITR;
 typedef std::vector<DB_POINT> PF_PATH;
 
+class CSprite;
 class CPathFind
 {
 public:
@@ -74,9 +75,14 @@ public:
 	};
 
 	// Main function - apply the algorithm to the input points.
-	PF_PATH pathFind(const DB_POINT start, const DB_POINT goal,
-					 const int layer, const RECT &r, 
-					 const int type, const void *pSprite);
+	PF_PATH pathFind(
+		const DB_POINT start, 
+		const DB_POINT goal,
+		const int layer, 
+		const RECT &r, 
+		const int type, 
+		const CSprite *pSprite
+	);
 
 private:
 	CPathFind (CPathFind &rhs);
@@ -101,10 +107,10 @@ private:
 	void initialize(const int layer, const RECT &r, const int type);
 
 	// Determine if a node can be directly reached from another node.
-	bool isChild(NODE &child, NODE &parent);
+	bool isChild(const NODE &child, const NODE &parent, const CSprite *pSprite);
 
 	// Reset the points at the start of a search.
-	void reset(DB_POINT start, DB_POINT goal, const RECT &r, const void *pSprite);
+	void reset(DB_POINT start, DB_POINT goal, const RECT &r, const CSprite *pSprite);
 
 	std::vector<DB_POINT> m_points;				// All node coords.
 	std::vector<NODE> m_openNodes;
