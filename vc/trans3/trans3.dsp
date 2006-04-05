@@ -521,6 +521,10 @@ SOURCE=.\common\background.cpp
 # End Source File
 # Begin Source File
 
+SOURCE="..\tkCommon\movement\board conversion.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\board.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -812,6 +816,10 @@ SOURCE=.\common\animation.h
 # Begin Source File
 
 SOURCE=.\common\background.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\tkCommon\movement\board conversion.h"
 # End Source File
 # Begin Source File
 

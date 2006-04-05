@@ -39,18 +39,6 @@ typedef enum tagZOrder
 
 } ZO_ENUM;
 
-// Tile type flags.
-typedef enum tagTileType
-{
-	TT_NORMAL = 0,
-	TT_SOLID = 1,
-	TT_UNDER = 2,
-	TT_UNIDIRECTIONAL = 4,
-	TT_STAIRS = 8,
-	TT_TERRAIN = 16			// TBD: speed modifier!
-
-} TILE_TYPE;
-
 // Double-precision point.
 typedef struct tagDbPoint
 {
