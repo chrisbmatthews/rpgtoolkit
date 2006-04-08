@@ -6588,6 +6588,55 @@ void killtimer(CALL_DATA &params)
 }
 
 /*
+ * void canvasDrawPart(int cnv, int x, int y, int xSrc, int ySrc, int width, int height[, canvas cnvDest])
+ *
+ * Draw part of a canvas.
+ */
+void canvasDrawPart(CALL_DATA &params)
+{
+	if ((params.params != 7) && (params.params != 8))
+	{
+		throw CError(_T("CanvasDrawPart() requires seven or eight parameters."));
+	}
+
+	CCanvas *pDest = g_cnvRpgCode;
+	if (params.params == 8)
+	{
+		pDest = g_canvases.cast(int(params[7].getNum()));
+		if (!pDest) pDest = g_cnvRpgCode;
+	}
+
+	CCanvas *pSrc = g_canvases.cast(int(params[0].getNum()));
+	if (!pSrc) return;
+
+	pSrc->BltPart(pDest, int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), int(params[4].getNum()), int(params[5].getNum()), int(params[6].getNum()));
+	if (pDest == g_cnvRpgCode)
+	{
+		renderRpgCodeScreen();
+	}
+}
+
+/*
+ * void canvasGetScreen(canvas cnvDest)
+ *
+ * Copy the screen onto a canvas.
+ */
+void canvasGetScreen(CALL_DATA &params)
+{
+	extern CDirectDraw *g_pDirectDraw;
+
+	if (params.params != 1)
+	{
+		throw CError(_T("CanvasGetScreen() requires one parameter."));
+	}
+
+	CCanvas *pDest = g_canvases.cast(int(params[0].getNum()));
+	if (!pDest) return;
+
+	g_pDirectDraw->CopyScreenToCanvas(pDest);
+}
+
+/*
  * void setMwinTranslucency(int percent)
  * 
  * Set the translucency of the message window.
@@ -6921,4 +6970,6 @@ void initRpgCode()
 	CProgram::addFunction(_T("setmwintranslucency"), setmwintranslucency);
 	CProgram::addFunction(_T("regexpreplace"), regExpReplace);
 	CProgram::addFunction(_T("playerlocation"), playerlocation);
+	CProgram::addFunction(_T("canvasdrawpart"), canvasDrawPart);
+	CProgram::addFunction(_T("canvasgetscreen"), canvasGetScreen);
 }
