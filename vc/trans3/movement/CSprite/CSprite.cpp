@@ -63,7 +63,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 		// If movements are queued or there is a board-set path.
 		if (!m_pend.path.empty() || m_brdData.boardPath())
 		{
-			// Determine the number of frames for required speed
+			// Determine the number of frames for required speed.
 			m_pos.loopSpeed = calcLoops();
 
 			// Increment the animation frame if movement did not 
@@ -77,8 +77,11 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			// may change if we slide).
 			m_facing.assign(getDirection());
 
-			// Get the tiletype at the target.
-			m_tileType = TILE_TYPE(boardCollisions(g_pBoard) | spriteCollisions());
+			// Get the tiletype at the target (or the next point for paths).
+			m_tileType = boardCollisions(g_pBoard);
+			
+			// Do not check for sprites at the target for paths.
+			if (!m_bPxMovement || !m_pos.bIsPath) m_tileType = TILE_TYPE(m_tileType | spriteCollisions());
 
 			// Start the render frame counter.
 			if (!(m_tileType & TT_SOLID) || isUser) m_pos.loopFrame = LOOP_MOVE;
@@ -105,7 +108,6 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 	{
 		// Movement is occurring.
 
-
 		if (m_pos.bIsPath)
 		{
 			// Re-test for sprite collisions. The path was calculated
@@ -118,8 +120,27 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 
 			if (spriteCollisions() & TT_SOLID)
 			{
-				std::deque<DB_POINT> path = m_pend.path;
-				PF_PATH p = pathFind(m_pend.path.front().x, m_pend.path.front().y, PF_VECTOR);
+				// Try to find a diversion that allows the sprite to
+				// resume the path.
+
+				MV_PATH path = m_pend.path;
+				MV_PATH::iterator i = path.begin();
+				PF_PATH p;
+				for (; i != path.end(); ++i)
+				{
+					// Try each point along the path in turn.
+					p = pathFind(i->x, i->y, PF_VECTOR, false);
+
+					// Do not break if pathfind has moved the target
+					// - the target is blocked and we want to skip it
+					// rather than move up to it.
+					if (!p.empty() && p.front() == *i)
+						break;
+					else
+						p.clear();
+				}
+
+				// Was a path to some point found?
 				if (p.empty())
 				{
 					// Cannot resume. tbd: try next point in path?
@@ -128,21 +149,17 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 				}
 				else
 				{
+					// Set the diversion and append the partial old path.
 					setQueuedPath(p, true);
-					m_pend.path.insert(m_pend.path.end() - 1, path.begin(), path.end());
+					// Miss the first point of partial path to avoid duplication.
+					if (++i != path.end())
+					{
+						m_pend.path.insert(m_pend.path.end(), i, path.end());
+					}
+					return true;
 				}
-
-				/*
-				clearQueue();
-				// tbd: set pf type.
-				PF_PATH p = pathFind(m_pend.path.front().x, m_pend.path.front().y, PF_VECTOR);
-				if (!p.empty())
-					setQueuedPath(p, false);
-				else
-					m_tileType = TILE_TYPE(m_tileType | TT_SOLID);
-				*/
 			}
-		}
+		} // if (path)
 
 		// Push the sprite only when the tiletype is passable.
 		// Items will not have entered this block if their target is solid.
@@ -306,12 +323,12 @@ MV_ENUM CSprite::getDirection(void)
  */
 DB_POINT CSprite::getTarget(void)
 {
-	if (m_pos.bIsPath)
+	if (m_bPxMovement)
 	{
 		// Pixels travelled this move.
 		const int step = moveSize();
-		const DB_POINT p = {round(m_pos.x + step * m_v.x),
-							round(m_pos.y + step * m_v.y)};
+		const DB_POINT p = {m_pos.x + step * m_v.x,
+							m_pos.y + step * m_v.y};
 		return p;
 	}
 	const DB_POINT p = {m_pend.xTarg, m_pend.yTarg};
@@ -343,6 +360,12 @@ void CSprite::setTarget(MV_ENUM direction)
 		m_v.x *= 2;
 	}
 */
+	// #Note to self - orig = pos when no movement is occurring, when
+	// #this function is called (boardCollisons() only used when
+	// #movement starts) - Delano.
+	if (m_pend.xOrig != m_pos.x || m_pend.yOrig != m_pos.y)
+		std::cerr << "\nCSprite::setTarget() - orig / pos disagreement.";
+
 	m_pend.xTarg = m_pend.xOrig + m_v.x * step;
 	m_pend.yTarg = m_pend.yOrig + m_v.y * step;
 	m_pend.lTarg = m_pend.lOrig;
@@ -374,6 +397,11 @@ void CSprite::setPathTarget(void)
 		m_pos.bIsPath = true;
 	}
 	else return;
+
+	// #Note to self - orig = pos when no movement is occurring, when
+	// #this function is called - Delano.
+	if (m_pend.xOrig != m_pos.x || m_pend.yOrig != m_pos.y)
+		std::cerr << "\nCSprite::setPathTarget() - orig / pos disagreement.";
 
 	const double dx = m_pend.xTarg - m_pend.xOrig,
 				 dy = m_pend.yTarg - m_pend.yOrig;
@@ -442,8 +470,11 @@ void CSprite::parseQueuedMovements(const STRING str, const bool bClearQueue)
 void CSprite::clearQueue(void)
 {
 	if (m_pos.loopFrame != LOOP_DONE) m_pos.loopFrame = LOOP_WAIT;
-	m_pend.xOrig = m_pos.x;
-	m_pend.yOrig = m_pos.y;
+	
+	// #Note to self: clearing the targ here could be dangerous, but
+	// #it prevents crossed bases - Delano.
+	m_pend.xOrig = m_pend.xTarg = m_pos.x;
+	m_pend.yOrig = m_pend.yTarg = m_pos.y;
 	m_pend.path.clear();
 	m_pos.bIsPath = false;
 }
@@ -500,7 +531,7 @@ void CSprite::runQueuedMovements(void)
 }
 
 /*
- * Get the destination.
+ * Get the destination. #TBD: integrate into setQueuedMovement().
  */
 void CSprite::getDestination(DB_POINT &p) const
 {
@@ -508,6 +539,12 @@ void CSprite::getDestination(DB_POINT &p) const
 	{
 		// The origin of the current movement or the target
 		// of the previous movement (origin = target on arrival).
+		if (m_pend.xOrig != m_pos.x || m_pend.yOrig != m_pos.y)
+			std::cerr << "\nCSprite::getDestination() - orig / pos disagreement.";
+
+		// #Note to self - orig will always equal pos whilst path has points
+		// #because the last point isn't cleared until movement ends. (Delano)
+
 		p.x = m_pend.xOrig;
 		p.y = m_pend.yOrig;
 	}
@@ -538,19 +575,22 @@ void CSprite::setQueuedPath(PF_PATH &path, const bool bClearQueue)
 /*
  * Pathfind to pixel position x, y (same layer).
  */
-PF_PATH CSprite::pathFind(const int x, const int y, const int type)
+PF_PATH CSprite::pathFind(const int x, const int y, const int type, const bool bNearPt)
 {
 	extern LPBOARD g_pBoard;
 	if (x > 0 && x <= g_pBoard->pxWidth() && y > 0 && y <= g_pBoard->pxHeight())
 	{
 		const DB_POINT start = {m_pos.x, m_pos.y}, goal = {x, y};
 
-		return m_pathFind.pathFind (start, 
+		return m_pathFind.pathFind(
+			start, 
 			goal, 
 			m_pos.l, 
 			m_attr.vBase.getBounds(), 
-			type,
-			this);
+			PF_DIAGONAL,
+			this,
+			bNearPt
+		);
 	}
 	return PF_PATH();
 }
@@ -650,10 +690,14 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 	// Ignore board collisions when running a path since the routine
 	// should have avoided collisions and negotiating any minor collisions
 	// on a path is tedious.
+
+	// #tbd: have a reduced interface for paths?
+	// #Need at the very least a containsPoint() on m_pend.targ to 
+	// #prevent rpgcode paths wandering through walls.
 	if (m_pos.bIsPath) return TT_NORMAL;
 
-	// Create the sprite's vector base at the *target* location.
-	DB_POINT p = getTarget();
+	// #m_pend.targ even for paths - only testing the destination.
+	DB_POINT p = {m_pend.xTarg, m_pend.yTarg};
 	CVector sprBase = m_attr.vBase + p;
 	int layer = m_pos.l;				// Destination layer.
 
@@ -838,8 +882,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
 	TILE_TYPE result = TT_NORMAL;			// To return.
 
 	// Create this sprite's vector base at the *target* location.
-	const DB_POINT p = getTarget();
-	CVector sprBase = m_attr.vBase + p;
+	CVector sprBase = m_attr.vBase + getTarget();
 	const RECT bounds = sprBase.getBounds();
 
 	for (i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
@@ -1400,7 +1443,8 @@ void CSprite::drawPath(CCanvas *const cnv)
 
 	if (!m_pos.bIsPath ||
 		(round(m_pos.x) == m_pend.xTarg &&
-		round(m_pos.y) == m_pend.yTarg)) return;
+		round(m_pos.y) == m_pend.yTarg && 
+		m_pend.path.empty())) return;
 
 	int x = m_pend.xTarg - g_screen.left, 
 		y = m_pend.yTarg - g_screen.top,
@@ -1412,7 +1456,7 @@ void CSprite::drawPath(CCanvas *const cnv)
 
 	if (!m_pend.path.empty())
 	{
-		std::deque<DB_POINT>::iterator i = m_pend.path.begin();
+		MV_PATH_ITR i = m_pend.path.begin();
 		cnv->DrawLine(m_pend.xTarg - g_screen.left, m_pend.yTarg - g_screen.top, 
 			i->x - g_screen.left, i->y - g_screen.top, color);
 

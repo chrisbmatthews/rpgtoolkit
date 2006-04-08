@@ -25,7 +25,7 @@ class CSprite
 {
 public:
 	CSprite(const bool show);				// Constructor.
-	virtual ~CSprite() { }					// Destructor.
+	virtual ~CSprite() {}					// Destructor.
 	static bool m_bPxMovement;				// Using pixel/tile movement (whole engine).
 
 	void clearQueue(void);					// Clear the queue.
@@ -39,7 +39,8 @@ public:
 	PF_PATH pathFind( 						// Pathfind to pixel position x, y (same layer).
 		const int x,
 		const int y, 
-		const int type);
+		const int type,
+		const bool bNearPt);
 	void runQueuedMovements(void);			// Run all the movements in the queue.
 	void setQueuedMovement(					// Place a movement in the sprite's queue.
 		const int queue,

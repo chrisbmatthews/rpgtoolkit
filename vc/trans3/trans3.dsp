@@ -987,6 +987,7 @@ SOURCE=.\movement\CPathFind\CPathFind.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
 
+# ADD CPP /FR
 # SUBTRACT CPP /YX
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
@@ -1031,6 +1032,7 @@ SOURCE=.\movement\CSprite\CSprite.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
 
+# ADD CPP /FR
 # SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
@@ -1054,6 +1056,7 @@ SOURCE=.\movement\CVector\CVector.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
 
+# ADD CPP /FR
 # SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"

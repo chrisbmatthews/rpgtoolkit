@@ -24,6 +24,7 @@
 // Distance measurements.
 enum PF_HEURISTIC
 {
+	PF_PREVIOUS,
 	PF_AXIAL,
 	PF_DIAGONAL,
 	PF_VECTOR
@@ -81,7 +82,8 @@ public:
 		const int layer, 
 		const RECT &r, 
 		const int type, 
-		const CSprite *pSprite
+		const CSprite *pSprite,
+		const bool bAllowNearPoint
 	);
 
 private:
@@ -101,16 +103,22 @@ private:
 	int distance (NODE &a, NODE &b);
 
 	// Get the next potential child of a node.
-	bool getChild(DB_POINT &child, const DB_POINT &parent);
+	bool getChild(DB_POINT &child, DB_POINT parent);
 
 	// Re-initialise the search.
-	void initialize(const int layer, const RECT &r, const int type);
+	void initialize(const int layer, const RECT &r, const PF_HEURISTIC type);
 
 	// Determine if a node can be directly reached from another node.
-	bool isChild(const NODE &child, const NODE &parent, const CSprite *pSprite);
+	bool isChild(const NODE &child, const NODE &parent, const CSprite *pSprite, const bool bTileMidPoint);
 
 	// Reset the points at the start of a search.
-	void reset(DB_POINT start, DB_POINT goal, const RECT &r, const CSprite *pSprite);
+	bool reset(
+		DB_POINT start, 
+		DB_POINT goal, 
+		const RECT &r, 
+		const CSprite *pSprite,
+		const bool bAllowNearPoint
+	);
 
 	std::vector<DB_POINT> m_points;				// All node coords.
 	std::vector<NODE> m_openNodes;

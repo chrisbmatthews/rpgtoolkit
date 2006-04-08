@@ -283,7 +283,7 @@ void scanKeys()
 		if (GetCursorPos(&p))
 		{
 			ScreenToClient(g_hHostWnd, &p);
-			PF_PATH pf = g_pSelectedPlayer->pathFind(p.x + g_screen.left, p.y + g_screen.top, PF_VECTOR);
+			PF_PATH pf = g_pSelectedPlayer->pathFind(p.x + g_screen.left, p.y + g_screen.top, PF_VECTOR, true);
 			if (pf.size())
 			{
 				g_pSelectedPlayer->setQueuedPath(pf, true);

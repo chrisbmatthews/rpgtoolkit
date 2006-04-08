@@ -109,7 +109,8 @@ typedef struct tagSpritePosition
 
 } SPRITE_POSITION;
 
-
+typedef std::deque<DB_POINT> MV_PATH;
+typedef std::deque<DB_POINT>::iterator MV_PATH_ITR;
 
 /*
  * A pending movement.
@@ -122,7 +123,7 @@ typedef struct tagPendingMovement
     double xTarg;			// Target PIXEL co-ordinates.
     double yTarg;
     int lTarg;
-	std::deque<DB_POINT> path;
+	MV_PATH path;
 
 
 	tagPendingMovement(void):

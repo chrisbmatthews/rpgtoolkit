@@ -34,7 +34,7 @@ DB_POINT spriteBases[8][4] =
  */
 DB_POINT spriteBaseOffsets[8] = 
 {
-	{-15,-30}, {-48,-48}, {-15,-15}, {-24,-24},		// Tile (see above).
+	{-15,-31}, {-48,-48}, {-15,-15}, {-24,-24},		// Tile (see above).
 	{  0,  0}, {  0,  0}, {  0,  0}, {  0,  0}		// Isometric.
 };
 
