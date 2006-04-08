@@ -16,11 +16,12 @@
 #include "../common/paths.h"
 #include "../input/input.h"
 #include "../../tkCommon/strings.h"
+#include <typeinfo.h>
 #include <malloc.h>
 #include <math.h>
 
 // Static member initialization.
-std::vector<NAMED_METHOD> tagNamedMethod::m_methods;
+std::vector<tagNamedMethod> tagNamedMethod::m_methods;
 std::map<STRING, MACHINE_FUNC> CProgram::m_functions;
 LPMACHINE_UNITS CProgram::m_pyyUnits = NULL;
 std::deque<MACHINE_UNITS> CProgram::m_yyFors;
@@ -34,6 +35,9 @@ std::vector<IPlugin *> CProgram::m_plugins;
 std::set<CThread *> CThread::m_threads;
 STRING CProgram::m_parsing;
 unsigned long CProgram::m_runningPrograms = 0;
+
+static std::map<STRING, CProgram> g_cache; // Program cache.
+typedef std::map<STRING, CProgram>::iterator CACHE_ITR;
 
 // Create a thread.
 CThread *CThread::create(const STRING str)
@@ -119,6 +123,48 @@ bool CThread::execute()
 	return false;
 }
 
+// Assignment operator.
+CProgram &CProgram::operator=(const CProgram &rhs)
+{
+	// Just copy over most of the members.
+	m_stack = rhs.m_stack;
+	m_locals = rhs.m_locals;
+	m_calls = rhs.m_calls;
+	m_classes = rhs.m_classes;
+	m_lines = rhs.m_lines;
+	//m_pBoardPrg = rhs.m_pBoardPrg; // Do not copy this.
+	m_units = rhs.m_units;
+	m_i = rhs.m_i;
+	m_methods = rhs.m_methods;
+
+	// Update the stack pointer.
+	if (!rhs.m_pStack)
+	{
+		m_pStack = NULL;
+	}
+	else
+	{
+		// Find the index of this pointer.
+		STACK_ITR i = rhs.m_stack.begin();
+		for (; i != rhs.m_stack.end(); ++i)
+		{
+			if (&*i == rhs.m_pStack) break;
+		}
+		if (i == rhs.m_stack.end())
+		{
+			m_pStack = NULL;
+		}
+		else
+		{
+			// Now make the pointer for this object pointer
+			// to the corresponding position in m_stack.
+			m_pStack = &m_stack[i - rhs.m_stack.begin()];
+		}
+	}
+
+	return *this;
+}
+
 // Show the debugger.
 void CProgram::debugger(const STRING str)
 {
@@ -199,6 +245,19 @@ LPSTACK_FRAME CProgram::getVar(const STRING name)
 }
 
 // Locate a named method.
+tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg)
+{
+	std::vector<NAMED_METHOD>::iterator i = prg.m_methods.begin();
+	for (; i != prg.m_methods.end(); ++i)
+	{
+		if ((i->name == name) && (i->params == params) && (bMethod || (i->i != 0xffffff)))
+		{
+			return &*i;
+		}
+	}
+	return NULL;
+}
+
 tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod)
 {
 	std::vector<NAMED_METHOD>::iterator i = m_methods.begin();
@@ -553,6 +612,15 @@ inline STRING freadString(FILE *file)
 // Open an RPGCode program.
 bool CProgram::open(const STRING fileName)
 {
+	// Attempt to locate this program in the cache.
+	CACHE_ITR itr = g_cache.find(fileName);
+	if (itr != g_cache.end())
+	{
+		*this = itr->second;
+		prime();
+		return true;
+	}
+
 	FILE *file = fopen(fileName.c_str(), _T("rb"));
 	if (!file) return false;
 	TCHAR c = _T('\0');
@@ -654,6 +722,10 @@ bool CProgram::open(const STRING fileName)
 	fclose(file);
 
 	prime();
+
+	// Store this program in the cache.
+	g_cache[fileName] = *this;
+
 	return true;
 }
 
@@ -692,7 +764,7 @@ void CProgram::parseFile(FILE *pFile)
 	//     producing machine units. See yacc.txt.
 	m_inclusions.clear();
 	m_units.clear();
-	NAMED_METHOD::m_methods.clear();
+	m_methods.clear();
 	m_classes.clear();
 	m_pClasses = &m_classes;
 	m_pyyUnits = &m_units;
@@ -700,7 +772,9 @@ void CProgram::parseFile(FILE *pFile)
 	g_lines = 0;
 	m_lines.clear();
 	m_pLines = &m_lines;
+	NAMED_METHOD::m_methods.clear();
 	yyparse();
+	m_methods = NAMED_METHOD::m_methods;
 	m_yyFors.clear();
 
 	// Pass II:
@@ -708,10 +782,18 @@ void CProgram::parseFile(FILE *pFile)
 	{
 		std::vector<STRING> inclusions = m_inclusions;
 		std::vector<STRING>::const_iterator i = inclusions.begin();
+
+		// (Hacky.) If this is a child program, include its parent.
+		const type_info &info = typeid(*this);
+		if (strcmp(info.name(), "class CProgramChild") == 0)
+		{
+			include(((CProgramChild *)this)->getProgram());
+		}
+
 		extern STRING g_projectPath;
 		for (; i != inclusions.end(); ++i)
 		{
-			include(g_projectPath + PRG_PATH + *i);
+			include(CProgram(g_projectPath + PRG_PATH + *i));
 		}
 		m_inclusions.clear();
 	}
@@ -720,7 +802,7 @@ void CProgram::parseFile(FILE *pFile)
 	//   - Handle member references within class methods.
 	//   - Record class members.
 	//   - Detect class factory references.
-	//   - Backward compatibility: _T("end") => _T("end()")
+	//   - Backward compatibility: "end" => "end()"
 	//	 - Transform switch...case structures to if...elseif...else.
 
 	tagClass **classes = (tagClass **)_alloca(sizeof(tagClass *) * m_classes.size());
@@ -796,7 +878,7 @@ void CProgram::parseFile(FILE *pFile)
 			}
 			else
 			{
-				// Convert such lines as _T("end") to _T("end()"). This could
+				// Convert such lines as "end" to "end()". This could
 				// potentially do unwanted things, but it is required
 				// for backward compatibility.
 				if (m_functions.count(i->lit))
@@ -922,7 +1004,7 @@ void CProgram::parseFile(FILE *pFile)
 	{
 		if ((i->udt & UDT_FUNC) && (i->func == skipMethod))
 		{
-			LPNAMED_METHOD p = NAMED_METHOD::locate(i->lit, (unsigned int)i->num, false);
+			LPNAMED_METHOD p = NAMED_METHOD::locate(i->lit, (unsigned int)i->num, false, *this);
 			if (p)
 			{
 				p->i = i - m_units.begin() + 1;
@@ -973,7 +1055,7 @@ void CProgram::parseFile(FILE *pFile)
 		{
 			POS unit = i - 1;
 			if (unit->udt & UDT_OBJ) continue;
-			LPNAMED_METHOD p = NAMED_METHOD::locate(unit->lit, i->params - 1, false);
+			LPNAMED_METHOD p = NAMED_METHOD::locate(unit->lit, i->params - 1, false, *this);
 			if (p)
 			{
 				unit->udt = UDT_NUM;
@@ -1048,12 +1130,8 @@ unsigned int CProgram::matchBrace(POS i)
 }
 
 // Include a file.
-void CProgram::include(const STRING file)
+void CProgram::include(const CProgram prg)
 {
-	std::vector<NAMED_METHOD> methods = NAMED_METHOD::m_methods;
-
-	CProgram prg(file);
-
 	{
 		std::map<STRING, tagClass>::const_iterator i = prg.m_classes.begin();
 		for (; i != prg.m_classes.end(); ++i)
@@ -1062,10 +1140,10 @@ void CProgram::include(const STRING file)
 		}
 	}
 
-	std::vector<NAMED_METHOD>::const_iterator i = NAMED_METHOD::m_methods.begin();
-	for (; i != NAMED_METHOD::m_methods.end(); ++i)
+	std::vector<NAMED_METHOD>::const_iterator i = prg.m_methods.begin();
+	for (; i != prg.m_methods.end(); ++i)
 	{
-		methods.push_back(*i);
+		m_methods.push_back(*i);
 		int depth = 0;
 		CONST_POS j = prg.m_units.begin() + i->i - 1;
 		do
@@ -1075,8 +1153,6 @@ void CProgram::include(const STRING file)
 			else if ((j->udt & UDT_CLOSE) && !--depth) break;
 		} while (++j != prg.m_units.end());
 	}
-
-	NAMED_METHOD::m_methods = methods;
 }
 
 // Save an RPGCode program.

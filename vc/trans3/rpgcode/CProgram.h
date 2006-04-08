@@ -159,6 +159,7 @@ typedef struct tagNamedMethod
 
 	static std::vector<tagNamedMethod> m_methods;
 	static tagNamedMethod *locate(const STRING name, const int params, const bool bMethod);
+	static tagNamedMethod *locate(const STRING name, const int params, const bool bMethod, CProgram &prg);
 } NAMED_METHOD, *LPNAMED_METHOD;
 
 // Class visibilities.
@@ -183,6 +184,8 @@ typedef struct tagClass
 typedef std::deque<MACHINE_UNIT> MACHINE_UNITS, *LPMACHINE_UNITS;
 typedef MACHINE_UNITS::const_iterator CONST_POS;
 typedef MACHINE_UNITS::iterator POS;
+
+typedef std::deque<std::deque<STACK_FRAME> >::const_iterator STACK_ITR;
 
 // Get a lowercase string.
 inline STRING lcase(const STRING str)
@@ -237,6 +240,10 @@ public:
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
 	static void freePlugins();
 
+	// Copy constructor and assignment operator.
+	CProgram(const CProgram &rhs) { *this = rhs; }
+	CProgram &operator=(const CProgram &rhs);
+
 /** Delano: could be unneeded after all. Will check after multiRun().
 	static bool isRunning() { return (m_runningPrograms != 0); } **/
 
@@ -248,6 +255,7 @@ private:
 	std::map<STRING, CLASS> m_classes;
 	std::vector<unsigned int> m_lines;
 	tagBoardProgram *m_pBoardPrg;
+	std::vector<tagNamedMethod> m_methods;
 
 	// Yacc globals.
 	static LPMACHINE_UNITS m_pyyUnits;
@@ -284,12 +292,11 @@ private:
 	friend int yylex();
 	friend int yyparse();
 	friend int yyerror(const char *);
+	friend tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg);
 
-	CProgram(CProgram &);
-	CProgram operator=(CProgram &);
 	void parseFile(FILE *pFile);
 	unsigned int matchBrace(POS i);
-	void include(const STRING file);
+	void include(const CProgram prg);
 	void prime();
 	static bool resolvePluginCall(LPMACHINE_UNIT pUnit);
 
@@ -304,6 +311,7 @@ class CProgramChild : public CProgram
 public:
 	CProgramChild(CProgram &prg): m_prg(prg) { }
 	LPSTACK_FRAME getVar(const STRING name) { return m_prg.getVar(name); }
+	CProgram &getProgram() { return m_prg; }
 
 private:
 	CProgram &m_prg;
