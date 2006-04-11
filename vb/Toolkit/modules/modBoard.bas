@@ -9,6 +9,7 @@ Option Explicit
 Private Declare Function BRDPixelToTile Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal brdSizeX As Integer) As Long
 Private Declare Function BRDTileToPixel Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal brdSizeX As Integer) As Long
 Private Declare Function BRDVectorize Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByRef vectors() As TKConvertedVector) As Long
+Private Declare Function BRDTileToVector Lib "actkrt3.dll" (ByVal pVector As Long, ByVal x As Long, ByVal y As Long, ByVal coordType As Integer) As Long
 
 '=========================================================================
 ' A board-set image [tagVBBoardImage]
@@ -24,14 +25,28 @@ Public Type TKBoardImage
     file As String
 End Type
 
+Public Enum eBoardImage
+    BI_NORMAL                           'See BI_ENUM enumeration, CBoard.h
+    BI_PARALLAX
+    BI_STRETCH
+End Enum
+
+'=========================================================================
+' Tiletype/vector defines
+'=========================================================================
 Public Enum eTileType
     TT_NULL = -1                        'To denote empty slot in editor.
-    TT_NORMAL = 0                       'See TILE_TYPE enumeration, CVector.h
+    TT_NORMAL = 0                       'See TILE_TYPE enumeration, board conversion.h
     TT_SOLID = 1
     TT_UNDER = 2
     TT_UNIDIRECTIONAL = 4
     TT_STAIRS = 8
 End Enum
+
+'Under vector attributes. See board.h
+Public Const TA_BRD_BACKGROUND = 1            'Under vector uses background image.
+Public Const TA_ALL_LAYERS_BELOW = 2          'Under vector applies to all layers below.
+Public Const TA_RECT_INTERSECT = 4            'Under vector activated by bounding rect intersection.
 
 '=========================================================================
 ' A board program [tagVBBoardProgram]
@@ -211,7 +226,7 @@ Public Type TKBoardEditorData
         
     currentVectorSet() As CVector         'References to vectors of current optSetting
     currentVector As CVector
-    vectorColor As Long
+    vectorColor(TT_STAIRS) As Long
     programColor As Long
     waypointColor As Long
 
@@ -419,4 +434,15 @@ Public Sub vectorize(ByRef ed As TKBoardEditorData) ': On Error Resume Next
         Call vector.closeVector(Not vects(i).closed, vects(i).layer)
         vector.attributes = vects(i).attributes
     Next i
+End Sub
+Public Sub upgradeProgram(ByRef prg As TKBoardProgram, ByVal x As Long, ByVal y As Long, ByVal coordType As Long) ':on error resume next
+    
+    Dim vect As TKConvertedVector, i As Long
+    Call BRDTileToVector(VarPtr(vect), x, y, coordType)
+    
+    For i = 0 To UBound(vect.pts)
+        Call prg.vBase.addPoint(vect.pts(i).x, vect.pts(i).y)
+    Next i
+    prg.vBase.tiletype = vect.type
+    Call prg.vBase.closeVector(0, prg.layer)
 End Sub

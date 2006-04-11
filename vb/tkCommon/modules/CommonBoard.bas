@@ -952,23 +952,36 @@ exitTheFor:
             For t = 0 To 8
                 .boardTitle(t) = BinReadString(num)  'Board title (layer)
             Next t
-            Dim numPrg As Long
-            numPrg = BinReadInt(num)    'ubound on number of programs...
+            
+            '3.0.7 wip - load intoTKBoardProgram structures.
+            Dim numPrg As Long, ubPrgs As Long
+            numPrg = BinReadInt(num)    'ubound on number of programs written to file.
+            
             For t = 0 To numPrg
-                .programName(t) = BinReadString(num)  'Board program filenames
-                .progX(t) = BinReadInt(num)   'program x
-                .progY(t) = BinReadInt(num)   'program y
-                .progLayer(t) = BinReadInt(num)  'program layer
-                .progGraphic(t) = BinReadString(num)  'program graphic
-                .progActivate(t) = BinReadInt(num)  'program activation: 0- always active, 1- conditional activation.
-                .progVarActivate(t) = BinReadString(num)  'activation variable
-                .progDoneVarActivate(t) = BinReadString(num)  'activation variable at end of prg.
-                .activateInitNum(t) = BinReadString(num)  'initial number of activation
-                .activateDoneNum(t) = BinReadString(num)  'what to make variable at end of activation.
-                .activationType(t) = BinReadInt(num)  'activation type- 0-step on, 1- conditional (activation key)
+                '3.0.7 wip - load into TKBoardProgram structure instead.
+                Dim prg As TKBoardProgram
+                prg.filename = BinReadString(num)       'Board program filenames
+                x = BinReadInt(num)                     'program x
+                y = BinReadInt(num)                     'program y
+                prg.layer = BinReadInt(num)             'program layer
+                prg.graphic = BinReadString(num)        'program graphic
+                prg.activate = BinReadInt(num)          'program activation: 0- always active, 1- conditional activation.
+                prg.initialVar = BinReadString(num)     'activation variable
+                prg.finalVar = BinReadString(num)       'activation variable at end of prg.
+                prg.initialValue = BinReadString(num)   'initial number of activation
+                prg.finalValue = BinReadString(num)     'what to make variable at end of activation.
+                prg.activationType = BinReadInt(num)    'activation type- 0-step on, 1- conditional (activation key)
+               
+                If (prg.filename <> vbNullString) Then
+                    ReDim Preserve .prgs(ubPrgs)
+                    .prgs(ubPrgs) = prg
+                    ' Hold the position in the CVector until the coordtype byte is read.
+                    Call .prgs(ubPrgs).vBase.addPoint(x, y)
+                    ubPrgs = ubPrgs + 1
+                End If
             Next t
-            .enterPrg = BinReadString(num)     'program to run on entrance''''''''''''''''''
-            .bgPrg = BinReadString(num)       'background program
+            .enterPrg = BinReadString(num)      'program to run on entrance
+            .bgPrg = BinReadString(num)         'background program
             
             On Error Resume Next
             
@@ -1025,6 +1038,16 @@ exitTheFor:
             End If
 
         Close num
+        
+        '3.0.7 wip - generate program bases after coordinate type is read.
+        Dim i As Long
+        For i = 0 To UBound(.prgs)
+            If .prgs(i).filename <> vbNullString Then
+                Call .prgs(i).vBase.getPoint(0, x, y)
+                Call .prgs(i).vBase.deletePoints
+                Call upgradeProgram(.prgs(i), x, y, .coordType)
+            End If
+        Next i
 
         Exit Function
 
