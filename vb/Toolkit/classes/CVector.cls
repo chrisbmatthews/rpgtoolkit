@@ -117,6 +117,29 @@ Public Sub closeVector(ByVal shiftState As Integer, ByVal layer As Long) ':on er
 End Sub
 
 '=========================================================================
+' Delete one or all points by index
+'=========================================================================
+Public Sub deletePoints(Optional ByVal p As Long = -1) ':on error resume next
+    If p < 0 Then
+    
+        ReDim m_pts(0)
+        m_tiletype = TT_NULL
+        
+    ElseIf p <= UBound(m_pts) Then
+    
+        Dim i As Long, pts() As TKVectorPoint
+        ReDim pts(0)
+        
+        For i = 0 To UBound(m_pts)
+            If p <> i Then
+                pts(UBound(pts)) = m_pts(i)
+                ReDim Preserve pts(UBound(pts) + 1)
+            End If
+        Next i
+    End If
+End Sub
+
+'=========================================================================
 ' Delete points in a selection
 '=========================================================================
 Public Sub deleteSelection(ByRef sel As CBoardSelection) ':on error resume next
@@ -180,6 +203,29 @@ Public Function extendSelection(ByRef sel As CBoardSelection, ByRef x As Long, B
 End Function
 
 '=========================================================================
+' Get the bounding box
+'=========================================================================
+Public Sub getBounds(ByRef x1 As Long, ByRef y1 As Long, ByRef x2 As Long, ByRef y2 As Long) ':on error resume next
+    Dim i As Long
+    For i = 0 To UBound(m_pts)
+        If m_pts(i).x > x2 Or i = 0 Then x2 = m_pts(i).x
+        If m_pts(i).y > y2 Or i = 0 Then y2 = m_pts(i).y
+        If m_pts(i).x < x1 Or i = 0 Then x1 = m_pts(i).x
+        If m_pts(i).y < y1 Or i = 0 Then y1 = m_pts(i).y
+    Next i
+End Sub
+
+'=========================================================================
+' Get a point by index
+'=========================================================================
+Public Sub getPoint(ByVal p As Long, ByRef x As Long, ByRef y As Long) ':on error resume next
+    If p <= UBound(m_pts) Then
+        x = m_pts(p).x
+        y = m_pts(p).y
+    End If
+End Sub
+
+'=========================================================================
 ' Move points a selection
 '=========================================================================
 Public Sub moveSelection(ByVal dx As Long, ByVal dy As Long) ':on error resume next
@@ -236,4 +282,73 @@ Public Sub subdivideSelection(ByRef sel As CBoardSelection) ':on error resume ne
     ReDim Preserve pts(UBound(pts) - 1)
     m_pts = pts
         
+End Sub
+
+'=========================================================================
+' Populate the right board toolbar with the vector's attributes
+'=========================================================================
+Public Sub tbPopulate() ':on error resume next
+    Dim i As Long, j As Long
+    
+    'Option buttons have been assigned TT_ values as indices.
+    If m_tiletype <> TT_NULL Then tkMainForm.bTools_VectorOptType(m_tiletype).value = True
+    tkMainForm.bTools_VectorChkClosed.value = Abs(m_bClosed)
+    tkMainForm.bTools_VectorTxtLayer.Text = str(m_layer)
+    tkMainForm.bTools_VectorTxtStairs.Enabled = (m_tiletype = TT_STAIRS)
+    tkMainForm.bTools_VectorLblStairs.Enabled = (m_tiletype = TT_STAIRS)
+    
+    For i = 0 To tkMainForm.bTools_VectorChkUnder.count - 1
+        tkMainForm.bTools_VectorChkUnder(i).Enabled = (m_tiletype = TT_UNDER)
+        tkMainForm.bTools_VectorChkUnder(i).value = 0
+    Next i
+    
+    If m_tiletype = TT_UNDER Then
+        tkMainForm.bTools_VectorChkUnder(0).value = Abs((m_attributes And TA_BRD_BACKGROUND) <> 0)
+        tkMainForm.bTools_VectorChkUnder(1).value = Abs((m_attributes And TA_ALL_LAYERS_BELOW) <> 0)
+        tkMainForm.bTools_VectorChkUnder(2).value = Abs((m_attributes And TA_RECT_INTERSECT) <> 0)
+    ElseIf m_tiletype = TT_STAIRS Then
+        tkMainForm.bTools_VectorTxtStairs.Text = str(m_attributes)
+    End If
+    
+    tkMainForm.bTools_VectorLv.ListItems.clear
+    
+    If m_tiletype = TT_NULL Then Exit Sub
+        
+    If Not tkMainForm.bTools_VectorLv.SelectedItem Is Nothing Then j = tkMainForm.bTools_VectorLv.SelectedItem.index
+    For i = 0 To UBound(m_pts)
+        Call tkMainForm.bTools_VectorLv.ListItems.Add(i + 1, , str(i))
+        tkMainForm.bTools_VectorLv.ListItems(i + 1).SubItems(1) = str(m_pts(i).x)
+        tkMainForm.bTools_VectorLv.ListItems(i + 1).SubItems(2) = str(m_pts(i).y)
+    Next i
+    If j <> 0 Then Set tkMainForm.bTools_VectorLv.SelectedItem = tkMainForm.bTools_VectorLv.ListItems(j)
+    tkMainForm.bTools_VectorLv.SelectedItem.EnsureVisible
+
+End Sub
+
+'=========================================================================
+' Set the vector's attributes to the toolbar's values
+'=========================================================================
+Public Sub tbApply() ':on error resume next
+    Dim i As Long
+    If tkMainForm.bTools_VectorOptType(TT_SOLID).value Then
+        m_tiletype = TT_SOLID
+    ElseIf tkMainForm.bTools_VectorOptType(TT_UNDER).value Then
+        m_tiletype = TT_UNDER
+        m_attributes = 0
+        For i = 0 To tkMainForm.bTools_VectorChkUnder.count - 1
+            If tkMainForm.bTools_VectorChkUnder(i).value Then m_attributes = m_attributes Or (2 ^ i)
+        Next i
+    ElseIf tkMainForm.bTools_VectorOptType(TT_STAIRS).value Then
+        m_tiletype = TT_STAIRS
+        m_attributes = 1
+        m_attributes = val(tkMainForm.bTools_VectorTxtStairs.Text)
+    End If
+    m_bClosed = (tkMainForm.bTools_VectorChkClosed.value <> 0)
+    m_layer = val(tkMainForm.bTools_VectorTxtLayer.Text)
+    
+    ReDim m_pts(tkMainForm.bTools_VectorLv.ListItems.count - 1)
+    For i = 0 To tkMainForm.bTools_VectorLv.ListItems.count - 1
+        m_pts(i).x = Abs(val(tkMainForm.bTools_VectorLv.ListItems(i + 1).SubItems(1)))
+        m_pts(i).y = Abs(val(tkMainForm.bTools_VectorLv.ListItems(i + 1).SubItems(2)))
+    Next i
 End Sub

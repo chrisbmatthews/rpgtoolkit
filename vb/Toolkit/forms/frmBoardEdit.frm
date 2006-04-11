@@ -151,8 +151,10 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
     Set m_sel = New CBoardSelection
     
     'testing
-    'm_ed.board.brdColor = 0
-    m_ed.vectorColor = RGB(255, 255, 255)
+    m_ed.board.brdColor = 0
+    m_ed.vectorColor(TT_SOLID) = RGB(255, 255, 255)
+    m_ed.vectorColor(TT_UNDER) = RGB(0, 255, 0)
+    m_ed.vectorColor(TT_STAIRS) = RGB(0, 255, 255)
     m_ed.programColor = RGB(255, 255, 0)
     m_ed.waypointColor = RGB(255, 0, 0)
     m_ed.gridColor = RGB(255, 255, 255)
@@ -237,14 +239,17 @@ Private Sub Form_Activate() ':on error resume next
     
     Call resetLayerCombos
     
+    'Update the toolbar.
+    If tkMainForm.popButton(3).value = 1 Then
+        tkMainForm.pTools.Visible = True
+        Call toolbarPopulate
+    End If
+    
     'tkMainForm.boardToolbar.Display.Refresh
    
     'Tick the flood option if entry made.
     'mnuRecursiveFlooding.Checked = False
     'If GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then mnuRecursiveFlooding.Checked = True
-    
-    ' if open, refresh board objects bar
-    'If tkMainForm.popButton(3).value = 1 Then tkMainForm.boardToolbar.Objects.Populate (activeBoardIndex)
     
     Call Form_Resize
     
@@ -263,6 +268,7 @@ Public Sub Form_Deactivate() ':on error resume next
     tkMainForm.StatusBar1.Panels(3).Text = vbNullString
     'Reset visible layers list.
     Call setVisibleLayersByCombo
+    Call tkMainForm.boardToolbar.hide
 End Sub
 Private Sub Form_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
     Call picBoard_KeyDown(keyCode, Shift)
@@ -328,6 +334,7 @@ Private Sub Form_Unload(Cancel As Integer) ': On Error Resume Next
     Call BoardClear(m_ed.board)
     Call hideAllTools
     Set m_sel = Nothing
+    Call tkMainForm.boardToolbar.hide
     'tbc
 
     ' Unhook scroll wheel.
@@ -355,7 +362,13 @@ Public Sub openFile(ByVal file As String) ': On Error Resume Next
     ' Call FileCopy(filename(1), projectPath & brdPath & antiPath)
     
     Call openBoard(file, m_ed)
-    Call vectorize(m_ed)
+    Call vectorize(m_ed)                                        'tbd: For old boards only.
+    
+    'tbd: merge with openBoard?
+    '.bounds information set in actkrt3
+    m_ed.board.bkgImage.file = bmpPath & m_ed.board.brdBack     'tbd: remove brdback
+    m_ed.board.bkgImage.drawType = BI_PARALLAX                  'Default for background.
+    
     Call resetEditor(m_ed)
     Call BRDRender(VarPtr(m_ed), picBoard.hdc, True)
     
@@ -627,28 +640,28 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
         Case BS_GENERAL
             'Move the board by dragging.
             If Button <> 0 And hScroll.Visible Then
-                Dim dx As Long, dy As Long, hx As Long, hy As Long, tx As Long, ty As Long
+                Dim dx As Long, dy As Long, hx As Long, hy As Long, tX As Long, tY As Long
                 dx = m_sel.xDrag - x:           dy = m_sel.yDrag - y
                 hx = scrollUnitWidth(m_ed) / 2: hy = scrollUnitHeight(m_ed) / 2
-                tx = val(hScroll.tag):          ty = val(vScroll.tag)
+                tX = val(hScroll.tag):          tY = val(vScroll.tag)
                 
                 If dx > 0 Then
-                    tx = IIf(dx + tx < hScroll.max, dx + tx, hScroll.max)
+                    tX = IIf(dx + tX < hScroll.max, dx + tX, hScroll.max)
                 Else
-                    tx = IIf(dx + tx > hScroll.min, dx + tx, hScroll.min)
+                    tX = IIf(dx + tX > hScroll.min, dx + tX, hScroll.min)
                 End If
                 'Round to nearest scroll unit.
-                hScroll.value = tx - ((tx + hx) Mod (2 * hx)) + hx
+                hScroll.value = tX - ((tX + hx) Mod (2 * hx)) + hx
                 
                 If dy > 0 Then
-                    ty = IIf(dy + ty < vScroll.max, dy + ty, vScroll.max)
+                    tY = IIf(dy + tY < vScroll.max, dy + tY, vScroll.max)
                 Else
-                    ty = IIf(dy + ty > vScroll.min, dy + ty, vScroll.min)
+                    tY = IIf(dy + tY > vScroll.min, dy + tY, vScroll.min)
                 End If
-                vScroll.value = ty - ((ty + hy) Mod (2 * hy)) + hy
+                vScroll.value = tY - ((tY + hy) Mod (2 * hy)) + hy
                 
                 m_sel.xDrag = x:                m_sel.yDrag = y
-                hScroll.tag = tx:               vScroll.tag = ty
+                hScroll.tag = tX:               vScroll.tag = tY
             End If
             
        Case BS_TILE
@@ -1427,17 +1440,29 @@ Private Sub vectorBuildCurrentSet() ':on error resume next
     End Select
 End Sub
 Private Sub vectorDrawAll(): On Error Resume Next
-    Dim i As Long
+    Dim i As Long, p1 As POINTAPI, p2 As POINTAPI
     'Vectors
     For i = 0 To UBound(m_ed.board.vectors)
         If m_ed.bLayerVisible(m_ed.board.vectors(i).layer) Then
-            Call m_ed.board.vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor)
+            Call m_ed.board.vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor(m_ed.board.vectors(i).tiletype))
         End If
     Next i
+    
     'Programs
+    picBoard.ForeColor = m_ed.programColor
     For i = 0 To UBound(m_ed.board.prgs)
         If m_ed.bLayerVisible(m_ed.board.prgs(i).vBase.layer) Then
             Call m_ed.board.prgs(i).vBase.draw(picBoard, m_ed.pCEd, m_ed.programColor)
+            
+            'Centre filename in middle of vector area.
+            If m_ed.board.prgs(i).filename <> vbNullString Then
+                Call m_ed.board.prgs(i).vBase.getBounds(p1.x, p1.y, p2.x, p2.y)
+                p1 = boardPixelToScreen(p1.x, p1.y, m_ed)
+                p2 = boardPixelToScreen(p2.x, p2.y, m_ed)
+                picBoard.currentX = (p1.x + p2.x - picBoard.TextWidth(m_ed.board.prgs(i).filename)) / 2
+                picBoard.currentY = (p1.y + p2.y - picBoard.TextHeight(m_ed.board.prgs(i).filename)) / 2
+                picBoard.Print m_ed.board.prgs(i).filename
+            End If
         End If
     Next i
 End Sub
@@ -1472,7 +1497,7 @@ End Sub
 Private Function vectorGetColor() As Long: On Error Resume Next
     Select Case m_ed.optSetting
         Case BS_VECTOR
-            vectorGetColor = m_ed.vectorColor
+            vectorGetColor = m_ed.vectorColor(m_ed.currentVector.tiletype)
         Case BS_PROGRAM
             vectorGetColor = m_ed.programColor
     End Select
@@ -1604,4 +1629,33 @@ Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelecti
             Call BRDRender(VarPtr(m_ed), picBoard, False, m_ed.currentLayer)
     End Select
     Call drawBoard
+End Sub
+
+Public Sub toolbarPopulate() ':on error resume next
+    Call tkMainForm.boardToolbar.Populate(m_ed.board.vectors)
+End Sub
+Public Sub toolbarChange(ByVal vectorIndex As Long) ':on error resume next
+    If vectorIndex <= UBound(m_ed.board.vectors) And Not (m_ed.board.vectors(vectorIndex) Is Nothing) Then
+        Call m_ed.board.vectors(vectorIndex).tbPopulate
+    End If
+End Sub
+Public Sub toolbarApply(ByVal vectorIndex As Long) ':on error resume next
+    If vectorIndex <= UBound(m_ed.board.vectors) And Not (m_ed.board.vectors(vectorIndex) Is Nothing) Then
+        Call m_ed.board.vectors(vectorIndex).tbApply
+        Call m_ed.board.vectors(vectorIndex).tbPopulate
+        Call drawAll
+    End If
+End Sub
+Public Sub toolbarVectorDelete(ByVal vectorIndex As Long) ':on error resume next
+    If vectorIndex <= UBound(m_ed.board.vectors) And Not (m_ed.board.vectors(vectorIndex) Is Nothing) Then
+        Set m_ed.board.vectors(vectorIndex) = Nothing
+        Call vectorBuildCurrentSet
+        Call tkMainForm.boardToolbar.Populate(m_ed.board.vectors)
+        Call drawAll
+    End If
+End Sub
+Public Sub toolbarVectorDuplicate(ByVal vectorIndex As Long) ':on error resume next
+    If vectorIndex <= UBound(m_ed.board.vectors) And Not (m_ed.board.vectors(vectorIndex) Is Nothing) Then
+        MsgBox "tbd"
+    End If
 End Sub

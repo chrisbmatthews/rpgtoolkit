@@ -9,11 +9,11 @@ Begin VB.Form frmNewBoard
    ControlBox      =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
+   MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   3705
    ScaleWidth      =   5985
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   2  'CenterScreen
    Begin VB.Frame fraBack 
       Height          =   3615
       Left            =   120
@@ -259,7 +259,7 @@ Private m_height As Integer
 Private m_layers As Integer
 Private m_default As String
 
-Private Sub chkPxAbsolute_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub chkPxAbsolute_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     m_coordOpt = m_coordOpt Xor PX_ABSOLUTE
 End Sub
 Private Sub cmdBrowseBkgImg_Click()
@@ -318,8 +318,8 @@ Private Sub Form_Load(): On Error Resume Next
     txtWidth.Text = str(m_width)
     txtHeight.Text = str(m_height)
     txtLayers.Text = str(m_layers)
-    optCoords(m_coordOpt And Not PX_ABSOLUTE).value = True
     chkPxAbsolute.value = Abs((m_coordOpt And PX_ABSOLUTE) <> 0)
+    optCoords(m_coordOpt And Not PX_ABSOLUTE).value = True
     txtDefaultBoard.Text = m_default
     Call updatePxDimensions
     
@@ -352,14 +352,14 @@ End Sub
 
 '========================================================================
 '========================================================================
-Private Sub optCoords_Click(Index As Integer): On Error Resume Next
-    Select Case Index
+Private Sub optCoords_Click(index As Integer): On Error Resume Next
+    Select Case index
         Case 0:
-            m_coordOpt = TILE_NORMAL
+            m_coordOpt = (m_coordOpt And PX_ABSOLUTE) Or TILE_NORMAL
         Case 1:
-            m_coordOpt = ISO_STACKED
+            m_coordOpt = (m_coordOpt And PX_ABSOLUTE) Or ISO_STACKED
         Case 2:
-            m_coordOpt = ISO_ROTATED
+            m_coordOpt = (m_coordOpt And PX_ABSOLUTE) Or ISO_ROTATED
     End Select
     Call updatePxDimensions
 End Sub
