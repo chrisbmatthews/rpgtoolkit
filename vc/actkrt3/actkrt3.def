@@ -63,21 +63,22 @@ EXPORTS
 	BRDTileToPixel		@58
 	BRDIsometricTransform @59
 	BRDVectorize		@60
+	BRDTileToVector		@61
 
 	;tkzip...
-	ZIPTest				@61
-	ZIPCreate			@62
-	ZIPCloseNew			@63
-	ZIPAdd				@64
-	ZIPOpen				@65
-	ZIPClose			@66
-	ZIPExtract			@67
-	ZIPGetFileCount		@68
-	ZIPGetFile			@69
-	ZIPFileExist		@70
-	ZIPCreateCompoundFile @71
-	ZIPIsCompoundFile	@72
-	ZIPExtractCompoundFile @73
+	ZIPTest				@71
+	ZIPCreate			@72
+	ZIPCloseNew			@73
+	ZIPAdd				@74
+	ZIPOpen				@75
+	ZIPClose			@76
+	ZIPExtract			@77
+	ZIPGetFileCount		@78
+	ZIPGetFile			@79
+	ZIPFileExist		@80
+	ZIPCreateCompoundFile @81
+	ZIPIsCompoundFile	@82
+	ZIPExtractCompoundFile @83
 
 	;tkCanvas...
 	CNVInit				@90

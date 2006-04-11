@@ -185,6 +185,39 @@ LONG APIENTRY BRDVectorize(
 //--------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------
+LONG APIENTRY BRDTileToVector(
+	CONST LPVB_CONV_VECTOR pVector,
+	CONST INT x,
+	CONST INT y,
+	CONST SHORT coordType)
+{
+	std::vector<CONV_POINT> pts = tileToVector(x, y, COORD_TYPE(coordType));
+
+	// Create a new SAFEARRAY for the points.
+	if (SafeArrayAllocDescriptor(1, &pVector->pts) != S_OK) return 1;
+
+	pVector->pts->cbElements = sizeof(CONV_POINT);
+	pVector->pts->fFeatures = FADF_EMBEDDED;
+	pVector->pts->rgsabound[0].cElements = pts.size();
+	pVector->pts->rgsabound[0].lLbound = 0;
+
+	if (SafeArrayAllocData(pVector->pts) == S_OK)
+	{
+		// Insert the points into the new array.
+		LONG index = 0;
+		std::vector<CONV_POINT>::iterator i = pts.begin();
+		for (; i != pts.end(); ++i, ++index)
+		{
+			if (SafeArrayPutElement(pVector->pts, &index, (void *)i) != S_OK) break;
+		}
+		pVector->closed = VARIANT_TRUE;
+	} 
+	return 0;
+}
+
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
 CBoard::~CBoard()
 {
 	BL_ITR i = m_layers.begin();
@@ -570,6 +603,14 @@ CCanvas *tagVBBoardImage::render(
 	if (!bmp) return NULL;
 
 	CONST INT w = FreeImage_GetWidth(bmp), h = FreeImage_GetHeight(bmp);
+	
+	// Assign width and height to bounds, since the image is only rendered once.
+	if (bounds.right - bounds.left <= 0 || bounds.bottom - bounds.top <= 0)
+	{
+		bounds.right = bounds.left + w;
+		bounds.bottom = bounds.top + h;
+	}
+	
 	pCnv = new CCanvas();
 	pCnv->CreateBlank(hdcCompat, w, h, TRUE);
 	pCnv->ClearScreen(TRANSP_COLOR);
@@ -783,7 +824,7 @@ VOID CBoard::vectorize(
 				}
 
 				// Set the other properties.
-				pCvVt->closed = -1;					// VB true.
+				pCvVt->closed = VARIANT_TRUE;
 				pCvVt->type = TILE_TYPE((*j)->type);
 				if ((*j)->type >= STAIRS1 && (*j)->type <= STAIRS8)
 				{
@@ -806,4 +847,4 @@ VOID CBoard::vectorize(
 		} // for (vectors on this layer)
 	} // for (z)
 }
-		
+
