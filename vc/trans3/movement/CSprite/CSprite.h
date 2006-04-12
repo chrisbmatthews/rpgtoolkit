@@ -40,7 +40,7 @@ public:
 		const int x,
 		const int y, 
 		const int type,
-		const bool bNearPt);
+		const int flags);
 	void runQueuedMovements(void);			// Run all the movements in the queue.
 	void setQueuedMovement(					// Place a movement in the sprite's queue.
 		const int queue,
@@ -86,6 +86,7 @@ public:
 	void setActive(const bool bActive) { m_bActive = bActive; }
 	void setPosition(int x, int y, const int l, const COORD_TYPE coord);
 	BRD_SPRITE *getBoardSprite(void) { return &m_brdData; }
+	MV_PATH getPath(void) const { return m_pend.path; } // tbd: put path in m_pos
 
 	// Create default vectors, overwriting any user-defined (PRE_VECTOR_ITEMs).
 	void createVectors(void) { m_attr.createVectors(m_brdData.activationType); };

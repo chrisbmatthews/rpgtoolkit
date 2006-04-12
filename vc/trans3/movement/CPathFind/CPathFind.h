@@ -21,6 +21,10 @@
 #include <windows.h>				// RECT only.
 #include <math.h>
 
+/*
+ * Defines
+ */
+
 // Distance measurements.
 enum PF_HEURISTIC
 {
@@ -29,6 +33,15 @@ enum PF_HEURISTIC
 	PF_DIAGONAL,
 	PF_VECTOR
 };
+
+// Flags: Three possibilities when target is blocked -
+//	0 - cannot reach target, do not pathfind (e.g., wander())
+//	1 - attempt to reach given target (e.g., attacking a sprite)
+//	2 - move the goal to the nearest free point (e.g., when a sprite
+//		blocks a mid-section of a path). 
+#define PF_QUIT_BLOCKED		1	// Do not move the goal to the nearest free point when blocked.
+#define PF_AVOID_SPRITE		2	// Walk around a sprite when it blocks the goal.
+#define PF_TILE_MIDPOINT	4	// Check the midpoint of tiles in tile mode (private use).
 
 // A node or navigation point.
 typedef struct tagNode
@@ -83,7 +96,7 @@ public:
 		const RECT &r, 
 		const int type, 
 		const CSprite *pSprite,
-		const bool bAllowNearPoint
+		const int flags
 	);
 
 private:
@@ -109,7 +122,7 @@ private:
 	void initialize(const int layer, const RECT &r, const PF_HEURISTIC type);
 
 	// Determine if a node can be directly reached from another node.
-	bool isChild(const NODE &child, const NODE &parent, const CSprite *pSprite, const bool bTileMidPoint);
+	bool isChild(const NODE &child, const NODE &parent, const CSprite *pSprite, const int flags);
 
 	// Reset the points at the start of a search.
 	bool reset(
@@ -117,7 +130,7 @@ private:
 		DB_POINT goal, 
 		const RECT &r, 
 		const CSprite *pSprite,
-		const bool bAllowNearPoint
+		const int flags
 	);
 
 	std::vector<DB_POINT> m_points;				// All node coords.

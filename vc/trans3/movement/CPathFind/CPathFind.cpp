@@ -31,7 +31,7 @@ const DB_POINT SEPARATOR = {-1, -1};// Invalid point to separate board and sprit
  * Default constructor.
  */
 CPathFind::CPathFind():
-m_heuristic(PF_VECTOR),
+m_heuristic(PF_DIAGONAL),
 m_goal(),
 m_layer(0),
 m_start(),
@@ -240,7 +240,7 @@ void CPathFind::initialize(const int layer, const RECT &r, const PF_HEURISTIC ty
  * Determine if a node can be directly reached from another node
  * i.e. is there an unobstructed line between the two?
  */
-bool CPathFind::isChild(const NODE &child, const NODE &parent, const CSprite *pSprite, const bool bTileMidPoint)
+bool CPathFind::isChild(const NODE &child, const NODE &parent, const CSprite *pSprite, const int flags)
 {
 	extern LPBOARD g_pBoard;
 	extern ZO_VECTOR g_sprites;
@@ -256,7 +256,6 @@ bool CPathFind::isChild(const NODE &child, const NODE &parent, const CSprite *pS
 		// Check for board collisions along the path.
 		for (std::vector<CPfVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
 		{
-			// Collision against a solid vector: not a child node.
 			if ((*i) && (*i)->contains(v)) return false;		
 		}
 	}
@@ -290,12 +289,16 @@ bool CPathFind::isChild(const NODE &child, const NODE &parent, const CSprite *pS
 				if (i->pV->contains(w)) return false;
 			}
 
+			// If the goal is occupied by a sprite and do not want to bypass
+			// it (i.e., we want to meet it) then return.
+			if ((child.pos == m_goal.pos) && (~flags & PF_AVOID_SPRITE)) return true;
+
 			for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
 			{
 				if ((*j)->getPosition().l != m_layer || *j == pSprite) continue;
 				if ((*j)->getVectorBase(true).contains(w)) return false;
 			}
-			if (!bTileMidPoint) break;
+			if (~flags & PF_TILE_MIDPOINT) break;
 		}
 	}
 	return true;
@@ -311,7 +314,7 @@ PF_PATH CPathFind::pathFind(
 	const RECT &r, 
 	const int type, 
 	const CSprite *pSprite,
-	const bool bAllowNearPoint)
+	const int flags)
 {
 	// Recreate m_obstructions if running on a new board or changing layers.
 	PF_HEURISTIC heur = PF_HEURISTIC(type);
@@ -321,7 +324,7 @@ PF_PATH CPathFind::pathFind(
 		initialize(layer, r, heur);
 
 	// Quit if the reset fails or the goal is the start point.
-	if (!reset(start, goal, r, pSprite, bAllowNearPoint)) return PF_PATH();
+	if (!reset(start, goal, r, pSprite, flags)) return PF_PATH();
 	if (m_start.pos == m_goal.pos) return PF_PATH();
 
 	while (!m_openNodes.empty())
@@ -347,7 +350,7 @@ PF_PATH CPathFind::pathFind(
 			// efficient.
 
 			NODE child(p);
-			if (!isChild(child, *parent, pSprite, true)) continue;
+			if (!isChild(child, *parent, pSprite, flags | PF_TILE_MIDPOINT)) continue;
 
 			// Assign total cost of moving from the start to this node
 			// *via this parent*, and the straight-line estimate to the goal (heuristic).
@@ -419,7 +422,7 @@ bool CPathFind::reset(
 	DB_POINT goal, 
 	const RECT &r, 
 	const CSprite *pSprite,
-	const bool bAllowNearPoint)
+	const int flags)
 {
 	extern LPBOARD g_pBoard;
 	extern ZO_VECTOR g_sprites;
@@ -455,32 +458,40 @@ bool CPathFind::reset(
 
 			// Extra clearance for sprites.
 			vector->grow(size + 1);
-			m_obstructions.push_back(vector);
-			vector->createNodes(m_points, limits);					
+
+			// If a sprite is at the goal and we do not want to bypass it
+			// (i.e., we want to meet it), then do not add it's vector to
+			// and the path will reach the requested goal.
+			if ((~flags & PF_AVOID_SPRITE) && vector->containsPoint(goal)) 				
+			{
+				if (vector->containsPoint(start)) start = vector->nearestPoint(start);
+				delete vector;
+			}
+			else
+			{
+				m_obstructions.push_back(vector);
+				vector->createNodes(m_points, limits);					
+			}
 		}
 
 		// Check if the goal is contained in a solid area.
 		// If so, set the goal to be the closest edge point.
 		for (std::vector<CPfVector *>::iterator j = m_obstructions.begin(); j != m_obstructions.end(); ++j)
 		{
-			if (!*j) continue;
+			if (!*j)
+			{
+				// Board vector / sprite separator.
+				// If the goal is allowed in a sprite base we can break 
+				// because we have already checked this in the previous loop.
+				if (~flags & PF_AVOID_SPRITE) break;
+				else continue;
+			}
 			if ((*j)->containsPoint(goal))
 			{
-				if (!bAllowNearPoint) return false;
+				// If the goal is blocked and a nearby point is not allowed, quit.
+				if (flags & PF_QUIT_BLOCKED) return false;
 
 				goal = (*j)->nearestPoint(goal);
-
-/*	#tbd remove				
-				// Make provision for offsetting the points in
-				// constructPath().
-				if (!g_pBoard->isIsometric())
-				{
-					// Shift points down the board by half
-					// the base height or to the tile edge.
-					goal.x += (r.right - r.left) / 2;
-					goal.y += (r.bottom - r.top) / 2;
-				}
-*/
 				/* Consider goals contained in multiple vectors! */
 			}
 			if ((*j)->containsPoint(start))
@@ -510,18 +521,20 @@ bool CPathFind::reset(
 		m_heuristic = PF_DIAGONAL;
 		m_u.i = MV_E;
 
+		// Temporarily set m_goal, but overwrite if first is blocked.
+		m_goal = NODE(goal);
 		NODE child(goal), unused;
 		while (true)
 		{
 			// Determine if the sprite can exist at the target - if
 			// so the target is clear.
-			if (isChild(child, unused, pSprite, false))
+			if (isChild(child, unused, pSprite, flags))
 			{
 				goal = child.pos;
 				break;
 			}
 
-			if (!bAllowNearPoint) return false;
+			if (flags & PF_QUIT_BLOCKED) return false;
 
 			// If the target isn't clear try the children of the goal
 			// until all surrounding tiles are checked.

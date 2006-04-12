@@ -97,6 +97,7 @@ typedef struct tagSpritePosition
 	int loopSpeed;			// speed converted to loops.
     IDLE_INFO idle;
 	bool bIsPath;			// Is the current movement part of a path?
+	int pathAttributes;		// Path flags (PF_).
 
 	tagSpritePosition(void): 
 		pAnm(NULL),
@@ -105,7 +106,8 @@ typedef struct tagSpritePosition
 		loopFrame(LOOP_WAIT),
 		bIsPath(false),
 		loopSpeed(1),
-		idle() {};
+		idle(),
+		pathAttributes(0) {};
 
 } SPRITE_POSITION;
 

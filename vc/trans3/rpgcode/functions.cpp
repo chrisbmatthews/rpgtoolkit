@@ -1710,7 +1710,7 @@ void pathfind(CALL_DATA &params)
 
 	// Pre C++, PathFind() was implemented axially only.
 	CPathFind path;
-	path.pathFind(start, goal, layer, r, PF_AXIAL, NULL, false); 
+	path.pathFind(start, goal, layer, r, PF_AXIAL, NULL, PF_QUIT_BLOCKED); 
 	std::vector<MV_ENUM> p = path.directionalPath();
 
 	for (std::vector<MV_ENUM>::reverse_iterator i = p.rbegin(); i != p.rend(); ++i)
@@ -1762,7 +1762,7 @@ void playerstep(CALL_DATA &params)
 	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
 	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->bSizeX);
 
-	PF_PATH path = p->pathFind(x, y, PF_AXIAL, true);
+	PF_PATH path = p->pathFind(x, y, PF_AXIAL, 0);
 	if (!path.empty())
 	{
 		// Prune to the last element.
@@ -1799,7 +1799,7 @@ void itemstep(CALL_DATA &params)
 	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
 	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->bSizeX);
 
-	PF_PATH path = p->pathFind(x, y, PF_AXIAL, true);
+	PF_PATH path = p->pathFind(x, y, PF_AXIAL, 0);
 	if (!path.empty())
 	{
 		// Prune to the last element.
@@ -1908,6 +1908,9 @@ void wander(CALL_DATA &params)
 
 	CSprite *p = getItemPointer(params[0]);
 	if (!p) throw CError(_T("Wander(): item not found"));
+	
+	// Break early if the item is already moving.
+	if (!p->getPath().empty()) return;
 
 	const int isIso = int(g_pBoard->isIsometric());
 
@@ -1939,7 +1942,7 @@ void wander(CALL_DATA &params)
 		direction = rand() % 8 + 1;
 		heuristic = PF_DIAGONAL;
 	}
-
+		
 	DB_POINT d;
 	p->getDestination(d);
 	const DB_POINT pt = {d.x + g_directions[isIso][direction][0] * 32, d.y + g_directions[isIso][direction][1] * 32};
@@ -1947,7 +1950,7 @@ void wander(CALL_DATA &params)
 	if (pt.x > 0 && pt.x <= g_pBoard->pxWidth() && pt.y > 0 && pt.y < g_pBoard->pxHeight())
 	{
 		// Pathfind to ensure tile collision checks.
-		PF_PATH path = p->pathFind(pt.x, pt.y, heuristic, false);
+		PF_PATH path = p->pathFind(pt.x, pt.y, heuristic, PF_QUIT_BLOCKED);
 		if (!path.empty())
 		{
 			p->setQueuedPath(path, true);

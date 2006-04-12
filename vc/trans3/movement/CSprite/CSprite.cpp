@@ -65,6 +65,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 		{
 			// Determine the number of frames for required speed.
 			m_pos.loopSpeed = calcLoops();
+			if (isUser && GetTickCount() % 1000 < 100) std::cerr << "\nm_pos.loopSpeed = " << m_pos.loopSpeed;
 
 			// Increment the animation frame if movement did not 
 			// finish the previous loop (pixel movement only).
@@ -118,7 +119,8 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 
 			m_tileType = TILE_TYPE(m_tileType | boardEdges(isUser));
 
-			if (spriteCollisions() & TT_SOLID)
+			// Test for collisions every PX_FACTOR.
+			if (!(m_pos.loopFrame % m_pos.loopSpeed) && spriteCollisions() & TT_SOLID)
 			{
 				// Try to find a diversion that allows the sprite to
 				// resume the path.
@@ -129,15 +131,13 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 				for (; i != path.end(); ++i)
 				{
 					// Try each point along the path in turn.
-					p = pathFind(i->x, i->y, PF_VECTOR, false);
 
-					// Do not break if pathfind has moved the target
-					// - the target is blocked and we want to skip it
-					// rather than move up to it.
-					if (!p.empty() && p.front() == *i)
-						break;
-					else
-						p.clear();
+					// tbd: m_pos.pathAttributes may be unneeded - currently unused.
+					const int flags = (i != path.end() - 1 ? PF_AVOID_SPRITE : m_pos.pathAttributes);
+					p = pathFind(i->x, i->y, PF_PREVIOUS, flags);
+
+					if (!p.empty()) break;
+					else p.clear();
 				}
 
 				// Was a path to some point found?
@@ -158,7 +158,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 					}
 					return true;
 				}
-			}
+			} // if (spriteCollisions())
 		} // if (path)
 
 		// Push the sprite only when the tiletype is passable.
@@ -234,7 +234,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 
 /*
  * Complete a single frame's movement of the sprite.
- * Return: true if movement occurred.
+ * Return true if movement occurred.
  */
 bool CSprite::push(const bool bScroll) 
 {
@@ -575,7 +575,7 @@ void CSprite::setQueuedPath(PF_PATH &path, const bool bClearQueue)
 /*
  * Pathfind to pixel position x, y (same layer).
  */
-PF_PATH CSprite::pathFind(const int x, const int y, const int type, const bool bNearPt)
+PF_PATH CSprite::pathFind(const int x, const int y, const int type, const int flags)
 {
 	extern LPBOARD g_pBoard;
 	if (x > 0 && x <= g_pBoard->pxWidth() && y > 0 && y <= g_pBoard->pxHeight())
@@ -587,9 +587,9 @@ PF_PATH CSprite::pathFind(const int x, const int y, const int type, const bool b
 			goal, 
 			m_pos.l, 
 			m_attr.vBase.getBounds(), 
-			PF_DIAGONAL,
+			type,
 			this,
-			bNearPt
+			flags
 		);
 	}
 	return PF_PATH();
