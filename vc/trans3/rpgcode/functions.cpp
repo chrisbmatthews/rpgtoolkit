@@ -74,6 +74,9 @@ int g_mwinSize = 0;							// Width of message window.
 const int MISC_DELAY = 5;					// Miscellaneous delay (millisecond).
 bool g_multirunning = false;				// Are we in multirun()'s scope (non-thread only). 
 
+// CLSID for Microsoft's regular expression class.
+const CLSID CLSID_REGEXP = {0x3F4DACA4, 0x160D, 0x11D2, {0xA8, 0xE9, 0x00, 0x10, 0x4B, 0x36, 0x5C, 0x9F}};
+
 /*
  * Rpgcode flags.
  */
@@ -5286,13 +5289,27 @@ void threadSleep(CALL_DATA &params)
 }
 
 /*
- * tellthread(...)
+ * variant tellThread(thread id, string code)
  * 
- * Description.
+ * Execute code in the context of a thread (e.g., to run
+ * a method located in another thread). TellThread() returns
+ * the value returned by the function called in the thread.
  */
-void tellthread(CALL_DATA &params)
+void tellThread(CALL_DATA &params)
 {
+	if (params.params != 2)
+	{
+		throw CError(_T("TellThread() requires two parameters."));
+	}
+	CThread *p = (CThread *)int(params[0].getNum());
+	if (!CThread::isThread(p))
+	{
+		throw CError(_T("Invalid thread ID for TellThread()."));
+	}
 
+	CProgramChild prg(*p);
+	prg.loadFromString(params[1].getLit());
+	params.ret() = prg.run();
 }
 
 /*
@@ -6670,8 +6687,7 @@ void regExpReplace(CALL_DATA &params)
 
 	// Create a RegExp object.
 	IDispatch *pRegExp = NULL;
-	CLSID clsid = {0x3F4DACA4, 0x160D, 0x11D2, {0xA8, 0xE9, 0x00, 0x10, 0x4B, 0x36, 0x5C, 0x9F}};
-	HRESULT res = CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IDispatch, (void **)&pRegExp);
+	HRESULT res = CoCreateInstance(CLSID_REGEXP, NULL, CLSCTX_INPROC_SERVER, IID_IDispatch, (void **)&pRegExp);
 
 	if (FAILED(res))
 	{
@@ -6897,7 +6913,7 @@ void initRpgCode()
 	CProgram::addFunction(_T("killthread"), killThread);
 	CProgram::addFunction(_T("getthreadid"), getThreadId);
 	CProgram::addFunction(_T("threadsleep"), threadSleep);
-	CProgram::addFunction(_T("tellthread"), tellthread);
+	CProgram::addFunction(_T("tellthread"), tellThread);
 	CProgram::addFunction(_T("threadwake"), threadWake);
 	CProgram::addFunction(_T("threadsleepremaining"), threadSleepRemaining);
 	CProgram::addFunction(_T("local"), local);

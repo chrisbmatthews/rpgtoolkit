@@ -1241,30 +1241,35 @@ void CProgram::save(const STRING fileName) const
 }
 
 // Run an RPGCode program.
-void CProgram::run()
+STACK_FRAME CProgram::run()
 {
 	extern void programInit(), programFinish();
 
 	++m_runningPrograms;
 	programInit();
 
-	//std::cerr << _T("\n============================================\n\n");
-
-	//for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
-	//{
-	//	m_i->show();
-	//}
-
-	//std::cerr << _T("\n============================================\n\n");
+	// This tricky line removes the UDT_LINE flag from the final
+	// unit to prevent the stack from being cleared in execute()
+	// so that the final value can be returned from this function.
+	*(int *)(&m_units.back().udt) ^= UDT_LINE;
 
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
-		//m_i->show();
 		m_i->execute(this);
 		processEvent();
 	}
+
 	programFinish();
 	--m_runningPrograms;
+
+	// Obtain the final return value.
+	const STACK_FRAME ret = m_pStack->size() ? m_pStack->back() : STACK_FRAME();
+
+	// Clear the stack.
+	m_pStack->clear();
+
+	// Return the last value.
+	return ret;
 }
 
 // Jump to a label.

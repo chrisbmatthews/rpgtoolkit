@@ -215,7 +215,7 @@ public:
 	bool open(const STRING fileName);
 	bool loadFromString(const STRING str);
 	void save(const STRING fileName) const;
-	void run();
+	STACK_FRAME run();
 	unsigned int getLine(CONST_POS i) const;
 	void freeObject(unsigned int obj);
 	void freeVar(const STRING var);
