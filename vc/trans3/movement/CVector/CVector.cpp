@@ -943,3 +943,51 @@ void CPfVector::extendPoint(DB_POINT &a, const DB_POINT &d, const int offset)
 		a.y += sgn(d.y) * offset;
 	}
 }
+
+/*
+ * Sweep out the path of a vector and create a new vector from the
+ * results.
+ */
+CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
+{
+	// For a tile-based pathfind instance, paths between nodes
+	// must be checked for the full extent of the sprite base
+	// swept out along the path. This is achieved using two struts
+	// connecting the extreme points.
+
+	// Calculate the offset.
+	const DB_POINT d = target - origin;
+	
+	// Determine the extreme points by extrapolating in the target
+	// to the y-intercept (or x if vertical).
+	DB_ITR max = NULL, min = NULL;
+	if (d.x)
+	{
+		const double m = d.y / d.x;
+		double dmax = 0.0, dmin = 0.0;
+		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
+		{
+			const double c = i->y - m * i->x;
+			if (!min || c < dmin) { dmin = c; min = i; }
+			if (!max || c > dmax) { dmax = c; max = i; }
+		}
+	}
+	else
+	{
+		// Take any x-value.
+		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
+		{
+			if (!min || i->x < min->x) min = i;
+			if (!max || i->x > max->x) max = i;
+		}
+	}
+
+	// Form a new vector from the two struts.
+	CPfVector v(*min);
+	v.push_back(*min + d);
+	v.push_back(*max + d);
+	v.push_back(*max + d);
+	v.close(true);
+
+	return v;
+}

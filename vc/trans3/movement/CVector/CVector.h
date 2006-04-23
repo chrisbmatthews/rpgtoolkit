@@ -57,6 +57,18 @@ inline bool operator!= (const DB_POINT &a, const DB_POINT &b)
 	return ((a.x != b.x) || (a.y != b.y));
 }
 
+inline DB_POINT operator+ (const DB_POINT &a, const DB_POINT &b)
+{
+	const DB_POINT p = {a.x + b.x, a.y + b.y};
+	return p;
+}
+
+inline DB_POINT operator- (const DB_POINT &a, const DB_POINT &b)
+{
+	const DB_POINT p = {a.x - b.x, a.y - b.y};
+	return p;
+}
+
 class CCanvas;
 
 class CVector  
@@ -72,7 +84,7 @@ public:
 	CVector(const DB_POINT p);
 
 	// Addition operator (moves entire vector).
-	CVector operator+ (const DB_POINT p) { return (CVector(*this) += p); }
+	CVector operator+ (const DB_POINT p) const { return (CVector(*this) += p); }
 
 	// Addition assignment operator (moves entire vector).
 	CVector &operator+= (const DB_POINT p);
@@ -165,6 +177,10 @@ protected:
 class CPfVector: public CVector
 {
 public:
+
+	// Void constructor.
+	CPfVector(void): CVector() {};
+
 	// Default constructor.
 	CPfVector(const CVector &rhs): CVector(rhs) {};
 	
@@ -182,6 +198,9 @@ public:
 
 	// Construct nodes from a CVector and add to the nodes vector.
 	void createNodes(std::vector<DB_POINT> &points, const DB_POINT max);
+
+	// Sweep out the vector from current location to target.
+	CPfVector sweep(const DB_POINT &origin, const DB_POINT &target);
 
 private:
 	// Extend a point 'a' at the end of a (position) vector 'd' by 'offset' pixels.

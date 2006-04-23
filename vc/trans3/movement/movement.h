@@ -19,7 +19,7 @@
  * Definitions.
  */
 const int MILLISECONDS	= 1000;			// Milliseconds in a second.
-const double PX_FACTOR	= 4.0;			// Movement scaler factor.
+const int PX_FACTOR		= 4;			// Movement scaler factor.
 										// Note: Possibly out by a factor of 2.
 
 // m_pos.loopFrame idle states. Only condition: must be negative.

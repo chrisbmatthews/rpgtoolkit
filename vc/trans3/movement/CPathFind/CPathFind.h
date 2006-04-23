@@ -41,7 +41,7 @@ enum PF_HEURISTIC
 //		blocks a mid-section of a path). 
 #define PF_QUIT_BLOCKED		1	// Do not move the goal to the nearest free point when blocked.
 #define PF_AVOID_SPRITE		2	// Walk around a sprite when it blocks the goal.
-#define PF_TILE_MIDPOINT	4	// Check the midpoint of tiles in tile mode (private use).
+#define PF_SWEEP			4	// Check a sweep from parent to child (private use).
 
 // A node or navigation point.
 typedef struct tagNode
@@ -52,7 +52,7 @@ typedef struct tagNode
 	int parent;						// Node's parent in m_closedNodes (offset from .begin()).
 	MV_ENUM direction;				// Directional relationship to parent.
 
-	tagNode(): pos(), cost(0), direction(MV_IDLE), dist(0), parent(NULL) {};
+	tagNode(): pos(), cost(0), direction(MV_IDLE), dist(0), parent(NULL) { pos.x = pos.y = 0; };
 	tagNode(DB_POINT p): pos(p), cost(0), direction(MV_IDLE), dist(0), parent (NULL) {};
 
 	int fValue(void) const { return (cost + dist); };
@@ -122,7 +122,13 @@ private:
 	void initialize(const int layer, const RECT &r, const PF_HEURISTIC type);
 
 	// Determine if a node can be directly reached from another node.
-	bool isChild(const NODE &child, const NODE &parent, const CSprite *pSprite, const int flags);
+	bool CPathFind::isChild(
+		const NODE &child, 
+		const NODE &parent, 
+		const CSprite *pSprite, 
+		const CPfVector &base,
+		const int flags
+	);
 
 	// Reset the points at the start of a search.
 	bool reset(
@@ -130,6 +136,7 @@ private:
 		DB_POINT goal, 
 		const RECT &r, 
 		const CSprite *pSprite,
+		CPfVector &base,
 		const int flags
 	);
 

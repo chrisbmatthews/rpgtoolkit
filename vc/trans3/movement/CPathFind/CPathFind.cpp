@@ -240,7 +240,12 @@ void CPathFind::initialize(const int layer, const RECT &r, const PF_HEURISTIC ty
  * Determine if a node can be directly reached from another node
  * i.e. is there an unobstructed line between the two?
  */
-bool CPathFind::isChild(const NODE &child, const NODE &parent, const CSprite *pSprite, const int flags)
+bool CPathFind::isChild(
+	const NODE &child, 
+	const NODE &parent, 
+	const CSprite *pSprite, 
+	const CPfVector &base,
+	const int flags)
 {
 	extern LPBOARD g_pBoard;
 	extern ZO_VECTOR g_sprites;
@@ -265,40 +270,30 @@ bool CPathFind::isChild(const NODE &child, const NODE &parent, const CSprite *pS
 		if (child.pos.x <= 0 || child.pos.y <= 0 || child.pos.x >= max.x || child.pos.y >= max.y) 
 			return false;
 
-		CVector v, w;
-		if (pSprite)
-			v = pSprite->getVectorBase(false);
-		else
+		// Check for collisions with both the swept vector and the target.
+		CPfVector sweep = CPfVector(base + parent.pos).sweep(parent.pos, child.pos);
+		// Move the origin to the target.
+		CPfVector v = base + child.pos;
+		
+		// Tile pathfinding operates directly on board/sprite vectors.
+		for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
 		{
-			DB_POINT pts[4];
-			tagSpriteAttr::defaultVector(pts, g_pBoard->isIsometric(), CSprite::m_bPxMovement, false);
-			v.push_back(pts, 4);
-			v.close(true);
+			if (i->layer != m_layer || i->type != TT_SOLID) continue;
+			if ((flags & PF_SWEEP) && i->pV->contains(sweep)) return false;
+			if (i->pV->contains(v)) return false;
 		}
 
-		// Check a midway point and the destination (the endpoint alone
-		// does not give good coverage of the path).
-		DB_POINT mid = {(child.pos.x + parent.pos.x) * 0.5, (child.pos.y + parent.pos.y) * 0.5};
-		w = v + child.pos;
-		for (int k = 0; k != 2; ++k, w = v + mid)
-		{					
-			// Tile pathfinding operates directly on board/sprite vectors.
-			for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
-			{
-				if (i->layer != m_layer || i->type != TT_SOLID) continue;
-				if (i->pV->contains(w)) return false;
-			}
+		// If the goal is occupied by a sprite and do not want to bypass
+		// it (i.e., we want to meet it) then return.
+		if ((child.pos == m_goal.pos) && (~flags & PF_AVOID_SPRITE)) return true;
 
-			// If the goal is occupied by a sprite and do not want to bypass
-			// it (i.e., we want to meet it) then return.
-			if ((child.pos == m_goal.pos) && (~flags & PF_AVOID_SPRITE)) return true;
-
-			for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
-			{
-				if ((*j)->getPosition().l != m_layer || *j == pSprite) continue;
-				if ((*j)->getVectorBase(true).contains(w)) return false;
-			}
-			if (~flags & PF_TILE_MIDPOINT) break;
+		DB_POINT unused = {0, 0};
+		for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
+		{
+			if ((*j)->getPosition().l != m_layer || *j == pSprite) continue;
+			CVector base = (*j)->getVectorBase(true);
+			if ((flags & PF_SWEEP) && base.contains(sweep, unused)) return false;
+			if (base.contains(v, unused)) return false;
 		}
 	}
 	return true;
@@ -324,7 +319,8 @@ PF_PATH CPathFind::pathFind(
 		initialize(layer, r, heur);
 
 	// Quit if the reset fails or the goal is the start point.
-	if (!reset(start, goal, r, pSprite, flags)) return PF_PATH();
+	CPfVector base;
+	if (!reset(start, goal, r, pSprite, base, flags)) return PF_PATH();
 	if (m_start.pos == m_goal.pos) return PF_PATH();
 
 	while (!m_openNodes.empty())
@@ -350,7 +346,7 @@ PF_PATH CPathFind::pathFind(
 			// efficient.
 
 			NODE child(p);
-			if (!isChild(child, *parent, pSprite, flags | PF_TILE_MIDPOINT)) continue;
+			if (!isChild(child, *parent, pSprite, base, flags | PF_SWEEP)) continue;
 
 			// Assign total cost of moving from the start to this node
 			// *via this parent*, and the straight-line estimate to the goal (heuristic).
@@ -422,6 +418,7 @@ bool CPathFind::reset(
 	DB_POINT goal, 
 	const RECT &r, 
 	const CSprite *pSprite,
+	CPfVector &base,
 	const int flags)
 {
 	extern LPBOARD g_pBoard;
@@ -460,7 +457,7 @@ bool CPathFind::reset(
 			vector->grow(size + 1);
 
 			// If a sprite is at the goal and we do not want to bypass it
-			// (i.e., we want to meet it), then do not add it's vector to
+			// (i.e., we want to meet it), then do not add it's vector
 			// and the path will reach the requested goal.
 			if ((~flags & PF_AVOID_SPRITE) && vector->containsPoint(goal)) 				
 			{
@@ -476,20 +473,21 @@ bool CPathFind::reset(
 
 		// Check if the goal is contained in a solid area.
 		// If so, set the goal to be the closest edge point.
+		int spFlags = PF_AVOID_SPRITE;
 		for (std::vector<CPfVector *>::iterator j = m_obstructions.begin(); j != m_obstructions.end(); ++j)
 		{
 			if (!*j)
 			{
 				// Board vector / sprite separator.
-				// If the goal is allowed in a sprite base we can break 
-				// because we have already checked this in the previous loop.
-				if (~flags & PF_AVOID_SPRITE) break;
-				else continue;
+				spFlags = flags;
+				continue;
 			}
-			if ((*j)->containsPoint(goal))
+			// If the goal is allowed in a sprite base skip because 
+			// we have already checked this in the previous loop.
+			if ((spFlags & PF_AVOID_SPRITE) && (*j)->containsPoint(goal))
 			{
 				// If the goal is blocked and a nearby point is not allowed, quit.
-				if (flags & PF_QUIT_BLOCKED) return false;
+				if (spFlags & PF_QUIT_BLOCKED) return false;
 
 				goal = (*j)->nearestPoint(goal);
 				/* Consider goals contained in multiple vectors! */
@@ -511,6 +509,17 @@ bool CPathFind::reset(
 		// Tile pathfinding.
 		const bool isIso = g_pBoard->isIsometric();
 
+		// Get the vector base once.
+		if (pSprite)
+			base = pSprite->getVectorBase(false);
+		else
+		{
+			DB_POINT pts[4];
+			tagSpriteAttr::defaultVector(pts, g_pBoard->isIsometric(), CSprite::m_bPxMovement, false);
+			base.push_back(pts, 4);
+			base.close(true);
+		}
+
 		coords::roundToTile(goal.x, goal.y, isIso, true);
 
 		// Check for goal contained in tiles. This does a quick check
@@ -528,7 +537,7 @@ bool CPathFind::reset(
 		{
 			// Determine if the sprite can exist at the target - if
 			// so the target is clear.
-			if (isChild(child, unused, pSprite, flags))
+			if (isChild(child, unused, pSprite, base, flags))
 			{
 				goal = child.pos;
 				break;

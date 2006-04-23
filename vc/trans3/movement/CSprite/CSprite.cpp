@@ -119,8 +119,8 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 
 			m_tileType = TILE_TYPE(m_tileType | boardEdges(isUser));
 
-			// Test for collisions every PX_FACTOR.
-			if (!(m_pos.loopFrame % m_pos.loopSpeed) && spriteCollisions() & TT_SOLID)
+			// Test for collisions every pixel.
+			if (!((m_pos.loopFrame * PX_FACTOR) % m_pos.loopSpeed) && spriteCollisions() & TT_SOLID)
 			{
 				// Try to find a diversion that allows the sprite to
 				// resume the path.
@@ -133,7 +133,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 					// Try each point along the path in turn.
 
 					// tbd: m_pos.pathAttributes may be unneeded - currently unused.
-					const int flags = (i != path.end() - 1 ? PF_AVOID_SPRITE : m_pos.pathAttributes);
+					const int flags = (i != path.end() - 1 ? PF_AVOID_SPRITE : PF_AVOID_SPRITE | PF_QUIT_BLOCKED);
 					p = pathFind(i->x, i->y, PF_PREVIOUS, flags);
 
 					if (!p.empty()) break;
