@@ -114,7 +114,7 @@ void setVirtualLit(const STRING name, STRING *pLit)
 
 void initVirtualVars()
 {
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
 		CProgram::getGlobal("playerx[0]") = new CPlayerLocationX(i);
 		CProgram::getGlobal("playery[0]") = new CPlayerLocationY(i);

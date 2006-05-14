@@ -448,6 +448,10 @@ SOURCE=.\rpgcode\functions.cpp
 
 SOURCE=.\rpgcode\parser\parser.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\rpgcode\virtualvar.cpp
+# End Source File
 # End Group
 # Begin Group "rpgcode - headers"
 
@@ -463,6 +467,10 @@ SOURCE=.\rpgcode\CProgram.h
 # Begin Source File
 
 SOURCE=.\rpgcode\parser\parser.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\rpgcode\virtualvar.h
 # End Source File
 # End Group
 # End Group
