@@ -116,7 +116,7 @@ void initVirtualVars()
 {
 	for (int i = 0; i < 5; ++i)
 	{
-		CProgram::getGlobal("playerx[0]") = new CPlayerLocationX(i);
-		CProgram::getGlobal("playery[0]") = new CPlayerLocationY(i);
+		CProgram::getGlobal("playerx[" + getLit(i) + "]") = new CPlayerLocationX(i);
+		CProgram::getGlobal("playery[" + getLit(i) + "]") = new CPlayerLocationY(i);
 	}
 }
