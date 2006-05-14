@@ -50,12 +50,15 @@ typedef struct tagStackFrame
 	STRING lit;
 	UNIT_DATA_TYPE udt;
 	CProgram *prg;
+	void *tag;
 
 	bool getBool() const;
-	double getNum() const;
-	STRING getLit() const;
-	UNIT_DATA_TYPE getType() const;
 	tagStackFrame getValue() const;
+
+	// Can be overridden for dynamic ("virtual") variables.
+	virtual double getNum() const;
+	virtual STRING getLit() const;
+	virtual UNIT_DATA_TYPE getType() const;
 
 	tagStackFrame():
 		num(0.0),
@@ -70,7 +73,7 @@ typedef struct tagStackFrame
 typedef struct tagCallData
 {
 	int params;
-	LPSTACK_FRAME p;
+	STACK_FRAME *p;
 	CProgram *prg;
 
 	STACK_FRAME &operator[](const int i) { return *(p + i); }
@@ -82,7 +85,7 @@ typedef struct tagCallFrame
 {
 	unsigned int i;		// Unit to which to return.
 	unsigned int j;		// Closing brace of the method.
-	LPSTACK_FRAME p;	// Return value.
+	STACK_FRAME *p;	// Return value.
 	bool bReturn;		// Whether we should return a value.
 	unsigned int obj;	// This pointer.
 } CALL_FRAME;
@@ -196,6 +199,24 @@ inline STRING lcase(const STRING str)
 	return ret;
 }
 
+// A pointer held in place.
+template <class T>
+class CPtrData
+{
+public:
+	CPtrData(T data = T()) { m_pData = new T(data); }
+	CPtrData(T *pData) { m_pData = new T(*pData); }
+	CPtrData(const CPtrData &rhs) { m_pData = new T(*rhs.m_pData); }
+	operator=(CPtrData &rhs) { *m_pData = *rhs.m_pData; }
+	operator=(T &rhs) { *m_pData = rhs; }
+	operator=(T *rhs) { delete m_pData; m_pData = rhs; }
+	operator T*() { return m_pData; }
+	T *operator->() { return m_pData; }
+	~CPtrData() { delete m_pData; }
+private:
+	T *m_pData;
+};
+
 // A plugin.
 class IPlugin;
 
@@ -234,7 +255,7 @@ public:
 	static STRING getFunctionName(const MACHINE_FUNC func);
 	static void setRedirect(const STRING oldFunc, const STRING newFunc) { /* tbd */ }
 	static void debugger(const STRING str);
-	static LPSTACK_FRAME getGlobal(const STRING var) { return &m_heap[lcase(var)]; }
+	static CPtrData<STACK_FRAME> &getGlobal(const STRING var) { return m_heap[lcase(var)]; }
 	static void freeGlobal(const STRING var) { m_heap.erase(lcase(var)); }
 	static void freeGlobals() { m_heap.clear(); m_objects.clear(); }
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
@@ -269,7 +290,7 @@ private:
 	// Other globals.
 	static std::map<unsigned int, STRING> m_objects;
 	static std::map<STRING, MACHINE_FUNC> m_functions;
-	static std::map<STRING, STACK_FRAME> m_heap;
+	static std::map<STRING, CPtrData<STACK_FRAME> > m_heap;
 	static std::vector<IPlugin *> m_plugins;
 	static unsigned long m_runningPrograms;
 

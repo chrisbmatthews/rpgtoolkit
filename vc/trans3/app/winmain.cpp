@@ -9,6 +9,7 @@
  */
 #include "../../tkCommon/strings.h"
 #include "../rpgcode/CProgram.h"
+#include "../rpgcode/virtualvar.h"
 #include "../plugins/plugins.h"
 #include "../common/paths.h"
 #include "../common/mainfile.h"
@@ -224,6 +225,9 @@ void setUpGame()
 		g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true, true));
 		g_pSelectedPlayer = g_players.front();
 	}
+
+	// Initialise virtual variables.
+	initVirtualVars();
 
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())

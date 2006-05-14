@@ -25,7 +25,7 @@ std::vector<tagNamedMethod> tagNamedMethod::m_methods;
 std::map<STRING, MACHINE_FUNC> CProgram::m_functions;
 LPMACHINE_UNITS CProgram::m_pyyUnits = NULL;
 std::deque<MACHINE_UNITS> CProgram::m_yyFors;
-std::map<STRING, STACK_FRAME> CProgram::m_heap;
+std::map<STRING, CPtrData<STACK_FRAME> > CProgram::m_heap;
 std::deque<int> CProgram::m_params;
 std::map<STRING, CLASS> *CProgram::m_pClasses = NULL;
 std::map<unsigned int, STRING> CProgram::m_objects;
@@ -221,7 +221,7 @@ LPSTACK_FRAME CProgram::getVar(const STRING name)
 {
 	if (name[0] == _T(':'))
 	{
-		return &m_heap[name.substr(1)];
+		return m_heap[name.substr(1)];
 	}
 	if (m_calls.size())
 	{
@@ -233,7 +233,7 @@ LPSTACK_FRAME CProgram::getVar(const STRING name)
 			{
 				TCHAR str[255];
 				_itot(obj, str, 10);
-				return &m_heap[STRING(str) + _T("::") + name];
+				return m_heap[STRING(str) + _T("::") + name];
 			}
 		}
 	}
@@ -241,7 +241,7 @@ LPSTACK_FRAME CProgram::getVar(const STRING name)
 	{
 		return &m_locals.back().find(name)->second;
 	}
-	return &m_heap[name];
+	return m_heap[name];
 }
 
 // Locate a named method.
@@ -1310,7 +1310,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 				CProgram::debugger(STRING(_T("Near line ")) + str + _T(": Unexpected error."));
 			}
 		}
-		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
+ 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
 	}
 	else if (udt & UDT_CLOSE)
 	{
