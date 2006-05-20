@@ -1418,11 +1418,60 @@ STRING tagStackFrame::getLit() const
 			// the variable hasn't been set.
 			return STRING();
 		}
-		TCHAR str[255];
-		gcvt(num, 255, str);
-		TCHAR &c = str[strlen(str) - 1];
-		if (c == _T('.')) c = _T('\0');
-		return str;
+
+		int dec, sign;
+		char *pstr = _fcvt(num, 10, &dec, &sign);
+		sign = sign ? 1 : 0;
+
+		const int abslength = strlen(pstr);
+
+		// Find number of digits.
+		int digits = 0;
+		{
+			char *p = _strrev(_strdup(pstr));
+			int i = 0;
+			do
+			{
+				if ((*p) != '0')
+				{
+					digits = abslength - i;
+					break;
+				}
+			} while (++i && ++p);
+			free(p - i);
+		}
+
+		// Length of string.
+		// (number of digits) + (decimal point) + (negative sign?) + (null)
+		int chars = digits + (((dec > 0) ? 1 : (abs(dec) + 2))) + sign + 1;
+
+		char *pRet = new char[chars];
+		memset(pRet, '0', chars * sizeof(char));
+		pRet[chars - 1] = '\0';
+
+		if (sign) pRet[0] = '-';
+
+		if (dec <= 0)	// (zero).(zeros?)(digits)
+		{
+			pRet[1 + sign] = '.';
+			memcpy(pRet + abs(dec) + sign + 2, pstr, digits * sizeof(char));
+		}
+		else if (dec < digits)	// (digits).(digits)
+		{
+			pRet[dec + sign] = '.';
+			memcpy(pRet + sign, pstr, dec * sizeof(char));
+			memcpy(pRet + sign + dec + 1, pstr + dec, (digits - dec) * sizeof(char));
+		}
+		else	// (digits)
+		{
+			memcpy(pRet + sign, pstr, digits * sizeof(char));
+		}
+
+		STRING ret = pRet;
+
+		delete pRet;
+
+		return ret;
 	}
 	return lit;
 }
@@ -1567,6 +1616,13 @@ void operators::pow(CALL_DATA &call)
 {
 	call.ret().udt = UDT_NUM;
 	call.ret().num = ::pow(call[0].getNum(), call[1].getNum());
+std::clog	<<	"operators::pow: "
+//			<< call[0].getNum()
+//			<< "^"
+//			<< call[1].getNum()
+//			<< "="
+			<< call.ret().getLit();
+//			<< std::endl;
 }
 
 void operators::assign(CALL_DATA &call)
