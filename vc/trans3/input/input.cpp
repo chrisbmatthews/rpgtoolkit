@@ -72,7 +72,12 @@ STRING getName(const char chr, const bool bCapital)
 		case 38: return _T("UP");
 		case 40: return _T("DOWN");
 	}
-	const TCHAR toRet[] = {bCapital ? toupper(TCHAR(chr)) : TCHAR(chr), _T('\0')};
+	const TCHAR toRet[] = {
+		bCapital ?
+			toupper(TCHAR(chr)) :
+			((GetAsyncKeyState(VK_SHIFT) < 0) ? toupper(TCHAR(chr)) : tolower(TCHAR(chr))),
+		_T('\0')
+	};
 	return toRet;
 }
 
@@ -333,7 +338,7 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		} break;
 
 		// Key down.
-		case WM_CHAR:
+		case WM_KEYDOWN:
 		{
 			// Queue the key.
 			const char key = char(wParam);
