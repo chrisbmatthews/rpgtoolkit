@@ -1426,7 +1426,7 @@ STRING tagStackFrame::getLit() const
 		const int abslength = strlen(pstr);
 
 		// Find number of digits.
-		int digits = 0;
+		int digits = 1;
 		{
 			char *p = _strrev(_strdup(pstr));
 			int i = 0;
