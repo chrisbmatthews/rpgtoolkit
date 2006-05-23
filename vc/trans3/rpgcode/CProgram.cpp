@@ -1443,7 +1443,8 @@ STRING tagStackFrame::getLit() const
 
 		// Length of string.
 		// (number of digits) + (decimal point) + (negative sign?) + (null)
-		int chars = digits + (((dec > 0) ? 1 : (abs(dec) + 2))) + sign + 1;
+		const int decimalchars = (dec < digits) ? ((((dec > 0) ? 1 : (abs(dec) + 2)))) : 0;
+		const int chars = digits + decimalchars + sign + 1;
 
 		char *pRet = new char[chars];
 		memset(pRet, '0', chars * sizeof(char));
