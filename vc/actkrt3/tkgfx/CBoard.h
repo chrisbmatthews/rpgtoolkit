@@ -178,7 +178,7 @@ typedef struct tagVBBoardEditor
     CBoard *pCBoard;					// pointer to associated CBoard in actkrt
     LPSAFEARRAY bLayerOccupied;			// layer contains tiles (VARIANT_BOOL)
     LPSAFEARRAY bLayerVisible;			// layer visibility in the editor
-	VB_BOARD board;
+//	VB_BOARD board; //Note to self: pass pointer from vb
 	/* Fragment... */
 
 } VB_BRDEDITOR, *LPVB_BRDEDITOR;
@@ -248,6 +248,7 @@ public:
 
 	VOID CBoard::draw(
 		CONST LPVB_BRDEDITOR pEditor,
+		CONST LPVB_BOARD pBoard, 
 		CONST HDC hdc,
 		CONST LONG destX, CONST LONG destY,
 		CONST LONG brdX, CONST LONG brdY,
@@ -258,6 +259,7 @@ public:
 
 	VOID render(
 		CONST LPVB_BRDEDITOR pEditor,
+		CONST LPVB_BOARD pBoard, 
 		CONST HDC hdcCompat,
 		CONST LONG layer,
 		CONST BOOL bDestroyCanvas

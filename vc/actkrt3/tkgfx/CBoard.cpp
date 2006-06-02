@@ -52,6 +52,7 @@ LONG APIENTRY BRDFree(CONST CBoard *pBoard)
 //--------------------------------------------------------------------------
 LONG APIENTRY BRDDraw(
 	CONST LPVB_BRDEDITOR pEditor,
+	CONST LPVB_BOARD pData,
 	CONST LONG hdc,
 	CONST LONG destX, LONG destY,
 	CONST LONG brdX, LONG brdY,
@@ -60,7 +61,7 @@ LONG APIENTRY BRDDraw(
 	CONST DOUBLE scale)
 {
 	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
-		if (*i == pEditor->pCBoard) pEditor->pCBoard->draw(pEditor, reinterpret_cast<HDC>(hdc), destX, destY, brdX, brdY, width, height, scale);
+		if (*i == pEditor->pCBoard) pEditor->pCBoard->draw(pEditor, pData, reinterpret_cast<HDC>(hdc), destX, destY, brdX, brdY, width, height, scale);
 	return 0;
 }
 
@@ -69,12 +70,13 @@ LONG APIENTRY BRDDraw(
 //--------------------------------------------------------------------------
 LONG APIENTRY BRDRender(
 	CONST LPVB_BRDEDITOR pEditor,
+	CONST LPVB_BOARD pData,
 	CONST LONG hdcCompat,
 	CONST SHORT bDestroyCanvas,
 	CONST LONG layer)
 {
 	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
-		if (*i == pEditor->pCBoard) pEditor->pCBoard->render(pEditor, reinterpret_cast<HDC>(hdcCompat), layer, bDestroyCanvas);
+		if (*i == pEditor->pCBoard) pEditor->pCBoard->render(pEditor, pData, reinterpret_cast<HDC>(hdcCompat), layer, bDestroyCanvas);
 	return 0;
 }
 
@@ -252,6 +254,7 @@ std::vector<LPVB_BRDIMAGE> CBoard::getImages()
 //--------------------------------------------------------------------------
 VOID CBoard::draw(
 	CONST LPVB_BRDEDITOR pEditor,
+	CONST LPVB_BOARD pBoard,
 	CONST HDC hdc,
 	CONST LONG destX, CONST LONG destY,		// Pixel destination on the board.
 	CONST LONG brdX, CONST LONG brdY,		// Unscaled pixel corner of the board.
@@ -261,7 +264,7 @@ VOID CBoard::draw(
 {
 
 	if (!hdc) return;
-	m_pBoard = &pEditor->board;
+	m_pBoard = pBoard;
 
 	// The board dimensions of the visible area (e.g., double area for 0.5 zoom).
 	CONST LONG newWidth = width / scale, newHeight = height / scale;
@@ -354,12 +357,13 @@ VOID CBoard::draw(
 // layer = 0 -- all layers
 //--------------------------------------------------------------------------
 VOID CBoard::render(
-	CONST LPVB_BRDEDITOR pEditor, 
+	CONST LPVB_BRDEDITOR pEditor,
+	CONST LPVB_BOARD pBoard,
 	CONST HDC hdcCompat, 
 	CONST LONG layer,
 	CONST BOOL bDestroyCanvas)
 {
-	m_pBoard = &pEditor->board;
+	m_pBoard = pBoard;
 	LONG length = 0;
 	CONST LONG lower = (layer ? layer : 1), upper = (layer ? layer : m_pBoard->m_bSizeL);
 	SafeArrayGetUBound(pEditor->bLayerOccupied, 1, &length);
@@ -847,4 +851,3 @@ VOID CBoard::vectorize(
 		} // for (vectors on this layer)
 	} // for (z)
 }
-
