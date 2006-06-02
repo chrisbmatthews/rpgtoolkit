@@ -61,6 +61,10 @@ Public Sub drawLine(ByRef edFrm As frmBoardEdit, ByRef pCEd As CBoardEditor) ':o
         edFrm.lineSelection(0).Visible = True
     End If
 End Sub
+Public Function isEmpty() As Boolean ':on error resume next
+    isEmpty = (x1 = x2) And (y1 = y2)
+End Function
+
 Public Sub expandToGrid(ByVal coordType As Long, ByVal brdSizeX As Long) ':on error resume next
     Dim pt As POINTAPI
     Call Me.reorientate

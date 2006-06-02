@@ -191,7 +191,6 @@ Public Type brdSelection
     dragPoint As POINTAPI                 'Mouse point when dragging (board px).
     color As Long
 End Type
-    
 
 '=========================================================================
 ' A board editor document
@@ -202,9 +201,11 @@ Public Type TKBoardEditorData
     pCBoard As Long                       'pointer to associated CBoard in actkrt
     bLayerOccupied() As Boolean           'layer contains tiles
     bLayerVisible() As Boolean            'layer visibility in the editor
-    board As TKBoard                      'actual contents of board
         
     ' Unordered
+    
+    board() As TKBoard                     'actual contents of board (dimmed to MAX_UNDO)
+    bUndoData() As Boolean                 'do the board() entries hold undo data?
     
     'Data that are required for classes.
     'topX As Long                          'top x coord (scaled pixels)
@@ -212,6 +213,7 @@ Public Type TKBoardEditorData
     'zoom As Double                        'scaling factor
     pCEd As New CBoardEditor
     
+    undoIndex As Long                     'index to current .board
     optSetting As eBrdSetting
     optTool As eBrdTool
     selectedTile As String                'Selected tile
@@ -222,7 +224,8 @@ Public Type TKBoardEditorData
     currentLayer As Integer               'Current board layer
     bHideAllLayers As Boolean
     bShowAllLayers As Boolean
-    bNeedUpdate As Boolean                'have any changes been made to the board data?
+    bNeedUpdate As Boolean                'tbd:have any changes been made to the board data?
+    bShowBackColour As Boolean            'tbd:show background colour in editor
         
     currentVectorSet() As CVector         'References to vectors of current optSetting
     currentVector As CVector
@@ -325,10 +328,10 @@ End Property
 ' Board pixel dimensions relative to zoom
 '=========================================================================
 Public Property Get relWidth(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    relWidth = absWidth(ed.board.bSizeX, ed.board.coordType) * ed.pCEd.zoom
+    relWidth = absWidth(ed.board(ed.undoIndex).bSizeX, ed.board(ed.undoIndex).coordType) * ed.pCEd.zoom
 End Property
 Public Property Get relHeight(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    relHeight = absHeight(ed.board.bSizeY, ed.board.coordType) * ed.pCEd.zoom
+    relHeight = absHeight(ed.board(ed.undoIndex).bSizeY, ed.board(ed.undoIndex).coordType) * ed.pCEd.zoom
 End Property
 
 '=========================================================================
@@ -366,17 +369,17 @@ End Function
 ' Tile pixel dimensions relative to zoom
 '=========================================================================
 Public Function tileWidth(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    tileWidth = IIf(isIsometric(ed.board.coordType), 64, 32) * ed.pCEd.zoom
+    tileWidth = IIf(isIsometric(ed.board(ed.undoIndex).coordType), 64, 32) * ed.pCEd.zoom
 End Function
 Public Function tileHeight(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    tileHeight = IIf(isIsometric(ed.board.coordType), 32, 32) * ed.pCEd.zoom
+    tileHeight = IIf(isIsometric(ed.board(ed.undoIndex).coordType), 32, 32) * ed.pCEd.zoom
 End Function
 Public Function scrollUnitWidth(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    scrollUnitWidth = IIf(isIsometric(ed.board.coordType), 32, 32) * ed.pCEd.zoom
+    scrollUnitWidth = IIf(isIsometric(ed.board(ed.undoIndex).coordType), 32, 32) * ed.pCEd.zoom
 End Function
 Public Function scrollUnitHeight(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
     'ISO_ROTATED board height is (currently) a multiple of 32.
-    scrollUnitHeight = IIf(ed.board.coordType And ISO_STACKED, 16, 32) * ed.pCEd.zoom
+    scrollUnitHeight = IIf(ed.board(ed.undoIndex).coordType And ISO_STACKED, 16, 32) * ed.pCEd.zoom
 End Function
 
 Public Function isIsometric(ByVal coordType As Long) As Boolean ': On Error Resume Next
@@ -423,10 +426,10 @@ Public Sub vectorize(ByRef ed As TKBoardEditorData) ': On Error Resume Next
     Dim vects() As TKConvertedVector, i As Long, j As Long, vector As CVector
     ReDim vects(0)
     
-    Call BRDVectorize(ed.pCBoard, VarPtr(ed.board), vects())
+    Call BRDVectorize(ed.pCBoard, VarPtr(ed.board(ed.undoIndex)), vects())
     
     For i = 0 To UBound(vects)
-        Set vector = vectorCreate(BS_VECTOR, ed.board)
+        Set vector = vectorCreate(BS_VECTOR, ed.board(ed.undoIndex))
         For j = 0 To UBound(vects(i).pts)
             Call vector.addPoint(vects(i).pts(j).x, vects(i).pts(j).y)
         Next j

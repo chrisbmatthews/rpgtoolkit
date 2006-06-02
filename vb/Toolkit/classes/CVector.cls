@@ -73,12 +73,14 @@ End Sub
 '=========================================================================
 ' Draw to a picture box
 '=========================================================================
-Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color As Long): 'on error resume next
-    Dim oldColor As Long
+Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color As Long, Optional ByVal bCurrentVector As Boolean = False): 'on error resume next
+    Dim oldColor As Long, i As Long, pt1 As POINTAPI, pt2 As POINTAPI
     If m_tiletype = TT_NULL Or UBound(m_pts) = 0 Then Exit Sub
+    
     oldColor = pic.ForeColor
     pic.ForeColor = color
-    Dim i As Long, pt1 As POINTAPI, pt2 As POINTAPI
+    pic.DrawWidth = IIf(bCurrentVector, 2, 1)
+    
     'Straight onto the hdc.
     For i = 0 To UBound(m_pts) - 1
         pt1.x = m_pts(i).x: pt1.y = m_pts(i).y
@@ -99,6 +101,7 @@ Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color
         pic.Line (pt1.x, pt1.y)-(pt2.x, pt2.y)
     End If
     pic.ForeColor = oldColor
+    pic.DrawWidth = 1
 End Sub
 
 '=========================================================================
@@ -239,6 +242,23 @@ Public Sub moveSelection(ByVal dx As Long, ByVal dy As Long) ':on error resume n
             m_pts(i).y = m_pts(i).y + dy
         End If
     Next i
+End Sub
+
+'=========================================================================
+' Get the nearest point to a given point
+'=========================================================================
+Public Sub nearestPoint(ByVal x As Long, ByVal y As Long, ByRef px As Long, ByRef py As Long, ByRef distance As Long) ': on error resume next
+    Dim i As Long, j As Long, best As Long, d As Long
+    If m_tiletype = TT_NULL Then Exit Sub
+    distance = -1
+    For i = 0 To UBound(m_pts)
+        d = Sqr((x - m_pts(i).x) ^ 2 + (y - m_pts(i).y) ^ 2)
+        If d < distance Or distance = -1 Then
+            j = i: distance = d
+        End If
+    Next i
+    px = m_pts(j).x
+    py = m_pts(j).y
 End Sub
 
 '=========================================================================

@@ -631,6 +631,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   2  'Dropdown List
             TabIndex        =   191
             Top             =   480
+            Visible         =   0   'False
             Width           =   3015
          End
          Begin VB.PictureBox Picture2 
@@ -797,8 +798,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   49
             Top             =   0
             Width           =   1815
-            _extentx        =   3201
-            _extenty        =   8070
+            _ExtentX        =   3201
+            _ExtentY        =   8070
          End
       End
       Begin VB.Label lblNew 
@@ -2836,13 +2837,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "11/04/2006"
+            TextSave        =   "02/06/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "22:15"
+            TextSave        =   "17:00"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -4681,7 +4682,7 @@ Private Sub bTools_VectorChkClosed_MouseUp(Button As Integer, Shift As Integer, 
 End Sub
 Private Sub bTools_VectorOptType_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call activeBoard.toolbarApply(bTools_GetVector)
-    Call activeBoard.toolbarPopulate
+'    Call activeBoard.toolbarPopulate
 End Sub
 Private Sub bTools_VectorTxtLayer_Validate(Cancel As Boolean): On Error Resume Next
     Call activeBoard.toolbarApply(bTools_GetVector)

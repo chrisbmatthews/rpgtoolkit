@@ -748,14 +748,14 @@ End Sub
 '=========================================================================
 ' Open a board
 '=========================================================================
-Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorData)
+Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorData, ByRef board As TKBoard)
 
     On Error GoTo loadBrdErr
     
-    Call BoardClear(ed.board)
+    Call BoardClear(board)
     Call BoardSetSize(50, 50, 8, ed)
 
-    With ed.board
+    With board
 
         .bSizeX = 50
         .bSizeY = 50
@@ -831,7 +831,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorDat
                 If LenB(Temp$) Then
                     ex$ = GetExt(Temp$)
                     If UCase$(ex$) = "TAN" Then
-                        Call BoardAddTileAnmLUTRef(ed.board, t)
+                        Call BoardAddTileAnmLUTRef(board, t)
                         .hasAnmTiles = True
                     End If
                 End If
@@ -886,7 +886,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorDat
                                 For tAnm = 0 To .anmTileLUTInsertIdx - 1
                                     If .board(x, y, l) = .anmTileLUTIndices(tAnm) Then
                                         'this is an animated tile
-                                        Call BoardAddTileAnmRef(ed.board, .tileIndex(.board(x, y, l)), x, y, l)
+                                        Call BoardAddTileAnmRef(board, .tileIndex(.board(x, y, l)), x, y, l)
                                     End If
                                 Next tAnm
                                 x = x + 1
@@ -921,7 +921,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorDat
                             For tAnm = 0 To .anmTileLUTInsertIdx - 1
                                 If .board(x, y, l) = .anmTileLUTIndices(tAnm) Then
                                     'this is an animated tile
-                                    Call BoardAddTileAnmRef(ed.board, .tileIndex(.board(x, y, l)), x, y, l)
+                                    Call BoardAddTileAnmRef(board, .tileIndex(.board(x, y, l)), x, y, l)
                                 End If
                             Next tAnm
                         End If
@@ -989,7 +989,7 @@ exitTheFor:
             
             'Dimension the arrays of this board *not* the activeboard.
             ReDim .itmName(0)
-            Call dimensionItemArrays(ed.board)
+            Call dimensionItemArrays(board)
             
             numItm = BinReadInt(num)            'The number of written item slots.
             t = 0
@@ -1008,7 +1008,7 @@ exitTheFor:
                 .itemMulti(t) = BinReadString(num)     'multitask program for item
                 If LenB(.itmName(t)) Then
                     t = t + 1
-                    Call dimensionItemArrays(ed.board)
+                    Call dimensionItemArrays(board)
                 End If
             Next count
 
@@ -1082,7 +1082,7 @@ ver2oldboard:
                 For y = 1 To .bSizeY
                     For lay = 1 To .bSizeL
                         Temp$ = fread(num)              'Board tiles (the ,8 on the end is 8 layers)
-                        Call BoardSetTile(x, y, lay, Temp$, ed.board)
+                        Call BoardSetTile(x, y, lay, Temp$, board)
                         .ambientRed(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile red
                         .ambientGreen(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile green
                         .ambientBlue(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile blue
@@ -1123,7 +1123,7 @@ ver2oldboard:
             Next loopControl
             ReDim boardList(activeBoardIndex).theData.itmName(0)
             For loopControl = 0 To 10
-                Call dimensionItemArrays(ed.board)
+                Call dimensionItemArrays(board)
                 .itmName(loopControl) = fread(num)   'filenames of items
                 .itmX(loopControl) = fread(num)        'x coord
                 .itmY(loopControl) = fread(num)             'y coord
@@ -1183,7 +1183,7 @@ Ver1Board:
                     Temp$ = fread(num)
                     If Temp$ = "VOID" Then Temp$ = vbNullString
                     Temp$ = pth & Temp$
-                    Call BoardSetTile(x, y, 1, Temp$, ed.board)
+                    Call BoardSetTile(x, y, 1, Temp$, board)
                 Next x
             Next y
             Call fread(num)
@@ -1252,25 +1252,25 @@ End Sub
 '=========================================================================
 ' Size a board losing its current contents
 '=========================================================================
-Public Sub BoardSetSize(ByVal x As Integer, ByVal y As Integer, ByVal z As Integer, ByRef ed As TKBoardEditorData)
+Public Sub BoardSetSize(ByVal x As Integer, ByVal y As Integer, ByVal z As Integer, ByRef ed As TKBoardEditorData, ByRef board As TKBoard)
 
     On Error Resume Next
     
-    ed.board.bSizeX = x
-    ed.board.bSizeY = y
-    ed.board.bSizeL = z
+    board.bSizeX = x
+    board.bSizeY = y
+    board.bSizeL = z
     
-    If ed.board.coordType And ISO_ROTATED Then
+    If board.coordType And ISO_ROTATED Then
         'Board matrix is square.
         x = x + y
         y = x
     End If
     
-    ReDim ed.board.board(x, y, z)
-    ReDim ed.board.ambientRed(x, y, z)
-    ReDim ed.board.ambientGreen(x, y, z)
-    ReDim ed.board.ambientBlue(x, y, z)
-    ReDim ed.board.tiletype(x, y, z)
+    ReDim board.board(x, y, z)
+    ReDim board.ambientRed(x, y, z)
+    ReDim board.ambientGreen(x, y, z)
+    ReDim board.ambientBlue(x, y, z)
+    ReDim board.tiletype(x, y, z)
     ReDim ed.bLayerOccupied(z)
 
 End Sub
