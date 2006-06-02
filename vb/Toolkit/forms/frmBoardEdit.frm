@@ -234,7 +234,7 @@ Private Sub Form_Activate() ':on error resume next
     tkMainForm.brdOptSetting(m_ed.optSetting).value = True
     tkMainForm.brdOptTool(m_ed.optTool).value = True
     tkMainForm.brdChkGrid.value = Abs(m_ed.bGrid)
-    tkMainForm.brdChkIso.value = Abs(isIsometric(m_ed.board.coordType))
+    'tkMainForm.brdChkIso.value = Abs(isIsometric(m_ed.board.coordType))
     tkMainForm.brdChkAutotile.value = Abs(m_ed.bAutotiler)
     
     Call resetLayerCombos
@@ -503,7 +503,7 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
                     If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) Then
                         Call m_ed.currentVector.closeVector(Shift, m_ed.currentLayer)
                         Call m_sel.clear(Me)
-                        Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor)
+                        Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
                     End If
             End Select 'Key
         Case BS_TILE
@@ -1413,12 +1413,12 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
                 Call m_sel.restart(pxCoord.x, pxCoord.y)
                 
                 Call m_ed.currentVector.addPoint(pxCoord.x, pxCoord.y)
-                Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor)
+                Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
             Else
                 'Finish the vector.
                 Call m_ed.currentVector.closeVector(Shift, m_ed.currentLayer)
                 Call m_sel.clear(Me)
-                Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor)
+                Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
             End If
     End Select
 
@@ -1439,12 +1439,13 @@ Private Sub vectorBuildCurrentSet() ':on error resume next
             Next i
     End Select
 End Sub
-Private Sub vectorDrawAll(): On Error Resume Next
+Private Sub vectorDrawAll() ': On Error Resume Next
     Dim i As Long, p1 As POINTAPI, p2 As POINTAPI
     'Vectors
     For i = 0 To UBound(m_ed.board.vectors)
-        If m_ed.bLayerVisible(m_ed.board.vectors(i).layer) Then
-            Call m_ed.board.vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor(m_ed.board.vectors(i).tiletype))
+        If Not m_ed.board.vectors(i) Is Nothing Then
+            If m_ed.board.vectors(i).layer <= m_ed.board.bSizeL And m_ed.bLayerVisible(m_ed.board.vectors(i).layer) Then _
+                Call m_ed.board.vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor(m_ed.board.vectors(i).tiletype))
         End If
     Next i
     
@@ -1465,6 +1466,9 @@ Private Sub vectorDrawAll(): On Error Resume Next
             End If
         End If
     Next i
+    
+    'Selected vector
+    If Not m_ed.currentVector Is Nothing Then Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
 End Sub
 Private Sub vectorDeleteSelectionAll(ByRef sel As CBoardSelection) ':on error resume next
     Dim i As Long
@@ -1636,7 +1640,13 @@ Public Sub toolbarPopulate() ':on error resume next
 End Sub
 Public Sub toolbarChange(ByVal vectorIndex As Long) ':on error resume next
     If vectorIndex <= UBound(m_ed.board.vectors) And Not (m_ed.board.vectors(vectorIndex) Is Nothing) Then
-        Call m_ed.board.vectors(vectorIndex).tbPopulate
+        If m_ed.optSetting = BS_VECTOR Then
+            Set m_ed.currentVector = m_ed.board.vectors(vectorIndex)
+            Call m_ed.currentVector.tbPopulate
+            Call drawAll
+        Else
+            Call m_ed.board.vectors(vectorIndex).tbPopulate
+        End If
     End If
 End Sub
 Public Sub toolbarApply(ByVal vectorIndex As Long) ':on error resume next
