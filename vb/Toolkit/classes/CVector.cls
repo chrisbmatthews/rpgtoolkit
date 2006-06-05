@@ -52,7 +52,9 @@ End Property
 Public Property Let attributes(ByVal attr As Long): On Error Resume Next
     m_attributes = attr
 End Property
-
+Public Property Get bClosed() As Boolean: On Error Resume Next
+    bClosed = m_bClosed
+End Property
 '=========================================================================
 ' Add a point to the vector
 '=========================================================================
@@ -334,41 +336,52 @@ Public Sub tbPopulate() ':on error resume next
     
     If m_tiletype = TT_NULL Then Exit Sub
         
-    If Not tkMainForm.bTools_VectorLv.SelectedItem Is Nothing Then j = tkMainForm.bTools_VectorLv.SelectedItem.index
-    For i = 0 To UBound(m_pts)
-        Call tkMainForm.bTools_VectorLv.ListItems.Add(i + 1, , str(i))
-        tkMainForm.bTools_VectorLv.ListItems(i + 1).SubItems(1) = str(m_pts(i).x)
-        tkMainForm.bTools_VectorLv.ListItems(i + 1).SubItems(2) = str(m_pts(i).y)
-    Next i
-    If j <> 0 Then Set tkMainForm.bTools_VectorLv.SelectedItem = tkMainForm.bTools_VectorLv.ListItems(j)
-    tkMainForm.bTools_VectorLv.SelectedItem.EnsureVisible
+    Call lvPopulate(tkMainForm.bTools_VectorLv)
 
+End Sub
+
+Public Sub lvPopulate(ByRef lv As ListView) ':on error resume next
+    Dim i As Long, j As Long
+    lv.ListItems.clear
+    If Not lv.SelectedItem Is Nothing Then j = lv.SelectedItem.index
+    For i = 0 To UBound(m_pts)
+        Call lv.ListItems.Add(i + 1, , str(i))
+        lv.ListItems(i + 1).SubItems(1) = str(m_pts(i).x)
+        lv.ListItems(i + 1).SubItems(2) = str(m_pts(i).y)
+    Next i
+    If j <> 0 Then Set lv.SelectedItem = lv.ListItems(j)
+    lv.SelectedItem.EnsureVisible
 End Sub
 
 '=========================================================================
 ' Set the vector's attributes to the toolbar's values
 '=========================================================================
-Public Sub tbApply() ':on error resume next
+Public Sub tbApply(ByRef ctl As ctlBrdVector) ':on error resume next
     Dim i As Long
-    If tkMainForm.bTools_VectorOptType(TT_SOLID).value Then
+    If ctl.getOptType(TT_SOLID).value Then
         m_tiletype = TT_SOLID
-    ElseIf tkMainForm.bTools_VectorOptType(TT_UNDER).value Then
+    ElseIf ctl.getOptType(TT_UNDER).value Then
+        m_bClosed = True
         m_tiletype = TT_UNDER
         m_attributes = 0
-        For i = 0 To tkMainForm.bTools_VectorChkUnder.count - 1
-            If tkMainForm.bTools_VectorChkUnder(i).value Then m_attributes = m_attributes Or (2 ^ i)
+        For i = 0 To 3 - 1
+            If ctl.getChkUnder(i).value Then m_attributes = m_attributes Or (2 ^ i)
         Next i
-    ElseIf tkMainForm.bTools_VectorOptType(TT_STAIRS).value Then
+    ElseIf ctl.getOptType(TT_STAIRS).value Then
         m_tiletype = TT_STAIRS
         m_attributes = 1
-        m_attributes = val(tkMainForm.bTools_VectorTxtStairs.Text)
+        m_attributes = val(ctl.getTxtStairs.Text)
     End If
-    m_bClosed = (tkMainForm.bTools_VectorChkClosed.value <> 0)
-    m_layer = val(tkMainForm.bTools_VectorTxtLayer.Text)
-    
-    ReDim m_pts(tkMainForm.bTools_VectorLv.ListItems.count - 1)
-    For i = 0 To tkMainForm.bTools_VectorLv.ListItems.count - 1
-        m_pts(i).x = Abs(val(tkMainForm.bTools_VectorLv.ListItems(i + 1).SubItems(1)))
-        m_pts(i).y = Abs(val(tkMainForm.bTools_VectorLv.ListItems(i + 1).SubItems(2)))
+    m_bClosed = ((ctl.getChkClosed.value <> 0) Or ctl.getOptType(TT_UNDER).value)
+    m_layer = val(ctl.getTxtLayer.Text)
+
+    Call lvApply(ctl.getLvPoints)
+End Sub
+Public Sub lvApply(ByRef lv As ListView) ':on error resume next
+    Dim i As Long
+    ReDim m_pts(lv.ListItems.count - 1)
+    For i = 0 To lv.ListItems.count - 1
+        m_pts(i).x = Abs(val(lv.ListItems(i + 1).SubItems(1)))
+        m_pts(i).y = Abs(val(lv.ListItems(i + 1).SubItems(2)))
     Next i
 End Sub

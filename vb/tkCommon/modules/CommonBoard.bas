@@ -517,6 +517,9 @@ Public Sub BoardClear(ByRef theBoard As TKBoard): On Error Resume Next
             Set .vectors(i) = Nothing
         Next i
         ReDim .vectors(0)
+        For i = 0 To UBound(.prgs)
+            Set .prgs(i) = Nothing
+        Next i
         ReDim .prgs(0)
     
         'Pre 3.0.7
@@ -753,7 +756,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorDat
     On Error GoTo loadBrdErr
     
     Call BoardClear(board)
-    Call BoardSetSize(50, 50, 8, ed)
+    Call BoardSetSize(50, 50, 8, ed, board)
 
     With board
 
@@ -806,7 +809,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorDat
             .bSizeX = BinReadInt(num)
             .bSizeY = BinReadInt(num)
             .bSizeL = BinReadInt(num)
-            Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed)
+            Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed, board)
             
             '3.0.7 wip
             ReDim ed.bLayerOccupied(.bSizeL + 1)
@@ -953,13 +956,14 @@ exitTheFor:
                 .boardTitle(t) = BinReadString(num)  'Board title (layer)
             Next t
             
-            '3.0.7 wip - load intoTKBoardProgram structures.
+            '3.0.7 wip - load into CBoardProgram structures.
             Dim numPrg As Long, ubPrgs As Long
             numPrg = BinReadInt(num)    'ubound on number of programs written to file.
             
             For t = 0 To numPrg
-                '3.0.7 wip - load into TKBoardProgram structure instead.
-                Dim prg As TKBoardProgram
+                '3.0.7 wip - load into CBoardProgram structure instead.
+                Dim prg As CBoardProgram
+                Set prg = New CBoardProgram
                 prg.filename = BinReadString(num)       'Board program filenames
                 x = BinReadInt(num)                     'program x
                 y = BinReadInt(num)                     'program y
@@ -974,11 +978,13 @@ exitTheFor:
                
                 If (prg.filename <> vbNullString) Then
                     ReDim Preserve .prgs(ubPrgs)
-                    .prgs(ubPrgs) = prg
+                    Set .prgs(ubPrgs) = prg
                     ' Hold the position in the CVector until the coordtype byte is read.
+                    .prgs(ubPrgs).vBase.deletePoints
                     Call .prgs(ubPrgs).vBase.addPoint(x, y)
                     ubPrgs = ubPrgs + 1
                 End If
+                Set prg = Nothing
             Next t
             .enterPrg = BinReadString(num)      'program to run on entrance
             .bgPrg = BinReadString(num)         'background program
@@ -1070,12 +1076,12 @@ ver2oldboard:
             If minorVer = 1 Then
                 .bSizeX = fread(num)        'size x
                 .bSizeY = fread(num)        'size y
-                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed)
+                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed, board)
             ElseIf minorVer = 0 Then
                 .bSizeX = 19
                 .bSizeY = 11
                 .bSizeL = 8
-                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed)
+                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed, board)
             End If
             Dim lay As Long
             For x = 1 To .bSizeX
@@ -1157,7 +1163,7 @@ Ver1Board:
 
         'We come here if we (apparently) have a version 1 board.
 
-        Call BoardSetSize(19, 11, 8, ed)
+        Call BoardSetSize(19, 11, 8, ed, board)
         .bSizeX = 19
         .bSizeY = 11
         .bSizeL = 8

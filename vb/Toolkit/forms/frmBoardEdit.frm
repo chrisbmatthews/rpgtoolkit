@@ -144,6 +144,10 @@ Private m_ed As TKBoardEditorData
 Private m_sel As CBoardSelection
 Private m_mouseScrollDistance As Long
 
+Private Const BTAB_OPTIONS = 0
+Private Const BTAB_VECTOR = 1
+Private Const BTAB_PROGRAM = 2
+
 Private Const WM_MOUSEWHEEL = &H20A
 Private Const WHEEL_DELTA = 120
 Private Const MAX_UNDO = 10
@@ -163,7 +167,7 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
     Set m_sel = New CBoardSelection
     
     'testing
-    m_ed.board(m_ed.undoIndex).brdColor = RGB(255, 255, 255)
+    m_ed.board(m_ed.undoIndex).brdColor = 0
     m_ed.vectorColor(TT_SOLID) = RGB(255, 255, 255)
     m_ed.vectorColor(TT_UNDER) = RGB(0, 255, 0)
     m_ed.vectorColor(TT_STAIRS) = RGB(0, 255, 255)
@@ -259,9 +263,10 @@ Private Sub Form_Activate() ':on error resume next
     Call resetLayerCombos
     
     'Update the toolbar.
+    Call toolbarPopulatePrgs
     If tkMainForm.popButton(3).value = 1 Then
         tkMainForm.pTools.Visible = True
-        Call toolbarPopulate
+        Call toolbarRefresh
     End If
     
     'tkMainForm.boardToolbar.Display.Refresh
@@ -352,8 +357,8 @@ Private Sub Form_Unload(Cancel As Integer) ': On Error Resume Next
     Call BRDFree(m_ed.pCBoard)
     Call BoardClear(m_ed.board(m_ed.undoIndex))
     Call hideAllTools
+    Call tkMainForm.boardToolbar.hide               'Before Set m_sel = Nothing
     Set m_sel = Nothing
-    Call tkMainForm.boardToolbar.hide
     'tbc
 
     ' Unhook scroll wheel.
@@ -541,6 +546,9 @@ End Sub
 '========================================================================
 Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
 
+    Dim curVector As CVector
+    Set curVector = currentVector
+
     Select Case m_ed.optSetting
         Case BS_VECTOR, BS_PROGRAM
             Select Case keyCode
@@ -551,19 +559,14 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
                 Case vbKeyE
                     Call vectorExtendSelection(m_sel)
                 Case vbKeyEscape
-                    If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) Then
-                        Call m_ed.currentVector.closeVector(Shift, m_ed.currentLayer)
+                    If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) And (Not curVector Is Nothing) Then
+                        Call curVector.closeVector(Shift, m_ed.currentLayer)
                         Call m_sel.clear(Me)
-                        Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
+                        Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
                     End If
             End Select 'Key
             
-            If Not m_ed.currentVector Is Nothing Then
-                Call m_ed.currentVector.tbPopulate
-            Else
-                Dim void As New CVector
-                void.tbPopulate
-            End If
+            Call toolbarRefresh
 
         Case BS_TILE
             Select Case keyCode
@@ -580,8 +583,9 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
 End Sub
 Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
     
-    Dim pxCoord As POINTAPI
+    Dim pxCoord As POINTAPI, curVector As CVector
     pxCoord = screenToBoardPixel(x, y, m_ed)
+    Set curVector = currentVector
     
     'Process tools common to all settings.
     Select Case m_ed.optTool
@@ -612,7 +616,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                                         pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
                                     End If
                                     'Determine selected points.
-                                    If Not m_ed.currentVector Is Nothing Then Call m_ed.currentVector.setSelection(m_sel)
+                                    If Not curVector Is Nothing Then Call curVector.setSelection(m_sel)
                             End Select
                             
                             m_sel.xDrag = pxCoord.x: m_sel.yDrag = pxCoord.y
@@ -649,8 +653,8 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                         Select Case m_ed.optSetting
                             Case BS_TILE
                             Case BS_VECTOR, BS_PROGRAM
-                                If Not m_ed.currentVector Is Nothing Then
-                                    Call m_ed.currentVector.moveSelection(dx, dy)
+                                If Not curVector Is Nothing Then
+                                    Call curVector.moveSelection(dx, dy)
                                     Call drawBoard
                                 End If
                         End Select
@@ -660,14 +664,14 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
     
                 End Select
             Else
-                'Clear selection.
-                Select Case m_ed.optSetting
-                    Case BS_VECTOR, BS_PROGRAM
-                        If m_sel.isEmpty Then
-                            Set m_ed.currentVector = Nothing
-                            Call drawBoard
-                        End If
-                End Select
+                'Right-click - clear selection.
+                'Select Case m_ed.optSetting
+                '    Case BS_VECTOR, BS_PROGRAM
+                '        If m_sel.isEmpty Then
+                '            Call vectorSetCurrentVector(m_sel, True)
+                '            Call drawBoard
+                '        End If
+                'End Select
                 Call m_sel.clear(Me)
             End If
             Exit Sub
@@ -777,9 +781,10 @@ Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y
                 If m_sel.isEmpty Then
                     Call vectorSetCurrentVector(m_sel)
                     Call m_sel.clear(Me)
+                    Call toolbarRefresh
                     Exit Sub
                 End If
-                Call m_ed.currentVector.tbPopulate
+                Call toolbarRefresh
         End Select
         
         Call m_sel.reorientate
@@ -1007,8 +1012,8 @@ Public Sub mdiOptSetting(ByVal index As Integer) ': On Error Resume Next
     If Not (m_sel Is Nothing) Then
         Call m_sel.clear(Me)
     End If
-    'Generate the list of current vectors.
-    Call vectorBuildCurrentSet
+    Call toolbarRefresh
+    Call drawBoard
 End Sub
 Public Sub mdiOptTool(ByVal index As Integer) ': On Error Resume Next
     m_ed.optTool = index
@@ -1300,22 +1305,22 @@ Private Sub floodRecursive(ByVal x As Long, ByVal y As Long, ByVal l As Long, By
     ' check against boundries of board
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
         ' if old tile is the same as replaced tile
-        If m_ed.board(m_ed.undoIndex).board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
+        If m_ed.board(m_ed.undoIndex).board(x2, y2, l) = replaceTile Then Call floodRecursive(x2, y2, l, tileFile, x, y)
     End If
     
     x2 = x: y2 = y - 1
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
-        If m_ed.board(m_ed.undoIndex).board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
+        If m_ed.board(m_ed.undoIndex).board(x2, y2, l) = replaceTile Then Call floodRecursive(x2, y2, l, tileFile, x, y)
     End If
     
     x2 = x - 1: y2 = y
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
-        If m_ed.board(m_ed.undoIndex).board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
+        If m_ed.board(m_ed.undoIndex).board(x2, y2, l) = replaceTile Then Call floodRecursive(x2, y2, l, tileFile, x, y)
     End If
     
     x2 = x: y2 = y + 1
     If (x2 <= sizex And y2 <= sizey And x2 >= 1 And y2 >= 1 And (x2 <> lastX Or y2 <> lastY)) Then
-        If m_ed.board(m_ed.undoIndex).board(x2, y2, l) = replaceTile Then Call fillBoard(x2, y2, l, tileFile, x, y)
+        If m_ed.board(m_ed.undoIndex).board(x2, y2, l) = replaceTile Then Call floodRecursive(x2, y2, l, tileFile, x, y)
     End If
     
 End Sub
@@ -1447,7 +1452,7 @@ End Sub
 
 '=========================================================================
 '=========================================================================
-Private Sub drawAll() ':on error resume next
+Public Sub drawAll() ':on error resume next
     Call drawBoard
     
     'Update line controls.
@@ -1458,19 +1463,17 @@ End Sub
 '========================================================================
 Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
     
-    Dim tileCoord As POINTAPI, pxCoord As POINTAPI
+    Dim tileCoord As POINTAPI, pxCoord As POINTAPI, curVector As CVector
     pxCoord = screenToBoardPixel(x, y, m_ed)
     tileCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
+    Set curVector = currentVector
 
     Select Case m_ed.optTool
         Case BT_DRAW
             If Button = vbLeftButton Then
                 If m_sel.status <> SS_DRAWING Then
                     'Start a new vector.
-                    Set m_ed.currentVector = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex))
-                    
-                    'Place into the current set.
-                    Call vectorBuildCurrentSet
+                    Set curVector = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex))
                     Call drawBoard
                 Else
                     'Close the last point.
@@ -1487,21 +1490,21 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
                 'CBoardSlection stores board pixel coordinate.
                 Call m_sel.restart(pxCoord.x, pxCoord.y)
                 
-                Call m_ed.currentVector.addPoint(pxCoord.x, pxCoord.y)
-                Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
+                Call curVector.addPoint(pxCoord.x, pxCoord.y)
+                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
             Else
                 'Finish the vector.
-                Call m_ed.currentVector.closeVector(Shift, m_ed.currentLayer)
+                Call curVector.closeVector(Shift, m_ed.currentLayer)
                 Call m_sel.clear(Me)
-                Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
-                Call m_ed.currentVector.tbPopulate
+                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
+                Call toolbarRefresh
             End If
     End Select
 
 End Sub
 Private Sub vectorBuildCurrentSet() ':on error resume next
-    'tbd: required any more?
     Dim i As Long
+    'Note to self: Don't really need this - only for vectorSetCurrentVector
     ReDim m_ed.currentVectorSet(0)
     Select Case m_ed.optSetting
         Case BS_VECTOR
@@ -1512,10 +1515,30 @@ Private Sub vectorBuildCurrentSet() ':on error resume next
         Case BS_PROGRAM
             For i = 0 To UBound(m_ed.board(m_ed.undoIndex).prgs)
                 ReDim Preserve m_ed.currentVectorSet(i)
-                Set m_ed.currentVectorSet(i) = m_ed.board(m_ed.undoIndex).prgs(i).vBase
+                If m_ed.board(m_ed.undoIndex).prgs(i) Is Nothing Then
+                    Set m_ed.currentVectorSet(i) = Nothing
+                Else
+                    Set m_ed.currentVectorSet(i) = m_ed.board(m_ed.undoIndex).prgs(i).vBase
+                End If
             Next i
     End Select
 End Sub
+Private Function currentVector() As CVector ': On Error Resume Next
+    Dim i As Long
+    Set currentVector = Nothing
+    Select Case m_ed.optSetting
+        Case BS_VECTOR
+            i = tkMainForm.bTools_ctlVector.vectorIndex
+            If i >= 0 And i < UBound(m_ed.board(m_ed.undoIndex).vectors) Then
+                If Not m_ed.board(m_ed.undoIndex).vectors(i) Is Nothing Then Set currentVector = m_ed.board(m_ed.undoIndex).vectors(i)
+            End If
+        Case BS_PROGRAM
+            i = tkMainForm.bTools_ctlPrg.getCombo.ListIndex
+            If i >= 0 And i < UBound(m_ed.board(m_ed.undoIndex).prgs) Then
+                If Not m_ed.board(m_ed.undoIndex).prgs(i) Is Nothing Then Set currentVector = m_ed.board(m_ed.undoIndex).prgs(i).vBase
+            End If
+    End Select
+End Function
 Private Sub vectorDrawAll() ': On Error Resume Next
     Dim i As Long, p1 As POINTAPI, p2 As POINTAPI
     'Vectors
@@ -1529,41 +1552,60 @@ Private Sub vectorDrawAll() ': On Error Resume Next
     'Programs
     picBoard.ForeColor = m_ed.programColor
     For i = 0 To UBound(m_ed.board(m_ed.undoIndex).prgs)
-        If m_ed.bLayerVisible(m_ed.board(m_ed.undoIndex).prgs(i).vBase.layer) Then
-            Call m_ed.board(m_ed.undoIndex).prgs(i).vBase.draw(picBoard, m_ed.pCEd, m_ed.programColor)
-            
-            'Centre filename in middle of vector area.
-            If m_ed.board(m_ed.undoIndex).prgs(i).filename <> vbNullString Then
-                Call m_ed.board(m_ed.undoIndex).prgs(i).vBase.getBounds(p1.x, p1.y, p2.x, p2.y)
-                p1 = boardPixelToScreen(p1.x, p1.y, m_ed)
-                p2 = boardPixelToScreen(p2.x, p2.y, m_ed)
-                picBoard.currentX = (p1.x + p2.x - picBoard.TextWidth(m_ed.board(m_ed.undoIndex).prgs(i).filename)) / 2
-                picBoard.currentY = (p1.y + p2.y - picBoard.TextHeight(m_ed.board(m_ed.undoIndex).prgs(i).filename)) / 2
-                picBoard.Print m_ed.board(m_ed.undoIndex).prgs(i).filename
+        If (Not m_ed.board(m_ed.undoIndex).prgs(i) Is Nothing) Then
+            If m_ed.bLayerVisible(m_ed.board(m_ed.undoIndex).prgs(i).vBase.layer) Then _
+                Call m_ed.board(m_ed.undoIndex).prgs(i).draw(picBoard, m_ed.pCEd, m_ed.programColor)
             End If
-        End If
     Next i
     
     'Selected vector
-    Select Case m_ed.optSetting
-        Case BS_VECTOR, BS_PROGRAM
-            If Not m_ed.currentVector Is Nothing Then Call m_ed.currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
+    If Not currentVector Is Nothing Then Call currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
+End Sub
+Public Sub vectorDeleteCurrentVector(ByVal Setting As eBrdSetting) ': on error resume next
+    Dim i As Long
+    Select Case Setting
+        Case BS_VECTOR
+            i = tkMainForm.bTools_ctlVector.vectorIndex
+            If i >= 0 Then
+                'Jiggle the vector.
+                For i = i To UBound(m_ed.board(m_ed.undoIndex).vectors) - 1
+                   Set m_ed.board(m_ed.undoIndex).vectors(i) = m_ed.board(m_ed.undoIndex).vectors(i + 1)
+                Next i
+                Set m_ed.board(m_ed.undoIndex).vectors(i) = Nothing
+                If i <> 0 Then ReDim Preserve m_ed.board(m_ed.undoIndex).vectors(i - 1)
+            End If
+        Case BS_PROGRAM
+            i = tkMainForm.bTools_ctlPrg.getCombo.ListIndex
+            If i >= 0 Then
+                For i = i To UBound(m_ed.board(m_ed.undoIndex).prgs) - 1
+                   Set m_ed.board(m_ed.undoIndex).prgs(i) = m_ed.board(m_ed.undoIndex).prgs(i + 1)
+                Next i
+                Set m_ed.board(m_ed.undoIndex).prgs(i) = Nothing
+                If i <> 0 Then ReDim Preserve m_ed.board(m_ed.undoIndex).prgs(i - 1)
+            End If
     End Select
+    Call toolbarRefresh
 End Sub
 Private Sub vectorDeleteSelection(ByRef sel As CBoardSelection) ':on error resume next
-    If m_ed.currentVector Is Nothing Then Exit Sub
+    Dim curVector As CVector
+    Set curVector = currentVector
+    If curVector Is Nothing Then Exit Sub
+    
     If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED Then
-        Call m_ed.currentVector.deleteSelection(sel)
+        Call curVector.deleteSelection(sel)
     Else
-        Call m_ed.currentVector.deletePoints
+        Call curVector.deletePoints
     End If
-    If m_ed.currentVector.tiletype = TT_NULL Then Set m_ed.currentVector = Nothing
+    If curVector.tiletype = TT_NULL Then
+        Set curVector = Nothing
+        Call vectorDeleteCurrentVector(m_ed.optSetting)
+    End If
     Call drawBoard
 End Sub
 Private Sub vectorExtendSelection(ByRef sel As CBoardSelection) ':on error resume next
     Dim x As Long, y As Long
-    If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED And (Not m_ed.currentVector Is Nothing) Then
-        If m_ed.currentVector.extendSelection(sel, x, y) Then
+    If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED And (Not currentVector Is Nothing) Then
+        If currentVector.extendSelection(sel, x, y) Then
             'Extend the first endpoint found.
             tkMainForm.brdOptTool(BT_DRAW).value = True
             sel.x1 = x
@@ -1575,7 +1617,7 @@ End Sub
 Private Function vectorGetColor() As Long: On Error Resume Next
     Select Case m_ed.optSetting
         Case BS_VECTOR
-            vectorGetColor = m_ed.vectorColor(m_ed.currentVector.tiletype)
+            vectorGetColor = m_ed.vectorColor(currentVector.tiletype)
         Case BS_PROGRAM
             vectorGetColor = m_ed.programColor
     End Select
@@ -1585,25 +1627,96 @@ Private Sub vectorSetCurrentVector(ByRef sel As CBoardSelection) ': on error res
     Dim i As Long, j As Long, x As Long, y As Long, dist As Long, best As Long
     best = -1
     
+    Call vectorBuildCurrentSet
     For i = 0 To UBound(m_ed.currentVectorSet)
         '.vectors is always dimensioned.
-        If m_ed.currentVectorSet(i) Is Nothing Then Exit Sub
-        Call m_ed.currentVectorSet(i).nearestPoint(sel.x1, sel.y1, x, y, dist)
-        If dist < best Or best = -1 Then
-            best = dist: j = i
+        If Not m_ed.currentVectorSet(i) Is Nothing Then
+            Call m_ed.currentVectorSet(i).nearestPoint(sel.x1, sel.y1, x, y, dist)
+            If dist < best Or best = -1 Then
+                best = dist: j = i
+            End If
         End If
     Next i
     
-    Set m_ed.currentVector = m_ed.board(m_ed.undoIndex).vectors(j)
-    Call m_ed.currentVector.tbPopulate
-    Call drawAll
+    Call toolbarChange(j)
     
 End Sub
 Private Sub vectorSubdivideSelection(ByRef sel As CBoardSelection) ':on error resume next
-    If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED And (Not m_ed.currentVector Is Nothing) Then
-        Call m_ed.currentVector.subdivideSelection(sel)
+    If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED And (Not currentVector Is Nothing) Then
+        Call currentVector.subdivideSelection(sel)
         Call drawBoard
     End If
+End Sub
+
+'========================================================================
+'========================================================================
+Public Sub toolbarRefresh() ':on error resume next
+    If tkMainForm.pTools.Visible Then
+        Select Case tkMainForm.bTools_Tabs.Tab
+            Case BTAB_OPTIONS
+            Case BTAB_VECTOR
+                Call toolbarPopulateVectors
+            Case BTAB_PROGRAM
+                Call toolbarPopulatePrgs
+        End Select
+    End If
+End Sub
+Public Sub toolbarChange(ByVal index As Long) ':on error resume next
+    Select Case tkMainForm.bTools_Tabs.Tab
+        Case BTAB_OPTIONS
+        Case BTAB_VECTOR
+            Call tkMainForm.bTools_ctlVector.populate(index, m_ed.board(m_ed.undoIndex).vectors(index))
+        Case BTAB_PROGRAM
+            Call tkMainForm.bTools_ctlPrg.populate(index, m_ed.board(m_ed.undoIndex).prgs(index))
+    End Select
+    Call drawAll
+End Sub
+Public Sub toolbarPopulateVectors() ':on error resume next
+    Dim i As Long, j As Long, k As Long
+    k = tkMainForm.bTools_ctlVector.vectorIndex
+                
+    With m_ed.board(m_ed.undoIndex)
+        For i = 0 To UBound(.vectors)
+            If Not .vectors(i) Is Nothing Then j = j + 1
+        Next i
+    End With
+    If j > 0 Then
+        'Preserve selected vector.
+        k = IIf(k < j And k <> -1, k, 0)
+        Call tkMainForm.bTools_ctlVector.populate(k, m_ed.board(m_ed.undoIndex).vectors(k))
+    Else
+        'No vectors.
+        Call tkMainForm.bTools_ctlVector.populate(-1, Nothing)
+    End If
+End Sub
+Public Sub toolbarPopulatePrgs() ':on error resume next
+
+    'User controls don't seem to like arrays of class references, so...
+    Dim combo As ComboBox, i As Long, j As Long, k As Long
+    Set combo = tkMainForm.bTools_ctlPrg.getCombo
+    k = combo.ListIndex
+    combo.clear
+    
+    With m_ed.board(m_ed.undoIndex)
+        For i = 0 To UBound(.prgs)
+            If Not .prgs(i) Is Nothing Then
+                'If .prgs(i).vBase.tiletype <> TT_NULL Then
+                    combo.AddItem str(j) & ": " & IIf(LenB(.prgs(i).filename), .prgs(i).filename, "<program>")
+                    combo.ItemData(j) = i
+                    j = j + 1
+                'End If
+            End If
+        Next i
+    End With
+    If j > 0 Then
+        'Preserve selected vector.
+        combo.ListIndex = IIf(k < j And k <> -1, k, 0)
+        Call tkMainForm.bTools_ctlPrg.populate(combo.ListIndex, m_ed.board(m_ed.undoIndex).prgs(combo.ItemData(combo.ListIndex)))
+    Else
+        'No programs.
+        Call tkMainForm.bTools_ctlPrg.disableAll
+    End If
+
 End Sub
 
 '========================================================================
@@ -1710,51 +1823,4 @@ Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelecti
     Call drawBoard
 End Sub
 
-Public Sub toolbarPopulate() ':on error resume next
-    Call tkMainForm.boardToolbar.Populate(m_ed.board(m_ed.undoIndex).vectors)
-End Sub
-Public Sub toolbarChange(ByVal vectorIndex As Long) ':on error resume next
-    If Not m_ed.currentVector Is Nothing Then
-        Call m_ed.currentVector.tbPopulate
-    End If
-'    If vectorIndex <= UBound(m_ed.board(m_ed.undoIndex).vectors) And Not (m_ed.board(m_ed.undoIndex).vectors(vectorIndex) Is Nothing) Then
-'        If m_ed.optSetting = BS_VECTOR Then
-'            Set m_ed.currentVector = m_ed.board(m_ed.undoIndex).vectors(vectorIndex)
-'            Call m_ed.currentVector.tbPopulate
-'            Call drawAll
-'        Else
-'            Call m_ed.board(m_ed.undoIndex).vectors(vectorIndex).tbPopulate
-'        End If
-'    End If
-End Sub
-Public Sub toolbarApply(ByVal vectorIndex As Long) ':on error resume next
-    If Not m_ed.currentVector Is Nothing Then
-        Call m_ed.currentVector.tbApply
-        Call m_ed.currentVector.tbPopulate
-        Call drawAll
-    End If
-'    If vectorIndex <= UBound(m_ed.board(m_ed.undoIndex).vectors) And Not (m_ed.board(m_ed.undoIndex).vectors(vectorIndex) Is Nothing) Then
-'        Call m_ed.board(m_ed.undoIndex).vectors(vectorIndex).tbApply
-'        Call m_ed.board(m_ed.undoIndex).vectors(vectorIndex).tbPopulate
-'        Call drawAll
-'    End If
-End Sub
-Public Sub toolbarVectorDelete(ByVal vectorIndex As Long) ':on error resume next
-    If Not m_ed.currentVector Is Nothing Then
-        Call m_ed.currentVector.deletePoints
-        Set m_ed.currentVector = Nothing
-        Call vectorBuildCurrentSet
-        Call drawAll
-    End If
-'    If vectorIndex <= UBound(m_ed.board(m_ed.undoIndex).vectors) And Not (m_ed.board(m_ed.undoIndex).vectors(vectorIndex) Is Nothing) Then
-'        Set m_ed.board(m_ed.undoIndex).vectors(vectorIndex) = Nothing
-'        Call vectorBuildCurrentSet
-'        Call tkMainForm.boardToolbar.Populate(m_ed.board(m_ed.undoIndex).vectors)
-'        Call drawAll
-'    End If
-End Sub
-Public Sub toolbarVectorDuplicate(ByVal vectorIndex As Long) ':on error resume next
-    If vectorIndex <= UBound(m_ed.board(m_ed.undoIndex).vectors) And Not (m_ed.board(m_ed.undoIndex).vectors(vectorIndex) Is Nothing) Then
-        MsgBox "tbd"
-    End If
-End Sub
+

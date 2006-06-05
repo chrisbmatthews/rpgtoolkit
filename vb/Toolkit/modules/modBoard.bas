@@ -60,6 +60,7 @@ Public Const PRG_STOPS_MOVEMENT = 4       'Running the program clears the moveme
 Public Const PRG_ACTIVE = 0               'Program is always active.
 Public Const PRG_CONDITIONAL = 1          'Program's running depends on RPGCode variables.
 
+'tbd: remove
 Public Type TKBoardProgram
     filename As String                    'Board program filename.
     layer As Long                         'Layer.
@@ -154,7 +155,7 @@ Public Type TKBoard
     
     '3.0.7
     vectors() As CVector
-    prgs() As TKBoardProgram
+    prgs() As CBoardProgram
     
 End Type
 
@@ -386,6 +387,8 @@ Public Function isIsometric(ByVal coordType As Long) As Boolean ': On Error Resu
     isIsometric = (coordType And (ISO_ROTATED Or ISO_STACKED))
 End Function
 
+'=========================================================================
+'=========================================================================
 Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKBoard) As CVector  ':on error resume next
     Dim i As Integer, bFound As Boolean
    
@@ -405,10 +408,15 @@ Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKB
                 ReDim Preserve board.vectors(i)
                 Set board.vectors(i) = New CVector
             End If
+            'Assign current vector.
+            Call tkMainForm.bTools_ctlVector.populate(i, board.vectors(i))
             Set vectorCreate = board.vectors(i)
         Case BS_PROGRAM
             '.prgs is always dimensioned.
             For i = 0 To UBound(board.prgs)
+                If board.prgs(i) Is Nothing Then
+                    Set board.prgs(i) = New CBoardProgram
+                End If
                 If board.prgs(i).vBase.tiletype = TT_NULL Then
                     bFound = True
                     Exit For
@@ -416,7 +424,10 @@ Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKB
             Next i
             If Not bFound Then
                 ReDim Preserve board.prgs(i)
+                Set board.prgs(i) = New CBoardProgram
             End If
+            Call activeBoard.toolbarPopulatePrgs
+            Call tkMainForm.bTools_ctlPrg.populate(i, board.prgs(i))
             Set vectorCreate = board.prgs(i).vBase
     End Select
     
@@ -438,7 +449,7 @@ Public Sub vectorize(ByRef ed As TKBoardEditorData) ': On Error Resume Next
         vector.attributes = vects(i).attributes
     Next i
 End Sub
-Public Sub upgradeProgram(ByRef prg As TKBoardProgram, ByVal x As Long, ByVal y As Long, ByVal coordType As Long) ':on error resume next
+Public Sub upgradeProgram(ByRef prg As CBoardProgram, ByVal x As Long, ByVal y As Long, ByVal coordType As Long) ':on error resume next
     
     Dim vect As TKConvertedVector, i As Long
     Call BRDTileToVector(VarPtr(vect), x, y, coordType)
@@ -449,3 +460,51 @@ Public Sub upgradeProgram(ByRef prg As TKBoardProgram, ByVal x As Long, ByVal y 
     prg.vBase.tiletype = vect.type
     Call prg.vBase.closeVector(0, prg.layer)
 End Sub
+
+'=========================================================================
+'=========================================================================
+Public Sub vectorLvColumn(ByRef lv As ListView, ByRef x As Single): On Error Resume Next
+    'Determine the column clicked.
+    Dim i As Long, w As Long
+    For i = 1 To 3
+        w = w + lv.ColumnHeaders(i).width
+        If x < w Then Exit For
+    Next i
+    'Store the subitem column in the tag (first subitem column is the second column).
+    lv.tag = i - 1
+End Sub
+Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal keyCode As Integer) As Boolean ':on error resume next
+    
+    Dim i As Long
+    i = val(lv.tag)
+    If i = 0 And keyCode = vbKeyDelete Then
+        'Whole row selected - delete the point.
+        lv.ListItems.Remove lv.SelectedItem.index
+        vectorLvKeyDown = True
+    End If
+    If i <> 1 And i <> 2 Then Exit Function
+        
+    Select Case keyCode
+        Case vbKeyBack, vbKeyDelete
+            lv.SelectedItem.SubItems(i) = vbNullString
+        Case vbKeyReturn
+            vectorLvKeyDown = True
+        Case vbKey0 To vbKey9
+            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(keyCode)
+        Case vbKeyNumpad0 To vbKeyNumpad9
+            keyCode = keyCode - (vbKeyNumpad0 - vbKey0)
+            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(keyCode)
+        Case vbKeyAdd
+            lv.SelectedItem.SubItems(i) = str(val(lv.SelectedItem.SubItems(i)) + 32)
+             vectorLvKeyDown = True
+       Case vbKeySubtract
+            lv.SelectedItem.SubItems(i) = str(val(lv.SelectedItem.SubItems(i)) - 32)
+            vectorLvKeyDown = True
+       Case vbKeyRight
+            'Switch columns.
+            If i = 1 Then lv.tag = "2": vectorLvKeyDown = True
+       Case vbKeyLeft
+            If i = 2 Then lv.tag = "1": vectorLvKeyDown = True
+    End Select
+End Function
+

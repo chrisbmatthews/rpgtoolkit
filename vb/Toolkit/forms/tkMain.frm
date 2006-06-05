@@ -15,8 +15,8 @@ Begin VB.MDIForm tkMainForm
    Begin VB.Timer animTileTimer 
       Enabled         =   0   'False
       Interval        =   5
-      Left            =   3240
-      Top             =   5520
+      Left            =   6480
+      Top             =   5400
    End
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
@@ -418,221 +418,53 @@ Begin VB.MDIForm tkMainForm
          Width           =   220
       End
       Begin TabDlg.SSTab bTools_Tabs 
-         Height          =   6255
+         Height          =   7215
          Left            =   120
          TabIndex        =   52
          Top             =   360
          Width           =   3285
          _ExtentX        =   5794
-         _ExtentY        =   11033
+         _ExtentY        =   12726
          _Version        =   393216
          Style           =   1
-         Tabs            =   2
          Tab             =   1
          TabsPerRow      =   4
          TabHeight       =   520
          TabCaption(0)   =   "Objects"
          TabPicture(0)   =   "tkMain.frx":10476
          Tab(0).ControlEnabled=   0   'False
-         Tab(0).Control(0)=   "bTools_Objects_Tree"
+         Tab(0).Control(0)=   "Picture2"
          Tab(0).Control(1)=   "bTools_Objects_Frame"
-         Tab(0).Control(2)=   "Picture2"
+         Tab(0).Control(2)=   "bTools_Objects_Tree"
          Tab(0).ControlCount=   3
          TabCaption(1)   =   "Vectors"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   -1  'True
-         Tab(1).Control(0)=   "bTools_VectorCombo"
+         Tab(1).Control(0)=   "bTools_ctlVector"
          Tab(1).Control(0).Enabled=   0   'False
-         Tab(1).Control(1)=   "bTools_VectorFrame"
-         Tab(1).Control(1).Enabled=   0   'False
-         Tab(1).Control(2)=   "bTools_VectorDelete"
-         Tab(1).Control(2).Enabled=   0   'False
-         Tab(1).Control(3)=   "bTools_VectorDuplicate"
-         Tab(1).Control(3).Enabled=   0   'False
-         Tab(1).ControlCount=   4
-         Begin VB.CommandButton bTools_VectorDuplicate 
-            Caption         =   "Duplicate"
-            Height          =   375
-            Left            =   960
-            TabIndex        =   205
-            Top             =   960
-            Width           =   855
-         End
-         Begin VB.CommandButton bTools_VectorDelete 
-            Caption         =   "Delete"
-            Height          =   375
-            Left            =   120
-            TabIndex        =   203
-            Top             =   960
-            Width           =   855
-         End
-         Begin VB.Frame bTools_VectorFrame 
-            Caption         =   "Properties"
-            Height          =   3735
+         Tab(1).ControlCount=   1
+         TabCaption(2)   =   "Programs"
+         TabPicture(2)   =   "tkMain.frx":104AE
+         Tab(2).ControlEnabled=   0   'False
+         Tab(2).Control(0)=   "bTools_ctlPrg"
+         Tab(2).ControlCount=   1
+         Begin Toolkit.ctlBrdVector bTools_ctlVector 
+            Height          =   5055
             Left            =   120
             TabIndex        =   192
-            Top             =   1440
-            Width           =   2895
-            Begin VB.TextBox bTools_VectorTxtLayer 
-               Height          =   285
-               Left            =   360
-               TabIndex        =   207
-               Text            =   "1"
-               Top             =   2085
-               Width           =   495
-            End
-            Begin MSComctlLib.ListView bTools_VectorLv 
-               Height          =   615
-               Left            =   480
-               TabIndex        =   206
-               Top             =   2880
-               Width           =   1935
-               _ExtentX        =   3413
-               _ExtentY        =   1085
-               View            =   3
-               LabelEdit       =   1
-               LabelWrap       =   -1  'True
-               HideSelection   =   -1  'True
-               HideColumnHeaders=   -1  'True
-               FullRowSelect   =   -1  'True
-               _Version        =   393217
-               ForeColor       =   -2147483640
-               BackColor       =   -2147483643
-               Appearance      =   1
-               NumItems        =   3
-               BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-                  Text            =   "index"
-                  Object.Width           =   564
-               EndProperty
-               BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-                  SubItemIndex    =   1
-                  Text            =   "x-coordinate"
-                  Object.Width           =   1058
-               EndProperty
-               BeginProperty ColumnHeader(3) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-                  SubItemIndex    =   2
-                  Text            =   "y-coordinate"
-                  Object.Width           =   1058
-               EndProperty
-            End
-            Begin VB.CheckBox bTools_VectorChkClosed 
-               Caption         =   "Closed vector"
-               Height          =   255
-               Left            =   360
-               TabIndex        =   204
-               Top             =   960
-               Width           =   1815
-            End
-            Begin VB.TextBox bTools_VectorTxtStairs 
-               Height          =   285
-               Left            =   360
-               TabIndex        =   201
-               Text            =   "1"
-               Top             =   2400
-               Width           =   495
-            End
-            Begin VB.CheckBox bTools_VectorChkUnder 
-               Caption         =   "Trigger on bounding box"
-               Height          =   255
-               Index           =   2
-               Left            =   360
-               TabIndex        =   199
-               Top             =   1680
-               Width           =   2295
-            End
-            Begin VB.CheckBox bTools_VectorChkUnder 
-               Caption         =   "Include all layers below"
-               Height          =   255
-               Index           =   1
-               Left            =   360
-               TabIndex        =   198
-               Top             =   1440
-               Width           =   2295
-            End
-            Begin VB.CheckBox bTools_VectorChkUnder 
-               Caption         =   "Include background"
-               Height          =   255
-               Index           =   0
-               Left            =   360
-               TabIndex        =   197
-               Top             =   1200
-               Width           =   2295
-            End
-            Begin VB.PictureBox Picture13 
-               Appearance      =   0  'Flat
-               BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
-               Height          =   735
-               Left            =   120
-               ScaleHeight     =   735
-               ScaleWidth      =   2655
-               TabIndex        =   193
-               Top             =   240
-               Width           =   2655
-               Begin VB.OptionButton bTools_VectorOptType 
-                  Caption         =   "Unidirectional"
-                  Height          =   375
-                  Index           =   4
-                  Left            =   1320
-                  TabIndex        =   200
-                  Top             =   360
-                  Visible         =   0   'False
-                  Width           =   1335
-               End
-               Begin VB.OptionButton bTools_VectorOptType 
-                  Caption         =   "Stairs"
-                  Height          =   375
-                  Index           =   8
-                  Left            =   1320
-                  TabIndex        =   196
-                  Top             =   0
-                  Width           =   855
-               End
-               Begin VB.OptionButton bTools_VectorOptType 
-                  Caption         =   "Under"
-                  Height          =   375
-                  Index           =   2
-                  Left            =   0
-                  TabIndex        =   195
-                  Top             =   360
-                  Width           =   855
-               End
-               Begin VB.OptionButton bTools_VectorOptType 
-                  Caption         =   "Solid"
-                  Height          =   375
-                  Index           =   1
-                  Left            =   0
-                  TabIndex        =   194
-                  Top             =   0
-                  Value           =   -1  'True
-                  Width           =   855
-               End
-            End
-            Begin VB.Label bTools_VectorLblLayer 
-               Caption         =   "Layer"
-               Height          =   255
-               Left            =   960
-               TabIndex        =   208
-               Top             =   2145
-               Width           =   975
-            End
-            Begin VB.Label bTools_VectorLblStairs 
-               Caption         =   "Stairs to layer"
-               Height          =   255
-               Left            =   960
-               TabIndex        =   202
-               Top             =   2445
-               Width           =   975
-            End
-         End
-         Begin VB.ComboBox bTools_VectorCombo 
-            Height          =   315
-            Left            =   120
-            Style           =   2  'Dropdown List
-            TabIndex        =   191
-            Top             =   480
-            Visible         =   0   'False
+            Top             =   360
             Width           =   3015
+            _ExtentX        =   5318
+            _ExtentY        =   8916
+         End
+         Begin Toolkit.ctlBrdProgram bTools_ctlPrg 
+            Height          =   6375
+            Left            =   -74880
+            TabIndex        =   191
+            Top             =   360
+            Width           =   3015
+            _ExtentX        =   5318
+            _ExtentY        =   11245
          End
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
@@ -777,7 +609,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          Height          =   220
          Left            =   1560
-         Picture         =   "tkMain.frx":104AE
+         Picture         =   "tkMain.frx":104CA
          Style           =   1  'Graphical
          TabIndex        =   84
          Top             =   0
@@ -847,7 +679,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          Height          =   220
          Left            =   750
-         Picture         =   "tkMain.frx":105F8
+         Picture         =   "tkMain.frx":10614
          Style           =   1  'Graphical
          TabIndex        =   85
          Top             =   0
@@ -1082,7 +914,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox brdChkAutotile 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":10742
+               Picture         =   "tkMain.frx":1075E
                Style           =   1  'Graphical
                TabIndex        =   80
                ToolTipText     =   "Toggle Auto Tiler"
@@ -1101,7 +933,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   1560
-               Picture         =   "tkMain.frx":10A4C
+               Picture         =   "tkMain.frx":10A68
                Style           =   1  'Graphical
                TabIndex        =   46
                TabStop         =   0   'False
@@ -1113,7 +945,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox brdChkGrid 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":11716
+               Picture         =   "tkMain.frx":11732
                Style           =   1  'Graphical
                TabIndex        =   45
                TabStop         =   0   'False
@@ -1135,7 +967,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":123E0
+               Picture         =   "tkMain.frx":123FC
                Style           =   1  'Graphical
                TabIndex        =   44
                TabStop         =   0   'False
@@ -1147,7 +979,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox brdChkIso 
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":12CAA
+               Picture         =   "tkMain.frx":12CC6
                Style           =   1  'Graphical
                TabIndex        =   43
                ToolTipText     =   "Isometric View"
@@ -1167,7 +999,7 @@ Begin VB.MDIForm tkMainForm
                Appearance      =   0  'Flat
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":13974
+               Picture         =   "tkMain.frx":13990
                Style           =   1  'Graphical
                TabIndex        =   41
                TabStop         =   0   'False
@@ -1179,7 +1011,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   8
                Left            =   120
-               Picture         =   "tkMain.frx":1463E
+               Picture         =   "tkMain.frx":1465A
                Style           =   1  'Graphical
                TabIndex        =   40
                TabStop         =   0   'False
@@ -1192,7 +1024,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   7
                Left            =   480
-               Picture         =   "tkMain.frx":14F08
+               Picture         =   "tkMain.frx":14F24
                Style           =   1  'Graphical
                TabIndex        =   39
                TabStop         =   0   'False
@@ -1205,7 +1037,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   6
                Left            =   120
-               Picture         =   "tkMain.frx":157D2
+               Picture         =   "tkMain.frx":157EE
                Style           =   1  'Graphical
                TabIndex        =   38
                TabStop         =   0   'False
@@ -1218,7 +1050,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   5
                Left            =   480
-               Picture         =   "tkMain.frx":1609C
+               Picture         =   "tkMain.frx":160B8
                Style           =   1  'Graphical
                TabIndex        =   37
                TabStop         =   0   'False
@@ -1231,7 +1063,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   4
                Left            =   120
-               Picture         =   "tkMain.frx":16966
+               Picture         =   "tkMain.frx":16982
                Style           =   1  'Graphical
                TabIndex        =   36
                TabStop         =   0   'False
@@ -1244,7 +1076,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   3
                Left            =   480
-               Picture         =   "tkMain.frx":16C70
+               Picture         =   "tkMain.frx":16C8C
                Style           =   1  'Graphical
                TabIndex        =   35
                TabStop         =   0   'False
@@ -1257,7 +1089,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   2
                Left            =   120
-               Picture         =   "tkMain.frx":1753A
+               Picture         =   "tkMain.frx":17556
                Style           =   1  'Graphical
                TabIndex        =   34
                TabStop         =   0   'False
@@ -1270,7 +1102,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   1
                Left            =   480
-               Picture         =   "tkMain.frx":17E04
+               Picture         =   "tkMain.frx":17E20
                Style           =   1  'Graphical
                TabIndex        =   33
                TabStop         =   0   'False
@@ -1283,7 +1115,7 @@ Begin VB.MDIForm tkMainForm
                Height          =   375
                Index           =   0
                Left            =   120
-               Picture         =   "tkMain.frx":1810E
+               Picture         =   "tkMain.frx":1812A
                Style           =   1  'Graphical
                TabIndex        =   32
                TabStop         =   0   'False
@@ -1296,7 +1128,7 @@ Begin VB.MDIForm tkMainForm
                Appearance      =   0  'Flat
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":18418
+               Picture         =   "tkMain.frx":18434
                Style           =   1  'Graphical
                TabIndex        =   31
                TabStop         =   0   'False
@@ -1308,7 +1140,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tileGrid 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":18CE2
+               Picture         =   "tkMain.frx":18CFE
                Style           =   1  'Graphical
                TabIndex        =   30
                TabStop         =   0   'False
@@ -1330,7 +1162,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   1560
-               Picture         =   "tkMain.frx":199AC
+               Picture         =   "tkMain.frx":199C8
                Style           =   1  'Graphical
                TabIndex        =   29
                TabStop         =   0   'False
@@ -1342,7 +1174,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tileIsoCheck 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1A676
+               Picture         =   "tkMain.frx":1A692
                Style           =   1  'Graphical
                TabIndex        =   63
                Top             =   360
@@ -1360,7 +1192,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tilebmpEraser 
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":1B340
+               Picture         =   "tkMain.frx":1B35C
                Style           =   1  'Graphical
                TabIndex        =   27
                TabStop         =   0   'False
@@ -1382,7 +1214,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1BC0A
+               Picture         =   "tkMain.frx":1BC26
                Style           =   1  'Graphical
                TabIndex        =   26
                TabStop         =   0   'False
@@ -1404,7 +1236,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   480
-               Picture         =   "tkMain.frx":1BF14
+               Picture         =   "tkMain.frx":1BF30
                Style           =   1  'Graphical
                TabIndex        =   25
                TabStop         =   0   'False
@@ -1425,7 +1257,7 @@ Begin VB.MDIForm tkMainForm
                EndProperty
                Height          =   375
                Left            =   1560
-               Picture         =   "tkMain.frx":1C7DE
+               Picture         =   "tkMain.frx":1C7FA
                Style           =   1  'Graphical
                TabIndex        =   24
                TabStop         =   0   'False
@@ -1437,7 +1269,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tilebmpDrawLock 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1D4A8
+               Picture         =   "tkMain.frx":1D4C4
                Style           =   1  'Graphical
                TabIndex        =   23
                TabStop         =   0   'False
@@ -1450,7 +1282,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CheckBox tilebmpGrid 
                Height          =   375
                Left            =   120
-               Picture         =   "tkMain.frx":1DD72
+               Picture         =   "tkMain.frx":1DD8E
                Style           =   1  'Graphical
                TabIndex        =   22
                TabStop         =   0   'False
@@ -1491,7 +1323,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton cmdAnimPlay 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":1EA3C
+               Picture         =   "tkMain.frx":1EA58
                Style           =   1  'Graphical
                TabIndex        =   20
                Top             =   360
@@ -1500,7 +1332,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton cmdAnimForward 
                Height          =   375
                Left            =   360
-               Picture         =   "tkMain.frx":1F706
+               Picture         =   "tkMain.frx":1F722
                Style           =   1  'Graphical
                TabIndex        =   19
                Top             =   0
@@ -1509,7 +1341,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton cmdAnimBack 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":203D0
+               Picture         =   "tkMain.frx":203EC
                Style           =   1  'Graphical
                TabIndex        =   18
                Top             =   0
@@ -1527,7 +1359,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton prgEventEdit 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":2109A
+               Picture         =   "tkMain.frx":210B6
                Style           =   1  'Graphical
                TabIndex        =   16
                TabStop         =   0   'False
@@ -1540,7 +1372,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton prgDebug 
                Height          =   375
                Left            =   360
-               Picture         =   "tkMain.frx":21D64
+               Picture         =   "tkMain.frx":21D80
                Style           =   1  'Graphical
                TabIndex        =   15
                TabStop         =   0   'False
@@ -1553,7 +1385,7 @@ Begin VB.MDIForm tkMainForm
             Begin VB.CommandButton prgRun 
                Height          =   375
                Left            =   0
-               Picture         =   "tkMain.frx":2262E
+               Picture         =   "tkMain.frx":2264A
                Style           =   1  'Graphical
                TabIndex        =   14
                TabStop         =   0   'False
@@ -1777,7 +1609,7 @@ Begin VB.MDIForm tkMainForm
                ForeColor       =   &H80000008&
                Height          =   270
                Left            =   120
-               Picture         =   "tkMain.frx":22EF8
+               Picture         =   "tkMain.frx":22F14
                ScaleHeight     =   16
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   236
@@ -1853,7 +1685,7 @@ Begin VB.MDIForm tkMainForm
                Enabled         =   0   'False
                Height          =   195
                Left            =   150
-               Picture         =   "tkMain.frx":23137
+               Picture         =   "tkMain.frx":23153
                Style           =   1  'Graphical
                TabIndex        =   150
                Top             =   810
@@ -1863,7 +1695,7 @@ Begin VB.MDIForm tkMainForm
                Enabled         =   0   'False
                Height          =   195
                Left            =   430
-               Picture         =   "tkMain.frx":23E01
+               Picture         =   "tkMain.frx":23E1D
                Style           =   1  'Graphical
                TabIndex        =   149
                Top             =   810
@@ -2117,7 +1949,7 @@ Begin VB.MDIForm tkMainForm
                   ForeColor       =   &H80000008&
                   Height          =   495
                   Left            =   0
-                  Picture         =   "tkMain.frx":24ACB
+                  Picture         =   "tkMain.frx":24AE7
                   ScaleHeight     =   465
                   ScaleWidth      =   5865
                   TabIndex        =   125
@@ -2662,7 +2494,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   3
          Left            =   0
-         Picture         =   "tkMain.frx":2E3AD
+         Picture         =   "tkMain.frx":2E3C9
          Style           =   1  'Graphical
          TabIndex        =   9
          ToolTipText     =   "board data"
@@ -2674,7 +2506,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   2
          Left            =   0
-         Picture         =   "tkMain.frx":2E737
+         Picture         =   "tkMain.frx":2E753
          Style           =   1  'Graphical
          TabIndex        =   7
          Top             =   720
@@ -2684,7 +2516,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   1
          Left            =   0
-         Picture         =   "tkMain.frx":2F401
+         Picture         =   "tkMain.frx":2F41D
          Style           =   1  'Graphical
          TabIndex        =   5
          Top             =   360
@@ -2694,7 +2526,7 @@ Begin VB.MDIForm tkMainForm
          Height          =   375
          Index           =   0
          Left            =   3
-         Picture         =   "tkMain.frx":2F98B
+         Picture         =   "tkMain.frx":2F9A7
          Style           =   1  'Graphical
          TabIndex        =   4
          Top             =   0
@@ -2729,7 +2561,7 @@ Begin VB.MDIForm tkMainForm
          Begin VB.CheckBox chkCurTilesetDrawGrid 
             Height          =   375
             Left            =   3960
-            Picture         =   "tkMain.frx":2FD15
+            Picture         =   "tkMain.frx":2FD31
             Style           =   1  'Graphical
             TabIndex        =   81
             Top             =   120
@@ -2796,7 +2628,7 @@ Begin VB.MDIForm tkMainForm
          EndProperty
          Height          =   220
          Left            =   4560
-         Picture         =   "tkMain.frx":309DF
+         Picture         =   "tkMain.frx":309FB
          Style           =   1  'Graphical
          TabIndex        =   8
          Top             =   0
@@ -2837,13 +2669,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "02/06/2006"
+            TextSave        =   "04/06/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "17:00"
+            TextSave        =   "20:53"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -4326,9 +4158,9 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
                 popButton(0).value = 0
                 popButton(1).value = 0
                 popButton(2).value = 0
-                Call boardToolbar.Objects.Populate(activeBoardIndex)
-                Call activeBoard.toolbarPopulate
+                'tbd:remove Call boardToolbar.Objects.populate(activeBoardIndex)
                 pTools.Visible = True
+                Call activeBoard.toolbarRefresh
                 pTools.SetFocus
             Else
                 pTools.Visible = False
@@ -4653,6 +4485,10 @@ End Sub
 '=========================================================================================
 ' BOARD TOOLBAR EVENTS
 '=========================================================================================
+Private Sub bTools_Tabs_Click(PreviousTab As Integer)
+    Call activeBoard.toolbarRefresh
+End Sub
+
 ' close toolbar
 Private Sub bTools_Close_Click(): On Error Resume Next
     popButton(3).value = 0
@@ -4670,53 +4506,6 @@ End Sub
 Private Sub bTools_Objects_Tree_Click(): On Error Resume Next
     boardToolbar.Objects.click
 End Sub
-
-Private Sub bTools_VectorCombo_Click(): On Error Resume Next
-    If bTools_VectorCombo.ListIndex >= 0 Then Call activeBoard.toolbarChange(bTools_GetVector)
-End Sub
-Private Sub bTools_VectorChkUnder_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    Call activeBoard.toolbarApply(bTools_GetVector)
-End Sub
-Private Sub bTools_VectorChkClosed_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    Call activeBoard.toolbarApply(bTools_GetVector)
-End Sub
-Private Sub bTools_VectorOptType_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    Call activeBoard.toolbarApply(bTools_GetVector)
-'    Call activeBoard.toolbarPopulate
-End Sub
-Private Sub bTools_VectorTxtLayer_Validate(Cancel As Boolean): On Error Resume Next
-    Call activeBoard.toolbarApply(bTools_GetVector)
-End Sub
-Private Sub bTools_VectorTxtStairs_Validate(Cancel As Boolean): On Error Resume Next
-    Call activeBoard.toolbarApply(bTools_GetVector)
-End Sub
-Private Sub bTools_VectorLv_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
-    'Determine the column clicked.
-    Dim i As Long, w As Long
-    For i = 1 To 3
-        w = w + bTools_VectorLv.ColumnHeaders(i).width
-        If x < w Then Exit For
-    Next i
-    'Store the subitem column in the tag (first subitem column is the second column).
-    bTools_VectorLv.tag = i - 1
-End Sub
-Private Sub bTools_VectorLv_KeyDown(keyCode As Integer, Shift As Integer): On Error Resume Next
-    If boardToolbar.editListView(bTools_VectorLv, keyCode) Then
-        Call activeBoard.toolbarApply(bTools_GetVector)
-    End If
-End Sub
-Private Sub bTools_VectorLv_Validate(Cancel As Boolean): On Error Resume Next
-    Call activeBoard.toolbarApply(bTools_GetVector)
-End Sub
-Private Sub bTools_VectorDelete_Click(): On Error Resume Next
-    Call activeBoard.toolbarVectorDelete(bTools_GetVector)
-End Sub
-Private Sub bTools_VectorDuplicate_Click(): On Error Resume Next
-    Call activeBoard.toolbarVectorDuplicate(bTools_GetVector)
-End Sub
-Private Function bTools_GetVector() As Long: On Error Resume Next
-    bTools_GetVector = bTools_VectorCombo.ItemData(bTools_VectorCombo.ListIndex)
-End Function
 
 '=========================================================================================
 ' GENERAL BOARD EVENTS
