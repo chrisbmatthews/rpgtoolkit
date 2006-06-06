@@ -26,6 +26,7 @@ Public Type TKBoardImage
 End Type
 
 Public Enum eBoardImage
+    BI_NULL = -1                        'VB only.
     BI_NORMAL                           'See BI_ENUM enumeration, CBoard.h
     BI_PARALLAX
     BI_STRETCH
@@ -229,7 +230,7 @@ Public Type TKBoardEditorData
     bShowBackColour As Boolean            'tbd:show background colour in editor
         
     currentVectorSet() As CVector         'References to vectors of current optSetting
-    currentVector As CVector
+    'currentVector As CVector
     vectorColor(TT_STAIRS) As Long
     programColor As Long
     waypointColor As Long
@@ -389,7 +390,7 @@ End Function
 
 '=========================================================================
 '=========================================================================
-Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKBoard) As CVector  ':on error resume next
+Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKBoard, ByVal layer As Long) As CVector  ':on error resume next
     Dim i As Integer, bFound As Boolean
    
     Select Case optSetting
@@ -409,6 +410,7 @@ Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKB
                 Set board.vectors(i) = New CVector
             End If
             'Assign current vector.
+            board.vectors(i).layer = layer
             Call tkMainForm.bTools_ctlVector.populate(i, board.vectors(i))
             Set vectorCreate = board.vectors(i)
         Case BS_PROGRAM
@@ -427,6 +429,7 @@ Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKB
                 Set board.prgs(i) = New CBoardProgram
             End If
             Call activeBoard.toolbarPopulatePrgs
+            board.prgs(i).layer = layer
             Call tkMainForm.bTools_ctlPrg.populate(i, board.prgs(i))
             Set vectorCreate = board.prgs(i).vBase
     End Select
@@ -440,7 +443,7 @@ Public Sub vectorize(ByRef ed As TKBoardEditorData) ': On Error Resume Next
     Call BRDVectorize(ed.pCBoard, VarPtr(ed.board(ed.undoIndex)), vects())
     
     For i = 0 To UBound(vects)
-        Set vector = vectorCreate(BS_VECTOR, ed.board(ed.undoIndex))
+        Set vector = vectorCreate(BS_VECTOR, ed.board(ed.undoIndex), vects(i).layer)
         For j = 0 To UBound(vects(i).pts)
             Call vector.addPoint(vects(i).pts(j).x, vects(i).pts(j).y)
         Next j
@@ -507,4 +510,29 @@ Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal keyCode As Integer) 
             If i = 2 Then lv.tag = "1": vectorLvKeyDown = True
     End Select
 End Function
+
+'=========================================================================
+' Copy a board - have to copy objects explicitly
+'=========================================================================
+Public Sub boardCopy(ByRef Source As TKBoard, ByRef dest As TKBoard) ': on error resume next
+    Dim i As Long
+    
+    'Copy non-object data.
+    dest = Source
+    
+    ReDim dest.vectors(UBound(Source.vectors))
+    For i = 0 To UBound(Source.vectors)
+        If Not Source.vectors(i) Is Nothing Then
+            Set dest.vectors(i) = New CVector
+            Call Source.vectors(i).copy(dest.vectors(i))
+        End If
+    Next i
+    ReDim dest.prgs(UBound(Source.prgs))
+    For i = 0 To UBound(Source.prgs)
+        If Not Source.prgs(i) Is Nothing Then
+            Set dest.prgs(i) = New CBoardProgram
+            Call Source.prgs(i).copy(dest.prgs(i))
+        End If
+    Next i
+End Sub
 

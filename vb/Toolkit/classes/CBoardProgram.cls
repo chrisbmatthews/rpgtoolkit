@@ -66,3 +66,19 @@ Public Sub tbApply(ByRef ctl As ctlBrdProgram) ':on error resume next
     Call vBase.lvApply(ctl.getLvPoints)
     
 End Sub
+
+Public Sub copy(ByRef rhs As CBoardProgram) ':on error resume next
+
+    rhs.filename = filename
+    rhs.activate = activate
+    rhs.activationType = activationType
+    rhs.distanceRepeat = distanceRepeat
+    rhs.finalValue = finalValue
+    rhs.finalVar = finalVar
+    rhs.initialValue = initialValue
+    rhs.initialVar = initialVar
+    rhs.layer = layer
+    Set rhs.vBase = New CVector
+    Call vBase.copy(rhs.vBase)
+
+End Sub

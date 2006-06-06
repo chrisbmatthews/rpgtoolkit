@@ -521,6 +521,8 @@ Public Sub BoardClear(ByRef theBoard As TKBoard): On Error Resume Next
             Set .prgs(i) = Nothing
         Next i
         ReDim .prgs(0)
+        ReDim .Images(0)
+        .Images(0).drawType = BI_NULL
     
         'Pre 3.0.7
         ReDim .tileIndex(5)

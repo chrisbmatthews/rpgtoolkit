@@ -46,6 +46,9 @@ End Property
 Public Property Get layer() As Long: On Error Resume Next
     layer = m_layer
 End Property
+Public Property Let layer(ByVal l As Long): On Error Resume Next
+    m_layer = l
+End Property
 Public Property Get attributes() As Long: On Error Resume Next
     attributes = m_attributes
 End Property
@@ -55,6 +58,10 @@ End Property
 Public Property Get bClosed() As Boolean: On Error Resume Next
     bClosed = m_bClosed
 End Property
+Public Property Let bClosed(ByVal bC As Boolean): On Error Resume Next
+    m_bClosed = bC
+End Property
+
 '=========================================================================
 ' Add a point to the vector
 '=========================================================================
@@ -273,6 +280,14 @@ Public Sub setSelection(ByRef sel As CBoardSelection) ': on error resume next
         m_pts(i).bSel = sel.containsPoint(m_pts(i).x, m_pts(i).y)
     Next i
 End Sub
+'=========================================================================
+' Set a point by index
+'=========================================================================
+Public Sub setPoint(ByVal p As Long, ByRef x As Long, ByRef y As Long) ':on error resume next
+    If p > UBound(m_pts) Then ReDim Preserve m_pts(p)
+    m_pts(p).x = x
+    m_pts(p).y = y
+End Sub
 
 '=========================================================================
 ' Subdivide selected lines (if start and end points selected)
@@ -383,5 +398,19 @@ Public Sub lvApply(ByRef lv As ListView) ':on error resume next
     For i = 0 To lv.ListItems.count - 1
         m_pts(i).x = Abs(val(lv.ListItems(i + 1).SubItems(1)))
         m_pts(i).y = Abs(val(lv.ListItems(i + 1).SubItems(2)))
+    Next i
+End Sub
+
+'=========================================================================
+' Copy "constructor"
+'=========================================================================
+Public Sub copy(ByRef rhs As CVector) ':on error resume next
+    Dim i As Long
+    rhs.tiletype = m_tiletype
+    rhs.layer = m_layer
+    rhs.attributes = m_attributes
+    rhs.bClosed = m_bClosed
+    For i = 0 To UBound(m_pts)
+        Call rhs.setPoint(i, m_pts(i).x, m_pts(i).y)
     Next i
 End Sub

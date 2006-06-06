@@ -11,8 +11,8 @@ Begin VB.Form frmBoardEdit
    ScaleMode       =   0  'User
    ScaleWidth      =   640
    Begin VB.VScrollBar vScroll 
-      Height          =   5775
-      Left            =   9360
+      Height          =   2655
+      Left            =   4320
       SmallChange     =   32
       TabIndex        =   2
       TabStop         =   0   'False
@@ -25,22 +25,22 @@ Begin VB.Form frmBoardEdit
       SmallChange     =   32
       TabIndex        =   1
       TabStop         =   0   'False
-      Top             =   5880
-      Width           =   9255
+      Top             =   2760
+      Width           =   4215
    End
    Begin VB.PictureBox picBoard 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5775
+      Height          =   2655
       Left            =   120
-      ScaleHeight     =   385
+      ScaleHeight     =   177
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   617
+      ScaleWidth      =   281
       TabIndex        =   0
       Top             =   120
-      Width           =   9255
+      Width           =   4215
       Begin VB.Line lineSelection 
          BorderStyle     =   3  'Dot
          DrawMode        =   6  'Mask Pen Not
@@ -139,6 +139,7 @@ Private Declare Function BRDRender Lib "actkrt3.dll" (ByVal pEditorData As Long,
 Private Declare Function BRDDraw Lib "actkrt3.dll" (ByVal pEditorData As Long, ByVal pData As Long, ByVal hdc As Long, ByVal destX As Long, ByVal destY As Long, ByVal brdX As Long, ByVal brdY As Long, ByVal width As Long, ByVal Height As Long, ByVal zoom As Double) As Long
 Private Declare Function BRDRenderTileToBoard Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByVal hdcCompat As Long, ByVal x As Long, ByVal y As Long, ByVal z As Long) As Long
 Private Declare Function BRDRenderTile Lib "actkrt3.dll" (ByVal filename As String, ByVal bIsometric As Boolean, ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal backColor As Long) As Long
+Private Declare Function BRDFreeImage Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pImage As Long) As Long
 
 Private m_ed As TKBoardEditorData
 Private m_sel As CBoardSelection
@@ -167,7 +168,7 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
     Set m_sel = New CBoardSelection
     
     'testing
-    m_ed.board(m_ed.undoIndex).brdColor = 0
+    m_ed.board(m_ed.undoIndex).brdColor = RGB(255, 255, 255)
     m_ed.vectorColor(TT_SOLID) = RGB(255, 255, 255)
     m_ed.vectorColor(TT_UNDER) = RGB(0, 255, 0)
     m_ed.vectorColor(TT_STAIRS) = RGB(0, 255, 255)
@@ -331,6 +332,7 @@ Private Sub Form_Resize() ':on error resume next
         hScroll.LargeChange = picBoard.width - scrollUnitWidth(m_ed)
     Else
          hScroll.Visible = False
+         hScroll.max = 0
          picBoard.width = brdWidth
          m_ed.pCEd.topX = 0
     End If
@@ -345,6 +347,7 @@ Private Sub Form_Resize() ':on error resume next
         vScroll.LargeChange = picBoard.Height - scrollUnitHeight(m_ed)
     Else
          vScroll.Visible = False
+         vScroll.max = 0
          picBoard.Height = brdHeight
          m_ed.pCEd.topY = 0
     End If
@@ -470,7 +473,7 @@ End Function
 Private Property Get ISubclass_MsgResponse() As EMsgResponse
     ISubclass_MsgResponse = emrConsume
 End Property
-Private Property Let ISubclass_MsgResponse(ByVal RHS As EMsgResponse)
+Private Property Let ISubclass_MsgResponse(ByVal rhs As EMsgResponse)
     ' Cannot be set.
 End Property
 
@@ -531,10 +534,10 @@ End Function
 Private Function nextRedo() As Long: On Error Resume Next
     nextRedo = (m_ed.undoIndex + 1) Mod (MAX_UNDO + 1)
 End Function
-Private Sub setUndo() ': On Error Resume Next
+Public Sub setUndo() ': On Error Resume Next
     Dim id As Long
     id = nextRedo
-    m_ed.board(id) = m_ed.board(m_ed.undoIndex)
+    Call boardCopy(m_ed.board(m_ed.undoIndex), m_ed.board(id))
     m_ed.undoIndex = id
     m_ed.bUndoData(id) = True
     m_ed.bUndoData(nextRedo) = False            'Clear redo data.
@@ -548,15 +551,28 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
 
     Dim curVector As CVector
     Set curVector = currentVector
+    
+    Select Case keyCode
+        Case vbKeyQ: tkMainForm.brdOptSetting(BS_GENERAL).value = True
+        Case vbKeyW: tkMainForm.brdOptSetting(BS_TILE).value = True
+        Case vbKeyE: tkMainForm.brdOptSetting(BS_VECTOR).value = True
+        Case vbKeyR: tkMainForm.brdOptSetting(BS_PROGRAM).value = True
+        Case vbKeyT: tkMainForm.brdOptSetting(BS_ITEM).value = True
+        Case vbKeyY: tkMainForm.brdOptSetting(BS_IMAGE).value = True
+        Case vbKeyA: tkMainForm.brdOptTool(BT_DRAW).value = True
+        Case vbKeyS: tkMainForm.brdOptTool(BT_SELECT).value = True
+        Case vbKeyD: tkMainForm.brdOptTool(BT_FLOOD).value = True
+        Case vbKeyF: tkMainForm.brdOptTool(BT_ERASE).value = True
+    End Select
 
     Select Case m_ed.optSetting
         Case BS_VECTOR, BS_PROGRAM
             Select Case keyCode
-                Case vbKeyDelete, vbKeyBack, vbKeyD
+                Case vbKeyDelete, vbKeyBack
                     Call vectorDeleteSelection(m_sel)
-                Case vbKeyS
+                Case vbKeyZ
                     Call vectorSubdivideSelection(m_sel)
-                Case vbKeyE
+                Case vbKeyX
                     Call vectorExtendSelection(m_sel)
                 Case vbKeyEscape
                     If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) And (Not curVector Is Nothing) Then
@@ -570,7 +586,7 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
 
         Case BS_TILE
             Select Case keyCode
-                Case vbKeyDelete, vbKeyBack, vbKeyD
+                Case vbKeyDelete, vbKeyBack
                     'Create a local clipboard and cut to it.
                     Dim clip As TKBoardClipboard
                     Call setUndo
@@ -597,33 +613,39 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                         If m_sel.containsPoint(pxCoord.x, pxCoord.y) And m_sel.status = SS_FINISHED Then
                             'Start to move selection.
                             m_sel.status = SS_MOVING
+                            Call setUndo
+                            Set curVector = currentVector           'Update since setUndo increments vectors.
                             
                             Select Case m_ed.optSetting
                                 Case BS_TILE
-                                    'Snap to grid.
-                                    pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                                    pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                                    
-                                    'Prepare a copy.
-                                    Call setUndo
-                                    g_boardClipboard.origin.x = m_sel.x1
+                                    pxCoord = snapToGrid(pxCoord)
+                                    g_boardClipboard.origin.x = m_sel.x1        'Prepare a copy.
                                     g_boardClipboard.origin.y = m_sel.y1
                                     
                                 Case BS_VECTOR, BS_PROGRAM
                                     'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
-                                    If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then
-                                        pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                                        pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                                    End If
+                                    If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord)
+                                    
                                     'Determine selected points.
                                     If Not curVector Is Nothing Then Call curVector.setSelection(m_sel)
                             End Select
                             
                             m_sel.xDrag = pxCoord.x: m_sel.yDrag = pxCoord.y
                         Else
-                            'Start new selection.
-                            'CBoardSlection stores board pixel coordinate.
-                            Call m_sel.restart(pxCoord.x, pxCoord.y)
+                            Select Case m_ed.optSetting
+                                Case BS_TILE, BS_VECTOR, BS_PROGRAM
+                                    'Start new selection.
+                                    'CBoardSlection stores board pixel coordinate.
+                                    Call m_sel.restart(pxCoord.x, pxCoord.y)
+                                Case BS_IMAGE
+                                    'Start moving the selected image.
+                                    Dim img As TKBoardImage, index As Long
+                                    If imageHitTest(pxCoord.x, pxCoord.y, index, img) Then
+                                        Call imagePopulate(index, img)
+                                        Call m_sel.assign(img.bounds.Left, img.bounds.Top, img.bounds.Right, img.bounds.Bottom)
+                                        m_sel.status = SS_FINISHED
+                                    End If
+                            End Select
                         End If
                         
                     Case SS_DRAWING
@@ -633,15 +655,10 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                     Case SS_MOVING, SS_PASTING
                         Select Case m_ed.optSetting
                             Case BS_TILE
-                                'Snap to grid.
-                                pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                                pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                            Case BS_VECTOR, BS_PROGRAM
+                                pxCoord = snapToGrid(pxCoord)
+                            Case BS_VECTOR, BS_PROGRAM, BS_IMAGE
                                 'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
-                                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then
-                                    pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                                    pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                                End If
+                                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord)
                         End Select
                         
                         Dim dx As Long, dy As Long
@@ -664,14 +681,6 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
     
                 End Select
             Else
-                'Right-click - clear selection.
-                'Select Case m_ed.optSetting
-                '    Case BS_VECTOR, BS_PROGRAM
-                '        If m_sel.isEmpty Then
-                '            Call vectorSetCurrentVector(m_sel, True)
-                '            Call drawBoard
-                '        End If
-                'End Select
                 Call m_sel.clear(Me)
             End If
             Exit Sub
@@ -688,6 +697,9 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
             Call tileSettingMouseDown(Button, Shift, x, y)
         Case BS_VECTOR, BS_PROGRAM
             Call vectorSettingMouseDown(Button, Shift, x, y)
+        Case BS_IMAGE
+            Call imageCreate(m_ed.board(m_ed.undoIndex), pxCoord.x, pxCoord.y)
+            Call drawAll
     End Select
 End Sub
 Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
@@ -747,10 +759,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
             If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) Then
                 
                 'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
-                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then
-                    pxCoord = boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                    pxCoord = tileToBoardPixel(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
-                End If
+                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord)
 
                 m_sel.x2 = pxCoord.x: m_sel.y2 = pxCoord.y
                 Call m_sel.drawLine(Me, m_ed.pCEd)
@@ -758,7 +767,10 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
     End Select
 End Sub
 Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single) ':on error resume next
-         
+    
+    Dim pxCoord As POINTAPI
+    pxCoord = screenToBoardPixel(x, y, m_ed)
+    
     If Button <> vbLeftButton Then Exit Sub
             
     If m_ed.optTool = BT_SELECT Then
@@ -785,15 +797,25 @@ Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y
                     Exit Sub
                 End If
                 Call toolbarRefresh
+            Case BS_IMAGE
+                'Finish the move.
+                If m_sel.status = SS_MOVING Then Call imageMoveCurrentTo(m_sel.x1, m_sel.y1)
+                Call m_sel.clear(Me)
+                Exit Sub
         End Select
         
         Call m_sel.reorientate
         m_sel.status = SS_FINISHED
         Call m_sel.draw(Me, m_ed.pCEd)
-        Exit Sub
     End If
          
 End Sub
+Private Function snapToGrid(ByRef pxCoord As POINTAPI) As POINTAPI: On Error Resume Next
+    Dim pt As POINTAPI: pt = pxCoord
+    pt = boardPixelToTile(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
+    snapToGrid = tileToBoardPixel(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
+End Function
+
 
 '========================================================================
 ' x,y as tileCoord
@@ -1473,7 +1495,8 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
             If Button = vbLeftButton Then
                 If m_sel.status <> SS_DRAWING Then
                     'Start a new vector.
-                    Set curVector = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex))
+                    Call setUndo
+                    Set curVector = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
                     Call drawBoard
                 Else
                     'Close the last point.
@@ -1529,12 +1552,12 @@ Private Function currentVector() As CVector ': On Error Resume Next
     Select Case m_ed.optSetting
         Case BS_VECTOR
             i = tkMainForm.bTools_ctlVector.vectorIndex
-            If i >= 0 And i < UBound(m_ed.board(m_ed.undoIndex).vectors) Then
+            If i >= 0 And i <= UBound(m_ed.board(m_ed.undoIndex).vectors) Then
                 If Not m_ed.board(m_ed.undoIndex).vectors(i) Is Nothing Then Set currentVector = m_ed.board(m_ed.undoIndex).vectors(i)
             End If
         Case BS_PROGRAM
             i = tkMainForm.bTools_ctlPrg.getCombo.ListIndex
-            If i >= 0 And i < UBound(m_ed.board(m_ed.undoIndex).prgs) Then
+            If i >= 0 And i <= UBound(m_ed.board(m_ed.undoIndex).prgs) Then
                 If Not m_ed.board(m_ed.undoIndex).prgs(i) Is Nothing Then Set currentVector = m_ed.board(m_ed.undoIndex).prgs(i).vBase
             End If
     End Select
@@ -1588,8 +1611,9 @@ Public Sub vectorDeleteCurrentVector(ByVal Setting As eBrdSetting) ': on error r
 End Sub
 Private Sub vectorDeleteSelection(ByRef sel As CBoardSelection) ':on error resume next
     Dim curVector As CVector
+    If currentVector Is Nothing Then Exit Sub
+    Call setUndo
     Set curVector = currentVector
-    If curVector Is Nothing Then Exit Sub
     
     If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED Then
         Call curVector.deleteSelection(sel)
@@ -1606,6 +1630,7 @@ Private Sub vectorExtendSelection(ByRef sel As CBoardSelection) ':on error resum
     Dim x As Long, y As Long
     If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED And (Not currentVector Is Nothing) Then
         If currentVector.extendSelection(sel, x, y) Then
+            Call setUndo
             'Extend the first endpoint found.
             tkMainForm.brdOptTool(BT_DRAW).value = True
             sel.x1 = x
@@ -1638,11 +1663,12 @@ Private Sub vectorSetCurrentVector(ByRef sel As CBoardSelection) ': on error res
         End If
     Next i
     
-    Call toolbarChange(j)
+    Call toolbarChange(j, m_ed.optSetting)
     
 End Sub
 Private Sub vectorSubdivideSelection(ByRef sel As CBoardSelection) ':on error resume next
     If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED And (Not currentVector Is Nothing) Then
+        Call setUndo
         Call currentVector.subdivideSelection(sel)
         Call drawBoard
     End If
@@ -1651,23 +1677,30 @@ End Sub
 '========================================================================
 '========================================================================
 Public Sub toolbarRefresh() ':on error resume next
-    If tkMainForm.pTools.Visible Then
-        Select Case tkMainForm.bTools_Tabs.Tab
-            Case BTAB_OPTIONS
-            Case BTAB_VECTOR
-                Call toolbarPopulateVectors
-            Case BTAB_PROGRAM
-                Call toolbarPopulatePrgs
-        End Select
-    End If
+    Select Case m_ed.optSetting
+        Case BS_VECTOR:     Call toolbarPopulateVectors
+        Case BS_PROGRAM:    Call toolbarPopulatePrgs
+        Case BS_IMAGE:      Call toolbarPopulateImages
+    End Select
+    'Update regardless of whether visible or not.
+'    If tkMainForm.pTools.Visible Then
+'        Select Case tkMainForm.bTools_Tabs.Tab
+'            Case BTAB_OPTIONS
+'            Case BTAB_VECTOR
+'                Call toolbarPopulateVectors
+'            Case BTAB_PROGRAM
+'                Call toolbarPopulatePrgs
+'        End Select
+'    End If
 End Sub
-Public Sub toolbarChange(ByVal index As Long) ':on error resume next
-    Select Case tkMainForm.bTools_Tabs.Tab
-        Case BTAB_OPTIONS
-        Case BTAB_VECTOR
+Public Sub toolbarChange(ByVal index As Long, ByVal Setting As eBrdSetting) ':on error resume next
+    Select Case Setting
+        Case BS_VECTOR
             Call tkMainForm.bTools_ctlVector.populate(index, m_ed.board(m_ed.undoIndex).vectors(index))
-        Case BTAB_PROGRAM
+        Case BS_PROGRAM
             Call tkMainForm.bTools_ctlPrg.populate(index, m_ed.board(m_ed.undoIndex).prgs(index))
+        Case BS_IMAGE
+            Call imagePopulate(index, m_ed.board(m_ed.undoIndex).Images(index))
     End Select
     Call drawAll
 End Sub
@@ -1823,4 +1856,118 @@ Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelecti
     Call drawBoard
 End Sub
 
-
+'========================================================================
+'========================================================================
+Private Sub imageCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Long) ':on error resume next
+    Dim i As Long, bFound As Boolean '.prgs is always dimensioned.
+    For i = 0 To UBound(board.Images)
+        If board.Images(i).drawType = BI_NULL Then
+            bFound = True
+            Exit For
+        End If
+    Next i
+    If Not bFound Then
+        ReDim Preserve board.Images(i)
+    End If
+    board.Images(i).drawType = BI_NORMAL
+    Call toolbarPopulateImages
+    
+    board.Images(i).layer = m_ed.currentLayer
+    board.Images(i).bounds.Left = x             'Board pixel co-ordinates always.
+    board.Images(i).bounds.Top = y
+    
+    Call imagePopulate(i, board.Images(i))
+End Sub
+Private Sub toolbarPopulateImages() ':on error resume next
+    'User controls don't seem to like arrays, so...
+    Dim combo As ComboBox, i As Long, j As Long, k As Long
+    Set combo = tkMainForm.bTools_ctlImage.getCombo
+    k = combo.ListIndex
+    combo.clear
+    
+    With m_ed.board(m_ed.undoIndex)
+        For i = 0 To UBound(.Images)
+            If Not .Images(i).drawType = BI_NULL Then
+                'If Not .images(i) Is Nothing Then
+                    combo.AddItem str(j) & ": " & IIf(LenB(.Images(i).file), .Images(i).file, "<image>")
+                    combo.ItemData(j) = i
+                    j = j + 1
+                'End If
+            End If
+        Next i
+    End With
+    If j > 0 Then
+        'Preserve selected vector.
+        combo.ListIndex = IIf(k < j And k <> -1, k, 0)
+        Call imagePopulate(combo.ListIndex, m_ed.board(m_ed.undoIndex).Images(combo.ItemData(combo.ListIndex)))
+    Else
+        'No programs.
+        Call tkMainForm.bTools_ctlImage.disableAll
+    End If
+End Sub
+Private Sub imagePopulate(ByVal index As Long, ByRef img As TKBoardImage) ':on error resume next
+    Dim ctl As ctlBrdImage
+    Set ctl = tkMainForm.bTools_ctlImage
+    
+    If (img.drawType = BI_NULL) Or (Not ctl.setCurrentImage(index)) Then
+        'No matching combo entry.
+        Call ctl.disableAll
+        Exit Sub
+    End If
+    
+    Call ctl.enableAll
+    
+    ctl.getCombo.list(index) = str(index) & ": " & IIf(LenB(img.file), img.file, "<image>")
+    ctl.getTxtFilename.Text = img.file
+    ctl.getTxtLoc(0).Text = str(img.bounds.Left)
+    ctl.getTxtLoc(1).Text = str(img.bounds.Top)
+    ctl.getTxtLoc(2).Text = str(img.layer)
+    ctl.transpcolor = img.transpcolor
+End Sub
+Public Sub imageApply(ByVal index As Long) ':on error resume next
+    Dim ctl As ctlBrdImage, w As Long, h As Long, img As TKBoardImage
+    Set ctl = tkMainForm.bTools_ctlImage
+    
+    img = m_ed.board(m_ed.undoIndex).Images(index)
+    w = img.bounds.Right - img.bounds.Left
+    h = img.bounds.Bottom - img.bounds.Top
+    
+    img.bounds.Left = val(ctl.getTxtLoc(0).Text)    'Board pixel co-ordinates always.
+    img.bounds.Top = val(ctl.getTxtLoc(1).Text)
+    img.bounds.Right = img.bounds.Left + w
+    img.bounds.Bottom = img.bounds.Top + h
+    
+    img.drawType = BI_NORMAL                        'Until parallax/stretch implemented.
+    img.transpcolor = ctl.transpcolor
+    
+    'Free the canvas of the current image if changing filename.
+    If img.file <> ctl.getTxtFilename.Text And img.pCnv Then
+        Call BRDFreeImage(m_ed.pCBoard, VarPtr(img))
+        img.bounds.Right = 0                        'Reset the dimensions.
+        img.bounds.Bottom = 0
+    End If
+    img.file = ctl.getTxtFilename.Text
+    
+    m_ed.board(m_ed.undoIndex).Images(index) = img
+    Call imagePopulate(ctl.getCombo.ListIndex, img)
+End Sub
+Private Function imageHitTest(ByVal x As Long, ByVal y As Long, ByRef index As Long, ByRef img As TKBoardImage) As Boolean ':on error resume next
+    Dim i As Long
+    With m_ed.board(m_ed.undoIndex)
+        For i = 0 To UBound(.Images)
+            If x > .Images(i).bounds.Left And x < .Images(i).bounds.Right And _
+                y > .Images(i).bounds.Top And y < .Images(i).bounds.Bottom Then
+                img = .Images(i)
+                index = i
+                imageHitTest = True
+                Exit Function
+            End If
+        Next i
+    End With
+End Function
+Private Sub imageMoveCurrentTo(ByVal x As Long, ByVal y As Long) ':on error resume next
+    tkMainForm.bTools_ctlImage.getTxtLoc(0).Text = str(x)
+    tkMainForm.bTools_ctlImage.getTxtLoc(1).Text = str(y)
+    Call imageApply(tkMainForm.bTools_ctlImage.getCombo.ListIndex)
+    Call drawAll
+End Sub

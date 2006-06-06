@@ -322,7 +322,7 @@ Public Sub disableAll(): On Error Resume Next
         i.Enabled = False
         i.Text = vbNullString
     Next i
-    programCombo.Enabled = True
+    cmbPrg.Enabled = True
     lvPoints.ListItems.clear
 End Sub
 Private Sub enableAll(): On Error Resume Next
@@ -348,7 +348,7 @@ Public Sub populate(ByVal prgsIndex As Long, ByRef prg As CBoardProgram) ': On E
     
     Call enableAll
     
-    cmbPrg.list(prgsIndex) = str(prgsIndex) & ": " & prg.filename
+    cmbPrg.list(prgsIndex) = str(prgsIndex) & ": " & IIf(LenB(prg.filename), prg.filename, "<program>")
     txtFilename.Text = prg.filename
     txtLayer.Text = str(prg.layer)
     optConditionallyActive(prg.activate).value = True
@@ -376,7 +376,7 @@ Public Sub populate(ByVal prgsIndex As Long, ByRef prg As CBoardProgram) ': On E
 End Sub
 Public Function setCurrentPrg(ByVal prgsIndex As Long) As Boolean ':on error resume next
     'prgsIndex is the entry in m_ed.board(m_ed.undoIndex).prgs()
-    'corresponding to programCombo.itemData(i)
+    'corresponding to cmbPrg.itemData(i)
     Dim i As Long
     For i = 0 To cmbPrg.ListCount - 1
         If cmbPrg.ItemData(i) = prgsIndex Then
@@ -387,10 +387,10 @@ Public Function setCurrentPrg(ByVal prgsIndex As Long) As Boolean ':on error res
     Next i
 End Function
 
-Public Property Get getChkActivationStopsMove() As CheckBox
+Public Property Get getChkActivationStopsMove() As CheckBox: On Error Resume Next
     Set getChkActivationStopsMove = chkActivationStopsMove
 End Property
-Public Property Get getChkRepeatTrigger() As CheckBox
+Public Property Get getChkRepeatTrigger() As CheckBox: On Error Resume Next
     Set getChkRepeatTrigger = chkRepeatTrigger
 End Property
 Public Property Get getCombo() As ComboBox: On Error Resume Next
@@ -425,9 +425,13 @@ Private Sub chkRepeatTrigger_MouseUp(Button As Integer, Shift As Integer, x As S
     Call apply
 End Sub
 Private Sub cmbPrg_Click(): On Error Resume Next
-    If cmbPrg.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbPrg.ItemData(cmbPrg.ListIndex))
+    If cmbPrg.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbPrg.ItemData(cmbPrg.ListIndex), BS_PROGRAM)
+End Sub
+Private Sub cmdBrowse_Click(): On Error Resume Next
+    MsgBox "tbd"
 End Sub
 Private Sub cmdDelete_Click(): On Error Resume Next
+    Call activeBoard.setUndo
     Call activeBoard.vectorDeleteCurrentVector(BS_PROGRAM)
     Call activeBoard.drawAll
 End Sub

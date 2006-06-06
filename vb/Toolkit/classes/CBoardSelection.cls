@@ -26,6 +26,10 @@ Public y2 As Long
 Public xDrag As Long                         'Mouse point when dragging (board px).
 Public yDrag As Long
 
+Public Sub assign(ByVal px1 As Long, ByVal py1 As Long, ByVal px2 As Long, ByVal py2 As Long): On Error Resume Next
+    x1 = px1: y1 = py1: x2 = px2: y2 = py2
+End Sub
+
 '=========================================================================
 '=========================================================================
 Public Sub draw(ByRef edFrm As frmBoardEdit, ByRef pCEd As CBoardEditor) ':on error resume next

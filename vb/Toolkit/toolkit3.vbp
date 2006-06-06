@@ -168,6 +168,7 @@ Reference=*\G{00025E01-0000-0000-C000-000000000046}#4.0#0#..\..\..\..\Program Fi
 UserControl=controls\ctlBrdProgram.ctl
 Class=CBoardProgram; classes\CBoardProgram.cls
 UserControl=controls\ctlBrdVector.ctl
+UserControl=controls\ctlBrdImage.ctl
 ResFile32="toolkit3.res"
 IconForm="frmMain"
 Startup="Sub Main"
