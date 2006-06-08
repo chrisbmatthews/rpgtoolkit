@@ -64,6 +64,7 @@ EXPORTS
 	BRDIsometricTransform @59
 	BRDVectorize		@60
 	BRDTileToVector		@61
+	BRDFreeImage		@62
 
 	;tkzip...
 	ZIPTest				@71

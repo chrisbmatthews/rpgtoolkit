@@ -523,7 +523,12 @@ Public Sub BoardClear(ByRef theBoard As TKBoard): On Error Resume Next
         ReDim .prgs(0)
         ReDim .Images(0)
         .Images(0).drawType = BI_NULL
-    
+        ReDim .spriteImages(0)
+        ReDim .sprites(0)
+        For i = 0 To UBound(.sprites)
+            Set .sprites(i) = Nothing
+        Next i
+
         'Pre 3.0.7
         ReDim .tileIndex(5)
         Dim x As Long, y As Long, layer As Long, t As Long
@@ -993,32 +998,38 @@ exitTheFor:
             
             On Error Resume Next
             
-            Dim numItm As Long, count As Long
-            
-            'Dimension the arrays of this board *not* the activeboard.
-            ReDim .itmName(0)
-            Call dimensionItemArrays(board)
-            
+            '3.0.7 wip - load into TKBoardSprite structures.
+            Dim numItm As Long, ubSprs As Long
             numItm = BinReadInt(num)            'The number of written item slots.
-            t = 0
-            For count = 0 To numItm
-                .itmName(t) = BinReadString(num)   'filenames of items
-                .itmX(t) = BinReadInt(num)     'x coord
-                .itmY(t) = BinReadInt(num)     'y coord
-                .itmLayer(t) = BinReadInt(num)  'layer coord
-                .itmActivate(t) = BinReadInt(num)  'itm activation: 0- always active, 1- conditional activation.
-                .itmVarActivate(t) = BinReadString(num)  'activation variable
-                .itmDoneVarActivate(t) = BinReadString(num)  'activation variable at end of itm.
-                .itmActivateInitNum(t) = BinReadString(num)  'initial number of activation
-                .itmActivateDoneNum(t) = BinReadString(num)  'what to make variable at end of activation.
-                .itmActivationType(t) = BinReadInt(num)  'activation type- 0-step on, 1- conditional (activation key)
-                .itemProgram(t) = BinReadString(num)    'program to run when item is touched.
-                .itemMulti(t) = BinReadString(num)     'multitask program for item
-                If LenB(.itmName(t)) Then
-                    t = t + 1
-                    Call dimensionItemArrays(board)
+            
+            ''Dimension the arrays of this board *not* the activeboard.
+            'ReDim .itmName(0)
+            'Call dimensionItemArrays(board)
+            
+            For t = 0 To numItm
+                Dim spr As CBoardSprite, filename As String
+                Set spr = New CBoardSprite
+            
+                filename = BinReadString(num)           'activeBoard.spriteUpdateImageData assigns to spr
+                spr.x = BinReadInt(num)                 'x coord
+                spr.y = BinReadInt(num)                 'y coord
+                spr.layer = BinReadInt(num)             'layer coord
+                spr.activate = BinReadInt(num)          'itm activation: 0- always active, 1- conditional activation.
+                spr.initialVar = BinReadString(num)     'activation variable
+                spr.finalVar = BinReadString(num)       'activation variable at end of itm.
+                spr.initialValue = BinReadString(num)   'initial number of activation
+                spr.finalValue = BinReadString(num)     'what to make variable at end of activation.
+                spr.activationType = BinReadInt(num)    'activation type- 0-step on, 1- conditional (activation key)
+                spr.prgActivate = BinReadString(num)    'program to run when item is touched.
+                spr.prgMultitask = BinReadString(num)   'multitask program for item
+                If LenB(filename) Then
+                    ReDim Preserve .sprites(ubSprs)
+                    ReDim Preserve .spriteImages(ubSprs)
+                    Set .sprites(ubSprs) = spr
+                    Call activeBoard.spriteUpdateImageData(spr, itmPath & filename)
+                    ubSprs = ubSprs + 1
                 End If
-            Next count
+            Next t
 
             Dim tCount As Long
 
@@ -1056,7 +1067,16 @@ exitTheFor:
                 Call upgradeProgram(.prgs(i), x, y, .coordType)
             End If
         Next i
-
+        
+        '3.0.7 update item locations to pixel values.
+        For i = 0 To UBound(.sprites)
+            Dim pt As POINTAPI
+            pt = modBoard.tileToBoardPixel(.sprites(i).x, .sprites(i).y, .coordType, False, .bSizeX)
+            .sprites(i).x = pt.x
+            .sprites(i).y = pt.y
+            Call activeBoard.spriteUpdateImageData(.sprites(i), .sprites(i).filename)
+        Next i
+        
         Exit Function
 
 ver2oldboard:

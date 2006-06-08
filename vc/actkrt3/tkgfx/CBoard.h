@@ -77,6 +77,36 @@ typedef struct tagVBBoardImage
 
 } VB_BRDIMAGE, *LPVB_BRDIMAGE;
 
+/* Unneeded
+//--------------------------------------------------------------------------
+// A board-set sprite.
+//--------------------------------------------------------------------------
+typedef struct tagVBBoardSprite
+{
+	// Editor data.
+	LONG transpColor;					// Transparent colour on the image.
+	CCanvas *pCnv;
+	RECT bounds;						// Board pixel co-ordinates.
+	BSTR displayImage;					// Image to represent sprite in board editor.
+	
+	// Board data.
+	BSTR filename;						// Sprite filename.
+	LONG x;
+	LONG y;
+	LONG layer;
+
+    LONG activate;						// Conditional activation?
+    BSTR initialVar;
+    BSTR finalVar;
+    BSTR initialValue;
+    BSTR finalValue;
+    LONG activationType;				// Step-on or keypress.
+    BSTR prgActivate;
+    BSTR prgMultitask;
+
+} VB_BRDSPRITE, *LPVB_BRDSPRITE;
+*/
+
 typedef struct tagVBBoard
 {
 	//
@@ -86,7 +116,8 @@ typedef struct tagVBBoard
 	// 3.0.7
 	SHORT m_coordType;
 	VB_BRDIMAGE m_bkgImage;				// Background image.
-	LPSAFEARRAY m_images;				// Array of tagVBBoardImages
+	LPSAFEARRAY m_images;				// Array of tagVBBoardImages.
+	LPSAFEARRAY m_sprites;				// tagVBBoardImages for sprites.
 
 	// Pre 3.0.7
 	SHORT m_bSizeX;						// Board size x
@@ -286,6 +317,10 @@ public:
 	VOID vectorize(
 		CONST LPVB_BOARD pBoard,
 		LPSAFEARRAY FAR *toRet
+	);
+
+	VOID freeImage(
+		LPVB_BRDIMAGE pImg
 	);
 
 private:

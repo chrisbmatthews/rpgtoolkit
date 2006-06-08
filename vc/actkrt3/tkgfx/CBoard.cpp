@@ -101,11 +101,12 @@ LONG APIENTRY BRDPixelToTile(
 LONG APIENTRY BRDTileToPixel(
 	LONG *x, 
 	LONG *y, 
-	CONST SHORT coordType, 
+	CONST SHORT coordType,
+	CONST SHORT bAddBasePoint,
 	CONST SHORT brdSizeX)
 {
 	INT px = *x, py = *y;
-	coords::tileToPixel(px, py, COORD_TYPE(coordType), false, brdSizeX);
+	coords::tileToPixel(px, py, COORD_TYPE(coordType), BOOL(bAddBasePoint), brdSizeX);
 	*x = px; *y = py;
 	return 0;
 }
@@ -220,6 +221,22 @@ LONG APIENTRY BRDTileToVector(
 //--------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------
+LONG APIENTRY BRDFreeImage(CBoard *pBoard, LPVB_BRDIMAGE pImg)
+{
+	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
+	{
+		if (*i == pBoard) 
+		{ 
+			pBoard->freeImage(pImg);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
 CBoard::~CBoard()
 {
 	BL_ITR i = m_layers.begin();
@@ -240,13 +257,38 @@ std::vector<LPVB_BRDIMAGE> CBoard::getImages()
 	SafeArrayGetUBound(m_pBoard->m_images, 1, &length);
 
 	std::vector<LPVB_BRDIMAGE> vect;
-	for (LONG i = 0; i != length; ++i)
+	for (LONG i = 0; i <= length; ++i)
 	{
 		LPVB_BRDIMAGE pImg = NULL;
 		SafeArrayPtrOfIndex(m_pBoard->m_images, &i, (void **)&pImg);
 		vect.push_back(pImg);
 	}
+
+	// Treat board sprites as images for the purposes of drawing them in the editor.
+	SafeArrayGetUBound(m_pBoard->m_sprites, 1, &length);
+
+	for (i = 0; i <= length; ++i)
+	{
+		LPVB_BRDIMAGE pImg = NULL;
+		SafeArrayPtrOfIndex(m_pBoard->m_sprites, &i, (void **)&pImg);
+		vect.push_back(pImg);
+	}	
+	
 	return vect;
+}
+
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
+VOID CBoard::freeImage(LPVB_BRDIMAGE pImg)
+{
+	std::set<CCanvas *>::iterator i = m_images.find(pImg->pCnv);
+	if (i != m_images.end()) 
+	{
+		delete *i;
+		m_images.erase(i);
+		pImg->pCnv = 0;
+	}
 }
 
 //--------------------------------------------------------------------------
@@ -322,9 +364,28 @@ VOID CBoard::draw(
 			if (!(*j)->pCnv) insertCnv((*j)->render(m_projectPath, hdc));
 
 			// Find a match in m_images.
-			if ((*j)->layer == z && m_images.find((*j)->pCnv) != m_images.end())
+			if ((*j)->layer == z)
 			{
-				(*j)->draw(cnv, screen, m_pBoard->pxWidth(), m_pBoard->pxHeight());
+				if (m_images.find((*j)->pCnv) != m_images.end())
+				{
+					(*j)->draw(cnv, screen, m_pBoard->pxWidth(), m_pBoard->pxHeight());
+				}
+				else
+				{
+					// Draw a small square to represent the image.
+					
+					RECT r = {0, 0, 0, 0}, b = (*j)->bounds;
+					b.right = b.left + 32;
+					b.bottom = b.top + 32;
+					if (IntersectRect(&r, &screen, &b))
+						cnv.DrawFilledRect(
+							r.left - screen.left,
+							r.top - screen.top,
+							r.right - screen.left,
+							r.bottom - screen.top,
+							(!m_pBoard->m_brdColor ? RGB(255, 255, 255) : 0)
+						);
+				}
 			}
 		} // for (images)
 
@@ -599,6 +660,7 @@ CCanvas *tagVBBoardImage::render(
 	CONST HDC hdcCompat)
 {
 	// Make a new canvas.
+
 	CONST STRING strFile = projectPath + getString(file);
 	FIBITMAP *bmp = FreeImage_Load(
 		FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), 
