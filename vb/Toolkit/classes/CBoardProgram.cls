@@ -50,23 +50,9 @@ Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color
     
 End Sub
 
-Public Sub tbApply(ByRef ctl As ctlBrdProgram) ':on error resume next
-    
-    filename = ctl.getTxtFilename.Text
-    layer = val(ctl.getTxtLayer.Text)
-    activate = Abs(ctl.getOptConditionallyActive(PRG_CONDITIONAL).value)
-    initialVar = ctl.getTxtConditionVars(0).Text
-    initialValue = ctl.getTxtConditionVars(1).Text
-    finalVar = ctl.getTxtConditionVars(2).Text
-    finalValue = ctl.getTxtConditionVars(3).Text
-    activationType = Abs(ctl.getOptActivationType(PRG_KEYPRESS).value)
-    If ctl.getChkRepeatTrigger.value Then activationType = activationType Or PRG_REPEAT
-    If ctl.getChkActivationStopsMove.value Then activationType = activationType Or PRG_STOPS_MOVEMENT
-    distanceRepeat = val(ctl.getTxtRepeatTrigger)
-    Call vBase.lvApply(ctl.getLvPoints)
-    
-End Sub
-
+'=========================================================================
+' Copy "constructor"
+'=========================================================================
 Public Sub copy(ByRef rhs As CBoardProgram) ':on error resume next
 
     rhs.filename = filename

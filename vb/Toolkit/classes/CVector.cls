@@ -321,40 +321,6 @@ Public Sub subdivideSelection(ByRef sel As CBoardSelection) ':on error resume ne
         
 End Sub
 
-'=========================================================================
-' Populate the right board toolbar with the vector's attributes
-'=========================================================================
-Public Sub tbPopulate() ':on error resume next
-    Dim i As Long, j As Long
-    
-    'Option buttons have been assigned TT_ values as indices.
-    If m_tiletype <> TT_NULL Then tkMainForm.bTools_VectorOptType(m_tiletype).value = True
-    tkMainForm.bTools_VectorChkClosed.value = Abs(m_bClosed)
-    tkMainForm.bTools_VectorTxtLayer.Text = str(m_layer)
-    tkMainForm.bTools_VectorTxtStairs.Enabled = (m_tiletype = TT_STAIRS)
-    tkMainForm.bTools_VectorLblStairs.Enabled = (m_tiletype = TT_STAIRS)
-    
-    For i = 0 To tkMainForm.bTools_VectorChkUnder.count - 1
-        tkMainForm.bTools_VectorChkUnder(i).Enabled = (m_tiletype = TT_UNDER)
-        tkMainForm.bTools_VectorChkUnder(i).value = 0
-    Next i
-    
-    If m_tiletype = TT_UNDER Then
-        tkMainForm.bTools_VectorChkUnder(0).value = Abs((m_attributes And TA_BRD_BACKGROUND) <> 0)
-        tkMainForm.bTools_VectorChkUnder(1).value = Abs((m_attributes And TA_ALL_LAYERS_BELOW) <> 0)
-        tkMainForm.bTools_VectorChkUnder(2).value = Abs((m_attributes And TA_RECT_INTERSECT) <> 0)
-    ElseIf m_tiletype = TT_STAIRS Then
-        tkMainForm.bTools_VectorTxtStairs.Text = str(m_attributes)
-    End If
-    
-    tkMainForm.bTools_VectorLv.ListItems.clear
-    
-    If m_tiletype = TT_NULL Then Exit Sub
-        
-    Call lvPopulate(tkMainForm.bTools_VectorLv)
-
-End Sub
-
 Public Sub lvPopulate(ByRef lv As ListView) ':on error resume next
     Dim i As Long, j As Long
     lv.ListItems.clear
@@ -368,30 +334,6 @@ Public Sub lvPopulate(ByRef lv As ListView) ':on error resume next
     lv.SelectedItem.EnsureVisible
 End Sub
 
-'=========================================================================
-' Set the vector's attributes to the toolbar's values
-'=========================================================================
-Public Sub tbApply(ByRef ctl As ctlBrdVector) ':on error resume next
-    Dim i As Long
-    If ctl.getOptType(TT_SOLID).value Then
-        m_tiletype = TT_SOLID
-    ElseIf ctl.getOptType(TT_UNDER).value Then
-        m_bClosed = True
-        m_tiletype = TT_UNDER
-        m_attributes = 0
-        For i = 0 To 3 - 1
-            If ctl.getChkUnder(i).value Then m_attributes = m_attributes Or (2 ^ i)
-        Next i
-    ElseIf ctl.getOptType(TT_STAIRS).value Then
-        m_tiletype = TT_STAIRS
-        m_attributes = 1
-        m_attributes = val(ctl.getTxtStairs.Text)
-    End If
-    m_bClosed = ((ctl.getChkClosed.value <> 0) Or ctl.getOptType(TT_UNDER).value)
-    m_layer = val(ctl.getTxtLayer.Text)
-
-    Call lvApply(ctl.getLvPoints)
-End Sub
 Public Sub lvApply(ByRef lv As ListView) ':on error resume next
     Dim i As Long
     ReDim m_pts(lv.ListItems.count - 1)

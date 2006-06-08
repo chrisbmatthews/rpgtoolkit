@@ -201,7 +201,29 @@ Public vectorIndex As Long
 Private m_currentVector As CVector
 
 Private Sub apply(): On Error Resume Next
-    If Not m_currentVector Is Nothing Then Call m_currentVector.tbApply(Me)
+    If Not m_currentVector Is Nothing Then
+        With m_currentVector
+            Dim i As Long
+            If optType(TT_SOLID).value Then
+                .tiletype = TT_SOLID
+            ElseIf optType(TT_UNDER).value Then
+                .bClosed = True
+                .tiletype = TT_UNDER
+                .attributes = 0
+                For i = 0 To 3 - 1
+                    If chkUnder(i).value Then .attributes = .attributes Or (2 ^ i)
+                Next i
+            ElseIf optType(TT_STAIRS).value Then
+                .tiletype = TT_STAIRS
+                .attributes = val(txtStairs.Text)
+            End If
+            .bClosed = ((chkClosed.value <> 0) Or optType(TT_UNDER).value)
+            .layer = val(txtLayer.Text)
+        
+            Call m_currentVector.lvApply(lvPoints)
+        End With
+    End If
+    
     Call activeBoard.drawAll
     Call populate(vectorIndex, m_currentVector)
 End Sub
@@ -264,25 +286,6 @@ Public Sub populate(ByVal index As Long, ByRef vector As CVector)  ':on error re
     Call vector.lvPopulate(lvPoints)
 
 End Sub
-
-Public Property Get getChkUnder(ByVal index As Integer) As CheckBox: On Error Resume Next
-    Set getChkUnder = chkUnder(index)
-End Property
-Public Property Get getChkClosed() As CheckBox: On Error Resume Next
-    Set getChkClosed = chkClosed
-End Property
-Public Property Get getLvPoints() As ListView: On Error Resume Next
-    Set getLvPoints = lvPoints
-End Property
-Public Property Get getOptType(ByVal index As Integer) As OptionButton: On Error Resume Next
-    Set getOptType = optType(index)
-End Property
-Public Property Get getTxtLayer() As TextBox: On Error Resume Next
-    Set getTxtLayer = txtLayer
-End Property
-Public Property Get getTxtStairs() As TextBox: On Error Resume Next
-    Set getTxtStairs = txtStairs
-End Property
 
 Private Sub chkUnder_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply

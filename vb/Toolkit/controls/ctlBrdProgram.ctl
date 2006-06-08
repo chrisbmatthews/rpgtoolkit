@@ -187,7 +187,7 @@ Begin VB.UserControl ctlBrdProgram
             End
             Begin VB.OptionButton optConditionallyActive 
                Caption         =   "Conditionally active"
-               Height          =   375
+               Height          =   255
                Index           =   1
                Left            =   0
                TabIndex        =   10
@@ -312,8 +312,23 @@ Option Explicit
 
 Private m_currentPrg As CBoardProgram
 
-Private Sub apply(): On Error Resume Next
-    If Not m_currentPrg Is Nothing Then Call m_currentPrg.tbApply(Me)
+Private Sub apply() ': On Error Resume Next
+    If Not m_currentPrg Is Nothing Then
+        With m_currentPrg
+            .filename = txtFilename.Text
+            .layer = val(txtLayer.Text)
+            .activate = Abs(optConditionallyActive(PRG_CONDITIONAL).value)
+            .initialVar = txtConditionVars(0).Text
+            .initialValue = txtConditionVars(1).Text
+            .finalVar = txtConditionVars(2).Text
+            .finalValue = txtConditionVars(3).Text
+            .activationType = Abs(optActivationType(PRG_KEYPRESS).value)
+            If chkRepeatTrigger.value Then .activationType = .activationType Or PRG_REPEAT
+            If chkActivationStopsMove.value Then .activationType = .activationType Or PRG_STOPS_MOVEMENT
+            .distanceRepeat = val(txtRepeatTrigger.Text)
+            Call .vBase.lvApply(lvPoints)
+        End With
+    End If
     Call populate(cmbPrg.ListIndex, m_currentPrg)
 End Sub
 Public Sub disableAll(): On Error Resume Next
@@ -332,7 +347,7 @@ Private Sub enableAll(): On Error Resume Next
     Next i
 End Sub
 
-Public Sub populate(ByVal prgsIndex As Long, ByRef prg As CBoardProgram) ': On Error Resume Next
+Public Sub populate(ByVal index As Long, ByRef prg As CBoardProgram) ': On Error Resume Next
     Dim i As Long
     tkMainForm.bTools_Tabs.Height = tkMainForm.pTools.Height - tkMainForm.bTools_Tabs.Top
     UserControl.Height = tkMainForm.bTools_Tabs.Height - tkMainForm.bTools_ctlPrg.Top - 128
@@ -340,7 +355,7 @@ Public Sub populate(ByVal prgsIndex As Long, ByRef prg As CBoardProgram) ': On E
     lvPoints.Height = fraProperties.Height - lvPoints.Top - 64
     
     Set m_currentPrg = prg
-    If (prg Is Nothing) Or (Not setCurrentPrg(prgsIndex)) Then
+    If (prg Is Nothing) Or (Not activeBoard.toolbarSetCurrent(cmbPrg, index)) Then
         'No matching combo entry.
         Call disableAll
         Exit Sub
@@ -348,7 +363,7 @@ Public Sub populate(ByVal prgsIndex As Long, ByRef prg As CBoardProgram) ': On E
     
     Call enableAll
     
-    cmbPrg.list(prgsIndex) = str(prgsIndex) & ": " & IIf(LenB(prg.filename), prg.filename, "<program>")
+    cmbPrg.list(index) = str(index) & ": " & IIf(LenB(prg.filename), prg.filename, "<program>")
     txtFilename.Text = prg.filename
     txtLayer.Text = str(prg.layer)
     optConditionallyActive(prg.activate).value = True
@@ -374,49 +389,11 @@ Public Sub populate(ByVal prgsIndex As Long, ByRef prg As CBoardProgram) ': On E
     Call prg.vBase.lvPopulate(lvPoints)
     
 End Sub
-Public Function setCurrentPrg(ByVal prgsIndex As Long) As Boolean ':on error resume next
-    'prgsIndex is the entry in m_ed.board(m_ed.undoIndex).prgs()
-    'corresponding to cmbPrg.itemData(i)
-    Dim i As Long
-    For i = 0 To cmbPrg.ListCount - 1
-        If cmbPrg.ItemData(i) = prgsIndex Then
-            cmbPrg.ListIndex = i
-            setCurrentPrg = True
-            Exit Function
-        End If
-    Next i
-End Function
 
-Public Property Get getChkActivationStopsMove() As CheckBox: On Error Resume Next
-    Set getChkActivationStopsMove = chkActivationStopsMove
-End Property
-Public Property Get getChkRepeatTrigger() As CheckBox: On Error Resume Next
-    Set getChkRepeatTrigger = chkRepeatTrigger
-End Property
 Public Property Get getCombo() As ComboBox: On Error Resume Next
     Set getCombo = cmbPrg
 End Property
-Public Property Get getLvPoints() As ListView: On Error Resume Next
-    Set getLvPoints = lvPoints
-End Property
-Public Property Get getOptActivationType(ByVal index As Integer) As OptionButton: On Error Resume Next
-    Set getOptActivationType = optActivationType(index)
-End Property
-Public Property Get getOptConditionallyActive(ByVal index As Integer) As OptionButton: On Error Resume Next
-    Set getOptConditionallyActive = optConditionallyActive(index)
-End Property
-Public Property Get getTxtFilename() As TextBox: On Error Resume Next
-    Set getTxtFilename = txtFilename
-End Property
-Public Property Get getTxtConditionVars(ByVal index As Integer) As TextBox: On Error Resume Next
-    Set getTxtConditionVars = txtConditionVars(index)
-End Property
-Public Property Get getTxtLayer() As TextBox: On Error Resume Next
-    Set getTxtLayer = txtLayer
-End Property
-Public Property Get getTxtRepeatTrigger() As TextBox: On Error Resume Next
-    Set getTxtRepeatTrigger = txtRepeatTrigger
-End Property
+
 
 Private Sub chkActivationStopsMove_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply

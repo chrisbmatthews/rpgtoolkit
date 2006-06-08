@@ -428,39 +428,48 @@ Begin VB.MDIForm tkMainForm
          _Version        =   393216
          Style           =   1
          Tabs            =   5
-         Tab             =   3
          TabsPerRow      =   5
          TabHeight       =   520
          ShowFocusRect   =   0   'False
          TabCaption(0)   =   "Vectors"
          TabPicture(0)   =   "tkMain.frx":10476
-         Tab(0).ControlEnabled=   0   'False
+         Tab(0).ControlEnabled=   -1  'True
          Tab(0).Control(0)=   "bTools_ctlVector"
+         Tab(0).Control(0).Enabled=   0   'False
          Tab(0).ControlCount=   1
          TabCaption(1)   =   "Programs"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
          Tab(1).Control(0)=   "bTools_ctlPrg"
          Tab(1).ControlCount=   1
-         TabCaption(2)   =   "Items"
+         TabCaption(2)   =   "Sprites"
          TabPicture(2)   =   "tkMain.frx":104AE
          Tab(2).ControlEnabled=   0   'False
-         Tab(2).ControlCount=   0
+         Tab(2).Control(0)=   "bTools_ctlSprite"
+         Tab(2).ControlCount=   1
          TabCaption(3)   =   "Images"
          TabPicture(3)   =   "tkMain.frx":104CA
-         Tab(3).ControlEnabled=   -1  'True
+         Tab(3).ControlEnabled=   0   'False
          Tab(3).Control(0)=   "bTools_ctlImage"
-         Tab(3).Control(0).Enabled=   0   'False
          Tab(3).ControlCount=   1
          TabCaption(4)   =   "Options?"
          TabPicture(4)   =   "tkMain.frx":104E6
          Tab(4).ControlEnabled=   0   'False
-         Tab(4).Control(0)=   "bTools_Objects_Frame"
-         Tab(4).Control(1)=   "bTools_Objects_Tree"
+         Tab(4).Control(0)=   "bTools_Objects_Tree"
+         Tab(4).Control(1)=   "bTools_Objects_Frame"
          Tab(4).ControlCount=   2
+         Begin Toolkit.ctlBrdSprite bTools_ctlSprite 
+            Height          =   6495
+            Left            =   -74880
+            TabIndex        =   194
+            Top             =   360
+            Width           =   3015
+            _ExtentX        =   5318
+            _ExtentY        =   11456
+         End
          Begin Toolkit.ctlBrdImage bTools_ctlImage 
             Height          =   4575
-            Left            =   120
+            Left            =   -74880
             TabIndex        =   193
             Top             =   360
             Width           =   3015
@@ -529,7 +538,7 @@ Begin VB.MDIForm tkMainForm
          End
          Begin Toolkit.ctlBrdVector bTools_ctlVector 
             Height          =   5055
-            Left            =   -74880
+            Left            =   120
             TabIndex        =   191
             Top             =   480
             Width           =   3015
@@ -2688,13 +2697,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "05/06/2006"
+            TextSave        =   "06/06/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "17:17"
+            TextSave        =   "18:46"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3018,7 +3027,7 @@ Public Sub fillTree(ByRef parentNode As String, ByRef folder As String): On Erro
         Do While LenB(a)
 
             ' Flag to sort alphabetically
-            .Item(parentNode).Sorted = True
+            .item(parentNode).Sorted = True
 
             ' If this is a directory
             If (GetAttr(folder & a) = vbDirectory) Then

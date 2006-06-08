@@ -13,6 +13,16 @@ Begin VB.UserControl ctlBrdImage
       TabIndex        =   3
       Top             =   960
       Width           =   3015
+      Begin VB.CheckBox chkTransp 
+         Caption         =   "Select"
+         Height          =   255
+         Left            =   1680
+         Style           =   1  'Graphical
+         TabIndex        =   20
+         TabStop         =   0   'False
+         Top             =   1800
+         Width           =   1095
+      End
       Begin VB.PictureBox picTrans 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
@@ -35,7 +45,7 @@ Begin VB.UserControl ctlBrdImage
          Left            =   240
          ScaleHeight     =   855
          ScaleWidth      =   2295
-         TabIndex        =   18
+         TabIndex        =   16
          Top             =   2640
          Visible         =   0   'False
          Width           =   2295
@@ -44,7 +54,7 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Index           =   2
             Left            =   0
-            TabIndex        =   21
+            TabIndex        =   19
             Top             =   480
             Width           =   2295
          End
@@ -53,7 +63,7 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   20
+            TabIndex        =   18
             Top             =   240
             Width           =   2295
          End
@@ -62,30 +72,10 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Index           =   0
             Left            =   0
-            TabIndex        =   19
+            TabIndex        =   17
             Top             =   0
             Value           =   -1  'True
             Width           =   2295
-         End
-      End
-      Begin VB.PictureBox picSelect 
-         Appearance      =   0  'Flat
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   375
-         Left            =   1680
-         ScaleHeight     =   375
-         ScaleWidth      =   1095
-         TabIndex        =   16
-         Top             =   1800
-         Width           =   1095
-         Begin VB.CommandButton cmdTrans 
-            Caption         =   "Select"
-            Height          =   255
-            Left            =   0
-            TabIndex        =   17
-            Top             =   0
-            Width           =   1095
          End
       End
       Begin VB.TextBox txtLoc 
@@ -140,13 +130,13 @@ Begin VB.UserControl ctlBrdImage
          End
       End
       Begin VB.Label lblTrans 
-         Caption         =   "RGB (255,255,255)"
+         Caption         =   "RGB (255, 255, 255)"
          Height          =   255
          Index           =   1
          Left            =   120
          TabIndex        =   14
          Top             =   2160
-         Width           =   1455
+         Width           =   1575
       End
       Begin VB.Label lblTrans 
          Caption         =   "Transparent colour"
@@ -223,6 +213,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub apply(): On Error Resume Next
+    Call activeBoard.setUndo
     Call activeBoard.imageApply(cmbImage.ListIndex)
 End Sub
 
@@ -240,18 +231,6 @@ Public Sub enableAll(): On Error Resume Next
         i.Enabled = True
     Next i
 End Sub
-Public Function setCurrentImage(ByVal index As Long) As Boolean ':on error resume next
-    'index is the entry in m_ed.board(m_ed.undoIndex).images()
-    'corresponding to cmbImage.itemData(i)
-    Dim i As Long
-    For i = 0 To cmbImage.ListCount - 1
-        If cmbImage.ItemData(i) = index Then
-            cmbImage.ListIndex = i
-            setCurrentImage = True
-            Exit Function
-        End If
-    Next i
-End Function
 
 Public Property Get getCombo() As ComboBox: On Error Resume Next
     Set getCombo = cmbImage
@@ -265,6 +244,9 @@ End Property
 Public Property Get getTxtLoc(ByVal index As Long) As TextBox: On Error Resume Next
     Set getTxtLoc = txtLoc(index)
 End Property
+Public Property Get getChkTransp() As CheckBox: On Error Resume Next
+    Set getChkTransp = chkTransp
+End Property
 Public Property Let transpcolor(ByVal color As Long): On Error Resume Next
     lblTrans(1).Caption = "RGB (" & red(color) & ", " & green(color) & ", " & blue(color) & ")"
     picTrans.backColor = color
@@ -273,6 +255,9 @@ Public Property Get transpcolor() As Long: On Error Resume Next
     transpcolor = picTrans.backColor
 End Property
 
+Private Sub chkTransp_Click(): On Error Resume Next
+    If chkTransp.value Then Call activeBoard.mdiOptTool(BT_IMG_TRANSP)
+End Sub
 Private Sub cmbImage_Click(): On Error Resume Next
     If cmbImage.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbImage.ItemData(cmbImage.ListIndex), BS_IMAGE)
 End Sub
@@ -281,17 +266,15 @@ Private Sub cmdBrowse_Click(): On Error Resume Next
 End Sub
 Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.setUndo
-    Call activeBoard.imageDeleteCurrent
+    Call activeBoard.imageDeleteCurrent(cmbImage.ListIndex)
     Call activeBoard.drawAll
 End Sub
 Private Sub cmdDuplicate_Click(): On Error Resume Next
     MsgBox "tbd"
 End Sub
-Private Sub cmdTrans_Click(): On Error Resume Next
-    MsgBox "tbd"
-End Sub
 Private Sub picTrans_Click(): On Error Resume Next
-    MsgBox "tbd"
+    transpcolor = ColorDialog()
+    Call activeBoard.drawAll
 End Sub
 Private Sub txtLoc_Validate(index As Integer, Cancel As Boolean): On Error Resume Next
     Call apply

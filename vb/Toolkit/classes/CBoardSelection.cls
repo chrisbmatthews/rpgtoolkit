@@ -74,7 +74,7 @@ Public Sub expandToGrid(ByVal coordType As Long, ByVal brdSizeX As Long) ':on er
     Call Me.reorientate
     If isIsometric(coordType) Then
         pt = boardPixelToTile(x1, y1, coordType, brdSizeX)
-        pt = tileToBoardPixel(pt.x, pt.y, coordType, brdSizeX, True)
+        pt = tileToBoardPixel(pt.x, pt.y, coordType, False, brdSizeX, True)
         x1 = pt.x: y1 = pt.y
         
         'Round to nearest 32nd or 16th.
@@ -86,11 +86,11 @@ Public Sub expandToGrid(ByVal coordType As Long, ByVal brdSizeX As Long) ':on er
         If y2 - y1 < 32 Then y2 = y1 + 32
     Else
         pt = boardPixelToTile(x1, y1, coordType, brdSizeX)
-        pt = tileToBoardPixel(pt.x, pt.y, coordType, brdSizeX)
+        pt = tileToBoardPixel(pt.x, pt.y, False, coordType, brdSizeX)
         x1 = pt.x: y1 = pt.y
         
         pt = boardPixelToTile(x2, y2, coordType, brdSizeX)
-        pt = tileToBoardPixel(pt.x + 1, pt.y + 1, coordType, brdSizeX)
+        pt = tileToBoardPixel(pt.x + 1, pt.y + 1, coordType, False, brdSizeX)
         x2 = pt.x: y2 = pt.y
     End If
 End Sub

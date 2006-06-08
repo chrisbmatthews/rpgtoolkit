@@ -7,7 +7,7 @@ Attribute VB_Name = "modBoard"
 Option Explicit
 
 Private Declare Function BRDPixelToTile Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal brdSizeX As Integer) As Long
-Private Declare Function BRDTileToPixel Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal brdSizeX As Integer) As Long
+Private Declare Function BRDTileToPixel Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal bAddBasePoint As Boolean, ByVal brdSizeX As Integer) As Long
 Private Declare Function BRDVectorize Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByRef vectors() As TKConvertedVector) As Long
 Private Declare Function BRDTileToVector Lib "actkrt3.dll" (ByVal pVector As Long, ByVal x As Long, ByVal y As Long, ByVal coordType As Integer) As Long
 
@@ -62,21 +62,57 @@ Public Const PRG_ACTIVE = 0               'Program is always active.
 Public Const PRG_CONDITIONAL = 1          'Program's running depends on RPGCode variables.
 
 'tbd: remove
-Public Type TKBoardProgram
-    filename As String                    'Board program filename.
-    layer As Long                         'Layer.
-    graphic  As String                    'Associated graphic.
-    activate As Long                      'PRG_ACTIVE - always active.
-                                          'PRG_CONDITIONAL - conditional activation.
-    initialVar As String                  'Activation variable.
-    finalVar As String                    'Activation variable at end of prg.
-    initialValue As String                'Initial value of activation variable.
-    finalValue As String                  'Value of variable after program runs.
-    activationType As Long                'Activation type (see 1st set of flags above).
+'Public Type TKBoardProgram
+'    filename As String                    'Board program filename.
+'    layer As Long                         'Layer.
+'    graphic  As String                    'Associated graphic.
+'    activate As Long                      'PRG_ACTIVE - always active.
+'                                          'PRG_CONDITIONAL - conditional activation.
+'    initialVar As String                  'Activation variable.
+'    finalVar As String                    'Activation variable at end of prg.
+'    initialValue As String                'Initial value of activation variable.
+'    finalValue As String                  'Value of variable after program runs.
+'    activationType As Long                'Activation type (see 1st set of flags above).
+'
+'    vBase As New CVector                  'The activation area.
+'    distanceRepeat As Long                'Distance to travel between activations within the vector.
+'End Type
 
-    vBase As New CVector                  'The activation area.
-    distanceRepeat As Long                'Distance to travel between activations within the vector.
+'=========================================================================
+' A board sprite [tagVBBoardSprite]
+'=========================================================================
+Public Type TKBoardSprite
+    'Editor data - use a TKBoardImage.
+    'transpcolor As Long                   'Transparent colour on the image.
+    'pCnv As Long                          'Pointer to the canvas.
+    'bounds As RECT                        'Image bounds (for hit test).
+    'displayImage As String                'Filename of image to display on board (rest graphic).
+    
+    'Board data
+    filename As String                    'Sprite filename (inc. path from project path).
+    x As Long                             'Location.
+    y As Long
+    layer As Long
+    activate As Long                      'SPR_ACTIVE - always active.
+                                          'SPR_CONDITIONAL - conditional activation.
+    initialVar As String                  'Activation variable.
+    finalVar As String                    'Activation variable at end of activation prg.
+    initialValue As String                'Initial value of activation variable.
+    finalValue As String                  'Value of variable after activation prg runs.
+    activationType As Long                'Activation type: SPR_STEP
+                                          '                 SPR_KEYPRESS
+    prgActivate As String                 'Program to run when sprite is activated.
+    prgMultitask As String                'Multitask program for sprite.
+
+    'boardPath As CVector                 'Path from the board that the sprite is moving along.
+                                          '(see SPR_BRDPATH, trans3)
 End Type
+
+Public Const SPR_STEP = 0                 'Triggers once until player leaves area.
+Public Const SPR_KEYPRESS = 1             'Player must hit activation key.
+
+Public Const SPR_ACTIVE = 0               'Sprite is always active.
+Public Const SPR_CONDITIONAL = 1          'Sprite running depends on RPGCode variables.
 
 '=========================================================================
 ' A RPGToolkit board
@@ -87,6 +123,7 @@ Public Type TKBoard
     coordType As Integer
     bkgImage As TKBoardImage              'background image
     Images() As TKBoardImage
+    spriteImages() As TKBoardImage        'Image data for board sprites
         
     ' Pre 3.0.7
     bSizeX As Integer                     'board size x
@@ -157,6 +194,7 @@ Public Type TKBoard
     '3.0.7
     vectors() As CVector
     prgs() As CBoardProgram
+    sprites() As CBoardSprite
     
 End Type
 
@@ -168,7 +206,7 @@ Public Enum eBrdSetting
     BS_TILE
     BS_VECTOR
     BS_PROGRAM
-    BS_ITEM
+    BS_SPRITE
     BS_IMAGE
 End Enum
 Public Enum eBrdTool
@@ -176,9 +214,7 @@ Public Enum eBrdTool
     BT_SELECT
     BT_FLOOD
     BT_ERASE
-    BT_EDIT
-    BT_UNUSED
-    BT_LIST
+    BT_IMG_TRANSP                         'Getting the transparent colour for an image.
 End Enum
 Public Enum eBrdSelectStatus
     SS_NONE
@@ -355,8 +391,8 @@ Public Function boardPixelToTile(ByVal x As Long, ByVal y As Long, ByVal coordTy
     boardPixelToTile.x = x
     boardPixelToTile.y = y
 End Function
-Public Function tileToBoardPixel(ByVal x As Long, ByVal y As Long, ByVal coordType As Long, ByVal brdSizeX As Long, Optional ByVal bIsoRenderPoint As Boolean = False) As POINTAPI
-    Call BRDTileToPixel(x, y, coordType And (TILE_NORMAL Or ISO_ROTATED Or ISO_STACKED), brdSizeX)
+Public Function tileToBoardPixel(ByVal x As Long, ByVal y As Long, ByVal coordType As Long, ByVal bAddBasePoint As Boolean, ByVal brdSizeX As Long, Optional ByVal bIsoRenderPoint As Boolean = False) As POINTAPI
+    Call BRDTileToPixel(x, y, coordType And (TILE_NORMAL Or ISO_ROTATED Or ISO_STACKED), bAddBasePoint, brdSizeX)
     tileToBoardPixel.x = x
     tileToBoardPixel.y = y
     If isIsometric(coordType) And bIsoRenderPoint Then
@@ -532,6 +568,53 @@ Public Sub boardCopy(ByRef Source As TKBoard, ByRef dest As TKBoard) ': on error
         If Not Source.prgs(i) Is Nothing Then
             Set dest.prgs(i) = New CBoardProgram
             Call Source.prgs(i).copy(dest.prgs(i))
+        End If
+    Next i
+    ReDim dest.sprites(UBound(Source.sprites))
+    For i = 0 To UBound(Source.sprites)
+        If Not Source.sprites(i) Is Nothing Then
+            Set dest.sprites(i) = New CBoardSprite
+            Call Source.sprites(i).copy(dest.sprites(i))
+        End If
+    Next i
+End Sub
+
+'=========================================================================
+' Extract a rest graphic (or other) to display an item on the board
+'=========================================================================
+Public Sub spriteGetDisplayImage(ByVal filename As String, ByRef image As String, ByRef transpcolor As Long) ':on error resume next
+    If UCase$(commonRoutines.extention(filename)) = "ITM" Then
+        Call itemGetDisplayImage(filename, image, transpcolor)
+    Else
+        'tbd
+    End If
+End Sub
+Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String, ByRef transpcolor As Long) ':on error resume next
+    Dim anm As TKAnimation, Item As TKItem, i As Long, str As String
+    
+    'Check standing and walking graphics.
+    Item = CommonItem.openItem(projectPath & filename)
+    For i = 0 To UBound(Item.standingGfx)
+        If LenB(Item.standingGfx(i)) Then Exit For
+    Next i
+    If i > UBound(Item.standingGfx) Then
+        For i = 0 To UBound(Item.gfx)
+            If LenB(Item.gfx(i)) Then Exit For
+        Next i
+        'None found.
+        If i > UBound(Item.gfx) Then Exit Sub
+        str = Item.gfx(i)
+    Else
+        str = Item.standingGfx(i)
+    End If
+    
+    'Take the first frame of the animation.
+    Call CommonAnimation.openAnimation(projectPath & miscPath & str, anm)
+    For i = 0 To UBound(anm.animFrame)
+        If LenB(anm.animFrame(i)) Then
+            image = bmpPath & anm.animFrame(i)
+            transpcolor = anm.animTransp(i)
+            Exit Sub
         End If
     Next i
 End Sub
