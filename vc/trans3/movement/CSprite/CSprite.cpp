@@ -242,7 +242,7 @@ bool CSprite::push(const bool bScroll)
 	extern LPBOARD g_pBoard;
 
 	// Pixels per frame (tile or pixel movement - not moveSize()).
-	const double stepSize = PX_FACTOR / m_pos.loopSpeed;
+	const double stepSize = double(PX_FACTOR) / m_pos.loopSpeed;
 	// Integer values to scroll.
 	int scx = -round(m_pos.x), scy = -round(m_pos.y);
 
