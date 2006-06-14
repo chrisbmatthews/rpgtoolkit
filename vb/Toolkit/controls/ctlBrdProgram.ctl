@@ -409,7 +409,7 @@ Private Sub cmdBrowse_Click(): On Error Resume Next
 End Sub
 Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.setUndo
-    Call activeBoard.vectorDeleteCurrentVector(BS_PROGRAM)
+    Call activeBoard.vectorDeleteCurrent(BS_PROGRAM)
     Call activeBoard.drawAll
 End Sub
 Private Sub cmdDuplicate_Click(): On Error Resume Next

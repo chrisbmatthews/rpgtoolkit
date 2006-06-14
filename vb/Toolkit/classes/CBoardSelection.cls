@@ -73,7 +73,7 @@ Public Sub expandToGrid(ByVal coordType As Long, ByVal brdSizeX As Long) ':on er
     Dim pt As POINTAPI
     Call Me.reorientate
     If isIsometric(coordType) Then
-        pt = boardPixelToTile(x1, y1, coordType, brdSizeX)
+        pt = boardPixelToTile(x1, y1, coordType, False, brdSizeX)
         pt = tileToBoardPixel(pt.x, pt.y, coordType, False, brdSizeX, True)
         x1 = pt.x: y1 = pt.y
         
@@ -85,11 +85,11 @@ Public Sub expandToGrid(ByVal coordType As Long, ByVal brdSizeX As Long) ':on er
         If x2 - x1 < 64 Then x2 = x1 + 64
         If y2 - y1 < 32 Then y2 = y1 + 32
     Else
-        pt = boardPixelToTile(x1, y1, coordType, brdSizeX)
-        pt = tileToBoardPixel(pt.x, pt.y, False, coordType, brdSizeX)
+        pt = boardPixelToTile(x1, y1, coordType, False, brdSizeX)
+        pt = tileToBoardPixel(pt.x, pt.y, coordType, False, brdSizeX)
         x1 = pt.x: y1 = pt.y
         
-        pt = boardPixelToTile(x2, y2, coordType, brdSizeX)
+        pt = boardPixelToTile(x2, y2, coordType, False, brdSizeX)
         pt = tileToBoardPixel(pt.x + 1, pt.y + 1, coordType, False, brdSizeX)
         x2 = pt.x: y2 = pt.y
     End If

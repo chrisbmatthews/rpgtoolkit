@@ -231,6 +231,13 @@ Public Sub enableAll(): On Error Resume Next
         i.Enabled = True
     Next i
 End Sub
+Public Sub moveCurrentTo(ByRef sel As CBoardSelection) ':on error resume next
+    Call activeBoard.setUndo
+    txtLoc(0).Text = str(sel.x1)
+    txtLoc(1).Text = str(sel.y1)
+    Call activeBoard.imageApply(cmbImage.ListIndex)
+    Call activeBoard.drawAll
+End Sub
 
 Public Property Get getCombo() As ComboBox: On Error Resume Next
     Set getCombo = cmbImage

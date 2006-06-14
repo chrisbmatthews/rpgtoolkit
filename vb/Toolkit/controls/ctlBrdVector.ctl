@@ -313,7 +313,7 @@ Private Sub lvPoints_Validate(Cancel As Boolean): On Error Resume Next
 End Sub
 Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.setUndo
-    Call activeBoard.vectorDeleteCurrentVector(BS_VECTOR)
+    Call activeBoard.vectorDeleteCurrent(BS_VECTOR)
     Call activeBoard.drawAll
 End Sub
 Private Sub cmdDuplicate_Click(): On Error Resume Next

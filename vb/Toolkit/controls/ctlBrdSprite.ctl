@@ -369,7 +369,7 @@ Private Sub apply() ': On Error Resume Next
         With m_sprite
             x = val(txtLoc(0).Text)
             y = val(txtLoc(1).Text)
-            Call activeBoard.tileToBoardPixel(x, y, True)
+            Call activeBoard.tileToBoardPixel(x, y, True, False)
             .x = x
             .y = y
             .layer = val(txtLoc(2).Text)
@@ -402,6 +402,15 @@ Public Sub enableAll(): On Error Resume Next
         i.Enabled = True
     Next i
 End Sub
+Public Sub moveCurrentTo(ByRef sel As CBoardSelection) ':on error resume next
+    'Call activeBoard.setUndo
+    'Selection holds the frame bounds. Derive the base point.
+    m_sprite.x = str((sel.x1 + sel.x2) / 2)
+    m_sprite.y = str(sel.y2)
+    Call activeBoard.spriteUpdateImageData(m_sprite, txtFilename.Text)
+    Call populate(cmbSprite.ListIndex, m_sprite)
+    Call activeBoard.drawAll
+End Sub
 
 Public Sub populate(ByVal index As Long, ByRef spr As CBoardSprite) ':on error resume next
     Dim i As Long, x As Long, y As Long
@@ -419,7 +428,7 @@ Public Sub populate(ByVal index As Long, ByRef spr As CBoardSprite) ':on error r
     txtFilename.Text = spr.filename
     x = spr.x
     y = spr.y
-    Call activeBoard.boardPixelToTile(x, y)
+    Call activeBoard.boardPixelToTile(x, y, True, False)
     txtLoc(0).Text = str(x)
     txtLoc(1).Text = str(y)
     txtLoc(2).Text = str(spr.layer)
@@ -452,7 +461,7 @@ Private Sub cmdBrowse_Click(index As Integer): On Error Resume Next
 End Sub
 Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.setUndo
-    Call activeBoard.spriteDeleteCurrent(BS_SPRITE)
+    Call activeBoard.spriteDeleteCurrent(cmbSprite.ListIndex)
     Call activeBoard.drawAll
 End Sub
 Private Sub cmdDuplicate_Click(): On Error Resume Next

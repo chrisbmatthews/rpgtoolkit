@@ -6,7 +6,7 @@ Attribute VB_Name = "modBoard"
 '========================================================================
 Option Explicit
 
-Private Declare Function BRDPixelToTile Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal brdSizeX As Integer) As Long
+Private Declare Function BRDPixelToTile Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal bRemoveBasePoint As Boolean, ByVal brdSizeX As Integer) As Long
 Private Declare Function BRDTileToPixel Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal bAddBasePoint As Boolean, ByVal brdSizeX As Integer) As Long
 Private Declare Function BRDVectorize Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByRef vectors() As TKConvertedVector) As Long
 Private Declare Function BRDTileToVector Lib "actkrt3.dll" (ByVal pVector As Long, ByVal x As Long, ByVal y As Long, ByVal coordType As Integer) As Long
@@ -385,14 +385,14 @@ Public Function boardPixelToScreen(ByVal x As Long, ByVal y As Long, ByRef ed As
     boardPixelToScreen.x = x
     boardPixelToScreen.y = y
 End Function
-Public Function boardPixelToTile(ByVal x As Long, ByVal y As Long, ByVal coordType As Long, ByVal brdSizeX As Long) As POINTAPI
+Public Function boardPixelToTile(ByVal x As Long, ByVal y As Long, ByVal coordType As Long, ByVal bRemoveBasePoint As Boolean, ByVal brdSizeX As Long) As POINTAPI
     ' Remove any PX_ABSOLUTE flag since we specifically want tile values when using this in the editor.
-    Call BRDPixelToTile(x, y, coordType And (TILE_NORMAL Or ISO_ROTATED Or ISO_STACKED), brdSizeX)
+    Call BRDPixelToTile(x, y, coordType And (Not PX_ABSOLUTE), bRemoveBasePoint, brdSizeX)
     boardPixelToTile.x = x
     boardPixelToTile.y = y
 End Function
 Public Function tileToBoardPixel(ByVal x As Long, ByVal y As Long, ByVal coordType As Long, ByVal bAddBasePoint As Boolean, ByVal brdSizeX As Long, Optional ByVal bIsoRenderPoint As Boolean = False) As POINTAPI
-    Call BRDTileToPixel(x, y, coordType And (TILE_NORMAL Or ISO_ROTATED Or ISO_STACKED), bAddBasePoint, brdSizeX)
+    Call BRDTileToPixel(x, y, coordType And (Not PX_ABSOLUTE), bAddBasePoint, brdSizeX)
     tileToBoardPixel.x = x
     tileToBoardPixel.y = y
     If isIsometric(coordType) And bIsoRenderPoint Then
@@ -612,7 +612,7 @@ Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String,
     Call CommonAnimation.openAnimation(projectPath & miscPath & str, anm)
     For i = 0 To UBound(anm.animFrame)
         If LenB(anm.animFrame(i)) Then
-            image = bmpPath & anm.animFrame(i)
+            image = IIf(LCase$(extention(anm.animFrame(i))) = "tst", tilePath, bmpPath) & anm.animFrame(i)
             transpcolor = anm.animTransp(i)
             Exit Sub
         End If
