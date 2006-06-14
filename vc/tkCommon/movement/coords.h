@@ -44,7 +44,8 @@ namespace coords
 	void pixelToTile(
 		int &x, 
 		int &y, 
-		const COORD_TYPE coord, 
+		const COORD_TYPE coord,
+		const bool bRemoveBasePoint, 
 		const int brdSizeX
 	);
 

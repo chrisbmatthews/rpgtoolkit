@@ -48,8 +48,14 @@ void coords::tileToPixel(int &x, int &y, const COORD_TYPE coord, const bool bAdd
 /*
  * Convert a pixel co-ordinate to a tile co-ordinate. brdSizeX in tiles.
  */
-void coords::pixelToTile(int &x, int &y, const COORD_TYPE coord, const int brdSizeX)
+void coords::pixelToTile(int &x, int &y, const COORD_TYPE coord, const bool bRemoveBasePoint, const int brdSizeX)
 {
+	if (bRemoveBasePoint)
+	{
+		x -= (coord == TILE_NORMAL ? BASE_POINT_X : BASE_POINT_ISO_X);
+		y -= (coord == TILE_NORMAL ? BASE_POINT_Y : BASE_POINT_ISO_Y);
+	}
+	
 	// coord is the output type. tbd: PX_ABSOLUTE absolute should have no effect.
 	switch (coord)
 	{

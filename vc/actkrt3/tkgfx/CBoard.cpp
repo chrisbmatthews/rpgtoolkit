@@ -87,10 +87,11 @@ LONG APIENTRY BRDPixelToTile(
 	LONG *x, 
 	LONG *y, 
 	CONST SHORT coordType, 
+	CONST SHORT bRemoveBasePoint,
 	CONST SHORT brdSizeX)
 {
 	INT px = *x, py = *y;
-	coords::pixelToTile(px, py, COORD_TYPE(coordType), brdSizeX);
+	coords::pixelToTile(px, py, COORD_TYPE(coordType), bRemoveBasePoint, brdSizeX);
 	*x = px; *y = py;
 	return 0;
 }
@@ -234,6 +235,7 @@ LONG APIENTRY BRDFreeImage(CBoard *pBoard, LPVB_BRDIMAGE pImg)
 	return 0;
 }
 
+
 //--------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------
@@ -374,10 +376,11 @@ VOID CBoard::draw(
 				{
 					// Draw a small square to represent the image.
 					
-					RECT r = {0, 0, 0, 0}, b = (*j)->bounds;
-					b.right = b.left + 32;
-					b.bottom = b.top + 32;
-					if (IntersectRect(&r, &screen, &b))
+					RECT r = {0, 0, 0, 0}, *b = &(*j)->bounds;
+					b->right = b->left + 32;
+					b->bottom = b->top + 32;
+					
+					if (IntersectRect(&r, &screen, b))
 						cnv.DrawFilledRect(
 							r.left - screen.left,
 							r.top - screen.top,
@@ -660,8 +663,18 @@ CCanvas *tagVBBoardImage::render(
 	CONST HDC hdcCompat)
 {
 	// Make a new canvas.
+	CONST STRING filename = getString(file), ext = util::getExt(filename);
+	if (stricmp(ext.c_str(), "tst") == 0 || stricmp(ext.c_str(), "tbm") == 0)
+	{
+		// Create a blank canvas and render tst/tbm through toolkit3.exe
+		// since the tbm format is not directly accessible here.
+		pCnv = new CCanvas();
+		pCnv->CreateBlank(hdcCompat, 32, 32, TRUE);
+		pCnv->ClearScreen(TRANSP_COLOR);
+		return pCnv;
+	}
 
-	CONST STRING strFile = projectPath + getString(file);
+	CONST STRING strFile = projectPath + filename;
 	FIBITMAP *bmp = FreeImage_Load(
 		FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), 
 		getAsciiString(strFile).c_str()
@@ -671,7 +684,7 @@ CCanvas *tagVBBoardImage::render(
 	CONST INT w = FreeImage_GetWidth(bmp), h = FreeImage_GetHeight(bmp);
 	
 	// Assign width and height to bounds, since the image is only rendered once.
-	if (bounds.right - bounds.left <= 0 || bounds.bottom - bounds.top <= 0)
+//	if (bounds.right - bounds.left <= 0 || bounds.bottom - bounds.top <= 0)
 	{
 		bounds.right = bounds.left + w;
 		bounds.bottom = bounds.top + h;
