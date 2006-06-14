@@ -848,8 +848,8 @@ VOID CBoard::vectorize(
 		VECTOR_CHAR row;
 		VECTOR_CHAR2D matrix;
 		 
-		for (UINT x = 0; x <= m_pBoard->m_bSizeY; ++x) row.push_back('\0');
-		for (UINT y = 0; y <= m_pBoard->m_bSizeX; ++y) matrix.push_back(row);
+		for (UINT x = 0; x <= m_pBoard->m_bSizeX; ++x) row.push_back('\0');
+		for (UINT y = 0; y <= m_pBoard->m_bSizeY; ++y) matrix.push_back(row);
 
 		for (x = 1; x <= m_pBoard->m_bSizeX; ++x)
 		{
