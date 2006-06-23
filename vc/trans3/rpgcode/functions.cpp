@@ -6133,9 +6133,9 @@ void cursormaphand(CALL_DATA &params)
 
 	if (!stretch)
 	{
-		const char *prFile = getAsciiString(resolve(strFile)).c_str();
+		STRING prFile = getAsciiString(resolve(strFile)).c_str();
 
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(prFile, 16), prFile);
+		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(prFile.c_str(), 16), prFile.c_str());
 
 		if (bmp)
 		{
