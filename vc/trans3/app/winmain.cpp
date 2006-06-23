@@ -272,28 +272,18 @@ void setUpGame()
  */
 void openSystems()
 {
-	std::cerr << "openSystems()\n";
 	extern void initRpgCode();
 	extern GAME_TIME g_gameTime;
 	initPluginSystem();
-std::cerr << "openSystems()\n";
 	FreeImage_Initialise();
-std::cerr << "openSystems()\n";
 	srand(GetTickCount());
-std::cerr << "openSystems()\n";
 	initGraphics();
-std::cerr << "openSystems()\n";
 	CProgram::initialize();
-std::cerr << "openSystems()\n";
 	initRpgCode();
-std::cerr << "openSystems()\n";
 	CAudioSegment::initLoader();
-std::cerr << "openSystems()\n";
 	g_bkgMusic = g_music.allocate();
-g_pBoard = g_boards.allocate();
-	std::cerr << "openSystems()\n";
+	g_pBoard = g_boards.allocate();
 	g_gameTime.reset(0);
-std::cerr << "openSystems()\n";
 	setUpGame();
 }
 
