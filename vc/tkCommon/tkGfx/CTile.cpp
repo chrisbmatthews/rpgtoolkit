@@ -20,6 +20,7 @@
 //-------------------------------------------------------------------
 #include "CTile.h"			// Definition of CTile
 #include "CUtil.h"			// Utility functions
+#include "../../trans3/common/paths.h" // For resolve()...
 
 //-------------------------------------------------------------------
 // CTile Member Initialization
@@ -920,7 +921,7 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 		INT number = util::getTileNum(strFilename);
 		std::string strTstFilename = util::tilesetFilename(strFilename);
 
-		m_nDetail = openFromTileSet(strTstFilename,number);
+		m_nDetail = openFromTileSet(resolve? resolve(strTstFilename) : strTstFilename, number);
 
 		
 		// Added:
@@ -933,7 +934,7 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 	//it's a .gph tile...
 	BOOL bTransparentParts = FALSE;
 
-	FILE* infile=fopen(strFilename.c_str(),"rt");
+	FILE* infile=fopen((resolve ? resolve(strFilename) : strFilename).c_str(),"rt");
 	if(!infile) {
 		return -1;		//Now returns.
 	}
@@ -1072,7 +1073,7 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 		INT thevalue=0;
 		
 		fclose(infile);
-		FILE* infile=fopen(strFilename.c_str(),"rt");
+		FILE* infile=fopen((resolve ? resolve(strFilename) : strFilename).c_str(),"rt");
 		
 		if(!infile) {
 			return -1;		//Now returns!

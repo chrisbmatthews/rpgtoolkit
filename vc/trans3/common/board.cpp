@@ -736,7 +736,7 @@ void tagBoard::render(CCanvas *cnv,
 					{
 						// Tile exists at this location.
 						CTile::drawByBoardCoord(
-							g_projectPath + TILE_PATH + strTile, 
+							g_projectPath + TILE_PATH + strTile,
 							j, k, 
 							ambientRed[x][y][i] + aR,
 							ambientGreen[x][y][i] + aG,

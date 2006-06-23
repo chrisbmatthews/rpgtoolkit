@@ -621,7 +621,7 @@ bool CProgram::open(const STRING fileName)
 		return true;
 	}
 
-	FILE *file = fopen(fileName.c_str(), _T("rb"));
+	FILE *file = fopen(resolve(fileName).c_str(), _T("rb"));
 	if (!file) return false;
 	TCHAR c = _T('\0');
 	if (fread(&c, sizeof(TCHAR), 1, file) == 0)

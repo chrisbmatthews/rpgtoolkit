@@ -66,4 +66,13 @@ extern STRING (*resolve)(const STRING path);
 // MUST be set at least once, lest trans3 should crash.
 void setResolve(const bool bPak);
 
+// Detect whether we are a standalone game.
+bool isStandaloneGame();
+
+// Initialise a pak file.
+bool initialisePakFile(const STRING file);
+
+// Uninitialise a pak file.
+void uninitialisePakFile();
+
 #endif

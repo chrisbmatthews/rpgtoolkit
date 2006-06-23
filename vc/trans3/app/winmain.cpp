@@ -303,7 +303,6 @@ void reset()
  */
 void closeSystems()
 {
-
 	// Free plugins first so that they have access to
 	// everything we're about to kill.
 	CProgram::freePlugins();
@@ -323,21 +322,28 @@ void closeSystems()
 	}
 	freePluginSystem();
 
+std::cerr << "*";
 	closeGraphics();
+std::cerr << ":";
 	extern void freeInput();
 	freeInput();
-
+std::cerr << "-";
 	// Destroy sprites (move to somewhere)
 	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
+std::cerr << "{";
 		delete (*i);
+std::cerr << "}";
 	}
+std::cerr << "a";
 	g_players.clear();
-
-
+std::cerr << "b";
 	g_music.free(g_bkgMusic);
+std::cerr << "c";
 	g_bkgMusic = NULL;
+std::cerr << "d";
 	CAudioSegment::freeLoader();
+std::cerr << "e";
 
 	FreeImage_DeInitialise();
 
@@ -347,6 +353,8 @@ void closeSystems()
 
 	CThreadAnimation::destroyAll();
 	CSharedAnimation::freeAll();
+
+	uninitialisePakFile();
 }
 
 /*
@@ -354,6 +362,12 @@ void closeSystems()
  */
 STRING getMainFileName(const STRING cmdLine)
 {
+	// First, check for a standalone game.
+	if (isStandaloneGame())
+	{
+		// We're standalone.
+		return _T("main.gam");
+	}
 
 	std::vector<STRING> parts;
 	split(cmdLine, _T(" "), parts);
@@ -401,7 +415,7 @@ STRING getMainFileName(const STRING cmdLine)
 
 	if (_ftcsicmp(getExtension(fileName).c_str(), _T("TPK")) == 0)
 	{
-		setResolve(true);
+		initialisePakFile(fileName);
 		return _T("main.gam");
 	}
 

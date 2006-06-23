@@ -109,9 +109,9 @@ int APIENTRY ZIPExtract(char* pstrToExt, char* pstrSaveAs)
 	{
 		CreateDir(pstrSaveAs);
 		if (!IsDir(pstrSaveAs))
-			Extract(pstrToExt, pstrSaveAs, g_uf);
+			return Extract(pstrToExt, pstrSaveAs, g_uf);
 	}
-	return 1;
+	return 0;
 }
 
 

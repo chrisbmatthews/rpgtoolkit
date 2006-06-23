@@ -46,8 +46,12 @@ bool tagMainFile::open(const STRING fileName)
 	file >> iUnused;
 	file >> strUnused;
 
-	extern STRING g_projectPath;
+	extern STRING g_projectPath, g_pakTempPath;
 	file >> g_projectPath;
+	if (!g_pakTempPath.empty())
+	{
+		g_projectPath = _T("");
+	}
 
 	file >> gameTitle;
 	file >> mainScreenType;

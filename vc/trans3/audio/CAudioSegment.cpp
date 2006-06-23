@@ -109,7 +109,7 @@ void CAudioSegment::stop()
 	}
 	else
 	{
-		m_pPerformance->Stop(NULL, NULL, 0, 0);
+		if (m_pPerformance) m_pPerformance->Stop(NULL, NULL, 0, 0);
 	}
 	m_playing = false;
 }
@@ -125,6 +125,10 @@ void CAudioSegment::init()
 		CoCreateInstance(CLSID_DirectMusicPerformance, NULL, CLSCTX_INPROC, IID_IDirectMusicPerformance8, (void **)&m_pPerformance);
 		extern HWND g_hHostWnd;
 		m_pPerformance->InitAudio(NULL, NULL, g_hHostWnd, DMUS_APATH_SHARED_STEREOPLUSREVERB, 64, DMUS_AUDIOF_ALL, NULL);
+	}
+	else
+	{
+		m_pPerformance = NULL;
 	}
 
 	m_pSegment = NULL;
@@ -259,6 +263,6 @@ CAudioSegment::~CAudioSegment()
 {
 	stop();
 	if (m_pSegment) m_pSegment->Unload(m_pPerformance);
-	m_pPerformance->Release();
+	if (m_pPerformance) m_pPerformance->Release();
 	if (m_pSegment) m_pSegment->Release();
 }
