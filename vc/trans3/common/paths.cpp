@@ -103,7 +103,7 @@ bool isStandaloneGame()
 
 	if (!ZIPExtractCompoundFile(path, pstrTemp))
 	{
-		MessageBox(NULL, "This application is corrupt.", "Corrupt application", 0);
+		MessageBox(NULL, _T("This application is corrupt."), _T("Corrupt application"), 0);
 		return false;
 	}
 
