@@ -9,6 +9,7 @@
 #include "../rpgcode/CProgram.h"
 #include "../input/input.h"
 #include "../plugins/plugins.h"
+#include "../common/paths.h"
 #include <strmif.h>
 #include <control.h>
 #include <uuids.h>
@@ -38,7 +39,7 @@ CVideo::CVideo()
 // Render a file.
 void CVideo::renderFile(const STRING file)
 {
-	BSTR bstr = getString(file);
+	BSTR bstr = getString(resolve(file));
 	m_pMediaControl->RenderFile(bstr);
 	SysFreeString(bstr);
 }

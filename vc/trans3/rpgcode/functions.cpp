@@ -2495,7 +2495,7 @@ void itemlocation(CALL_DATA &params)
 
 	// Transform from pixel to board type (e.g. tile).
 	int dx = int(s.x), dy = int(s.y);
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
 
 	x->num = dx;
 	y->num = dy;
@@ -2531,7 +2531,7 @@ void playerlocation(CALL_DATA &params)
 
 	// Transform from pixel to board type (e.g. tile).
 	int dx = int(s.x), dy = int(s.y);
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
 
 	x->num = dx;
 	y->num = dy;
@@ -2581,7 +2581,7 @@ void sourcelocation(CALL_DATA &params)
 		}
 	}
 	// Transform from pixel to board type (e.g. tile).
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
 	x->num = dx;
 	y->num = dy;
 }
@@ -2629,7 +2629,7 @@ void targetlocation(CALL_DATA &params)
 		}
 	}
 	// Transform from pixel to board type (e.g. tile).
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
 	x->num = dx;
 	y->num = dy;
 }
@@ -6133,7 +6133,9 @@ void cursormaphand(CALL_DATA &params)
 
 	if (!stretch)
 	{
-		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), getAsciiString(strFile).c_str());
+		const char *prFile = getAsciiString(resolve(strFile)).c_str();
+
+		FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(prFile, 16), prFile);
 
 		if (bmp)
 		{

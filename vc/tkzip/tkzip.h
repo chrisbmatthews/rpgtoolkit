@@ -4,6 +4,8 @@
 
 #include "stdafx.h"
 
+#pragma once
+
 int APIENTRY ZIPTest();
 
 int APIENTRY ZIPCreate(char* pstrZipToCreate, int nTackOntoEndYN);

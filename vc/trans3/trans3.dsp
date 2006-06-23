@@ -55,7 +55,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none
 # Begin Custom Build - Performing registration
 OutDir=.\Debug
 TargetPath=.\Debug\trans3.exe
@@ -1570,6 +1571,34 @@ SOURCE=.\video\CVideo.cpp
 # Begin Source File
 
 SOURCE=.\video\CVideo.h
+# End Source File
+# End Group
+# End Group
+# Begin Group "zip"
+
+# PROP Default_Filter ""
+# Begin Group "zip - source"
+
+# PROP Default_Filter "cpp"
+# Begin Source File
+
+SOURCE=..\tkzip\tkzip.cpp
+# End Source File
+# End Group
+# Begin Group "zip - headers"
+
+# PROP Default_Filter "h"
+# Begin Source File
+
+SOURCE=..\tkzip\tkzip.h
+# End Source File
+# End Group
+# Begin Group "zip - libraries"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\tkzip\zlib.lib
 # End Source File
 # End Group
 # End Group

@@ -276,16 +276,24 @@ void openSystems()
 	extern void initRpgCode();
 	extern GAME_TIME g_gameTime;
 	initPluginSystem();
+std::cerr << "openSystems()\n";
 	FreeImage_Initialise();
+std::cerr << "openSystems()\n";
 	srand(GetTickCount());
+std::cerr << "openSystems()\n";
 	initGraphics();
+std::cerr << "openSystems()\n";
 	CProgram::initialize();
+std::cerr << "openSystems()\n";
 	initRpgCode();
+std::cerr << "openSystems()\n";
 	CAudioSegment::initLoader();
+std::cerr << "openSystems()\n";
 	g_bkgMusic = g_music.allocate();
-	//createRpgCodeGlobals();
-	g_pBoard = g_boards.allocate();
+g_pBoard = g_boards.allocate();
+	std::cerr << "openSystems()\n";
 	g_gameTime.reset(0);
+std::cerr << "openSystems()\n";
 	setUpGame();
 }
 
@@ -403,7 +411,7 @@ STRING getMainFileName(const STRING cmdLine)
 
 	if (_ftcsicmp(getExtension(fileName).c_str(), _T("TPK")) == 0)
 	{
-		/* ... do pakfile stuff ... */
+		setResolve(true);
 		return _T("main.gam");
 	}
 
@@ -536,6 +544,8 @@ int mainEventLoop()
 int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, const LPTSTR lpCmdLine, const int nCmdShow)
 {
 	extern STRING g_savePath;
+
+	setResolve(false);
 
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;

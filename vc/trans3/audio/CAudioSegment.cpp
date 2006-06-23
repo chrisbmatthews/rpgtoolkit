@@ -11,6 +11,7 @@
 IDirectMusicLoader8 *CAudioSegment::m_pLoader = NULL;
 HANDLE CAudioSegment::m_notify = NULL;
 static CAudioSegment *g_pSoundEffect = NULL;
+static bool g_bDirectMusic = false;
 
 /*
  * Construct and load a file.
@@ -20,6 +21,8 @@ CAudioSegment::CAudioSegment(const STRING file)
 	init();
 	open(file);
 }
+
+#include "../common/mbox.h"
 
 /*
  * Open a file.
@@ -33,7 +36,8 @@ bool CAudioSegment::open(const STRING file)
 	}
 	stop();
 	const STRING ext = parser::uppercase(getExtension(file));
-	if ((ext == _T("MID")) || (ext == _T("MIDI")) || (ext == _T("RMI")) || (ext == _T("MPL")) || (ext == _T("WAV")))
+	if (g_bDirectMusic &&
+			(ext == _T("MID")) || (ext == _T("MIDI")) || (ext == _T("RMI")) || (ext == _T("MPL")) || (ext == _T("WAV")))
 	{
 		if (m_pSegment)
 		{
@@ -55,7 +59,7 @@ bool CAudioSegment::open(const STRING file)
 	}
 	m_audiere = true;
 	extern STRING g_projectPath;
-	if (m_outputStream = audiere::OpenSound(m_device, getAsciiString(g_projectPath + MEDIA_PATH + file).c_str(), true))
+	if (m_outputStream = audiere::OpenSound(m_device, getAsciiString(resolve(g_projectPath + MEDIA_PATH + file)).c_str(), true))
 	{
 		m_file = file;
 		return true;
@@ -116,9 +120,13 @@ void CAudioSegment::stop()
 void CAudioSegment::init()
 {
 	// Set up DirectMusic.
-	CoCreateInstance(CLSID_DirectMusicPerformance, NULL, CLSCTX_INPROC, IID_IDirectMusicPerformance8, (void **)&m_pPerformance);
-	extern HWND g_hHostWnd;
-	m_pPerformance->InitAudio(NULL, NULL, g_hHostWnd, DMUS_APATH_SHARED_STEREOPLUSREVERB, 64, DMUS_AUDIOF_ALL, NULL);
+	if (g_bDirectMusic)
+	{
+		CoCreateInstance(CLSID_DirectMusicPerformance, NULL, CLSCTX_INPROC, IID_IDirectMusicPerformance8, (void **)&m_pPerformance);
+		extern HWND g_hHostWnd;
+		m_pPerformance->InitAudio(NULL, NULL, g_hHostWnd, DMUS_APATH_SHARED_STEREOPLUSREVERB, 64, DMUS_AUDIOF_ALL, NULL);
+	}
+
 	m_pSegment = NULL;
 	m_audiere = false;
 	m_playing = false;
@@ -206,19 +214,29 @@ void CAudioSegment::initLoader()
 {
 	extern STRING g_projectPath;
 
-	if (m_pLoader) return;
-	CoCreateInstance(CLSID_DirectMusicLoader, NULL, CLSCTX_INPROC, IID_IDirectMusicLoader8, (void **)&m_pLoader);
-#ifndef _UNICODE
-	WCHAR searchPath[MAX_PATH + 1];
-	MultiByteToWideChar(CP_ACP, 0, (g_projectPath + MEDIA_PATH).c_str(), -1, searchPath, MAX_PATH);
-	m_pLoader->SetSearchDirectory(GUID_DirectMusicAllTypes, searchPath, FALSE);
-#else
-	m_pLoader->SetSearchDirectory(GUID_DirectMusicAllTypes, (g_projectPath + MEDIA_PATH).c_str(), FALSE);
-#endif
-
 	// Not loader related, but I don't feel like making another function.
 	m_notify = CreateEvent(NULL, FALSE, FALSE, NULL);
 	g_pSoundEffect = new CAudioSegment();
+
+	// Loader related stuff starts now.
+	if (m_pLoader) return;
+	CoCreateInstance(CLSID_DirectMusicLoader, NULL, CLSCTX_INPROC, IID_IDirectMusicLoader8, (void **)&m_pLoader);
+
+	if (!m_pLoader)
+	{
+		messageBox(_T("We were unable to initialise the DirectMusic 8 music loader.\n\nThe game will attempt to run without DirectMusic 8, but it may not be able to play all music and sound effects successfully. Please make sure that you have the latest version of DirectX and then try again."));
+		return;
+	}
+
+	g_bDirectMusic = true;
+
+#ifndef _UNICODE
+	WCHAR searchPath[MAX_PATH + 1];
+	MultiByteToWideChar(CP_ACP, 0, resolve(g_projectPath + MEDIA_PATH).c_str(), -1, searchPath, MAX_PATH);
+	m_pLoader->SetSearchDirectory(GUID_DirectMusicAllTypes, searchPath, FALSE);
+#else
+	m_pLoader->SetSearchDirectory(GUID_DirectMusicAllTypes, resolve(g_projectPath + MEDIA_PATH).c_str(), FALSE);
+#endif
 }
 
 /*
@@ -226,9 +244,11 @@ void CAudioSegment::initLoader()
  */
 void CAudioSegment::freeLoader()
 {
-	if (!m_pLoader) return;
-	m_pLoader->Release();
-	m_pLoader = NULL;
+	if (m_pLoader)
+	{
+		m_pLoader->Release();
+		m_pLoader = NULL;
+	}
 	delete g_pSoundEffect;
 }
 

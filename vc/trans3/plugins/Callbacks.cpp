@@ -821,7 +821,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			{
 				const SPRITE_POSITION p = pPlayer->getPosition();
 				int x = p.x, y = p.y;
-				coords::pixelToTile(x, y, g_pBoard->coordType, g_pBoard->bSizeX);
+				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 				*pRet = (infoCode == GEN_CURX ? x : y);
 			} break;
 		case GEN_CURLAYER:
@@ -1047,7 +1047,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 				// Get current x and y in board coordinates.
 				const SPRITE_POSITION p = pPlayer->getPosition();
 				int x = p.x, y = p.y;
-				coords::pixelToTile(x, y, g_pBoard->coordType, g_pBoard->bSizeX);
+				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 
 				// Pass board coordinates to CSprite to convert back to pixel.
 				(infoCode == GEN_CURX ? x = newVal : y = newVal);
@@ -1631,7 +1631,7 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			{
 				DB_POINT pt = pPrg->vBase[0];
 				int x = int(pt.x), y = int(pt.y);
-				coords::pixelToTile(x, y, g_pBoard->coordType, g_pBoard->bSizeX);
+				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 				*pRet = ((infoCode == BRD_PRG_X) ? x : y);
 			}
 			else
@@ -1858,7 +1858,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			{
 				DB_POINT pt = pPrg->vBase[0];
 				int x = int(pt.x), y = int(pt.y);
-				coords::pixelToTile(x, y, g_pBoard->coordType, g_pBoard->bSizeX);
+				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 				(infoCode == BRD_PRG_X ? x = nValue : y = nValue);
 				coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
 				pPrg->vBase.move(x, y);

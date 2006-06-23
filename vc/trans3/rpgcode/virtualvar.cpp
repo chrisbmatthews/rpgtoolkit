@@ -70,7 +70,7 @@ std::pair<int, std::pair<int, int> > getPlayerLocation(int tag)
 
 	// Transform from pixel to board type (e.g. tile).
 	int dx = int(s.x), dy = int(s.y);
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
 
 	return std::pair<int, std::pair<int, int> >(s.l, std::pair<int, int>(dx, dy));
 }

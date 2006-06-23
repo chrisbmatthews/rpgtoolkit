@@ -59,4 +59,11 @@ inline STRING getExtension(const STRING str)
 	return (dot == -1) ? _T("") : str.substr(dot + 1);
 }
 
+// Resolve a file name.
+extern STRING (*resolve)(const STRING path);
+
+// Toggle file resolution.
+// MUST be set at least once, lest trans3 should crash.
+void setResolve(const bool bPak);
+
 #endif

@@ -8,6 +8,7 @@
  * Inclusions.
  */
 #include "CFile.h"
+#include "paths.h"
 
 /*
  * Constructor.
@@ -17,7 +18,7 @@
 CFile::CFile(CONST STRING fileName, CONST UINT mode)
 {
 	OFSTRUCT ofs;
-	m_hFile = OpenFile(fileName.c_str(), &ofs, mode);
+	m_hFile = OpenFile(resolve(fileName.c_str()).c_str(), &ofs, mode);
 	memset(&m_ptr, 0, sizeof(m_ptr));
 	m_bEof = FALSE;
 }
@@ -29,7 +30,7 @@ void CFile::open(const STRING fileName, CONST UINT mode)
 		CloseHandle(HANDLE(m_hFile));
 	}
 	OFSTRUCT ofs;
-	m_hFile = OpenFile(fileName.c_str(), &ofs, mode);
+	m_hFile = OpenFile(resolve(fileName.c_str()).c_str(), &ofs, mode);
 	memset(&m_ptr, 0, sizeof(m_ptr));
 	m_bEof = FALSE;
 }

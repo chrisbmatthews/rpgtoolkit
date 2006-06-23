@@ -15,6 +15,7 @@ static ICallbacks *g_pCallbacks = NULL;
 #include <vector>
 #include <set>
 #include "../common/mbox.h"
+#include "../common/paths.h"
 
 // A plugin that accepts input using the special methods.
 interface IPluginInput
@@ -123,8 +124,10 @@ static std::set<IPluginInput *> g_inputPlugins;
 /*
  * Load a plugin.
  */
-IPlugin *loadPlugin(const STRING file)
+IPlugin *loadPlugin(const STRING path)
 {
+	const STRING file = resolve(path);
+
 	HMODULE mod = LoadLibrary(file.c_str());
 	if (!mod)
 	{

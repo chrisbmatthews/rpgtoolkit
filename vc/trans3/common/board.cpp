@@ -598,7 +598,7 @@ void tagBoardImage::createCanvas(BOARD &board)
 	const int resX = g_screen.right - g_screen.left, resY = g_screen.bottom - g_screen.top;
 
 	// Load the image.
-	const STRING path = g_projectPath + BMP_PATH + file;
+	const STRING path = resolve(g_projectPath + BMP_PATH + file);
 	FIBITMAP *bmp = FreeImage_Load (FreeImage_GetFileType(path.c_str(), 16), path.c_str());
 	if (bmp)
 	{

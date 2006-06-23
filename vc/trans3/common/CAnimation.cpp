@@ -185,7 +185,7 @@ bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
 	else
 	{
 		// Image file.
-		const STRING strFile = g_projectPath + BMP_PATH + frameFile;
+		const STRING strFile = resolve(g_projectPath + BMP_PATH + frameFile);
 		FIBITMAP *bmp = FreeImage_Load(
 			FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), 
 			getAsciiString(strFile).c_str()

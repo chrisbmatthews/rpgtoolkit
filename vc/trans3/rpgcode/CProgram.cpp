@@ -1620,13 +1620,6 @@ void operators::pow(CALL_DATA &call)
 {
 	call.ret().udt = UDT_NUM;
 	call.ret().num = ::pow(call[0].getNum(), call[1].getNum());
-std::clog	<<	"operators::pow: "
-//			<< call[0].getNum()
-//			<< "^"
-//			<< call[1].getNum()
-//			<< "="
-			<< call.ret().getLit();
-//			<< std::endl;
 }
 
 void operators::assign(CALL_DATA &call)

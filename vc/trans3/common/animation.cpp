@@ -165,7 +165,9 @@ void drawImage(const STRING strFile, const HDC hdc, const int x, const int y, co
 		cnvMask.CloseDC(hdcMask);
 		return;
 	}
-	FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), getAsciiString(strFile).c_str());
+
+	const char *prFile = getAsciiString(resolve(strFile)).c_str();
+	FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(prFile, 16), prFile);
 	StretchDIBits(hdc, x, y, (width != -1) ? width : FreeImage_GetWidth(bmp), (height != -1) ? height : FreeImage_GetHeight(bmp), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
 	FreeImage_Unload(bmp);
 }
