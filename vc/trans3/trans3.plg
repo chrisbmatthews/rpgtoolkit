@@ -6,11 +6,20 @@
 --------------------Configuration: trans3 - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP41B.tmp" with contents
+[
+/nologo /MLd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "FREEIMAGE_LIB" /D "WIN32" /D "_WINDOWS" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\cvs\vc\trans3\app\winmain.cpp"
+]
+Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSP41B.tmp" 
+<h3>Output Window</h3>
+Compiling...
+winmain.cpp
 
 
 
 <h3>Results</h3>
-trans3.exe - 0 error(s), 0 warning(s)
+winmain.obj - 0 error(s), 0 warning(s)
 </pre>
 </body>
 </html>

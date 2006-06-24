@@ -322,28 +322,20 @@ void closeSystems()
 	}
 	freePluginSystem();
 
-std::cerr << "*";
 	closeGraphics();
-std::cerr << ":";
 	extern void freeInput();
 	freeInput();
-std::cerr << "-";
+
 	// Destroy sprites (move to somewhere)
 	for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
-std::cerr << "{";
 		delete (*i);
-std::cerr << "}";
 	}
-std::cerr << "a";
+
 	g_players.clear();
-std::cerr << "b";
 	g_music.free(g_bkgMusic);
-std::cerr << "c";
 	g_bkgMusic = NULL;
-std::cerr << "d";
 	CAudioSegment::freeLoader();
-std::cerr << "e";
 
 	FreeImage_DeInitialise();
 

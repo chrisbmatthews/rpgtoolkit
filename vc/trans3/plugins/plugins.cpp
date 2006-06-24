@@ -152,7 +152,7 @@ IPlugin *loadPlugin(const STRING path)
 
 	if (FAILED(((HRESULT (__stdcall *)())pReg)()))
 	{
-		messageBox(_T("An error occurred while registering ") + file + _T("."));
+		messageBox(_T("An error occurred while registering ") + file + _T(".\n\nIf this problem persists, please make sure you are running the game in an account with administrator privileges."));
 		FreeLibrary(mod);
 		return NULL;
 	}
