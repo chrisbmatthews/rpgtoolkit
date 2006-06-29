@@ -145,6 +145,9 @@ void deleteTree(const STRING path)
 
 void uninitialisePakFile()
 {
+	// Return if this isn't a pak file.
+	if (g_pakTempPath.empty()) return;
+
 	deleteTree(g_pakTempPath);
 	ZIPClose();
 
