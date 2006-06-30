@@ -14,7 +14,7 @@
 #include "stdafx.h"
 #include <stdlib.h>
 #include <string.h>
-#include "freeimage.h"
+#include "../../tkCommon/images/freeimage.h"
 #include "tkimage.h"
 #include "../../tkCommon/tkGfx/CUtil.h"
 

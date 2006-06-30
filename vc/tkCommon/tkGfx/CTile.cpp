@@ -20,7 +20,6 @@
 //-------------------------------------------------------------------
 #include "CTile.h"			// Definition of CTile
 #include "CUtil.h"			// Utility functions
-#include "../../trans3/common/paths.h" // For resolve()...
 
 //-------------------------------------------------------------------
 // CTile Member Initialization
@@ -38,6 +37,7 @@ LONG CTile::isoMaskCTile[64][32] = {NULL};
 // actkrt3 and trans3 globals
 //-------------------------------------------------------------------
 std::vector<CTile *> g_tiles;				// Cache of tiles.
+STRING (*resolve)(const STRING path) = NULL; // How to resolve tile file names.
 
 //-------------------------------------------------------------------
 // Big DOS palette of doom
@@ -921,7 +921,7 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 		INT number = util::getTileNum(strFilename);
 		std::string strTstFilename = util::tilesetFilename(strFilename);
 
-		m_nDetail = openFromTileSet(resolve? resolve(strTstFilename) : strTstFilename, number);
+		m_nDetail = openFromTileSet(resolve ? resolve(strTstFilename) : strTstFilename, number);
 
 		
 		// Added:

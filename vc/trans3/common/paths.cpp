@@ -20,7 +20,6 @@ STRING g_savePath = _T("Saved\\");	// May be altered for pack files.
 STRING g_pakTempPath;				// Temp path for the pak file.
 STRING g_pakFile;					// The file name of the pak file.
 bool g_bStandalone = false;			// Are we a standalone game?
-STRING (*resolve)(const STRING path) = NULL;
 
 // Don't resolve a file name.
 STRING resolveNonPakFile(const STRING path)
