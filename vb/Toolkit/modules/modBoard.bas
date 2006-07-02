@@ -50,7 +50,7 @@ Public Const TA_ALL_LAYERS_BELOW = 2          'Under vector applies to all layer
 Public Const TA_RECT_INTERSECT = 4            'Under vector activated by bounding rect intersection.
 
 '=========================================================================
-' A board program [tagVBBoardProgram]
+' Board program defines
 '=========================================================================
 Public Const PRG_STEP = 0                 'Triggers once until player leaves area.
 Public Const PRG_KEYPRESS = 1             'Player must hit activation key.
@@ -60,23 +60,6 @@ Public Const PRG_STOPS_MOVEMENT = 4       'Running the program clears the moveme
 
 Public Const PRG_ACTIVE = 0               'Program is always active.
 Public Const PRG_CONDITIONAL = 1          'Program's running depends on RPGCode variables.
-
-'tbd: remove
-'Public Type TKBoardProgram
-'    filename As String                    'Board program filename.
-'    layer As Long                         'Layer.
-'    graphic  As String                    'Associated graphic.
-'    activate As Long                      'PRG_ACTIVE - always active.
-'                                          'PRG_CONDITIONAL - conditional activation.
-'    initialVar As String                  'Activation variable.
-'    finalVar As String                    'Activation variable at end of prg.
-'    initialValue As String                'Initial value of activation variable.
-'    finalValue As String                  'Value of variable after program runs.
-'    activationType As Long                'Activation type (see 1st set of flags above).
-'
-'    vBase As New CVector                  'The activation area.
-'    distanceRepeat As Long                'Distance to travel between activations within the vector.
-'End Type
 
 '=========================================================================
 ' A board sprite [tagVBBoardSprite]
@@ -113,6 +96,16 @@ Public Const SPR_KEYPRESS = 1             'Player must hit activation key.
 
 Public Const SPR_ACTIVE = 0               'Sprite is always active.
 Public Const SPR_CONDITIONAL = 1          'Sprite running depends on RPGCode variables.
+
+'=========================================================================
+' wip: An animated tile
+'=========================================================================
+Public Type TKBoardAnimTile
+    theTile As TKTileAnm
+    x As Long
+    y As Long
+    layer As Long
+End Type
 
 '=========================================================================
 ' A RPGToolkit board
@@ -185,7 +178,7 @@ Public Type TKBoard
     isIsometric As Byte                   'is it an isometric board? (0- no, 1-yes)
     Threads() As String                   'filenames of threads on board
     hasAnmTiles As Boolean                'does board have anim tiles?
-    'animatedTile() As TKBoardAnimTile     'animated tiles associated with this board
+    animatedTile() As TKBoardAnimTile     'animated tiles associated with this board
     anmTileInsertIdx As Long              'index of animated tile insertion
     anmTileLUTIndices() As Long           'indices into LUT of animated tiles
     anmTileLUTInsertIdx As Long           'index of LUT table insertion
@@ -203,6 +196,7 @@ End Type
 '=========================================================================
 Public Enum eBrdSetting
     BS_GENERAL
+    BS_ZOOM
     BS_TILE
     BS_VECTOR
     BS_PROGRAM
@@ -223,12 +217,6 @@ Public Enum eBrdSelectStatus
     SS_MOVING
     SS_PASTING
 End Enum
-Public Type brdSelection
-    status As eBrdSelectStatus            'Status of selection.
-    area As RECT                          'Selection area (board px).
-    dragPoint As POINTAPI                 'Mouse point when dragging (board px).
-    color As Long
-End Type
 
 '=========================================================================
 ' A board editor document
@@ -246,9 +234,6 @@ Public Type TKBoardEditorData
     bUndoData() As Boolean                 'do the board() entries hold undo data?
     
     'Data that are required for classes.
-    'topX As Long                          'top x coord (scaled pixels)
-    'topY As Long                          'top y coord (scaled pixels)
-    'zoom As Double                        'scaling factor
     pCEd As New CBoardEditor
     
     undoIndex As Long                     'index to current .board
@@ -258,7 +243,6 @@ Public Type TKBoardEditorData
     bGrid As Boolean
     bAutotiler As Boolean
     bRevertToDraw As Boolean              'After flooding revert to draw tool
-    gridColor As Long
     currentLayer As Integer               'Current board layer
     bHideAllLayers As Boolean
     bShowAllLayers As Boolean
@@ -266,10 +250,10 @@ Public Type TKBoardEditorData
     bShowBackColour As Boolean            'tbd:show background colour in editor
         
     currentVectorSet() As CVector         'References to vectors of current optSetting
-    'currentVector As CVector
     vectorColor(TT_STAIRS) As Long
     programColor As Long
     waypointColor As Long
+    gridColor As Long
 
     'Pre 3.0.7
     boardName As String                   'filename

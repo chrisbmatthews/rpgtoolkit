@@ -17,17 +17,6 @@ Attribute VB_Name = "Commonboard"
 Option Explicit
 
 '=========================================================================
-' An animated tile
-'=========================================================================
-Public Type TKBoardAnimTile
-    theTile As TKTileAnm
-    x As Long
-    y As Long
-    layer As Long
-End Type
-
-
-'=========================================================================
 ' Member variables
 '=========================================================================
 Private lastAnm As TKTileAnm    'last opened anm file
@@ -513,21 +502,15 @@ Public Sub BoardClear(ByRef theBoard As TKBoard): On Error Resume Next
     
     With theBoard
         '3.0.7
-        For i = 0 To UBound(.vectors)
-            Set .vectors(i) = Nothing
-        Next i
         ReDim .vectors(0)
-        For i = 0 To UBound(.prgs)
-            Set .prgs(i) = Nothing
-        Next i
+        Set .vectors(0) = Nothing
         ReDim .prgs(0)
+        Set .prgs(0) = Nothing
         ReDim .Images(0)
         .Images(0).drawType = BI_NULL
-        ReDim .spriteImages(0)
         ReDim .sprites(0)
-        For i = 0 To UBound(.sprites)
-            Set .sprites(i) = Nothing
-        Next i
+        Set .sprites(0) = Nothing
+        ReDim .spriteImages(0)
 
         'Pre 3.0.7
         ReDim .tileIndex(5)
@@ -1071,7 +1054,7 @@ exitTheFor:
         '3.0.7 update item locations to pixel values.
         For i = 0 To UBound(.sprites)
             Dim pt As POINTAPI
-            pt = modBoard.tileToBoardPixel(.sprites(i).x, .sprites(i).y, .coordType, False, .bSizeX)
+            pt = modBoard.tileToBoardPixel(.sprites(i).x, .sprites(i).y, .coordType, True, .bSizeX)
             .sprites(i).x = pt.x
             .sprites(i).y = pt.y
             Call activeBoard.spriteUpdateImageData(.sprites(i), .sprites(i).filename)
@@ -1273,7 +1256,7 @@ End Function
 Public Sub BoardInit(ByRef theBoard As TKBoard)
     On Error Resume Next
     ReDim theBoard.tileIndex(5)
-    Call BoardSetSize(19, 11, 8, theBoard)
+    'Call BoardSetSize(19, 11, 8, theBoard)
     Call dimensionItemArrays(theBoard)
 End Sub
 

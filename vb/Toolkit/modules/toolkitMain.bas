@@ -22,7 +22,7 @@ Public Sub Main()
     Call createFileAssociations
     Call StartTracing("tktrace.txt")
     Call Randomize(timer)
-    Call BoardInit(boardList(activeBoardIndex).theData)
+    'wip:'Call BoardInit(boardList(activeBoardIndex).theData)
     Call TileAnmClear(tileAnmList(activeTileAnmIndex).theData)
     Call initCanvasEngine
     Call initDirectories

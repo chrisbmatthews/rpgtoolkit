@@ -48,7 +48,6 @@ Option Explicit
         '=======================================================
         With tkMainForm
                 .animationExtras.Visible = False
-                .frmBoardExtras.Visible = False
                 '.bottomFrame.Visible = False
                 .tileExtras.Visible = False
                 .bBar.Visible = False
