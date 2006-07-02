@@ -6,6 +6,14 @@ Begin VB.UserControl ctlBrdSprite
    ClientWidth     =   3135
    ScaleHeight     =   6585
    ScaleWidth      =   3135
+   Begin VB.CommandButton cmdHideAll 
+      Caption         =   "Hide All"
+      Height          =   375
+      Left            =   1680
+      TabIndex        =   38
+      Top             =   480
+      Width           =   855
+   End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
       Height          =   5535
@@ -315,7 +323,7 @@ Begin VB.UserControl ctlBrdSprite
          Width           =   975
       End
       Begin VB.Label lblFilename 
-         Caption         =   "Item filename"
+         Caption         =   "Sprite filename"
          Height          =   255
          Left            =   120
          TabIndex        =   7
@@ -361,12 +369,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private m_sprite As CBoardSprite
-
 Private Sub apply() ': On Error Resume Next
-    Dim x As Long, y As Long
-    If Not m_sprite Is Nothing Then
-        With m_sprite
+    Dim x As Long, y As Long, spr As CBoardSprite
+    Call activeBoard.setUndo
+    Set spr = activeBoard.toolbarGetCurrent(BS_SPRITE, cmbSprite.ListIndex)
+    If Not spr Is Nothing Then
+        With spr
             x = val(txtLoc(0).Text)
             y = val(txtLoc(1).Text)
             Call activeBoard.tileToBoardPixel(x, y, True, False)
@@ -383,10 +391,10 @@ Private Sub apply() ': On Error Resume Next
             .prgMultitask = txtMultitask.Text
        
             'Free the canvas of the current image if changing filename.
-            Call activeBoard.spriteUpdateImageData(m_sprite, txtFilename.Text)
+            Call activeBoard.spriteUpdateImageData(spr, txtFilename.Text)
         End With
     End If
-    Call populate(cmbSprite.ListIndex, m_sprite)
+    Call populate(cmbSprite.ListIndex, spr)
 End Sub
 Public Sub disableAll(): On Error Resume Next
     Dim i As Control
@@ -403,19 +411,20 @@ Public Sub enableAll(): On Error Resume Next
     Next i
 End Sub
 Public Sub moveCurrentTo(ByRef sel As CBoardSelection) ':on error resume next
-    'Call activeBoard.setUndo
+    Dim x As Long, y As Long
     'Selection holds the frame bounds. Derive the base point.
-    m_sprite.x = str((sel.x1 + sel.x2) / 2)
-    m_sprite.y = str(sel.y2)
-    Call activeBoard.spriteUpdateImageData(m_sprite, txtFilename.Text)
-    Call populate(cmbSprite.ListIndex, m_sprite)
+    x = (sel.x1 + sel.x2) / 2
+    y = sel.y2
+    Call activeBoard.boardPixelToTile(x, y, True, False)
+    txtLoc(0).Text = str(x)
+    txtLoc(1).Text = str(y)
+    Call apply
     Call activeBoard.drawAll
 End Sub
 
 Public Sub populate(ByVal index As Long, ByRef spr As CBoardSprite) ':on error resume next
     Dim i As Long, x As Long, y As Long
     
-    Set m_sprite = spr
     If (spr Is Nothing) Or (Not activeBoard.toolbarSetCurrent(cmbSprite, index)) Then
         'No matching combo entry.
         Call disableAll
@@ -465,6 +474,9 @@ Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.drawAll
 End Sub
 Private Sub cmdDuplicate_Click(): On Error Resume Next
+    MsgBox "tbd"
+End Sub
+Private Sub cmdHideAll_Click(): On Error Resume Next
     MsgBox "tbd"
 End Sub
 Private Sub hsbSlot_Change(): On Error Resume Next

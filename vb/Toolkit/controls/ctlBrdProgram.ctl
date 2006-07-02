@@ -310,11 +310,13 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private m_currentPrg As CBoardProgram
-
 Private Sub apply() ': On Error Resume Next
-    If Not m_currentPrg Is Nothing Then
-        With m_currentPrg
+    Dim prg As CBoardProgram
+    'Set undo before getting current program because undo creates new objects.
+    Call activeBoard.setUndo
+    Set prg = activeBoard.toolbarGetCurrent(BS_PROGRAM, cmbPrg.ListIndex)
+    If Not prg Is Nothing Then
+        With prg
             .filename = txtFilename.Text
             .layer = val(txtLayer.Text)
             .activate = Abs(optConditionallyActive(PRG_CONDITIONAL).value)
@@ -329,7 +331,7 @@ Private Sub apply() ': On Error Resume Next
             Call .vBase.lvApply(lvPoints)
         End With
     End If
-    Call populate(cmbPrg.ListIndex, m_currentPrg)
+    Call populate(cmbPrg.ListIndex, prg)
 End Sub
 Public Sub disableAll(): On Error Resume Next
     Dim i As Control
@@ -354,7 +356,6 @@ Public Sub populate(ByVal index As Long, ByRef prg As CBoardProgram) ': On Error
     fraProperties.Height = UserControl.Height - fraProperties.Top - 32
     lvPoints.Height = fraProperties.Height - lvPoints.Top - 64
     
-    Set m_currentPrg = prg
     If (prg Is Nothing) Or (Not activeBoard.toolbarSetCurrent(cmbPrg, index)) Then
         'No matching combo entry.
         Call disableAll
@@ -393,7 +394,6 @@ End Sub
 Public Property Get getCombo() As ComboBox: On Error Resume Next
     Set getCombo = cmbPrg
 End Property
-
 
 Private Sub chkActivationStopsMove_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply

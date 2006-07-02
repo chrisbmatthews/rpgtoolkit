@@ -56,7 +56,7 @@ Property Get Display() As Integer
 End Property
 Property Let Display(ByVal newValue As Integer)
     mDisplay = newValue
-    Populate (mBoard)
+    populate (mBoard)
 End Property
 Property Get Selected() As Integer ' Read Only
     Selected = mSelected
@@ -65,7 +65,7 @@ End Property
 '========================================================================
 ' POPULATES - Public procedure that is called to populate the tree view.
 '========================================================================
-Public Sub Populate(Optional ByVal board As Long = -1)
+Public Sub populate(Optional ByVal board As Long = -1)
 
     ' KSNiloc: need to handle errors
     On Error Resume Next
@@ -76,7 +76,7 @@ Public Sub Populate(Optional ByVal board As Long = -1)
     End If
     
     ' clear all nodes
-    tkMainForm.bTools_Objects_Tree.Nodes.Clear
+    tkMainForm.bTools_Objects_Tree.Nodes.clear
     
     ' populate tree view
     Select Case mDisplay
@@ -309,7 +309,7 @@ Public Sub click()
     End Select
     If valid Then
         mObject = Right(tkMainForm.bTools_Objects_Tree.SelectedItem.Key, 1)
-        activeBoard.PopupMenu activeBoard.mTB
+'        activeBoard.PopupMenu activeBoard.mTB
     End If
 End Sub
 
@@ -320,10 +320,10 @@ Public Sub Settings()
     Select Case mSelected
         Case 0, 2
             boardList(activeBoardIndex).prgCondition = mObject
-            programset.Show vbModal
+'            programset.Show vbModal
         Case 1
             boardList(activeBoardIndex).itmCondition = mObject
-            itemset.Show vbModal
+'            itemset.Show vbModal
     End Select
 End Sub
 
@@ -356,7 +356,7 @@ Public Sub Remove()
             boardList(activeBoardIndex).theData.itmActivateDoneNum$(mObject) = ""
             boardList(activeBoardIndex).theData.itmActivationType(mObject) = 0
     End Select
-    activeBoard.boardRedraw: Populate
+'    activeBoard.boardRedraw: populate
 End Sub
 
 '========================================================================
@@ -396,5 +396,5 @@ Private Sub Class_Initialize()
     mPrefix(3).Enum = eLayer
    
     ' set control value
-    tkMainForm.bTools_Objects_Display(mDisplay).value = True
+'    tkMainForm.bTools_Objects_Display(mDisplay).value = True
 End Sub

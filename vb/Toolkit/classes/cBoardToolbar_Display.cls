@@ -48,10 +48,10 @@ Public Property Let Update(ByVal id As Integer, ByVal newValue As Integer)
     On Error Resume Next
     mDisplay(id) = newValue
     Select Case id
-        Case 0: activeBoard.drawLayers
-        Case 1: If newValue = 1 Then Call activeBoard.drawPrograms Else Call activeBoard.boardRedraw
-        Case 2: If newValue = 1 Then Call activeBoard.drawItems Else Call activeBoard.boardRedraw
-        Case 3: If newValue = 1 Then Call activeBoard.drawWarps Else Call activeBoard.boardRedraw
+'        Case 0: activeBoard.drawLayers
+'        Case 1: If newValue = 1 Then Call activeBoard.drawPrograms Else Call activeBoard.boardRedraw
+'        Case 2: If newValue = 1 Then Call activeBoard.drawItems Else Call activeBoard.boardRedraw
+'        Case 3: If newValue = 1 Then Call activeBoard.drawWarps Else Call activeBoard.boardRedraw
     End Select
 End Property
 
@@ -61,6 +61,6 @@ End Property
 Public Sub Refresh()
     Dim i As Integer
     For i = 0 To 4
-        tkMainForm.bTools_Display_Option(i).value = mDisplay(i)
+'        tkMainForm.bTools_Display_Option(i).value = mDisplay(i)
     Next i
 End Sub

@@ -121,6 +121,21 @@ Attribute VB_Exposed = False
 'Read LICENSE.txt for licensing info
 '========================================================================
 'Note to self: wip = temporary additions to old code.
+'Files to consider (remember to remove from cvs after use)
+'   boardinformation
+'   boardlighting
+'   boardgradientdefine
+'   brdbackground
+'   BoardDayNightForm (?)
+'   frmThreading
+'   itemmenu
+'   itemset
+'   programmenu
+'   programset
+'   spotlighting
+'   tileinfo
+'   warpset
+'   CScrollBoard
 
 Option Explicit
 
@@ -149,6 +164,7 @@ Private Declare Function CNVResize Lib "actkrt3.dll" (ByVal handle As Long, ByVa
 Private m_ed As TKBoardEditorData
 Private m_sel As CBoardSelection
 Private m_mouseScrollDistance As Long
+Private m_mousePosition As POINTAPI             'For zooming with the mousewheel.
 
 Private Const BTAB_VECTOR = 0
 Private Const BTAB_PROGRAM = 1
@@ -198,7 +214,7 @@ Private Sub resetEditor(ByRef ed As TKBoardEditorData) ': On Error Resume Next
 End Sub
 '=========================================================================
 '=========================================================================
-Public Sub newBoard(ByVal x As Long, ByVal y As Long, ByVal z As Long, ByVal coordType As Long, ByVal background As String)
+Public Sub newBoard(ByVal x As Long, ByVal y As Long, ByVal z As Long, ByVal coordType As Long, ByVal background As String) ':on error resume next
     ReDim m_ed.board(MAX_UNDO)                  'Cannot be a static array.
     ReDim m_ed.bUndoData(MAX_UNDO)
     m_ed.bUndoData(m_ed.undoIndex) = True
@@ -245,7 +261,6 @@ End Sub
 ' identify type of form
 '========================================================================
 Public Property Get formType() As Long: On Error Resume Next
-    On Error Resume Next
     formType = FT_BOARD
 End Property
 Private Sub Form_Activate() ':on error resume next
@@ -257,13 +272,10 @@ Private Sub Form_Activate() ':on error resume next
     tkMainForm.popButton(3).Visible = True              'Board toolbar
     tkMainForm.boardTools.Visible = True                'Lefthand tools
     tkMainForm.boardTools.Top = tkMainForm.toolTop
-    'tkMainForm.bBar.Visible = True                      'Bottom bar
-    tkMainForm.frmBoardExtras.Visible = True
     
     tkMainForm.brdOptSetting(m_ed.optSetting).value = True
     tkMainForm.brdOptTool(m_ed.optTool).value = True
     tkMainForm.brdChkGrid.value = Abs(m_ed.bGrid)
-    'tkMainForm.brdChkIso.value = Abs(isIsometric(m_ed.board(m_ed.undoIndex).coordType))
     tkMainForm.brdChkAutotile.value = Abs(m_ed.bAutotiler)
     
     mnuUndo.Enabled = m_ed.bUndoData(nextUndo)
@@ -278,7 +290,6 @@ Private Sub Form_Activate() ':on error resume next
     
     If tkMainForm.popButton(3).value = 1 Then
         tkMainForm.pTools.Visible = True
-        Call toolbarRefresh
     End If
     
     'tkMainForm.boardToolbar.Display.Refresh
@@ -292,9 +303,9 @@ Private Sub Form_Activate() ':on error resume next
     Exit Sub
     
     'Redraw the selected tile.
-    tkMainForm.currenttile.Cls
-    tkMainForm.currenttileIso.Cls
-    tkMainForm.bFrame(2).Caption = "Current Tile - None" & "       "
+    'tkMainForm.currenttile.Cls
+    'tkMainForm.currenttileIso.Cls
+    'tkMainForm.bFrame(2).Caption = "Current Tile - None" & "       "
     'Call changeSelectedTile(boardList(activeBoardIndex).selectedTile)
     'tkMainForm.animTileTimer.Enabled = m_bAnimating
 
@@ -346,6 +357,7 @@ Private Sub Form_Resize() ':on error resume next
         hScroll.Left = picBoard.Left
         hScroll.width = picBoard.width
         hScroll.max = brdWidth - picBoard.width
+        hScroll.SmallChange = scrollUnitWidth(m_ed)
         hScroll.LargeChange = picBoard.width - scrollUnitWidth(m_ed)
     Else
          hScroll.Visible = False
@@ -361,6 +373,7 @@ Private Sub Form_Resize() ':on error resume next
         vScroll.Left = picBoard.width
         vScroll.Height = picBoard.Height
         vScroll.max = brdHeight - picBoard.Height
+        vScroll.SmallChange = scrollUnitHeight(m_ed)
         vScroll.LargeChange = picBoard.Height - scrollUnitHeight(m_ed)
     Else
          vScroll.Visible = False
@@ -390,14 +403,14 @@ End Sub
 Private Sub hScroll_Change() ': On Error Resume Next
     ' exit if opening board
     'If bOpeningBoard Then Exit Sub
-    
+    hScroll.value = hScroll.value - (hScroll.value Mod scrollUnitWidth(m_ed))
     m_ed.pCEd.topX = hScroll.value
     Call drawAll
 End Sub
 
 '========================================================================
 '========================================================================
-Public Sub openFile(ByVal file As String) ': On Error Resume Next
+Public Sub openFile(ByVal file As String): On Error Resume Next
 
     Call activeBoard.Show
     Call checkSave
@@ -502,7 +515,7 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
         Dim distance As Long
         distance = HiWord(wParam)
         If (m_mouseScrollDistance <> 0) Then
-            If ((distance / Abs(distance)) <> (m_mouseScrollDistance / Abs(m_mouseScrollDistance))) Then
+            If (Sgn(distance) <> Sgn(m_mouseScrollDistance)) Then
                 ' Signs are not the same, so start the total distance from zero.
                 m_mouseScrollDistance = 0
             End If
@@ -510,8 +523,8 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
         m_mouseScrollDistance = m_mouseScrollDistance + distance
         If (Abs(m_mouseScrollDistance) >= WHEEL_DELTA) Then
             ' We've scrolled the delta distance
-            Call zoom(m_mouseScrollDistance / Abs(m_mouseScrollDistance))
-            m_mouseScrollDistance = (m_mouseScrollDistance Mod WHEEL_DELTA) * (m_mouseScrollDistance / Abs(m_mouseScrollDistance))
+            Call zoom(Sgn(m_mouseScrollDistance), m_mousePosition)
+            m_mouseScrollDistance = (m_mouseScrollDistance Mod WHEEL_DELTA) * Sgn(m_mouseScrollDistance)
         End If
     End If
 End Function
@@ -533,6 +546,7 @@ Private Sub mnuPaste_Click(): On Error Resume Next
 End Sub
 Private Sub mnuUndo_Click() ': On Error Resume Next
     m_ed.undoIndex = nextUndo
+    Call toolbarRefresh
     Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, True)
     Call drawAll
     mnuUndo.Enabled = m_ed.bUndoData(nextUndo)
@@ -571,15 +585,20 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
     
     Select Case keyCode
         Case vbKeyQ: tkMainForm.brdOptSetting(BS_GENERAL).value = True
-        Case vbKeyW: tkMainForm.brdOptSetting(BS_TILE).value = True
-        Case vbKeyE: tkMainForm.brdOptSetting(BS_VECTOR).value = True
-        Case vbKeyR: tkMainForm.brdOptSetting(BS_PROGRAM).value = True
-        Case vbKeyT: tkMainForm.brdOptSetting(BS_SPRITE).value = True
-        Case vbKeyY: tkMainForm.brdOptSetting(BS_IMAGE).value = True
+        Case vbKeyW: tkMainForm.brdOptSetting(BS_ZOOM).value = True
+        Case vbKeyE: tkMainForm.brdOptSetting(BS_TILE).value = True
+        Case vbKeyR: tkMainForm.brdOptSetting(BS_VECTOR).value = True
+        Case vbKeyT: tkMainForm.brdOptSetting(BS_PROGRAM).value = True
+        Case vbKeyY: tkMainForm.brdOptSetting(BS_SPRITE).value = True
+        Case vbKeyU: tkMainForm.brdOptSetting(BS_IMAGE).value = True
         Case vbKeyA: tkMainForm.brdOptTool(BT_DRAW).value = True
         Case vbKeyS: tkMainForm.brdOptTool(BT_SELECT).value = True
         Case vbKeyD: tkMainForm.brdOptTool(BT_FLOOD).value = True
         Case vbKeyF: tkMainForm.brdOptTool(BT_ERASE).value = True
+        Case vbKeyG: tkMainForm.brdChkGrid.value = Not tkMainForm.brdChkGrid.value
+        Case vbKeyH: tkMainForm.brdChkAutotile.value = Not tkMainForm.brdChkAutotile.value
+        Case vbKeyN: tkMainForm.brdChkHideLayers.value = Not tkMainForm.brdChkHideLayers.value
+        Case vbKeyM: tkMainForm.brdChkShowLayers.value = Not tkMainForm.brdChkShowLayers.value
     End Select
 
     Select Case m_ed.optSetting
@@ -629,7 +648,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
     'Process tools common to all settings.
     Select Case m_ed.optTool
         Case BT_SELECT
-            If Button <= vbLeftButton And m_ed.optSetting <> BS_GENERAL Then
+            If Button <= vbLeftButton And m_ed.optSetting > BS_ZOOM Then
                 'Making a selection.
                 Select Case m_sel.status
                     Case SS_NONE, SS_FINISHED
@@ -731,7 +750,8 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
             'Move the board by dragging. Use the selection.
             m_sel.xDrag = x:             m_sel.yDrag = y
             hScroll.tag = hScroll.value: vScroll.tag = vScroll.value
-            
+        Case BS_ZOOM
+            Call zoom(IIf(Button = vbLeftButton, 1, -1), pxCoord)
         Case BS_TILE
             Call setUndo
             Call tileSettingMouseDown(Button, Shift, x, y)
@@ -751,10 +771,11 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
     
     Dim pxCoord As POINTAPI, tileCoord As POINTAPI
     pxCoord = screenToBoardPixel(x, y, m_ed)
+    m_mousePosition = pxCoord
     tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
     tkMainForm.StatusBar1.Panels(3).Text = str(tileCoord.x) & ", " & str(tileCoord.y)
     
-     If m_sel.status = SS_DRAWING Or m_sel.status = SS_MOVING Then
+    If m_sel.status = SS_DRAWING Or m_sel.status = SS_MOVING Then
         'Scroll the board to expand selection.
         If x > picBoard.width - 8 And hScroll.value <> hScroll.max And hScroll.Visible Then hScroll.value = hScroll.value + hScroll.SmallChange
         If x < 8 And hScroll.value <> hScroll.min Then hScroll.value = hScroll.value - hScroll.SmallChange
@@ -1001,23 +1022,8 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
             Else
                 Call placeTile("", tileCoord.x, tileCoord.y)
             End If
-            
-        Case BT_EDIT
     
     End Select
-End Sub
-Private Sub tileSettingMouseUp(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
-
-    ' picBoard_MouseUp
-    'Select Case m_ed.optTool
-    '    Case BT_SELECT
-    '        'Expand to grid
-    '        If Button = vbLeftButton Then
-    '            m_sel.status = SS_FINISHED
-    '            Call selectionExpandToGrid(m_sel)
-    '            Call selectionDraw(m_sel)
-    '        End If
-    'End Select
 End Sub
 
 '========================================================================
@@ -1025,17 +1031,17 @@ End Sub
 Private Sub vScroll_Change() ': On Error Resume Next
     ' exit if opening board
     'If bOpeningBoard Then Exit Sub
-    
+    vScroll.value = vScroll.value - (vScroll.value Mod scrollUnitHeight(m_ed))
     m_ed.pCEd.topY = vScroll.value
     Call drawAll
 End Sub
 
 '========================================================================
 '========================================================================
-Private Sub zoom(ByVal direction As Integer) ': On Error Resume Next
+Private Sub zoom(ByVal direction As Integer, ByRef pxCoord As POINTAPI) ': On Error Resume Next
 
     'Record the old zoom.
-    Dim oldZoom As Double
+    Dim oldZoom As Double, h As Long, v As Long
     oldZoom = m_ed.pCEd.zoom
 
     If direction > 0 Then
@@ -1053,8 +1059,17 @@ Private Sub zoom(ByVal direction As Integer) ': On Error Resume Next
     m_ed.pCEd.topX = (m_ed.pCEd.topX / oldZoom) * m_ed.pCEd.zoom
     m_ed.pCEd.topY = (m_ed.pCEd.topY / oldZoom) * m_ed.pCEd.zoom
     Call Form_Resize
-    hScroll.value = m_ed.pCEd.topX
-    vScroll.value = m_ed.pCEd.topY
+    
+    'Centre around the given pixel coordinate.
+    pxCoord = snapToGrid(pxCoord, False)
+    h = pxCoord.x * m_ed.pCEd.zoom + scrollUnitWidth(m_ed) - picBoard.width / 2
+    v = pxCoord.y * m_ed.pCEd.zoom + scrollUnitHeight(m_ed) - picBoard.Height / 2
+    If h < 0 Then h = 0
+    If h > hScroll.max Then h = hScroll.max
+    If v < 0 Then v = 0
+    If v > vScroll.max Then v = vScroll.max
+    hScroll.value = h
+    vScroll.value = v
 
 End Sub
 
@@ -1083,6 +1098,9 @@ End Sub
 
 '========================================================================
 '========================================================================
+Public Sub mdiChkAutotile(ByVal value As Integer) ':on error resume next
+    MsgBox "tbd"
+End Sub
 Public Sub mdiOptSetting(ByVal index As Integer) ': On Error Resume Next
     m_ed.optSetting = index
     If Not (m_sel Is Nothing) Then
@@ -1095,14 +1113,10 @@ Public Sub mdiOptTool(ByVal index As Integer) ': On Error Resume Next
     m_ed.optTool = index
     If (index <> BT_SELECT) And Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
 End Sub
-Public Sub mdiCmdZoom(ByVal Button As Integer) ': On Error Resume Next
-    zoom (IIf(Button = vbLeftButton, 1, -1))
-End Sub
 Public Sub mdiChkGrid(ByVal value As Integer) ': On Error Resume Next
     m_ed.bGrid = value
     Call drawBoard
 End Sub
-
 Public Sub mdiChkHideLayers(ByVal value As Integer, ByVal bRedraw As Boolean) ':on error resume next
     Dim i As Integer
     If value Then
@@ -1156,6 +1170,9 @@ Public Sub mdiCmbVisibleLayers() ':on error resume next
         .ListIndex = -1
     End With
     Call drawBoard
+End Sub
+Public Sub mdiCmdUndo(): On Error Resume Next
+    Call mnuUndo_Click
 End Sub
 
 '=========================================================================
@@ -1338,7 +1355,7 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
         Next iy
     End If
     
-    Call boardform.Refresh
+    Call picBoard.Refresh
 End Sub
 '========================================================================
 ' End of Board AutoTiler functions
@@ -1488,7 +1505,7 @@ End Sub
 '========================================================================
 Private Sub gridDraw() ': On Error Resume Next
     
-    Dim color As Long, offsetY As Long, x As Long, y As Long, oldMode As Long
+    Dim color As Long, offsetY As Long, x As Long, y As Long, oldMode As Long, intHeight As Long
     color = m_ed.gridColor
     
     oldMode = picBoard.DrawMode
@@ -1496,7 +1513,7 @@ Private Sub gridDraw() ': On Error Resume Next
         
     If m_ed.bGrid = True Then
         If isIsometric(m_ed.board(m_ed.undoIndex).coordType) Then
-            offsetY = IIf(m_ed.pCEd.topY Mod tileHeight(m_ed) = 0, 0, 16 * m_ed.pCEd.zoom)
+            offsetY = IIf((m_ed.pCEd.topY Mod tileHeight(m_ed) = 0) = (m_ed.pCEd.topX Mod tileWidth(m_ed) = 0), 0, 16 * m_ed.pCEd.zoom)
             
             ' Top right to bottom left.
             Do While y < picBoard.width / 2 + picBoard.Height
@@ -1506,9 +1523,10 @@ Private Sub gridDraw() ': On Error Resume Next
 
             ' Top left to bottom right.
             x = 0
-            y = picBoard.Height
+            intHeight = picBoard.Height + (picBoard.Height Mod tileHeight(m_ed))
+            y = intHeight
             Do While y > -picBoard.width / 2
-                picBoard.Line (0, y + offsetY)-(x, picBoard.Height + offsetY), color
+                picBoard.Line (0, y + offsetY)-(x, intHeight + offsetY), color
                 x = x + tileWidth(m_ed):  y = y - tileHeight(m_ed)
             Loop
         Else
@@ -1946,11 +1964,11 @@ End Function
 '========================================================================
 '========================================================================
 Public Sub toolbarRefresh() ':on error resume next
-    Select Case m_ed.optSetting
-        Case BS_VECTOR:     Call toolbarPopulateVectors
-        Case BS_PROGRAM:    Call toolbarPopulatePrgs
-        Case BS_SPRITE:     Call toolbarPopulateSprites
-        Case BS_IMAGE:      Call toolbarPopulateImages
+    Select Case tkMainForm.bTools_Tabs.Tab
+        Case BTAB_VECTOR:     Call toolbarPopulateVectors
+        Case BTAB_PROGRAM:    Call toolbarPopulatePrgs
+        Case BTAB_SPRITE:     Call toolbarPopulateSprites
+        Case BTAB_IMAGE:      Call toolbarPopulateImages
     End Select
 End Sub
 Public Sub toolbarChange(ByVal index As Long, ByVal Setting As eBrdSetting) ':on error resume next
@@ -2067,6 +2085,14 @@ Private Sub toolbarPopulateSprites() ':on error resume next
         Call drawAll
     End If
 End Sub
+Public Function toolbarGetCurrent(ByVal Setting As eBrdSetting, ByVal index As Long) As Object ':on error resume next
+    Select Case Setting
+        Case BS_VECTOR:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).vectors(index)
+        Case BS_PROGRAM:    Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).prgs(index)
+        Case BS_SPRITE:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).sprites(index)
+        Case BS_IMAGE:      Set toolbarGetCurrent = Nothing
+    End Select
+End Function
 Public Function toolbarSetCurrent(ByRef cmb As ComboBox, ByVal index As Long) As Boolean ':on error resume next
     Dim i As Long
     For i = 0 To cmb.ListCount - 1

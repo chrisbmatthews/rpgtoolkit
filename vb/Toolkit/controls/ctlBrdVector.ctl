@@ -198,11 +198,13 @@ Option Explicit
 
 'Currently selected vector on board c.f. combo (board switching problems!)
 Public vectorIndex As Long
-Private m_currentVector As CVector
 
 Private Sub apply(): On Error Resume Next
-    If Not m_currentVector Is Nothing Then
-        With m_currentVector
+    Dim vector As CVector
+    Call activeBoard.setUndo
+    Set vector = activeBoard.toolbarGetCurrent(BS_VECTOR, vectorIndex)
+    If Not vector Is Nothing Then
+        With vector
             Dim i As Long
             If optType(TT_SOLID).value Then
                 .tiletype = TT_SOLID
@@ -220,12 +222,12 @@ Private Sub apply(): On Error Resume Next
             .bClosed = ((chkClosed.value <> 0) Or optType(TT_UNDER).value)
             .layer = val(txtLayer.Text)
         
-            Call m_currentVector.lvApply(lvPoints)
+            Call vector.lvApply(lvPoints)
         End With
     End If
     
     Call activeBoard.drawAll
-    Call populate(vectorIndex, m_currentVector)
+    Call populate(vectorIndex, vector)
 End Sub
 Private Sub disableAll(): On Error Resume Next
     Dim i As Control
@@ -251,8 +253,6 @@ Public Sub populate(ByVal index As Long, ByRef vector As CVector)  ':on error re
     lvPoints.Height = fraProperties.Height - lvPoints.Top - 256
     
     vectorIndex = index
-    Set m_currentVector = vector
-    
     If vector Is Nothing Then
         Call disableAll
         Exit Sub
