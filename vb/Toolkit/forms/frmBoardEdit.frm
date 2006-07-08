@@ -1311,7 +1311,7 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
         End If
     ElseIf (iMsg = WM_MBUTTONDOWN) Then
         ' Toggle axis of scrolling.
-        m_bScrollVertical = Not (bBScrollVertical)
+        m_bScrollVertical = Not (m_bScrollVertical)
     End If
 End Function
 
