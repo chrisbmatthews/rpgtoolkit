@@ -217,6 +217,13 @@ Public Enum eBrdSelectStatus
     SS_MOVING
     SS_PASTING
 End Enum
+Public Enum eBoardTabs
+    BTAB_VECTOR
+    BTAB_PROGRAM
+    BTAB_SPRITE
+    BTAB_IMAGE
+End Enum
+Public g_tabMap(BS_IMAGE) As Long              'Map eBrdSettings to eBoardTabs
 
 '=========================================================================
 ' A board editor document
@@ -256,7 +263,7 @@ Public Type TKBoardEditorData
     effectiveBoardX As Long               'Board data matrix dimensions
     effectiveBoardY As Long               '(different from bSizeX/Y for ISO_ROTATED)
     
-    'currentObject(BTAB_IMAGES) As Long    'Selected object indices
+    currentObject(BTAB_IMAGE) As Long     'Selected object indices
     
     'Common to all board editors
     bShowBackColour As Boolean            'tbd:show background colour in editor
@@ -423,9 +430,10 @@ End Function
 
 '=========================================================================
 '=========================================================================
-Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKBoard, ByVal layer As Long) As CVector  ':on error resume next
+Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKBoard, ByVal layer As Long) As CVector       ':on error resume next
+
     Dim i As Integer, bFound As Boolean
-   
+    
     Select Case optSetting
         Case BS_VECTOR
             '.vectors is always dimensioned.
@@ -444,7 +452,7 @@ Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKB
             End If
             'Assign current vector.
             board.vectors(i).layer = layer
-            Call tkMainForm.bTools_ctlVector.populate(i, board.vectors(i))
+            Call activeBoard.toolbarChange(i, BS_VECTOR)
             Set vectorCreate = board.vectors(i)
         Case BS_PROGRAM
             '.prgs is always dimensioned.
@@ -461,9 +469,9 @@ Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKB
                 ReDim Preserve board.prgs(i)
                 Set board.prgs(i) = New CBoardProgram
             End If
-            Call activeBoard.toolbarPopulatePrgs
+            Call activeBoard.toolbarPopulatePrgs            'Add the combo entry.
             board.prgs(i).layer = layer
-            Call tkMainForm.bTools_ctlPrg.populate(i, board.prgs(i))
+            Call activeBoard.toolbarChange(i, BS_PROGRAM)
             Set vectorCreate = board.prgs(i).vBase
     End Select
     
@@ -515,7 +523,7 @@ Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal keyCode As Integer) 
     i = val(lv.Tag)
     If i = 0 And keyCode = vbKeyDelete Then
         'Whole row selected - delete the point.
-        lv.ListItems.Remove lv.SelectedItem.Index
+        lv.ListItems.Remove lv.SelectedItem.index
         vectorLvKeyDown = True
     End If
     If i <> 1 And i <> 2 Then Exit Function

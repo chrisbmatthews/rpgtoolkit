@@ -6,14 +6,6 @@ Begin VB.UserControl ctlBrdSprite
    ClientWidth     =   3135
    ScaleHeight     =   6585
    ScaleWidth      =   3135
-   Begin VB.CommandButton cmdHideAll 
-      Caption         =   "Hide All"
-      Height          =   375
-      Left            =   1680
-      TabIndex        =   38
-      Top             =   480
-      Width           =   855
-   End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
       Height          =   5535
@@ -372,7 +364,7 @@ Option Explicit
 Private Sub apply() ': On Error Resume Next
     Dim x As Long, y As Long, spr As CBoardSprite
     Call activeBoard.setUndo
-    Set spr = activeBoard.toolbarGetCurrent(BS_SPRITE, cmbSprite.ListIndex)
+    Set spr = activeBoard.toolbarGetCurrent(BS_SPRITE)
     If Not spr Is Nothing Then
         With spr
             x = val(txtLoc(0).Text)
@@ -402,6 +394,7 @@ Public Sub disableAll(): On Error Resume Next
         i.Enabled = False
         i.Text = vbNullString
     Next i
+    Call activeBoard.toolbarSetCurrent(BTAB_SPRITE, -1)
     cmbSprite.Enabled = True
 End Sub
 Public Sub enableAll(): On Error Resume Next
@@ -425,14 +418,15 @@ End Sub
 Public Sub populate(ByVal index As Long, ByRef spr As CBoardSprite) ':on error resume next
     Dim i As Long, x As Long, y As Long
     
-    If (spr Is Nothing) Or (Not activeBoard.toolbarSetCurrent(cmbSprite, index)) Then
-        'No matching combo entry.
+    If spr Is Nothing Then
         Call disableAll
         Exit Sub
     End If
     
+    Call activeBoard.toolbarSetCurrent(BTAB_SPRITE, index)
     Call enableAll
     
+    If cmbSprite.ListIndex <> index Then cmbSprite.ListIndex = index
     cmbSprite.list(index) = str(index) & ": " & IIf(LenB(spr.filename), spr.filename, "<sprite>")
     txtFilename.Text = spr.filename
     x = spr.x
@@ -463,7 +457,7 @@ Public Property Get getCombo() As ComboBox: On Error Resume Next
 End Property
 
 Private Sub cmbSprite_Click(): On Error Resume Next
-    If cmbSprite.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbSprite.ItemData(cmbSprite.ListIndex), BS_SPRITE)
+    If cmbSprite.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbSprite.ListIndex, BS_SPRITE)
 End Sub
 Private Sub cmdBrowse_Click(index As Integer): On Error Resume Next
     MsgBox "tbd"
@@ -474,9 +468,6 @@ Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.drawAll
 End Sub
 Private Sub cmdDuplicate_Click(): On Error Resume Next
-    MsgBox "tbd"
-End Sub
-Private Sub cmdHideAll_Click(): On Error Resume Next
     MsgBox "tbd"
 End Sub
 Private Sub hsbSlot_Change(): On Error Resume Next

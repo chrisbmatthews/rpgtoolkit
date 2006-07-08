@@ -21,13 +21,13 @@ Begin VB.Form frmBoardEdit
       _Version        =   393216
       Style           =   1
       Tabs            =   2
-      Tab             =   1
       TabHeight       =   520
       ShowFocusRect   =   0   'False
       TabCaption(0)   =   "Board"
       TabPicture(0)   =   "frmBoardEdit.frx":0000
-      Tab(0).ControlEnabled=   0   'False
+      Tab(0).ControlEnabled=   -1  'True
       Tab(0).Control(0)=   "picBoard"
+      Tab(0).Control(0).Enabled=   0   'False
       Tab(0).Control(1)=   "vScroll"
       Tab(0).Control(1).Enabled=   0   'False
       Tab(0).Control(2)=   "hScroll"
@@ -35,7 +35,7 @@ Begin VB.Form frmBoardEdit
       Tab(0).ControlCount=   3
       TabCaption(1)   =   "Properties"
       TabPicture(1)   =   "frmBoardEdit.frx":001C
-      Tab(1).ControlEnabled=   -1  'True
+      Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "picProperties"
       Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
@@ -45,7 +45,7 @@ Begin VB.Form frmBoardEdit
          ForeColor       =   &H80000008&
          HasDC           =   0   'False
          Height          =   5775
-         Left            =   120
+         Left            =   -74880
          ScaleHeight     =   5775
          ScaleWidth      =   10095
          TabIndex        =   4
@@ -731,7 +731,7 @@ Begin VB.Form frmBoardEdit
       End
       Begin VB.HScrollBar hScroll 
          Height          =   255
-         Left            =   -74880
+         Left            =   120
          SmallChange     =   32
          TabIndex        =   3
          TabStop         =   0   'False
@@ -740,7 +740,7 @@ Begin VB.Form frmBoardEdit
       End
       Begin VB.VScrollBar vScroll 
          Height          =   2655
-         Left            =   -70680
+         Left            =   4320
          SmallChange     =   32
          TabIndex        =   2
          TabStop         =   0   'False
@@ -753,7 +753,7 @@ Begin VB.Form frmBoardEdit
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   2655
-         Left            =   -74880
+         Left            =   120
          MousePointer    =   1  'Arrow
          ScaleHeight     =   177
          ScaleMode       =   3  'Pixel
@@ -897,14 +897,7 @@ Private m_mousePosition As POINTAPI             'For zooming with the mousewheel
 Private Const BTAB_BOARD = 0
 Private Const BTAB_PROPERTIES = 1
 
-Private Enum eBoardTabs
-    BTAB_VECTOR
-    BTAB_PROGRAM
-    BTAB_SPRITE
-    BTAB_IMAGE
-End Enum
 Private m_ctls(BTAB_IMAGE) As Object
-Private m_tabMap(BS_IMAGE) As Long              'Map eBrdSettings to eBoardTabs
 
 Private Const WM_MOUSEWHEEL = &H20A
 Private Const WHEEL_DELTA = 120
@@ -914,6 +907,7 @@ Private Const MAX_UNDO = 10
 '=========================================================================
 Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume Next
     ' Assign default values.
+    Dim i As Long
     Call resetEditor(ed)
     With ed
         .pCEd.zoom = 1
@@ -921,6 +915,9 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
         .pCBoard = BRDNewCBoard(projectPath)
         .bRevertToDraw = True
         .currentLayer = 1
+        For i = 0 To UBound(m_ed.currentObject)
+            m_ed.currentObject(i) = -1              'Initialise the selected objects.
+        Next i
     End With
     Set m_sel = New CBoardSelection
     
@@ -1072,13 +1069,14 @@ Private Sub Form_Load() ':on error resume next
     Set m_ctls(BTAB_PROGRAM) = tkMainForm.bTools_ctlPrg
     Set m_ctls(BTAB_SPRITE) = tkMainForm.bTools_ctlSprite
     Set m_ctls(BTAB_IMAGE) = tkMainForm.bTools_ctlImage
-    'Map the settings to the tabs
-    For i = 0 To UBound(m_tabMap): m_tabMap(i) = -1: Next i
-    m_tabMap(BS_VECTOR) = BTAB_VECTOR
-    m_tabMap(BS_PROGRAM) = BTAB_PROGRAM
-    m_tabMap(BS_SPRITE) = BTAB_SPRITE
-    m_tabMap(BS_IMAGE) = BTAB_IMAGE
     
+    'Map the settings to the tabs
+    For i = 0 To UBound(g_tabMap): g_tabMap(i) = -1: Next i
+    g_tabMap(BS_VECTOR) = BTAB_VECTOR
+    g_tabMap(BS_PROGRAM) = BTAB_PROGRAM
+    g_tabMap(BS_SPRITE) = BTAB_SPRITE
+    g_tabMap(BS_IMAGE) = BTAB_IMAGE
+        
     ' Hook scroll wheel.
     Call AttachMessage(Me, hwnd, WM_MOUSEWHEEL)
 End Sub
@@ -1358,7 +1356,7 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
     Set curVector = currentVector
     
     'Currently handling Ctrl+letter through menus.
-    If Shift And vbCtrlMask Then Exit Sub
+    If Shift And (vbCtrlMask Or vbAltMask) Then Exit Sub
     
     Select Case keyCode
         Case vbKeyQ: tkMainForm.brdOptSetting(BS_GENERAL).value = True
@@ -1456,7 +1454,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                             m_sel.xDrag = pxCoord.x
                             m_sel.yDrag = pxCoord.y
                         Else
-                            Dim img As TKBoardImage, Index  As Long
+                            Dim img As TKBoardImage, index  As Long
                             Select Case m_ed.optSetting
                                 Case BS_TILE, BS_VECTOR, BS_PROGRAM
                                     'Start new selection.
@@ -1464,13 +1462,13 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                                     Call m_sel.restart(pxCoord.x, pxCoord.y)
                                 Case BS_SPRITE
                                     'Start moving the selected sprite.
-                                    If imageHitTest(pxCoord.x, pxCoord.y, Index, img, m_ed.board(m_ed.undoIndex).spriteImages) Then
-                                        Call toolbarChange(Index, m_ed.optSetting)
+                                    If imageHitTest(pxCoord.x, pxCoord.y, index, img, m_ed.board(m_ed.undoIndex).spriteImages) Then
+                                        Call toolbarChange(index, m_ed.optSetting)
                                         Call m_sel.assign(img.bounds.Left, img.bounds.Top, img.bounds.Right, img.bounds.Bottom)
                                     End If
                                 Case BS_IMAGE
-                                    If imageHitTest(pxCoord.x, pxCoord.y, Index, img, m_ed.board(m_ed.undoIndex).Images) Then
-                                        Call toolbarChange(Index, m_ed.optSetting)
+                                    If imageHitTest(pxCoord.x, pxCoord.y, index, img, m_ed.board(m_ed.undoIndex).Images) Then
+                                        Call toolbarChange(index, m_ed.optSetting)
                                         Call m_sel.assign(img.bounds.Left, img.bounds.Top, img.bounds.Right, img.bounds.Bottom)
                                     End If
                             End Select
@@ -1902,8 +1900,8 @@ End Sub
 Public Sub mdiChkAutotile(ByVal value As Integer) ':on error resume next
     m_ed.bAutotiler = (value <> 0)
 End Sub
-Public Sub mdiOptSetting(ByVal Index As Integer) ': On Error Resume Next
-    m_ed.optSetting = Index
+Public Sub mdiOptSetting(ByVal index As Integer) ': On Error Resume Next
+    m_ed.optSetting = index
     If Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
     
     'Switch to BT_DRAW for general/zoom.
@@ -1911,13 +1909,13 @@ Public Sub mdiOptSetting(ByVal Index As Integer) ': On Error Resume Next
     Call toolsRefresh
     
     'Switch the object toolbar pane.
-    If m_tabMap(Index) <> -1 Then tkMainForm.bTools_Tabs.Tab = m_tabMap(Index)
+    If g_tabMap(index) <> -1 Then tkMainForm.bTools_Tabs.Tab = g_tabMap(index)
     Call toolbarRefresh
     Call drawBoard
 End Sub
-Public Sub mdiOptTool(ByVal Index As Integer) ': On Error Resume Next
-    m_ed.optTool = Index
-    If (Index <> BT_SELECT) And Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
+Public Sub mdiOptTool(ByVal index As Integer) ': On Error Resume Next
+    m_ed.optTool = index
+    If (index <> BT_SELECT) And Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
 End Sub
 Public Sub mdiChkGrid(ByVal value As Integer) ': On Error Resume Next
     m_ed.bGrid = value
@@ -2419,12 +2417,12 @@ Private Function currentVector() As CVector ': On Error Resume Next
     Set currentVector = Nothing
     Select Case m_ed.optSetting
         Case BS_VECTOR
-            i = tkMainForm.bTools_ctlVector.vectorIndex
+            i = m_ed.currentObject(BTAB_VECTOR)
             If i >= 0 And i <= UBound(m_ed.board(m_ed.undoIndex).vectors) Then
                 If Not m_ed.board(m_ed.undoIndex).vectors(i) Is Nothing Then Set currentVector = m_ed.board(m_ed.undoIndex).vectors(i)
             End If
         Case BS_PROGRAM
-            i = tkMainForm.bTools_ctlPrg.getCombo.ListIndex
+            i = m_ed.currentObject(BTAB_PROGRAM)
             If i >= 0 And i <= UBound(m_ed.board(m_ed.undoIndex).prgs) Then
                 If Not m_ed.board(m_ed.undoIndex).prgs(i) Is Nothing Then Set currentVector = m_ed.board(m_ed.undoIndex).prgs(i).vBase
             End If
@@ -2436,8 +2434,8 @@ Private Sub vectorDrawAll() ': On Error Resume Next
         'Vectors
         If m_ed.bShowVectors Or m_ed.optSetting = BS_VECTOR Then
             For i = 0 To UBound(.vectors)
-                If Not (.vectors(i) Is Nothing) Then 'And (.vectors(i).tiletype <> TT_NULL) Then
-                    If .vectors(i).layer <= .bSizeL And m_ed.bLayerVisible(.vectors(i).layer) Then _
+                If Not (.vectors(i) Is Nothing) Then
+                    If .vectors(i).layer <= .bSizeL And m_ed.bLayerVisible(.vectors(i).layer) And (.vectors(i).tiletype <> TT_NULL) Then _
                         Call .vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor(.vectors(i).tiletype), m_ed.bShowVectorIndices)
                 End If
             Next i
@@ -2456,11 +2454,11 @@ Private Sub vectorDrawAll() ': On Error Resume Next
     'Selected vector
     If Not currentVector Is Nothing Then Call currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
 End Sub
-Public Sub vectorDeleteCurrent(ByVal Setting As eBrdSetting) ': on error resume next
+Public Sub vectorDeleteCurrent(ByVal setting As eBrdSetting) ': on error resume next
     Dim i As Long
-    Select Case Setting
+    Select Case setting
         Case BS_VECTOR
-            i = tkMainForm.bTools_ctlVector.vectorIndex
+            i = m_ed.currentObject(BTAB_VECTOR)
             If i >= 0 Then
                 'Jiggle the vector.
                 For i = i To UBound(m_ed.board(m_ed.undoIndex).vectors) - 1
@@ -2470,7 +2468,7 @@ Public Sub vectorDeleteCurrent(ByVal Setting As eBrdSetting) ': on error resume 
                 If i <> 0 Then ReDim Preserve m_ed.board(m_ed.undoIndex).vectors(i - 1)
             End If
         Case BS_PROGRAM
-            i = tkMainForm.bTools_ctlPrg.getCombo.ListIndex
+            i = m_ed.currentObject(BTAB_PROGRAM)
             If i >= 0 Then
                 For i = i To UBound(m_ed.board(m_ed.undoIndex).prgs) - 1
                    Set m_ed.board(m_ed.undoIndex).prgs(i) = m_ed.board(m_ed.undoIndex).prgs(i + 1)
@@ -2548,11 +2546,11 @@ End Sub
 
 '========================================================================
 '========================================================================
-Public Sub imageApply(ByVal Index As Long) ':on error resume next
+Public Sub imageApply(ByVal index As Long) ':on error resume next
     Dim ctl As ctlBrdImage, w As Long, h As Long, img As TKBoardImage
     Set ctl = tkMainForm.bTools_ctlImage
     
-    img = m_ed.board(m_ed.undoIndex).Images(Index)
+    img = m_ed.board(m_ed.undoIndex).Images(index)
     w = img.bounds.Right - img.bounds.Left
     h = img.bounds.Bottom - img.bounds.Top
     
@@ -2571,7 +2569,7 @@ Public Sub imageApply(ByVal Index As Long) ':on error resume next
     End If
     img.file = ctl.getTxtFilename.Text
     
-    m_ed.board(m_ed.undoIndex).Images(Index) = img
+    m_ed.board(m_ed.undoIndex).Images(index) = img
     Call imagePopulate(ctl.getCombo.ListIndex, img)
 End Sub
 Private Sub imageCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Long) ':on error resume next
@@ -2594,12 +2592,12 @@ Private Sub imageCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Long
     
     Call imagePopulate(i, board.Images(i))
 End Sub
-Public Sub imageDeleteCurrent(ByVal Index As Long) ':on error resume next
+Public Sub imageDeleteCurrent(ByVal index As Long) ':on error resume next
     Dim i As Long, img As TKBoardImage
-    If Index >= 0 Then
+    If index >= 0 Then
         Call setUndo
-        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).Images(Index)))
-        For i = Index To UBound(m_ed.board(m_ed.undoIndex).Images) - 1
+        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).Images(index)))
+        For i = index To UBound(m_ed.board(m_ed.undoIndex).Images) - 1
            m_ed.board(m_ed.undoIndex).Images(i) = m_ed.board(m_ed.undoIndex).Images(i + 1)
         Next i
         If i = 0 Then
@@ -2611,31 +2609,33 @@ Public Sub imageDeleteCurrent(ByVal Index As Long) ':on error resume next
         Call toolbarPopulateImages
     End If
 End Sub
-Private Function imageHitTest(ByVal x As Long, ByVal y As Long, ByRef Index As Long, ByRef img As TKBoardImage, ByRef imgs() As TKBoardImage) As Boolean ':on error resume next
+Private Function imageHitTest(ByVal x As Long, ByVal y As Long, ByRef index As Long, ByRef img As TKBoardImage, ByRef imgs() As TKBoardImage) As Boolean ':on error resume next
     Dim i As Long
     For i = UBound(imgs) To 0 Step -1
         If x > imgs(i).bounds.Left And x < imgs(i).bounds.Right And _
             y > imgs(i).bounds.Top And y < imgs(i).bounds.Bottom Then
             img = imgs(i)
-            Index = i
+            index = i
             imageHitTest = True
             Exit Function
         End If
     Next i
 End Function
-Private Sub imagePopulate(ByVal Index As Long, ByRef img As TKBoardImage) ':on error resume next
-    Dim ctl As ctlBrdImage
+Private Sub imagePopulate(ByVal index As Long, ByRef img As TKBoardImage) ':on error resume next
+    Dim ctl As ctlBrdImage, cmb As ComboBox
     Set ctl = m_ctls(BTAB_IMAGE)
+    Set cmb = ctl.getCombo
     
-    If (img.drawType = BI_NULL) Or (Not toolbarSetCurrent(ctl.getCombo, Index)) Then
-        'No matching combo entry.
+    If img.drawType = BI_NULL Then
         Call ctl.disableAll
         Exit Sub
     End If
     
+    Call toolbarSetCurrent(BTAB_IMAGE, index)
     Call ctl.enableAll
     
-    ctl.getCombo.list(Index) = str(Index) & ": " & IIf(LenB(img.file), img.file, "<image>")
+    If cmb.ListIndex <> index Then cmb.ListIndex = index
+    cmb.list(index) = str(index) & ": " & IIf(LenB(img.file), img.file, "<image>")
     ctl.getTxtFilename.Text = img.file
     ctl.getTxtLoc(0).Text = str(img.bounds.Left)
     ctl.getTxtLoc(1).Text = str(img.bounds.Top)
@@ -2658,7 +2658,7 @@ Private Sub spriteCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Lon
         ReDim Preserve board.spriteImages(i)
     End If
     Set board.sprites(i) = New CBoardSprite
-    Call toolbarPopulateSprites
+    Call toolbarPopulateSprites                         'Add the combo entry.
     
     board.sprites(i).layer = m_ed.currentLayer
     
@@ -2672,12 +2672,12 @@ Private Sub spriteCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Lon
     
     Call m_ctls(BTAB_SPRITE).populate(i, board.sprites(i))
 End Sub
-Public Sub spriteDeleteCurrent(ByVal Index As Long) ':on error resume next
+Public Sub spriteDeleteCurrent(ByVal index As Long) ':on error resume next
     Dim i As Long
-    If Index >= 0 Then
+    If index >= 0 Then
         Call setUndo
-        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).spriteImages(Index)))
-        For i = Index To UBound(m_ed.board(m_ed.undoIndex).sprites) - 1
+        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).spriteImages(index)))
+        For i = index To UBound(m_ed.board(m_ed.undoIndex).sprites) - 1
             Set m_ed.board(m_ed.undoIndex).sprites(i) = m_ed.board(m_ed.undoIndex).sprites(i + 1)
            m_ed.board(m_ed.undoIndex).spriteImages(i) = m_ed.board(m_ed.undoIndex).spriteImages(i + 1)
         Next i
@@ -2746,21 +2746,21 @@ Private Sub spriteSetImageData(ByRef spr As CBoardSprite, img As TKBoardImage) '
         End If
     Next i
 End Sub
-Public Function spriteSwapSlots(ByVal Index As Long, ByVal newIndex As Long) As Boolean ':on error resume next
-    If newIndex = Index Or newIndex < 0 Or newIndex > UBound(m_ed.board(m_ed.undoIndex).sprites) Then Exit Function
+Public Function spriteSwapSlots(ByVal index As Long, ByVal newIndex As Long) As Boolean ':on error resume next
+    If newIndex = index Or newIndex < 0 Or newIndex > UBound(m_ed.board(m_ed.undoIndex).sprites) Then Exit Function
     
     Dim spr As CBoardSprite, img As TKBoardImage
     'Hold the data in the new slot.
     Set spr = m_ed.board(m_ed.undoIndex).sprites(newIndex)
     img = m_ed.board(m_ed.undoIndex).spriteImages(newIndex)
     
-    Set m_ed.board(m_ed.undoIndex).sprites(newIndex) = m_ed.board(m_ed.undoIndex).sprites(Index)
-    m_ed.board(m_ed.undoIndex).spriteImages(newIndex) = m_ed.board(m_ed.undoIndex).spriteImages(Index)
+    Set m_ed.board(m_ed.undoIndex).sprites(newIndex) = m_ed.board(m_ed.undoIndex).sprites(index)
+    m_ed.board(m_ed.undoIndex).spriteImages(newIndex) = m_ed.board(m_ed.undoIndex).spriteImages(index)
     
-    Set m_ed.board(m_ed.undoIndex).sprites(Index) = spr
-    m_ed.board(m_ed.undoIndex).spriteImages(Index) = img
+    Set m_ed.board(m_ed.undoIndex).sprites(index) = spr
+    m_ed.board(m_ed.undoIndex).spriteImages(index) = img
         
-    Call toolbarSetCurrent(m_ctls(BTAB_SPRITE).getCombo, newIndex)
+    Call toolbarSetCurrent(BTAB_SPRITE, newIndex)
     Call toolbarPopulateSprites
 End Function
 
@@ -2774,22 +2774,22 @@ Public Sub toolbarRefresh() ':on error resume next
         Case BTAB_IMAGE:      Call toolbarPopulateImages
     End Select
 End Sub
-Public Sub toolbarChange(ByVal Index As Long, ByVal Setting As eBrdSetting) ':on error resume next
-    Select Case Setting
+Public Sub toolbarChange(ByVal index As Long, ByVal setting As eBrdSetting) ':on error resume next
+    Select Case setting
         Case BS_VECTOR
-            Call m_ctls(BTAB_VECTOR).populate(Index, m_ed.board(m_ed.undoIndex).vectors(Index))
+            Call m_ctls(BTAB_VECTOR).populate(index, m_ed.board(m_ed.undoIndex).vectors(index))
         Case BS_PROGRAM
-            Call m_ctls(BTAB_PROGRAM).populate(Index, m_ed.board(m_ed.undoIndex).prgs(Index))
+            Call m_ctls(BTAB_PROGRAM).populate(index, m_ed.board(m_ed.undoIndex).prgs(index))
         Case BS_SPRITE
-            Call m_ctls(BTAB_SPRITE).populate(Index, m_ed.board(m_ed.undoIndex).sprites(Index))
+            Call m_ctls(BTAB_SPRITE).populate(index, m_ed.board(m_ed.undoIndex).sprites(index))
         Case BS_IMAGE
-            Call imagePopulate(Index, m_ed.board(m_ed.undoIndex).Images(Index))
+            Call imagePopulate(index, m_ed.board(m_ed.undoIndex).Images(index))
     End Select
     Call drawAll
 End Sub
 Public Sub toolbarPopulateVectors() ':on error resume next
     Dim i As Long, j As Long, k As Long
-    k = m_ctls(BTAB_VECTOR).vectorIndex
+    k = m_ed.currentObject(BTAB_VECTOR)
                 
     With m_ed.board(m_ed.undoIndex)
         For i = 0 To UBound(.vectors)
@@ -2798,8 +2798,8 @@ Public Sub toolbarPopulateVectors() ':on error resume next
     End With
     If j > 0 Then
         'Preserve selected vector.
-        k = IIf(k < j And k <> -1, k, 0)
-        Call m_ctls(BTAB_VECTOR).populate(k, m_ed.board(m_ed.undoIndex).vectors(k))
+        i = IIf(k < j And k <> -1, k, 0)
+        Call m_ctls(BTAB_VECTOR).populate(i, m_ed.board(m_ed.undoIndex).vectors(i))
     Else
         'No vectors.
         Call m_ctls(BTAB_VECTOR).populate(-1, Nothing)
@@ -2810,24 +2810,21 @@ Public Sub toolbarPopulatePrgs() ':on error resume next
     'User controls don't seem to like arrays of class references, so...
     Dim combo As ComboBox, i As Long, j As Long, k As Long
     Set combo = m_ctls(BTAB_PROGRAM).getCombo
-    k = combo.ListIndex
     combo.clear
+    k = m_ed.currentObject(BTAB_PROGRAM)
     
     With m_ed.board(m_ed.undoIndex)
         For i = 0 To UBound(.prgs)
             If Not .prgs(i) Is Nothing Then
-                'If .prgs(i).vBase.tiletype <> TT_NULL Then
                     combo.AddItem str(j) & ": " & IIf(LenB(.prgs(i).filename), .prgs(i).filename, "<program>")
-                    combo.ItemData(j) = i
                     j = j + 1
-                'End If
             End If
         Next i
     End With
     If j > 0 Then
         'Preserve selected vector.
-        combo.ListIndex = IIf(k < j And k <> -1, k, 0)
-        Call m_ctls(BTAB_PROGRAM).populate(combo.ListIndex, m_ed.board(m_ed.undoIndex).prgs(combo.ItemData(combo.ListIndex)))
+        i = IIf(k < j And k <> -1, k, 0)
+        Call m_ctls(BTAB_PROGRAM).populate(i, m_ed.board(m_ed.undoIndex).prgs(i))
     Else
         'No programs.
         Call m_ctls(BTAB_PROGRAM).disableAll
@@ -2835,18 +2832,18 @@ Public Sub toolbarPopulatePrgs() ':on error resume next
 
 End Sub
 Private Sub toolbarPopulateImages() ':on error resume next
+    
     'User controls don't seem to like arrays, so...
     Dim combo As ComboBox, i As Long, j As Long, k As Long
     Set combo = m_ctls(BTAB_IMAGE).getCombo
-    k = combo.ListIndex
     combo.clear
+    k = m_ed.currentObject(BTAB_IMAGE)
     
     With m_ed.board(m_ed.undoIndex)
         For i = 0 To UBound(.Images)
             If Not .Images(i).drawType = BI_NULL Then
                 'If Not .images(i) Is Nothing Then
                     combo.AddItem str(j) & ": " & IIf(LenB(.Images(i).file), .Images(i).file, "<image>")
-                    combo.ItemData(j) = i
                     j = j + 1
                 'End If
             End If
@@ -2854,8 +2851,8 @@ Private Sub toolbarPopulateImages() ':on error resume next
     End With
     If j > 0 Then
         'Preserve selected image.
-        combo.ListIndex = IIf(k < j And k <> -1, k, 0)
-        Call imagePopulate(combo.ListIndex, m_ed.board(m_ed.undoIndex).Images(combo.ItemData(combo.ListIndex)))
+        i = IIf(k < j And k <> -1, k, 0)
+        Call imagePopulate(i, m_ed.board(m_ed.undoIndex).Images(i))
     Else
         'No images.
         Call m_ctls(BTAB_IMAGE).disableAll
@@ -2863,58 +2860,43 @@ Private Sub toolbarPopulateImages() ':on error resume next
     End If
 End Sub
 Private Sub toolbarPopulateSprites() ':on error resume next
-    'User controls don't seem to like arrays, so...
+    
     Dim combo As ComboBox, i As Long, j As Long, k As Long
     Set combo = m_ctls(BTAB_SPRITE).getCombo
-    k = combo.ListIndex
+    k = m_ed.currentObject(BTAB_SPRITE)
     combo.clear
     
     With m_ed.board(m_ed.undoIndex)
         For i = 0 To UBound(.sprites)
             If Not .sprites(i) Is Nothing Then
                     combo.AddItem str(j) & ": " & IIf(LenB(.sprites(i).filename), .sprites(i).filename, "<sprite>")
-                    combo.ItemData(j) = i
                     j = j + 1
             End If
         Next i
     End With
     If j > 0 Then
         'Preserve selected sprite.
-        combo.ListIndex = IIf(k < j And k <> -1, k, 0)
-        Call m_ctls(BTAB_SPRITE).populate(combo.ListIndex, m_ed.board(m_ed.undoIndex).sprites(combo.ItemData(combo.ListIndex)))
+        i = IIf(k < j And k <> -1, k, 0)
+        Call m_ctls(BTAB_SPRITE).populate(i, m_ed.board(m_ed.undoIndex).sprites(i))
     Else
         'No sprites.
         Call m_ctls(BTAB_SPRITE).disableAll
         Call drawAll
     End If
 End Sub
-Public Function toolbarGetCurrent(ByVal Setting As eBrdSetting, ByVal Index As Long) As Object ':on error resume next
-    Select Case Setting
-        Case BS_VECTOR:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).vectors(Index)
-        Case BS_PROGRAM:    Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).prgs(Index)
-        Case BS_SPRITE:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).sprites(Index)
-        Case BS_IMAGE:      Set toolbarGetCurrent = Nothing
+Public Function toolbarGetCurrent(ByVal setting As eBrdSetting) As Object ':on error resume next
+    Select Case setting
+        Case BS_VECTOR:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).vectors(toolbarGetIndex(setting))
+        Case BS_PROGRAM:    Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).prgs(toolbarGetIndex(setting))
+        Case BS_SPRITE:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).sprites(toolbarGetIndex(setting))
     End Select
 End Function
-Public Function toolbarGetIndex(ByVal Setting As eBrdSetting) As Long ':on error resume next
-    Select Case Setting
-        Case BS_VECTOR: toolbarGetIndex = m_ctls(BTAB_VECTOR).vectorIndex
-        Case BS_PROGRAM: toolbarGetIndex = m_ctls(BTAB_PROGRAM).getCombo.ListIndex
-        Case BS_SPRITE: toolbarGetIndex = m_ctls(BTAB_SPRITE).getCombo.ListIndex
-        Case BS_IMAGE: toolbarGetIndex = m_ctls(BTAB_IMAGE).getCombo.ListIndex
-    End Select
+Public Function toolbarGetIndex(ByVal setting As eBrdSetting) As Long ':on error resume next
+    toolbarGetIndex = m_ed.currentObject(g_tabMap(setting))
 End Function
-Public Function toolbarSetCurrent(ByRef cmb As ComboBox, ByVal Index As Long) As Boolean ':on error resume next
-    Dim i As Long
-    For i = 0 To cmb.ListCount - 1
-        If cmb.ItemData(i) = Index Then
-            If i <> Index Then MsgBox "toolbarsetcurrent: i <> index"
-            cmb.ListIndex = i
-            toolbarSetCurrent = True
-            Exit Function
-        End If
-    Next i
-End Function
+Public Sub toolbarSetCurrent(ByVal obj As eBoardTabs, ByVal index As Long) ':on error resume next
+    m_ed.currentObject(obj) = index
+End Sub
 
 '========================================================================
 '========================================================================
@@ -2976,7 +2958,7 @@ Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelectio
             
         Case BS_VECTOR, BS_PROGRAM
             Dim obj As Object
-            Set obj = toolbarGetCurrent(m_ed.optSetting, toolbarGetIndex(m_ed.optSetting))
+            Set obj = toolbarGetCurrent(m_ed.optSetting)
             If Not (obj Is Nothing) Then
                 Call mnuSelectAll_Click
                 Set clip.obj = obj
@@ -2984,10 +2966,9 @@ Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelectio
             End If
         Case BS_SPRITE
             Dim spr As CBoardSprite
-            i = toolbarGetIndex(m_ed.optSetting)
-            Set spr = toolbarGetCurrent(m_ed.optSetting, i)
+            Set spr = toolbarGetCurrent(m_ed.optSetting)
             If Not (spr Is Nothing) Then
-                r = m_ed.board(m_ed.undoIndex).spriteImages(i).bounds
+                r = m_ed.board(m_ed.undoIndex).spriteImages(toolbarGetIndex(m_ed.optSetting)).bounds
                 Call m_sel.assign(r.Left, r.Top, r.Right, r.Bottom)
                 Set clip.obj = spr
             End If
@@ -3050,16 +3031,15 @@ Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelecti
             Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, False, m_ed.currentLayer)
         
         Case BS_VECTOR, BS_PROGRAM
-            Dim obj As Object
-            Set obj = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
+            Call vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
             Call clip.obj.moveSelectionBy(dr.x, dr.y)
-            Call clip.obj.copy(toolbarGetCurrent(m_ed.optSetting, toolbarGetIndex(m_ed.optSetting)))
+            Call clip.obj.copy(toolbarGetCurrent(m_ed.optSetting))
             Call toolbarRefresh
         Case BS_SPRITE
             clip.obj.x = clip.obj.x + dr.x
             clip.obj.y = clip.obj.y + dr.y
             Call spriteCreate(m_ed.board(m_ed.undoIndex), clip.obj.x, clip.obj.y)
-            Call clip.obj.copy(toolbarGetCurrent(m_ed.optSetting, toolbarGetIndex(m_ed.optSetting)))
+            Call clip.obj.copy(toolbarGetCurrent(m_ed.optSetting))
             Call toolbarRefresh
         Case BS_IMAGE
             clip.img.bounds.Left = clip.img.bounds.Left + dr.x

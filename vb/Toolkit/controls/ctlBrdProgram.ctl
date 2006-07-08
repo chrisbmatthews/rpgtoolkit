@@ -314,7 +314,7 @@ Private Sub apply() ': On Error Resume Next
     Dim prg As CBoardProgram
     'Set undo before getting current program because undo creates new objects.
     Call activeBoard.setUndo
-    Set prg = activeBoard.toolbarGetCurrent(BS_PROGRAM, cmbPrg.ListIndex)
+    Set prg = activeBoard.toolbarGetCurrent(BS_PROGRAM)
     If Not prg Is Nothing Then
         With prg
             .filename = txtFilename.Text
@@ -340,6 +340,7 @@ Public Sub disableAll(): On Error Resume Next
         i.Text = vbNullString
     Next i
     cmbPrg.Enabled = True
+    Call activeBoard.toolbarSetCurrent(BTAB_PROGRAM, -1)
     lvPoints.ListItems.clear
 End Sub
 Private Sub enableAll(): On Error Resume Next
@@ -356,14 +357,15 @@ Public Sub populate(ByVal index As Long, ByRef prg As CBoardProgram) ': On Error
     fraProperties.Height = UserControl.Height - fraProperties.Top - 32
     lvPoints.Height = fraProperties.Height - lvPoints.Top - 64
     
-    If (prg Is Nothing) Or (Not activeBoard.toolbarSetCurrent(cmbPrg, index)) Then
-        'No matching combo entry.
+    If prg Is Nothing Then
         Call disableAll
         Exit Sub
     End If
     
+    Call activeBoard.toolbarSetCurrent(BTAB_PROGRAM, index)
     Call enableAll
     
+    If cmbPrg.ListIndex <> index Then cmbPrg.ListIndex = index
     cmbPrg.list(index) = str(index) & ": " & IIf(LenB(prg.filename), prg.filename, "<program>")
     txtFilename.Text = prg.filename
     txtLayer.Text = str(prg.layer)
@@ -402,7 +404,7 @@ Private Sub chkRepeatTrigger_MouseUp(Button As Integer, Shift As Integer, x As S
     Call apply
 End Sub
 Private Sub cmbPrg_Click(): On Error Resume Next
-    If cmbPrg.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbPrg.ItemData(cmbPrg.ListIndex), BS_PROGRAM)
+    If cmbPrg.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbPrg.ListIndex, BS_PROGRAM)
 End Sub
 Private Sub cmdBrowse_Click(): On Error Resume Next
     MsgBox "tbd"

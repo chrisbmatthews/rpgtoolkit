@@ -223,6 +223,7 @@ Public Sub disableAll(): On Error Resume Next
         i.Enabled = False
         i.Text = vbNullString
     Next i
+    Call activeBoard.toolbarSetCurrent(BTAB_IMAGE, -1)
     cmbImage.Enabled = True
 End Sub
 Public Sub enableAll(): On Error Resume Next
@@ -266,7 +267,7 @@ Private Sub chkTransp_Click(): On Error Resume Next
     If chkTransp.value Then Call activeBoard.mdiOptTool(BT_IMG_TRANSP)
 End Sub
 Private Sub cmbImage_Click(): On Error Resume Next
-    If cmbImage.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbImage.ItemData(cmbImage.ListIndex), BS_IMAGE)
+    If cmbImage.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbImage.ListIndex, BS_IMAGE)
 End Sub
 Private Sub cmdBrowse_Click(): On Error Resume Next
     MsgBox "tbd"

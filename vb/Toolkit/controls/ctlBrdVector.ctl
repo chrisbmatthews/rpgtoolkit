@@ -196,13 +196,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Currently selected vector on board c.f. combo (board switching problems!)
-Public vectorIndex As Long
-
 Private Sub apply(): On Error Resume Next
     Dim vector As CVector
     Call activeBoard.setUndo
-    Set vector = activeBoard.toolbarGetCurrent(BS_VECTOR, vectorIndex)
+    Set vector = activeBoard.toolbarGetCurrent(BS_VECTOR)
     If Not vector Is Nothing Then
         With vector
             Dim i As Long
@@ -227,7 +224,7 @@ Private Sub apply(): On Error Resume Next
     End If
     
     Call activeBoard.drawAll
-    Call populate(vectorIndex, vector)
+    Call populate(activeBoard.toolbarGetIndex(BS_VECTOR), vector)
 End Sub
 Private Sub disableAll(): On Error Resume Next
     Dim i As Control
@@ -235,6 +232,7 @@ Private Sub disableAll(): On Error Resume Next
         i.Enabled = False
         i.Text = vbNullString
     Next i
+    Call activeBoard.toolbarSetCurrent(BTAB_VECTOR, -1)
     Call lvPoints.ListItems.clear
 End Sub
 Private Sub enableAll(): On Error Resume Next
@@ -252,14 +250,15 @@ Public Sub populate(ByVal index As Long, ByRef vector As CVector)  ':on error re
     fraProperties.Height = UserControl.Height - fraProperties.Top
     lvPoints.Height = fraProperties.Height - lvPoints.Top - 256
     
-    vectorIndex = index
     If vector Is Nothing Then
         Call disableAll
         Exit Sub
     End If
     
-    'Option buttons have been assigned TT_ values as indices.
+    Call activeBoard.toolbarSetCurrent(BTAB_VECTOR, index)
     Call enableAll
+    
+    'Option buttons have been assigned TT_ values as indices.
     If vector.tiletype <> TT_NULL Then optType(vector.tiletype).value = True
     chkClosed.value = Abs(vector.bClosed)
     txtLayer.Text = str(vector.layer)
@@ -284,7 +283,7 @@ Public Sub populate(ByVal index As Long, ByRef vector As CVector)  ':on error re
     If vector.tiletype = TT_NULL Then Exit Sub
         
     Call vector.lvPopulate(lvPoints)
-
+    
 End Sub
 
 Private Sub chkUnder_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
@@ -318,8 +317,4 @@ Private Sub cmdDelete_Click(): On Error Resume Next
 End Sub
 Private Sub cmdDuplicate_Click(): On Error Resume Next
     MsgBox "tbd"
-End Sub
-
-Private Sub UserControl_Initialize(): On Error Resume Next
-    vectorIndex = -1      'c.f. combo
 End Sub
