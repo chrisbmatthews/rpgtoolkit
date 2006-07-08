@@ -1289,7 +1289,7 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
         If (Abs(m_mouseScrollDistance) >= WHEEL_DELTA) Then
             ' We've scrolled the delta distance
 
-            If (loWord(wParam) Or MK_CONTROL) Then
+            If (loWord(wParam) And MK_CONTROL) Then
                 ' Control is down: zoom.
                 Dim pt As POINTAPI
                 pt.x = loWord(lParam)
