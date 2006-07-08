@@ -33,10 +33,12 @@ Public activationType As Long                'Activation type (PRG_ flags).
 Public vBase As New CVector                  'The activation area.
 Public distanceRepeat As Long                'Distance to travel between activations within the vector.
 
-Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color As Long) ': on error resume next
-    Dim p1 As POINTAPI, p2 As POINTAPI
+Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color As Long, ByVal bShowIndices As Boolean) ': on error resume next
+    Dim p1 As POINTAPI, p2 As POINTAPI, oldColor As Long
 
-    Call vBase.draw(pic, pCEd, color)
+    oldColor = pic.ForeColor
+    pic.ForeColor = color
+    Call vBase.draw(pic, pCEd, color, bShowIndices)
     
     'Centre filename in middle of vector area.
     If filename <> vbNullString Then
@@ -47,6 +49,7 @@ Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color
         pic.currentY = (p1.y + p2.y - pic.TextHeight(filename)) / 2
         pic.Print filename
     End If
+    pic.ForeColor = oldColor
     
 End Sub
 
@@ -67,4 +70,11 @@ Public Sub copy(ByRef rhs As CBoardProgram) ':on error resume next
     Set rhs.vBase = New CVector
     Call vBase.copy(rhs.vBase)
 
+End Sub
+
+Public Sub setSelection(ByRef sel As CBoardSelection): On Error Resume Next
+    Call vBase.setSelection(sel)
+End Sub
+Public Sub moveSelectionBy(ByVal dx As Long, ByVal dy As Long): On Error Resume Next
+    Call vBase.moveSelectionBy(dx, dy)
 End Sub

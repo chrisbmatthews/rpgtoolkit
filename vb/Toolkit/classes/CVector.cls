@@ -82,7 +82,13 @@ End Sub
 '=========================================================================
 ' Draw to a picture box
 '=========================================================================
-Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color As Long, Optional ByVal bCurrentVector As Boolean = False): 'on error resume next
+Public Sub draw( _
+    ByRef pic As PictureBox, _
+    ByRef pCEd As CBoardEditor, _
+    ByVal color As Long, _
+    ByVal bShowIndices As Boolean, _
+    Optional ByVal bCurrentVector As Boolean = False): 'on error resume next
+    
     Dim oldColor As Long, i As Long, pt1 As POINTAPI, pt2 As POINTAPI
     If m_tiletype = TT_NULL Or UBound(m_pts) = 0 Then Exit Sub
     
@@ -99,11 +105,11 @@ Public Sub draw(ByRef pic As PictureBox, ByRef pCEd As CBoardEditor, ByVal color
         pic.Line (pt1.x, pt1.y)-(pt2.x, pt2.y)
         pic.currentX = pt1.x
         pic.currentY = pt1.y
-        pic.Print str(i)
+        If bShowIndices Then pic.Print str(i)
     Next i
     pic.currentX = pt2.x
     pic.currentY = pt2.y
-    pic.Print str(i)
+    If bShowIndices Then pic.Print str(i)
     If m_bClosed Then
         pt1.x = m_pts(0).x: pt1.y = m_pts(0).y
         Call pCEd.boardPixelToScreen(pt1.x, pt1.y)
@@ -240,7 +246,7 @@ End Sub
 '=========================================================================
 ' Move points a selection
 '=========================================================================
-Public Sub moveSelection(ByVal dx As Long, ByVal dy As Long) ':on error resume next
+Public Sub moveSelectionBy(ByVal dx As Long, ByVal dy As Long) ':on error resume next
     Dim i As Long
     If m_tiletype = TT_NULL Then Exit Sub
     
@@ -249,6 +255,21 @@ Public Sub moveSelection(ByVal dx As Long, ByVal dy As Long) ':on error resume n
             ' Don't do a CBoardSelection.containsPoint() test because this may pick up new points on the move.
             m_pts(i).x = m_pts(i).x + dx
             m_pts(i).y = m_pts(i).y + dy
+        End If
+    Next i
+End Sub
+
+'=========================================================================
+' Move points a selection
+'=========================================================================
+Public Sub moveSelectionTo(ByVal x As Long, ByVal y As Long) ':on error resume next
+    Dim i As Long
+    If m_tiletype = TT_NULL Then Exit Sub
+    For i = UBound(m_pts) To 0 Step -1
+        If m_pts(i).bSel Then
+            ' Don't do a CBoardSelection.containsPoint() test because this may pick up new points on the move.
+            m_pts(i).x = x - (m_pts(0).x - m_pts(i).x)
+            m_pts(i).y = y - (m_pts(0).y - m_pts(i).y)
         End If
     Next i
 End Sub
@@ -283,10 +304,11 @@ End Sub
 '=========================================================================
 ' Set a point by index
 '=========================================================================
-Public Sub setPoint(ByVal p As Long, ByRef x As Long, ByRef y As Long) ':on error resume next
+Public Sub setPoint(ByVal p As Long, ByVal x As Long, ByVal y As Long, ByVal bSel As Boolean) ':on error resume next
     If p > UBound(m_pts) Then ReDim Preserve m_pts(p)
     m_pts(p).x = x
     m_pts(p).y = y
+    m_pts(p).bSel = bSel
 End Sub
 
 '=========================================================================
@@ -353,6 +375,6 @@ Public Sub copy(ByRef rhs As CVector) ':on error resume next
     rhs.attributes = m_attributes
     rhs.bClosed = m_bClosed
     For i = 0 To UBound(m_pts)
-        Call rhs.setPoint(i, m_pts(i).x, m_pts(i).y)
+        Call rhs.setPoint(i, m_pts(i).x, m_pts(i).y, False)
     Next i
 End Sub

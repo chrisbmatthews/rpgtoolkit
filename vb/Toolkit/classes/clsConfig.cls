@@ -112,7 +112,7 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
             lastTileset = BinReadString(num)
             grabTips = BinReadInt(num)
             advTilesetTips = BinReadInt(num)
-            tkMainForm.boardToolbar.Display.Update(0) = BinReadInt(num)
+            a = BinReadInt(num)  'removed: board toolbar preference [3.0.7]
             If EOF(num) Then
                 tutCurrentLesson = 0
             Else
@@ -188,7 +188,7 @@ Public Sub saveConfig(Optional ByVal file As String = CONFIG_FILE)
         Call BinWriteString(num, lastTileset)
         Call BinWriteInt(num, grabTips)
         Call BinWriteInt(num, advTilesetTips)
-        Call BinWriteInt(num, tkMainForm.boardToolbar.Display.Setting(eRedrawAll))
+        Call BinWriteInt(num, 0) 'removed: board toolbar preference [3.0.7]
         Call BinWriteInt(num, 1)
     Close num
 
