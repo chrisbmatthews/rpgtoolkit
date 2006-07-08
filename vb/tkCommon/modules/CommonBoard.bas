@@ -1271,11 +1271,11 @@ Public Sub BoardSetSize(ByVal x As Integer, ByVal y As Integer, ByVal z As Integ
     board.bSizeY = y
     board.bSizeL = z
     
-    If board.coordType And ISO_ROTATED Then
-        'Board matrix is square.
-        x = x + y
-        y = x
-    End If
+    'Data matrix must be reshaped for ISO_ROTATED
+    x = IIf(board.coordType And ISO_ROTATED, board.bSizeX + board.bSizeY, board.bSizeX)
+    y = IIf(board.coordType And ISO_ROTATED, board.bSizeX + board.bSizeY, board.bSizeY)
+    ed.effectiveBoardX = x
+    ed.effectiveBoardY = y
     
     ReDim board.board(x, y, z)
     ReDim board.ambientRed(x, y, z)
