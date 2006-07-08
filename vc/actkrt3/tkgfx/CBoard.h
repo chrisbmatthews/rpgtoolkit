@@ -77,36 +77,9 @@ typedef struct tagVBBoardImage
 
 } VB_BRDIMAGE, *LPVB_BRDIMAGE;
 
-/* Unneeded
 //--------------------------------------------------------------------------
-// A board-set sprite.
+// VB structure of the board format.
 //--------------------------------------------------------------------------
-typedef struct tagVBBoardSprite
-{
-	// Editor data.
-	LONG transpColor;					// Transparent colour on the image.
-	CCanvas *pCnv;
-	RECT bounds;						// Board pixel co-ordinates.
-	BSTR displayImage;					// Image to represent sprite in board editor.
-	
-	// Board data.
-	BSTR filename;						// Sprite filename.
-	LONG x;
-	LONG y;
-	LONG layer;
-
-    LONG activate;						// Conditional activation?
-    BSTR initialVar;
-    BSTR finalVar;
-    BSTR initialValue;
-    BSTR finalValue;
-    LONG activationType;				// Step-on or keypress.
-    BSTR prgActivate;
-    BSTR prgMultitask;
-
-} VB_BRDSPRITE, *LPVB_BRDSPRITE;
-*/
-
 typedef struct tagVBBoard
 {
 	//
@@ -204,15 +177,35 @@ typedef struct tagVBBoard
 
 } VB_BOARD, *LPVB_BOARD;
 
+//--------------------------------------------------------------------------
+// VB structure of the board editor UDT.
+//--------------------------------------------------------------------------
 typedef struct tagVBBoardEditor
 {
     CBoard *pCBoard;					// pointer to associated CBoard in actkrt
+	LONG optSetting;					// The current setting (eBrdSetting enumeration)
     LPSAFEARRAY bLayerOccupied;			// layer contains tiles (VARIANT_BOOL)
     LPSAFEARRAY bLayerVisible;			// layer visibility in the editor
+	VARIANT_BOOL bShowSprites;
+	VARIANT_BOOL bShowImages;
 //	VB_BOARD board; //Note to self: pass pointer from vb
 	/* Fragment... */
 
 } VB_BRDEDITOR, *LPVB_BRDEDITOR;
+
+//--------------------------------------------------------------------------
+// Board editor setting enumeration (mirrors that in modBoard.bas)
+//--------------------------------------------------------------------------
+typedef enum tagVBBoardSettings
+{
+	BS_GENERAL,
+	BS_ZOOM,
+	BS_TILE,
+	BS_VECTOR,
+	BS_PROGRAM,
+	BS_SPRITE,
+	BS_IMAGE
+} VB_EBRDSETTING;
 
 typedef struct tagEditorLayer
 {
@@ -303,7 +296,7 @@ public:
 	);
 
 	std::vector<LPVB_BRDIMAGE> getImages(
-		VOID
+		CONST LPVB_BRDEDITOR pEditor
 	);
 
 	VOID renderTile(

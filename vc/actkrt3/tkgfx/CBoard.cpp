@@ -252,29 +252,35 @@ CBoard::~CBoard()
 //--------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------
-std::vector<LPVB_BRDIMAGE> CBoard::getImages()
+std::vector<LPVB_BRDIMAGE> CBoard::getImages(CONST LPVB_BRDEDITOR pEditor)
 {
 	// Get board image array.
 	LONG length = 0;
 	SafeArrayGetUBound(m_pBoard->m_images, 1, &length);
 
 	std::vector<LPVB_BRDIMAGE> vect;
-	for (LONG i = 0; i <= length; ++i)
+	if (pEditor->bShowImages == VARIANT_TRUE || pEditor->optSetting == BS_IMAGE)
 	{
-		LPVB_BRDIMAGE pImg = NULL;
-		SafeArrayPtrOfIndex(m_pBoard->m_images, &i, (void **)&pImg);
-		vect.push_back(pImg);
+		for (LONG i = 0; i <= length; ++i)
+		{
+			LPVB_BRDIMAGE pImg = NULL;
+			SafeArrayPtrOfIndex(m_pBoard->m_images, &i, (void **)&pImg);
+			vect.push_back(pImg);
+		}
 	}
 
 	// Treat board sprites as images for the purposes of drawing them in the editor.
 	SafeArrayGetUBound(m_pBoard->m_sprites, 1, &length);
 
-	for (i = 0; i <= length; ++i)
+	if (pEditor->bShowSprites == VARIANT_TRUE || pEditor->optSetting == BS_SPRITE)
 	{
-		LPVB_BRDIMAGE pImg = NULL;
-		SafeArrayPtrOfIndex(m_pBoard->m_sprites, &i, (void **)&pImg);
-		vect.push_back(pImg);
-	}	
+		for (LONG i = 0; i <= length; ++i)
+		{
+			LPVB_BRDIMAGE pImg = NULL;
+			SafeArrayPtrOfIndex(m_pBoard->m_sprites, &i, (void **)&pImg);
+			vect.push_back(pImg);
+		}	
+	}
 	
 	return vect;
 }
@@ -328,7 +334,7 @@ VOID CBoard::draw(
 	// Board images.
 	// Reallocation will not occur during this call so no need to lock.
 	// SafeArrayLock(m_pBoard->m_images);
-	std::vector<LPVB_BRDIMAGE> imgs = getImages();
+	std::vector<LPVB_BRDIMAGE> imgs = getImages(pEditor);
 	
 	LONG z = 1, length = 0;
 	SafeArrayGetUBound(pEditor->bLayerVisible, 1, &length);
@@ -358,7 +364,7 @@ VOID CBoard::draw(
 			);
 		}
 
-		// Draw images.
+		// Draw sprites and images.
 		std::vector<LPVB_BRDIMAGE>::iterator j = imgs.begin();
 		for(; j != imgs.end(); ++j)
 		{
@@ -391,8 +397,6 @@ VOID CBoard::draw(
 				}
 			}
 		} // for (images)
-
-		// Draw items.
 
 	} // for (layers)
 
