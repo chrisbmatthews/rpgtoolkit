@@ -5,20 +5,20 @@ Begin VB.Form frmNewBoard
    ClientHeight    =   3705
    ClientLeft      =   45
    ClientTop       =   435
-   ClientWidth     =   5985
+   ClientWidth     =   6195
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MDIChild        =   -1  'True
    MinButton       =   0   'False
    ScaleHeight     =   3705
-   ScaleWidth      =   5985
+   ScaleWidth      =   6195
    ShowInTaskbar   =   0   'False
    Begin VB.Frame fraBack 
       Height          =   3615
       Left            =   120
       TabIndex        =   0
       Top             =   0
-      Width           =   5775
+      Width           =   6015
       Begin VB.PictureBox Picture1 
          Appearance      =   0  'Flat
          BorderStyle     =   0  'None
@@ -26,79 +26,115 @@ Begin VB.Form frmNewBoard
          Height          =   3375
          Left            =   120
          ScaleHeight     =   3375
-         ScaleWidth      =   5535
+         ScaleWidth      =   5775
          TabIndex        =   1
          Top             =   120
-         Width           =   5535
+         Width           =   5775
          Begin VB.Frame fraDimensions 
             Caption         =   "Dimensions"
             Height          =   1935
             Left            =   0
             TabIndex        =   18
             Top             =   480
-            Width           =   1695
-            Begin VB.TextBox txtLayers 
+            Width           =   1935
+            Begin VB.HScrollBar hsbDims 
+               Height          =   255
+               Index           =   1
+               Left            =   1320
+               Max             =   2
+               TabIndex        =   28
+               Top             =   720
+               Value           =   1
+               Width           =   495
+            End
+            Begin VB.HScrollBar hsbDims 
+               Height          =   255
+               Index           =   2
+               Left            =   1320
+               Max             =   2
+               TabIndex        =   27
+               Top             =   1080
+               Value           =   1
+               Width           =   495
+            End
+            Begin VB.HScrollBar hsbDims 
+               Height          =   255
+               Index           =   0
+               Left            =   1320
+               Max             =   2
+               TabIndex        =   26
+               Top             =   360
+               Value           =   1
+               Width           =   495
+            End
+            Begin VB.TextBox txtDims 
                Height          =   285
-               Left            =   240
+               Index           =   2
+               Left            =   720
                TabIndex        =   21
                Text            =   "4"
                Top             =   1080
                Width           =   495
             End
-            Begin VB.TextBox txtHeight 
+            Begin VB.TextBox txtDims 
                Height          =   285
-               Left            =   240
+               Index           =   1
+               Left            =   720
                TabIndex        =   20
                Text            =   "10"
                Top             =   720
                Width           =   495
             End
-            Begin VB.TextBox txtWidth 
+            Begin VB.TextBox txtDims 
                Height          =   285
-               Left            =   240
+               Index           =   0
+               Left            =   720
                TabIndex        =   19
                Text            =   "15"
                Top             =   360
                Width           =   495
             End
-            Begin VB.Label lblLayers 
+            Begin VB.Label lblDims 
                Caption         =   "Layers"
                Height          =   255
-               Left            =   840
+               Index           =   2
+               Left            =   120
                TabIndex        =   25
-               Top             =   1140
-               Width           =   615
+               Top             =   1120
+               Width           =   495
             End
             Begin VB.Label lblPxDimensions 
                Alignment       =   2  'Center
                Caption         =   "(1024 x 1024 pixels)"
-               Height          =   375
+               Height          =   255
                Left            =   120
                TabIndex        =   24
-               Top             =   1440
-               Width           =   1455
+               Top             =   1560
+               Width           =   1695
             End
-            Begin VB.Label lblHeight 
+            Begin VB.Label lblDims 
                Caption         =   "Height"
                Height          =   255
-               Left            =   840
+               Index           =   1
+               Left            =   120
                TabIndex        =   23
-               Top             =   780
-               Width           =   615
+               Top             =   760
+               Width           =   495
             End
-            Begin VB.Label lblWidth 
+            Begin VB.Label lblDims 
                Caption         =   "Width"
                Height          =   255
-               Left            =   840
+               Index           =   0
+               Left            =   120
                TabIndex        =   22
-               Top             =   420
+               Top             =   400
                Width           =   495
             End
          End
          Begin VB.Frame fraCoordinates 
             Caption         =   "Coordinate system"
             Height          =   1215
-            Left            =   1800
+            Left            =   2040
             TabIndex        =   12
             Top             =   480
             Width           =   3735
@@ -154,7 +190,7 @@ Begin VB.Form frmNewBoard
          Begin VB.Frame fraBackground 
             Caption         =   "Background image"
             Height          =   615
-            Left            =   1800
+            Left            =   2040
             TabIndex        =   8
             Top             =   1800
             Width           =   3735
@@ -188,7 +224,7 @@ Begin VB.Form frmNewBoard
          End
          Begin VB.TextBox txtDefaultBoard 
             Height          =   285
-            Left            =   2040
+            Left            =   2280
             TabIndex        =   7
             Top             =   2520
             Width           =   2775
@@ -196,7 +232,7 @@ Begin VB.Form frmNewBoard
          Begin VB.CommandButton cmdBrowseDefaultBoard 
             Caption         =   "..."
             Height          =   255
-            Left            =   4920
+            Left            =   5160
             TabIndex        =   6
             Top             =   2520
             Width           =   495
@@ -205,7 +241,7 @@ Begin VB.Form frmNewBoard
             Cancel          =   -1  'True
             Caption         =   "OK"
             Height          =   375
-            Left            =   3960
+            Left            =   4200
             TabIndex        =   5
             Top             =   3000
             Width           =   1455
@@ -258,6 +294,12 @@ Private m_height As Integer
 Private m_layers As Integer
 Private m_default As String
 
+Private Enum eDimensions
+    NB_W
+    NB_H
+    NB_L
+End Enum
+
 Private Sub chkPxAbsolute_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     m_coordOpt = m_coordOpt Xor PX_ABSOLUTE
 End Sub
@@ -277,8 +319,8 @@ Private Sub cmdOK_Click(): On Error Resume Next
     End If
     
     If optType(0).value = True Then
-        m_height = IIf(val(txtHeight.Text) > 0, val(txtHeight.Text), 10)
-        m_layers = IIf(val(txtLayers.Text) > 0, val(txtLayers.Text), 10)
+        m_height = IIf(val(txtDims(NB_H).Text) > 0, val(txtDims(NB_H).Text), 10)
+        m_layers = IIf(val(txtDims(NB_L).Text) > 0, val(txtDims(NB_L).Text), 10)
         
         Call SaveSetting("RPGToolkit3", "BRD Editor", "New width", str(m_width))
         Call SaveSetting("RPGToolkit3", "BRD Editor", "New height", str(m_height))
@@ -299,8 +341,8 @@ End Sub
 '========================================================================
 Private Sub Form_Load(): On Error Resume Next
 
-    m_width = val(GetSetting("RPGToolkit3", "BRD Editor", "New width", "5"))
-    m_height = val(GetSetting("RPGToolkit3", "BRD Editor", "New height", "5"))
+    m_width = val(GetSetting("RPGToolkit3", "BRD Editor", "New width", "20"))
+    m_height = val(GetSetting("RPGToolkit3", "BRD Editor", "New height", "15"))
     m_layers = val(GetSetting("RPGToolkit3", "BRD Editor", "New layers", "4"))
     m_coordOpt = val(GetSetting("RPGToolkit3", "BRD Editor", "New coords", "0"))
     m_default = GetSetting("RPGToolkit3", "BRD Editor", "Default board", vbNullString)
@@ -314,9 +356,9 @@ Private Sub Form_Load(): On Error Resume Next
         Unload Me
     End If
     
-    txtWidth.Text = str(m_width)
-    txtHeight.Text = str(m_height)
-    txtLayers.Text = str(m_layers)
+    txtDims(NB_W).Text = str(m_width)
+    txtDims(NB_H).Text = str(m_height)
+    txtDims(NB_L).Text = str(m_layers)
     chkPxAbsolute.value = Abs((m_coordOpt And PX_ABSOLUTE) <> 0)
     optCoords(m_coordOpt And Not PX_ABSOLUTE).value = True
     txtDefaultBoard.Text = m_default
@@ -349,10 +391,19 @@ Private Sub loadNewBoard(): On Error Resume Next
     Call tkMainForm.refreshTabs
 End Sub
 
+Private Sub hsbDims_Change(Index As Integer): On Error Resume Next
+    Dim i As Long
+    If hsbDims(Index).value <> 1 Then
+        i = val(txtDims(Index).Text) + hsbDims(Index).value - 1
+        txtDims(Index).Text = IIf(i < 0, "0", str(i))
+    End If
+    hsbDims(Index).value = 1
+End Sub
+
 '========================================================================
 '========================================================================
-Private Sub optCoords_Click(index As Integer): On Error Resume Next
-    Select Case index
+Private Sub optCoords_Click(Index As Integer): On Error Resume Next
+    Select Case Index
         Case 0:
             m_coordOpt = (m_coordOpt And PX_ABSOLUTE) Or TILE_NORMAL
         Case 1:
@@ -365,12 +416,14 @@ End Sub
 
 '========================================================================
 '========================================================================
-Private Sub txtWidth_Change(): On Error Resume Next
-    m_width = IIf(val(txtWidth.Text) > 0, val(txtWidth.Text), 10)
-    Call updatePxDimensions
-End Sub
-Private Sub txtHeight_Change(): On Error Resume Next
-    m_height = IIf(val(txtHeight.Text) > 0, val(txtHeight.Text), 10)
+Private Sub txtDims_Change(Index As Integer): On Error Resume Next
+    Dim i As Long
+    i = IIf(val(txtDims(Index).Text) > 0, val(txtDims(Index).Text), 10)
+    Select Case Index
+        Case NB_W: m_width = i
+        Case NB_H: m_height = i
+        Case NB_L: m_layers = i
+    End Select
     Call updatePxDimensions
 End Sub
 Private Sub updatePxDimensions(): On Error Resume Next

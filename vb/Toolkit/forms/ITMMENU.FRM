@@ -373,11 +373,6 @@ ErrorHandler:
     Resume Next
 End Sub
 
-' !NEW!
-Private Sub Form_Unload(Cancel As Integer)
-    tkMainForm.boardToolbar.Objects.Populate
-End Sub
-
 'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
 Private Sub hpup_Change()
     On Error GoTo ErrorHandler

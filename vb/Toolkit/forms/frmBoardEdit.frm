@@ -1,86 +1,806 @@
 VERSION 5.00
+Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form frmBoardEdit 
    Caption         =   "frmBoardEdit"
    ClientHeight    =   6465
    ClientLeft      =   60
    ClientTop       =   750
-   ClientWidth     =   10200
+   ClientWidth     =   11340
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
-   ScaleHeight     =   480
-   ScaleMode       =   0  'User
-   ScaleWidth      =   640
-   Begin VB.VScrollBar vScroll 
-      Height          =   2655
-      Left            =   4320
-      SmallChange     =   32
-      TabIndex        =   2
-      TabStop         =   0   'False
-      Top             =   120
-      Width           =   255
-   End
-   Begin VB.HScrollBar hScroll 
-      Height          =   255
+   ScaleHeight     =   6465
+   ScaleWidth      =   11340
+   Begin TabDlg.SSTab sstBoard 
+      Height          =   6255
       Left            =   120
-      SmallChange     =   32
-      TabIndex        =   1
-      TabStop         =   0   'False
-      Top             =   2760
-      Width           =   4215
-   End
-   Begin VB.PictureBox picBoard 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   2655
-      Left            =   120
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   177
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   281
       TabIndex        =   0
       Top             =   120
-      Width           =   4215
-      Begin VB.Line lineSelection 
-         BorderStyle     =   3  'Dot
-         DrawMode        =   6  'Mask Pen Not
-         Index           =   3
-         Visible         =   0   'False
-         X1              =   128
-         X2              =   128
-         Y1              =   64
-         Y2              =   128
+      Width           =   10335
+      _ExtentX        =   18230
+      _ExtentY        =   11033
+      _Version        =   393216
+      Style           =   1
+      Tabs            =   2
+      Tab             =   1
+      TabHeight       =   520
+      ShowFocusRect   =   0   'False
+      TabCaption(0)   =   "Board"
+      TabPicture(0)   =   "frmBoardEdit.frx":0000
+      Tab(0).ControlEnabled=   0   'False
+      Tab(0).Control(0)=   "picBoard"
+      Tab(0).Control(1)=   "vScroll"
+      Tab(0).Control(1).Enabled=   0   'False
+      Tab(0).Control(2)=   "hScroll"
+      Tab(0).Control(2).Enabled=   0   'False
+      Tab(0).ControlCount=   3
+      TabCaption(1)   =   "Properties"
+      TabPicture(1)   =   "frmBoardEdit.frx":001C
+      Tab(1).ControlEnabled=   -1  'True
+      Tab(1).Control(0)=   "picProperties"
+      Tab(1).Control(0).Enabled=   0   'False
+      Tab(1).ControlCount=   1
+      Begin VB.PictureBox picProperties 
+         Appearance      =   0  'Flat
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         HasDC           =   0   'False
+         Height          =   5775
+         Left            =   120
+         ScaleHeight     =   5775
+         ScaleWidth      =   10095
+         TabIndex        =   4
+         Top             =   360
+         Width           =   10095
+         Begin VB.Frame fraProperties 
+            Caption         =   "Threads"
+            Height          =   1575
+            Index           =   2
+            Left            =   0
+            TabIndex        =   71
+            Top             =   4200
+            Width           =   4935
+            Begin VB.ListBox lbThreads 
+               Height          =   1035
+               Left            =   840
+               TabIndex        =   75
+               Top             =   360
+               Width           =   2055
+            End
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   975
+               Index           =   5
+               Left            =   3120
+               ScaleHeight     =   975
+               ScaleWidth      =   975
+               TabIndex        =   72
+               Top             =   360
+               Width           =   975
+               Begin VB.CommandButton cmdThreadsAdd 
+                  Caption         =   "Add"
+                  Height          =   375
+                  Index           =   0
+                  Left            =   0
+                  TabIndex        =   74
+                  Top             =   0
+                  Width           =   975
+               End
+               Begin VB.CommandButton cmdThreadsRemove 
+                  Caption         =   "Remove"
+                  Height          =   375
+                  Index           =   1
+                  Left            =   0
+                  TabIndex        =   73
+                  Top             =   480
+                  Width           =   975
+               End
+            End
+         End
+         Begin VB.Frame fraProperties 
+            Caption         =   "Dimensions"
+            Height          =   1335
+            Index           =   3
+            Left            =   5160
+            TabIndex        =   59
+            Top             =   0
+            Width           =   4935
+            Begin VB.HScrollBar hsbDims 
+               Height          =   285
+               Index           =   2
+               Left            =   4080
+               TabIndex        =   65
+               Top             =   600
+               Width           =   495
+            End
+            Begin VB.TextBox txtDims 
+               Height          =   285
+               Index           =   2
+               Left            =   3360
+               TabIndex        =   64
+               Text            =   "Text7"
+               Top             =   600
+               Width           =   615
+            End
+            Begin VB.HScrollBar hsbDims 
+               Height          =   285
+               Index           =   1
+               Left            =   1560
+               TabIndex        =   63
+               Top             =   840
+               Width           =   495
+            End
+            Begin VB.TextBox txtDims 
+               Height          =   285
+               Index           =   1
+               Left            =   840
+               TabIndex        =   62
+               Text            =   "Text7"
+               Top             =   840
+               Width           =   615
+            End
+            Begin VB.HScrollBar hsbDims 
+               Height          =   285
+               Index           =   0
+               Left            =   1560
+               TabIndex        =   61
+               Top             =   360
+               Width           =   495
+            End
+            Begin VB.TextBox txtDims 
+               Height          =   285
+               Index           =   0
+               Left            =   840
+               TabIndex        =   60
+               Text            =   "Text7"
+               Top             =   360
+               Width           =   615
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Layers"
+               Height          =   255
+               Index           =   12
+               Left            =   3360
+               TabIndex        =   70
+               Top             =   360
+               Width           =   495
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "1024 pixels"
+               Height          =   255
+               Index           =   11
+               Left            =   2160
+               TabIndex        =   69
+               Top             =   840
+               Width           =   975
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "1024 pixels"
+               Height          =   255
+               Index           =   10
+               Left            =   2160
+               TabIndex        =   68
+               Top             =   360
+               Width           =   975
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Width"
+               Height          =   255
+               Index           =   8
+               Left            =   120
+               TabIndex        =   67
+               Top             =   360
+               Width           =   735
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Height"
+               Height          =   255
+               Index           =   9
+               Left            =   120
+               TabIndex        =   66
+               Top             =   840
+               Width           =   735
+            End
+         End
+         Begin VB.Frame fraProperties 
+            Caption         =   "Variables"
+            Height          =   1215
+            Index           =   4
+            Left            =   5160
+            TabIndex        =   50
+            Top             =   1440
+            Width           =   4935
+            Begin VB.ComboBox cmbLayerTitles 
+               Height          =   315
+               Left            =   960
+               TabIndex        =   54
+               Text            =   "Combo2"
+               Top             =   720
+               Width           =   1335
+            End
+            Begin VB.TextBox txtLayerTitle 
+               Height          =   285
+               Left            =   3000
+               TabIndex        =   53
+               Text            =   "Text6"
+               Top             =   720
+               Width           =   1815
+            End
+            Begin VB.TextBox txtConstant 
+               Height          =   285
+               Left            =   3000
+               TabIndex        =   52
+               Text            =   "Text5"
+               Top             =   240
+               Width           =   1815
+            End
+            Begin VB.ComboBox cmbConstants 
+               Height          =   315
+               Left            =   960
+               TabIndex        =   51
+               Text            =   "Combo1"
+               Top             =   240
+               Width           =   1335
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Layer"
+               Height          =   255
+               Index           =   15
+               Left            =   120
+               TabIndex        =   58
+               Top             =   720
+               Width           =   735
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Title"
+               Height          =   255
+               Index           =   16
+               Left            =   2400
+               TabIndex        =   57
+               Top             =   720
+               Width           =   855
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Value"
+               Height          =   255
+               Index           =   14
+               Left            =   2400
+               TabIndex        =   56
+               Top             =   240
+               Width           =   855
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Constant"
+               Height          =   255
+               Index           =   13
+               Left            =   120
+               TabIndex        =   55
+               Top             =   240
+               Width           =   975
+            End
+         End
+         Begin VB.Frame fraProperties 
+            Caption         =   "Miscellaneous"
+            Height          =   1575
+            Index           =   6
+            Left            =   5160
+            TabIndex        =   44
+            Top             =   4200
+            Width           =   4935
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   375
+               Index           =   6
+               Left            =   3600
+               ScaleHeight     =   375
+               ScaleWidth      =   495
+               TabIndex        =   47
+               Top             =   960
+               Width           =   495
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "..."
+                  Height          =   255
+                  Index           =   8
+                  Left            =   0
+                  TabIndex        =   48
+                  Top             =   0
+                  Width           =   495
+               End
+            End
+            Begin VB.TextBox txtPrgEnterBoard 
+               Height          =   285
+               Left            =   840
+               TabIndex        =   46
+               Text            =   "Text2"
+               Top             =   960
+               Width           =   2655
+            End
+            Begin VB.CheckBox chkProgressiveSaving 
+               Caption         =   "Disable progressive saving"
+               Height          =   255
+               Left            =   600
+               TabIndex        =   45
+               Top             =   360
+               Width           =   3255
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Program to run when entering board"
+               Height          =   255
+               Index           =   19
+               Left            =   840
+               TabIndex        =   49
+               Top             =   720
+               Width           =   2775
+            End
+         End
+         Begin VB.Frame fraProperties 
+            Caption         =   "Battle settings"
+            Height          =   1335
+            Index           =   5
+            Left            =   5160
+            TabIndex        =   36
+            Top             =   2760
+            Width           =   4935
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   375
+               Index           =   9
+               Left            =   4320
+               ScaleHeight     =   375
+               ScaleWidth      =   495
+               TabIndex        =   40
+               Top             =   720
+               Width           =   495
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "..."
+                  Height          =   255
+                  Index           =   7
+                  Left            =   0
+                  TabIndex        =   41
+                  Top             =   0
+                  Width           =   495
+               End
+            End
+            Begin VB.TextBox txtBattleBackground 
+               Height          =   285
+               Left            =   1560
+               TabIndex        =   39
+               Text            =   "Text4"
+               Top             =   720
+               Width           =   2655
+            End
+            Begin VB.TextBox txtBoardSkill 
+               Height          =   285
+               Left            =   4320
+               TabIndex        =   38
+               Text            =   "Text3"
+               Top             =   240
+               Width           =   495
+            End
+            Begin VB.CheckBox chkEnableBattles 
+               Caption         =   "Enable fighting on this board"
+               Height          =   375
+               Left            =   240
+               TabIndex        =   37
+               Top             =   240
+               Width           =   2535
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Battle background"
+               Height          =   495
+               Index           =   17
+               Left            =   240
+               TabIndex        =   43
+               Top             =   720
+               Width           =   1095
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Board skill"
+               Height          =   255
+               Index           =   18
+               Left            =   3360
+               TabIndex        =   42
+               Top             =   240
+               Width           =   855
+            End
+         End
+         Begin VB.Frame fraProperties 
+            Caption         =   "Links"
+            Height          =   2055
+            Index           =   0
+            Left            =   0
+            TabIndex        =   18
+            Top             =   0
+            Width           =   4935
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   375
+               Index           =   3
+               Left            =   3600
+               ScaleHeight     =   375
+               ScaleWidth      =   495
+               TabIndex        =   29
+               Top             =   1680
+               Width           =   495
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "..."
+                  Height          =   255
+                  Index           =   4
+                  Left            =   0
+                  TabIndex        =   30
+                  Top             =   0
+                  Width           =   495
+               End
+            End
+            Begin VB.TextBox txtLinks 
+               Height          =   285
+               Index           =   3
+               Left            =   840
+               TabIndex        =   28
+               Text            =   "Text2"
+               Top             =   1680
+               Width           =   2655
+            End
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   375
+               Index           =   2
+               Left            =   3600
+               ScaleHeight     =   375
+               ScaleWidth      =   495
+               TabIndex        =   26
+               Top             =   1320
+               Width           =   495
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "..."
+                  Height          =   255
+                  Index           =   3
+                  Left            =   0
+                  TabIndex        =   27
+                  Top             =   0
+                  Width           =   495
+               End
+            End
+            Begin VB.TextBox txtLinks 
+               Height          =   285
+               Index           =   2
+               Left            =   840
+               TabIndex        =   25
+               Text            =   "Text2"
+               Top             =   1320
+               Width           =   2655
+            End
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   375
+               Index           =   1
+               Left            =   3600
+               ScaleHeight     =   375
+               ScaleWidth      =   495
+               TabIndex        =   23
+               Top             =   960
+               Width           =   495
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "..."
+                  Height          =   255
+                  Index           =   2
+                  Left            =   0
+                  TabIndex        =   24
+                  Top             =   0
+                  Width           =   495
+               End
+            End
+            Begin VB.TextBox txtLinks 
+               Height          =   285
+               Index           =   1
+               Left            =   840
+               TabIndex        =   22
+               Text            =   "Text2"
+               Top             =   960
+               Width           =   2655
+            End
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   375
+               Index           =   0
+               Left            =   3600
+               ScaleHeight     =   375
+               ScaleWidth      =   495
+               TabIndex        =   20
+               Top             =   600
+               Width           =   495
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "..."
+                  Height          =   255
+                  Index           =   1
+                  Left            =   0
+                  TabIndex        =   21
+                  Top             =   0
+                  Width           =   495
+               End
+            End
+            Begin VB.TextBox txtLinks 
+               Height          =   285
+               Index           =   0
+               Left            =   840
+               TabIndex        =   19
+               Text            =   "Text2"
+               Top             =   600
+               Width           =   2655
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Directional links (board or program)"
+               Height          =   255
+               Index           =   0
+               Left            =   120
+               TabIndex        =   35
+               Top             =   240
+               Width           =   3255
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "North"
+               Height          =   255
+               Index           =   1
+               Left            =   240
+               TabIndex        =   34
+               Top             =   600
+               Width           =   495
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "South"
+               Height          =   255
+               Index           =   2
+               Left            =   240
+               TabIndex        =   33
+               Top             =   960
+               Width           =   495
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "East"
+               Height          =   255
+               Index           =   3
+               Left            =   240
+               TabIndex        =   32
+               Top             =   1320
+               Width           =   495
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "West"
+               Height          =   255
+               Index           =   4
+               Left            =   240
+               TabIndex        =   31
+               Top             =   1680
+               Width           =   495
+            End
+         End
+         Begin VB.Frame fraProperties 
+            Caption         =   "Background settings"
+            Height          =   1935
+            Index           =   1
+            Left            =   0
+            TabIndex        =   5
+            Top             =   2160
+            Width           =   4935
+            Begin VB.PictureBox picBackgroundColor 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   255
+               Left            =   2880
+               ScaleHeight     =   255
+               ScaleWidth      =   615
+               TabIndex        =   14
+               Top             =   960
+               Width           =   615
+            End
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   375
+               Index           =   4
+               Left            =   3600
+               ScaleHeight     =   375
+               ScaleWidth      =   495
+               TabIndex        =   12
+               Top             =   480
+               Width           =   495
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "..."
+                  Height          =   255
+                  Index           =   0
+                  Left            =   0
+                  TabIndex        =   13
+                  Top             =   0
+                  Width           =   495
+               End
+            End
+            Begin VB.TextBox txtBackgroundImage 
+               Height          =   285
+               Left            =   840
+               TabIndex        =   11
+               Text            =   "Text1"
+               Top             =   480
+               Width           =   2655
+            End
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   375
+               Index           =   8
+               Left            =   3600
+               ScaleHeight     =   375
+               ScaleWidth      =   495
+               TabIndex        =   9
+               Top             =   960
+               Width           =   495
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "..."
+                  Height          =   255
+                  Index           =   5
+                  Left            =   0
+                  TabIndex        =   10
+                  Top             =   0
+                  Width           =   495
+               End
+            End
+            Begin VB.TextBox txtBackgroundMusic 
+               Height          =   285
+               Left            =   840
+               TabIndex        =   8
+               Text            =   "Text2"
+               Top             =   1440
+               Width           =   2655
+            End
+            Begin VB.PictureBox picHolder 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BorderStyle     =   0  'None
+               ForeColor       =   &H80000008&
+               Height          =   375
+               Index           =   7
+               Left            =   3600
+               ScaleHeight     =   375
+               ScaleWidth      =   495
+               TabIndex        =   6
+               Top             =   1440
+               Width           =   495
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "..."
+                  Height          =   255
+                  Index           =   6
+                  Left            =   0
+                  TabIndex        =   7
+                  Top             =   0
+                  Width           =   495
+               End
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Board background color"
+               Height          =   255
+               Index           =   6
+               Left            =   840
+               TabIndex        =   17
+               Top             =   880
+               Width           =   1815
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Board background image"
+               Height          =   255
+               Index           =   5
+               Left            =   840
+               TabIndex        =   16
+               Top             =   240
+               Width           =   2775
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Background music"
+               Height          =   255
+               Index           =   7
+               Left            =   840
+               TabIndex        =   15
+               Top             =   1200
+               Width           =   2775
+            End
+         End
       End
-      Begin VB.Line lineSelection 
-         BorderStyle     =   3  'Dot
-         DrawMode        =   6  'Mask Pen Not
-         Index           =   2
-         Visible         =   0   'False
-         X1              =   32
-         X2              =   32
-         Y1              =   64
-         Y2              =   128
+      Begin VB.HScrollBar hScroll 
+         Height          =   255
+         Left            =   -74880
+         SmallChange     =   32
+         TabIndex        =   3
+         TabStop         =   0   'False
+         Top             =   3000
+         Width           =   4215
       End
-      Begin VB.Line lineSelection 
-         BorderStyle     =   3  'Dot
-         DrawMode        =   6  'Mask Pen Not
-         Index           =   1
-         Visible         =   0   'False
-         X1              =   32
-         X2              =   128
-         Y1              =   128
-         Y2              =   128
+      Begin VB.VScrollBar vScroll 
+         Height          =   2655
+         Left            =   -70680
+         SmallChange     =   32
+         TabIndex        =   2
+         TabStop         =   0   'False
+         Top             =   360
+         Width           =   255
       End
-      Begin VB.Line lineSelection 
-         BorderStyle     =   3  'Dot
-         DrawMode        =   6  'Mask Pen Not
-         Index           =   0
-         Visible         =   0   'False
-         X1              =   32
-         X2              =   128
-         Y1              =   64
-         Y2              =   64
+      Begin VB.PictureBox picBoard 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   2655
+         Left            =   -74880
+         MousePointer    =   1  'Arrow
+         ScaleHeight     =   177
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   281
+         TabIndex        =   1
+         Top             =   360
+         Width           =   4215
+         Begin VB.Line lineSelection 
+            BorderStyle     =   3  'Dot
+            DrawMode        =   6  'Mask Pen Not
+            Index           =   0
+            Visible         =   0   'False
+            X1              =   32
+            X2              =   128
+            Y1              =   64
+            Y2              =   64
+         End
+         Begin VB.Line lineSelection 
+            BorderStyle     =   3  'Dot
+            DrawMode        =   6  'Mask Pen Not
+            Index           =   1
+            Visible         =   0   'False
+            X1              =   32
+            X2              =   128
+            Y1              =   128
+            Y2              =   128
+         End
+         Begin VB.Line lineSelection 
+            BorderStyle     =   3  'Dot
+            DrawMode        =   6  'Mask Pen Not
+            Index           =   2
+            Visible         =   0   'False
+            X1              =   32
+            X2              =   32
+            Y1              =   64
+            Y2              =   128
+         End
+         Begin VB.Line lineSelection 
+            BorderStyle     =   3  'Dot
+            DrawMode        =   6  'Mask Pen Not
+            Index           =   3
+            Visible         =   0   'False
+            X1              =   128
+            X2              =   128
+            Y1              =   64
+            Y2              =   128
+         End
       End
    End
    Begin VB.Menu mnuEdit 
@@ -93,7 +813,7 @@ Begin VB.Form frmBoardEdit
          Caption         =   "Redo"
          Shortcut        =   ^Y
       End
-      Begin VB.Menu separator 
+      Begin VB.Menu mnuS1 
          Caption         =   "-"
       End
       Begin VB.Menu mnuCopy 
@@ -107,6 +827,13 @@ Begin VB.Form frmBoardEdit
       Begin VB.Menu mnuPaste 
          Caption         =   "Paste"
          Shortcut        =   ^V
+      End
+      Begin VB.Menu mnuS2 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuSelectAll 
+         Caption         =   "Select All"
+         Shortcut        =   ^A
       End
    End
 End
@@ -136,6 +863,7 @@ Attribute VB_Exposed = False
 '   tileinfo
 '   warpset
 '   CScrollBoard
+'   cBoardToolbar & co.
 
 Option Explicit
 
@@ -166,12 +894,17 @@ Private m_sel As CBoardSelection
 Private m_mouseScrollDistance As Long
 Private m_mousePosition As POINTAPI             'For zooming with the mousewheel.
 
-Private Const BTAB_VECTOR = 0
-Private Const BTAB_PROGRAM = 1
-Private Const BTAB_SPRITE = 2
-Private Const BTAB_IMAGE = 3
-Private Const BTAB_OPTIONS = 4
-Private m_ctls(BTAB_OPTIONS) As Object
+Private Const BTAB_BOARD = 0
+Private Const BTAB_PROPERTIES = 1
+
+Private Enum eBoardTabs
+    BTAB_VECTOR
+    BTAB_PROGRAM
+    BTAB_SPRITE
+    BTAB_IMAGE
+End Enum
+Private m_ctls(BTAB_IMAGE) As Object
+Private m_tabMap(BS_IMAGE) As Long              'Map eBrdSettings to eBoardTabs
 
 Private Const WM_MOUSEWHEEL = &H20A
 Private Const WHEEL_DELTA = 120
@@ -199,6 +932,7 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
     m_ed.programColor = RGB(255, 255, 0)
     m_ed.waypointColor = RGB(255, 0, 0)
     m_ed.gridColor = RGB(255, 255, 255)
+    m_ed.bShowVectorIndices = True
 End Sub
 '=========================================================================
 '=========================================================================
@@ -277,6 +1011,7 @@ Private Sub Form_Activate() ':on error resume next
     tkMainForm.brdOptTool(m_ed.optTool).value = True
     tkMainForm.brdChkGrid.value = Abs(m_ed.bGrid)
     tkMainForm.brdChkAutotile.value = Abs(m_ed.bAutotiler)
+    Call toolsRefresh
     
     mnuUndo.Enabled = m_ed.bUndoData(nextUndo)
     mnuRedo.Enabled = m_ed.bUndoData(nextRedo)
@@ -292,7 +1027,7 @@ Private Sub Form_Activate() ':on error resume next
         tkMainForm.pTools.Visible = True
     End If
     
-    'tkMainForm.boardToolbar.Display.Refresh
+    tkMainForm.StatusBar1.Panels(4).Text = "Zoom: " & str(m_ed.pCEd.zoom * 100) & "%"
    
     'Tick the flood option if entry made.
     'mnuRecursiveFlooding.Checked = False
@@ -311,28 +1046,38 @@ Private Sub Form_Activate() ':on error resume next
 
 End Sub
 Public Sub Form_Deactivate() ':on error resume next
-    'Clear co-ordinate panel.
+    'Clear status panels.
     tkMainForm.StatusBar1.Panels(3).Text = vbNullString
+    tkMainForm.StatusBar1.Panels(4).Text = vbNullString
+
     'Reset visible layers list.
     Call setVisibleLayersByCombo
-    Call tkMainForm.boardToolbar.hide
+    
+    tkMainForm.popButton(3).Visible = False
+    tkMainForm.pTools.Visible = False
 End Sub
 Private Sub Form_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
     Call picBoard_KeyDown(keyCode, Shift)
 End Sub
 Private Sub Form_Load() ':on error resume next
     'Board loading performed explicitly through newBoard()
+    Dim i As Long
     Set activeBoard = Me
     
     'Pixel scaling
-    activeBoard.ScaleMode = 3
-    picBoard.ScaleMode = 3
+    picBoard.ScaleMode = vbPixels
     
     'Ctls
     Set m_ctls(BTAB_VECTOR) = tkMainForm.bTools_ctlVector
     Set m_ctls(BTAB_PROGRAM) = tkMainForm.bTools_ctlPrg
     Set m_ctls(BTAB_SPRITE) = tkMainForm.bTools_ctlSprite
     Set m_ctls(BTAB_IMAGE) = tkMainForm.bTools_ctlImage
+    'Map the settings to the tabs
+    For i = 0 To UBound(m_tabMap): m_tabMap(i) = -1: Next i
+    m_tabMap(BS_VECTOR) = BTAB_VECTOR
+    m_tabMap(BS_PROGRAM) = BTAB_PROGRAM
+    m_tabMap(BS_SPRITE) = BTAB_SPRITE
+    m_tabMap(BS_IMAGE) = BTAB_IMAGE
     
     ' Hook scroll wheel.
     Call AttachMessage(Me, hwnd, WM_MOUSEWHEEL)
@@ -341,48 +1086,62 @@ Private Sub Form_Resize() ':on error resume next
         
     Dim brdWidth As Integer, brdHeight As Integer
     
-    picBoard.Top = 0
-    picBoard.Left = 0
+    'Available space.
+    sstBoard.width = activeBoard.width - sstBoard.Left * 3
+    sstBoard.Height = activeBoard.Height - sstBoard.Top * 6
+    
+    If sstBoard.Tab = BTAB_PROPERTIES Then
+        picProperties.Left = (sstBoard.width - picProperties.width) / 2
+        picProperties.Top = (sstBoard.Height + sstBoard.TabHeight - picProperties.Height) / 2
+        If picProperties.Left < 120 Then picProperties.Left = 120
+        If picProperties.Top < sstBoard.TabHeight + 120 Then picProperties.Top = sstBoard.TabHeight + 120
+        
+        'Do not resize picturebox if not visible, since this will cause it to
+        'become visible on another tab.
+        Exit Sub
+    End If
+   
+    picBoard.width = sstBoard.width - vScroll.width
+    picBoard.Height = sstBoard.Height - sstBoard.TabHeight - hScroll.Height
+    picBoard.ScaleMode = vbPixels
     
     brdWidth = relWidth(m_ed)
     brdHeight = relHeight(m_ed)
-    
-    ' Available space.
-    picBoard.width = activeBoard.ScaleWidth - vScroll.width
-    picBoard.Height = activeBoard.ScaleHeight - hScroll.Height
        
-    If brdWidth > picBoard.width Then
-        picBoard.width = picBoard.width - (picBoard.width Mod scrollUnitWidth(m_ed))
+    If picBoard.ScaleX(brdWidth, vbPixels, vbTwips) > picBoard.width Then
+        picBoard.width = picBoard.width - (picBoard.width Mod picBoard.ScaleX(scrollUnitWidth(m_ed), vbPixels, vbTwips))
         hScroll.Visible = True
-        hScroll.Left = picBoard.Left
         hScroll.width = picBoard.width
-        hScroll.max = brdWidth - picBoard.width
+        hScroll.max = brdWidth - picBoard.ScaleWidth
         hScroll.SmallChange = scrollUnitWidth(m_ed)
-        hScroll.LargeChange = picBoard.width - scrollUnitWidth(m_ed)
+        hScroll.LargeChange = picBoard.ScaleWidth - scrollUnitWidth(m_ed)
     Else
-         hScroll.Visible = False
-         hScroll.max = 0
-         picBoard.width = brdWidth
-         m_ed.pCEd.topX = 0
+        hScroll.Visible = False
+        hScroll.max = 0
+        picBoard.width = picBoard.ScaleX(brdWidth, vbPixels, vbTwips)
+        m_ed.pCEd.topX = 0
     End If
          
-    If brdHeight > picBoard.Height Then
-        picBoard.Height = picBoard.Height - (picBoard.Height Mod scrollUnitHeight(m_ed))
+    If picBoard.ScaleY(brdHeight, vbPixels, vbTwips) > picBoard.Height Then
+        picBoard.Height = picBoard.Height - (picBoard.Height Mod picBoard.ScaleY(scrollUnitHeight(m_ed), vbPixels, vbTwips))
         vScroll.Visible = True
-        vScroll.Top = picBoard.Top
-        vScroll.Left = picBoard.width
         vScroll.Height = picBoard.Height
-        vScroll.max = brdHeight - picBoard.Height
+        vScroll.max = brdHeight - picBoard.ScaleHeight
         vScroll.SmallChange = scrollUnitHeight(m_ed)
-        vScroll.LargeChange = picBoard.Height - scrollUnitHeight(m_ed)
+        vScroll.LargeChange = picBoard.ScaleHeight - scrollUnitHeight(m_ed)
     Else
-         vScroll.Visible = False
-         vScroll.max = 0
-         picBoard.Height = brdHeight
-         m_ed.pCEd.topY = 0
+        vScroll.Visible = False
+        vScroll.max = 0
+        picBoard.Height = picBoard.ScaleY(brdHeight, vbPixels, vbTwips)
+        m_ed.pCEd.topY = 0
     End If
-    ' Update for changes in above if()
-    hScroll.Top = picBoard.Height
+    
+    picBoard.Left = (sstBoard.width - (picBoard.width + IIf(vScroll.Visible, vScroll.width, 0))) / 2
+    picBoard.Top = (sstBoard.Height + sstBoard.TabHeight - (picBoard.Height + IIf(hScroll.Visible, hScroll.Height, 0))) / 2
+    hScroll.Top = picBoard.Height + picBoard.Top
+    vScroll.Left = picBoard.width + picBoard.Left
+    vScroll.Top = picBoard.Top
+    hScroll.Left = picBoard.Left
     
     Call drawAll
 End Sub
@@ -390,7 +1149,8 @@ Private Sub Form_Unload(Cancel As Integer) ': On Error Resume Next
     Call BRDFree(m_ed.pCBoard)
     Call BoardClear(m_ed.board(m_ed.undoIndex))
     Call hideAllTools
-    Call tkMainForm.boardToolbar.hide               'Before Set m_sel = Nothing
+    tkMainForm.popButton(3).Visible = False         'Before Set m_sel = Nothing
+    tkMainForm.pTools.Visible = False
     Set m_sel = Nothing
     'tbc
 
@@ -529,7 +1289,8 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
     End If
 End Function
 
-Private Sub mnuCopy_Click(): On Error Resume Next
+Private Sub mnuCopy_Click() ': On Error Resume Next
+    tkMainForm.brdOptTool(BT_SELECT).value = True
     Call clipCopy(g_boardClipboard, m_sel, True)
 End Sub
 Private Sub mnuCut_Click(): On Error Resume Next
@@ -543,6 +1304,19 @@ Private Sub mnuPaste_Click(): On Error Resume Next
     m_sel.xDrag = m_sel.x1
     m_sel.yDrag = m_sel.y1
     m_sel.status = SS_PASTING
+End Sub
+Private Sub mnuSelectAll_Click() ': On Error Resume Next
+    If m_ed.optTool <> BT_SELECT Then Exit Sub
+    Select Case m_ed.optSetting
+        Case BS_TILE
+            Call m_sel.assign(0, 0, absWidth(m_ed.board(m_ed.undoIndex).bSizeX, m_ed.board(m_ed.undoIndex).coordType), absHeight(m_ed.board(m_ed.undoIndex).bSizeY, m_ed.board(m_ed.undoIndex).coordType))
+        Case BS_VECTOR, BS_PROGRAM
+            Dim r As RECT
+            If currentVector Is Nothing Then Exit Sub
+            Call currentVector.getBounds(r.Left, r.Top, r.Right, r.Bottom)
+            Call m_sel.assign(r.Left, r.Top, r.Right, r.Bottom)
+    End Select
+    Call m_sel.draw(Me, m_ed.pCEd)
 End Sub
 Private Sub mnuUndo_Click() ': On Error Resume Next
     m_ed.undoIndex = nextUndo
@@ -583,6 +1357,9 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
     Dim curVector As CVector
     Set curVector = currentVector
     
+    'Currently handling Ctrl+letter through menus.
+    If Shift And vbCtrlMask Then Exit Sub
+    
     Select Case keyCode
         Case vbKeyQ: tkMainForm.brdOptSetting(BS_GENERAL).value = True
         Case vbKeyW: tkMainForm.brdOptSetting(BS_ZOOM).value = True
@@ -614,7 +1391,7 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
                     If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) And (Not curVector Is Nothing) Then
                         Call curVector.closeVector(Shift, m_ed.currentLayer)
                         Call m_sel.clear(Me)
-                        Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
+                        Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
                     End If
             End Select 'Key
             
@@ -679,7 +1456,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                             m_sel.xDrag = pxCoord.x
                             m_sel.yDrag = pxCoord.y
                         Else
-                            Dim img As TKBoardImage, index  As Long
+                            Dim img As TKBoardImage, Index  As Long
                             Select Case m_ed.optSetting
                                 Case BS_TILE, BS_VECTOR, BS_PROGRAM
                                     'Start new selection.
@@ -687,16 +1464,14 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                                     Call m_sel.restart(pxCoord.x, pxCoord.y)
                                 Case BS_SPRITE
                                     'Start moving the selected sprite.
-                                    If imageHitTest(pxCoord.x, pxCoord.y, index, img, m_ed.board(m_ed.undoIndex).spriteImages) Then
-                                        Call toolbarChange(index, m_ed.optSetting)
+                                    If imageHitTest(pxCoord.x, pxCoord.y, Index, img, m_ed.board(m_ed.undoIndex).spriteImages) Then
+                                        Call toolbarChange(Index, m_ed.optSetting)
                                         Call m_sel.assign(img.bounds.Left, img.bounds.Top, img.bounds.Right, img.bounds.Bottom)
-                                        m_sel.status = SS_FINISHED
                                     End If
                                 Case BS_IMAGE
-                                    If imageHitTest(pxCoord.x, pxCoord.y, index, img, m_ed.board(m_ed.undoIndex).Images) Then
-                                        Call toolbarChange(index, m_ed.optSetting)
+                                    If imageHitTest(pxCoord.x, pxCoord.y, Index, img, m_ed.board(m_ed.undoIndex).Images) Then
+                                        Call toolbarChange(Index, m_ed.optSetting)
                                         Call m_sel.assign(img.bounds.Left, img.bounds.Top, img.bounds.Right, img.bounds.Bottom)
-                                        m_sel.status = SS_FINISHED
                                     End If
                             End Select
                         End If
@@ -726,7 +1501,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                             Case BS_TILE
                             Case BS_VECTOR, BS_PROGRAM
                                 If Not curVector Is Nothing Then
-                                    Call curVector.moveSelection(dx, dy)
+                                    Call curVector.moveSelectionBy(dx, dy)
                                     Call drawBoard
                                 End If
                         End Select
@@ -749,7 +1524,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
         Case BS_GENERAL
             'Move the board by dragging. Use the selection.
             m_sel.xDrag = x:             m_sel.yDrag = y
-            hScroll.tag = hScroll.value: vScroll.tag = vScroll.value
+            hScroll.Tag = hScroll.value: vScroll.Tag = vScroll.value
         Case BS_ZOOM
             Call zoom(IIf(Button = vbLeftButton, 1, -1), pxCoord)
         Case BS_TILE
@@ -777,9 +1552,9 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
     
     If m_sel.status = SS_DRAWING Or m_sel.status = SS_MOVING Then
         'Scroll the board to expand selection.
-        If x > picBoard.width - 8 And hScroll.value <> hScroll.max And hScroll.Visible Then hScroll.value = hScroll.value + hScroll.SmallChange
+        If x > picBoard.ScaleWidth - 8 And hScroll.value <> hScroll.max And hScroll.Visible Then hScroll.value = hScroll.value + hScroll.SmallChange
         If x < 8 And hScroll.value <> hScroll.min Then hScroll.value = hScroll.value - hScroll.SmallChange
-        If y > picBoard.Height - 8 And vScroll.value <> vScroll.max And vScroll.Visible Then vScroll.value = vScroll.value + vScroll.SmallChange
+        If y > picBoard.ScaleHeight - 8 And vScroll.value <> vScroll.max And vScroll.Visible Then vScroll.value = vScroll.value + vScroll.SmallChange
         If y < 8 And vScroll.value <> vScroll.min Then vScroll.value = vScroll.value - vScroll.SmallChange
     End If
       
@@ -797,7 +1572,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
                 dx = m_sel.xDrag - x:           dy = m_sel.yDrag - y
                 hx = scrollUnitWidth(m_ed) / 2
                 hy = scrollUnitHeight(m_ed) / 2
-                tX = val(hScroll.tag):          tY = val(vScroll.tag)
+                tX = val(hScroll.Tag):          tY = val(vScroll.Tag)
                 
                 If dx > 0 Then
                     tX = IIf(dx + tX < hScroll.max, dx + tX, hScroll.max)
@@ -815,7 +1590,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
                 vScroll.value = tY - ((tY + hy) Mod (2 * hy)) + hy
                 
                 m_sel.xDrag = x:                m_sel.yDrag = y
-                hScroll.tag = tX:               vScroll.tag = tY
+                hScroll.Tag = tX:               vScroll.Tag = tY
             End If
             
         Case BS_TILE
@@ -862,12 +1637,23 @@ Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y
                         Call m_sel.clear(Me)
                         Call toolbarRefresh
                         Exit Sub
+                    Else
+                        If m_sel.status = SS_PASTING Then
+                            m_sel.status = SS_FINISHED
+                            Call clipPaste(g_boardClipboard, m_sel)
+                        End If
                     End If
                     Call toolbarRefresh
                 Case BS_SPRITE, BS_IMAGE
                     'Finish the move.
                     i = IIf(m_ed.optSetting = BS_SPRITE, BTAB_SPRITE, BTAB_IMAGE)
-                    If m_sel.status = SS_MOVING Then Call m_ctls(i).moveCurrentTo(m_sel)
+                    Select Case m_sel.status
+                        Case SS_MOVING
+                            Call m_ctls(i).moveCurrentTo(m_sel)
+                        Case SS_PASTING
+                            m_sel.status = SS_FINISHED
+                            Call clipPaste(g_boardClipboard, m_sel)
+                    End Select
                     Call m_sel.clear(Me)
                     Exit Sub
             End Select
@@ -950,6 +1736,8 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
     pxCoord = screenToBoardPixel(x, y, m_ed)
     tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
 
+    If tileCoord.x > m_ed.effectiveBoardX Or tileCoord.y > m_ed.effectiveBoardY Then Exit Sub
+
     Select Case m_ed.optTool
         Case BT_DRAW
             If LenB(m_ed.selectedTile) = 0 Then Exit Sub
@@ -994,10 +1782,14 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
             ' Code is common to settings.
     
         Case BT_FLOOD
+            If LenB(m_ed.selectedTile) = 0 Then Exit Sub
             If m_ed.bAutotiler Then
                 'fill disabled in autotiler mode (unless someone wants to code it)
                 MsgBox "The Fill tool is disabled in AutoTiler mode!"
             Else
+                m_ed.bLayerOccupied(0) = True
+                m_ed.bLayerOccupied(m_ed.currentLayer) = True
+            
                 'Use gdi version as recursive routine crashes on large boards (3.0.6)
                 If GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then
                     'User has enabled recursive flooding - when gdi doesn't work.
@@ -1012,7 +1804,7 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
                 tkMainForm.brdOptTool(m_ed.optTool).value = True
             End If
             
-            Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard, False, m_ed.currentLayer)
+            Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, False, m_ed.currentLayer)
             Call drawBoard
             
         Case BT_ERASE
@@ -1024,6 +1816,12 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
             End If
     
     End Select
+End Sub
+
+Private Sub sstBoard_Click(PreviousTab As Integer) ': On Error Resume Next
+    If sstBoard.Tab = BTAB_BOARD Then
+        Call Form_Resize
+    End If
 End Sub
 
 '========================================================================
@@ -1062,14 +1860,17 @@ Private Sub zoom(ByVal direction As Integer, ByRef pxCoord As POINTAPI) ': On Er
     
     'Centre around the given pixel coordinate.
     pxCoord = snapToGrid(pxCoord, False)
-    h = pxCoord.x * m_ed.pCEd.zoom + scrollUnitWidth(m_ed) - picBoard.width / 2
-    v = pxCoord.y * m_ed.pCEd.zoom + scrollUnitHeight(m_ed) - picBoard.Height / 2
+    h = pxCoord.x * m_ed.pCEd.zoom + scrollUnitWidth(m_ed) - picBoard.ScaleWidth / 2
+    v = pxCoord.y * m_ed.pCEd.zoom + scrollUnitHeight(m_ed) - picBoard.ScaleHeight / 2
     If h < 0 Then h = 0
     If h > hScroll.max Then h = hScroll.max
     If v < 0 Then v = 0
     If v > vScroll.max Then v = vScroll.max
     hScroll.value = h
     vScroll.value = v
+    
+    'Display the zoom level.
+    tkMainForm.StatusBar1.Panels(4).Text = "Zoom: " & str(m_ed.pCEd.zoom * 100) & "%"
 
 End Sub
 
@@ -1084,8 +1885,8 @@ Private Sub drawBoard(Optional ByVal bRefresh As Boolean = True) ': On Error Res
         0, 0, _
         screenToBoardPixel(0, 0, m_ed).x, _
         screenToBoardPixel(0, 0, m_ed).y, _
-        CLng(picBoard.width), _
-        CLng(picBoard.Height), _
+        CLng(picBoard.ScaleWidth), _
+        CLng(picBoard.ScaleHeight), _
         m_ed.pCEd.zoom _
     )
     
@@ -1099,19 +1900,24 @@ End Sub
 '========================================================================
 '========================================================================
 Public Sub mdiChkAutotile(ByVal value As Integer) ':on error resume next
-    MsgBox "tbd"
+    m_ed.bAutotiler = (value <> 0)
 End Sub
-Public Sub mdiOptSetting(ByVal index As Integer) ': On Error Resume Next
-    m_ed.optSetting = index
-    If Not (m_sel Is Nothing) Then
-        Call m_sel.clear(Me)
-    End If
+Public Sub mdiOptSetting(ByVal Index As Integer) ': On Error Resume Next
+    m_ed.optSetting = Index
+    If Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
+    
+    'Switch to BT_DRAW for general/zoom.
+    If m_ed.optSetting <= BS_ZOOM Then tkMainForm.brdOptTool(BT_DRAW).value = True
+    Call toolsRefresh
+    
+    'Switch the object toolbar pane.
+    If m_tabMap(Index) <> -1 Then tkMainForm.bTools_Tabs.Tab = m_tabMap(Index)
     Call toolbarRefresh
     Call drawBoard
 End Sub
-Public Sub mdiOptTool(ByVal index As Integer) ': On Error Resume Next
-    m_ed.optTool = index
-    If (index <> BT_SELECT) And Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
+Public Sub mdiOptTool(ByVal Index As Integer) ': On Error Resume Next
+    m_ed.optTool = Index
+    If (Index <> BT_SELECT) And Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
 End Sub
 Public Sub mdiChkGrid(ByVal value As Integer) ': On Error Resume Next
     m_ed.bGrid = value
@@ -1205,12 +2011,11 @@ Private Sub resetLayerCombos() ':on error resume next
 End Sub
 
 '========================================================================
-' Board AutoTiler functions
-'   +Added by Shao, 09/24/2004
+' Board AutoTiler functions - Added by Shao, 09/24/2004
 '========================================================================
-'   +autoTileset:
 'returns the index of an autotst, or -1 if invalid
 'if its not presently an autotst, make it one now
+'========================================================================
 Private Function autoTileset(ByVal tileset As String, Optional ByVal allowAdd As Boolean = True) As Long
     On Error Resume Next
     Dim i As Long, ub As Long ', sGrpCode As String
@@ -1239,37 +2044,33 @@ Private Function autoTileset(ByVal tileset As String, Optional ByVal allowAdd As
         autoTilerSets(autoTileset) = tileset
     End If
 End Function
+
 '========================================================================
-'   +autoTilerPutTile
-'change a tile and update surrounding autotiles to match it
+' Autotiler: alters surrounding tiles to form contiguous blocks
 '========================================================================
-Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal tileY As Long, Optional ByVal coordType As Long, Optional ByVal eo As Boolean = False, Optional ByVal ignoreOthers As Boolean = False)
-    On Error Resume Next
+Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal tileY As Long, Optional ByVal coordType As Long, Optional ByVal eo As Boolean = False, Optional ByVal ignoreOthers As Boolean = False): On Error Resume Next
     Dim ix As Long, iy As Long, morphTileIndex As Byte, currentTileset As String, currentAutotileset As Long, thisAutoTileset As Long
     Dim brdWidth As Long, brdHeight As Long, startY As Long, endY As Long, startX As Long, endX As Long
 
     currentTileset = tilesetFilename(tst)
-    
-    'TBD: check this still works.
      
     If autoTileset(currentTileset, True) = -1 Then
-        'not an autotileset! set it down to close off surrounding autotiles
-'        If tst <> "" Then
+        'Not an autotileset! set it down to close off surrounding autotiles
         Call placeTile(tst, tileX, tileY)
     Else
-        'valid autotileset! set down tile 51 (arbitrary) to link to surrounding autotiles
+        'Valid autotileset! set down tile 51 (arbitrary) to link to surrounding autotiles
         Call placeTile(currentTileset & CStr(51), tileX, tileY)
     End If
     
-    brdWidth = m_ed.board(m_ed.undoIndex).bSizeX
-    brdHeight = m_ed.board(m_ed.undoIndex).bSizeY
+    brdWidth = m_ed.effectiveBoardX
+    brdHeight = m_ed.effectiveBoardY
     
     currentAutotileset = autoTileset(tilesetFilename(BoardGetTile(tileX, tileY, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))))
     
     If coordType = ISO_STACKED Then
-        'iso board [ISO_STACKED only]
-        'loop through each surrounding tile to check if it should be morphed
-        'known issue: this loop has a few unneeded iterations
+        'Iso board [ISO_STACKED only]
+        'Loop through each surrounding tile to check if it should be morphed
+        'Known issue: this loop has a few unneeded iterations
         
         startY = tileY - 2: If startY < 1 Then startY = 1
         endY = tileY + 2: If endY > brdHeight Then endY = brdHeight
@@ -1281,43 +2082,43 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
             For ix = startX To endX
                 thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))))
                 
-                'if shift is held down, override updating of other autotiles
+                'If shift is held down, override updating of other autotiles
                 If (ignoreOthers) And (thisAutoTileset <> currentAutotileset) Then thisAutoTileset = -1
                 
-                'the 8 bits in this byte represent the 8 directions it can link to
+                'The 8 bits in this byte represent the 8 directions it can link to
                 morphTileIndex = 0
     
                 If thisAutoTileset <> -1 Then
-                    'check if the tile should link to the cardinal directions
+                    'Check if the tile should link to the cardinal directions
                     If iy Mod 2 = 0 Then
-                        'even row
+                        'Even row
                         If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
                         If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
                         If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
                         If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
                     Else
-                        'odd row
+                        'Odd row
                         If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
                         If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
                         If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
                         If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
                     End If
                     
-                    'check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
+                    'Check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
                     If (ix > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
                     If (iy > 2) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 2, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
                     If (iy < brdHeight - 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 2, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
                     If (ix < brdWidth) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
                 
-                    'draw and set the new tile
+                    'Draw and set the new tile
                     Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy)
                 End If
             Next ix
         Next iy
     
     Else
-        '2d board/ ISO_ROTATED [unchecked]
-        'loop through each surrounding tile to check if it should be morphed
+        '2d board/ ISO_ROTATED
+        'Loop through each surrounding tile to check if it should be morphed
         
         startY = tileY - 1: If startY < 1 Then startY = 1
         endY = tileY + 1: If endY > brdHeight Then endY = brdHeight
@@ -1329,26 +2130,26 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
             For ix = startX To endX
                 thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))))
                 
-                'if shift is held down, override updating of other autotiles
+                'If shift is held down, override updating of other autotiles
                 If (ignoreOthers) And (thisAutoTileset <> currentAutotileset) Then thisAutoTileset = -1
                 
-                'the 8 bits in this byte represent the 8 directions it can link to
+                'The 8 bits in this byte represent the 8 directions it can link to
                 morphTileIndex = 0
     
                 If thisAutoTileset <> -1 Then
-                    'check if the tile should link to the cardinal directions
+                    'Check if the tile should link to the cardinal directions
                     If (ix > 1) And autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_W
                     If (iy > 1) And autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_N
                     If (iy < brdHeight) And autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_S
                     If (ix < brdWidth) And autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_E
                      
-                    'check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
+                    'Check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
                     If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
                     If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
                     If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
                     If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
                     
-                    'draw and set the new tile
+                    'Draw and set the new tile
                     Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy)
                 End If
             Next ix
@@ -1357,10 +2158,6 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
     
     Call picBoard.Refresh
 End Sub
-'========================================================================
-' End of Board AutoTiler functions
-'   +Added by Shao, 09/24/2004
-'========================================================================
 
 '==============================================================================
 ' Fill board with selected tile
@@ -1389,8 +2186,8 @@ Private Sub floodRecursive(ByVal x As Long, ByVal y As Long, ByVal l As Long, By
     m_ed.board(m_ed.undoIndex).ambientBlue(x, y, l) = m_ed.ambientB
     
     Dim sizex As Long, sizey As Long, x2 As Long, y2 As Long
-    sizex = m_ed.board(m_ed.undoIndex).bSizeX
-    sizey = m_ed.board(m_ed.undoIndex).bSizeY
+    sizex = m_ed.effectiveBoardX
+    sizey = m_ed.effectiveBoardY
     
     'new x and y position
     x2 = x + 1: y2 = y
@@ -1421,7 +2218,7 @@ End Sub
 '========================================================================
 ' Fill board with selected tile - using gdi (added for 3.0.6)
 '========================================================================
-Private Sub floodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long, ByVal tileFilename As String): On Error Resume Next
+Private Sub floodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long, ByVal tileFilename As String) ': On Error Resume Next
 
     Const MAGIC_NUMBER = 32768
                 
@@ -1450,12 +2247,14 @@ Private Sub floodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long
         'Draw the board onto a canvas.
         'We use a different "colour" for each tile, by its LUT entry.
         
-        Dim cnv As Long
-        cnv = createCanvas(.bSizeX + 1, .bSizeY + 1)
+        Dim cnv As Long, width As Long, Height As Long
+        width = m_ed.effectiveBoardX
+        Height = m_ed.effectiveBoardY
+        cnv = createCanvas(width + 1, Height + 1)
         
         Dim x As Long, y As Long
-        For x = 1 To .bSizeX
-            For y = 1 To .bSizeY
+        For x = 1 To width
+            For y = 1 To Height
                 'Set a pixel per tile, an empty tile is represented as 0 (black).
                 Call canvasSetPixel(cnv, x, y, .board(x, y, layer))
             Next y
@@ -1473,8 +2272,8 @@ Private Sub floodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long
         Call DeleteObject(brush)                        'Destroy the brush.
         Call canvasCloseHDC(cnv, hdc)                   'Close the device context.
             
-        For x = 1 To .bSizeX
-            For y = 1 To .bSizeY
+        For x = 1 To width
+            For y = 1 To Height
                 'Copy the flooded image back to the board.
                 
                 If .board(x, y, layer) <> canvasGetPixel(cnv, x, y) Then
@@ -1516,26 +2315,26 @@ Private Sub gridDraw() ': On Error Resume Next
             offsetY = IIf((m_ed.pCEd.topY Mod tileHeight(m_ed) = 0) = (m_ed.pCEd.topX Mod tileWidth(m_ed) = 0), 0, 16 * m_ed.pCEd.zoom)
             
             ' Top right to bottom left.
-            Do While y < picBoard.width / 2 + picBoard.Height
+            Do While y < picBoard.ScaleWidth / 2 + picBoard.ScaleHeight
                 picBoard.Line (0, y + offsetY)-(x + offsetY * 2, 0), color
                 x = x + tileWidth(m_ed): y = y + tileHeight(m_ed)
             Loop
 
             ' Top left to bottom right.
             x = 0
-            intHeight = picBoard.Height + (picBoard.Height Mod tileHeight(m_ed))
+            intHeight = picBoard.ScaleHeight + (picBoard.ScaleHeight Mod tileHeight(m_ed))
             y = intHeight
-            Do While y > -picBoard.width / 2
+            Do While y > -picBoard.ScaleWidth / 2
                 picBoard.Line (0, y + offsetY)-(x, intHeight + offsetY), color
                 x = x + tileWidth(m_ed):  y = y - tileHeight(m_ed)
             Loop
         Else
-            Do While x < picBoard.width
-                picBoard.Line (x, 0)-(x, picBoard.Height), color
+            Do While x < picBoard.ScaleWidth
+                picBoard.Line (x, 0)-(x, picBoard.ScaleHeight), color
                 x = x + tileWidth(m_ed)
             Loop
-            Do While y < picBoard.Height
-                picBoard.Line (0, y)-(picBoard.width, y), color
+            Do While y < picBoard.ScaleHeight
+                picBoard.Line (0, y)-(picBoard.ScaleWidth, y), color
                 y = y + tileHeight(m_ed)
             Loop
         End If 'isIsometric
@@ -1583,12 +2382,12 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
                 Call m_sel.restart(pxCoord.x, pxCoord.y)
                 
                 Call curVector.addPoint(pxCoord.x, pxCoord.y)
-                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
+                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
             Else
                 'Finish the vector.
                 Call curVector.closeVector(Shift, m_ed.currentLayer)
                 Call m_sel.clear(Me)
-                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
+                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
                 Call toolbarRefresh
             End If
     End Select
@@ -1633,25 +2432,29 @@ Private Function currentVector() As CVector ': On Error Resume Next
 End Function
 Private Sub vectorDrawAll() ': On Error Resume Next
     Dim i As Long, p1 As POINTAPI, p2 As POINTAPI
-    'Vectors
-    For i = 0 To UBound(m_ed.board(m_ed.undoIndex).vectors)
-        If (Not m_ed.board(m_ed.undoIndex).vectors(i) Is Nothing) Then
-            If m_ed.board(m_ed.undoIndex).vectors(i).layer <= m_ed.board(m_ed.undoIndex).bSizeL And m_ed.bLayerVisible(m_ed.board(m_ed.undoIndex).vectors(i).layer) And (m_ed.board(m_ed.undoIndex).vectors(i).tiletype <> TT_NULL) Then _
-                Call m_ed.board(m_ed.undoIndex).vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor(m_ed.board(m_ed.undoIndex).vectors(i).tiletype))
+    With m_ed.board(m_ed.undoIndex)
+        'Vectors
+        If m_ed.bShowVectors Or m_ed.optSetting = BS_VECTOR Then
+            For i = 0 To UBound(.vectors)
+                If Not (.vectors(i) Is Nothing) Then 'And (.vectors(i).tiletype <> TT_NULL) Then
+                    If .vectors(i).layer <= .bSizeL And m_ed.bLayerVisible(.vectors(i).layer) Then _
+                        Call .vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor(.vectors(i).tiletype), m_ed.bShowVectorIndices)
+                End If
+            Next i
         End If
-    Next i
-    
-    'Programs
-    picBoard.ForeColor = m_ed.programColor
-    For i = 0 To UBound(m_ed.board(m_ed.undoIndex).prgs)
-        If (Not m_ed.board(m_ed.undoIndex).prgs(i) Is Nothing) Then
-            If m_ed.bLayerVisible(m_ed.board(m_ed.undoIndex).prgs(i).vBase.layer) Then _
-                Call m_ed.board(m_ed.undoIndex).prgs(i).draw(picBoard, m_ed.pCEd, m_ed.programColor)
-            End If
-    Next i
+        'Programs
+        If m_ed.bShowPrograms Or m_ed.optSetting = BS_PROGRAM Then
+            For i = 0 To UBound(.prgs)
+                If Not (.prgs(i) Is Nothing) Then
+                    If m_ed.bLayerVisible(.prgs(i).vBase.layer) Then _
+                        Call .prgs(i).draw(picBoard, m_ed.pCEd, m_ed.programColor, m_ed.bShowVectorIndices)
+                    End If
+            Next i
+        End If
+    End With
     
     'Selected vector
-    If Not currentVector Is Nothing Then Call currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, True)
+    If Not currentVector Is Nothing Then Call currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
 End Sub
 Public Sub vectorDeleteCurrent(ByVal Setting As eBrdSetting) ': on error resume next
     Dim i As Long
@@ -1682,7 +2485,7 @@ Private Sub vectorDeleteSelection(ByRef sel As CBoardSelection) ':on error resum
     Dim curVector As CVector
     If currentVector Is Nothing Then Exit Sub
     Call setUndo
-    Set curVector = currentVector
+    Set curVector = currentVector                   'After setUndo
     
     If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED Then
         Call curVector.deleteSelection(sel)
@@ -1745,11 +2548,11 @@ End Sub
 
 '========================================================================
 '========================================================================
-Public Sub imageApply(ByVal index As Long) ':on error resume next
+Public Sub imageApply(ByVal Index As Long) ':on error resume next
     Dim ctl As ctlBrdImage, w As Long, h As Long, img As TKBoardImage
     Set ctl = tkMainForm.bTools_ctlImage
     
-    img = m_ed.board(m_ed.undoIndex).Images(index)
+    img = m_ed.board(m_ed.undoIndex).Images(Index)
     w = img.bounds.Right - img.bounds.Left
     h = img.bounds.Bottom - img.bounds.Top
     
@@ -1768,7 +2571,7 @@ Public Sub imageApply(ByVal index As Long) ':on error resume next
     End If
     img.file = ctl.getTxtFilename.Text
     
-    m_ed.board(m_ed.undoIndex).Images(index) = img
+    m_ed.board(m_ed.undoIndex).Images(Index) = img
     Call imagePopulate(ctl.getCombo.ListIndex, img)
 End Sub
 Private Sub imageCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Long) ':on error resume next
@@ -1791,12 +2594,12 @@ Private Sub imageCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Long
     
     Call imagePopulate(i, board.Images(i))
 End Sub
-Public Sub imageDeleteCurrent(ByVal index As Long) ':on error resume next
+Public Sub imageDeleteCurrent(ByVal Index As Long) ':on error resume next
     Dim i As Long, img As TKBoardImage
-    If index >= 0 Then
+    If Index >= 0 Then
         Call setUndo
-        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).Images(index)))
-        For i = index To UBound(m_ed.board(m_ed.undoIndex).Images) - 1
+        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).Images(Index)))
+        For i = Index To UBound(m_ed.board(m_ed.undoIndex).Images) - 1
            m_ed.board(m_ed.undoIndex).Images(i) = m_ed.board(m_ed.undoIndex).Images(i + 1)
         Next i
         If i = 0 Then
@@ -1808,23 +2611,23 @@ Public Sub imageDeleteCurrent(ByVal index As Long) ':on error resume next
         Call toolbarPopulateImages
     End If
 End Sub
-Private Function imageHitTest(ByVal x As Long, ByVal y As Long, ByRef index As Long, ByRef img As TKBoardImage, ByRef imgs() As TKBoardImage) As Boolean ':on error resume next
+Private Function imageHitTest(ByVal x As Long, ByVal y As Long, ByRef Index As Long, ByRef img As TKBoardImage, ByRef imgs() As TKBoardImage) As Boolean ':on error resume next
     Dim i As Long
     For i = UBound(imgs) To 0 Step -1
         If x > imgs(i).bounds.Left And x < imgs(i).bounds.Right And _
             y > imgs(i).bounds.Top And y < imgs(i).bounds.Bottom Then
             img = imgs(i)
-            index = i
+            Index = i
             imageHitTest = True
             Exit Function
         End If
     Next i
 End Function
-Private Sub imagePopulate(ByVal index As Long, ByRef img As TKBoardImage) ':on error resume next
+Private Sub imagePopulate(ByVal Index As Long, ByRef img As TKBoardImage) ':on error resume next
     Dim ctl As ctlBrdImage
     Set ctl = m_ctls(BTAB_IMAGE)
     
-    If (img.drawType = BI_NULL) Or (Not toolbarSetCurrent(ctl.getCombo, index)) Then
+    If (img.drawType = BI_NULL) Or (Not toolbarSetCurrent(ctl.getCombo, Index)) Then
         'No matching combo entry.
         Call ctl.disableAll
         Exit Sub
@@ -1832,7 +2635,7 @@ Private Sub imagePopulate(ByVal index As Long, ByRef img As TKBoardImage) ':on e
     
     Call ctl.enableAll
     
-    ctl.getCombo.list(index) = str(index) & ": " & IIf(LenB(img.file), img.file, "<image>")
+    ctl.getCombo.list(Index) = str(Index) & ": " & IIf(LenB(img.file), img.file, "<image>")
     ctl.getTxtFilename.Text = img.file
     ctl.getTxtLoc(0).Text = str(img.bounds.Left)
     ctl.getTxtLoc(1).Text = str(img.bounds.Top)
@@ -1869,12 +2672,12 @@ Private Sub spriteCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Lon
     
     Call m_ctls(BTAB_SPRITE).populate(i, board.sprites(i))
 End Sub
-Public Sub spriteDeleteCurrent(ByVal index As Long) ':on error resume next
+Public Sub spriteDeleteCurrent(ByVal Index As Long) ':on error resume next
     Dim i As Long
-    If index >= 0 Then
+    If Index >= 0 Then
         Call setUndo
-        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).spriteImages(index)))
-        For i = index To UBound(m_ed.board(m_ed.undoIndex).sprites) - 1
+        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).spriteImages(Index)))
+        For i = Index To UBound(m_ed.board(m_ed.undoIndex).sprites) - 1
             Set m_ed.board(m_ed.undoIndex).sprites(i) = m_ed.board(m_ed.undoIndex).sprites(i + 1)
            m_ed.board(m_ed.undoIndex).spriteImages(i) = m_ed.board(m_ed.undoIndex).spriteImages(i + 1)
         Next i
@@ -1904,7 +2707,7 @@ Public Sub spriteUpdateImageData(ByRef spr As CBoardSprite, ByVal filename As St
         'Render tst/tbm here because actkrt does not have easy access to tbm format.
         'actkrt3 creates a blank canvas to render onto, which is a member of CBoard.m_images
         If LCase$(extention(img.file)) = "tst" Then
-            Call drawTileCnv(img.pCnv, projectPath & img.file, 0, 0, 0, 0, 0, False)
+            Call drawTileCnv(img.pCnv, projectPath & img.file, 1, 1, 0, 0, 0, False)
         ElseIf LCase$(extention(img.file)) = "tbm" Then
             Dim tbm As TKTileBitmap
             Call OpenTileBitmap(projectPath & img.file, tbm)
@@ -1943,19 +2746,19 @@ Private Sub spriteSetImageData(ByRef spr As CBoardSprite, img As TKBoardImage) '
         End If
     Next i
 End Sub
-Public Function spriteSwapSlots(ByVal index As Long, ByVal newIndex As Long) As Boolean ':on error resume next
-    If newIndex = index Or newIndex < 0 Or newIndex > UBound(m_ed.board(m_ed.undoIndex).sprites) Then Exit Function
+Public Function spriteSwapSlots(ByVal Index As Long, ByVal newIndex As Long) As Boolean ':on error resume next
+    If newIndex = Index Or newIndex < 0 Or newIndex > UBound(m_ed.board(m_ed.undoIndex).sprites) Then Exit Function
     
     Dim spr As CBoardSprite, img As TKBoardImage
     'Hold the data in the new slot.
     Set spr = m_ed.board(m_ed.undoIndex).sprites(newIndex)
     img = m_ed.board(m_ed.undoIndex).spriteImages(newIndex)
     
-    Set m_ed.board(m_ed.undoIndex).sprites(newIndex) = m_ed.board(m_ed.undoIndex).sprites(index)
-    m_ed.board(m_ed.undoIndex).spriteImages(newIndex) = m_ed.board(m_ed.undoIndex).spriteImages(index)
+    Set m_ed.board(m_ed.undoIndex).sprites(newIndex) = m_ed.board(m_ed.undoIndex).sprites(Index)
+    m_ed.board(m_ed.undoIndex).spriteImages(newIndex) = m_ed.board(m_ed.undoIndex).spriteImages(Index)
     
-    Set m_ed.board(m_ed.undoIndex).sprites(index) = spr
-    m_ed.board(m_ed.undoIndex).spriteImages(index) = img
+    Set m_ed.board(m_ed.undoIndex).sprites(Index) = spr
+    m_ed.board(m_ed.undoIndex).spriteImages(Index) = img
         
     Call toolbarSetCurrent(m_ctls(BTAB_SPRITE).getCombo, newIndex)
     Call toolbarPopulateSprites
@@ -1971,16 +2774,16 @@ Public Sub toolbarRefresh() ':on error resume next
         Case BTAB_IMAGE:      Call toolbarPopulateImages
     End Select
 End Sub
-Public Sub toolbarChange(ByVal index As Long, ByVal Setting As eBrdSetting) ':on error resume next
+Public Sub toolbarChange(ByVal Index As Long, ByVal Setting As eBrdSetting) ':on error resume next
     Select Case Setting
         Case BS_VECTOR
-            Call m_ctls(BTAB_VECTOR).populate(index, m_ed.board(m_ed.undoIndex).vectors(index))
+            Call m_ctls(BTAB_VECTOR).populate(Index, m_ed.board(m_ed.undoIndex).vectors(Index))
         Case BS_PROGRAM
-            Call m_ctls(BTAB_PROGRAM).populate(index, m_ed.board(m_ed.undoIndex).prgs(index))
+            Call m_ctls(BTAB_PROGRAM).populate(Index, m_ed.board(m_ed.undoIndex).prgs(Index))
         Case BS_SPRITE
-            Call m_ctls(BTAB_SPRITE).populate(index, m_ed.board(m_ed.undoIndex).sprites(index))
+            Call m_ctls(BTAB_SPRITE).populate(Index, m_ed.board(m_ed.undoIndex).sprites(Index))
         Case BS_IMAGE
-            Call imagePopulate(index, m_ed.board(m_ed.undoIndex).Images(index))
+            Call imagePopulate(Index, m_ed.board(m_ed.undoIndex).Images(Index))
     End Select
     Call drawAll
 End Sub
@@ -2085,19 +2888,27 @@ Private Sub toolbarPopulateSprites() ':on error resume next
         Call drawAll
     End If
 End Sub
-Public Function toolbarGetCurrent(ByVal Setting As eBrdSetting, ByVal index As Long) As Object ':on error resume next
+Public Function toolbarGetCurrent(ByVal Setting As eBrdSetting, ByVal Index As Long) As Object ':on error resume next
     Select Case Setting
-        Case BS_VECTOR:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).vectors(index)
-        Case BS_PROGRAM:    Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).prgs(index)
-        Case BS_SPRITE:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).sprites(index)
+        Case BS_VECTOR:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).vectors(Index)
+        Case BS_PROGRAM:    Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).prgs(Index)
+        Case BS_SPRITE:     Set toolbarGetCurrent = m_ed.board(m_ed.undoIndex).sprites(Index)
         Case BS_IMAGE:      Set toolbarGetCurrent = Nothing
     End Select
 End Function
-Public Function toolbarSetCurrent(ByRef cmb As ComboBox, ByVal index As Long) As Boolean ':on error resume next
+Public Function toolbarGetIndex(ByVal Setting As eBrdSetting) As Long ':on error resume next
+    Select Case Setting
+        Case BS_VECTOR: toolbarGetIndex = m_ctls(BTAB_VECTOR).vectorIndex
+        Case BS_PROGRAM: toolbarGetIndex = m_ctls(BTAB_PROGRAM).getCombo.ListIndex
+        Case BS_SPRITE: toolbarGetIndex = m_ctls(BTAB_SPRITE).getCombo.ListIndex
+        Case BS_IMAGE: toolbarGetIndex = m_ctls(BTAB_IMAGE).getCombo.ListIndex
+    End Select
+End Function
+Public Function toolbarSetCurrent(ByRef cmb As ComboBox, ByVal Index As Long) As Boolean ':on error resume next
     Dim i As Long
     For i = 0 To cmb.ListCount - 1
-        If cmb.ItemData(i) = index Then
-            If i <> index Then MsgBox "toolbarsetcurrent: i <> index"
+        If cmb.ItemData(i) = Index Then
+            If i <> Index Then MsgBox "toolbarsetcurrent: i <> index"
             cmb.ListIndex = i
             toolbarSetCurrent = True
             Exit Function
@@ -2109,7 +2920,7 @@ End Function
 '========================================================================
 Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelection, ByVal bSetOrigin As Boolean) ':on error resume next
     Dim t1 As POINTAPI, t2 As POINTAPI, d As POINTAPI, O As POINTAPI
-    Dim i As Long, j As Long, k As Long, file As String
+    Dim i As Long, j As Long, k As Long, file As String, r As RECT
     
     'Set the origin of the copy.
     'Allow for a tile drag-drop: set the origin at the beginning of the drag and recreate the
@@ -2162,7 +2973,39 @@ Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelectio
                     Next j
                 Next i
             End If 'isIsometric()
+            
+        Case BS_VECTOR, BS_PROGRAM
+            Dim obj As Object
+            Set obj = toolbarGetCurrent(m_ed.optSetting, toolbarGetIndex(m_ed.optSetting))
+            If Not (obj Is Nothing) Then
+                Call mnuSelectAll_Click
+                Set clip.obj = obj
+                Call clip.obj.setSelection(sel)
+            End If
+        Case BS_SPRITE
+            Dim spr As CBoardSprite
+            i = toolbarGetIndex(m_ed.optSetting)
+            Set spr = toolbarGetCurrent(m_ed.optSetting, i)
+            If Not (spr Is Nothing) Then
+                r = m_ed.board(m_ed.undoIndex).spriteImages(i).bounds
+                Call m_sel.assign(r.Left, r.Top, r.Right, r.Bottom)
+                Set clip.obj = spr
+            End If
+        Case BS_IMAGE
+            i = toolbarGetIndex(m_ed.optSetting)
+            If m_ed.board(m_ed.undoIndex).Images(i).drawType <> BI_NULL Then
+                r = m_ed.board(m_ed.undoIndex).Images(i).bounds
+                Call m_sel.assign(r.Left, r.Top, r.Right, r.Bottom)
+                clip.img = m_ed.board(m_ed.undoIndex).Images(i)
+                clip.img.pCnv = 0               'Do not let two objects point to the same canvas.
+            End If
+            
     End Select
+    
+    'Update for BS_VECTOR,BS_PROGRAM,BS_SPRITE,BS_IMAGE
+    clip.origin.x = sel.x1
+    clip.origin.y = sel.y1
+    
 End Sub
 Private Sub clipCut(ByRef clip As TKBoardClipboard, ByVal bRedraw As Boolean) ':on error resume next
     Dim i As Long
@@ -2176,7 +3019,7 @@ Private Sub clipCut(ByRef clip As TKBoardClipboard, ByVal bRedraw As Boolean) ':
         )
     Next i
     If bRedraw Then
-        Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard, False, m_ed.currentLayer)
+        Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, False, m_ed.currentLayer)
         Call drawBoard
     End If
 End Sub
@@ -2204,8 +3047,27 @@ Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelecti
                 'm_ed.board(m_ed.undoIndex).ambientGreen(x, y, m_ed.currentLayer) = m_ed.ambientG
                 'm_ed.board(m_ed.undoIndex).ambientBlue(x, y, m_ed.currentLayer) = m_ed.ambientB
             Next i
-            Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard, False, m_ed.currentLayer)
-    End Select
+            Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, False, m_ed.currentLayer)
+        
+        Case BS_VECTOR, BS_PROGRAM
+            Dim obj As Object
+            Set obj = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
+            Call clip.obj.moveSelectionBy(dr.x, dr.y)
+            Call clip.obj.copy(toolbarGetCurrent(m_ed.optSetting, toolbarGetIndex(m_ed.optSetting)))
+            Call toolbarRefresh
+        Case BS_SPRITE
+            clip.obj.x = clip.obj.x + dr.x
+            clip.obj.y = clip.obj.y + dr.y
+            Call spriteCreate(m_ed.board(m_ed.undoIndex), clip.obj.x, clip.obj.y)
+            Call clip.obj.copy(toolbarGetCurrent(m_ed.optSetting, toolbarGetIndex(m_ed.optSetting)))
+            Call toolbarRefresh
+        Case BS_IMAGE
+            clip.img.bounds.Left = clip.img.bounds.Left + dr.x
+            clip.img.bounds.Top = clip.img.bounds.Top + dr.y
+            Call imageCreate(m_ed.board(m_ed.undoIndex), 0, 0)
+            m_ed.board(m_ed.undoIndex).Images(toolbarGetIndex(m_ed.optSetting)) = clip.img
+            Call toolbarRefresh
+        End Select
     Call drawBoard
 End Sub
 
@@ -2225,3 +3087,11 @@ Public Sub tileToBoardPixel(ByRef x As Long, ByRef y As Long, ByVal bAddBasePoin
         y = pt.y
     End If
 End Sub
+
+Private Sub toolsRefresh(): On Error Resume Next
+    tkMainForm.brdOptTool(BT_DRAW).Enabled = (m_ed.optSetting > BS_ZOOM)
+    tkMainForm.brdOptTool(BT_SELECT).Enabled = (m_ed.optSetting > BS_ZOOM)
+    tkMainForm.brdOptTool(BT_FLOOD).Enabled = (m_ed.optSetting = BS_TILE)
+    tkMainForm.brdOptTool(BT_ERASE).Enabled = (m_ed.optSetting = BS_TILE)
+End Sub
+

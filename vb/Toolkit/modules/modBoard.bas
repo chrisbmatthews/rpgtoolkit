@@ -225,8 +225,11 @@ Public Type TKBoardEditorData
     '3.0.7
     ' Following block ordered for actkrt
     pCBoard As Long                       'pointer to associated CBoard in actkrt
+    optSetting As eBrdSetting
     bLayerOccupied() As Boolean           'layer contains tiles
     bLayerVisible() As Boolean            'layer visibility in the editor
+    bShowSprites As Boolean
+    bShowImages As Boolean
         
     ' Unordered
     
@@ -237,19 +240,28 @@ Public Type TKBoardEditorData
     pCEd As New CBoardEditor
     
     undoIndex As Long                     'index to current .board
-    optSetting As eBrdSetting
     optTool As eBrdTool
     selectedTile As String                'Selected tile
     bGrid As Boolean
     bAutotiler As Boolean
-    bRevertToDraw As Boolean              'After flooding revert to draw tool
     currentLayer As Integer               'Current board layer
     bHideAllLayers As Boolean
     bShowAllLayers As Boolean
+    bShowVectors As Boolean
+    bShowPrograms As Boolean
     bNeedUpdate As Boolean                'tbd:have any changes been made to the board data?
-    bShowBackColour As Boolean            'tbd:show background colour in editor
         
     currentVectorSet() As CVector         'References to vectors of current optSetting
+    
+    effectiveBoardX As Long               'Board data matrix dimensions
+    effectiveBoardY As Long               '(different from bSizeX/Y for ISO_ROTATED)
+    
+    'currentObject(BTAB_IMAGES) As Long    'Selected object indices
+    
+    'Common to all board editors
+    bShowBackColour As Boolean            'tbd:show background colour in editor
+    bRevertToDraw As Boolean              'After flooding revert to draw tool
+    bShowVectorIndices As Boolean
     vectorColor(TT_STAIRS) As Long
     programColor As Long
     waypointColor As Long
@@ -295,13 +307,14 @@ End Type
 Public Type TKBoardClipboardTile
     file As String
     brdCoord As POINTAPI
-    'Colour, tiletype.
+    'tbd: Colour, tiletype.
 End Type
 
 Public Type TKBoardClipboard
     tiles() As TKBoardClipboardTile
     origin As POINTAPI
-    vector As CVector
+    obj As Object           'BS_VECTOR,BS_PROGRAM,BS_SPRITE
+    img As TKBoardImage
 End Type
 
 
@@ -494,15 +507,15 @@ Public Sub vectorLvColumn(ByRef lv As ListView, ByRef x As Single): On Error Res
         If x < w Then Exit For
     Next i
     'Store the subitem column in the tag (first subitem column is the second column).
-    lv.tag = i - 1
+    lv.Tag = i - 1
 End Sub
 Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal keyCode As Integer) As Boolean ':on error resume next
     
     Dim i As Long
-    i = val(lv.tag)
+    i = val(lv.Tag)
     If i = 0 And keyCode = vbKeyDelete Then
         'Whole row selected - delete the point.
-        lv.ListItems.Remove lv.SelectedItem.index
+        lv.ListItems.Remove lv.SelectedItem.Index
         vectorLvKeyDown = True
     End If
     If i <> 1 And i <> 2 Then Exit Function
@@ -525,9 +538,9 @@ Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal keyCode As Integer) 
             vectorLvKeyDown = True
        Case vbKeyRight
             'Switch columns.
-            If i = 1 Then lv.tag = "2": vectorLvKeyDown = True
+            If i = 1 Then lv.Tag = "2": vectorLvKeyDown = True
        Case vbKeyLeft
-            If i = 2 Then lv.tag = "1": vectorLvKeyDown = True
+            If i = 2 Then lv.Tag = "1": vectorLvKeyDown = True
     End Select
 End Function
 
