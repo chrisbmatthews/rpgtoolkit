@@ -892,15 +892,18 @@ Private Declare Function CNVResize Lib "actkrt3.dll" (ByVal handle As Long, ByVa
 Private m_ed As TKBoardEditorData
 Private m_sel As CBoardSelection
 Private m_mouseScrollDistance As Long
-Private m_bScrollVertical As Boolean    ' Scroll vertically? (If false, scroll horizontally.)
+Private m_bScrollHorizontal As Boolean  ' Scroll horizontally? (If false, scroll vertically.)
 
 Private Const BTAB_BOARD = 0
 Private Const BTAB_PROPERTIES = 1
 
 Private m_ctls(BTAB_IMAGE) As Object
 
-Private Const WM_MOUSEWHEEL = &H20A     ' Event: mouse wheel was scrolled.
-Private Const WM_MBUTTONDOWN = &H207    ' Event: mouse wheel was pressed down.
+Private Const WM_MOUSEWHEEL = &H20A     ' Event: Mouse wheel was scrolled.
+Private Const WM_MBUTTONDOWN = &H207    ' Event: Mouse wheel was pressed down.
+                                        '        Note that this event is not working for me (Colin),
+                                        '        but according to MSDN it is the proper event, so
+                                        '        I am not attempting to locate another.
 Private Const WHEEL_DELTA = 120         ' One complete rotation of the scroll wheel.
 Private Const MK_CONTROL = 8            ' The control key was down while a mouse event took place.
 Private Const MAX_UNDO = 10             ' Maximum number of undo-redo positions.
@@ -1071,20 +1074,20 @@ Private Sub Form_Load() ':on error resume next
     Set m_ctls(BTAB_PROGRAM) = tkMainForm.bTools_ctlPrg
     Set m_ctls(BTAB_SPRITE) = tkMainForm.bTools_ctlSprite
     Set m_ctls(BTAB_IMAGE) = tkMainForm.bTools_ctlImage
-    
+
     'Map the settings to the tabs
     For i = 0 To UBound(g_tabMap): g_tabMap(i) = -1: Next i
     g_tabMap(BS_VECTOR) = BTAB_VECTOR
     g_tabMap(BS_PROGRAM) = BTAB_PROGRAM
     g_tabMap(BS_SPRITE) = BTAB_SPRITE
     g_tabMap(BS_IMAGE) = BTAB_IMAGE
-        
+
     ' Hook scroll wheel.
     Call AttachMessage(Me, hwnd, WM_MOUSEWHEEL)
     Call AttachMessage(Me, hwnd, WM_MBUTTONDOWN)
 End Sub
 Private Sub Form_Resize() ':on error resume next
-        
+
     Dim brdWidth As Integer, brdHeight As Integer
     
     'Available space.
@@ -1277,41 +1280,40 @@ End Property
 '==========================================================================
 Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     If (iMsg = WM_MOUSEWHEEL) Then
-        Dim distance As Long
-        distance = hiWord(wParam)
-        If (m_mouseScrollDistance <> 0) Then
-            If (Sgn(distance) <> Sgn(m_mouseScrollDistance)) Then
-                ' Signs are not the same, so start the total distance from zero.
-                m_mouseScrollDistance = 0
-            End If
-        End If
-        m_mouseScrollDistance = m_mouseScrollDistance + distance
-        If (Abs(m_mouseScrollDistance) >= WHEEL_DELTA) Then
-            ' We've scrolled the delta distance
+        m_mouseScrollDistance = m_mouseScrollDistance + hiWord(wParam)
 
-            If (loWord(wParam) And MK_CONTROL) Then
-                ' Control is down: zoom.
+        If (loWord(wParam) And MK_CONTROL) Then
+            ' Control is down: zoom.
+            If (Abs(m_mouseScrollDistance) >= WHEEL_DELTA) Then
+                ' We've scrolled the delta distance
                 Dim pt As POINTAPI
                 pt.x = loWord(lParam)
                 pt.y = hiWord(lParam)
                 Call zoom(Sgn(m_mouseScrollDistance), pt)
-            Else
-                ' Control is not down: scroll.
 
-                Dim scroll As Object ' Cannot use more specific type because there isn't one.
-                Set scroll = IIf(m_bScrollVertical, vScroll, hScroll)
-
-                scroll.value = scroll.value + scroll.LargeChange * Sgn(m_mouseScrollDistance)
-                IIf(m_bScrollVertical, m_ed.pCEd.topY, m_ed.pCEd.topX) = scroll.value
-                Call drawAll
+                ' Preserve any partial rotations of the wheel.
+                m_mouseScrollDistance = (m_mouseScrollDistance Mod WHEEL_DELTA) * Sgn(m_mouseScrollDistance)
             End If
+        Else
+            ' Control is not down: scroll.
 
-            ' Preserve any partial rotations of the wheel.
-            m_mouseScrollDistance = (m_mouseScrollDistance Mod WHEEL_DELTA) * Sgn(m_mouseScrollDistance)
+            Dim scroll As Object ' Cannot use more specific type because there isn't one.
+            Set scroll = IIf(m_bScrollHorizontal, hScroll, vScroll)
+
+            Dim newVal As Long
+            newVal = scroll.value + scroll.LargeChange * (m_mouseScrollDistance / WHEEL_DELTA)
+            scroll.value = IIf(newVal < scroll.min, scroll.min, IIf(newVal > scroll.max, scroll.max, newVal))
+            If (m_bScrollHorizontal) Then
+                m_ed.pCEd.topX = scroll.value
+            Else
+                m_ed.pCEd.topY = scroll.value
+            End If
+            Call drawAll
         End If
+
     ElseIf (iMsg = WM_MBUTTONDOWN) Then
         ' Toggle axis of scrolling.
-        m_bScrollVertical = Not (m_bScrollVertical)
+        m_bScrollHorizontal = Not (m_bScrollHorizontal)
     End If
 End Function
 
