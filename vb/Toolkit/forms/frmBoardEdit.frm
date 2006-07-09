@@ -1280,10 +1280,10 @@ End Property
 '==========================================================================
 Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     If (iMsg = WM_MOUSEWHEEL) Then
-        m_mouseScrollDistance = m_mouseScrollDistance + hiWord(wParam)
-
         If (loWord(wParam) And MK_CONTROL) Then
             ' Control is down: zoom.
+            m_mouseScrollDistance = m_mouseScrollDistance + hiWord(wParam)
+
             If (Abs(m_mouseScrollDistance) >= WHEEL_DELTA) Then
                 ' We've scrolled the delta distance
                 Dim pt As POINTAPI
@@ -1301,7 +1301,7 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
             Set scroll = IIf(m_bScrollHorizontal, hScroll, vScroll)
 
             Dim newVal As Long
-            newVal = scroll.value + scroll.LargeChange * (m_mouseScrollDistance / WHEEL_DELTA)
+            newVal = scroll.value - scroll.SmallChange * hiWord(wParam) / WHEEL_DELTA
             scroll.value = IIf(newVal < scroll.min, scroll.min, IIf(newVal > scroll.max, scroll.max, newVal))
             If (m_bScrollHorizontal) Then
                 m_ed.pCEd.topX = scroll.value
@@ -1309,6 +1309,7 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
                 m_ed.pCEd.topY = scroll.value
             End If
             Call drawAll
+
         End If
 
     ElseIf (iMsg = WM_MBUTTONDOWN) Then
