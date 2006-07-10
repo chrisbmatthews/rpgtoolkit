@@ -19,12 +19,13 @@
  */
 typedef struct tagTileAnim
 {
-	int animTileFrames;						// Total number of frames.
-	std::vector<STRING> animTileFrame;	// Filenames of each image in animation.
-	int animTilePause;						// Frames per second for animation (15 is fast).
-	int animTileCurrentFrame;				// Current frame for insertion/animation.
-	int timerFrame;							// This number will be 0 to 29 to indicate how many times the timer has clicked.
-	int currentAnmFrame;					// Currently animating frame.
+	std::vector<STRING> frames;				// Filenames of each image in animation.
+	int frameDelay;							// Frames per second for animation (15 is fast).
+
+	// Volatile data.
+	int currentFrame;						// Current frame for insertion/animation.
+	int frameTime;							// This number will be 0 to 29 to indicate how many times the timer has clicked.
+
 	bool open(const STRING fileName);
 } TILEANIM;
 

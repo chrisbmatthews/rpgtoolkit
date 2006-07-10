@@ -88,20 +88,24 @@ bool tagBoard::open(const STRING fileName)
 	file >> lutSize;
 	tileIndex.clear();
 
+	// Temporarily to hold animated tile indices.
+	std::vector<int> tanLutIndices;
+
 	unsigned int i;
-	hasAnmTiles = false;
 	for (i = 0; i <= lutSize; i++)
 	{
 		STRING entry;
 		file >> entry;
+
+
 		tileIndex.push_back(entry);
 		if (!entry.empty())
 		{
 			const STRING ext = getExtension(entry);
 			if (_stricmp(ext.c_str(), _T("TAN")) == 0)
 			{
-				anmTileLUTIndices.push_back(i);
-				hasAnmTiles = true;
+				// Indices that point to animated tiles.
+				tanLutIndices.push_back(i);
 			}
 		}
 	}
@@ -134,20 +138,21 @@ bool tagBoard::open(const STRING fileName)
 
 					for (unsigned int cnt = 1; cnt <= test; cnt++)
 					{
-
 						board[x][y][l] = bb;
 						ambientRed[x][y][l] = rr;
 						ambientGreen[x][y][l] = gg;
 						ambientBlue[x][y][l] = bl;
 						tiletype[l][y][x] = tt;
-						std::vector<int>::const_iterator i = anmTileLUTIndices.begin();
-						for (; i != anmTileLUTIndices.end(); ++i)
+
+						std::vector<int>::const_iterator i = tanLutIndices.begin();
+						for (; i != tanLutIndices.end(); ++i)
 						{
 							if (board[x][y][l] == *i)
 							{
 								addAnimTile(tileIndex[board[x][y][l]], x, y, l);
 							}
 						}
+
 						if (++x > bSizeX)
 						{
 							x = 1;
@@ -161,7 +166,6 @@ bool tagBoard::open(const STRING fileName)
 								}
 								// Onto the next layer.
 								if (bb) bLayerOccupied[l] = true;
-
 							}
 						}
 					}
@@ -176,8 +180,8 @@ bool tagBoard::open(const STRING fileName)
 					file >> ambientGreen[x][y][l];
 					file >> ambientBlue[x][y][l];
 					file >> tiletype[l][y][x];
-					std::vector<int>::const_iterator i = anmTileLUTIndices.begin();
-					for (; i != anmTileLUTIndices.end(); ++i)
+					std::vector<int>::const_iterator i = tanLutIndices.begin();
+					for (; i != tanLutIndices.end(); ++i)
 					{
 						if (board[x][y][l] == *i)
 						{
@@ -672,23 +676,27 @@ void tagBoardImage::createCanvas(BOARD &board)
 /*
  * Render the board to a canvas.
  */
-void tagBoard::render(CCanvas *cnv,
-	int destX, const int destY,			// canvas destination.
-	const int lLower, const int lUpper,	// layer bounds. 
-	int topX, int topY,					// pixel location on board to start from. 
-	int width, int height,				// pixel dimensions to draw. 
-	const int aR, const int aG, const int aB)
+void tagBoard::render(
+	CCanvas *cnv,
+	int destX, 			// canvas destination.
+	const int destY,
+	const int lLower, 	// layer bounds. 
+	const int lUpper,
+	int topX,			// pixel location on board to start from. 
+	int topY,
+	int width, 			// pixel dimensions to draw. 
+	int height,
+	const int aR, 
+	const int aG, 
+	const int aB)
 {
 	extern STRING g_projectPath;
 
-	// Tile dimensions.
-	const int tWidth = (isIsometric() ? 64 : 32),
-			  tHeight = (isIsometric() ? 16 : 32);
 	const RECT bounds = { topX, topY, topX + width, topY + height };
 
 	// Number of tiles to draw in each dimension.
-	int nWidth = (width + topX > pxWidth() ? pxWidth() - topX : width) / tWidth,
-		nHeight = (height + topY > pxHeight() ? pxHeight() - topY : height) / tHeight;
+	int nWidth = (width + topX > pxWidth() ? pxWidth() - topX : width) / tileWidth(),
+		nHeight = (height + topY > pxHeight() ? pxHeight() - topY : height) / tileHeight();
 
 	// Grow the board to draw the outer edges (of large boards).
 	if (coordType & ISO_STACKED) 
@@ -704,12 +712,12 @@ void tagBoard::render(CCanvas *cnv,
 	const int parity = !(topY % 32);
 
 	// Tile start co-ordinates.
-	topX /= tWidth;
-	topY /= tHeight;
+	topX /= tileWidth();
+	topY /= tileHeight();
 
 	// Effective matrix dimensions.
-	const int effWidth = (coordType & ISO_ROTATED ? bSizeX + bSizeY : bSizeX); 
-	const int effHeight = (coordType & ISO_ROTATED ? bSizeX + bSizeY : bSizeY);
+	const int effectiveWidth = (coordType & ISO_ROTATED ? bSizeX + bSizeY : bSizeX); 
+	const int effectiveHeight = (coordType & ISO_ROTATED ? bSizeX + bSizeY : bSizeY);
 	
 	// For each layer
 	for (unsigned int i = lLower; i <= lUpper; ++i)
@@ -720,23 +728,23 @@ void tagBoard::render(CCanvas *cnv,
 		for (unsigned int j = 1; j <= nWidth; ++j)
 		{
 			const int x = j + topX;
-			if (x < 0 || x > effWidth) continue;
+			if (x < 0 || x > effectiveWidth) continue;
 
 			// For the y axis
 			for (unsigned int k = 1; k <= nHeight; ++k)
 			{
 				// The tile co-ordinates.
 				const int  y = k + topY;
-				if (y < 0 || y > effHeight) continue;
+				if (y < 0 || y > effectiveHeight) continue;
 
 				if (board[x][y][i])
 				{
-					const STRING strTile = tileIndex[board[x][y][i]];
-					if (!strTile.empty())
+					const STRING tile = tileIndex[board[x][y][i]];
+					if (!tile.empty())
 					{
 						// Tile exists at this location.
 						CTile::drawByBoardCoord(
-							g_projectPath + TILE_PATH + strTile,
+							g_projectPath + TILE_PATH + tile,
 							j, k, 
 							ambientRed[x][y][i] + aR,
 							ambientGreen[x][y][i] + aG,
@@ -755,29 +763,44 @@ void tagBoard::render(CCanvas *cnv,
 
 		// Draw attached images over tiles on their respective layers.
 		// Background image handled separately.
-		for (std::vector<LPBRD_IMAGE>::iterator img = images.begin(); img != images.end(); ++img)
-		{
-			if (((*img)->pCnv) && ((*img)->type != BI_PARALLAX) && (*img)->layer == i)
-			{
-				// Do not blt parallaxed images - unlikely to be
-				// feasible to have parallaxed images between layers.
-				RECT rect = {0, 0, 0, 0};
-				if (IntersectRect(&rect, &(*img)->r, &bounds))
-				{
-					// If the image intersects the scrollcache.
-					(*img)->pCnv->BltTransparentPart(cnv, 
-						rect.left - bounds.left + destX,
-						rect.top - bounds.top + destY,
-						rect.left - (*img)->r.left,
-						rect.top - (*img)->r.top,
-						rect.right - rect.left,
-						rect.bottom - rect.top,
-						(*img)->transpColor);
-				}
-			}
-		}
+		renderImages(cnv, destX, destY, bounds, i);
 
 	} // for i
+}
+
+/*
+ * Render images on a layer that intersect the RECT bounds (or all images if layer = 0).
+ */
+void tagBoard::renderImages(
+	CCanvas *cnv, 
+	const int destX,
+	const int destY,
+	const RECT bounds, 
+	const int layer)
+{
+	for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
+	{
+		BRD_IMAGE img = **i;
+		if ((img.layer == layer || !layer) && (img.pCnv) && (img.type != BI_PARALLAX))
+		{
+			// Do not blt parallaxed images - unlikely to be
+			// feasible to have parallaxed images between layers.
+			RECT rect = {0, 0, 0, 0};
+			if (IntersectRect(&rect, &img.r, &bounds))
+			{
+				// If the image intersects the scrollcache.
+				img.pCnv->BltTransparentPart(cnv, 
+					rect.left - bounds.left + destX,
+					rect.top - bounds.top + destY,
+					rect.left - img.r.left,
+					rect.top - img.r.top,
+					rect.right - rect.left,
+					rect.bottom - rect.top,
+					img.transpColor
+				);
+			}
+		}
+	}
 }
 
 /*
@@ -848,14 +871,14 @@ void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 
 }
 
-int tagBoard::pxWidth() 
+int tagBoard::pxWidth() const
 {
 	if (coordType & ISO_STACKED) return bSizeX * 64 - 32;
 	if (coordType & ISO_ROTATED) return bSizeX * 64 - 32;
 	return bSizeX * 32;			// TILE_NORMAL.
 }
 
-int tagBoard::pxHeight() 
+int tagBoard::pxHeight() const
 { 
 	if (coordType & ISO_STACKED) return bSizeY * 16 - 16;
 	if (coordType & ISO_ROTATED) return bSizeY * 32;
@@ -970,18 +993,30 @@ void tagBoard::addAnimTile(const STRING fileName, const int x, const int y, cons
 {
 	static STRING lastAnimFile;
 	static TILEANIM lastAnim;
+
+	// Save time when multiple TANs are being loaded.
 	if (_stricmp(lastAnimFile.c_str(), fileName.c_str()) != 0)
 	{
 		extern STRING g_projectPath;
 		lastAnim.open(g_projectPath + TILE_PATH + fileName);
-		lastAnimFile = fileName;
+		lastAnimFile = fileName;	
 	}
+
 	BOARD_TILEANIM anim;
 	anim.tile = lastAnim;
 	anim.x = x;
 	anim.y = y;
 	anim.z = z;
-	animatedTile.push_back(anim);
+
+	// Unpack the TAN and add each frame to the Lut to be 
+	// cycled through during rendering.
+	std::vector<STRING>::const_iterator i = lastAnim.frames.begin();
+	for (; i != lastAnim.frames.end(); ++i)
+	{
+		anim.lutIndices.push_back(lutIndex(*i));
+	}
+
+	animatedTiles.push_back(anim);
 }
 
 /*
@@ -1069,8 +1104,25 @@ bool tagBoard::hasProgram(LPBRD_PROGRAM p) const
  */
 bool tagBoard::insertTile(const STRING tile, const int x, const int y, const int z)
 {
-	int index = 0;
+	try
+	{
+		board[x][y][z] = lutIndex(tile);
+		bLayerOccupied[z] = true;
+		bLayerOccupied[0] = true;			// Any layer occupied.
+	}
+	catch (...) 
+	{
+		return false;
+	}
+	return true;
+}
 
+/*
+ * Get the Lut index of a tile, adding the tile if not found.
+ */
+int tagBoard::lutIndex(const STRING tile)
+{
+	int index = 0;
 	// Search the table for the tile.
 	std::vector<STRING>::iterator i = tileIndex.begin(), j = i;
 	for (; i != tileIndex.end(); ++i)
@@ -1087,16 +1139,101 @@ bool tagBoard::insertTile(const STRING tile, const int x, const int y, const int
 		index = tileIndex.size();
 		tileIndex.push_back(tile);
 	}
+	return index;
+}
 
-	try
+void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
+{
+	std::vector<BOARD_TILEANIM>::iterator i = animatedTiles.begin();
+	for (; i != animatedTiles.end(); ++i)
 	{
-		board[x][y][z] = index;
-		bLayerOccupied[z] = true;
-		bLayerOccupied[0] = true;			// Any layer occupied.
-	}
-	catch (...) 
+		TILEANIM *tan = &i->tile;
+		if (GetTickCount() - tan->frameTime > tan->frameDelay)
+		{
+			(++tan->currentFrame) %= tan->frames.size();
+			tan->frameTime = GetTickCount();
+
+			// Change the LUT index to point to a TST.
+			board[i->x][i->y][i->z] = i->lutIndices[tan->currentFrame];
+
+			// Pixel bounds of tile stack.
+			int x = i->x, y = i->y;
+			coords::tileToPixel(x, y, coordType, false, bSizeX);
+			if (isIsometric())
+			{
+				// Render location.
+				x -= 32;
+				y -= 16;
+			}
+			RECT bounds = {x, y, x + tileWidth(), y + tileHeight()};
+			
+			// Draw the whole tile stack onto the scrollcache.
+			renderStack(
+				&scrollCache.cnv,
+				bounds.left - scrollCache.r.left,
+				bounds.top - scrollCache.r.top,
+				1, bSizeL,
+				i->x, i->y,
+				bounds,
+				0, 0, 0
+			);
+		} // if (advanced frame)
+	} // for (i)
+}
+
+/*
+ * Render tiles on all layers at a single co-ordinate.
+ */
+void tagBoard::renderStack(
+	CCanvas *cnv,
+	const int destX,	// canvas destination.
+	const int destY,
+	const int lLower, 	// layer bounds. 
+	const int lUpper,
+	const int x,		// tile location on board to draw. 
+	const int y,
+	const RECT bounds,
+	const int aR, 
+	const int aG, 
+	const int aB)
+{
+
+	extern STRING g_projectPath;
+	extern RECT g_screen;
+
+	// Skip tan if off screen.
+	RECT dest = {0, 0, 0, 0};
+	if (!IntersectRect(&dest, &bounds, &g_screen)) return;
+
+	// TBD: draw blank tile rather than rectangle - isometrics!
+//	cnv->DrawFilledRect(bounds.left, bounds.top, bounds.right - 1, bounds.bottom - 1, brdColor);
+
+	for (unsigned int i = lLower; i <= lUpper; ++i)
 	{
-		return false;
+		if (!bLayerOccupied[i]) continue;
+
+		if (board[x][y][i])
+		{
+			const STRING tile = tileIndex[board[x][y][i]];
+			if (!tile.empty())
+			{
+				// Tile exists at this location.
+				CTile::drawByBoardCoord(
+					g_projectPath + TILE_PATH + tile,
+					x, y, 
+					ambientRed[x][y][i] + aR,
+					ambientGreen[x][y][i] + aG,
+					ambientBlue[x][y][i] + aB,
+					cnv, 
+					TM_NONE,
+					destX - bounds.left, 
+					destY - bounds.top,
+					coordType,
+					bSizeX,
+					!(y % 32)
+				);
+			}
+		}
+		renderImages(cnv, destX, destY, bounds, i);
 	}
-	return true;
 }

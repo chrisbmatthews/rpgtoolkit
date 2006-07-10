@@ -433,14 +433,16 @@ void tagScrollCache::render(const bool bForceRedraw)
 
 		cnv.ClearScreen(TRANSP_COLOR);
 
-		g_pBoard->render(&cnv, 
-				  0, 0, 
-				  1, g_pBoard->bSizeL,
-				  r.left, 
-				  r.top, 
-				  width, 
-				  height, 
-				  0, 0, 0); 
+		g_pBoard->render(
+			&cnv, 
+			0, 0, 
+			1, g_pBoard->bSizeL,
+			r.left, 
+			r.top, 
+			width, 
+			height, 
+			0, 0, 0
+		); 
 
 #ifdef DEBUG_VECTORS
 		// Draw program and tile vectors.
@@ -489,14 +491,19 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 		// Check if we need to re-render the scroll cache.
 		g_scrollCache.render(false);
 
+		// Advance animated tiles and update the scroll cache.
+		g_pBoard->renderAnimatedTiles(g_scrollCache);
+
 		// Draw flattened layers.
-		g_scrollCache.cnv.BltTransparentPart(cnv, 
+		g_scrollCache.cnv.BltTransparentPart(
+			cnv, 
 			g_scrollCache.r.left - g_screen.left,
 			g_scrollCache.r.top - g_screen.top,
 			0, 0, 
 			g_scrollCache.r.right - g_scrollCache.r.left, 
 			g_scrollCache.r.bottom - g_scrollCache.r.top,
-			TRANSP_COLOR);
+			TRANSP_COLOR
+		);			
 	}
 
 	/*
@@ -523,14 +530,16 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 
 				// If this rect is occupied, draw all the tiles on this layer
 				// it totally or partially contains, covering the sprite.
-				g_pBoard->render(cnv,
-								rAlign.left - g_screen.left,
-								rAlign.top - g_screen.top,
-								layer, layer,
-								rAlign.left, rAlign.top, 
-								rAlign.right - rAlign.left, 
-								rAlign.bottom - rAlign.top,
-								0, 0, 0);
+				g_pBoard->render(
+					cnv,
+					rAlign.left - g_screen.left,
+					rAlign.top - g_screen.top,
+					layer, layer,
+					rAlign.left, rAlign.top, 
+					rAlign.right - rAlign.left, 
+					rAlign.bottom - rAlign.top,
+					0, 0, 0
+				);
 			}
 		} // if (g_pBoard->bLayerOccupied[layer])
 
@@ -574,14 +583,16 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 					if(((k->attributes & TA_RECT_INTERSECT) && IntersectRect(&sr, &sr, &rBounds))
 						|| k->pV->contains(v, p))
 					{
-						k->pCnv->BltTransparentPart(cnv, 
-									r.left - g_screen.left,
-									r.top - g_screen.top,
-									r.left - rBounds.left, 
-									r.top - rBounds.top, 
-									r.right - r.left, 
-									r.bottom - r.top,
-									TRANSP_COLOR);
+						k->pCnv->BltTransparentPart(
+							cnv, 
+							r.left - g_screen.left,
+							r.top - g_screen.top,
+							r.left - rBounds.left, 
+							r.top - rBounds.top, 
+							r.right - r.left, 
+							r.bottom - r.top,
+							TRANSP_COLOR
+						);
 					}
 				}
 			} // for (under tile canvases)

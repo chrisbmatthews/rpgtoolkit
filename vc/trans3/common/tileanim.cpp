@@ -8,6 +8,7 @@
 /*
  * Inclusions.
  */
+#include "../movement/movement.h"
 #include "tileanim.h"
 #include "CFile.h"
 #include "mbox.h"
@@ -34,15 +35,23 @@ bool tagTileAnim::open(const STRING fileName)
 	short majorVer, minorVer;
 	file >> majorVer;
 	file >> minorVer;
-	file >> animTilePause;
-	file >> animTileFrames;
+	file >> frameDelay;
 
-	animTileFrame.clear();
-	for (unsigned int i = 0; i < animTileFrames; i++)
+	// Convert the file's "frame pause" into a millisecond delay.
+	// (The editor (as of 3.0.7 and before) stores the value of
+	// a scrollbar whose maximum value of 200 corresponds to an intended
+	// delay of 5ms, and minimum of 1, corresponding to 1000ms.)
+	frameDelay = MILLISECONDS / double(frameDelay);
+
+	int frameCount;
+	file >> frameCount;
+
+	frames.clear();
+	for (unsigned int i = 0; i < frameCount; i++)
 	{
 		STRING frame;
 		file >> frame;
-		animTileFrame.push_back(frame);
+		frames.push_back(frame);
 	}
 	return true;
 }
