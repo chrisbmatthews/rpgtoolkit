@@ -37,7 +37,6 @@ Begin VB.Form frmBoardEdit
       TabPicture(1)   =   "frmBoardEdit.frx":001C
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "picProperties"
-      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       Begin VB.PictureBox picProperties 
          Appearance      =   0  'Flat
@@ -803,6 +802,102 @@ Begin VB.Form frmBoardEdit
          End
       End
    End
+   Begin VB.Menu mnuFile 
+      Caption         =   "File"
+      Begin VB.Menu mnuNewProject 
+         Caption         =   "New Project"
+         Shortcut        =   ^N
+      End
+      Begin VB.Menu mnuNewFile 
+         Caption         =   "New..."
+         WindowList      =   -1  'True
+         Begin VB.Menu mnuNew 
+            Caption         =   "Tile"
+            Index           =   0
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Animated Tile"
+            Index           =   1
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Board"
+            Index           =   2
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Player"
+            Index           =   3
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Item"
+            Index           =   4
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Enemy"
+            Index           =   5
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "RPGCode Program"
+            Index           =   6
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Fight Background"
+            Index           =   7
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Special Move"
+            Index           =   8
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Status Effect"
+            Index           =   9
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Animation"
+            Index           =   10
+         End
+         Begin VB.Menu mnuNew 
+            Caption         =   "Tile Bitmap"
+            Index           =   11
+         End
+      End
+      Begin VB.Menu mnuS1 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuOpen 
+         Caption         =   "Open Project"
+         Index           =   0
+      End
+      Begin VB.Menu mnuOpenFile 
+         Caption         =   "Open File"
+         Index           =   1
+         Shortcut        =   ^O
+      End
+      Begin VB.Menu mnuSave 
+         Caption         =   "Save Board"
+         Index           =   0
+         Shortcut        =   ^S
+      End
+      Begin VB.Menu mnuSaveBoardAs 
+         Caption         =   "Save Board As"
+         Index           =   1
+         Shortcut        =   {F2}
+      End
+      Begin VB.Menu mnuSaveAll 
+         Caption         =   "Save All"
+         Index           =   2
+         Shortcut        =   {F3}
+      End
+      Begin VB.Menu mnuS2 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuCloseBoard 
+         Caption         =   "Close Board"
+         Shortcut        =   ^{F4}
+      End
+      Begin VB.Menu mnuExitEditor 
+         Caption         =   "Exit Editor"
+      End
+   End
    Begin VB.Menu mnuEdit 
       Caption         =   "Edit"
       Begin VB.Menu mnuUndo 
@@ -813,7 +908,7 @@ Begin VB.Form frmBoardEdit
          Caption         =   "Redo"
          Shortcut        =   ^Y
       End
-      Begin VB.Menu mnuS1 
+      Begin VB.Menu mnuS3 
          Caption         =   "-"
       End
       Begin VB.Menu mnuCopy 
@@ -828,7 +923,7 @@ Begin VB.Form frmBoardEdit
          Caption         =   "Paste"
          Shortcut        =   ^V
       End
-      Begin VB.Menu mnuS2 
+      Begin VB.Menu mnuS4 
          Caption         =   "-"
       End
       Begin VB.Menu mnuSelectAll 
@@ -884,6 +979,7 @@ Private Declare Function BRDDraw Lib "actkrt3.dll" (ByVal pEditorData As Long, B
 Private Declare Function BRDRenderTileToBoard Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByVal hdcCompat As Long, ByVal x As Long, ByVal y As Long, ByVal z As Long) As Long
 Private Declare Function BRDRenderTile Lib "actkrt3.dll" (ByVal filename As String, ByVal bIsometric As Boolean, ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal backColor As Long) As Long
 Private Declare Function BRDFreeImage Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pImage As Long) As Long
+Private Declare Function BRDRenderImage Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pImage As Long, ByVal hdcCompat As Long) As Long
 
 Private Declare Function CNVGetWidth Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Function CNVGetHeight Lib "actkrt3.dll" (ByVal handle As Long) As Long
@@ -900,10 +996,6 @@ Private Const BTAB_PROPERTIES = 1
 Private m_ctls(BTAB_IMAGE) As Object
 
 Private Const WM_MOUSEWHEEL = &H20A     ' Event: Mouse wheel was scrolled.
-Private Const WM_MBUTTONDOWN = &H207    ' Event: Mouse wheel was pressed down.
-                                        '        Note that this event is not working for me (Colin),
-                                        '        but according to MSDN it is the proper event, so
-                                        '        I am not attempting to locate another.
 Private Const WHEEL_DELTA = 120         ' One complete rotation of the scroll wheel.
 Private Const MK_CONTROL = 8            ' The control key was down while a mouse event took place.
 Private Const MAX_UNDO = 10             ' Maximum number of undo-redo positions.
@@ -925,9 +1017,10 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
         Next i
     End With
     Set m_sel = New CBoardSelection
+    Me.Caption = "Untitled board"
     
     'testing
-    m_ed.board(m_ed.undoIndex).brdColor = 0 'RGB(255, 255, 255)
+    m_ed.board(m_ed.undoIndex).bkgColor = 0 'RGB(255, 255, 255)
     m_ed.vectorColor(TT_SOLID) = RGB(255, 255, 255)
     m_ed.vectorColor(TT_UNDER) = RGB(0, 255, 0)
     m_ed.vectorColor(TT_STAIRS) = RGB(0, 255, 255)
@@ -941,7 +1034,7 @@ End Sub
 Private Sub resetEditor(ByRef ed As TKBoardEditorData) ': On Error Resume Next
     With ed
         Dim i As Integer '.bLayerOccupied assigned in openBoard()
-        ReDim .bLayerVisible(m_ed.board(m_ed.undoIndex).bSizeL + 1)
+        ReDim .bLayerVisible(m_ed.board(m_ed.undoIndex).sizeL + 1)
         For i = 1 To UBound(.bLayerVisible)
             .bLayerVisible(i) = True
         Next i
@@ -956,10 +1049,10 @@ Public Sub newBoard(ByVal x As Long, ByVal y As Long, ByVal z As Long, ByVal coo
     m_ed.bUndoData(m_ed.undoIndex) = True
     
     m_ed.board(m_ed.undoIndex).coordType = coordType
-    Call BoardClear(m_ed.board(m_ed.undoIndex))
-    Call BoardSetSize(x, y, z, m_ed, m_ed.board(m_ed.undoIndex))
+    Call boardInitialise(m_ed.board(m_ed.undoIndex))
+    Call boardSetSize(x, y, z, m_ed, m_ed.board(m_ed.undoIndex))
     
-    m_ed.board(m_ed.undoIndex).bkgImage.file = background
+    m_ed.board(m_ed.undoIndex).bkgImage.filename = background
     Call initializeEditor(m_ed)
     Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, True)
 End Sub
@@ -1084,7 +1177,6 @@ Private Sub Form_Load() ':on error resume next
 
     ' Hook scroll wheel.
     Call AttachMessage(Me, hwnd, WM_MOUSEWHEEL)
-    Call AttachMessage(Me, hwnd, WM_MBUTTONDOWN)
 End Sub
 Private Sub Form_Resize() ':on error resume next
 
@@ -1151,7 +1243,7 @@ Private Sub Form_Resize() ':on error resume next
 End Sub
 Private Sub Form_Unload(Cancel As Integer) ': On Error Resume Next
     Call BRDFree(m_ed.pCBoard)
-    Call BoardClear(m_ed.board(m_ed.undoIndex))
+    'wip - no need 'Call BoardClear(m_ed.board(m_ed.undoIndex))
     Call hideAllTools
     tkMainForm.popButton(3).Visible = False         'Before Set m_sel = Nothing
     tkMainForm.pTools.Visible = False
@@ -1159,7 +1251,6 @@ Private Sub Form_Unload(Cancel As Integer) ': On Error Resume Next
     'tbc
 
     ' Unhook scroll wheel.
-    Call DetachMessage(Me, hwnd, WM_MBUTTONDOWN)
     Call DetachMessage(Me, hwnd, WM_MOUSEWHEEL)
 End Sub
 
@@ -1175,7 +1266,7 @@ End Sub
 
 '========================================================================
 '========================================================================
-Public Sub openFile(ByVal file As String): On Error Resume Next
+Public Sub openFile(ByVal file As String) ': On Error Resume Next
 
     Call activeBoard.Show
     Call checkSave
@@ -1184,43 +1275,35 @@ Public Sub openFile(ByVal file As String): On Error Resume Next
     ' Call FileCopy(filename(1), projectPath & brdPath & antiPath)
     
     Call openBoard(file, m_ed, m_ed.board(m_ed.undoIndex))
-    Call vectorize(m_ed)                          'tbd: For old boards only.
-    
-    'tbd: merge with openBoard?
-    '.bounds information set in actkrt3
-    m_ed.board(m_ed.undoIndex).bkgImage.file = bmpPath & m_ed.board(m_ed.undoIndex).brdBack   'tbd: remove brdback
-    m_ed.board(m_ed.undoIndex).bkgImage.drawType = BI_PARALLAX                  'Default for background.
-    
+        
     Call resetEditor(m_ed)
     Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, True)
     
     m_ed.boardName = RemovePath(file)
-    activeBoard.Caption = "Board Editor (" & m_ed.boardName & ")"
+    Me.Caption = m_ed.boardName
     
     Call Form_Resize
 End Sub
 Public Sub saveFile() ':on error resume next
 
     ' if no filename exists, we've just created this board, so show dialog.
-    If LenB(boardList(activeBoardIndex).boardName) = 0 Then
+    If LenB(m_ed.boardName) = 0 Then
         Call saveFileAs
         Exit Sub
     End If
 
     'Check this isn't read-only.
-    If (fileExists(projectPath & brdPath & boardList(activeBoardIndex).boardName)) Then
-        If (GetAttr(projectPath & brdPath & boardList(activeBoardIndex).boardName) And vbReadOnly) Then
-        
-            Call MsgBox(boardList(activeBoardIndex).boardName & " is read-only, please choose a different filename", vbExclamation)
+    If (fileExists(projectPath & brdPath & m_ed.boardName)) Then
+        If (GetAttr(projectPath & brdPath & m_ed.boardName) And vbReadOnly) Then
+            Call MsgBox(m_ed.boardName & " is read-only, please choose a different filename", vbExclamation)
             Call saveFileAs
-
             Exit Sub
         End If
     End If
 
-    boardList(activeBoardIndex).boardNeedUpdate = False
-    Call saveBoard(projectPath & brdPath & boardList(activeBoardIndex).boardName, boardList(activeBoardIndex).theData)
-    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & boardList(activeBoardIndex).boardName & ")"
+    m_ed.bNeedUpdate = False
+    Call saveBoard(projectPath & brdPath & m_ed.boardName, m_ed.board(m_ed.undoIndex))
+    Me.Caption = m_ed.boardName
 
 End Sub
 Private Sub saveFileAs() ':on error resume next
@@ -1239,11 +1322,11 @@ Private Sub saveFileAs() ':on error resume next
     ' if no filename entered, exit.
     If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
 
-    boardList(activeBoardIndex).boardName = dlg.strSelectedFileNoPath
-    Call saveBoard(dlg.strSelectedFile, boardList(activeBoardIndex).theData)
-    activeBoard.Caption = LoadStringLoc(802, "Board Editor") & " (" & dlg.strSelectedFileNoPath & ")"
+    m_ed.boardName = dlg.strSelectedFileNoPath
+    Call saveBoard(dlg.strSelectedFile, m_ed.board(m_ed.undoIndex))
+    activeBoard.Caption = m_ed.boardName
     
-    boardList(activeBoardIndex).boardNeedUpdate = False
+    m_ed.bNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath)
 End Sub
 
@@ -1258,11 +1341,11 @@ End Sub
 '==========================================================================
 ' Get the high or low order word.
 '==========================================================================
-Private Function loWord(ByRef lng As Long) As Integer
-   Call CopyMemory(loWord, ByVal VarPtr(lng), 2)
+Private Function LoWord(ByRef lng As Long) As Integer
+   Call CopyMemory(LoWord, ByVal VarPtr(lng), 2)
 End Function
-Private Function hiWord(ByRef lng As Long) As Integer
-   Call CopyMemory(hiWord, ByVal (VarPtr(lng) + 2), 2)
+Private Function HiWord(ByRef lng As Long) As Integer
+   Call CopyMemory(HiWord, ByVal (VarPtr(lng) + 2), 2)
 End Function
 
 '==========================================================================
@@ -1280,15 +1363,15 @@ End Property
 '==========================================================================
 Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     If (iMsg = WM_MOUSEWHEEL) Then
-        If (loWord(wParam) And MK_CONTROL) Then
+        If (LoWord(wParam) And MK_CONTROL) Then
             ' Control is down: zoom.
-            m_mouseScrollDistance = m_mouseScrollDistance + hiWord(wParam)
+            m_mouseScrollDistance = m_mouseScrollDistance + HiWord(wParam)
 
             If (Abs(m_mouseScrollDistance) >= WHEEL_DELTA) Then
                 ' We've scrolled the delta distance
                 Dim pt As POINTAPI
-                pt.x = loWord(lParam)
-                pt.y = hiWord(lParam)
+                pt.x = LoWord(lParam)
+                pt.y = HiWord(lParam)
                 Call zoom(Sgn(m_mouseScrollDistance), pt)
 
                 ' Preserve any partial rotations of the wheel.
@@ -1297,24 +1380,20 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
         Else
             ' Control is not down: scroll.
 
-            Dim scroll As Object ' Cannot use more specific type because there isn't one.
-            Set scroll = IIf(m_bScrollHorizontal, hScroll, vScroll)
+            Dim Scroll As Object ' Cannot use more specific type because there isn't one.
+            Set Scroll = IIf(m_bScrollHorizontal, hScroll, vScroll)
 
             Dim newVal As Long
-            newVal = scroll.value - scroll.SmallChange * hiWord(wParam) / WHEEL_DELTA
-            scroll.value = IIf(newVal < scroll.min, scroll.min, IIf(newVal > scroll.max, scroll.max, newVal))
+            newVal = Scroll.value - Scroll.SmallChange * HiWord(wParam) / WHEEL_DELTA
+            Scroll.value = IIf(newVal < Scroll.min, Scroll.min, IIf(newVal > Scroll.max, Scroll.max, newVal))
             If (m_bScrollHorizontal) Then
-                m_ed.pCEd.topX = scroll.value
+                m_ed.pCEd.topX = Scroll.value
             Else
-                m_ed.pCEd.topY = scroll.value
+                m_ed.pCEd.topY = Scroll.value
             End If
             Call drawAll
 
         End If
-
-    ElseIf (iMsg = WM_MBUTTONDOWN) Then
-        ' Toggle axis of scrolling.
-        m_bScrollHorizontal = Not (m_bScrollHorizontal)
     End If
 End Function
 
@@ -1334,11 +1413,20 @@ Private Sub mnuPaste_Click(): On Error Resume Next
     m_sel.yDrag = m_sel.y1
     m_sel.status = SS_PASTING
 End Sub
+
+Private Sub mnusave_Click(index As Integer) ': On Error Resume Next
+    Select Case index
+        Case 0: Call saveFile
+        Case 1: Call saveFileAs
+        Case 2: 'tbd
+    End Select
+End Sub
+
 Private Sub mnuSelectAll_Click() ': On Error Resume Next
     If m_ed.optTool <> BT_SELECT Then Exit Sub
     Select Case m_ed.optSetting
         Case BS_TILE
-            Call m_sel.assign(0, 0, absWidth(m_ed.board(m_ed.undoIndex).bSizeX, m_ed.board(m_ed.undoIndex).coordType), absHeight(m_ed.board(m_ed.undoIndex).bSizeY, m_ed.board(m_ed.undoIndex).coordType))
+            Call m_sel.assign(0, 0, absWidth(m_ed.board(m_ed.undoIndex).sizex, m_ed.board(m_ed.undoIndex).coordType), absHeight(m_ed.board(m_ed.undoIndex).sizey, m_ed.board(m_ed.undoIndex).coordType))
         Case BS_VECTOR, BS_PROGRAM
             Dim r As RECT
             If currentVector Is Nothing Then Exit Sub
@@ -1446,10 +1534,13 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
     End Select 'Setting
 End Sub
 Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
-    
+       
     Dim pxCoord As POINTAPI, curVector As CVector
     pxCoord = screenToBoardPixel(x, y, m_ed)
     Set curVector = currentVector
+    
+    'Switch mousewheel scrolling axis by clicking the mousewheel button.
+    If Button = vbMiddleButton Then m_bScrollHorizontal = Not (m_bScrollHorizontal): Exit Sub
     
     'Process tools common to all settings.
     Select Case m_ed.optTool
@@ -1575,7 +1666,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
     
     Dim pxCoord As POINTAPI, tileCoord As POINTAPI
     pxCoord = screenToBoardPixel(x, y, m_ed)
-    tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
+    tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
     tkMainForm.StatusBar1.Panels(3).Text = str(tileCoord.x) & ", " & str(tileCoord.y)
     
     If m_sel.status = SS_DRAWING Or m_sel.status = SS_MOVING Then
@@ -1648,7 +1739,7 @@ Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y
                 Case BS_TILE
                     Select Case m_sel.status
                         Case SS_DRAWING
-                            Call m_sel.expandToGrid(m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).bSizeX)
+                            Call m_sel.expandToGrid(m_ed.board(m_ed.undoIndex).coordType, m_ed.board(m_ed.undoIndex).sizex)
                         Case SS_MOVING, SS_PASTING
                             If m_sel.status = SS_MOVING Then
                                 'Perform a cut/copy-paste when dragging tiles.
@@ -1702,8 +1793,8 @@ Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y
 End Sub
 Private Function snapToGrid(ByRef pxCoord As POINTAPI, Optional ByVal bAddBasePoint As Boolean = False) As POINTAPI: On Error Resume Next
     Dim pt As POINTAPI: pt = pxCoord
-    pt = modBoard.boardPixelToTile(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
-    snapToGrid = modBoard.tileToBoardPixel(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, bAddBasePoint, m_ed.board(m_ed.undoIndex).bSizeX)
+    pt = modBoard.boardPixelToTile(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
+    snapToGrid = modBoard.tileToBoardPixel(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, bAddBasePoint, m_ed.board(m_ed.undoIndex).sizex)
 End Function
 
 '========================================================================
@@ -1713,14 +1804,14 @@ Private Sub placeTile(file As String, x As Long, y As Long) ': On Error Resume N
 
     'Get board pixel _drawing_ coordinate from tile.
     Dim brdPt As POINTAPI, scrPt As POINTAPI
-    brdPt = modBoard.tileToBoardPixel(x, y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX, True)
+    brdPt = modBoard.tileToBoardPixel(x, y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex, True)
     scrPt = boardPixelToScreen(brdPt.x, brdPt.y, m_ed)
     
     'Check if this tile is already inserted.
-    If BoardGetTile(x, y, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)) = file Then Exit Sub
+    If boardGetTile(x, y, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)) = file Then Exit Sub
     
     'Insert the selected tile into the board array.
-    Call BoardSetTile( _
+    Call boardSetTile( _
         x, y, _
         m_ed.currentLayer, _
         file, _
@@ -1730,9 +1821,6 @@ Private Sub placeTile(file As String, x As Long, y As Long) ': On Error Resume N
     m_ed.board(m_ed.undoIndex).ambientRed(x, y, m_ed.currentLayer) = m_ed.ambientR
     m_ed.board(m_ed.undoIndex).ambientGreen(x, y, m_ed.currentLayer) = m_ed.ambientG
     m_ed.board(m_ed.undoIndex).ambientBlue(x, y, m_ed.currentLayer) = m_ed.ambientB
-    
-    ' set tiletype details (tbd:?)
-    m_ed.board(m_ed.undoIndex).tiletype(x, y, m_ed.currentLayer) = m_ed.currentTileType
     
     'Render the tile to actkrt's layer canvas.
     Call BRDRenderTileToBoard( _
@@ -1762,7 +1850,7 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
 
     Dim tileCoord As POINTAPI, pxCoord As POINTAPI
     pxCoord = screenToBoardPixel(x, y, m_ed)
-    tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
+    tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
 
     If tileCoord.x > m_ed.effectiveBoardX Or tileCoord.y > m_ed.effectiveBoardY Then Exit Sub
 
@@ -1796,8 +1884,8 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
                 Height = UBound(tbm.tiles, 2)
                 
                 'Lose any tiles that go off the board.
-                If (m_ed.board(m_ed.undoIndex).bSizeX - 1) < width Then width = (m_ed.board(m_ed.undoIndex).bSizeX - 1)
-                If (m_ed.board(m_ed.undoIndex).bSizeY - 1) < Height Then Height = (m_ed.board(m_ed.undoIndex).bSizeY - 1)
+                If (m_ed.board(m_ed.undoIndex).sizex - 1) < width Then width = (m_ed.board(m_ed.undoIndex).sizex - 1)
+                If (m_ed.board(m_ed.undoIndex).sizey - 1) < Height Then Height = (m_ed.board(m_ed.undoIndex).sizey - 1)
                                    
                 For i = 0 To width
                     For j = 0 To Height
@@ -1954,7 +2042,7 @@ End Sub
 Public Sub mdiChkHideLayers(ByVal value As Integer, ByVal bRedraw As Boolean) ':on error resume next
     Dim i As Integer
     If value Then
-        For i = 1 To m_ed.board(m_ed.undoIndex).bSizeL
+        For i = 1 To m_ed.board(m_ed.undoIndex).sizeL
             If i <> m_ed.currentLayer Then m_ed.bLayerVisible(i) = False
         Next i
         tkMainForm.brdChkShowLayers.value = 0
@@ -1969,7 +2057,7 @@ End Sub
 Public Sub mdiChkShowLayers(ByVal value As Integer, ByVal bRedraw As Boolean) ':on error resume next
     Dim i As Integer
     If value Then
-        For i = 1 To m_ed.board(m_ed.undoIndex).bSizeL
+        For i = 1 To m_ed.board(m_ed.undoIndex).sizeL
             m_ed.bLayerVisible(i) = True
         Next i
         tkMainForm.brdChkHideLayers.value = 0
@@ -2028,7 +2116,7 @@ Private Sub resetLayerCombos() ':on error resume next
     tkMainForm.brdCmbVisibleLayers.clear
     Call tkMainForm.brdCmbVisibleLayers.AddItem("* B", 0)
     Dim i As Integer, Text As String
-    For i = 1 To m_ed.board(m_ed.undoIndex).bSizeL
+    For i = 1 To m_ed.board(m_ed.undoIndex).sizeL
         Call tkMainForm.brdCmbVisibleLayers.AddItem(IIf(m_ed.bLayerVisible(i), "* " & i, i))
         Call tkMainForm.brdCmbCurrentLayer.AddItem(i)
     Next i
@@ -2093,7 +2181,7 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
     brdWidth = m_ed.effectiveBoardX
     brdHeight = m_ed.effectiveBoardY
     
-    currentAutotileset = autoTileset(tilesetFilename(BoardGetTile(tileX, tileY, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))))
+    currentAutotileset = autoTileset(tilesetFilename(boardGetTile(tileX, tileY, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))))
     
     If coordType = ISO_STACKED Then
         'Iso board [ISO_STACKED only]
@@ -2108,7 +2196,7 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
         
         For iy = startY To endY
             For ix = startX To endX
-                thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))))
+                thisAutoTileset = autoTileset(tilesetFilename(boardGetTile(ix, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))))
                 
                 'If shift is held down, override updating of other autotiles
                 If (ignoreOthers) And (thisAutoTileset <> currentAutotileset) Then thisAutoTileset = -1
@@ -2120,23 +2208,23 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
                     'Check if the tile should link to the cardinal directions
                     If iy Mod 2 = 0 Then
                         'Even row
-                        If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
-                        If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
-                        If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
-                        If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
+                        If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(boardGetTile(ix - 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
+                        If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(boardGetTile(ix - 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
+                        If (iy > 1) And (autoTileset(tilesetFilename(boardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
+                        If (iy < brdHeight) And (autoTileset(tilesetFilename(boardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
                     Else
                         'Odd row
-                        If (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
-                        If (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
-                        If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
-                        If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
+                        If (iy > 1) And (autoTileset(tilesetFilename(boardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_W
+                        If (iy < brdHeight) And (autoTileset(tilesetFilename(boardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_S
+                        If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(boardGetTile(ix + 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_N
+                        If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(boardGetTile(ix + 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) Then morphTileIndex = morphTileIndex Or TD_E
                     End If
                     
                     'Check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
-                    If (ix > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
-                    If (iy > 2) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy - 2, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
-                    If (iy < brdHeight - 1) And (autoTileset(tilesetFilename(BoardGetTile(ix, iy + 2, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
-                    If (ix < brdWidth) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
+                    If (ix > 1) And (autoTileset(tilesetFilename(boardGetTile(ix - 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
+                    If (iy > 2) And (autoTileset(tilesetFilename(boardGetTile(ix, iy - 2, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
+                    If (iy < brdHeight - 1) And (autoTileset(tilesetFilename(boardGetTile(ix, iy + 2, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
+                    If (ix < brdWidth) And (autoTileset(tilesetFilename(boardGetTile(ix + 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
                 
                     'Draw and set the new tile
                     Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy)
@@ -2156,7 +2244,7 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
         
         For iy = startY To endY
             For ix = startX To endX
-                thisAutoTileset = autoTileset(tilesetFilename(BoardGetTile(ix, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))))
+                thisAutoTileset = autoTileset(tilesetFilename(boardGetTile(ix, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))))
                 
                 'If shift is held down, override updating of other autotiles
                 If (ignoreOthers) And (thisAutoTileset <> currentAutotileset) Then thisAutoTileset = -1
@@ -2166,16 +2254,16 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
     
                 If thisAutoTileset <> -1 Then
                     'Check if the tile should link to the cardinal directions
-                    If (ix > 1) And autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_W
-                    If (iy > 1) And autoTileset(tilesetFilename(BoardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_N
-                    If (iy < brdHeight) And autoTileset(tilesetFilename(BoardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_S
-                    If (ix < brdWidth) And autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_E
+                    If (ix > 1) And autoTileset(tilesetFilename(boardGetTile(ix - 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_W
+                    If (iy > 1) And autoTileset(tilesetFilename(boardGetTile(ix, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_N
+                    If (iy < brdHeight) And autoTileset(tilesetFilename(boardGetTile(ix, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_S
+                    If (ix < brdWidth) And autoTileset(tilesetFilename(boardGetTile(ix + 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset Then morphTileIndex = morphTileIndex Or TD_E
                      
                     'Check the intercardinal directions, but only link if both cardinal directions are also present to prevent unsupported combinations
-                    If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
-                    If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix - 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
-                    If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
-                    If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(BoardGetTile(ix + 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
+                    If (ix > 1) And (iy > 1) And (autoTileset(tilesetFilename(boardGetTile(ix - 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NW
+                    If (ix > 1) And (iy < brdHeight) And (autoTileset(tilesetFilename(boardGetTile(ix - 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_W) = TD_W) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SW
+                    If (ix < brdWidth) And (iy > 1) And (autoTileset(tilesetFilename(boardGetTile(ix + 1, iy - 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
+                    If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(boardGetTile(ix + 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
                     
                     'Draw and set the new tile
                     Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy)
@@ -2196,7 +2284,7 @@ Private Sub floodRecursive(ByVal x As Long, ByVal y As Long, ByVal l As Long, By
     
     Dim replaceTile As Long, newTile As Long
     replaceTile = m_ed.board(m_ed.undoIndex).board(x, y, l)
-    newTile = BoardTileInLUT(tileFile, m_ed.board(m_ed.undoIndex))
+    newTile = boardTileInLut(tileFile, m_ed.board(m_ed.undoIndex))
     
     ' check if old and new tile are the same.
     ' also compare rgb ambient levels, in case we're flooding a different shade.
@@ -2208,7 +2296,6 @@ Private Sub floodRecursive(ByVal x As Long, ByVal y As Long, ByVal l As Long, By
     
     ' enter the tile data of the copying tile.
     m_ed.board(m_ed.undoIndex).board(x, y, l) = newTile
-    m_ed.board(m_ed.undoIndex).tiletype(x, y, l) = m_ed.currentTileType
     m_ed.board(m_ed.undoIndex).ambientRed(x, y, l) = m_ed.ambientR
     m_ed.board(m_ed.undoIndex).ambientGreen(x, y, l) = m_ed.ambientG
     m_ed.board(m_ed.undoIndex).ambientBlue(x, y, l) = m_ed.ambientB
@@ -2255,14 +2342,13 @@ Private Sub floodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long
         Dim curIdx As Long, newIdx As Long
         'The tile we clicked to flood and the tile we want to flood it with.
         curIdx = .board(xLoc, yLoc, layer)
-        newIdx = BoardTileInLUT(tileFilename, m_ed.board(m_ed.undoIndex))
+        newIdx = boardTileInLut(tileFilename, m_ed.board(m_ed.undoIndex))
         
         If curIdx = newIdx Then
             'We're flooding the same tile, but does it have the same attributes?
             If .ambientRed(xLoc, yLoc, layer) = m_ed.ambientR And _
                 .ambientGreen(xLoc, yLoc, layer) = m_ed.ambientG And _
-                .ambientBlue(xLoc, yLoc, layer) = m_ed.ambientB And _
-                .tiletype(xLoc, yLoc, layer) = m_ed.currentTileType Then
+                .ambientBlue(xLoc, yLoc, layer) = m_ed.ambientB Then
                     Exit Sub
             Else
                 'Give the new tile a different "colour" so these tiles get flooded.
@@ -2314,7 +2400,6 @@ Private Sub floodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long
                     End If
                     
                     'Set attributes.
-                    .tiletype(x, y, layer) = m_ed.currentTileType
                     .ambientRed(x, y, layer) = m_ed.ambientR
                     .ambientGreen(x, y, layer) = m_ed.ambientG
                     .ambientBlue(x, y, layer) = m_ed.ambientB
@@ -2386,7 +2471,7 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
     
     Dim tileCoord As POINTAPI, pxCoord As POINTAPI, curVector As CVector
     pxCoord = screenToBoardPixel(x, y, m_ed)
-    tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
+    tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
     Set curVector = currentVector
 
     Select Case m_ed.optTool
@@ -2465,7 +2550,7 @@ Private Sub vectorDrawAll() ': On Error Resume Next
         If m_ed.bShowVectors Or m_ed.optSetting = BS_VECTOR Then
             For i = 0 To UBound(.vectors)
                 If Not (.vectors(i) Is Nothing) Then
-                    If .vectors(i).layer <= .bSizeL And m_ed.bLayerVisible(.vectors(i).layer) And (.vectors(i).tiletype <> TT_NULL) Then _
+                    If .vectors(i).layer <= .sizeL And m_ed.bLayerVisible(.vectors(i).layer) And (.vectors(i).tiletype <> TT_NULL) Then _
                         Call .vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor(.vectors(i).tiletype), m_ed.bShowVectorIndices)
                 End If
             Next i
@@ -2474,7 +2559,7 @@ Private Sub vectorDrawAll() ': On Error Resume Next
         If m_ed.bShowPrograms Or m_ed.optSetting = BS_PROGRAM Then
             For i = 0 To UBound(.prgs)
                 If Not (.prgs(i) Is Nothing) Then
-                    If m_ed.bLayerVisible(.prgs(i).vBase.layer) Then _
+                    If m_ed.bLayerVisible(.prgs(i).layer) Then _
                         Call .prgs(i).draw(picBoard, m_ed.pCEd, m_ed.programColor, m_ed.bShowVectorIndices)
                     End If
             Next i
@@ -2594,10 +2679,10 @@ Public Sub imageApply(ByVal index As Long) ':on error resume next
     img.transpcolor = ctl.transpcolor
     
     'Free the canvas of the current image if changing filename.
-    If img.file <> ctl.getTxtFilename.Text And img.pCnv Then
+    If img.filename <> ctl.getTxtFilename.Text And img.pCnv Then
         Call BRDFreeImage(m_ed.pCBoard, VarPtr(img))
     End If
-    img.file = ctl.getTxtFilename.Text
+    img.filename = ctl.getTxtFilename.Text
     
     m_ed.board(m_ed.undoIndex).Images(index) = img
     Call imagePopulate(ctl.getCombo.ListIndex, img)
@@ -2665,8 +2750,8 @@ Private Sub imagePopulate(ByVal index As Long, ByRef img As TKBoardImage) ':on e
     Call ctl.enableAll
     
     If cmb.ListIndex <> index Then cmb.ListIndex = index
-    cmb.list(index) = str(index) & ": " & IIf(LenB(img.file), img.file, "<image>")
-    ctl.getTxtFilename.Text = img.file
+    cmb.list(index) = str(index) & ": " & IIf(LenB(img.filename), img.filename, "<image>")
+    ctl.getTxtFilename.Text = img.filename
     ctl.getTxtLoc(0).Text = str(img.bounds.Left)
     ctl.getTxtLoc(1).Text = str(img.bounds.Top)
     ctl.getTxtLoc(2).Text = str(img.layer)
@@ -2698,7 +2783,7 @@ Private Sub spriteCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Lon
     If (m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) = 0 Then pt = snapToGrid(pt, True)
     board.sprites(i).x = pt.x
     board.sprites(i).y = pt.y
-    Call spriteUpdateImageData(board.sprites(i), vbNullString)
+    Call spriteUpdateImageData(board.sprites(i), vbNullString, False)
     
     Call m_ctls(BTAB_SPRITE).populate(i, board.sprites(i))
 End Sub
@@ -2721,30 +2806,26 @@ Public Sub spriteDeleteCurrent(ByVal index As Long) ':on error resume next
         Call toolbarPopulateSprites
     End If
 End Sub
-Public Sub spriteUpdateImageData(ByRef spr As CBoardSprite, ByVal filename As String) ':on error resume next
+Public Sub spriteUpdateImageData(ByRef spr As CBoardSprite, ByVal filename As String, ByVal bForceRedraw As Boolean) ':on error resume next
     Dim img As TKBoardImage, w As Long, h As Long, ext As String
     img = spriteGetImageData(spr)
     
-    If spr.filename <> filename Then 'And img.pCnv Then
-        Call BRDFreeImage(m_ed.pCBoard, VarPtr(img))
-        Call modBoard.spriteGetDisplayImage(filename, img.file, img.transpcolor)
+    If spr.filename <> filename Or bForceRedraw Then 'And img.pCnv Then
         
-        'Render the new image and update img.
-        Call spriteSetImageData(spr, img)
-        Call drawBoard(False)
-        img = spriteGetImageData(spr)
+        Call BRDFreeImage(m_ed.pCBoard, VarPtr(img))
+        Call modBoard.spriteGetDisplayImage(filename, img.filename, img.transpcolor)
+        Call BRDRenderImage(m_ed.pCBoard, VarPtr(img), picBoard.hdc)
         
         'Render tst/tbm here because actkrt does not have easy access to tbm format.
         'actkrt3 creates a blank canvas to render onto, which is a member of CBoard.m_images
-        If LCase$(extention(img.file)) = "tst" Then
-            Call drawTileCnv(img.pCnv, projectPath & img.file, 1, 1, 0, 0, 0, False)
-        ElseIf LCase$(extention(img.file)) = "tbm" Then
+        If LCase$(extention(img.filename)) = "tst" Then
+            Call drawTileCnv(img.pCnv, projectPath & img.filename, 1, 1, 0, 0, 0, False)
+        ElseIf LCase$(extention(img.filename)) = "tbm" Then
             Dim tbm As TKTileBitmap
-            Call OpenTileBitmap(projectPath & img.file, tbm)
+            Call OpenTileBitmap(projectPath & img.filename, tbm)
             Call CNVResize(img.pCnv, picBoard.hdc, tbm.sizex * 32, tbm.sizey * 32)
             Call DrawTileBitmapCNV(img.pCnv, -1, 0, 0, tbm)
         End If
-        
     End If
     spr.filename = filename
     
@@ -2873,7 +2954,7 @@ Private Sub toolbarPopulateImages() ':on error resume next
         For i = 0 To UBound(.Images)
             If Not .Images(i).drawType = BI_NULL Then
                 'If Not .images(i) Is Nothing Then
-                    combo.AddItem str(j) & ": " & IIf(LenB(.Images(i).file), .Images(i).file, "<image>")
+                    combo.AddItem str(j) & ": " & IIf(LenB(.Images(i).filename), .Images(i).filename, "<image>")
                     j = j + 1
                 'End If
             End If
@@ -2955,8 +3036,8 @@ Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelectio
                 Do While i < O.x + d.x
                     j = O.y + IIf(i - O.x Mod 64 = 0, 32, 16)
                     Do While j < O.y + d.y
-                        t1 = modBoard.boardPixelToTile(i, j, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
-                        file = BoardGetTile(t1.x, t1.y, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))
+                        t1 = modBoard.boardPixelToTile(i, j, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
+                        file = boardGetTile(t1.x, t1.y, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))
                         If file <> vbNullString Then
                             ReDim Preserve clip.tiles(k)
                             'Save tile coordinates.
@@ -2970,11 +3051,11 @@ Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelectio
                     i = i + 32
                 Loop
             Else
-                t1 = modBoard.boardPixelToTile(O.x, O.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
-                t2 = modBoard.boardPixelToTile(O.x + d.x, O.y + d.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
+                t1 = modBoard.boardPixelToTile(O.x, O.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
+                t2 = modBoard.boardPixelToTile(O.x + d.x, O.y + d.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
                 For i = t1.x To t2.x - 1
                     For j = t1.y To t2.y - 1
-                        file = BoardGetTile(i, j, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))
+                        file = boardGetTile(i, j, m_ed.currentLayer, m_ed.board(m_ed.undoIndex))
                         If file <> vbNullString Then
                             ReDim Preserve clip.tiles(k)
                             clip.tiles(k).brdCoord.x = i
@@ -3022,7 +3103,7 @@ Private Sub clipCut(ByRef clip As TKBoardClipboard, ByVal bRedraw As Boolean) ':
     Dim i As Long
     For i = 0 To UBound(clip.tiles)
         'Cut the current tile.
-        Call BoardSetTile( _
+        Call boardSetTile( _
             clip.tiles(i).brdCoord.x, clip.tiles(i).brdCoord.y, _
             m_ed.currentLayer, _
             vbNullString, _
@@ -3045,10 +3126,10 @@ Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelecti
         Case BS_TILE
             For i = 0 To UBound(clip.tiles)
                 'Origin.
-                pt = modBoard.tileToBoardPixel(clip.tiles(i).brdCoord.x, clip.tiles(i).brdCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
+                pt = modBoard.tileToBoardPixel(clip.tiles(i).brdCoord.x, clip.tiles(i).brdCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
                 'Get new tile from new position in pixels.
-                pt = modBoard.boardPixelToTile(pt.x + dr.x, pt.y + dr.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).bSizeX)
-                Call BoardSetTile( _
+                pt = modBoard.boardPixelToTile(pt.x + dr.x, pt.y + dr.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
+                Call boardSetTile( _
                     pt.x, pt.y, _
                     m_ed.currentLayer, _
                     clip.tiles(i).file, _
@@ -3084,7 +3165,7 @@ End Sub
 Public Sub boardPixelToTile(ByRef x As Long, ByRef y As Long, ByVal bRemoveBasePoint As Boolean, Optional ByVal bIgnorePxAbsolute As Boolean = True): On Error Resume Next
     Dim pt As POINTAPI
     If bIgnorePxAbsolute Or ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) = 0) Then
-        pt = modBoard.boardPixelToTile(x, y, m_ed.board(m_ed.undoIndex).coordType, bRemoveBasePoint, m_ed.board(m_ed.undoIndex).bSizeX)
+        pt = modBoard.boardPixelToTile(x, y, m_ed.board(m_ed.undoIndex).coordType, bRemoveBasePoint, m_ed.board(m_ed.undoIndex).sizex)
         x = pt.x
         y = pt.y
     End If
@@ -3092,7 +3173,7 @@ End Sub
 Public Sub tileToBoardPixel(ByRef x As Long, ByRef y As Long, ByVal bAddBasePoint As Boolean, Optional ByVal bIgnorePxAbsolute As Boolean = True): On Error Resume Next
     Dim pt As POINTAPI
     If bIgnorePxAbsolute Or ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) = 0) Then
-        pt = modBoard.tileToBoardPixel(x, y, m_ed.board(m_ed.undoIndex).coordType, bAddBasePoint, m_ed.board(m_ed.undoIndex).bSizeX)
+        pt = modBoard.tileToBoardPixel(x, y, m_ed.board(m_ed.undoIndex).coordType, bAddBasePoint, m_ed.board(m_ed.undoIndex).sizex)
         x = pt.x
         y = pt.y
     End If

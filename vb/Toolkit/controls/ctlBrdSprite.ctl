@@ -383,7 +383,7 @@ Private Sub apply() ': On Error Resume Next
             .prgMultitask = txtMultitask.Text
        
             'Free the canvas of the current image if changing filename.
-            Call activeBoard.spriteUpdateImageData(spr, txtFilename.Text)
+            Call activeBoard.spriteUpdateImageData(spr, txtFilename.Text, False)
         End With
     End If
     Call populate(cmbSprite.ListIndex, spr)

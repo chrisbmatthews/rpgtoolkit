@@ -72,6 +72,8 @@ Public Sub addPoint(ByVal xPxBrd As Long, ByVal yPxBrd As Long) ': on error resu
         ' No points defined.
         m_tiletype = TT_SOLID
     Else
+        'Prevent setting two points at the same coordinate.
+        If m_pts(UBound(m_pts)).x = xPxBrd And m_pts(UBound(m_pts)).y = yPxBrd Then Exit Sub
         i = UBound(m_pts) + 1
     End If
     ReDim Preserve m_pts(i)
@@ -232,6 +234,13 @@ Public Sub getBounds(ByRef x1 As Long, ByRef y1 As Long, ByRef x2 As Long, ByRef
         If m_pts(i).y < y1 Or i = 0 Then y1 = m_pts(i).y
     Next i
 End Sub
+
+'=========================================================================
+' Get the number of points in the vector
+'=========================================================================
+Public Function getPoints() As Long: On Error Resume Next
+    getPoints = UBound(m_pts)
+End Function
 
 '=========================================================================
 ' Get a point by index

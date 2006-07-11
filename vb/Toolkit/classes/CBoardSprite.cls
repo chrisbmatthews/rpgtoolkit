@@ -46,7 +46,7 @@ Public Sub copy(ByRef rhs As CBoardSprite) ':on error resume next
     rhs.activationType = activationType
     rhs.x = x
     rhs.y = y
-    Call activeBoard.spriteUpdateImageData(rhs, filename)
+    Call activeBoard.spriteUpdateImageData(rhs, filename, False)
     rhs.filename = filename
     rhs.finalValue = finalValue
     rhs.finalVar = finalVar

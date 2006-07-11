@@ -22,7 +22,7 @@ Public Type TKBoardImage
     pCnv As Long                        'Pointer to the canvas.
     scrollX As Double                   'Scrolling factors (x,y).
     scrollY As Double
-    file As String
+    filename As String
 End Type
 
 Public Enum eBoardImage
@@ -98,97 +98,48 @@ Public Const SPR_ACTIVE = 0               'Sprite is always active.
 Public Const SPR_CONDITIONAL = 1          'Sprite running depends on RPGCode variables.
 
 '=========================================================================
-' wip: An animated tile
-'=========================================================================
-Public Type TKBoardAnimTile
-    theTile As TKTileAnm
-    x As Long
-    y As Long
-    layer As Long
-End Type
-
-'=========================================================================
 ' A RPGToolkit board
 '=========================================================================
 Public Type TKBoard
 
-    ' New from 3.0.7
+    ' 3.0.7 Following block ordered for actkrt (see CBoard.h)
+    sizex As Integer                      'board size x
+    sizey As Integer                      'board size y
+    sizeL As Integer                      'board size layer
     coordType As Integer
-    bkgImage As TKBoardImage              'background image
-    Images() As TKBoardImage
-    spriteImages() As TKBoardImage        'Image data for board sprites
-        
-    ' Pre 3.0.7
-    bSizeX As Integer                     'board size x
-    bSizeY As Integer                     'board size y
-    bSizeL As Integer                     'board size layer
+    
     tileIndex() As String                 'lookup table for tiles
     board() As Integer                    'board tiles -- codes indicating where the tiles are on the board
     ambientRed() As Integer               'ambient tile red
     ambientGreen() As Integer             'ambient tile green
     ambientBlue() As Integer              'ambient tile blue
-    tiletype() As Byte                    'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
-    brdBack As String                     'board background img (parallax layer)
-    brdBackCNV As Long                    'Canvas holding the background image
-    brdFore As String                     'board foreground image (parallax)
-    borderBack As String                  'border background img
-    brdColor As Long                      'board color
-    borderColor As Long                   'Border color
-    ambientEffect As Integer              'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
-    dirLink(4) As String                  'Direction links 1- N, 2- S, 3- E, 4-W
-    boardSkill As Integer                 'Board skill level
-    boardBackground As String             'Fighting background
-    fightingYN As Integer                 'Fighting on boardYN (1- yes, 0- no)
-    BoardDayNight As Integer              'board is affected by day/night? 0=no, 1=yes
-    BoardNightBattleOverride As Integer   'use custom battle options at night? 0=no, 1=yes
-    BoardSkillNight As Integer            'Board skill level at night
-    BoardBackgroundNight As String        'Fighting background at night
-    brdConst(10) As Integer               'Board Constants (1-10)
-    boardMusic As String                  'Background music file
-    boardTitle(8) As String               'Board title (layer)
-    programName(500) As String            'Board program filenames
-    progX(500) As Integer                 'program x
-    progY(500) As Integer                 'program y
-    progLayer(500) As Integer             'program layer
-    progGraphic(500) As String            'program graphic
-    progActivate(500) As Integer          'program activation: 0- always active, 1- conditional activation.
-    progVarActivate(500) As String        'activation variable
-    progDoneVarActivate(500) As String    'activation variable at end of prg.
-    activateInitNum(500) As String        'initial number of activation
-    activateDoneNum(500) As String        'what to make variable at end of activation.
-    activationType(500) As Integer        'activation type- 0-step on, 1- conditional (activation key)
-    enterPrg As String                    'program to run on entrance
-    bgPrg As String                       'background program
-    itmName() As String                   'filenames of items
-    itmX() As Double                      'x coord
-    itmY() As Double                      'y coord
-    itmLayer() As Double                  'layer coord
-    itmActivate() As Integer              'itm activation: 0- always active, 1- conditional activation.
-    itmVarActivate() As String            'activation variable
-    itmDoneVarActivate() As String        'activation variable at end of itm.
-    itmActivateInitNum() As String        'initial number of activation
-    itmActivateDoneNum() As String        'what to make variable at end of activation.
-    itmActivationType() As Integer        'activation type- 0-step on, 1- conditional (activation key)
-    itemProgram() As String               'program to run when item is touched.
-    itemMulti() As String                 'multitask program for item
-    playerX As Integer                    'player x ccord
-    playerY As Integer                    'player y coord
-    playerLayer As Integer                'player layer coord
-    brdSavingYN As Integer                'can player save on board? 0-yes, 1-no
-    isIsometric As Byte                   'is it an isometric board? (0- no, 1-yes)
-    Threads() As String                   'filenames of threads on board
-    hasAnmTiles As Boolean                'does board have anim tiles?
-    animatedTile() As TKBoardAnimTile     'animated tiles associated with this board
-    anmTileInsertIdx As Long              'index of animated tile insertion
-    anmTileLUTIndices() As Long           'indices into LUT of animated tiles
-    anmTileLUTInsertIdx As Long           'index of LUT table insertion
-    strFileName As String                 'filename of the board
+    tiletype() As Byte                    'tile types
     
-    '3.0.7
+    Images() As TKBoardImage
+    spriteImages() As TKBoardImage        'Image data for board sprites
+    bkgImage As TKBoardImage              'background image
+    bkgColor As Long                      'board color
+    
+    'Unordered
     vectors() As CVector
     prgs() As CBoardProgram
     sprites() As CBoardSprite
-    
+    Threads() As String                   'filenames of threads on board
+    constants() As String                 'Board Constants
+    layerTitles() As String               'Layer titles
+    directionalLinks() As String          'Direction links 0: N, 1: S, 2: E, 3: W
+    enterPrg As String                    'Program to run on entrance
+    bkgMusic As String                    'Background music file
+    battleBackground As String            'Battle background
+    bAllowBattles As Boolean              'Allow random battles on board?
+    bAllowSaving As Boolean               'Can player save on board?
+    ambientEffect As Integer              'Ambient effect applied to the board 0: none, 1: fog, 2: darkness, 3: watery
+    battleSkill As Integer                'Random enemy skill level
+       
+    'Volatile data (trans3 only)
+    'animatedTile() As TKBoardAnimTile     'animated tiles associated with this board
+    'strFileName As String                 'filename of the board
+
 End Type
 
 '=========================================================================
@@ -261,7 +212,7 @@ Public Type TKBoardEditorData
     currentVectorSet() As CVector         'References to vectors of current optSetting
     
     effectiveBoardX As Long               'Board data matrix dimensions
-    effectiveBoardY As Long               '(different from bSizeX/Y for ISO_ROTATED)
+    effectiveBoardY As Long               '(different from sizeX/Y for ISO_ROTATED)
     
     currentObject(BTAB_IMAGE) As Long     'Selected object indices
     
@@ -290,7 +241,6 @@ Public Type TKBoardEditorData
     BoardDetail As Integer                'Detail of selected board tile
     gridBoard As Integer                  'Board grid on off
     BoardTile(32, 32) As Long             'Tile selected by board
-    currentTileType As Integer            'The current tile type
     ambient As Long                       'ambient light
     ambientR As Long                      'ambient red
     ambientG As Long                      'ambient green
@@ -370,10 +320,10 @@ End Property
 ' Board pixel dimensions relative to zoom
 '=========================================================================
 Public Property Get relWidth(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    relWidth = absWidth(ed.board(ed.undoIndex).bSizeX, ed.board(ed.undoIndex).coordType) * ed.pCEd.zoom
+    relWidth = absWidth(ed.board(ed.undoIndex).sizex, ed.board(ed.undoIndex).coordType) * ed.pCEd.zoom
 End Property
 Public Property Get relHeight(ByRef ed As TKBoardEditorData) As Integer ': On Error Resume Next
-    relHeight = absHeight(ed.board(ed.undoIndex).bSizeY, ed.board(ed.undoIndex).coordType) * ed.pCEd.zoom
+    relHeight = absHeight(ed.board(ed.undoIndex).sizey, ed.board(ed.undoIndex).coordType) * ed.pCEd.zoom
 End Property
 
 '=========================================================================
@@ -588,6 +538,7 @@ End Sub
 ' Extract a rest graphic (or other) to display an item on the board
 '=========================================================================
 Public Sub spriteGetDisplayImage(ByVal filename As String, ByRef image As String, ByRef transpcolor As Long) ':on error resume next
+    If Not fileExists(projectPath & filename) Then Exit Sub
     If UCase$(commonRoutines.extention(filename)) = "ITM" Then
         Call itemGetDisplayImage(filename, image, transpcolor)
     Else
@@ -623,4 +574,3 @@ Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String,
         End If
     Next i
 End Sub
-

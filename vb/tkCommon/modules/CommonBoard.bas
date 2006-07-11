@@ -17,20 +17,24 @@ Attribute VB_Name = "Commonboard"
 Option Explicit
 
 '=========================================================================
-' Member variables
-'=========================================================================
-Private lastAnm As TKTileAnm    'last opened anm file
-Private lastAnmFile As String   'last opened anm file name
-
-'=========================================================================
 ' Member constants
 '=========================================================================
 Private Const FILE_HEADER = "RPGTLKIT BOARD"
 
 '=========================================================================
-' A RPGToolkit board
+' An animated tile (trans3 only)
 '=========================================================================
-Public Type uTKBoard
+Private Type TKBoardAnimTile
+    theTile As TKTileAnm
+    x As Long
+    y As Long
+    layer As Long
+End Type
+
+'=========================================================================
+' A pre-vector RPGToolkit board (up to 3.0.6)
+'=========================================================================
+Public Type TKpvBoard
     bSizeX As Integer                     'board size x
     bSizeY As Integer                     'board size y
     bSizeL As Integer                     'board size layer
@@ -135,7 +139,7 @@ Public Type boardDoc
     topX As Double                        'top x coord
     topY As Double                        'top y coord
     autotiler As Integer                  'is autotiler enabled?
-    theData As TKBoard                    'actual contents of board
+    theData As TKpvBoard                    'actual contents of board
 End Type
 
 '=========================================================================
@@ -147,170 +151,60 @@ Public currentBoard As String             'current board
 Public tilesX As Double                   'tiles screen can hold on x
 Public tilesY As Double                   'tiles screen can hold on y
 
-'=========================================================================
-'Enlarge item related arrays
-'Called by: BoardInit, openBoard, saveBoard, BoardClear, CreateItemRPG,
-'           CBLoadItem, + itemset.frm: Command3_Click (toolkit3)
-'=========================================================================
-Public Sub dimensionItemArrays(ByRef theBoard As TKBoard)
-
-    With theBoard
-
-        'Check our dimensioning situation
-        On Error GoTo needsDim
-
-        'Get upper bound
-        Dim ub As Long
-        ub = UBound(.itmName) + 1
-
-        On Error Resume Next
-
-        ReDim Preserve .itmActivate(ub)
-        ReDim Preserve .itmActivateDoneNum(ub)
-        ReDim Preserve .itmActivateInitNum(ub)
-        ReDim Preserve .itmActivationType(ub)
-        ReDim Preserve .itmDoneVarActivate(ub)
-        ReDim Preserve .itmLayer(ub)
-        ReDim Preserve .itmName(ub)
-        ReDim Preserve .itmVarActivate(ub)
-        ReDim Preserve .itmX(ub)
-        ReDim Preserve .itmY(ub)
-        ReDim Preserve .itemMulti(ub)
-        ReDim Preserve .itemProgram(ub)
-
-#If (isToolkit = 0) Then
-        'If we're just opening the board for other information, this isn't
-        'the activeboard and we don't need to do this (nor do we want to redim
-        'the itmPos and itmMem arrays! - items may disappear!).
-        If (VarPtr(boardList(activeBoardIndex).theData) = VarPtr(theBoard)) Then
-            ReDim Preserve itemMem(ub)
-            ReDim Preserve itmPos(ub)
-        End If
-#End If
-
-    End With
-
-needsDim:
-    If ub = 1 Then ub = 0
-    Resume Next
-
-End Sub
-
-'=========================================================================
-' Add an animated tile to the board
-'=========================================================================
-Public Sub BoardAddTileAnmRef(ByRef theBoard As TKBoard, ByVal file As String, ByVal x As Long, ByVal y As Long, ByVal layer As Long)
-    On Error Resume Next
-    'add a reference to an animated tile to this board
-    
-    'check size of container...
-    Dim sz As Long
-    
-    If theBoard.anmTileInsertIdx + 1 > UBound(theBoard.animatedTile) Then
-        sz = UBound(theBoard.animatedTile) * 2
-        ReDim Preserve theBoard.animatedTile(sz)
-    End If
-    
-    'add tile...
-    
-    If UCase$(lastAnmFile) <> UCase$(file) Then
-        Call openTileAnm(projectPath & tilePath & file, lastAnm)
-        lastAnmFile = file
-    End If
-    theBoard.animatedTile(theBoard.anmTileInsertIdx).theTile = lastAnm
-    theBoard.animatedTile(theBoard.anmTileInsertIdx).x = x
-    theBoard.animatedTile(theBoard.anmTileInsertIdx).y = y
-    theBoard.animatedTile(theBoard.anmTileInsertIdx).layer = layer
-    
-    theBoard.anmTileInsertIdx = theBoard.anmTileInsertIdx + 1
-End Sub
-
-'=========================================================================
-' Add an animated tile to the look up table (LUT)
-'=========================================================================
-Public Sub BoardAddTileAnmLUTRef(ByRef theBoard As TKBoard, ByVal idx As Long)
-    On Error Resume Next
-    'add a reference to an animated tile to this board
-    
-    'check size of container...
-    Dim sz As Long
-    
-    If theBoard.anmTileLUTInsertIdx + 1 > UBound(theBoard.anmTileLUTIndices) Then
-        sz = UBound(theBoard.anmTileLUTIndices) * 2
-        ReDim Preserve theBoard.anmTileLUTIndices(sz)
-    End If
-    
-    'add tile...
-    theBoard.anmTileLUTIndices(theBoard.anmTileLUTInsertIdx) = idx
-    
-    theBoard.anmTileLUTInsertIdx = theBoard.anmTileLUTInsertIdx + 1
-End Sub
+Private Const BRD_MINOR = 4               'Current minor version (3.0.7)
+Private Const MAX_INTEGER = &H7FFF
 
 '=========================================================================
 ' Find the number of consective tiles
 '=========================================================================
-Public Function BoardFindConsecutive(ByRef x As Integer, ByRef y As Integer, ByRef l As Integer, ByRef theBoard As TKBoard) As Long
-    'find the number of consecutive identical tiles there are
-    'starting at x, y, l
-    'return 1 if there's only the one, else return the number of consecutive tiles
-    '(inclusive of the first one).
-    'also return the next x, y, l position in the for-loops after determining this (byref)
+Public Function boardFindConsecutive(ByRef x As Long, ByRef y As Long, ByRef z As Long, ByRef board As TKBoard) As Integer
+    'Find and return the number of consecutive identical tiles, starting at x, y, z
+    'Also return the terminating x, y, z position ByRef
     On Error Resume Next
 
-    Dim theTile As String
-    Dim theRed As Long, theGreen As Long, theBlue As Long, theType As Long
+    Dim tile As Long, r As Long, g As Long, b As Long
     
-    theTile = theBoard.board(x, y, l)
-    theRed = theBoard.ambientRed(x, y, l)
-    theGreen = theBoard.ambientGreen(x, y, l)
-    theBlue = theBoard.ambientBlue(x, y, l)
-    theType = theBoard.tiletype(x, y, l)
+    tile = board.board(x, y, z)
+    r = board.ambientRed(x, y, z)
+    g = board.ambientGreen(x, y, z)
+    b = board.ambientBlue(x, y, z)
     
-    Dim count As Long, sx As Long, sy As Long, sl As Long
-    Dim ll As Long, yy As Long, xx As Long
-    
+    Dim count As Integer, i As Long, j As Long, k As Long
     count = 0
     
-    sx = x
-    sy = y
-    sl = l
-    
-    'now finf the consecutive similar ones...
-    For ll = sl To theBoard.bSizeL
-        For yy = sy To theBoard.bSizeY
-            For xx = sx To theBoard.bSizeX
-                sx = 1: sy = 1: sl = 1
-                If theBoard.board(xx, yy, ll) <> theTile Or _
-                    theBoard.ambientRed(xx, yy, ll) <> theRed Or _
-                    theBoard.ambientGreen(xx, yy, ll) <> theGreen Or _
-                    theBoard.ambientBlue(xx, yy, ll) <> theBlue Or _
-                    theBoard.tiletype(xx, yy, ll) <> theType Then
-                    'does not match-- return!
-                    x = xx: y = yy: l = ll
-                    BoardFindConsecutive = count
-                    Exit Function
-                Else
-                    count = count + 1
-                    If count > 30000 Then
-                        x = xx: y = yy: l = ll
-                        BoardFindConsecutive = count - 1
-                        Exit Function
-                    End If
+    For k = z To board.sizeL
+        For j = y To board.sizey
+            For i = x To board.sizex
+                
+                If board.board(i, j, k) <> tile Or _
+                    board.ambientRed(i, j, k) <> r Or _
+                    board.ambientGreen(i, j, k) <> g Or _
+                    board.ambientBlue(i, j, k) <> b Then
+                    
+                    'First non-matching tile.
+                    GoTo exitFor
                 End If
-            Next xx
-        Next yy
-    Next ll
+                
+                If count = MAX_INTEGER Then GoTo exitFor
+                count = count + 1
+            Next i
+            'Reset the start column
+            x = 1
+        Next j
+        y = 1
+    Next k
     
-    x = xx
-    y = yy
-    l = ll
-    BoardFindConsecutive = count
+exitFor:
+    x = i
+    y = j
+    z = k
+    boardFindConsecutive = count
 End Function
 
 '=========================================================================
 ' Resize the board
 '=========================================================================
-Public Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLayer As Integer, ByRef theBoard As TKBoard)
+Public Sub boardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLayer As Integer, ByRef theBoard As TKBoard)
     'resize the board-- retain the current tiles
     On Error Resume Next
     Dim sizex As Long, sizey As Long, sizeLayer As Long
@@ -320,17 +214,17 @@ Public Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLa
     sizeLayer = newLayer
     
     'create backup...
-    ReDim brd(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Integer
-    ReDim r(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Integer
-    ReDim g(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Integer
-    ReDim b(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Integer
-    ReDim t(theBoard.bSizeX, theBoard.bSizeY, theBoard.bSizeL) As Byte
+    ReDim brd(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Integer
+    ReDim r(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Integer
+    ReDim g(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Integer
+    ReDim b(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Integer
+    ReDim t(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Byte
     
     Dim x As Long, y As Long, l As Long
     
-    For x = 0 To theBoard.bSizeX
-        For y = 0 To theBoard.bSizeY
-            For l = 0 To theBoard.bSizeL
+    For x = 0 To theBoard.sizex
+        For y = 0 To theBoard.sizey
+            For l = 0 To theBoard.sizeL
                 brd(x, y, l) = theBoard.board(x, y, l)
                 r(x, y, l) = theBoard.ambientRed(x, y, l)
                 g(x, y, l) = theBoard.ambientGreen(x, y, l)
@@ -349,9 +243,9 @@ Public Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLa
     
     Dim xx As Long, yy As Long, ll As Long
     
-    If sizex < theBoard.bSizeX Then xx = sizex Else xx = theBoard.bSizeX
-    If sizey < theBoard.bSizeY Then yy = sizey Else yy = theBoard.bSizeY
-    If sizeLayer < theBoard.bSizeL Then ll = sizeLayer Else ll = theBoard.bSizeL
+    If sizex < theBoard.sizex Then xx = sizex Else xx = theBoard.sizex
+    If sizey < theBoard.sizey Then yy = sizey Else yy = theBoard.sizey
+    If sizeLayer < theBoard.sizeL Then ll = sizeLayer Else ll = theBoard.sizeL
     
     'now fill it in with the old info...
     For x = 0 To xx
@@ -366,375 +260,250 @@ Public Sub BoardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLa
         Next y
     Next x
     
-    theBoard.bSizeX = sizex
-    theBoard.bSizeY = sizey
-    theBoard.bSizeL = sizeLayer
+    theBoard.sizex = sizex
+    theBoard.sizey = sizey
+    theBoard.sizeL = sizeLayer
 End Sub
 
 '=========================================================================
-' Find a file in the look up table
+' Find the Lut index of a tile, inserting it if not found
 '=========================================================================
-Public Function BoardTileInLUT(ByVal filename As String, ByRef theBoard As TKBoard) As Long
-    'return the index in the LUT where filename exists
-    On Error Resume Next
+Public Function boardTileInLut(ByVal filename As String, ByRef board As TKBoard) As Long: On Error Resume Next
     
-    'first scan the look up table for filenames...
-    Dim bWasSet As Boolean, t As Long
-    bWasSet = False
-    For t = 0 To UBound(theBoard.tileIndex)
-        If LCase$(filename) = theBoard.tileIndex(t) Then
-            'found it in lookup table...
-            BoardTileInLUT = t
-            bWasSet = True
-            Exit For
-        End If
-    Next t
-    
-    Dim bFoundPos As Boolean
-    bFoundPos = False
-    If Not (bWasSet) Then
-        'it wasn't found in the lookup table.
-        'we have to add it to the lookup table...
-        'first, find an empty slot...
-        For t = 1 To UBound(theBoard.tileIndex)
-            If (LenB(theBoard.tileIndex(t)) = 0) Then
-                'found a position!
-                theBoard.tileIndex(t) = LCase$(filename)
-                BoardTileInLUT = t
-                bFoundPos = True
-                Exit For
-            End If
-        Next t
-        
-        If Not (bFoundPos) Then
-            'no empty slots found-- make the array bigger!
-            Dim newSize As Long, insertPos As Long
-            newSize = UBound(theBoard.tileIndex) * 2
-            insertPos = UBound(theBoard.tileIndex) + 1
-            ReDim Preserve theBoard.tileIndex(newSize)
-            theBoard.tileIndex(insertPos) = LCase$(filename)
-            BoardTileInLUT = insertPos
-        End If
-    End If
-End Function
-
-'=========================================================================
-' Get a board's size
-'=========================================================================
-Public Sub boardSize(ByRef fName As String, ByRef x As Long, ByRef y As Long)
-
-    '// Passing fName ByRef for speed reasons
-
-    On Error Resume Next
-
-    Dim fileOpen As String, xx As Long, yy As Long, num As Long
-
-    fileOpen$ = fName$
-    fileOpen$ = PakLocate(fileOpen$)
-    xx = 19: yy = 11
-    num = FreeFile
-    Open fileOpen For Binary Access Read As num
-        Dim b As Byte
-        Get num, 15, b
-        If (b) Then
-            Close #num
-            GoTo ver2oldboard
-        End If
-    Close num
-
-    Dim fileHeader As String, majorVer As Long, minorVer As Long, regYN As Long, regCode As String, l As Long
-    Open fileOpen For Binary As #num
-        fileHeader$ = BinReadString(num)      'Filetype
-        'If fileheader$ <> "RPGTLKIT BOARD" Then Close #num: GoTo Ver1Board
-        majorVer = BinReadInt(num)       'Version
-        minorVer = BinReadInt(num)      'Minor version (ie 2.0)
-
-        If minorVer < 2 Then
-            Close #num
-            GoTo ver2oldboard
-        End If
-        
-        regYN = BinReadInt(num)     'Is it registered?
-        regCode$ = BinReadString(num)            'reg code
-        
-        'new style boards.
-        'first is the board size...
-        x = BinReadInt(num)
-        y = BinReadInt(num)
-        l = BinReadInt(num)
-    Close #num
-    Exit Sub
-    
-ver2oldboard:
-    Dim isRegistered As String
-    Open fileOpen$ For Input As #num
-        Input #num, fileHeader$        'Filetype
-        If fileHeader$ <> "RPGTLKIT BOARD" Then
-            Close #num
-            x = 19: y = 11
-            Exit Sub
-        End If
-        Input #num, majorVer           'Version
-        Input #num, minorVer           'Minor version (ie 2.0)
-        If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit", , "Unable to open tile": Exit Sub
-        Input #num, isRegistered$         'Is it registered?
-        Input #num, regCode$              'reg code
-        'Next up0 is the board data.  It goes: tilename, boardList(activeBoardIndex).ambientr, ag, ab, tiletype fopr each tile y's then x's, layer by layer
-        
-        If minorVer = 1 Then
-            Input #num, xx          'size x
-            Input #num, yy          'size y
-        End If
-        If minorVer = 0 Then
-            xx = 19
-            yy = 11
-        End If
-    Close #num
-    x = xx: y = yy
-End Sub
-
-'=========================================================================
-' Clear a board structure. Called by open board only (trans3).
-'=========================================================================
-Public Sub BoardClear(ByRef theBoard As TKBoard): On Error Resume Next
-
     Dim i As Long
     
-    With theBoard
-        '3.0.7
-        ReDim .vectors(0)
-        Set .vectors(0) = Nothing
-        ReDim .prgs(0)
-        Set .prgs(0) = Nothing
-        ReDim .Images(0)
-        .Images(0).drawType = BI_NULL
-        ReDim .sprites(0)
-        Set .sprites(0) = Nothing
-        ReDim .spriteImages(0)
+    For i = 0 To UBound(board.tileIndex)
+        If LCase$(filename) = board.tileIndex(i) Then
+            boardTileInLut = i
+            Exit Function
+        End If
+    Next i
+    
+    'Not found - insert into the second empty (= 0) element,
+    '(excluding the first element, which indicates no tile at that position).
+    For i = 1 To UBound(board.tileIndex)
+        If LenB(board.tileIndex(i)) = 0 Then
+            board.tileIndex(i) = LCase$(filename)
+            boardTileInLut = i
+            Exit Function
+        End If
+    Next i
+        
+    'No empty slots found - append to array.
+    ReDim Preserve board.tileIndex(UBound(board.tileIndex) + 1)
+    board.tileIndex(UBound(board.tileIndex)) = LCase$(filename)
+    boardTileInLut = UBound(board.tileIndex)
 
-        'Pre 3.0.7
-        ReDim .tileIndex(5)
-        Dim x As Long, y As Long, layer As Long, t As Long
-        Call dimensionItemArrays(theBoard)
-        For x = 0 To .bSizeX
-            For y = 0 To .bSizeY
-                For layer = 0 To .bSizeL
-                    .board(x, y, layer) = 0
-                    .ambientRed(x, y, layer) = 0
-                    .ambientGreen(x, y, layer) = 0
-                    .ambientBlue(x, y, layer) = 0
-                    .tiletype(x, y, layer) = 0
-                Next layer
-            Next y
-        Next x
-        .brdBack = vbNullString
-        .borderBack = vbNullString
-        .brdColor = RGB(255, 255, 255)
-        .borderColor = 0
-        .ambientEffect = 0
-        For t = 0 To 4
-            .dirLink(t) = vbNullString
-        Next t
-        .boardSkill = 0
-        .boardBackground = vbNullString
-        .fightingYN = 0
-        For t = 0 To 10
-            .brdConst(t) = 0
-        Next t
-        .boardMusic = vbNullString
-        For t = 0 To 8
-            .boardTitle(t) = vbNullString
-        Next t
-        For t = 0 To UBound(boardList(activeBoardIndex).theData.programName)
-            .programName(t) = vbNullString
-            .progX(t) = 0
-            .progY(t) = 0
-            .progLayer(t) = 0
-            .progGraphic(t) = vbNullString
-            .progActivate(t) = 0
-            .progVarActivate(t) = vbNullString
-            .progDoneVarActivate(t) = vbNullString
-            .activateInitNum(t) = vbNullString
-            .activateDoneNum(t) = vbNullString
-            .activationType(t) = 0
-        Next t
-        .enterPrg = vbNullString
-        .bgPrg = vbNullString
-        For t = 0 To UBound(.itemMulti)
-            .itmName(t) = vbNullString
-            .itmX(t) = 0
-            .itmY(t) = 0
-            .itmLayer(t) = 0
-            .itmActivate(t) = 0
-            .itmVarActivate(t) = vbNullString
-            .itmDoneVarActivate(t) = vbNullString
-            .itmActivateInitNum(t) = vbNullString
-            .itmActivateDoneNum(t) = vbNullString
-            .itmActivationType(t) = 0
-            .itemProgram(t) = vbNullString
-            .itemMulti(t) = vbNullString
-        Next t
-        .playerX = 1                'Set an initial location in case people neglect to.
-        .playerY = 1
-        .playerLayer = 1
-        .brdSavingYN = 0
-        .bSizeX = UBound(.board, 1)
-        .bSizeY = UBound(.board, 2)
-        .bSizeL = UBound(.board, 3)
-        .BoardDayNight = 0
-        .BoardNightBattleOverride = 0
-        .BoardSkillNight = 0
-        .BoardBackgroundNight = vbNullString
-        .isIsometric = 0
-        ReDim .Threads(0)
-        'ReDim .animatedTile(10)
-        ReDim .anmTileLUTIndices(10)
-        .anmTileLUTInsertIdx = 0
-        .anmTileInsertIdx = 0
-        .hasAnmTiles = False
-    End With
-End Sub
+End Function
 
 '=========================================================================
 ' Save a board to file
 '=========================================================================
-Public Sub saveBoard(ByVal filename As String, ByRef theBoard As TKBoard)
+Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
 
     On Error Resume Next
 
-    Dim num As Long, t As Long, l As Long, x As Long, y As Long
+    Dim num As Long, i As Long, j As Long, k As Long, x As Long, y As Long, z As Long
+    
+    Call Kill(filename)
 
     num = FreeFile()
 
-    Const majVer = 2
-    Const minVer = 2
+    With board
 
-    Call Kill(filename)
-
-    Open filename For Binary Access Write As num
-        Call BinWriteString(num, "RPGTLKIT BOARD")    'Filetype
-        Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 3)    'Minor version (ie 2.2 new type, allowing large boards)
-        Call BinWriteInt(num, 1)
-        Call BinWriteString(num, "NOCODE")            'No reg code
-
-        'first is the board size...
-        Call BinWriteInt(num, theBoard.bSizeX)
-        Call BinWriteInt(num, theBoard.bSizeY)
-        Call BinWriteInt(num, theBoard.bSizeL)
-    
-        'now some player and saving info...
-        Call BinWriteInt(num, theBoard.playerX)            'player x ccord
-        Call BinWriteInt(num, theBoard.playerY)           'player y coord
-        Call BinWriteInt(num, theBoard.playerLayer)        'player layer coord
-        Call BinWriteInt(num, theBoard.brdSavingYN)        'can player save on board? 0-yes, 1-no
-    
-        'now the look-up table for the tiles...
-        'first the size of the LUT
-        Call BinWriteInt(num, UBound(theBoard.tileIndex))
-        For t = 0 To UBound(theBoard.tileIndex)
-            Call BinWriteString(num, theBoard.tileIndex(t))
-        Next t
-        'now the board tiles...
-        For l = 1 To theBoard.bSizeL
-            For y = 1 To theBoard.bSizeY
-                For x = 1 To theBoard.bSizeX
-                    Dim x2 As Integer, y2 As Integer, l2 As Integer
-                    x2 = x: y2 = y: l2 = l
-                    Dim rep As Long
-                    rep = BoardFindConsecutive(x2, y2, l2, theBoard)
-                    If rep > 1 Then
-                        'found something we can compress (using RLE)
-                        'first output the number of repeats (using a negative number
-                        'to denote compression)...
-                        rep = rep * -1
-                        Call BinWriteInt(num, rep)
-                        'now write out the board data...
-                        Call BinWriteInt(num, theBoard.board(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientRed(x, y, l))  'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientGreen(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientBlue(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteByte(num, theBoard.tiletype(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        'set the new x, y, l...
-                        x2 = x2 - 1
-                        x = x2: y = y2: l = l2
-                    Else
-                        'no repetitions-- just write as normal...
-                        Call BinWriteInt(num, theBoard.board(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientRed(x, y, l))  'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientGreen(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteInt(num, theBoard.ambientBlue(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                        Call BinWriteByte(num, theBoard.tiletype(x, y, l))   'board tiles -- codes indicating where the tiles are on the board
-                    End If
-                Next x
-            Next y
-        Next l
-        Call BinWriteString(num, theBoard.brdBack)      'board background img (parallax layer)
-        Call BinWriteString(num, theBoard.brdFore)      'board foreground image (parallax)
-        Call BinWriteString(num, theBoard.borderBack)   'border background img
-        Call BinWriteLong(num, theBoard.brdColor)    'board color
-        Call BinWriteLong(num, theBoard.borderColor)    'Border color
-        Call BinWriteInt(num, theBoard.ambientEffect) 'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
-        For t = 1 To 4
-            Call BinWriteString(num, theBoard.dirLink(t)) 'Direction links 1- N, 2- S, 3- E, 4-W
-        Next t
-        Call BinWriteInt(num, theBoard.boardSkill) 'Board skill level
-        Call BinWriteString(num, theBoard.boardBackground) 'Fighting background
-        Call BinWriteInt(num, theBoard.fightingYN)  'Fighting on boardYN (1- yes, 0- no)
-        Call BinWriteInt(num, theBoard.BoardDayNight) 'board is affected by day/night? 0=no, 1=yes
-        Call BinWriteInt(num, theBoard.BoardNightBattleOverride) 'use custom battle options at night? 0=no, 1=yes
-        Call BinWriteInt(num, theBoard.BoardSkillNight) 'Board skill level at night
-        Call BinWriteString(num, theBoard.BoardBackgroundNight) 'Fighting background at night
-        For t = 0 To 10
-            Call BinWriteInt(num, theBoard.brdConst(t)) 'Board Constants (1-10)
-        Next t
-        Call BinWriteString(num, theBoard.boardMusic) 'Background music file
-        For t = 0 To 8
-            Call BinWriteString(num, theBoard.boardTitle(t)) 'Board title (layer)
-        Next t
+        Open filename For Binary Access Write As num
         
-        Call BinWriteInt(num, UBound(theBoard.programName))  'number of programs on the board...
-        For t = 0 To UBound(theBoard.programName)
-            Call BinWriteString(num, theBoard.programName(t)) 'Board program filenameames
-            Call BinWriteInt(num, theBoard.progX(t))   'program x
-            Call BinWriteInt(num, theBoard.progY(t))   'program y
-            Call BinWriteInt(num, theBoard.progLayer(t)) 'program layer
-            Call BinWriteString(num, theBoard.progGraphic(t)) 'program graphic
-            Call BinWriteInt(num, theBoard.progActivate(t)) 'program activation: 0- always active, 1- conditional activation.
-            Call BinWriteString(num, theBoard.progVarActivate(t)) 'activation variable
-            Call BinWriteString(num, theBoard.progDoneVarActivate(t)) 'activation variable at end of prg.
-            Call BinWriteString(num, theBoard.activateInitNum(t)) 'initial number of activation
-            Call BinWriteString(num, theBoard.activateDoneNum(t)) 'what to make variable at end of activation.
-            Call BinWriteInt(num, theBoard.activationType(t)) 'activation type- 0-step on, 1- conditional (activation key)
-        Next t
-        Call BinWriteString(num, theBoard.enterPrg)     'program to run on entrance''''''''''''''''''
-        Call BinWriteString(num, theBoard.bgPrg)       'background program
-
-        Call dimensionItemArrays(theBoard)
-        Call BinWriteInt(num, UBound(theBoard.itmName))   'number of items on the board...
-        For t = 0 To UBound(theBoard.itmName)
-            Call BinWriteString(num, theBoard.itmName(t))   'filenameames of items
-            Call BinWriteInt(num, theBoard.itmX(t))     'x coord
-            Call BinWriteInt(num, theBoard.itmY(t))     'y coord
-            Call BinWriteInt(num, theBoard.itmLayer(t)) 'layer coord
-            Call BinWriteInt(num, theBoard.itmActivate(t)) 'itm activation: 0- always active, 1- conditional activation.
-            Call BinWriteString(num, theBoard.itmVarActivate(t)) 'activation variable
-            Call BinWriteString(num, theBoard.itmDoneVarActivate(t)) 'activation variable at end of itm.
-            Call BinWriteString(num, theBoard.itmActivateInitNum(t)) 'initial number of activation
-            Call BinWriteString(num, theBoard.itmActivateDoneNum(t)) 'what to make variable at end of activation.
-            Call BinWriteInt(num, theBoard.itmActivationType(t)) 'activation type- 0-step on, 1- conditional (activation key)
-            Call BinWriteString(num, theBoard.itemProgram(t))    'program to run when item is touched.
-            Call BinWriteString(num, theBoard.itemMulti(t))     'multitask program for item
-        Next t
-
-        Call BinWriteLong(num, UBound(theBoard.Threads))
-        For t = 0 To UBound(theBoard.Threads)
-            Call BinWriteString(num, theBoard.Threads(t))
-        Next t
-
-        Call BinWriteByte(num, theBoard.isIsometric)
-
-    Close num
+            Call BinWriteString(num, "RPGTLKIT BOARD")    'Filetype
+            Call BinWriteInt(num, major)                  'Global version - required?
+            Call BinWriteInt(num, BRD_MINOR)              'Minor version
+            
+            'Board dimensions
+            Call BinWriteInt(num, .sizex)
+            Call BinWriteInt(num, .sizey)
+            Call BinWriteInt(num, .sizeL)
+            Call BinWriteInt(num, .coordType)
+            
+            'Remove unused tiles from the lut by recording used indices.
+            Dim bLutIndexUsed() As Boolean
+            ReDim bLutIndexUsed(UBound(.tileIndex)) As Boolean
+            
+            'Board tiles
+            For k = 1 To .sizeL
+                For j = 1 To .sizey
+                    For i = 1 To .sizex
+                    
+                        'Denote this lut index as in use.
+                        bLutIndexUsed(.board(i, j, k)) = True
+                    
+                        '"Compress" identical tiles:
+                        x = i: y = j: z = k
+                        
+                        Dim count As Integer
+                        count = boardFindConsecutive(x, y, z, board)
+                        If count > 1 Then
+                            'The next 'count' tiles are identical - write 'count' and the
+                            'properties of the first tile only. A negative 'count' will
+                            'indicate compression when loading.
+                            
+                            Call BinWriteInt(num, -count)
+                            
+                            Call BinWriteInt(num, .board(i, j, k))
+                            Call BinWriteInt(num, .ambientRed(i, j, k))
+                            Call BinWriteInt(num, .ambientGreen(i, j, k))
+                            Call BinWriteInt(num, .ambientBlue(i, j, k))
+                            
+                            'Set the new position. Decrement i since the loop will increment it.
+                            i = x - 1: j = y: k = z
+                        Else
+                            'No consecutive identical tiles - write this tile's properties.
+                            
+                            Call BinWriteInt(num, .board(i, j, k))
+                            Call BinWriteInt(num, .ambientRed(i, j, k))
+                            Call BinWriteInt(num, .ambientGreen(i, j, k))
+                            Call BinWriteInt(num, .ambientBlue(i, j, k))
+                        End If
+                    Next i
+                Next j
+            Next k
+            
+            'Tile look-up-table (lut)
+            'Write after tile block to allow removal of unused tiles from the lut.
+            For i = UBound(bLutIndexUsed) To 1 Step -1
+                If bLutIndexUsed(i) Then Exit For
+            Next i
+            Call BinWriteInt(num, i)
+            For j = 0 To i
+                Call BinWriteString(num, IIf(bLutIndexUsed(j), .tileIndex(j), ""))
+            Next j
+            
+            'Vectors
+            If .vectors(0) Is Nothing Then
+                Call BinWriteInt(num, -1)
+            Else
+                Call BinWriteInt(num, UBound(.vectors))
+                For i = 0 To UBound(.vectors)
+                    
+                    Call BinWriteInt(num, .vectors(i).getPoints)
+                    For j = 0 To .vectors(i).getPoints
+                        Call .vectors(i).getPoint(j, x, y)
+                        Call BinWriteLong(num, x)                   'Stored by pixel (Longs)
+                        Call BinWriteLong(num, y)
+                    Next j
+                    
+                    Call BinWriteInt(num, .vectors(i).attributes)
+                    Call BinWriteInt(num, CInt(.vectors(i).bClosed))
+                    Call BinWriteInt(num, .vectors(i).layer)
+                    Call BinWriteInt(num, CInt(.vectors(i).tiletype))
+                    
+                Next i
+            End If
+            
+            'Programs
+            If .prgs(0) Is Nothing Then
+                Call BinWriteInt(num, -1)
+            Else
+                Call BinWriteInt(num, UBound(.prgs))
+                For i = 0 To UBound(.prgs)
+    
+                    Call BinWriteString(num, .prgs(i).filename)
+                    Call BinWriteString(num, .prgs(i).initialVar)
+                    Call BinWriteString(num, .prgs(i).initialValue)
+                    Call BinWriteString(num, .prgs(i).finalVar)
+                    Call BinWriteString(num, .prgs(i).finalValue)
+                    Call BinWriteInt(num, .prgs(i).activate)
+                    Call BinWriteInt(num, .prgs(i).activationType)
+                    Call BinWriteInt(num, .prgs(i).distanceRepeat)
+                    Call BinWriteInt(num, .prgs(i).layer)
+                    
+                    Call BinWriteInt(num, CInt(.prgs(i).vBase.bClosed))
+                    Call BinWriteInt(num, .prgs(i).vBase.getPoints)
+                    
+                    For j = 0 To .prgs(i).vBase.getPoints
+                        Call .prgs(i).vBase.getPoint(j, x, y)
+                        Call BinWriteLong(num, x)                   'Stored by pixel (Longs)
+                        Call BinWriteLong(num, y)
+                    Next j
+                    
+                Next i
+            End If
+            
+            'Sprites
+            If .sprites(0) Is Nothing Then
+                Call BinWriteInt(num, -1)
+            Else
+                Call BinWriteInt(num, UBound(.sprites))
+                For i = 0 To UBound(.sprites)
+    
+                    Call BinWriteString(num, .sprites(i).filename)
+                    Call BinWriteString(num, .sprites(i).prgActivate)
+                    Call BinWriteString(num, .sprites(i).prgMultitask)
+                    Call BinWriteString(num, .sprites(i).initialVar)
+                    Call BinWriteString(num, .sprites(i).initialValue)
+                    Call BinWriteString(num, .sprites(i).finalVar)
+                    Call BinWriteString(num, .sprites(i).finalValue)
+                    Call BinWriteInt(num, .sprites(i).activate)
+                    Call BinWriteInt(num, .sprites(i).activationType)
+                    Call BinWriteInt(num, .sprites(i).layer)
+                    Call BinWriteInt(num, .sprites(i).x)
+                    Call BinWriteInt(num, .sprites(i).y)
+    
+                Next i
+            End If
+            
+            'Images
+            If .Images(0).drawType = BI_NULL Then
+                Call BinWriteInt(num, -1)
+            Else
+                Call BinWriteInt(num, UBound(.Images))
+                For i = 0 To UBound(.Images)
+    
+                    Call BinWriteString(num, .Images(i).filename)
+                    Call BinWriteLong(num, .Images(i).bounds.Left)
+                    Call BinWriteLong(num, .Images(i).bounds.Top)
+                    Call BinWriteInt(num, .Images(i).layer)
+                    Call BinWriteInt(num, .Images(i).drawType)
+                    Call BinWriteLong(num, .Images(i).transpcolor)
+    
+                Next i
+            End If
+            
+            'Threads
+            Call BinWriteInt(num, UBound(.Threads))
+            For i = 0 To UBound(.Threads)
+                Call BinWriteString(num, .Threads(i))
+            Next i
+            
+            'Constants
+            Call BinWriteInt(num, UBound(.constants))
+            For i = 0 To UBound(.constants)
+                Call BinWriteString(num, .constants(i))
+            Next i
+            
+            'Layer titles
+            For i = 0 To .sizeL
+                Call BinWriteString(num, .layerTitles(i))
+            Next i
+            
+            'Directional links
+            For i = 0 To UBound(.directionalLinks)
+                Call BinWriteString(num, .directionalLinks(i))
+            Next i
+            
+            Call BinWriteString(num, .bkgImage.filename)    'Background image
+            Call BinWriteLong(num, .bkgImage.drawType)
+            Call BinWriteLong(num, .bkgColor)               'Background colour
+            Call BinWriteString(num, .bkgMusic)
+        
+            Call BinWriteString(num, .enterPrg)
+            Call BinWriteString(num, .battleBackground)
+            Call BinWriteInt(num, .battleSkill)
+            Call BinWriteInt(num, .bAllowBattles)
+            Call BinWriteInt(num, .bAllowSaving)
+            Call BinWriteInt(num, .ambientEffect)
+        
+        Close num
+    
+    End With
 
 End Sub
 
@@ -743,228 +512,433 @@ End Sub
 '=========================================================================
 Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorData, ByRef board As TKBoard)
 
-    On Error GoTo loadBrdErr
+    'On Error Resume Next
     
-    Call BoardClear(board)
-    Call BoardSetSize(50, 50, 8, ed, board)
+    Call boardInitialise(board)
+    Call boardSetSize(20, 15, 4, ed, board)
 
     With board
 
-        .bSizeX = 50
-        .bSizeY = 50
-        .bSizeL = 8
-    
-        boardList(activeBoardIndex).boardNeedUpdate = False
-
         fileOpen = PakLocate(fileOpen)
-        currentBoard = fileOpen ' Potential problems here
     
-        .strFileName = RemovePath(fileOpen)
-    
-        Dim num As Long, fileHeader As String, majorVer As Long, minorVer As Long, user As Long
-        Dim regYN As Long, regCode As String, loopControl As Long
+        Dim num As Long, fileHeader As String, i As Long, j As Long, k As Long
 
         num = FreeFile()
 
         'Check if we have a v3 or v2 board
         Open fileOpen For Binary As num
-            Dim b As Byte
-            Get num, 15, b
-            If (b) Then
+            Dim ver As Byte
+            Get num, 15, ver
+            If ver Then
                 Close num
-                GoTo ver2oldboard
+                MsgBox "Please save this board using RPGToolkit version 3.0.6 or below to upgrade the file format"
+                Exit Function
             End If
         Close num
 
-        Open fileOpen For Binary As #num
+        Open fileOpen For Binary As num
 
-            fileHeader$ = BinReadString(num)      'Filetype
-            If fileHeader$ <> "RPGTLKIT BOARD" Then Close #num: GoTo Ver1Board
-            majorVer = BinReadInt(num)       'Version
-            minorVer = BinReadInt(num)      'Minor version (ie 2.0)
-            If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit " + fileOpen, , "Unable to open tile": Exit Function
-            'If minorVer > 2 Then
-            '    Call MsgBox("There may be trouble opening this board; save it in the editor to resolve this.")
-            'End If
-            If minorVer < 2 Then
-                Close #num
-                GoTo ver2oldboard
+            fileHeader = BinReadString(num)      'Filetype
+            If fileHeader <> "RPGTLKIT BOARD" Then
+                Close num
+                MsgBox "Please save this board using RPGToolkit version 3.0.6 or below to upgrade the file format"
+                Exit Function
             End If
-
-            regYN = BinReadInt(num)     'Is it registered?
-            regCode$ = BinReadString(num)            'reg code
-        
-            'new style boards.
-            'first is the board size...
-            .bSizeX = BinReadInt(num)
-            .bSizeY = BinReadInt(num)
-            .bSizeL = BinReadInt(num)
-            Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed, board)
             
-            '3.0.7 wip
-            ReDim ed.bLayerOccupied(.bSizeL + 1)
+            Dim majorVer As Long, minorVer As Long
+            majorVer = BinReadInt(num)       'Version (?)
+            minorVer = BinReadInt(num)       'Minor version (BRD_MINOR)
+            If majorVer <> major Then
+                MsgBox "This board was created with an unrecognised version of the Toolkit " + fileOpen, , "Unable to open tile"
+                Exit Function
+            End If
+            
+            Select Case minorVer
+                Case 0, 1
+                    Close num
+                    MsgBox "Please save this board using RPGToolkit version 3.0.6 or below to upgrade the file format"
+                    Exit Function
+                Case 2, 3
+                    GoTo pvVersion
+            End Select
 
-            'now some player and saving info...
-            .playerX = BinReadInt(num)            'player x ccord
-            .playerY = BinReadInt(num)           'player y coord
-            .playerLayer = BinReadInt(num)        'player layer coord
-            .brdSavingYN = BinReadInt(num)        'can player save on board? 0-yes, 1-no
+vVersion:
+            '3.0.7 - vector collision implementation.
+        
+            .sizex = BinReadInt(num)
+            .sizey = BinReadInt(num)
+            .sizeL = BinReadInt(num)
+            .coordType = BinReadInt(num)
+            Call boardSetSize(.sizex, .sizey, .sizeL, ed, board)
     
-            'now the look-up table for the tiles...
-            'first the size of the LUT
-            Dim lutSize As Long, t As Long, Temp As String, ex As String
-        
-            lutSize = BinReadInt(num)
-            ReDim .tileIndex(lutSize)
-            For t = 0 To UBound(.tileIndex)
-                .tileIndex(t) = BinReadString(num)
-                Temp$ = .tileIndex(t)
-            
-                'scan for animated tiles
-                If LenB(Temp$) Then
-                    ex$ = GetExt(Temp$)
-                    If UCase$(ex$) = "TAN" Then
-                        Call BoardAddTileAnmLUTRef(board, t)
-                        .hasAnmTiles = True
-                    End If
-                End If
-            
-                #If isToolkit = 1 Then
-                    Dim pakFileRunning As Boolean
-                #End If
-            
-                If LenB(Temp$) And pakFileRunning Then
-                    'do check for pakfile system
-                    'ex$ = GetExt(temp$)
-                    'ex$ = Left$(ex$, 3)
-                    If Left$(UCase$(ex$), 3) = "TST" Then
-                        'numof = getTileNum(temp$)
-                        Temp$ = tilesetFilename(Temp$)
-                    End If
-                    'PakLocate (tilePath & Temp$)
-                End If
-            Next t
-
-            'now the board tiles...
-            Dim l As Long, y As Long, x As Long
-            For l = 1 To .bSizeL
-                For y = 1 To .bSizeY
-                    For x = 1 To .bSizeX
-                        Dim test As Integer
-                        test = BinReadInt(num)
-                        If test < 0 Then
-                            test = Abs(test)
-                            Dim bb As Long, rr As Long, gg As Long, bl As Long, tt As Long, cnt As Long
-                            bb = BinReadInt(num)   'board tiles -- codes indicating where the tiles are on the board
-                            rr = BinReadInt(num) 'ambiebnt tile red
-                            gg = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile green
-                            bl = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile blue
-                            tt = BinReadByte(num)  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
+            'Read off the Lut indices for each tile.
+            Dim x As Long, y As Long, z As Long
+            For z = 1 To .sizeL
+                For y = 1 To .sizey
+                    For x = 1 To .sizex
+                    
+                        Dim index As Integer, count As Integer
+                        index = BinReadInt(num)
+                        
+                        'Negative index indicates compression:
+                        'the next 'index' tiles are indentical.
+                        If index < 0 Then
+                            count = -index
                             
-                            'Determine if the layer contains tiles.
-                            '(0) indicates if the whole board contains tiles. 3.0.7 wip
-                            If (bb) Then
-                                ed.bLayerOccupied(l) = True
+                            Dim r As Long, b As Long, g As Long, tiletype As Byte
+                            index = BinReadInt(num)
+                            r = BinReadInt(num)
+                            g = BinReadInt(num)
+                            b = BinReadInt(num)
+                            
+                            'Determine if the layer contains tiles (editor use).
+                            '(0) indicates if the whole board contains tiles.
+                            If index Then
+                                ed.bLayerOccupied(z) = True
                                 ed.bLayerOccupied(0) = True
                             End If
                     
-                            For cnt = 1 To test
-                                .board(x, y, l) = bb   'board tiles -- codes indicating where the tiles are on the board
-                                .ambientRed(x, y, l) = rr 'ambiebnt tile red
-                                .ambientGreen(x, y, l) = gg 'boardList(activeBoardIndex).ambient tile green
-                                .ambientBlue(x, y, l) = bl 'boardList(activeBoardIndex).ambient tile blue
-                                .tiletype(x, y, l) = tt  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
-                                Dim tAnm As Long
-                                'check tile type for animations
-                                For tAnm = 0 To .anmTileLUTInsertIdx - 1
-                                    If .board(x, y, l) = .anmTileLUTIndices(tAnm) Then
-                                        'this is an animated tile
-                                        Call BoardAddTileAnmRef(board, .tileIndex(.board(x, y, l)), x, y, l)
-                                    End If
-                                Next tAnm
+                            For i = 1 To count
+                                .board(x, y, z) = index
+                                .ambientRed(x, y, z) = r
+                                .ambientGreen(x, y, z) = g
+                                .ambientBlue(x, y, z) = b
+
+                                'Check whether compression spans rows/layers.
                                 x = x + 1
-                                If x > .bSizeX Then
+                                If x > .sizex Then
                                     x = 1
                                     y = y + 1
-                                    If y > .bSizeY Then
+                                    If y > .sizey Then
                                         y = 1
-                                        l = l + 1
-                                        If l > .bSizeL Then
-                                            GoTo exitTheFor
+                                        z = z + 1
+                                        If z > .sizeL Then
+                                            'Compression to end of board - exit.
+                                            GoTo exitForA
                                         End If
-                                        'Onto next layer. 3.0.7 wip
-                                        If (bb) Then ed.bLayerOccupied(l) = True
+                                        
+                                        'Spans onto next layer (editor use).
+                                        If (index) Then ed.bLayerOccupied(z) = True
                                     End If
                                 End If
-                            Next cnt
+                            Next i
                             x = x - 1
                         Else
-                            If (test) Then '3.0.7 wip
-                                ed.bLayerOccupied(l) = True
+                            'Single tile.
+                            
+                            'Determine if the layer contains tiles (editor use).
+                            If index Then
+                                ed.bLayerOccupied(z) = True
                                 ed.bLayerOccupied(0) = True
                             End If
                             
-                            .board(x, y, l) = test   'board tiles -- codes indicating where the tiles are on the board
-                            .ambientRed(x, y, l) = BinReadInt(num) 'ambiebnt tile red
-                            .ambientGreen(x, y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile green
-                            .ambientBlue(x, y, l) = BinReadInt(num) 'boardList(activeBoardIndex).ambient tile blue
-                            .tiletype(x, y, l) = BinReadByte(num)  'tile types 0- Normal, 1- solid 2- Under, 3- NorthSouth normal, 4- EastWest Normal, 11- Elevate to level 1, 12- Elevate to level 2... 18- Elevate to level 8
-                    
-                            'check tile type for animations
-                            For tAnm = 0 To .anmTileLUTInsertIdx - 1
-                                If .board(x, y, l) = .anmTileLUTIndices(tAnm) Then
-                                    'this is an animated tile
-                                    Call BoardAddTileAnmRef(board, .tileIndex(.board(x, y, l)), x, y, l)
-                                End If
-                            Next tAnm
+                            .board(x, y, z) = index
+                            .ambientRed(x, y, z) = BinReadInt(num)
+                            .ambientGreen(x, y, z) = BinReadInt(num)
+                            .ambientBlue(x, y, z) = BinReadInt(num)
+                            
                         End If
                     Next x
                 Next y
-            Next l
-exitTheFor:
-            .brdBack = BinReadString(num)      'board background img (parallax layer)
-            .brdFore = BinReadString(num)      'board foreground image (parallax)
-            .borderBack = BinReadString(num)   'border background img
-            .brdColor = BinReadLong(num)    'board color
-            .borderColor = BinReadLong(num)    'Border color
-            .ambientEffect = BinReadInt(num) 'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
-            For t = 1 To 4
-                .dirLink(t) = BinReadString(num)  'Direction links 1- N, 2- S, 3- E, 4-W
-            Next t
-            .boardSkill = BinReadInt(num) 'Board skill level
-            .boardBackground = BinReadString(num) 'Fighting background
-            .fightingYN = BinReadInt(num)  'Fighting on boardYN (1- yes, 0- no)
-            .BoardDayNight = BinReadInt(num) 'board is affected by day/night? 0=no, 1=yes
-            .BoardNightBattleOverride = BinReadInt(num) 'use custom battle options at night? 0=no, 1=yes
-            .BoardSkillNight = BinReadInt(num) 'Board skill level at night
-            .BoardBackgroundNight = BinReadString(num) 'Fighting background at night
-            For t = 0 To 10
-                .brdConst(t) = BinReadInt(num)  'Board Constants (1-10)
-            Next t
-            .boardMusic = BinReadString(num) 'Background music file
-            For t = 0 To 8
-                .boardTitle(t) = BinReadString(num)  'Board title (layer)
-            Next t
+            Next z
+exitForA:
+            'Build the tile look-up-table (Lut) after tile block.
+            Dim lutSize As Long
+            lutSize = BinReadInt(num)
+            ReDim .tileIndex(lutSize)
             
-            '3.0.7 wip - load into CBoardProgram structures.
+            For i = 0 To lutSize
+                .tileIndex(i) = BinReadString(num)
+            Next i
+
+            'Vectors
+            Dim ub As Integer, pts As Integer
+            ub = BinReadInt(num)
+            If ub >= 0 Then
+                'Negative number indicates no objects.
+            
+                ReDim .vectors(ub)
+                For i = 0 To ub
+                    Set .vectors(i) = New CVector
+                    pts = BinReadInt(num)
+                    For j = 0 To pts
+                        x = BinReadLong(num)
+                        y = BinReadLong(num)
+                        Call .vectors(i).addPoint(x, y)
+                    Next j
+                    
+                    .vectors(i).attributes = BinReadInt(num)
+                    .vectors(i).bClosed = CBool(BinReadInt(num))
+                    .vectors(i).layer = BinReadInt(num)
+                    .vectors(i).tiletype = BinReadInt(num)
+                    
+                Next i
+            End If
+            
+            'Programs
+            ub = BinReadInt(num)
+            If ub >= 0 Then
+                ReDim .prgs(ub)
+                For i = 0 To ub
+                    Set .prgs(i) = New CBoardProgram
+                    
+                    .prgs(i).filename = BinReadString(num)
+                    .prgs(i).initialVar = BinReadString(num)
+                    .prgs(i).initialValue = BinReadString(num)
+                    .prgs(i).finalVar = BinReadString(num)
+                    .prgs(i).finalValue = BinReadString(num)
+                    .prgs(i).activate = BinReadInt(num)
+                    .prgs(i).activationType = BinReadInt(num)
+                    .prgs(i).distanceRepeat = BinReadInt(num)
+                    .prgs(i).layer = BinReadInt(num)
+                    
+                    Set .prgs(i).vBase = New CVector
+                    .prgs(i).vBase.bClosed = CBool(BinReadInt(num))
+                    
+                    pts = BinReadInt(num)
+                    For j = 0 To pts
+                        x = BinReadLong(num)
+                        y = BinReadLong(num)
+                        Call .prgs(i).vBase.addPoint(x, y)
+                    Next j
+                    
+                Next i
+            End If
+            
+            'Sprites
+            ub = BinReadInt(num)
+            If ub >= 0 Then
+                ReDim .sprites(ub)
+                ReDim .spriteImages(ub)
+                For i = 0 To ub
+                    Set .sprites(i) = New CBoardSprite
+                    
+                    .sprites(i).filename = BinReadString(num)
+                    .sprites(i).prgActivate = BinReadString(num)
+                    .sprites(i).prgMultitask = BinReadString(num)
+                    .sprites(i).initialVar = BinReadString(num)
+                    .sprites(i).initialValue = BinReadString(num)
+                    .sprites(i).finalVar = BinReadString(num)
+                    .sprites(i).finalValue = BinReadString(num)
+                    .sprites(i).activate = BinReadInt(num)
+                    .sprites(i).activationType = BinReadInt(num)
+                    .sprites(i).layer = BinReadInt(num)
+                    .sprites(i).x = BinReadInt(num)
+                    .sprites(i).y = BinReadInt(num)
+                Next i
+                
+                'Update only after loading all sprites.
+                For i = 0 To ub
+                    'tbd: decide on storing default paths.
+                    Call activeBoard.spriteUpdateImageData(.sprites(i), .sprites(i).filename, True)
+                Next i
+            End If
+            
+            
+            'Images
+            ub = BinReadInt(num)
+            If ub >= 0 Then
+                ReDim .Images(ub)
+                For i = 0 To ub
+                    
+                    .Images(i).filename = BinReadString(num)
+                    .Images(i).bounds.Left = BinReadLong(num)
+                    .Images(i).bounds.Top = BinReadLong(num)
+                    .Images(i).layer = BinReadInt(num)
+                    .Images(i).drawType = BinReadInt(num)
+                    .Images(i).transpcolor = BinReadLong(num)
+                
+                Next i
+            End If
+            
+            ub = BinReadInt(num)
+            ReDim .Threads(ub)
+            For i = 0 To ub
+                .Threads(i) = BinReadString(num)
+            Next i
+            
+            ub = BinReadInt(num)
+            ReDim .constants(ub)
+            For i = 0 To ub
+                .constants(i) = BinReadString(num)
+            Next i
+            
+            For i = 0 To .sizeL
+                .layerTitles(i) = BinReadString(num)
+            Next i
+            
+            ReDim .directionalLinks(3)
+            For i = 0 To UBound(.directionalLinks)
+                .directionalLinks(i) = BinReadString(num)
+            Next i
+
+            .bkgImage.filename = BinReadString(num)
+            .bkgImage.drawType = BinReadLong(num)
+            .bkgColor = BinReadLong(num)
+            .bkgMusic = BinReadString(num)
+            
+            .enterPrg = BinReadString(num)
+            .battleBackground = BinReadString(num)
+            .battleSkill = BinReadInt(num)
+            .bAllowBattles = CBool(BinReadInt(num))
+            .bAllowSaving = CBool(BinReadInt(num))
+            .ambientEffect = BinReadInt(num)
+            
+        Close num
+        Exit Function
+
+pvVersion:
+            Dim bReg As Integer, regCode As String
+            bReg = BinReadInt(num)                  'Created with a registered version?
+            regCode = BinReadString(num)            'Registration code
+        
+            .sizex = BinReadInt(num)
+            .sizey = BinReadInt(num)
+            .sizeL = BinReadInt(num)
+            Call boardSetSize(.sizex, .sizey, .sizeL, ed, board)
+            
+            'tbd: Player start location data has been moved to the main file.
+            x = BinReadInt(num)
+            y = BinReadInt(num)
+            z = BinReadInt(num)
+            
+            .bAllowSaving = (BinReadInt(num) = 0)         'Can player save on board? 0-yes, 1-no
+    
+            'Build the tile look-up-table (Lut)
+            lutSize = BinReadInt(num)
+            ReDim .tileIndex(lutSize)
+            
+            For i = 0 To UBound(.tileIndex)
+                .tileIndex(i) = BinReadString(num)
+            Next i
+
+            'Read off the Lut indices for each tile.
+            For z = 1 To .sizeL
+                For y = 1 To .sizey
+                    For x = 1 To .sizex
+                    
+                        index = BinReadInt(num)
+                        
+                        'Negative index indicates compression:
+                        'the next 'index' tiles are indentical.
+                        If index < 0 Then
+                            count = -index
+                            
+                            index = BinReadInt(num)
+                            r = BinReadInt(num)
+                            g = BinReadInt(num)
+                            b = BinReadInt(num)
+                            tiletype = BinReadByte(num)
+                            
+                            'Determine if the layer contains tiles (editor use).
+                            '(0) indicates if the whole board contains tiles.
+                            If index Then
+                                ed.bLayerOccupied(z) = True
+                                ed.bLayerOccupied(0) = True
+                            End If
+                    
+                            For i = 1 To count
+                                .board(x, y, z) = index
+                                .ambientRed(x, y, z) = r
+                                .ambientGreen(x, y, z) = g
+                                .ambientBlue(x, y, z) = b
+                                .tiletype(x, y, z) = tiletype
+
+                                'Check whether compression spans rows/layers.
+                                x = x + 1
+                                If x > .sizex Then
+                                    x = 1
+                                    y = y + 1
+                                    If y > .sizey Then
+                                        y = 1
+                                        z = z + 1
+                                        If z > .sizeL Then
+                                            'Compression to end of board - exit.
+                                            GoTo exitForB
+                                        End If
+                                        
+                                        'Spans onto next layer (editor use).
+                                        If (index) Then ed.bLayerOccupied(z) = True
+                                    End If
+                                End If
+                            Next i
+                            x = x - 1
+                        Else
+                            'Single tile.
+                            
+                            'Determine if the layer contains tiles (editor use).
+                            If index Then
+                                ed.bLayerOccupied(z) = True
+                                ed.bLayerOccupied(0) = True
+                            End If
+                            
+                            .board(x, y, z) = index
+                            .ambientRed(x, y, z) = BinReadInt(num)
+                            .ambientGreen(x, y, z) = BinReadInt(num)
+                            .ambientBlue(x, y, z) = BinReadInt(num)
+                            .tiletype(x, y, z) = BinReadByte(num)
+                            
+                        End If
+                    Next x
+                Next y
+            Next z
+exitForB:
+            
+            Dim strUnused As String, lUnused As Long, iUnused As Integer
+
+            .bkgImage.filename = BinReadString(num) 'Background image
+            .bkgImage.drawType = BI_PARALLAX    'Default for pre-vector boards
+
+            strUnused = BinReadString(num)      'Foreground image (depreciated parallax)
+            strUnused = BinReadString(num)      'Border background image (depreciated)
+            .bkgColor = BinReadLong(num)        'Background colour
+            lUnused = BinReadLong(num)          'Border colour (depreciated)
+            .ambientEffect = BinReadInt(num)    'Ambient effect 0: none, 1: fog, 2: darkness, 3: watery
+            
+            ReDim .directionalLinks(3)
+            For i = 0 To 3
+                .directionalLinks(i) = BinReadString(num)  'Direction links 0: N, 1: S, 2: E, 3: W
+            Next i
+            
+            .battleSkill = BinReadInt(num)         'Skill level
+            .battleBackground = BinReadString(num) 'Fighting background
+            .bAllowBattles = CBool(BinReadInt(num)) 'Fighting on board? (1: yes, 0: no)
+            
+            iUnused = BinReadInt(num)           'Board is affected by day/night? (depreciated)
+            iUnused = BinReadInt(num)           'Use custom battle options at night? (depreciated)
+            iUnused = BinReadInt(num)           'Skill level at night (depreciated)
+            strUnused = BinReadString(num)      'Fighting background at night (depreciated)
+            
+            ReDim .constants(10)
+            For i = 0 To 10
+                .constants(i) = CStr(BinReadInt(num))  'Constants
+            Next i
+            
+            .bkgMusic = BinReadString(num)    'Background music file
+            
+            ReDim .layerTitles(8)
+            For i = 0 To 8
+                .layerTitles(i) = BinReadString(num)  'Layer titles
+            Next i
+            
+            '3.0.7 - load programs into CBoardProgram structures.
             Dim numPrg As Long, ubPrgs As Long
             numPrg = BinReadInt(num)    'ubound on number of programs written to file.
             
-            For t = 0 To numPrg
-                '3.0.7 wip - load into CBoardProgram structure instead.
+            For i = 0 To numPrg
                 Dim prg As CBoardProgram
                 Set prg = New CBoardProgram
-                prg.filename = BinReadString(num)       'Board program filenames
+                prg.filename = BinReadString(num)       'program filenames
                 x = BinReadInt(num)                     'program x
                 y = BinReadInt(num)                     'program y
                 prg.layer = BinReadInt(num)             'program layer
                 prg.graphic = BinReadString(num)        'program graphic
-                prg.activate = BinReadInt(num)          'program activation: 0- always active, 1- conditional activation.
+                prg.activate = BinReadInt(num)          'program activation - 0: always active, 1: conditional activation.
                 prg.initialVar = BinReadString(num)     'activation variable
                 prg.finalVar = BinReadString(num)       'activation variable at end of prg.
                 prg.initialValue = BinReadString(num)   'initial number of activation
                 prg.finalValue = BinReadString(num)     'what to make variable at end of activation.
-                prg.activationType = BinReadInt(num)    'activation type- 0-step on, 1- conditional (activation key)
+                prg.activationType = BinReadInt(num)    'activation type - 0: step on, 1: conditional (activation key)
                
                 If (prg.filename <> vbNullString) Then
                     ReDim Preserve .prgs(ubPrgs)
@@ -975,25 +949,19 @@ exitTheFor:
                     ubPrgs = ubPrgs + 1
                 End If
                 Set prg = Nothing
-            Next t
+            Next i
             .enterPrg = BinReadString(num)      'program to run on entrance
-            .bgPrg = BinReadString(num)         'background program
+            strUnused = BinReadString(num)      'background program (depreciated)
             
-            On Error Resume Next
-            
-            '3.0.7 wip - load into TKBoardSprite structures.
+            '3.0.7 - load into TKBoardSprite structures.
             Dim numItm As Long, ubSprs As Long
             numItm = BinReadInt(num)            'The number of written item slots.
             
-            ''Dimension the arrays of this board *not* the activeboard.
-            'ReDim .itmName(0)
-            'Call dimensionItemArrays(board)
-            
-            For t = 0 To numItm
-                Dim spr As CBoardSprite, filename As String
+            For i = 0 To numItm
+                Dim spr As CBoardSprite
                 Set spr = New CBoardSprite
             
-                filename = BinReadString(num)           'activeBoard.spriteUpdateImageData assigns to spr
+                spr.filename = BinReadString(num)
                 spr.x = BinReadInt(num)                 'x coord
                 spr.y = BinReadInt(num)                 'y coord
                 spr.layer = BinReadInt(num)             'layer coord
@@ -1005,14 +973,14 @@ exitTheFor:
                 spr.activationType = BinReadInt(num)    'activation type- 0-step on, 1- conditional (activation key)
                 spr.prgActivate = BinReadString(num)    'program to run when item is touched.
                 spr.prgMultitask = BinReadString(num)   'multitask program for item
-                If LenB(filename) Then
+                If LenB(spr.filename) Then
                     ReDim Preserve .sprites(ubSprs)
                     ReDim Preserve .spriteImages(ubSprs)
                     Set .sprites(ubSprs) = spr
-                    Call activeBoard.spriteUpdateImageData(spr, itmPath & filename)
+                    Call activeBoard.spriteUpdateImageData(spr, itmPath & spr.filename, True)
                     ubSprs = ubSprs + 1
                 End If
-            Next t
+            Next i
 
             Dim tCount As Long
 
@@ -1020,15 +988,12 @@ exitTheFor:
             If (minorVer >= 3) Then
                 tCount = BinReadLong(num)
                 ReDim .Threads(tCount)
-                For t = 0 To tCount
-                    .Threads(t) = BinReadString(num)
-                Next t
+                For i = 0 To tCount
+                    .Threads(i) = BinReadString(num)
+                Next i
             End If
 
-            'Read in isometrics
-            .isIsometric = BinReadByte(num)
-            '3.0.7 wip
-            .coordType = .isIsometric
+            .coordType = BinReadByte(num)
 
             If (minorVer < 3) Then
                 'Read in threads
@@ -1041,239 +1006,89 @@ exitTheFor:
 
         Close num
         
-        '3.0.7 wip - generate program bases after coordinate type is read.
-        Dim i As Long
+        '3.0.7 - generate program bases after coordinate type is read.
         For i = 0 To UBound(.prgs)
-            If .prgs(i).filename <> vbNullString Then
-                Call .prgs(i).vBase.getPoint(0, x, y)
-                Call .prgs(i).vBase.deletePoints
-                Call upgradeProgram(.prgs(i), x, y, .coordType)
+            If Not .prgs(i) Is Nothing Then
+                If .prgs(i).filename <> vbNullString Then
+                    Call .prgs(i).vBase.getPoint(0, x, y)
+                    Call .prgs(i).vBase.deletePoints
+                    Call upgradeProgram(.prgs(i), x, y, .coordType)
+                End If
             End If
         Next i
         
-        '3.0.7 update item locations to pixel values.
+        '3.0.7 - update item locations to pixel values.
         For i = 0 To UBound(.sprites)
-            Dim pt As POINTAPI
-            pt = modBoard.tileToBoardPixel(.sprites(i).x, .sprites(i).y, .coordType, True, .bSizeX)
-            .sprites(i).x = pt.x
-            .sprites(i).y = pt.y
-            Call activeBoard.spriteUpdateImageData(.sprites(i), .sprites(i).filename)
+            If Not .sprites(i) Is Nothing Then
+                Dim pt As POINTAPI
+                pt = modBoard.tileToBoardPixel(.sprites(i).x, .sprites(i).y, .coordType, True, .sizex)
+                .sprites(i).x = pt.x
+                .sprites(i).y = pt.y
+                Call activeBoard.spriteUpdateImageData(.sprites(i), .sprites(i).filename, False)
+            End If
         Next i
         
-        Exit Function
-
-ver2oldboard:
-
-        Open fileOpen For Input As #num
-            fileHeader$ = fread(num)      'Filetype
-            If fileHeader$ <> "RPGTLKIT BOARD" Then Close #num: GoTo Ver1Board
-            Input #num, majorVer       'Version
-            Input #num, minorVer       'Minor version (ie 2.0)
-            If majorVer <> major Then MsgBox "This board was created with an unrecognised version of the Toolkit", , "Unable to open tile": Close #num: Exit Function
-            If minorVer > 2 Then
-                user = MsgBox("This board was created using Version " + CStr(majorVer) + "." + CStr(minorVer) + ".  You have version " + currentVersion + ". Opening this file may not work.  Continue?", 4, "Different Version")
-                If user = 7 Then Close #num: Exit Function 'selected no
-            End If
-        
-            Input #num, regYN       'Is it registered?
-            regCode$ = fread(num)            'reg code
-            'old style boards.
-            If minorVer = 1 Then
-                .bSizeX = fread(num)        'size x
-                .bSizeY = fread(num)        'size y
-                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed, board)
-            ElseIf minorVer = 0 Then
-                .bSizeX = 19
-                .bSizeY = 11
-                .bSizeL = 8
-                Call BoardSetSize(.bSizeX, .bSizeY, .bSizeL, ed, board)
-            End If
-            Dim lay As Long
-            For x = 1 To .bSizeX
-                For y = 1 To .bSizeY
-                    For lay = 1 To .bSizeL
-                        Temp$ = fread(num)              'Board tiles (the ,8 on the end is 8 layers)
-                        Call BoardSetTile(x, y, lay, Temp$, board)
-                        .ambientRed(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile red
-                        .ambientGreen(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile green
-                        .ambientBlue(x, y, lay) = fread(num) 'boardList(activeBoardIndex).ambient tile blue
-                        .tiletype(x, y, lay) = fread(num) 'Board tile types... 0- Normal, 1- solid
-                    Next lay
-                Next y
-            Next x
-            .brdBack$ = fread(num)        'Board background image
-            .borderBack$ = fread(num)     'Border background image
-            .brdColor = fread(num)        'Board color
-            .borderColor = fread(num)    'Border color
-            .ambientEffect = fread(num)    'boardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery
-            For loopControl = 1 To 4
-                .dirLink$(loopControl) = fread(num)      'Direction links 1- N, 2- S, 3- E, 4-W
-            Next loopControl
-            .boardSkill = fread(num)      'Board skill level
-            .boardBackground$ = fread(num) 'Fighting background
-            .fightingYN = fread(num)      'Fighting on boardYN (1- yes, 0- no)
-            For loopControl = 1 To 10
-                .brdConst(loopControl) = fread(num)    'Board Constants (1-10)
-            Next loopControl
-            .boardMusic$ = fread(num)     'Background music file
-            For loopControl = 1 To 8
-                .boardTitle$(loopControl) = fread(num) 'Board title (layer)
-            Next loopControl
-            For loopControl = 0 To 50
-                .programName$(loopControl) = fread(num) 'Board program filenames
-                .progX(loopControl) = fread(num)       'program x
-                .progY(loopControl) = fread(num)       'program y
-                .progLayer(loopControl) = fread(num)   'program layer
-                .progGraphic$(loopControl) = fread(num) 'program graphic
-                .progActivate(loopControl) = fread(num) 'program activation: 0- always active, 1- conditional activation.
-                .progVarActivate$(loopControl) = fread(num) 'activation variable
-                .progDoneVarActivate$(loopControl) = fread(num) 'activation variable at end of prg.
-                .activateInitNum$(loopControl) = fread(num) 'initial number of activation
-                .activateDoneNum$(loopControl) = fread(num) 'what to make variable at end of activation.
-                .activationType(loopControl) = fread(num) 'activation type- 0-step on, 1- conditional (activation key)
-            Next loopControl
-            ReDim boardList(activeBoardIndex).theData.itmName(0)
-            For loopControl = 0 To 10
-                Call dimensionItemArrays(board)
-                .itmName(loopControl) = fread(num)   'filenames of items
-                .itmX(loopControl) = fread(num)        'x coord
-                .itmY(loopControl) = fread(num)             'y coord
-                .itmLayer(loopControl) = fread(num)         'layer coord
-                .itmActivate(loopControl) = fread(num)      'itm activation: 0- always active, 1- conditional activation.
-                .itmVarActivate$(loopControl) = fread(num)  'activation variable
-                .itmDoneVarActivate$(loopControl) = fread(num) 'activation variable at end of itm.
-                .itmActivateInitNum$(loopControl) = fread(num) 'initial number of activation
-                .itmActivateDoneNum$(loopControl) = fread(num) 'what to make variable at end of activation.
-                .itmActivationType(loopControl) = fread(num)   'activation type- 0-step on, 1- conditional (activation key)
-            Next loopControl
-            .playerX = fread(num)                 'player x
-            .playerY = fread(num)                 'player y
-            .playerLayer = fread(num)             'player layer
-            For loopControl = 0 To 10
-                .itemProgram$(loopControl) = fread(num)    'item program
-            Next loopControl
-            .brdSavingYN = fread(num)              'can player save on board? 0-yes, 1-no
-            For loopControl = 0 To 10
-                .itemMulti$(loopControl) = fread(num)  'item multitask prg
-            Next loopControl
-            .BoardDayNight = fread(num) 'board is affected by day/night? 0=no, 1=yes
-            .BoardNightBattleOverride = fread(num) 'use custom battle options at night? 0=no, 1=yes
-            .BoardSkillNight = fread(num)      'Board skill level at night
-            .BoardBackgroundNight$ = fread(num) 'Fighting background at night
-        Close num
-
-        Exit Function
-
-Ver1Board:
-
-        'We come here if we (apparently) have a version 1 board.
-
-        Call BoardSetSize(19, 11, 8, ed, board)
-        .bSizeX = 19
-        .bSizeY = 11
-        .bSizeL = 8
-
-        Dim pth As String, errorsA As Long
-        pth = GetPath(fileOpen$)
-        errorsA = 0
-
-        Open fileOpen For Input As #num
-            If errorsA = 1 Then
-                errorsA = 0
-                Call MsgBox("Unable to open selected filename", "Board editor")
-                Exit Function
-            End If
-            For y = 1 To 11
-                For x = 1 To 19
-                    .tiletype(x, y, 1) = fread(num)          ' PULL IN SOLID DATA
-                Next x
-            Next y
-            Call fread(num)
-            For y = 1 To 11
-                For x = 1 To 19
-                    Temp$ = fread(num)
-                    If Temp$ = "VOID" Then Temp$ = vbNullString
-                    Temp$ = pth & Temp$
-                    Call BoardSetTile(x, y, 1, Temp$, board)
-                Next x
-            Next y
-            Call fread(num)
-            .playerX = fread(num)             ' PULL IN PLAYER X POSITION (unsupported)
-            .playerY = fread(num)             ' PULL IN PLAYER Y POSITION (unsuppt)
-            .boardTitle$(1) = fread(num)      ' PULL IN TITLE (filename)
-            Call fread(num)
-            For loopControl = 1 To 4
-                .dirLink$(loopControl) = fread(num)       ' PULL IN DIRECTION LINKS
-            Next loopControl
-            .brdColor = fread(num)              ' PULL IN BOARD COLOR
-            Call fread(num)
-            Call fread(num)
-            For loopControl = 0 To 9
-                .programName$(loopControl) = fread(num)       ' PULL IN PROGRAM TITLE
-                .progX(loopControl) = fread(num)         ' PULL IN PROG X POS
-                .progY(loopControl) = fread(num)         ' PULL IN PROG Y POS (NEXT 30 ARE THESE 3)
-                .progLayer(loopControl) = 1
-            Next loopControl
-            Dim fgtBrd As String
-            fgtBrd$ = fread(num)             ' FIGHTING ON BOARD (Y/N)
-            If UCase$(fgtBrd$) = "Y" Then
-                .fightingYN = 1
-            Else
-                .fightingYN = 0
-            End If
-            .boardSkill = fread(num)            ' BOARD FIGHTING SKILL
-            .boardBackground$ = fread(num)             ' BACKGROUND
-            .brdConst(1) = fread(num)                ' BOARD CONSTANT
-            Call fread(num)                  'Space for clarity
-            .boardMusic$ = fread(num)             'Background Midi File
-            .enterPrg$ = fread(num)           'Board entrance program
-            .bgPrg$ = fread(num)              'Background program
-            .boardTitle$(1) = fread(num)             'Board title
-            .playerLayer = 1
-        Close num
+        '3.0.7 - vectorise the tiletypes.
+         Call vectorize(ed)
         
     End With
-
-    Exit Function
-
-loadBrdErr:
-    errorsA = 1
-    Resume Next
 
 End Function
 
 '=========================================================================
 ' Get a tile
 '=========================================================================
-Public Function BoardGetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByRef theBoard As TKBoard) As String
+Public Function boardGetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByRef theBoard As TKBoard) As String
     On Error Resume Next
-    BoardGetTile = theBoard.tileIndex(theBoard.board(x, y, layer))
+    boardGetTile = theBoard.tileIndex(theBoard.board(x, y, layer))
 End Function
 
 '=========================================================================
-' Initiate a board
+' Initialise the arrays of a board structure.
 '=========================================================================
-Public Sub BoardInit(ByRef theBoard As TKBoard)
-    On Error Resume Next
-    ReDim theBoard.tileIndex(5)
-    'Call BoardSetSize(19, 11, 8, theBoard)
-    Call dimensionItemArrays(theBoard)
+Public Sub boardInitialise(ByRef board As TKBoard): On Error Resume Next
+    
+    With board
+        '3.0.7
+        ReDim .vectors(0)
+        ReDim .prgs(0)
+        ReDim .spriteImages(0)
+        ReDim .sprites(0)
+        ReDim .Images(0)
+        
+        Set .vectors(0) = Nothing
+        Set .prgs(0) = Nothing
+        Set .sprites(0) = Nothing
+        .Images(0).drawType = BI_NULL
+
+        'Pre 3.0.7
+        ReDim .tileIndex(0)
+        ReDim .board(1, 1, 1)
+        ReDim .ambientRed(1, 1, 1)
+        ReDim .ambientGreen(1, 1, 1)
+        ReDim .ambientBlue(1, 1, 1)
+        ReDim .directionalLinks(3)
+        ReDim .constants(0)
+        ReDim .layerTitles(0)
+        ReDim .Threads(0)
+        
+    End With
 End Sub
 
 '=========================================================================
 ' Size a board losing its current contents
 '=========================================================================
-Public Sub BoardSetSize(ByVal x As Integer, ByVal y As Integer, ByVal z As Integer, ByRef ed As TKBoardEditorData, ByRef board As TKBoard)
+Public Sub boardSetSize(ByVal x As Long, ByVal y As Long, ByVal z As Long, ByRef ed As TKBoardEditorData, ByRef board As TKBoard)
 
     On Error Resume Next
     
-    board.bSizeX = x
-    board.bSizeY = y
-    board.bSizeL = z
+    board.sizex = x
+    board.sizey = y
+    board.sizeL = z
     
     'Data matrix must be reshaped for ISO_ROTATED
-    x = IIf(board.coordType And ISO_ROTATED, board.bSizeX + board.bSizeY, board.bSizeX)
-    y = IIf(board.coordType And ISO_ROTATED, board.bSizeX + board.bSizeY, board.bSizeY)
+    x = IIf(board.coordType And ISO_ROTATED, board.sizex + board.sizey, board.sizex)
+    y = IIf(board.coordType And ISO_ROTATED, board.sizex + board.sizey, board.sizey)
     ed.effectiveBoardX = x
     ed.effectiveBoardY = y
     
@@ -1283,96 +1098,15 @@ Public Sub BoardSetSize(ByVal x As Integer, ByVal y As Integer, ByVal z As Integ
     ReDim board.ambientBlue(x, y, z)
     ReDim board.tiletype(x, y, z)
     ReDim ed.bLayerOccupied(z)
+    ReDim board.layerTitles(z)
 
-End Sub
-
-'=========================================================================
-' Set RGB value of tile
-'=========================================================================
-Public Sub BoardSetTileRGB(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByVal ttype As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef theBoard As TKBoard)
-
-    On Error Resume Next
-    
-    'first scan the look up table for filenames...
-    Dim bWasSet As Boolean
-    bWasSet = False
-    Dim t As Long
-    For t = 0 To UBound(theBoard.tileIndex)
-        If LCase$(filename) = theBoard.tileIndex(t) Then
-            'found it in lookup table...
-            theBoard.board(x - 1, y - 1, layer - 1) = t
-            bWasSet = True
-            Exit For
-        End If
-    Next t
-    
-    Dim bFoundPos As Boolean
-    bFoundPos = False
-    If Not (bWasSet) Then
-        'it wasn't found in the lookup table.
-        'we have to add it to the lookup table...
-        'first, find an empty slot...
-        For t = 1 To UBound(theBoard.tileIndex)
-            If (LenB(theBoard.tileIndex(t)) = 0) Then
-                'found a position!
-                theBoard.tileIndex(t) = LCase$(filename)
-                theBoard.board(x - 1, y - 1, layer - 1) = t
-                bFoundPos = True
-                Exit For
-            End If
-        Next t
-        
-        Dim newSize As Long, insertPos As Long
-        If Not (bFoundPos) Then
-            'no empty slots found-- make the array bigger!
-            newSize = UBound(theBoard.tileIndex) * 2
-            insertPos = UBound(theBoard.tileIndex) + 1
-            ReDim Preserve theBoard.tileIndex(newSize)
-            theBoard.tileIndex(insertPos) = LCase$(filename)
-            theBoard.board(x - 1, y - 1, layer - 1) = insertPos
-        End If
-    End If
-    
-    'now set the other info...
-    theBoard.tiletype(x - 1, y - 1, layer - 1) = ttype
-    theBoard.ambientRed(x - 1, y - 1, layer - 1) = r
-    theBoard.ambientGreen(x - 1, y - 1, layer - 1) = g
-    theBoard.ambientBlue(x - 1, y - 1, layer - 1) = b
 End Sub
 
 '=========================================================================
 ' Set a tile on the board
 '=========================================================================
-Public Sub BoardSetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByVal filename As String, ByRef theBoard As TKBoard)
-
-    On Error Resume Next
-    
-    'Look for an existing matching entry.
-    Dim t As Long
-    For t = 0 To UBound(theBoard.tileIndex)
-        If LCase$(filename) = theBoard.tileIndex(t) Then
-            'found it in lookup table...
-            theBoard.board(x, y, layer) = t
-            Exit Sub
-        End If
-    Next t
-    
-    'Not found, look for an empty slot.
-    For t = 1 To UBound(theBoard.tileIndex)
-        If (LenB(theBoard.tileIndex(t)) = 0) Then
-            'found a position!
-            theBoard.tileIndex(t) = LCase$(filename)
-            theBoard.board(x, y, layer) = t
-            Exit Sub
-        End If
-    Next t
-    
-    'Not found, create a new slot.
-    Dim newSize As Long, insertPos As Long
-    newSize = UBound(theBoard.tileIndex) * 2
-    insertPos = UBound(theBoard.tileIndex) + 1
-    ReDim Preserve theBoard.tileIndex(newSize)
-    theBoard.tileIndex(insertPos) = LCase$(filename)
-    theBoard.board(x, y, layer) = insertPos
-
+Public Sub boardSetTile(ByVal x As Long, ByVal y As Long, ByVal z As Long, ByVal filename As String, ByRef board As TKBoard) ': On Error Resume Next
+    Dim i As Long
+    i = boardTileInLut(filename, board)
+    board.board(x, y, z) = i
 End Sub
