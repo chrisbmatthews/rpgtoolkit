@@ -18,6 +18,7 @@
 #include "../../tkCommon/images/FreeImage.h"
 #include "../../tkCommon/tkGfx/CTile.h"
 #include "../../tkCommon/movement/board conversion.h"
+#include <map>
 
 std::vector<CBoard *> g_boards;
 //--------------------------------------------------------------------------
@@ -235,6 +236,24 @@ LONG APIENTRY BRDFreeImage(CBoard *pBoard, LPVB_BRDIMAGE pImg)
 	return 0;
 }
 
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
+LONG APIENTRY BRDRenderImage(
+	CBoard *pBoard, 
+	LPVB_BRDIMAGE pImg,
+	CONST HDC hdcCompat)
+{
+	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
+	{
+		if (*i == pBoard) 
+		{
+			pBoard->insertCnv(pImg->render(pBoard->projectPath(), hdcCompat));
+			return 1;
+		}
+	}
+	return 0;
+}
 
 //--------------------------------------------------------------------------
 // 
@@ -270,16 +289,23 @@ std::vector<LPVB_BRDIMAGE> CBoard::getImages(CONST LPVB_BRDEDITOR pEditor)
 	}
 
 	// Treat board sprites as images for the purposes of drawing them in the editor.
-	SafeArrayGetUBound(m_pBoard->m_sprites, 1, &length);
+	SafeArrayGetUBound(m_pBoard->m_spriteImages, 1, &length);
+
+	std::map<int, LPVB_BRDIMAGE> spr;
 
 	if (pEditor->bShowSprites == VARIANT_TRUE || pEditor->optSetting == BS_SPRITE)
 	{
 		for (LONG i = 0; i <= length; ++i)
 		{
 			LPVB_BRDIMAGE pImg = NULL;
-			SafeArrayPtrOfIndex(m_pBoard->m_sprites, &i, (void **)&pImg);
-			vect.push_back(pImg);
-		}	
+			SafeArrayPtrOfIndex(m_pBoard->m_spriteImages, &i, (void **)&pImg);
+			
+			// Do some basic z-ordering (multiple sprites 
+			// at the same co-ordinate will be invisible).
+			spr[m_pBoard->pxWidth() * pImg->bounds.top + pImg->bounds.left] = pImg;
+		}
+		std::map<int, LPVB_BRDIMAGE>::const_iterator j = spr.begin();
+		for (; j != spr.end(); ++j) vect.push_back(j->second);
 	}
 	
 	return vect;
@@ -312,7 +338,6 @@ VOID CBoard::draw(
 	CONST LONG height,
 	CONST DOUBLE scale)
 {
-
 	if (!hdc) return;
 	m_pBoard = pBoard;
 
@@ -339,29 +364,33 @@ VOID CBoard::draw(
 	LONG z = 1, length = 0;
 	SafeArrayGetUBound(pEditor->bLayerVisible, 1, &length);
 
-	for (BL_ITR i = m_layers.begin() + 1; i < m_layers.end(); ++i, ++z)
+	for (z = 1; z <= m_pBoard->m_bSizeL; ++z)
 	{
 		if (z < length)
 		{
-			VARIANT_BOOL vis = 1;
+			VARIANT_BOOL vis = VARIANT_TRUE;
 			SafeArrayGetElement(pEditor->bLayerVisible, &z, LPVOID(&vis));
 			if (!vis) continue;
 		}
 		RECT r = {0, 0, 0, 0};
 
 		// Draw tiles.
-		if (i->cnv && IntersectRect(&r, &screen, &i->bounds))
+		if (m_layers.size() > z)
 		{
-			i->cnv->BltTransparentPart(
-				&cnv,
-				r.left - screen.left,
-				r.top - screen.top,
-				r.left - i->bounds.left,
-				r.top - i->bounds.top,
-				r.right - r.left,
-				r.bottom - r.top,
-				TRANSP_COLOR
-			);
+			LPBRD_LAYER i = &m_layers[z];
+			if (i->cnv && IntersectRect(&r, &screen, &i->bounds))
+			{
+				i->cnv->BltTransparentPart(
+					&cnv,
+					r.left - screen.left,
+					r.top - screen.top,
+					r.left - i->bounds.left,
+					r.top - i->bounds.top,
+					r.right - r.left,
+					r.bottom - r.top,
+					TRANSP_COLOR
+				);
+			}
 		}
 
 		// Draw sprites and images.
@@ -436,12 +465,11 @@ VOID CBoard::render(
 	CONST LONG lower = (layer ? layer : 1), upper = (layer ? layer : m_pBoard->m_bSizeL);
 	SafeArrayGetUBound(pEditor->bLayerOccupied, 1, &length);
 
-
 	for (LONG i = lower; i <= upper; ++i)
 	{
-		if (i < length)
+		if (i <= length)
 		{
-			VARIANT_BOOL occ = -1;
+			VARIANT_BOOL occ = VARIANT_TRUE;
 			SafeArrayGetElement(pEditor->bLayerOccupied, &i, LPVOID(&occ));
 			if (!occ) continue;
 		}
@@ -475,6 +503,7 @@ VOID CBoard::renderTile(
 	}
 
 	CONST STRING strTile = tile(x, y, z);
+
 	if (!strTile.empty())
 	{
 		// Tile exists at this location.
@@ -529,6 +558,7 @@ VOID CBoard::renderLayer(
 		CONST RECT r = {0, 0, w, h};
 		p->bounds = r;
 	}
+
 	p->cnv->ClearScreen(TRANSP_COLOR);
 	CONST HDC hdc = p->cnv->OpenDC();
 
@@ -820,7 +850,7 @@ INLINE std::string CBoard::tile(
 		if (strExt.compare("TAN") == 0)
 		{
 			// Use the first frame
-			return CTileAnim("tiles\\" + toRetStr).frame(1);
+			return CTileAnim(m_projectPath + "tiles\\" + toRetStr).frame(1);
 		}
 
 		// Return the result
