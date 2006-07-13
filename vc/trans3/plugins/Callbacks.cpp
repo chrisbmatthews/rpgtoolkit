@@ -821,7 +821,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			{
 				const SPRITE_POSITION p = pPlayer->getPosition();
 				int x = p.x, y = p.y;
-				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
+				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 				*pRet = (infoCode == GEN_CURX ? x : y);
 			} break;
 		case GEN_CURLAYER:
@@ -1047,7 +1047,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 				// Get current x and y in board coordinates.
 				const SPRITE_POSITION p = pPlayer->getPosition();
 				int x = p.x, y = p.y;
-				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
+				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 
 				// Pass board coordinates to CSprite to convert back to pixel.
 				(infoCode == GEN_CURX ? x = newVal : y = newVal);
@@ -1543,6 +1543,7 @@ STDMETHODIMP CCallbacks::CBGetItemNum(int infoCode, int arrayPos, int itmSlot, i
 STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos2, int arrayPos3, int *pRet)
 {
 	extern LPBOARD g_pBoard;
+	extern MAIN_FILE g_mainFile;
 
 	LPBRD_PROGRAM pPrg = NULL;
 	CItem *pItem = NULL;
@@ -1567,10 +1568,10 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 	switch (infoCode)
 	{
 		case BRD_SIZEX:
-			*pRet = g_pBoard->bSizeX;
+			*pRet = g_pBoard->sizeX;
 			break;
 		case BRD_SIZEY:
-			*pRet = g_pBoard->bSizeY;
+			*pRet = g_pBoard->sizeY;
 			break;
 		case BRD_AMBIENTRED:
 			try
@@ -1613,16 +1614,16 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			}
 			break;
 		case BRD_BACKCOLOR:
-			*pRet = g_pBoard->brdColor;
+			*pRet = g_pBoard->bkgColor;
 			break;
 		case BRD_BORDERCOLOR:
 			// Obselete.
 			break;
 		case BRD_SKILL:
-			*pRet = g_pBoard->boardSkill;
+			*pRet = g_pBoard->battleSkill;
 			break;
 		case BRD_FIGHTINGYN:
-			*pRet = g_pBoard->fightingYN;
+			*pRet = g_pBoard->bAllowBattles ? 1 : 0;
 			break;
 		case BRD_PRG_X:
 		case BRD_PRG_Y:
@@ -1631,7 +1632,7 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			{
 				DB_POINT pt = pPrg->vBase[0];
 				int x = int(pt.x), y = int(pt.y);
-				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
+				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 				*pRet = ((infoCode == BRD_PRG_X) ? x : y);
 			}
 			else
@@ -1662,16 +1663,16 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			*pRet = pItem ? (pItem->getBoardSprite()->activationType & SPR_KEYPRESS) : 0;
 			break;
 		case BRD_PLAYERX:
-			*pRet = g_pBoard->playerX;
+			*pRet = g_mainFile.startX;
 			break;
 		case BRD_PLAYERY:
-			*pRet = g_pBoard->playerY;
+			*pRet = g_mainFile.startY;
 			break;
 		case BRD_PLAYERLAYER:
-			*pRet = g_pBoard->playerLayer;
+			*pRet = g_mainFile.startL;
 			break;
 		case BRD_SAVING_DISABLED:
-			*pRet = g_pBoard->brdSavingYN;
+			*pRet = g_pBoard->bDisableSaving ? 1 : 0;
 			break;
 	}
 	return S_OK;
@@ -1713,22 +1714,23 @@ STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int array
 			catch (...) { }
 			break;
 		case BRD_BACK_IMAGE:
-			str = g_pBoard->brdBack;
+			if (g_pBoard->bkgImage) str = g_pBoard->bkgImage->file;
 			break;
 		case BRD_BORDER_IMAGE:
 			// Obselete.
 			break;
 		case BRD_DIR_LINK:
-			str = g_pBoard->dirLink[bounds(arrayPos1, 0, int(g_pBoard->dirLink.size() - 1))];
+			// (arrayPos - 1) to maintain compatibility.
+			str = g_pBoard->links[bounds(arrayPos1 - 1, 0, int(g_pBoard->links.size() - 1))];
 			break;
 		case BRD_FIGHT_BKG:
-			str = g_pBoard->boardBackground;
+			str = g_pBoard->battleBackground;
 			break;
 		case BRD_MUSIC:
-			str = g_pBoard->boardMusic;
+			str = g_pBoard->bkgMusic;
 			break;
 		case BRD_LAYER_NAME:
-			str = g_pBoard->boardTitle[bounds(arrayPos1, 0, int(g_pBoard->boardTitle.size() - 1))];
+			str = g_pBoard->layerTitles[bounds(arrayPos1, 0, int(g_pBoard->layerTitles.size() - 1))];
 			break;
 		case BRD_PRG:
 			if (pPrg) str = pPrg->fileName;
@@ -1841,16 +1843,16 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			catch (...)	{ } 
 			break;
 		case BRD_BACKCOLOR:
-			g_pBoard->brdColor = nValue;
+			g_pBoard->bkgColor = nValue;
 			break;
 		case BRD_BORDERCOLOR:
 			// Obselete
 			break;
 		case BRD_SKILL:
-			g_pBoard->boardSkill = short(nValue);
+			g_pBoard->battleSkill = short(nValue);
 			break;
 		case BRD_FIGHTINGYN:
-			g_pBoard->fightingYN = short(nValue);
+			g_pBoard->bAllowBattles = bool(nValue);
 			break;
 		case BRD_PRG_X:
 		case BRD_PRG_Y:
@@ -1858,9 +1860,9 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			{
 				DB_POINT pt = pPrg->vBase[0];
 				int x = int(pt.x), y = int(pt.y);
-				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
+				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 				(infoCode == BRD_PRG_X ? x = nValue : y = nValue);
-				coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
+				coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 				pPrg->vBase.move(x, y);
 			} break;
 		case BRD_PRG_LAYER:
@@ -1890,7 +1892,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			// cannot be changed before loading.
 			break;
 		case BRD_SAVING_DISABLED:
-			g_pBoard->brdSavingYN = short(nValue);
+			g_pBoard->bDisableSaving = bool(nValue);
 			break;
 	}
 	return S_OK;
@@ -1928,25 +1930,30 @@ STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int array
 			g_scrollCache.render(true);
 			break;
 		case BRD_BACK_IMAGE:
-			g_pBoard->brdBack = getString(newVal);
+			if (!g_pBoard->bkgImage)
+			{
+				g_pBoard->bkgImage = new BRD_IMAGE();
+			}
+			g_pBoard->bkgImage->file = getString(newVal);
+			g_pBoard->bkgImage->createCanvas(*g_pBoard);
 			break;
 		case BRD_BORDER_IMAGE:
 			// Obselete.
 			break;
 		case BRD_DIR_LINK:
-			g_pBoard->dirLink[bounds(arrayPos1, 0, int(g_pBoard->dirLink.size() - 1))] = getString(newVal);
+			g_pBoard->links[bounds(arrayPos1 - 1, 0, int(g_pBoard->links.size() - 1))] = getString(newVal);
 			break;
 		case BRD_FIGHT_BKG:
-			g_pBoard->boardBackground = getString(newVal);
+			g_pBoard->battleBackground = getString(newVal);
 			break;
 		case BRD_MUSIC:
 			extern CAudioSegment *g_bkgMusic;
-			g_pBoard->boardMusic = getString(newVal);
-			g_bkgMusic->open(g_pBoard->boardMusic);
+			g_pBoard->bkgMusic = getString(newVal);
+			g_bkgMusic->open(g_pBoard->bkgMusic);
 			g_bkgMusic->play(true);
 			break;
 		case BRD_LAYER_NAME:
-			g_pBoard->boardTitle[bounds(arrayPos1, 0, int(g_pBoard->boardTitle.size() - 1))] = getString(newVal);
+			g_pBoard->layerTitles[bounds(arrayPos1, 0, int(g_pBoard->layerTitles.size() - 1))] = getString(newVal);
 			break;
 		case BRD_PRG:
 			if (pPrg) pPrg->fileName = getString(newVal);

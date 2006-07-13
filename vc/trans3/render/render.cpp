@@ -436,7 +436,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 		g_pBoard->render(
 			&cnv, 
 			0, 0, 
-			1, g_pBoard->bSizeL,
+			1, g_pBoard->sizeL,
 			r.left, 
 			r.top, 
 			width, 
@@ -477,7 +477,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 	const bool bScreen = (cnv == NULL);
 	if (!cnv) cnv = g_pDirectDraw->getBackBuffer();
 
-	cnv->ClearScreen(g_pBoard->brdColor);
+	cnv->ClearScreen(g_pBoard->bkgColor);
 
 	// Set of RECTs covering the sprites.
 	std::vector<RECT> rects;		
@@ -513,7 +513,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 	 * Draw tiles on higher layers over the sprites: draw tiles directly
 	 * rather than using any intermediate canvas.
 	 */
-	for (int layer = 1; layer <= g_pBoard->bSizeL; ++layer)
+	for (int layer = 1; layer <= g_pBoard->sizeL; ++layer)
 	{
 		// Draw tiles on higher layers over the sprites.
 		if (g_pBoard->bLayerOccupied[layer])

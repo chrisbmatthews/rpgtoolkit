@@ -70,7 +70,7 @@ std::pair<int, std::pair<int, int> > getPlayerLocation(int tag)
 
 	// Transform from pixel to board type (e.g. tile).
 	int dx = int(s.x), dy = int(s.y);
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
 
 	return std::pair<int, std::pair<int, int> >(s.l, std::pair<int, int>(dx, dy));
 }
@@ -158,7 +158,7 @@ public:
 	STRING getLit() const
 	{
 		extern LPBOARD g_pBoard;
-		return g_pBoard->boardTitle[int(tag)];
+		return g_pBoard->layerTitles[int(tag)];
 	}
 	double getNum() const { return atof(getLit().c_str()); }
 	UNIT_DATA_TYPE getType() const { return UDT_LIT; }
@@ -169,12 +169,12 @@ class CBoardConstant : public tagStackFrame
 {
 public:
 	CBoardConstant(int idx) { tag = (void *)idx; }
-	double getNum() const
+	STRING getLit() const
 	{
 		extern LPBOARD g_pBoard;
-		return g_pBoard->brdConst[int(tag)];
+		return g_pBoard->constants[int(tag)];
 	}
-	STRING getLit() const { return ::getLit(getNum()); }
+	double getNum() const { return atof(getLit().c_str()); }
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
 };
 
@@ -185,7 +185,7 @@ public:
 	STRING getLit() const
 	{
 		extern LPBOARD g_pBoard;
-		return g_pBoard->boardBackground;
+		return g_pBoard->battleBackground;
 	}
 	double getNum() const { return atof(getLit().c_str()); }
 	UNIT_DATA_TYPE getType() const { return UDT_LIT; }
@@ -198,7 +198,7 @@ public:
 	double getNum() const
 	{
 		extern LPBOARD g_pBoard;
-		return g_pBoard->boardSkill;
+		return g_pBoard->battleSkill;
 	}
 	STRING getLit() const { return ::getLit(getNum()); }
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }

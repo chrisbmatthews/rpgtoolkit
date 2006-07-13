@@ -70,9 +70,18 @@ typedef struct tagMainFile
     int resX;							// Custom x resolution.
     int resY;							// Custom y resolution.
     char bFpsInTitleBar;				// Show FPS in the title bar?
+
+	// 3.0.7:
+	short startX;						// Coordinates for the player to start from,
+	short startY;						// moved from tagBoard.
+	short startL;
+
 	int getGameSpeed() { return gameSpeed - 128; }
 	void setGameSpeed(const int gs) { gameSpeed = gs + 128; }
 	bool open(const STRING fileName);
+
+	tagMainFile(): startX(0), startY(0), startL(0) {}
+
 private:
     unsigned char gameSpeed;			// Speed at which game runs.
 } MAIN_FILE;

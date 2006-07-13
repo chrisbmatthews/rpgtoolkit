@@ -357,7 +357,7 @@ void send(CALL_DATA &params)
 	g_pBoard->open(g_projectPath + BRD_PATH + params[0].getLit());
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
-	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->bSizeX);
+	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->sizeX);
 
 	if (x < 1 || x > g_pBoard->pxWidth())
 	{
@@ -654,7 +654,7 @@ void viewbrd(CALL_DATA &params)
 	{
 		x = params[1].getNum();
 		y = params[2].getNum();
-		coords::tileToPixel(x, y, pBoard->coordType, false, pBoard->bSizeX);
+		coords::tileToPixel(x, y, pBoard->coordType, false, pBoard->sizeX);
 		if (pBoard->coordType == TILE_NORMAL)
 		{
 			// coords::tileToPixel(...false.) returns at top-left for 2D.
@@ -663,11 +663,11 @@ void viewbrd(CALL_DATA &params)
 		}
 	}
 
-	pCnv->ClearScreen(pBoard->brdColor);
+	pCnv->ClearScreen(pBoard->bkgColor);
 	pBoard->render(
 		pCnv, 
 		0, 0, 
-		1, pBoard->bSizeL,
+		1, pBoard->sizeL,
 		x, y, 
 		pCnv->GetWidth(), 
 		pCnv->GetHeight(), 
@@ -820,7 +820,7 @@ void move(CALL_DATA &params)
 	}
 	
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
-	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
+	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 	if (g_pBoard->isIsometric() && !(g_pBoard->coordType & PX_ABSOLUTE))
 	{
 		// coords::tileToPixel() returns the centrepoint of isometric tiles.
@@ -859,7 +859,7 @@ void prg(CALL_DATA &params)
 		throw CError(_T("Prg() requires three or four parameters."));
 	}
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
-	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
+	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 	if (g_pBoard->isIsometric() && !(g_pBoard->coordType & PX_ABSOLUTE))
 	{
 		// coords::tileToPixel() returns the centrepoint of isometric tiles.
@@ -1703,8 +1703,8 @@ void pathfind(CALL_DATA &params)
 		x2 = int(params[2].getNum()), y2 = int(params[3].getNum());
 
 	// Transform the input co-ordinates based on the board co-ordinate system.
-	coords::tileToPixel(x1, y1, g_pBoard->coordType, true, g_pBoard->bSizeX);
-	coords::tileToPixel(x2, y2, g_pBoard->coordType, true, g_pBoard->bSizeX);
+	coords::tileToPixel(x1, y1, g_pBoard->coordType, true, g_pBoard->sizeX);
+	coords::tileToPixel(x2, y2, g_pBoard->coordType, true, g_pBoard->sizeX);
 
 	// Parameters. r is unneeded for tile pathfinding.
 	const DB_POINT start = {x1, y1}, goal = {x2, y2};
@@ -1763,7 +1763,7 @@ void playerstep(CALL_DATA &params)
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
-	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->bSizeX);
+	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->sizeX);
 
 	PF_PATH path = p->pathFind(x, y, PF_AXIAL, 0);
 	if (!path.empty())
@@ -1800,7 +1800,7 @@ void itemstep(CALL_DATA &params)
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
-	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->bSizeX);
+	coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->sizeX);
 
 	PF_PATH path = p->pathFind(x, y, PF_AXIAL, 0);
 	if (!path.empty())
@@ -2495,7 +2495,7 @@ void itemlocation(CALL_DATA &params)
 
 	// Transform from pixel to board type (e.g. tile).
 	int dx = int(s.x), dy = int(s.y);
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
 
 	x->num = dx;
 	y->num = dy;
@@ -2531,7 +2531,7 @@ void playerlocation(CALL_DATA &params)
 
 	// Transform from pixel to board type (e.g. tile).
 	int dx = int(s.x), dy = int(s.y);
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
 
 	x->num = dx;
 	y->num = dy;
@@ -2581,7 +2581,7 @@ void sourcelocation(CALL_DATA &params)
 		}
 	}
 	// Transform from pixel to board type (e.g. tile).
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
 	x->num = dx;
 	y->num = dy;
 }
@@ -2629,7 +2629,7 @@ void targetlocation(CALL_DATA &params)
 		}
 	}
 	// Transform from pixel to board type (e.g. tile).
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->bSizeX);
+	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
 	x->num = dx;
 	y->num = dy;
 }
@@ -2837,7 +2837,7 @@ void scan(CALL_DATA &params)
 	
 	const int i = int(params[2].getNum());
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
-	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
+	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 
 	while (i >= g_cnvRpgScans.size())
 	{
@@ -2877,7 +2877,7 @@ void mem(CALL_DATA &params)
 
 	const int i = int(params[2].getNum());
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
-	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->bSizeX);
+	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 
 	if (i < g_cnvRpgScans.size() && g_cnvRpgScans[i])
 	{
@@ -3580,22 +3580,22 @@ void earthquake(CALL_DATA &params)
 
 	for (int i = 1; i <= intensity; ++i)
 	{
-		g_cnvRpgCode->ClearScreen(g_pBoard->brdColor);
+		g_cnvRpgCode->ClearScreen(g_pBoard->bkgColor);
 		cnv.BltPart(g_cnvRpgCode, 0, 0, i, i, width - i, height - i, SRCCOPY);
 		renderRpgCodeScreen();
 		Sleep(MISC_DELAY);
 
-		g_cnvRpgCode->ClearScreen(g_pBoard->brdColor);
+		g_cnvRpgCode->ClearScreen(g_pBoard->bkgColor);
 		cnv.BltPart(g_cnvRpgCode, i, 0, 0, i, width - i, height - i, SRCCOPY);
 		renderRpgCodeScreen();
 		Sleep(MISC_DELAY);
 
-		g_cnvRpgCode->ClearScreen(g_pBoard->brdColor);
+		g_cnvRpgCode->ClearScreen(g_pBoard->bkgColor);
 		cnv.BltPart(g_cnvRpgCode, 0, i, i, 0, width - i, height - i, SRCCOPY);
 		renderRpgCodeScreen();
 		Sleep(MISC_DELAY);
 
-		g_cnvRpgCode->ClearScreen(g_pBoard->brdColor);
+		g_cnvRpgCode->ClearScreen(g_pBoard->bkgColor);
 		cnv.BltPart(g_cnvRpgCode, i, i, 0, 0, width - i, height - i, SRCCOPY);
 		renderRpgCodeScreen();
 		Sleep(MISC_DELAY);

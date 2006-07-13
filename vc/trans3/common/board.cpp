@@ -13,6 +13,7 @@
 #include "paths.h"
 #include "CFile.h"
 #include "mbox.h"
+#include "mainfile.h"
 #include "../movement/CItem/CItem.h"
 #include "../rpgcode/CProgram.h"
 #include "../misc/misc.h"
@@ -46,6 +47,7 @@ bool tagBoard::open(const STRING fileName)
 	file.seek(0);
 	if (cUnused)
 	{
+		// Version 2 board.
 		messageBox(_T("Please save ") + fileName + _T(" in the editor."));
 		return false;
 	}
@@ -55,6 +57,7 @@ bool tagBoard::open(const STRING fileName)
 
 	if (fileHeader != _T("RPGTLKIT BOARD"))
 	{
+		// Version 1 board.
 		messageBox(_T("Please save ") + fileName + _T(" in the editor."));
 		return false;
 	}
@@ -63,284 +66,276 @@ bool tagBoard::open(const STRING fileName)
 	file >> majorVer;
 	file >> minorVer;
 
-	if (minorVer < 2)
+	switch (minorVer)
 	{
+	case 0:
+	case 1:
 		messageBox(_T("Please save ") + fileName + _T(" in the editor."));
 		return false;
+	case 2:
+	case 3:
+		goto pvVersion;
 	}
 
-	int regYN;
-	STRING regCode;
-	file >> regYN;
-	file >> regCode;
-
-	file >> bSizeX;
-	file >> bSizeY;
-	file >> bSizeL;
-	setSize(bSizeX, bSizeY, bSizeL);
-
-	file >> playerX;
-	file >> playerY;
-	file >> playerLayer;
-	file >> brdSavingYN;
-    
-	short lutSize;
-	file >> lutSize;
-	tileIndex.clear();
-
-	// Temporarily to hold animated tile indices.
-	std::vector<int> tanLutIndices;
-
-	unsigned int i;
-	for (i = 0; i <= lutSize; i++)
+vVersion:
 	{
-		STRING entry;
-		file >> entry;
+		// 3.0.7 vector implementation.
 
+		short var;
+		file >> sizeX;
+		file >> sizeY;
+		file >> sizeL;
+		file >> var; coordType = COORD_TYPE(var);
+		setSize(sizeX, sizeY, sizeL); //tbd
 
-		tileIndex.push_back(entry);
-		if (!entry.empty())
+		// Build the tile look-up-table.
+		short lutSize;
+		file >> lutSize;
+		tileIndex.clear();
+
+		// Temporarily to hold animated tile indices.
+		std::vector<int> tanLutIndices;
+
+		for (int i = 0; i <= lutSize; ++i)
 		{
-			const STRING ext = getExtension(entry);
-			if (_stricmp(ext.c_str(), _T("TAN")) == 0)
+			STRING entry;
+			file >> entry;
+
+			tileIndex.push_back(entry);
+			if (!entry.empty())
 			{
-				// Indices that point to animated tiles.
-				tanLutIndices.push_back(i);
+				if (_stricmp(getExtension(entry).c_str(), _T("TAN")) == 0)
+				{
+					// Indices that point to animated tiles.
+					tanLutIndices.push_back(i);
+				}
 			}
 		}
-	}
 
-	unsigned int x, y, l;
-	for (l = 1; l <= bSizeL; l++)
-	{
-		for (y = 1; y <= bSizeY; y++)
+		// Tile index block.
+		int x, y, z;
+		for (z = 1; z <= sizeL; ++z)
 		{
-			for (x = 1; x <= bSizeX; x++)
+			for (y = 1; y <= sizeY; ++y)
 			{
-				short test;
-				file >> test;
-
-				if (test < 0)
+				for (x = 1; x <= sizeX; ++x)
 				{
-					// "Compression": stream of identical tiles 'test' long. 
-					test = -test;
-					short bb, rr, gg, bl;
-					char tt;
-					file >> bb;
-					file >> rr;
-					file >> gg;
-					file >> bl;
-					file >> tt;
+					short index = 0, count = 0;
+					file >> index;
 
-					// Determine if the layer contains tiles.
-					// [0] indicates if the whole board contains tiles.
-					if (bb) bLayerOccupied[l] = bLayerOccupied[0] = true;
-
-					for (unsigned int cnt = 1; cnt <= test; cnt++)
+					if (index < 0)
 					{
-						board[x][y][l] = bb;
-						ambientRed[x][y][l] = rr;
-						ambientGreen[x][y][l] = gg;
-						ambientBlue[x][y][l] = bl;
-						tiletype[l][y][x] = tt;
+						// Compression: stream of identical tiles 'test' long. 
+						count = -index;
+						short r, b, g;
+						file >> index;
+						file >> r;
+						file >> g;
+						file >> b;
 
+						// Determine if the layer contains tiles.
+						// [0] indicates if the whole board contains tiles.
+						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
+
+						for (short i = 1; i <= count; ++i)
+						{
+							board[x][y][z] = index;
+							ambientRed[x][y][z] = r;
+							ambientGreen[x][y][z] = g;
+							ambientBlue[x][y][z] = b;
+
+							std::vector<int>::const_iterator j = tanLutIndices.begin();
+							for (; j != tanLutIndices.end(); ++j)
+							{
+								if (board[x][y][z] == *j)
+								{
+									addAnimTile(tileIndex[board[x][y][z]], x, y, z);
+								}
+							}
+
+							if (++x > sizeX)
+							{
+								x = 1;
+								if (++y > sizeY)
+								{
+									y = 1;
+									if (++z > sizeL)
+									{
+										goto lutEndA;
+									}
+									// Onto the next layer.
+									if (index) bLayerOccupied[z] = true;
+								}
+							}
+						} // for(i)
+						--x;
+					}
+					else // (index > 0)
+					{
+						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
+
+						board[x][y][z] = index;
+						file >> ambientRed[x][y][z];
+						file >> ambientGreen[x][y][z];
+						file >> ambientBlue[x][y][z];
+					
 						std::vector<int>::const_iterator i = tanLutIndices.begin();
 						for (; i != tanLutIndices.end(); ++i)
 						{
-							if (board[x][y][l] == *i)
+							if (board[x][y][z] == *i)
 							{
-								addAnimTile(tileIndex[board[x][y][l]], x, y, l);
-							}
-						}
-
-						if (++x > bSizeX)
-						{
-							x = 1;
-							if (++y > bSizeY)
-							{
-								y = 1;
-
-								if (++l > bSizeL)
-								{
-									goto lutEnd;
-								}
-								// Onto the next layer.
-								if (bb) bLayerOccupied[l] = true;
+								addAnimTile(tileIndex[board[x][y][z]], x, y, z);
 							}
 						}
 					}
-					x--;
-				}
-				else
-				{
-					if (test) bLayerOccupied[l] = bLayerOccupied[0] = true;
+				} // for (x)
+			} // for (y)
+		} // for (z)
+lutEndA:
 
-					board[x][y][l] = test;
-					file >> ambientRed[x][y][l];
-					file >> ambientGreen[x][y][l];
-					file >> ambientBlue[x][y][l];
-					file >> tiletype[l][y][x];
-					std::vector<int>::const_iterator i = tanLutIndices.begin();
-					for (; i != tanLutIndices.end(); ++i)
-					{
-						if (board[x][y][l] == *i)
-						{
-							addAnimTile(tileIndex[board[x][y][l]], x, y, l);
-						}
-					}
-				}
-			}
-		}
-	}
-lutEnd:
-
-	file >> brdBack;
-	file >> brdFore;
-	file >> borderBack;
-	file >> brdColor;
-	file >> borderColor;
-	file >> ambientEffect;
-
-	dirLink.clear();
-	for (i = 1; i <= 4; i++)
-	{
-		STRING link;
-		file >> link;
-		dirLink.push_back(link);
-	}
-
-	file >> boardSkill;
-	file >> boardBackground;
-	file >> fightingYN;
-	file >> boardDayNight;
-	file >> boardNightBattleOverride;
-	file >> boardSkillNight;
-	file >> boardBackgroundNight;
-
-	brdConst.clear();
-	for (i = 0; i <= 10; i++)
-	{
-		short sConst;
-		file >> sConst;
-		brdConst.push_back(sConst);
-	}
-
-	file >> boardMusic;
-
-	boardTitle.clear();
-	for (i = 0; i <= 8; i++)
-	{
-		STRING title;
-		file >> title;
-		boardTitle.push_back(title);
-	}
-
-	short numPrg;
-	file >> numPrg;
-
-	freePrograms();
-
-	// Temporary vector to hold locations until isometric byte is read.
-	std::vector<OBJ_POSITION> prgPos;
-
-	for (i = 0; i <= numPrg; i++)
-	{
-		LPBRD_PROGRAM prg = new BRD_PROGRAM();
-		OBJ_POSITION pos = {0, 0, 0};
-
-		file >> prg->fileName;
-		file >> pos.x;
-		file >> pos.y;
-		file >> prg->layer;
-		file >> prg->graphic;
-		file >> prg->activate;
-		file >> prg->initialVar; replace(replace(prg->initialVar, _T("!"), _T("")), _T("$"), _T(""));
-		file >> prg->finalVar; replace(replace(prg->finalVar, _T("!"), _T("")), _T("$"), _T(""));
-		file >> prg->initialValue;
-		file >> prg->finalValue;
-		file >> prg->activationType;
-
-		// Old programs: default to PRG_STOPS_MOVEMENT.
-		prg->activationType |= PRG_STOPS_MOVEMENT;
-
-		if (!prg->fileName.empty())
+		// Vectors.
+		freeVectors();
+		short ub, pts;
+		file >> ub;
+		if (ub >= 0)
 		{
-			// Add the program to the list.
-			programs.push_back(prg);
+			// Negative number indicates no objects.
+			vectors.reserve(ub);
 
-			// Can't form vector here because we don't know
-			// if the board is isometric yet.
-			prgPos.push_back(pos);
-		}
-		else
-		{
-			delete prg;
-		}
-	}
-
-	file >> enterPrg;
-	file >> bgPrg;
-
-	short numSpr;
-	file >> numSpr;
-
-	freeItems();
-
-	// Temporary vector to hold locations until isometric byte is read.
-	std::vector<OBJ_POSITION> itemPos;
-
-	for (i = 0; i <= numSpr; ++i)
-	{
-		BRD_SPRITE spr;
-		OBJ_POSITION pos = {0, 0, 0, 0};
-
-		file >> spr.fileName;
-
-		// Look after these.
-		file >> pos.x;
-		file >> pos.y;
-		file >> pos.layer;
-
-		file >> spr.activate;
-		file >> spr.initialVar; replace(replace(spr.initialVar, _T("!"), _T("")), _T("$"), _T(""));
-		file >> spr.finalVar; replace(replace(spr.finalVar, _T("!"), _T("")), _T("$"), _T(""));
-		file >> spr.initialValue;
-		file >> spr.finalValue;
-		file >> spr.activationType;
-		file >> spr.prgActivate;
-		file >> spr.prgMultitask;
-
-/*		CVector *v = new CVector();
-		DB_POINT pts[] = {{180, 50}, {360, 50}, {360, 200}, {200, 200}};
-		v->push_back(pts, 4);
-		v->close(false);
-		paths.push_back(v);
-		spr.boardPath.pVector = v;
-*/
-		if (!spr.fileName.empty() && (this == g_pBoard))
-		{
-			try
+			for (i = 0; i <= ub; ++i)
 			{
-				CItem *pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, pos.version);
-				items.push_back(pItem);
+				BRD_VECTOR vect;
+				short var;
+				vect.pV = new CVector();
+				
+				file >> pts;
+				for (int j = 0; j <= pts; ++j)
+				{
+					file >> x;
+					file >> y;
+					vect.pV->push_back(double(x), double(y));
+				}
+				file >> var; vect.attributes = int(var);
+				file >> var; vect.pV->close(var != 0);
+				file >> var; vect.layer = int(var);
+				file >> var; vect.type = TILE_TYPE(var);
 
-				// Hold onto location until isometric byte is read.
-				itemPos.push_back(pos);
+				vectors.push_back(vect);
 			}
-			catch (CInvalidItem) { }
-
 		}
-	}
 
-	if (this == g_pBoard) 
-	{
-		freeThreads();
-	}
-	if (minorVer >= 3)
-	{
-		int tCount;
-		file >> tCount;
-		for (i = 0; i <= tCount; i++)
+		// Programs.
+		freePrograms();
+		file >> ub;
+		if (ub >= 0)
+		{
+			programs.reserve(ub);
+
+			for (i = 0; i <= ub; ++i)
+			{
+				LPBRD_PROGRAM prg = new BRD_PROGRAM();
+
+				short var;
+				file >> prg->fileName;
+				file >> prg->initialVar;
+				file >> prg->initialValue;
+				file >> prg->finalVar;
+				file >> prg->finalValue;
+				file >> prg->activate;
+				file >> prg->activationType;
+				file >> var; prg->distanceRepeat = double(var);
+				file >> prg->layer;
+
+				file >> pts;
+				for (int j = 0; j <= pts; ++j)
+				{
+					file >> x;
+					file >> y;
+					prg->vBase.push_back(double(x), double(y));
+				}
+				file >> var; prg->vBase.close(var != 0);
+
+				programs.push_back(prg);
+			}
+		}
+
+		// Sprites.
+		freeItems();
+		file >> ub;
+		if (ub >= 0)
+		{
+			// tbd: players?
+			items.reserve(ub);
+
+			for (i = 0; i <= ub; ++i)
+			{
+				BRD_SPRITE spr;
+				short x, y, z;
+				file >> spr.fileName;
+				file >> spr.prgActivate;
+				file >> spr.prgMultitask;
+				file >> spr.initialVar;
+				file >> spr.initialValue;
+				file >> spr.finalVar;
+				file >> spr.finalValue;
+				file >> spr.activate;
+				file >> spr.activationType;
+				file >> x;
+				file >> y;
+				file >> z;
+
+				if (!spr.fileName.empty() && (this == g_pBoard))
+				{
+					short version = 0;
+					try
+					{
+						CItem *pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, version);
+						if (version <= PRE_VECTOR_ITEM)
+						{
+							// Create standard vectors for old items.
+							pItem->createVectors();
+						} 
+						// Set the position. Sprite location is always stored in pixels.
+						pItem->setPosition(x, y, z, COORD_TYPE(coordType | PX_ABSOLUTE));
+						items.push_back(pItem);
+					}
+					catch (CInvalidItem) { }
+				}
+			} // for (i)
+		}
+
+		// Images
+		freeImages();
+		file >> ub;
+		if (ub >= 0)
+		{
+			images.reserve(ub);
+
+			for (i = 0; i <= ub; ++i)
+			{
+				LPBRD_IMAGE img = new BRD_IMAGE();
+
+				short var;
+				file >> img->file;
+				file >> x; img->r.left = x;
+				file >> y; img->r.top = y;
+				file >> var; img->layer = int(var);
+				file >> var; img->type = BI_ENUM(var);
+				file >> i; img->transpColor = i;
+    
+				images.push_back(img);
+				// Create canvases later.
+			} // for (i)
+		}
+
+		// Threads.
+		if (this == g_pBoard) 
+		{
+			freeThreads();
+		}
+
+		file >> ub;
+		for (i = 0; i <= ub; ++i)
 		{
 			STRING thread;
 			file >> thread;
@@ -358,69 +353,434 @@ lutEnd:
 				}
 			}
 		}
-	}
 
-	if (minorVer > 2)
-	{
-		char coord;
-		file >> coord;
-		coordType = COORD_TYPE(coord);
-	}
+		STRING str;
 
-	freeVectors();
-	for (i = 1; i <= bSizeL; i++)
-	{
-		// Vectorize in all instances - we might be testing a linked board.
-		vectorize(i);
-	}
-
-	if (this == g_pBoard) 
-	{
-		// Required only for the active board.
-
-		// Create program bases.
-		std::vector<LPBRD_PROGRAM>::iterator p = programs.begin();
-		std::vector<OBJ_POSITION>::iterator pos = prgPos.begin();
-		for (; p != programs.end(); ++p, ++pos)
+		// Constants
+		file >> ub;
+		constants.clear();
+		for (i = 0; i <= ub; ++i)
 		{
-			createProgramBase(*p, pos);
+			file >> str;
+			constants.push_back(str);  // tbd strings!
 		}
 
-		// Setup the background image as an attached image.
-		if (!brdBack.empty())
+		// Layer titles.
+		layerTitles.clear();
+		for (i = 0; i <= sizeL; ++i)
 		{
-			bkgImage = new BRD_IMAGE();
-			bkgImage->type = BI_STRETCH;
-			bkgImage->file = brdBack;
-			// Layer 0 reserved for the background images. (?)
-			bkgImage->layer = 0;					
-			bkgImage->createCanvas(*this);
+			file >> str;
+			layerTitles.push_back(str);
 		}
 
-		// Images first, for use with vectors.
-		for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
+		// Directional links.
+		links.clear();
+		for (i = 0; i != 4; ++i)
 		{
-			(*i)->createCanvas(*this);
+			file >> str;
+			links.push_back(str);
 		}
-		createVectorCanvases();
 
-		// Set the positions of and create vectors for old items.
-		std::vector<CItem *>::iterator itm = items.begin();
-		pos = itemPos.begin();
-		for (; itm != items.end(); ++itm, ++pos)
+		bkgImage = new BRD_IMAGE();
+		file >> bkgImage->file;
+		file >> i; bkgImage->type = BI_ENUM(i);
+
+		file >> bkgColor;
+		file >> bkgMusic;
+		file >> enterPrg;
+		file >> battleBackground;
+		file >> battleSkill;
+		file >> var; bAllowBattles = bool(var);
+		file >> var; bDisableSaving = bool(var);
+		file >> ambientEffect;
+
+		if (this == g_pBoard) 
 		{
-			if (pos->version <= PRE_VECTOR_ITEM)
+			// Required only for the active board.
+
+			// Setup the background image as an attached image.
+			if (!bkgImage->file.empty())
 			{
-				// Create standard vectors for old items.
-				(*itm)->createVectors();
+				bkgImage->createCanvas(*this);
+			}
+			else
+			{
+				delete bkgImage;
+				bkgImage = 0;
 			}
 
-			// Can do this only after reading the isometric bit.
-			(*itm)->setPosition(pos->x, pos->y, pos->layer, coordType);
+			// Images first, for use with vectors.
+			for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
+			{
+				(*i)->createCanvas(*this);
+			}
+			createVectorCanvases();
+
+		} // if (this == g_pBoard) 
+
+		return true;
+	}
+pvVersion:
+	{
+		// Pre-vector version.
+
+		short var;
+		int iUnused;
+		STRING sUnused;
+
+		file >> var;			// Registered version?
+		file >> sUnused;		// Registration code.
+
+		file >> sizeX;
+		file >> sizeY;
+		file >> sizeL;
+		setSize(sizeX, sizeY, sizeL);
+
+		// Start position moved to main file.
+		short spX, spY, spL;
+		file >> spX;
+		file >> spY;
+		file >> spL;
+
+		extern MAIN_FILE g_mainFile;
+		if (!g_mainFile.startX) g_mainFile.startX = spX;
+		if (!g_mainFile.startY) g_mainFile.startY = spY;
+		if (!g_mainFile.startL) g_mainFile.startL = spL;
+
+		file >> var; bDisableSaving = bool(var);
+    
+		short lutSize;
+		file >> lutSize;
+		tileIndex.clear();
+
+		// Temporarily to hold animated tile indices.
+		std::vector<int> tanLutIndices;
+
+		for (int i = 0; i <= lutSize; ++i)
+		{
+			STRING entry;
+			file >> entry;
+
+			tileIndex.push_back(entry);
+			if (!entry.empty())
+			{
+				const STRING ext = getExtension(entry);
+				if (_stricmp(ext.c_str(), _T("TAN")) == 0)
+				{
+					// Indices that point to animated tiles.
+					tanLutIndices.push_back(i);
+				}
+			}
 		}
 
-	} // if (this == g_pBoard) 
+		int x, y, z;
+		for (z = 1; z <= sizeL; ++z)
+		{
+			for (y = 1; y <= sizeY; ++y)
+			{
+				for (x = 1; x <= sizeX; ++x)
+				{
+					short index, count;
+					file >> index;
 
+					if (index < 0)
+					{
+						// Compression: stream of identical tiles 'test' long. 
+						count = -index;
+						short r, b, g;
+						char type;
+						file >> index;
+						file >> r;
+						file >> g;
+						file >> b;
+						file >> type;
+
+						// Determine if the layer contains tiles.
+						// [0] indicates if the whole board contains tiles.
+						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
+
+						for (int i = 1; i <= count; ++i)
+						{
+							board[x][y][z] = index;
+							ambientRed[x][y][z] = r;
+							ambientGreen[x][y][z] = g;
+							ambientBlue[x][y][z] = b;
+							tiletype[z][y][x] = type;
+
+							std::vector<int>::const_iterator j = tanLutIndices.begin();
+							for (; j != tanLutIndices.end(); ++j)
+							{
+								if (board[x][y][z] == *j)
+								{
+									addAnimTile(tileIndex[board[x][y][z]], x, y, z);
+								}
+							}
+
+							if (++x > sizeX)
+							{
+								x = 1;
+								if (++y > sizeY)
+								{
+									y = 1;
+									if (++z > sizeL)
+									{
+										goto lutEndB;
+									}
+									// Onto the next layer.
+									if (index) bLayerOccupied[z] = true;
+								}
+							}
+						} // for(i)
+						--x;
+					}
+					else // (index > 0)
+					{
+						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
+
+						board[x][y][z] = index;
+						file >> ambientRed[x][y][z];
+						file >> ambientGreen[x][y][z];
+						file >> ambientBlue[x][y][z];
+						file >> tiletype[z][y][x];
+					
+						std::vector<int>::const_iterator i = tanLutIndices.begin();
+						for (; i != tanLutIndices.end(); ++i)
+						{
+							if (board[x][y][z] == *i)
+							{
+								addAnimTile(tileIndex[board[x][y][z]], x, y, z);
+							}
+						}
+					}
+				} // for (x)
+			} // for (y)
+		} // for (z)
+lutEndB:
+
+		bkgImage = new BRD_IMAGE();
+		file >> bkgImage->file;
+		file >> sUnused;				// Foreground image.
+		file >> sUnused;				// Border image.
+		file >> bkgColor;
+		file >> iUnused;				// Border colour.
+		file >> ambientEffect;
+
+		links.clear();
+		for (i = 0; i != 4; ++i)
+		{
+			STRING link;
+			file >> link;
+			links.push_back(link);
+		}
+
+		file >> battleSkill;
+		file >> battleBackground;
+		file >> var; bAllowBattles = bool(var);
+		file >> var;					// boardDayNight.
+		file >> var;					// boardNightBattleOverride.
+		file >> var;					// boardSkillNight.
+		file >> var;					// boardBackgroundNight.
+
+		constants.clear();
+		for (i = 0; i <= 10; ++i)
+		{
+			std::stringstream ss;
+			file >> var;
+			ss << var;
+			constants.push_back(ss.str());
+		}
+
+		file >> bkgMusic;
+
+		layerTitles.clear();
+		for (i = 0; i <= 8; ++i)
+		{
+			STRING title;
+			file >> title;
+			layerTitles.push_back(title);
+		}
+
+		short numPrg;
+		file >> numPrg;
+
+		freePrograms();
+
+		// Temporary vector to hold locations until isometric byte is read.
+		std::vector<OBJ_POSITION> prgPos;
+
+		for (i = 0; i <= numPrg; ++i)
+		{
+			LPBRD_PROGRAM prg = new BRD_PROGRAM();
+			OBJ_POSITION pos = {0, 0, 0};
+
+			file >> prg->fileName;
+			file >> pos.x;
+			file >> pos.y;
+			file >> prg->layer;
+			file >> prg->graphic;
+			file >> prg->activate;
+			file >> prg->initialVar; replace(replace(prg->initialVar, _T("!"), _T("")), _T("$"), _T(""));
+			file >> prg->finalVar; replace(replace(prg->finalVar, _T("!"), _T("")), _T("$"), _T(""));
+			file >> prg->initialValue;
+			file >> prg->finalValue;
+			file >> prg->activationType;
+
+			// Old programs: default to PRG_STOPS_MOVEMENT.
+			prg->activationType |= PRG_STOPS_MOVEMENT;
+
+			if (!prg->fileName.empty())
+			{
+				// Add the program to the list.
+				programs.push_back(prg);
+
+				// Can't form vector here because we don't know
+				// if the board is isometric yet.
+				prgPos.push_back(pos);
+			}
+			else
+			{
+				delete prg;
+			}
+		}
+
+		file >> enterPrg;
+		file >> sUnused;
+
+		short numSpr;
+		file >> numSpr;
+
+		freeItems();
+
+		// Temporary vector to hold locations until isometric byte is read.
+		std::vector<OBJ_POSITION> itemPos;
+
+		for (i = 0; i <= numSpr; ++i)
+		{
+			BRD_SPRITE spr;
+			OBJ_POSITION pos = {0, 0, 0, 0};
+
+			file >> spr.fileName;
+
+			// Look after these.
+			file >> pos.x;
+			file >> pos.y;
+			file >> pos.layer;
+
+			file >> spr.activate;
+			file >> spr.initialVar; replace(replace(spr.initialVar, _T("!"), _T("")), _T("$"), _T(""));
+			file >> spr.finalVar; replace(replace(spr.finalVar, _T("!"), _T("")), _T("$"), _T(""));
+			file >> spr.initialValue;
+			file >> spr.finalValue;
+			file >> spr.activationType;
+			file >> spr.prgActivate;
+			file >> spr.prgMultitask;
+
+			if (!spr.fileName.empty() && (this == g_pBoard))
+			{
+				try
+				{
+					CItem *pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, pos.version);
+					items.push_back(pItem);
+
+					// Hold onto location until isometric byte is read.
+					itemPos.push_back(pos);
+				}
+				catch (CInvalidItem) { }
+
+			}
+		}
+
+		if (this == g_pBoard) 
+		{
+			freeThreads();
+		}
+		if (minorVer >= 3)
+		{
+			int tCount;
+			file >> tCount;
+			for (i = 0; i <= tCount; ++i)
+			{
+				STRING thread;
+				file >> thread;
+				if (this == g_pBoard)
+				{
+					thread = g_projectPath + PRG_PATH + thread;
+					if (CFile::fileExists(thread))
+					{
+						CThread *p = CThread::create(thread);
+						char str[255]; itoa(i, str, 10);
+						LPSTACK_FRAME var = CProgram::getGlobal(STRING(_T("threads[")) + str + _T("]"));
+						var->udt = UDT_NUM;
+						var->num = double(int(p));
+						threads.push_back(p);
+					}
+				}
+			}
+		}
+
+		if (minorVer > 2)
+		{
+			char coord;
+			file >> coord;
+			coordType = COORD_TYPE(coord);
+		}
+
+		freeVectors();
+		for (i = 1; i <= sizeL; ++i)
+		{
+			// Vectorize in all instances - we might be testing a linked board.
+			vectorize(i);
+		}
+
+		if (this == g_pBoard) 
+		{
+			// Required only for the active board.
+
+			// Create program bases.
+			std::vector<LPBRD_PROGRAM>::iterator p = programs.begin();
+			std::vector<OBJ_POSITION>::iterator pos = prgPos.begin();
+			for (; p != programs.end(); ++p, ++pos)
+			{
+				createProgramBase(*p, pos);
+			}
+
+			// Setup the background image as an attached image.
+			if (!bkgImage->file.empty())
+			{
+				bkgImage->type = BI_STRETCH;
+				bkgImage->createCanvas(*this);
+			}
+			else
+			{
+				delete bkgImage;
+				bkgImage = NULL;
+			}
+
+			// Images first, for use with vectors.
+			for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
+			{
+				(*i)->createCanvas(*this);
+			}
+			createVectorCanvases();
+
+			// Set the positions of and create vectors for old items.
+			std::vector<CItem *>::iterator itm = items.begin();
+			pos = itemPos.begin();
+			for (; itm != items.end(); ++itm, ++pos)
+			{
+				if (pos->version <= PRE_VECTOR_ITEM)
+				{
+					// Create standard vectors for old items.
+					(*itm)->createVectors();
+				}
+
+				// Can do this only after reading the isometric bit.
+				(*itm)->setPosition(pos->x, pos->y, pos->layer, coordType);
+			}
+
+		} // if (this == g_pBoard) 
+
+	} // pvVersion
 	return true;
 }
 
@@ -449,8 +809,8 @@ void tagBoard::vectorize(const unsigned int layer)
 {
 	std::vector<LPCONV_VECTOR> vects = vectorizeLayer(
 		tiletype[layer],
-		bSizeX,
-		bSizeY,
+		sizeX,
+		sizeY,
 		coordType
 	);
 
@@ -610,6 +970,7 @@ void tagBoardImage::createCanvas(BOARD &board)
 		const DWORD width  = (type == BI_STRETCH) ? board.pxWidth() : FreeImage_GetWidth(bmp),
 					height = (type == BI_STRETCH) ? board.pxHeight() : FreeImage_GetHeight(bmp);
 
+		if (pCnv) delete pCnv;
 		pCnv = new CCanvas();
 		pCnv->CreateBlank(NULL, width, height, TRUE);
 		pCnv->ClearScreen(TRANSP_COLOR);
@@ -655,7 +1016,8 @@ void tagBoardImage::createCanvas(BOARD &board)
 			}
 		}
 
-		if (file == board.brdBack && type != BI_PARALLAX)
+#ifdef _DEBUG
+		if (this == board.bkgImage && type != BI_PARALLAX)
 		{
 			// Draw program and tile vectors onto the background image.
 			pCnv->Lock();
@@ -670,6 +1032,7 @@ void tagBoardImage::createCanvas(BOARD &board)
 			}
 			pCnv->Unlock();
 		}
+#endif
 	}
 }
 
@@ -716,8 +1079,8 @@ void tagBoard::render(
 	topY /= tileHeight();
 
 	// Effective matrix dimensions.
-	const int effectiveWidth = (coordType & ISO_ROTATED ? bSizeX + bSizeY : bSizeX); 
-	const int effectiveHeight = (coordType & ISO_ROTATED ? bSizeX + bSizeY : bSizeY);
+	const int effectiveWidth = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeX); 
+	const int effectiveHeight = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeY);
 	
 	// For each layer
 	for (unsigned int i = lLower; i <= lUpper; ++i)
@@ -753,7 +1116,7 @@ void tagBoard::render(
 							TM_NONE,
 							destX, destY,
 							coordType,
-							bSizeX,
+							sizeX,
 							parity
 						);
 					} // if (!strTile.empty())
@@ -873,16 +1236,16 @@ void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 
 int tagBoard::pxWidth() const
 {
-	if (coordType & ISO_STACKED) return bSizeX * 64 - 32;
-	if (coordType & ISO_ROTATED) return bSizeX * 64 - 32;
-	return bSizeX * 32;			// TILE_NORMAL.
+	if (coordType & ISO_STACKED) return sizeX * 64 - 32;
+	if (coordType & ISO_ROTATED) return sizeX * 64 - 32;
+	return sizeX * 32;			// TILE_NORMAL.
 }
 
 int tagBoard::pxHeight() const
 { 
-	if (coordType & ISO_STACKED) return bSizeY * 16 - 16;
-	if (coordType & ISO_ROTATED) return bSizeY * 32;
-	return bSizeY * 32;			// TILE_NORMAL.
+	if (coordType & ISO_STACKED) return sizeY * 16 - 16;
+	if (coordType & ISO_ROTATED) return sizeY * 32;
+	return sizeY * 32;			// TILE_NORMAL.
 }
 
 /*
@@ -1028,32 +1391,32 @@ void tagBoard::addAnimTile(const STRING fileName, const int x, const int y, cons
  */
 void tagBoard::setSize(const int width, const int height, const int depth)
 {
-	bSizeX = width;
-	bSizeY = height;
-	bSizeL = depth;
+	sizeX = width;
+	sizeY = height;
+	sizeL = depth;
 	// tbd Should probably reverse ([z][y][x]) these too.
 	{
 		VECTOR_SHORT row;
 		VECTOR_SHORT2D face;
 		unsigned int i;
-		for (i = 0; i <= bSizeL; i++)
+		for (i = 0; i <= sizeL; i++)
 		{
 			row.push_back(0);
 			bLayerOccupied.push_back(false);
 		}
-		for (i = 0; i <= bSizeY; i++) face.push_back(row);
+		for (i = 0; i <= sizeY; i++) face.push_back(row);
 		ambientBlue.clear();
-		for (i = 0; i <= bSizeX; i++) ambientBlue.push_back(face);
+		for (i = 0; i <= sizeX; i++) ambientBlue.push_back(face);
 		board = ambientRed = ambientGreen = ambientBlue;
 	}
 	{
 		VECTOR_CHAR row;
 		VECTOR_CHAR2D face;
 		unsigned int i;
-		for (i = 0; i <= bSizeX; i++) row.push_back(_T('\0'));
-		for (i = 0; i <= bSizeY; i++) face.push_back(row);
+		for (i = 0; i <= sizeX; i++) row.push_back(_T('\0'));
+		for (i = 0; i <= sizeY; i++) face.push_back(row);
 		tiletype.clear();
-		for (i = 0; i <= bSizeL; i++) tiletype.push_back(face);
+		for (i = 0; i <= sizeL; i++) tiletype.push_back(face);
 	}
 }
 
@@ -1064,7 +1427,7 @@ const BRD_VECTOR *tagBoard::getVectorFromTile(const int x, const int y, const in
 {
 	// Convert the point to pixels.
 	int px = x, py = y;
-	coords::tileToPixel(px, py, coordType, false, bSizeX);
+	coords::tileToPixel(px, py, coordType, false, sizeX);
 	DB_POINT pt = {px + 1.0, py + 1.0};
 
 	// Locate the vector.
@@ -1158,7 +1521,7 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
 
 			// Pixel bounds of tile stack.
 			int x = i->x, y = i->y;
-			coords::tileToPixel(x, y, coordType, false, bSizeX);
+			coords::tileToPixel(x, y, coordType, false, sizeX);
 			if (isIsometric())
 			{
 				// Render location.
@@ -1172,7 +1535,7 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
 				&scrollCache.cnv,
 				bounds.left - scrollCache.r.left,
 				bounds.top - scrollCache.r.top,
-				1, bSizeL,
+				1, sizeL,
 				i->x, i->y,
 				bounds,
 				0, 0, 0
@@ -1206,7 +1569,7 @@ void tagBoard::renderStack(
 	if (!IntersectRect(&dest, &bounds, &g_screen)) return;
 
 	// TBD: draw blank tile rather than rectangle - isometrics!
-//	cnv->DrawFilledRect(bounds.left, bounds.top, bounds.right - 1, bounds.bottom - 1, brdColor);
+//	cnv->DrawFilledRect(bounds.left, bounds.top, bounds.right - 1, bounds.bottom - 1, bkgColor);
 
 	for (unsigned int i = lLower; i <= lUpper; ++i)
 	{
@@ -1229,7 +1592,7 @@ void tagBoard::renderStack(
 					destX - bounds.left, 
 					destY - bounds.top,
 					coordType,
-					bSizeX,
+					sizeX,
 					!(y % 32)
 				);
 			}

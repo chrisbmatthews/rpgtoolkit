@@ -33,6 +33,7 @@ m_facing(this),
 m_attr(),
 m_bActive(show),
 m_pathFind(),
+m_pCanvas(NULL),
 m_pend(),
 m_pos(),
 m_thread(NULL),
@@ -624,7 +625,7 @@ void CSprite::setPosition(int x, int y, const int l, const COORD_TYPE coord)
 {
 	extern LPBOARD g_pBoard;
 	// Convert the co-ordinates an absolute pixel value.
-	coords::tileToPixel(x, y, coord, true, g_pBoard->bSizeX);
+	coords::tileToPixel(x, y, coord, true, g_pBoard->sizeX);
 	m_pend.xOrig = m_pend.xTarg = m_pos.x = x;
 	m_pend.yOrig = m_pend.yTarg = m_pos.y = y;
 	m_pend.lOrig = m_pend.lTarg = m_pos.l = l;
@@ -988,7 +989,7 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 	if (link == LK_NONE) return TT_NORMAL;
 
 	// This corresponds to the order links are stored in the board format.
-	const STRING &fileName = g_pBoard->dirLink[link];
+	const STRING &fileName = g_pBoard->links[link];
 
 	// No board exists.
 	if (fileName.empty()) return TT_SOLID; 
@@ -1055,7 +1056,7 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 	// Check the target board extends to the player's location.
 	if (m_pos.x > pBoard->pxWidth() || 
 		m_pos.y > pBoard->pxHeight() || 
-		m_pos.l > pBoard->bSizeL ||
+		m_pos.l > pBoard->sizeL ||
 		boardCollisions(pBoard) == TT_SOLID)		// Tiletype at target.
 	{
 		// Restore.
@@ -1113,7 +1114,7 @@ void CSprite::send(void)
 
 	extern CAudioSegment *g_bkgMusic;
 	// Open file regardless of existence.
-	g_bkgMusic->open(g_pBoard->boardMusic);
+	g_bkgMusic->open(g_pBoard->bkgMusic);
 	g_bkgMusic->play(true);
 
 	if (!g_pBoard->enterPrg.empty())
@@ -1196,8 +1197,10 @@ bool CSprite::programTest(void)
 
 			if ((*j)->m_brdData.activationType & SPR_KEYPRESS)
 			{
-				// General activation key - if not pressed, continue.
-				if (GetAsyncKeyState(g_mainFile.key) >= 0) continue;
+				// General activation key. GetAsyncKeyState is
+				// negative if key is currently down.
+				const short state = GetAsyncKeyState(MapVirtualKey(g_mainFile.key, 1));
+				if (state >= 0) continue;
 			}
 
 			// Check activation conditions.
@@ -1300,7 +1303,8 @@ bool CSprite::programTest(void)
 			if ((*k)->activationType & PRG_KEYPRESS)
 			{
 				// General activation key - if not pressed, continue.
-				if (GetAsyncKeyState(g_mainFile.key) >= 0) continue;
+				const short state = GetAsyncKeyState(MapVirtualKey(g_mainFile.key, 1));
+				if (state >= 0) continue;
 			}
 
 			// Check activation conditions.
@@ -1718,7 +1722,7 @@ bool CSprite::render(const CCanvas *cnv, const int layer, RECT &rect)
 
 	// If we're rendering the top layer, draw the translucent sprite.
 	if (layer != m_pos.l && 
-		(layer != g_pBoard->bSizeL || !g_translucentOpacity)
+		(layer != g_pBoard->sizeL || !g_translucentOpacity)
 		) return false;
 
 	// Render the frame here (but not when rendering translucently).

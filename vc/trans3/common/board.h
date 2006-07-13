@@ -89,7 +89,7 @@ typedef struct tagBoardVector
 
 } BRD_VECTOR, *LPBRD_VECTOR;
 
-// Vector indices for .dirLink member (only used in CSprite::send())
+// Vector indices for links member (only used in CSprite::send())
 typedef enum tagDirectionalLinks
 {
 	LK_NONE = -1,
@@ -127,7 +127,7 @@ typedef struct tagBoardImage
 	tagBoardImage():
 		type(BI_NORMAL), 
 		file(STRING()), 
-		layer(1), 
+		layer(0), 
 		pCnv(NULL),
 		transpColor(TRANSP_COLOR)
 		{ r.left = r.right = r.top = r.bottom = 0; };
@@ -164,43 +164,42 @@ typedef struct tagBoard
 	typedef std::vector<char> VECTOR_CHAR;
 	typedef std::vector<VECTOR_CHAR> VECTOR_CHAR2D;
 
-	short bSizeX;									// Board size x.
-	short bSizeY;									// Board size y.
-	short bSizeL;									// Board size layer.	
+	short sizeX;									// x-tile dimension.
+	short sizeY;									// y-tile dimension.
+	short sizeL;									// Layers.	
 	COORD_TYPE coordType;							// Co-ordinate system type.
 
 	std::vector<STRING> tileIndex;					// Lookup table for tiles.
-	VECTOR_SHORT3D board;							// Board tiles -- codes indicating where the tiles are on the board.
-
+	VECTOR_SHORT3D board;							// Board tiles indices.
 	VECTOR_SHORT3D ambientRed;						// Ambient tile red.
 	VECTOR_SHORT3D ambientGreen;					// Ambient tile green.
 	VECTOR_SHORT3D ambientBlue;						// Ambient tile blue.
-	short ambientEffect;							// BoardList(activeBoardIndex).ambient effect applied to the board 0- none, 1- fog, 2- darkness, 3- watery.
-	
-	STRING brdBack;									// Board background img (parallax layer).
-	int brdColor;									// Board color.
-	STRING boardMusic;								// Background music file.
-
-	std::vector<STRING> dirLink;					// Direction links 1- N, 2- S, 3- E, 4-W.
-
-	short boardSkill;								// Board skill level.
-	STRING boardBackground;							// Fighting background.
-	short fightingYN;								// Fighting on boardYN (1- yes, 0- no).
-
-	std::vector<short> brdConst;					// Board Constants (1-10).
-	std::vector<STRING> boardTitle;					// Board title (layer).
 
 	std::vector<CItem *> items;						// Items.
 	std::vector<LPBRD_IMAGE> images;				// Layered images.
-	std::vector<LPBRD_PROGRAM> programs;
+	std::vector<LPBRD_PROGRAM> programs;			// Programs.
 	std::vector<CThread *> threads;					// Threads on board.
-	std::vector<BRD_VECTOR> vectors;				// Vectors.
+	std::vector<BRD_VECTOR> vectors;				// Collision vectors.
+
+	std::vector<STRING> constants;					// Constants.
+	std::vector<STRING> layerTitles;				// Board title (layer).
+	std::vector<STRING> links;						// Board edge links.
+													// 0: N, 1: S, 2: E, 3: W.
+
+	LPBRD_IMAGE bkgImage;							// Background image.
+	int bkgColor;									// Background color.
+	STRING bkgMusic;								// Background music file.
+
+	STRING enterPrg;								// Program to run on entrance.
+	STRING battleBackground;						// Fighting background.
+	short battleSkill;								// Random enemy skill level.
+	bool bAllowBattles;								// Random fighting allowed?
+	bool bDisableSaving;							// Is saving disabled on board?
+	short ambientEffect;							// Ambient effect applied to the board.
+													// 0: none, 1: fog, 2: darkness, 3: watery.
 
 	std::vector<CVector *> paths;					// Board-defined paths that can be
 													// assigned to sprites.
-
-	STRING enterPrg;								// Program to run on entrance.
-	short brdSavingYN;								// Can player save on board? 0-yes, 1-no.
 
 	// Pre-vector boards only.
 	std::vector<VECTOR_CHAR2D> tiletype;			// Note order: [z][y][x]
@@ -212,22 +211,6 @@ typedef struct tagBoard
 	std::vector<BOARD_TILEANIM> animatedTiles;		// Animated tiles associated with this board.
 
 	STRING strFilename;								// Filename of the board.
-
-	LPBRD_IMAGE bkgImage;							// Background image.
-
-	/* Obselete - to be removed */
-
-	STRING brdFore;									// Board foreground image (parallax).
-	STRING borderBack;								// Border background img. (TBD: obselete).
-	int borderColor;								// Border color. (TBD: obselete)
-	short boardDayNight;							// Board is affected by day/night? 0=no, 1=yes.
-	short boardNightBattleOverride;					// Use custom battle options at night? 0=no, 1=yes.
-	short boardSkillNight;							// Board skill level at night.
-	STRING boardBackgroundNight;					// Fighting background at night.
-	STRING bgPrg;									// Background program.
-	short playerX;									// Player x ccord.
-	short playerY;									// Player y coord.
-	short playerLayer;								// Player layer coord.
 
 	/* Member functions */
 

@@ -242,10 +242,12 @@ void setUpGame()
 		g_pBoard->open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
 
 		// Set player position before rendering in order to align board.
-		g_pSelectedPlayer->setPosition (g_pBoard->playerX ? g_pBoard->playerX : 1,
-										g_pBoard->playerY ? g_pBoard->playerY : 1,
-										g_pBoard->playerLayer ? g_pBoard->playerLayer : 1,
-										g_pBoard->coordType);
+		g_pSelectedPlayer->setPosition(
+			g_mainFile.startX ? g_mainFile.startX : 2,
+			g_mainFile.startY ? g_mainFile.startY : 2,
+			g_mainFile.startL ? g_mainFile.startL : 1,
+			g_mainFile.startX ? g_pBoard->coordType : COORD_TYPE(g_pBoard->coordType & ~PX_ABSOLUTE)
+		);
 
 		g_pSelectedPlayer->alignBoard(g_screen, true);
 		g_scrollCache.render(true);
@@ -253,9 +255,9 @@ void setUpGame()
 		// z-order the sprites on board loading.
 		g_sprites.zOrder();
 
-		if (!g_pBoard->boardMusic.empty())
+		if (!g_pBoard->bkgMusic.empty())
 		{
-			g_bkgMusic->open(g_pBoard->boardMusic);
+			g_bkgMusic->open(g_pBoard->bkgMusic);
 			g_bkgMusic->play(true);
 		}
 		if (!g_pBoard->enterPrg.empty())
@@ -546,8 +548,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
 	path = dev;
 
 	set_terminate(termFunc);
@@ -568,16 +570,16 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 
 	if (!g_mainFile.open(fileName)) return EXIT_SUCCESS;
 
-	try
+//	try
 	{
 		openSystems();
 		const int toRet = mainEventLoop();
 		closeSystems();
 		return toRet;
 	}
-	catch (...)
+//	catch (...)
 	{
-		terminate();
+//		terminate();
 	}
 
 	return EXIT_SUCCESS;

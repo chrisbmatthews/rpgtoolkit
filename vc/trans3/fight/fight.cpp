@@ -636,7 +636,7 @@ void fightTest(const int moveSize)
 	// That no ! is applied to fightGameYn is not an error.
 	// For reasons unknown, this boolean is actually false when
 	// it's true and vice versa.
-	if (g_mainFile.fightGameYn || !g_pBoard->fightingYN) return;
+	if (g_mainFile.fightGameYn || !g_pBoard->bAllowBattles) return;
 
 	// The goal here is to test for a fight only after walking
 	// a whole tile. The introduction of 'true' pixel movement,
@@ -664,7 +664,7 @@ void fightTest(const int moveSize)
 		}
 		else
 		{
-			skillFight(g_pBoard->boardSkill, g_pBoard->boardBackground);
+			skillFight(g_pBoard->battleSkill, g_pBoard->battleBackground);
 		}
 	}
 }
