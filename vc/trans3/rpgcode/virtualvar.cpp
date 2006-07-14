@@ -175,7 +175,7 @@ public:
 		return g_pBoard->constants[int(tag)];
 	}
 	double getNum() const { return atof(getLit().c_str()); }
-	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
+	UNIT_DATA_TYPE getType() const { return UDT_LIT; }
 };
 
 // Reserved variable: string boardBackground
