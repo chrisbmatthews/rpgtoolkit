@@ -16,6 +16,7 @@
 #include "../../common/board.h"
 #include "../../common/paths.h"
 #include "../../common/CAllocationHeap.h"
+#include "../../common/CFile.h"
 #include "../../fight/fight.h"
 #include "../../audio/CAudioSegment.h"
 #include "../../rpgcode/CProgram.h"
@@ -1230,7 +1231,16 @@ bool CSprite::programTest(void)
 		const STRING finalValue = itm->m_brdData.finalValue;
 		const STRING finalVar = itm->m_brdData.finalVar;
 
-		CProgram(g_projectPath + PRG_PATH + itm->m_brdData.prgActivate).run();
+		if (CFile::fileExists(g_projectPath + PRG_PATH + itm->m_brdData.prgActivate))
+		{
+			CProgram(g_projectPath + PRG_PATH + itm->m_brdData.prgActivate).run();
+		}
+		else
+		{
+			CProgram p;
+			p.loadFromString(itm->m_brdData.prgActivate);
+			p.run();
+		}
 
 		// Set the requested variable after the program is complete.
 		if (activate == SPR_CONDITIONAL)
@@ -1344,7 +1354,16 @@ bool CSprite::programTest(void)
 		const STRING finalValue = prg->finalValue;
 		const STRING finalVar = prg->finalVar;
 
-		CProgram(g_projectPath + PRG_PATH + prg->fileName, prg).run();
+		if (CFile::fileExists(g_projectPath + PRG_PATH + prg->fileName))
+		{
+			CProgram(g_projectPath + PRG_PATH + prg->fileName, prg).run();
+		}
+		else
+		{
+			CProgram p;
+			p.loadFromString(prg->fileName);
+			p.run();
+		}
 
 		// Set the requested variable after the program is complete.
 		if (activate == PRG_CONDITIONAL)
