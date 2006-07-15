@@ -5,8 +5,20 @@ Begin VB.UserControl ctlBrdProgram
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3105
+   DefaultCancel   =   -1  'True
    ScaleHeight     =   6345
    ScaleWidth      =   3105
+   Begin VB.CommandButton cmdDefault 
+      Caption         =   "Ok"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   2640
+      TabIndex        =   30
+      ToolTipText     =   "Confirmation button"
+      Top             =   480
+      Visible         =   0   'False
+      Width           =   375
+   End
    Begin VB.CommandButton cmdDuplicate 
       Caption         =   "Duplicate"
       Height          =   375
@@ -407,7 +419,12 @@ Private Sub cmbPrg_Click(): On Error Resume Next
     If cmbPrg.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbPrg.ListIndex, BS_PROGRAM)
 End Sub
 Private Sub cmdBrowse_Click(): On Error Resume Next
-    MsgBox "tbd"
+    Dim file As String, fileTypes As String
+    fileTypes = "RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(tkMainForm.hwnd, projectPath & prgPath, "Board program", ".prg", fileTypes, file) Then
+        txtFilename.Text = file
+        Call cmdDefault_Click
+    End If
 End Sub
 Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.setUndo
@@ -416,6 +433,11 @@ Private Sub cmdDelete_Click(): On Error Resume Next
 End Sub
 Private Sub cmdDuplicate_Click(): On Error Resume Next
     MsgBox "tbd"
+End Sub
+Private Sub cmdDefault_Click(): On Error Resume Next
+    'Default button on form: hitting the Enter key calls this function.
+    Call apply
+    Call activeBoard.drawAll
 End Sub
 Private Sub lvPoints_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call modBoard.vectorLvColumn(lvPoints, x)

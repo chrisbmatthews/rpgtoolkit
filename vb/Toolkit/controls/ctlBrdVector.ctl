@@ -5,8 +5,19 @@ Begin VB.UserControl ctlBrdVector
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3120
+   DefaultCancel   =   -1  'True
    ScaleHeight     =   4965
    ScaleWidth      =   3120
+   Begin VB.CommandButton cmdDefault 
+      Caption         =   "Ok"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   2640
+      TabIndex        =   17
+      Top             =   120
+      Visible         =   0   'False
+      Width           =   375
+   End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
       Height          =   4215
@@ -292,6 +303,13 @@ End Sub
 Private Sub chkClosed_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply
 End Sub
+
+Private Sub cmdDefault_Click(): On Error Resume Next
+    'Default button on form: hitting the Enter key calls this function.
+    Call apply
+    Call activeBoard.drawAll
+End Sub
+
 Private Sub optType_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply
 End Sub

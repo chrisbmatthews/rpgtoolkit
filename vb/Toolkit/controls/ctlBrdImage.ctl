@@ -4,8 +4,19 @@ Begin VB.UserControl ctlBrdImage
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3135
+   DefaultCancel   =   -1  'True
    ScaleHeight     =   4740
    ScaleWidth      =   3135
+   Begin VB.CommandButton cmdDefault 
+      Caption         =   "Ok"
+      Default         =   -1  'True
+      Height          =   375
+      Left            =   2640
+      TabIndex        =   21
+      Top             =   480
+      Visible         =   0   'False
+      Width           =   375
+   End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
       Height          =   3615
@@ -255,9 +266,9 @@ End Property
 Public Property Get getChkTransp() As CheckBox: On Error Resume Next
     Set getChkTransp = chkTransp
 End Property
-Public Property Let transpcolor(ByVal color As Long): On Error Resume Next
-    lblTrans(1).Caption = "RGB (" & red(color) & ", " & green(color) & ", " & blue(color) & ")"
-    picTrans.backColor = color
+Public Property Let transpcolor(ByVal Color As Long): On Error Resume Next
+    lblTrans(1).Caption = "RGB (" & red(Color) & ", " & green(Color) & ", " & blue(Color) & ")"
+    picTrans.backColor = Color
 End Property
 Public Property Get transpcolor() As Long: On Error Resume Next
     transpcolor = picTrans.backColor
@@ -270,7 +281,15 @@ Private Sub cmbImage_Click(): On Error Resume Next
     If cmbImage.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbImage.ListIndex, BS_IMAGE)
 End Sub
 Private Sub cmdBrowse_Click(): On Error Resume Next
-    MsgBox "tbd"
+    Dim file As String
+    If browseFileDialog(tkMainForm.hwnd, projectPath & bmpPath, "Board image", ".jpg", strFileDialogFilterGfx, file) Then
+        txtFilename.Text = file
+    End If
+End Sub
+Private Sub cmdDefault_Click(): On Error Resume Next
+    'Default button on form: hitting the Enter key calls this function.
+    Call apply
+    Call activeBoard.drawAll
 End Sub
 Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.setUndo
