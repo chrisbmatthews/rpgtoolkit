@@ -19,6 +19,7 @@
 #include "../../tkCommon/tkGfx/CTile.h"
 #include "../../tkCommon/movement/board conversion.h"
 #include <map>
+#include "../../trans3/common/paths.h"
 
 std::vector<CBoard *> g_boards;
 //--------------------------------------------------------------------------
@@ -366,7 +367,7 @@ VOID CBoard::draw(
 
 	for (z = 1; z <= m_pBoard->m_bSizeL; ++z)
 	{
-		if (z < length)
+		if (z <= length)
 		{
 			VARIANT_BOOL vis = VARIANT_TRUE;
 			SafeArrayGetElement(pEditor->bLayerVisible, &z, LPVOID(&vis));
@@ -514,7 +515,7 @@ VOID CBoard::renderTile(
 		// Set the tile onto it
 		CONST HDC hdc = p->cnv->OpenDC();
 		CTile::drawByBoardCoordHdc(
-			m_projectPath + "tiles\\" + strTile,
+			m_projectPath + TILE_PATH + strTile,
 			x, y,
 			r, g, b,
 			hdc,
@@ -583,7 +584,7 @@ VOID CBoard::renderLayer(
 
 				// Set the tile onto it
 				CTile::drawByBoardCoordHdc(
-					m_projectPath + "tiles\\" + strTile,
+					m_projectPath + TILE_PATH + strTile,
 					x, y,
 					r, g, b,
 					hdc,
@@ -708,7 +709,7 @@ CCanvas *tagVBBoardImage::render(
 		return pCnv;
 	}
 
-	CONST STRING strFile = projectPath + filename;
+	CONST STRING strFile = projectPath + BMP_PATH + filename;
 	FIBITMAP *bmp = FreeImage_Load(
 		FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), 
 		getAsciiString(strFile).c_str()
@@ -850,7 +851,7 @@ INLINE std::string CBoard::tile(
 		if (strExt.compare("TAN") == 0)
 		{
 			// Use the first frame
-			return CTileAnim(m_projectPath + "tiles\\" + toRetStr).frame(1);
+			return CTileAnim(m_projectPath + TILE_PATH + toRetStr).frame(1);
 		}
 
 		// Return the result
