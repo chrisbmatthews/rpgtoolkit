@@ -202,70 +202,6 @@ exitFor:
 End Function
 
 '=========================================================================
-' Resize the board
-'=========================================================================
-Public Sub boardResize(ByVal newX As Integer, ByVal newY As Integer, ByVal newLayer As Integer, ByRef theBoard As TKBoard)
-    'resize the board-- retain the current tiles
-    On Error Resume Next
-    Dim sizex As Long, sizey As Long, sizeLayer As Long
-    
-    sizex = newX
-    sizey = newY
-    sizeLayer = newLayer
-    
-    'create backup...
-    ReDim brd(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Integer
-    ReDim r(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Integer
-    ReDim g(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Integer
-    ReDim b(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Integer
-    ReDim t(theBoard.sizex, theBoard.sizey, theBoard.sizeL) As Byte
-    
-    Dim x As Long, y As Long, l As Long
-    
-    For x = 0 To theBoard.sizex
-        For y = 0 To theBoard.sizey
-            For l = 0 To theBoard.sizeL
-                brd(x, y, l) = theBoard.board(x, y, l)
-                r(x, y, l) = theBoard.ambientRed(x, y, l)
-                g(x, y, l) = theBoard.ambientGreen(x, y, l)
-                b(x, y, l) = theBoard.ambientBlue(x, y, l)
-                t(x, y, l) = theBoard.tiletype(x, y, l)
-            Next l
-        Next y
-    Next x
-    
-    'resize...
-    ReDim theBoard.board(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientRed(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientGreen(sizex, sizey, sizeLayer)
-    ReDim theBoard.ambientBlue(sizex, sizey, sizeLayer)
-    ReDim theBoard.tiletype(sizex, sizey, sizeLayer)
-    
-    Dim xx As Long, yy As Long, ll As Long
-    
-    If sizex < theBoard.sizex Then xx = sizex Else xx = theBoard.sizex
-    If sizey < theBoard.sizey Then yy = sizey Else yy = theBoard.sizey
-    If sizeLayer < theBoard.sizeL Then ll = sizeLayer Else ll = theBoard.sizeL
-    
-    'now fill it in with the old info...
-    For x = 0 To xx
-        For y = 0 To yy
-            For l = 0 To ll
-                theBoard.board(x, y, l) = brd(x, y, l)
-                theBoard.ambientRed(x, y, l) = r(x, y, l)
-                theBoard.ambientGreen(x, y, l) = g(x, y, l)
-                theBoard.ambientBlue(x, y, l) = b(x, y, l)
-                theBoard.tiletype(x, y, l) = t(x, y, l)
-            Next l
-        Next y
-    Next x
-    
-    theBoard.sizex = sizex
-    theBoard.sizey = sizey
-    theBoard.sizeL = sizeLayer
-End Sub
-
-'=========================================================================
 ' Find the Lut index of a tile, inserting it if not found
 '=========================================================================
 Public Function boardTileInLut(ByVal filename As String, ByRef board As TKBoard) As Long: On Error Resume Next
@@ -323,18 +259,35 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
             Call BinWriteInt(num, .sizeL)
             Call BinWriteInt(num, .coordType)
             
+            'Tile look-up-table (lut)
             'Remove unused tiles from the lut by recording used indices.
             Dim bLutIndexUsed() As Boolean
             ReDim bLutIndexUsed(UBound(.tileIndex)) As Boolean
+            
+            'Do this before the board tile loop since trans3 needs the lut indices
+            'to load animated tiles.
+            For k = 1 To .sizeL
+                For j = 1 To .sizey
+                    For i = 1 To .sizex
+                        'Denote this lut index as in use.
+                        bLutIndexUsed(.board(i, j, k)) = True
+                    Next i
+                Next j
+            Next k
+                        
+            For i = UBound(bLutIndexUsed) To 1 Step -1
+                If bLutIndexUsed(i) Then Exit For
+            Next i
+            
+            Call BinWriteInt(num, i)
+            For j = 0 To i
+                Call BinWriteString(num, IIf(bLutIndexUsed(j), .tileIndex(j), ""))
+            Next j
             
             'Board tiles
             For k = 1 To .sizeL
                 For j = 1 To .sizey
                     For i = 1 To .sizex
-                    
-                        'Denote this lut index as in use.
-                        bLutIndexUsed(.board(i, j, k)) = True
-                    
                         '"Compress" identical tiles:
                         x = i: y = j: z = k
                         
@@ -365,16 +318,6 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
                     Next i
                 Next j
             Next k
-            
-            'Tile look-up-table (lut)
-            'Write after tile block to allow removal of unused tiles from the lut.
-            For i = UBound(bLutIndexUsed) To 1 Step -1
-                If bLutIndexUsed(i) Then Exit For
-            Next i
-            Call BinWriteInt(num, i)
-            For j = 0 To i
-                Call BinWriteString(num, IIf(bLutIndexUsed(j), .tileIndex(j), ""))
-            Next j
             
             'Vectors
             If .vectors(0) Is Nothing Then
@@ -415,7 +358,6 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
                     Call BinWriteInt(num, .prgs(i).distanceRepeat)
                     Call BinWriteInt(num, .prgs(i).layer)
                     
-                    Call BinWriteInt(num, CInt(.prgs(i).vBase.bClosed))
                     Call BinWriteInt(num, .prgs(i).vBase.getPoints)
                     
                     For j = 0 To .prgs(i).vBase.getPoints
@@ -423,6 +365,8 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
                         Call BinWriteLong(num, x)                   'Stored by pixel (Longs)
                         Call BinWriteLong(num, y)
                     Next j
+                    
+                    Call BinWriteInt(num, CInt(.prgs(i).vBase.bClosed))
                     
                 Next i
             End If
@@ -443,9 +387,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
                     Call BinWriteString(num, .sprites(i).finalValue)
                     Call BinWriteInt(num, .sprites(i).activate)
                     Call BinWriteInt(num, .sprites(i).activationType)
-                    Call BinWriteInt(num, .sprites(i).layer)
                     Call BinWriteInt(num, .sprites(i).x)
                     Call BinWriteInt(num, .sprites(i).y)
+                    Call BinWriteInt(num, .sprites(i).layer)
     
                 Next i
             End If
@@ -498,7 +442,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
             Call BinWriteString(num, .battleBackground)
             Call BinWriteInt(num, .battleSkill)
             Call BinWriteInt(num, .bAllowBattles)
-            Call BinWriteInt(num, .bAllowSaving)
+            Call BinWriteInt(num, .bDisableSaving)
             Call BinWriteInt(num, .ambientEffect)
         
         Close num
@@ -515,7 +459,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorDat
     'On Error Resume Next
     
     Call boardInitialise(board)
-    Call boardSetSize(20, 15, 4, ed, board)
+    Call boardSetSize(20, 15, 4, ed, board, False)
 
     With board
 
@@ -569,8 +513,17 @@ vVersion:
             .sizey = BinReadInt(num)
             .sizeL = BinReadInt(num)
             .coordType = BinReadInt(num)
-            Call boardSetSize(.sizex, .sizey, .sizeL, ed, board)
-    
+            Call boardSetSize(.sizex, .sizey, .sizeL, ed, board, False)
+            
+            'Build the tile look-up-table (Lut).
+            Dim lutSize As Long
+            lutSize = BinReadInt(num)
+            ReDim .tileIndex(lutSize)
+            
+            For i = 0 To lutSize
+                .tileIndex(i) = BinReadString(num)
+            Next i
+            
             'Read off the Lut indices for each tile.
             Dim x As Long, y As Long, z As Long
             For z = 1 To .sizeL
@@ -642,14 +595,7 @@ vVersion:
                 Next y
             Next z
 exitForA:
-            'Build the tile look-up-table (Lut) after tile block.
-            Dim lutSize As Long
-            lutSize = BinReadInt(num)
-            ReDim .tileIndex(lutSize)
-            
-            For i = 0 To lutSize
-                .tileIndex(i) = BinReadString(num)
-            Next i
+
 
             'Vectors
             Dim ub As Integer, pts As Integer
@@ -693,7 +639,6 @@ exitForA:
                     .prgs(i).layer = BinReadInt(num)
                     
                     Set .prgs(i).vBase = New CVector
-                    .prgs(i).vBase.bClosed = CBool(BinReadInt(num))
                     
                     pts = BinReadInt(num)
                     For j = 0 To pts
@@ -701,6 +646,8 @@ exitForA:
                         y = BinReadLong(num)
                         Call .prgs(i).vBase.addPoint(x, y)
                     Next j
+                    
+                    .prgs(i).vBase.bClosed = CBool(BinReadInt(num))
                     
                 Next i
             End If
@@ -722,9 +669,10 @@ exitForA:
                     .sprites(i).finalValue = BinReadString(num)
                     .sprites(i).activate = BinReadInt(num)
                     .sprites(i).activationType = BinReadInt(num)
-                    .sprites(i).layer = BinReadInt(num)
                     .sprites(i).x = BinReadInt(num)
                     .sprites(i).y = BinReadInt(num)
+                    .sprites(i).layer = BinReadInt(num)
+                
                 Next i
                 
                 'Update only after loading all sprites.
@@ -781,7 +729,7 @@ exitForA:
             .battleBackground = BinReadString(num)
             .battleSkill = BinReadInt(num)
             .bAllowBattles = CBool(BinReadInt(num))
-            .bAllowSaving = CBool(BinReadInt(num))
+            .bDisableSaving = CBool(BinReadInt(num))
             .ambientEffect = BinReadInt(num)
             
         Close num
@@ -795,15 +743,16 @@ pvVersion:
             .sizex = BinReadInt(num)
             .sizey = BinReadInt(num)
             .sizeL = BinReadInt(num)
-            Call boardSetSize(.sizex, .sizey, .sizeL, ed, board)
+            Call boardSetSize(.sizex, .sizey, .sizeL, ed, board, False)
+            ReDim .tiletype(.sizex, .sizey, .sizeL) 'Not done in boardSetSize
             
             'tbd: Player start location data has been moved to the main file.
             x = BinReadInt(num)
             y = BinReadInt(num)
             z = BinReadInt(num)
             
-            .bAllowSaving = (BinReadInt(num) = 0)         'Can player save on board? 0-yes, 1-no
-    
+            .bDisableSaving = CBool(BinReadInt(num))
+            
             'Build the tile look-up-table (Lut)
             lutSize = BinReadInt(num)
             ReDim .tileIndex(lutSize)
@@ -977,7 +926,7 @@ exitForB:
                     ReDim Preserve .sprites(ubSprs)
                     ReDim Preserve .spriteImages(ubSprs)
                     Set .sprites(ubSprs) = spr
-                    Call activeBoard.spriteUpdateImageData(spr, itmPath & spr.filename, True)
+                    Call activeBoard.spriteUpdateImageData(spr, spr.filename, True)
                     ubSprs = ubSprs + 1
                 End If
             Next i
@@ -1038,9 +987,9 @@ End Function
 '=========================================================================
 ' Get a tile
 '=========================================================================
-Public Function boardGetTile(ByVal x As Integer, ByVal y As Integer, ByVal layer As Integer, ByRef theBoard As TKBoard) As String
+Public Function boardGetTile(ByVal x As Long, ByVal y As Long, ByVal layer As Long, ByRef board As TKBoard) As String
     On Error Resume Next
-    boardGetTile = theBoard.tileIndex(theBoard.board(x, y, layer))
+    boardGetTile = board.tileIndex(board.board(x, y, layer))
 End Function
 
 '=========================================================================
@@ -1078,28 +1027,77 @@ End Sub
 '=========================================================================
 ' Size a board losing its current contents
 '=========================================================================
-Public Sub boardSetSize(ByVal x As Long, ByVal y As Long, ByVal z As Long, ByRef ed As TKBoardEditorData, ByRef board As TKBoard)
-
-    On Error Resume Next
+Public Sub boardSetSize( _
+    ByVal x As Long, _
+    ByVal y As Long, _
+    ByVal z As Long, _
+    ByRef ed As TKBoardEditorData, _
+    ByRef board As TKBoard, _
+    ByVal bPreserveContents As Boolean): On Error Resume Next
     
-    board.sizex = x
-    board.sizey = y
-    board.sizeL = z
+    Dim i As Long, j As Long, k As Long
+    Dim Data() As Integer, r() As Integer, g() As Integer, b() As Integer
     
-    'Data matrix must be reshaped for ISO_ROTATED
-    x = IIf(board.coordType And ISO_ROTATED, board.sizex + board.sizey, board.sizex)
-    y = IIf(board.coordType And ISO_ROTATED, board.sizex + board.sizey, board.sizey)
-    ed.effectiveBoardX = x
-    ed.effectiveBoardY = y
+    If x < 1 Then x = 1
+    If y < 1 Then y = 1
+    If z < 1 Then z = 1
     
-    ReDim board.board(x, y, z)
-    ReDim board.ambientRed(x, y, z)
-    ReDim board.ambientGreen(x, y, z)
-    ReDim board.ambientBlue(x, y, z)
-    ReDim board.tiletype(x, y, z)
-    ReDim ed.bLayerOccupied(z)
-    ReDim board.layerTitles(z)
-
+    With board
+        .sizex = x
+        .sizey = y
+        .sizeL = z
+        
+        'Data matrix must be reshaped for ISO_ROTATED
+        x = IIf(.coordType And ISO_ROTATED, x + y, x)
+        y = IIf(.coordType And ISO_ROTATED, x + y, y)
+        ed.effectiveBoardX = x
+        ed.effectiveBoardY = y
+        
+        If bPreserveContents Then
+            'Assignment redims left-hand objects
+            Data = .board
+            r = .ambientRed
+            g = .ambientGreen
+            b = .ambientBlue
+        End If
+            
+        ReDim .board(x, y, z)
+        ReDim .ambientRed(x, y, z)
+        ReDim .ambientGreen(x, y, z)
+        ReDim .ambientBlue(x, y, z)
+        
+        If bPreserveContents Then
+                
+            If x > UBound(Data, 1) Then x = UBound(Data, 1)
+            If y > UBound(Data, 2) Then y = UBound(Data, 2)
+            If z > UBound(Data, 3) Then z = UBound(Data, 3)
+            
+            'Cannot straight assign since arrays would revert to previous dimensions.
+            For k = 0 To z
+                For j = 0 To y
+                    For i = 0 To x
+                        .board(i, j, k) = Data(i, j, k)
+                        .ambientRed(i, j, k) = r(i, j, k)
+                        .ambientGreen(i, j, k) = g(i, j, k)
+                        .ambientBlue(i, j, k) = b(i, j, k)
+                    Next i
+                Next j
+            Next k
+            
+            ReDim Preserve .layerTitles(.sizeL)
+            ReDim Preserve ed.bLayerOccupied(.sizeL)
+            ReDim Preserve ed.bLayerVisible(.sizeL)
+        
+            'Make any new layers visible.
+            For k = z + 1 To .sizeL
+                ed.bLayerVisible(k) = True
+            Next k
+        Else
+            ReDim .layerTitles(z)
+            ReDim ed.bLayerOccupied(z)
+            ReDim ed.bLayerVisible(z)
+        End If
+    End With
 End Sub
 
 '=========================================================================
