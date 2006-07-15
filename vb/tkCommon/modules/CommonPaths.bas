@@ -71,12 +71,12 @@ End Function
 '=========================================================================
 ' Get extension of a file (gotta be fifteen functions like this!)
 '=========================================================================
-Public Function GetExt(ByVal inFile As String) As String
+Public Function GetExt(ByVal InFile As String) As String
     On Error Resume Next
     Dim theloc As Long, t As Long, part As String, theext As String
     'step 1: search backwars for '.'
-    For t = Len(inFile) To 1 Step -1
-        part$ = Mid$(inFile, t, 1)
+    For t = Len(InFile) To 1 Step -1
+        part$ = Mid$(InFile, t, 1)
         If part$ = "." Then
             theloc = t
             Exit For
@@ -96,8 +96,8 @@ Public Function GetExt(ByVal inFile As String) As String
     End If
     'step 3: extract extention after the '.'
     theext$ = vbNullString
-    For t = theloc + 1 To Len(inFile)
-        part$ = Mid$(inFile, t, 1)
+    For t = theloc + 1 To Len(InFile)
+        part$ = Mid$(InFile, t, 1)
         theext$ = theext & part$
     Next t
     GetExt = theext$
@@ -106,12 +106,12 @@ End Function
 '=========================================================================
 ' Get path of a file
 '=========================================================================
-Public Function GetPath(ByVal inFile As String) As String
+Public Function GetPath(ByVal InFile As String) As String
     On Error Resume Next
     Dim theloc As Long, part As String, thept As String, t As Long
     'step 1: search backwars for '\' or '/'
-    For t = Len(inFile) To 1 Step -1
-        part$ = Mid$(inFile, t, 1)
+    For t = Len(InFile) To 1 Step -1
+        part$ = Mid$(InFile, t, 1)
         If part$ = "\" Or part$ = "/" Then
             'found it.
             theloc = t
@@ -126,7 +126,7 @@ Public Function GetPath(ByVal inFile As String) As String
     'step 3: extract path before the '/' or '\'
     thept$ = vbNullString
     For t = 1 To theloc
-        part$ = Mid$(inFile, t, 1)
+        part$ = Mid$(InFile, t, 1)
         thept$ = thept & part$
     Next t
     GetPath = thept$
@@ -135,7 +135,7 @@ End Function
 '=========================================================================
 ' Get path of a file minus the \
 '=========================================================================
-Public Function GetPathNoSlash(ByVal inFile As String) As String
+Public Function GetPathNoSlash(ByVal InFile As String) As String
 
     On Error Resume Next
 
@@ -143,8 +143,8 @@ Public Function GetPathNoSlash(ByVal inFile As String) As String
     theloc = 0
     
     'step 1: search backwars for '\' or '/'
-    For t = Len(inFile) To 1 Step -1
-        part$ = Mid$(inFile, t, 1)
+    For t = Len(InFile) To 1 Step -1
+        part$ = Mid$(InFile, t, 1)
         If part$ = "\" Or part$ = "/" Then
             'found it.
             theloc = t
@@ -161,7 +161,7 @@ Public Function GetPathNoSlash(ByVal inFile As String) As String
     'step 3: extract path before the '/' or '\'
     thept$ = vbNullString
     For t = 1 To theloc - 1
-        part$ = Mid$(inFile, t, 1)
+        part$ = Mid$(InFile, t, 1)
         thept$ = thept & part$
     Next t
     
@@ -171,15 +171,15 @@ End Function
 '=========================================================================
 ' Remove path from a file
 '=========================================================================
-Public Function RemovePath(ByVal inFile As String) As String
+Public Function RemovePath(ByVal InFile As String) As String
 
     On Error Resume Next
 
     Dim theloc As Long, t As Long, part As String, thefn As String
     
     'step 1: search backwars for '\' or '/'
-    For t = Len(inFile) To 1 Step -1
-        part$ = Mid$(inFile, t, 1)
+    For t = Len(InFile) To 1 Step -1
+        part$ = Mid$(InFile, t, 1)
         If part$ = "\" Or part$ = "/" Then
             'found it.
             theloc = t
@@ -189,14 +189,14 @@ Public Function RemovePath(ByVal inFile As String) As String
     
     'step 2: check if filename wasn't found...
     If theloc = 0 Then
-        RemovePath = inFile
+        RemovePath = InFile
         Exit Function
     End If
     
     'step 3: extract filename after the '/' or '\'
     thefn$ = vbNullString
-    For t = theloc + 1 To Len(inFile)
-        part$ = Mid$(inFile, t, 1)
+    For t = theloc + 1 To Len(InFile)
+        part$ = Mid$(InFile, t, 1)
         thefn$ = thefn & part$
     Next t
     
@@ -210,3 +210,30 @@ Public Function fileExists(ByVal file As String) As Boolean
     On Local Error Resume Next
     fileExists = ((GetAttr(file) And vbDirectory) = 0)
 End Function
+
+'=========================================================================
+' Preserve files saved in subfolders of default directories;
+' do not allow files outside the default directories
+'=========================================================================
+Public Function getValidPath(ByVal currentPath As String, ByVal defaultPath As String, ByRef returnPath As String, ByVal showWarning As Boolean) As Boolean  ':on error resume next
+    Dim start As Long
+    start = InStr(1, currentPath, defaultPath, vbTextCompare)
+    If start > 0 Then
+        'The default path is contained in the current path, remove the default folders.
+        returnPath = Mid$(currentPath, start + Len(defaultPath))
+    Else
+        'The current path is outside the default, remove the current path.
+        If showWarning Then
+            If MsgBox( _
+                "Files must reside within the game's default folder or sub-folders. " & vbCrLf & _
+                "Do you wish to save this file in the default folder " & defaultPath & "?", _
+                vbOKCancel Or vbInformation) = vbCancel Then
+                getValidPath = False
+                Exit Function
+            End If
+        End If
+        returnPath = RemovePath(currentPath)
+    End If
+    getValidPath = True
+End Function
+

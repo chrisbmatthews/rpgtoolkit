@@ -121,7 +121,11 @@ Private Const CC_STYLED = 32             '  Can do styled lines
 Private Const CC_WIDE = 16               '  Can do wide lines
 Private Const CC_WIDESTYLED = 64         '  Can do wide styled lines
 Private Const OFN_OVERWRITEPROMPT = &H2
+Private Const OFN_HIDEREADONLY = &H4
+Private Const OFN_NOCHANGEDIR = &H8
 Private Const OFN_NOREADONLYRETURN = &H8000&
+
+Private Const MAX_BUFFER = 255
 
 '=========================================================================
 ' Convert a pointer to a null-terminated string to a VB string
@@ -212,83 +216,103 @@ End Function
 '=========================================================================
 ' Show an open file dialog
 '=========================================================================
-Public Function OpenFileDialog(ByRef dlgInfo As FileDialogInfo, Optional ByVal hwndParent As Long = 0) As Boolean
-
-    On Error Resume Next
+Public Function OpenFileDialog(ByRef dlgInfo As FileDialogInfo, Optional ByVal hwndParent As Long = 0) As Boolean: On Error Resume Next
     
-    Dim retval As Long ' return value of the function
-    Dim opfS As OPENFILENAME ' variable to hold the structure
-    
-    Const MAX_BUFFER = 255 ' the maximum length of the file name
-    
-    With opfS ' populate the structure
-          .lStructSize = Len(opfS) ' the size of the structure
-          .hwndOwner = hwndParent ' the owner of the dialog (the form handle)
-          .hInstance = App.hInstance ' instance of the app, use App.hInstance
-          .lpstrTitle = dlgInfo.strTitle ' the title of the dialog box
-          .lpstrInitialDir = dlgInfo.strDefaultFolder ' initial directory which the user will see
+    Dim opfS As OPENFILENAME
+    With opfS
+          .lStructSize = Len(opfS)                      ' the size of the structure
+          .hwndOwner = hwndParent                       ' the owner of the dialog (the form handle)
+          .hInstance = App.hInstance                    ' instance of the app, use App.hInstance
+          .lpstrTitle = dlgInfo.strTitle                ' the title of the dialog box
+          .lpstrInitialDir = dlgInfo.strDefaultFolder   ' initial directory which the user will see
           .lpstrFilter = DialogFilterToAPIFilter(dlgInfo.strFileTypes)
           .nFilterIndex = 1 '
-          .lpstrFile = String(MAX_BUFFER + 1, 0) ' initialize empty string to get 'filename
-          .nMaxFile = MAX_BUFFER ' the maximum length of the filename
-          .lpstrFileTitle = .lpstrFile '
+          .lpstrFile = String(MAX_BUFFER + 1, 0)        ' initialize empty string to get 'filename
+          .nMaxFile = MAX_BUFFER                        ' the maximum length of the filename
+          .lpstrFileTitle = .lpstrFile
           .nMaxFileTitle = MAX_BUFFER
           .lpstrDefExt = dlgInfo.strDefaultExt
+          .flags = OFN_HIDEREADONLY Or OFN_NOCHANGEDIR
     End With
     
-    retval = GetOpenFileName(opfS)
+    OpenFileDialog = (GetOpenFileName(opfS) <> 0)
     
     dlgInfo.strSelectedFile = APIString2VBString(opfS.lpstrFile)
     dlgInfo.strSelectedFileNoPath = APIString2VBString(opfS.lpstrFileTitle)
-    
-    If retval = 0 Then
-        OpenFileDialog = False
-    Else
-        OpenFileDialog = True
-    End If
+
 End Function
 
 '=========================================================================
 ' Show a save file dialog
 '=========================================================================
-Public Function SaveFileDialog(ByRef dlgInfo As FileDialogInfo, _
-                               Optional ByVal hwndParent As Long = 0, _
-                               Optional ByVal overwritePrompt As Boolean = False) As Boolean
-
-    On Error Resume Next
+Public Function SaveFileDialog( _
+    ByRef dlgInfo As FileDialogInfo, _
+    Optional ByVal hwndParent As Long = 0, _
+    Optional ByVal overwritePrompt As Boolean = False) As Boolean: On Error Resume Next
     
-    Dim retval As Long ' return value of the function
-    Dim opfS As OPENFILENAME ' variable to hold the structure
-    
-    Const MAX_BUFFER = 255 ' the maximum length of the file name
-    
-    With opfS ' populate the structure
-          .lStructSize = Len(opfS) ' the size of the structure
-          .hwndOwner = hwndParent ' the owner of the dialog (the form handle)
-          .hInstance = App.hInstance ' instance of the app, use App.hInstance
-          .lpstrTitle = dlgInfo.strTitle ' the title of the dialog box
-          .lpstrInitialDir = dlgInfo.strDefaultFolder ' initial directory which the user will see
+    Dim opfS As OPENFILENAME
+    With opfS
+          .lStructSize = Len(opfS)                      ' the size of the structure
+          .hwndOwner = hwndParent                       ' the owner of the dialog (the form handle)
+          .hInstance = App.hInstance                    ' instance of the app, use App.hInstance
+          .lpstrTitle = dlgInfo.strTitle                ' the title of the dialog box
+          .lpstrInitialDir = dlgInfo.strDefaultFolder   ' initial directory which the user will see
           .lpstrFilter = DialogFilterToAPIFilter(dlgInfo.strFileTypes)
-          .nFilterIndex = 1 '
-          .lpstrFile = String(MAX_BUFFER + 1, 0) ' initialize empty string to get 'filename
-          .nMaxFile = MAX_BUFFER ' the maximum length of the filename
-          .lpstrFileTitle = .lpstrFile '
+          .nFilterIndex = 1
+          .lpstrFile = String(MAX_BUFFER + 1, 0)        ' initialize empty string to get 'filename
+          .nMaxFile = MAX_BUFFER                        ' the maximum length of the filename
+          .lpstrFileTitle = .lpstrFile
           .nMaxFileTitle = MAX_BUFFER
           .lpstrDefExt = dlgInfo.strDefaultExt
-          .flags = OFN_NOREADONLYRETURN         'Do not allow for selection of read-only files.
+          .flags = OFN_HIDEREADONLY Or OFN_NOCHANGEDIR Or OFN_NOREADONLYRETURN
+          
+          'Do not allow for selection of read-only files.
           'Prompt if overwriting - optional since this may be a save-game file.
-          If overwritePrompt Then .flags = OFN_NOREADONLYRETURN Or OFN_OVERWRITEPROMPT
+          If overwritePrompt Then .flags = .flags Or OFN_OVERWRITEPROMPT
     End With
     
-    retval = GetSaveFileName(opfS)
+    SaveFileDialog = (GetSaveFileName(opfS) <> 0)
     
     dlgInfo.strSelectedFile = APIString2VBString(opfS.lpstrFile)
     dlgInfo.strSelectedFileNoPath = APIString2VBString(opfS.lpstrFileTitle)
-    
-    If retval = 0 Then
-        SaveFileDialog = False
-    Else
-        SaveFileDialog = True
-    End If
 
 End Function
+
+'=========================================================================
+' Preserve files saved in subfolders of the default folders
+' Copy files outside the default folder into the default folder
+'=========================================================================
+Public Function browseFileDialog( _
+    ByVal hwndParent As Long, _
+    ByVal defaultPath As String, _
+    ByVal windowTitle As String, _
+    ByVal defaultExt As String, _
+    ByVal fileTypes As String, _
+    ByRef returnPath As String) As Boolean ': on error resume next
+
+    Dim dlg As FileDialogInfo
+    With dlg
+        .strDefaultFolder = defaultPath
+        .strTitle = windowTitle
+        .strDefaultExt = defaultExt
+        .strFileTypes = fileTypes
+    End With
+    ChDir (currentDir)
+    If Not OpenFileDialog(dlg, hwndParent) Then Exit Function
+    
+    'If no filename entered, exit.
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Function
+
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, defaultPath, returnPath, True) Then Exit Function
+    
+    'Copy folders outside the default directory into the default directory.
+    If Not fileExists(defaultPath & returnPath) Then
+        FileCopy dlg.strSelectedFile, defaultPath & returnPath
+    End If
+
+    'A file was selected
+    browseFileDialog = True
+End Function
+
+
