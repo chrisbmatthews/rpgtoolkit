@@ -104,7 +104,6 @@ Form=forms\tkMain.frm
 Form=forms\ENEMYSPE.FRM
 Form=forms\frmToolWindow.frm
 Module=modRPGCodeCleaner; modules\modRPGCodeCapitalization.bas
-Form=forms\frmThreading.frm
 UserControl=controls\ctlNewBar.ctl
 UserControl=controls\ctlOpenButton.ctl
 Module=modSelfExtract; modules\modSelfExtract.bas

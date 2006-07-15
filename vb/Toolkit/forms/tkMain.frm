@@ -419,18 +419,18 @@ Begin VB.MDIForm tkMainForm
       End
       Begin TabDlg.SSTab bTools_Tabs 
          Height          =   7215
-         Left            =   120
+         Left            =   20
          TabIndex        =   51
-         Top             =   360
-         Width           =   3285
-         _ExtentX        =   5794
+         Top             =   300
+         Width           =   3510
+         _ExtentX        =   6191
          _ExtentY        =   12726
          _Version        =   393216
          Style           =   1
          Tabs            =   4
-         Tab             =   3
+         Tab             =   2
          TabsPerRow      =   4
-         TabHeight       =   520
+         TabHeight       =   635
          ShowFocusRect   =   0   'False
          TabCaption(0)   =   "Vectors"
          TabPicture(0)   =   "tkMain.frx":10476
@@ -444,47 +444,47 @@ Begin VB.MDIForm tkMainForm
          Tab(1).ControlCount=   1
          TabCaption(2)   =   "Sprites"
          TabPicture(2)   =   "tkMain.frx":104AE
-         Tab(2).ControlEnabled=   0   'False
+         Tab(2).ControlEnabled=   -1  'True
          Tab(2).Control(0)=   "bTools_ctlSprite"
+         Tab(2).Control(0).Enabled=   0   'False
          Tab(2).ControlCount=   1
          TabCaption(3)   =   "Images"
          TabPicture(3)   =   "tkMain.frx":104CA
-         Tab(3).ControlEnabled=   -1  'True
+         Tab(3).ControlEnabled=   0   'False
          Tab(3).Control(0)=   "bTools_ctlImage"
-         Tab(3).Control(0).Enabled=   0   'False
          Tab(3).ControlCount=   1
          Begin Toolkit.ctlBrdSprite bTools_ctlSprite 
             Height          =   6495
-            Left            =   -74880
+            Left            =   240
             TabIndex        =   163
-            Top             =   360
+            Top             =   480
             Width           =   3015
             _ExtentX        =   5318
             _ExtentY        =   11456
          End
          Begin Toolkit.ctlBrdImage bTools_ctlImage 
             Height          =   4575
-            Left            =   120
+            Left            =   -74760
             TabIndex        =   162
-            Top             =   360
+            Top             =   480
             Width           =   3015
             _ExtentX        =   5318
             _ExtentY        =   8070
          End
          Begin Toolkit.ctlBrdVector bTools_ctlVector 
             Height          =   5055
-            Left            =   -74880
+            Left            =   -74760
             TabIndex        =   160
-            Top             =   360
+            Top             =   480
             Width           =   3015
             _ExtentX        =   5318
             _ExtentY        =   8916
          End
          Begin Toolkit.ctlBrdProgram bTools_ctlPrg 
             Height          =   6375
-            Left            =   -74880
+            Left            =   -74760
             TabIndex        =   161
-            Top             =   360
+            Top             =   480
             Width           =   3015
             _ExtentX        =   5318
             _ExtentY        =   11245
@@ -668,6 +668,18 @@ Begin VB.MDIForm tkMainForm
             Top             =   120
             Visible         =   0   'False
             Width           =   975
+            Begin VB.OptionButton brdOptSetting 
+               Caption         =   "Lit"
+               Height          =   375
+               Index           =   7
+               Left            =   480
+               Style           =   1  'Graphical
+               TabIndex        =   165
+               TabStop         =   0   'False
+               ToolTipText     =   "Lighting tools (I)"
+               Top             =   1920
+               Width           =   375
+            End
             Begin VB.PictureBox brdPicCurrentTile 
                Appearance      =   0  'Flat
                AutoRedraw      =   -1  'True
@@ -942,7 +954,7 @@ Begin VB.MDIForm tkMainForm
                Style           =   1  'Graphical
                TabIndex        =   141
                TabStop         =   0   'False
-               ToolTipText     =   "Move board (Q)"
+               ToolTipText     =   "Scroll board (Q)"
                Top             =   840
                Width           =   375
             End
@@ -2302,13 +2314,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "08/07/2006"
+            TextSave        =   "15/07/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "15:17"
+            TextSave        =   "14:58"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3376,7 +3388,7 @@ End Sub
 
 Private Sub mainToolbar_ButtonMenuClick(ByVal ButtonMenu As MSComctlLib.ButtonMenu): On Error Resume Next
     Dim frm As Form
-    Select Case ButtonMenu.Index
+    Select Case ButtonMenu.index
         Case 1:
             Set frm = New tileedit
         Case 2:
@@ -3722,12 +3734,12 @@ End Sub
 
 '=========================================================================================
 ' ADDED FOURTH BUTTON FOR BOARD TOOLBAR
-Private Sub popButton_Click(Index As Integer): On Error Resume Next
+Private Sub popButton_Click(index As Integer): On Error Resume Next
     
-    Select Case Index
+    Select Case index
         Case 0
             'File tree.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(1).value = 0
                 popButton(2).value = 0
                 popButton(3).value = 0
@@ -3739,7 +3751,7 @@ Private Sub popButton_Click(Index As Integer): On Error Resume Next
             
         Case 1
             'Open editors.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(0).value = 0
                 popButton(2).value = 0
                 popButton(3).value = 0
@@ -3750,7 +3762,7 @@ Private Sub popButton_Click(Index As Integer): On Error Resume Next
             
         Case 2
             'Tileset browser.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(0).value = 0
                 popButton(1).value = 0
                 popButton(3).value = 0
@@ -3764,7 +3776,7 @@ Private Sub popButton_Click(Index As Integer): On Error Resume Next
             
         Case 3
             'Board editor toolbar.
-            If popButton(Index).value = 1 Then
+            If popButton(index).value = 1 Then
                 popButton(0).value = 0
                 popButton(1).value = 0
                 popButton(2).value = 0
@@ -4012,8 +4024,8 @@ Private Sub tilesetBar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub tileTool_Click(Index As Integer): On Error Resume Next
-    Call activeTile.ToolSet(Index)
+Private Sub tileTool_Click(index As Integer): On Error Resume Next
+    Call activeTile.ToolSet(index)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -4112,11 +4124,11 @@ End Sub
 Private Sub brdCmbVisibleLayers_Click(): On Error Resume Next
     Call activeBoard.mdiCmbVisibleLayers
 End Sub
-Private Sub brdOptSetting_Click(Index As Integer): On Error Resume Next
-    Call activeBoard.mdiOptSetting(Index)
+Private Sub brdOptSetting_Click(index As Integer): On Error Resume Next
+    Call activeBoard.mdiOptSetting(index)
 End Sub
-Private Sub brdOptTool_Click(Index As Integer): On Error Resume Next
-    Call activeBoard.mdiOptTool(Index)
+Private Sub brdOptTool_Click(index As Integer): On Error Resume Next
+    Call activeBoard.mdiOptTool(index)
 End Sub
 Private Sub brdChkAutotile_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call activeBoard.mdiChkAutotile(brdChkAutotile.value)
@@ -4198,8 +4210,8 @@ End Sub
 ' ANIMATION EDITOR RELATED EVENTS
 '=========================================================================================
 'Set the size of the animation
-Private Sub optAnimSize_Click(Index As Integer): On Error Resume Next
-    Call activeAnimation.setAnimSize(Index)
+Private Sub optAnimSize_Click(index As Integer): On Error Resume Next
+    Call activeAnimation.setAnimSize(index)
 End Sub
 'Set the X-Size (Custom anim only)
 Private Sub txtAnimXSize_Change(): On Error Resume Next

@@ -66,10 +66,7 @@ Begin VB.Form frmBoardEdit
                Width           =   2055
             End
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
                Height          =   975
                Index           =   5
                Left            =   3120
@@ -81,7 +78,6 @@ Begin VB.Form frmBoardEdit
                Begin VB.CommandButton cmdThreadsAdd 
                   Caption         =   "Add"
                   Height          =   375
-                  Index           =   0
                   Left            =   0
                   TabIndex        =   74
                   Top             =   0
@@ -90,7 +86,6 @@ Begin VB.Form frmBoardEdit
                Begin VB.CommandButton cmdThreadsRemove 
                   Caption         =   "Remove"
                   Height          =   375
-                  Index           =   1
                   Left            =   0
                   TabIndex        =   73
                   Top             =   480
@@ -109,26 +104,26 @@ Begin VB.Form frmBoardEdit
             Begin VB.HScrollBar hsbDims 
                Height          =   285
                Index           =   2
-               Left            =   4080
+               Left            =   4320
                TabIndex        =   65
-               Top             =   600
+               Top             =   300
                Width           =   495
             End
             Begin VB.TextBox txtDims 
                Height          =   285
                Index           =   2
-               Left            =   3360
+               Left            =   3600
                TabIndex        =   64
                Text            =   "Text7"
-               Top             =   600
+               Top             =   300
                Width           =   615
             End
             Begin VB.HScrollBar hsbDims 
                Height          =   285
                Index           =   1
-               Left            =   1560
+               Left            =   1500
                TabIndex        =   63
-               Top             =   840
+               Top             =   720
                Width           =   495
             End
             Begin VB.TextBox txtDims 
@@ -137,15 +132,15 @@ Begin VB.Form frmBoardEdit
                Left            =   840
                TabIndex        =   62
                Text            =   "Text7"
-               Top             =   840
+               Top             =   720
                Width           =   615
             End
             Begin VB.HScrollBar hsbDims 
                Height          =   285
                Index           =   0
-               Left            =   1560
+               Left            =   1500
                TabIndex        =   61
-               Top             =   360
+               Top             =   300
                Width           =   495
             End
             Begin VB.TextBox txtDims 
@@ -154,14 +149,23 @@ Begin VB.Form frmBoardEdit
                Left            =   840
                TabIndex        =   60
                Text            =   "Text7"
-               Top             =   360
+               Top             =   300
                Width           =   615
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Isometric stacked / Pixel coordinates"
+               Height          =   375
+               Index           =   13
+               Left            =   3000
+               TabIndex        =   76
+               Top             =   780
+               Width           =   1815
             End
             Begin VB.Label lblProperties 
                Caption         =   "Layers"
                Height          =   255
                Index           =   12
-               Left            =   3360
+               Left            =   3000
                TabIndex        =   70
                Top             =   360
                Width           =   495
@@ -170,16 +174,16 @@ Begin VB.Form frmBoardEdit
                Caption         =   "1024 pixels"
                Height          =   255
                Index           =   11
-               Left            =   2160
+               Left            =   2055
                TabIndex        =   69
-               Top             =   840
+               Top             =   780
                Width           =   975
             End
             Begin VB.Label lblProperties 
                Caption         =   "1024 pixels"
                Height          =   255
                Index           =   10
-               Left            =   2160
+               Left            =   2055
                TabIndex        =   68
                Top             =   360
                Width           =   975
@@ -199,12 +203,12 @@ Begin VB.Form frmBoardEdit
                Index           =   9
                Left            =   120
                TabIndex        =   66
-               Top             =   840
+               Top             =   780
                Width           =   735
             End
          End
          Begin VB.Frame fraProperties 
-            Caption         =   "Variables"
+            Caption         =   "Constants"
             Height          =   1215
             Index           =   4
             Left            =   5160
@@ -213,9 +217,9 @@ Begin VB.Form frmBoardEdit
             Width           =   4935
             Begin VB.ComboBox cmbLayerTitles 
                Height          =   315
-               Left            =   960
+               Left            =   840
+               Style           =   2  'Dropdown List
                TabIndex        =   54
-               Text            =   "Combo2"
                Top             =   720
                Width           =   1335
             End
@@ -223,7 +227,6 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Left            =   3000
                TabIndex        =   53
-               Text            =   "Text6"
                Top             =   720
                Width           =   1815
             End
@@ -231,53 +234,52 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Left            =   3000
                TabIndex        =   52
-               Text            =   "Text5"
                Top             =   240
                Width           =   1815
             End
             Begin VB.ComboBox cmbConstants 
                Height          =   315
-               Left            =   960
+               Left            =   840
+               Style           =   2  'Dropdown List
                TabIndex        =   51
-               Text            =   "Combo1"
                Top             =   240
                Width           =   1335
             End
             Begin VB.Label lblProperties 
                Caption         =   "Layer"
                Height          =   255
-               Index           =   15
+               Index           =   16
                Left            =   120
                TabIndex        =   58
-               Top             =   720
+               Top             =   780
                Width           =   735
             End
             Begin VB.Label lblProperties 
                Caption         =   "Title"
                Height          =   255
-               Index           =   16
+               Index           =   17
                Left            =   2400
                TabIndex        =   57
-               Top             =   720
+               Top             =   780
                Width           =   855
             End
             Begin VB.Label lblProperties 
                Caption         =   "Value"
                Height          =   255
-               Index           =   14
+               Index           =   15
                Left            =   2400
                TabIndex        =   56
-               Top             =   240
+               Top             =   300
                Width           =   855
             End
             Begin VB.Label lblProperties 
                Caption         =   "Constant"
                Height          =   255
-               Index           =   13
+               Index           =   14
                Left            =   120
                TabIndex        =   55
-               Top             =   240
-               Width           =   975
+               Top             =   300
+               Width           =   735
             End
          End
          Begin VB.Frame fraProperties 
@@ -289,10 +291,7 @@ Begin VB.Form frmBoardEdit
             Top             =   4200
             Width           =   4935
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
                Height          =   375
                Index           =   6
                Left            =   3600
@@ -319,7 +318,7 @@ Begin VB.Form frmBoardEdit
                Top             =   960
                Width           =   2655
             End
-            Begin VB.CheckBox chkProgressiveSaving 
+            Begin VB.CheckBox chkDisableSaving 
                Caption         =   "Disable progressive saving"
                Height          =   255
                Left            =   600
@@ -330,7 +329,7 @@ Begin VB.Form frmBoardEdit
             Begin VB.Label lblProperties 
                Caption         =   "Program to run when entering board"
                Height          =   255
-               Index           =   19
+               Index           =   20
                Left            =   840
                TabIndex        =   49
                Top             =   720
@@ -346,10 +345,7 @@ Begin VB.Form frmBoardEdit
             Top             =   2760
             Width           =   4935
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
                Height          =   375
                Index           =   9
                Left            =   4320
@@ -395,19 +391,19 @@ Begin VB.Form frmBoardEdit
             Begin VB.Label lblProperties 
                Caption         =   "Battle background"
                Height          =   495
-               Index           =   17
+               Index           =   18
                Left            =   240
                TabIndex        =   43
-               Top             =   720
+               Top             =   660
                Width           =   1095
             End
             Begin VB.Label lblProperties 
                Caption         =   "Board skill"
                Height          =   255
-               Index           =   18
-               Left            =   3360
+               Index           =   19
+               Left            =   3450
                TabIndex        =   42
-               Top             =   240
+               Top             =   300
                Width           =   855
             End
          End
@@ -420,14 +416,11 @@ Begin VB.Form frmBoardEdit
             Top             =   0
             Width           =   4935
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
-               Height          =   375
+               Height          =   325
                Index           =   3
                Left            =   3600
-               ScaleHeight     =   375
+               ScaleHeight     =   330
                ScaleWidth      =   495
                TabIndex        =   29
                Top             =   1680
@@ -435,7 +428,7 @@ Begin VB.Form frmBoardEdit
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
-                  Index           =   4
+                  Index           =   3
                   Left            =   0
                   TabIndex        =   30
                   Top             =   0
@@ -452,10 +445,7 @@ Begin VB.Form frmBoardEdit
                Width           =   2655
             End
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
                Height          =   375
                Index           =   2
                Left            =   3600
@@ -467,7 +457,7 @@ Begin VB.Form frmBoardEdit
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
-                  Index           =   3
+                  Index           =   2
                   Left            =   0
                   TabIndex        =   27
                   Top             =   0
@@ -484,10 +474,7 @@ Begin VB.Form frmBoardEdit
                Width           =   2655
             End
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
                Height          =   375
                Index           =   1
                Left            =   3600
@@ -499,7 +486,7 @@ Begin VB.Form frmBoardEdit
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
-                  Index           =   2
+                  Index           =   1
                   Left            =   0
                   TabIndex        =   24
                   Top             =   0
@@ -516,10 +503,7 @@ Begin VB.Form frmBoardEdit
                Width           =   2655
             End
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
                Height          =   375
                Index           =   0
                Left            =   3600
@@ -531,7 +515,7 @@ Begin VB.Form frmBoardEdit
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
-                  Index           =   1
+                  Index           =   0
                   Left            =   0
                   TabIndex        =   21
                   Top             =   0
@@ -615,10 +599,7 @@ Begin VB.Form frmBoardEdit
                Width           =   615
             End
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
                Height          =   375
                Index           =   4
                Left            =   3600
@@ -630,7 +611,7 @@ Begin VB.Form frmBoardEdit
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
-                  Index           =   0
+                  Index           =   4
                   Left            =   0
                   TabIndex        =   13
                   Top             =   0
@@ -646,10 +627,7 @@ Begin VB.Form frmBoardEdit
                Width           =   2655
             End
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
                Height          =   375
                Index           =   8
                Left            =   3600
@@ -677,10 +655,7 @@ Begin VB.Form frmBoardEdit
                Width           =   2655
             End
             Begin VB.PictureBox picHolder 
-               Appearance      =   0  'Flat
-               BackColor       =   &H80000005&
                BorderStyle     =   0  'None
-               ForeColor       =   &H80000008&
                Height          =   375
                Index           =   7
                Left            =   3600
@@ -705,7 +680,7 @@ Begin VB.Form frmBoardEdit
                Index           =   6
                Left            =   840
                TabIndex        =   17
-               Top             =   880
+               Top             =   940
                Width           =   1815
             End
             Begin VB.Label lblProperties 
@@ -802,15 +777,15 @@ Begin VB.Form frmBoardEdit
          End
       End
    End
-   Begin VB.Menu mnuFile 
+   Begin VB.Menu mnu 
       Caption         =   "File"
+      Index           =   0
       Begin VB.Menu mnuNewProject 
          Caption         =   "New Project"
          Shortcut        =   ^N
       End
       Begin VB.Menu mnuNewFile 
          Caption         =   "New..."
-         WindowList      =   -1  'True
          Begin VB.Menu mnuNew 
             Caption         =   "Tile"
             Index           =   0
@@ -863,7 +838,7 @@ Begin VB.Form frmBoardEdit
       Begin VB.Menu mnuS1 
          Caption         =   "-"
       End
-      Begin VB.Menu mnuOpen 
+      Begin VB.Menu mnuOpenProject 
          Caption         =   "Open Project"
          Index           =   0
       End
@@ -877,12 +852,12 @@ Begin VB.Form frmBoardEdit
          Index           =   0
          Shortcut        =   ^S
       End
-      Begin VB.Menu mnuSaveBoardAs 
+      Begin VB.Menu mnuSave 
          Caption         =   "Save Board As"
          Index           =   1
          Shortcut        =   {F2}
       End
-      Begin VB.Menu mnuSaveAll 
+      Begin VB.Menu mnuSave 
          Caption         =   "Save All"
          Index           =   2
          Shortcut        =   {F3}
@@ -898,8 +873,9 @@ Begin VB.Form frmBoardEdit
          Caption         =   "Exit Editor"
       End
    End
-   Begin VB.Menu mnuEdit 
+   Begin VB.Menu mnu 
       Caption         =   "Edit"
+      Index           =   1
       Begin VB.Menu mnuUndo 
          Caption         =   "Undo"
          Shortcut        =   ^Z
@@ -929,6 +905,75 @@ Begin VB.Form frmBoardEdit
       Begin VB.Menu mnuSelectAll 
          Caption         =   "Select All"
          Shortcut        =   ^A
+      End
+   End
+   Begin VB.Menu mnu 
+      Caption         =   "Toolkit"
+      Index           =   2
+      Begin VB.Menu mnuToolkit 
+         Caption         =   "Test Game"
+         Index           =   0
+         Shortcut        =   {F5}
+      End
+      Begin VB.Menu mnuToolkit 
+         Caption         =   "Select Language"
+         Enabled         =   0   'False
+         Index           =   1
+      End
+   End
+   Begin VB.Menu mnu 
+      Caption         =   "Build"
+      Index           =   3
+      Begin VB.Menu mnuBuild 
+         Caption         =   "Create PakFile"
+         Index           =   0
+      End
+      Begin VB.Menu mnuBuild 
+         Caption         =   "Make EXE"
+         Index           =   1
+         Shortcut        =   {F7}
+      End
+      Begin VB.Menu mnuBuild 
+         Caption         =   "-"
+         Index           =   2
+      End
+      Begin VB.Menu mnuBuild 
+         Caption         =   "Create Setup"
+         Index           =   3
+      End
+   End
+   Begin VB.Menu mnu 
+      Caption         =   "Window"
+      Index           =   4
+      WindowList      =   -1  'True
+      Begin VB.Menu mnuWindow 
+         Caption         =   "Show/Hide Tools"
+         Index           =   0
+      End
+   End
+   Begin VB.Menu mnu 
+      Caption         =   "Help"
+      Index           =   5
+      Begin VB.Menu mnuHelp 
+         Caption         =   "User's Guide"
+         Index           =   0
+         Shortcut        =   {F1}
+      End
+      Begin VB.Menu mnuHelp 
+         Caption         =   "-"
+         Index           =   1
+      End
+      Begin VB.Menu mnuHelp 
+         Caption         =   "History.txt"
+         Index           =   2
+      End
+      Begin VB.Menu mnuHelp 
+         Caption         =   "-"
+         Index           =   3
+      End
+      Begin VB.Menu mnuHelp 
+         Caption         =   "About"
+         Index           =   4
       End
    End
 End
@@ -1028,14 +1073,17 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
     m_ed.waypointColor = RGB(255, 0, 0)
     m_ed.gridColor = RGB(255, 255, 255)
     m_ed.bShowVectorIndices = True
+    m_ed.bShowImages = True
+    m_ed.bShowPrograms = True
+    m_ed.bShowSprites = True
+    m_ed.bShowVectors = True
 End Sub
 '=========================================================================
 '=========================================================================
 Private Sub resetEditor(ByRef ed As TKBoardEditorData) ': On Error Resume Next
     With ed
-        Dim i As Integer '.bLayerOccupied assigned in openBoard()
-        ReDim .bLayerVisible(m_ed.board(m_ed.undoIndex).sizeL + 1)
-        For i = 1 To UBound(.bLayerVisible)
+        Dim i As Long
+        For i = 0 To UBound(.bLayerVisible)
             .bLayerVisible(i) = True
         Next i
         Call resetLayerCombos
@@ -1050,10 +1098,11 @@ Public Sub newBoard(ByVal x As Long, ByVal y As Long, ByVal z As Long, ByVal coo
     
     m_ed.board(m_ed.undoIndex).coordType = coordType
     Call boardInitialise(m_ed.board(m_ed.undoIndex))
-    Call boardSetSize(x, y, z, m_ed, m_ed.board(m_ed.undoIndex))
-    
+    Call boardSetSize(x, y, z, m_ed, m_ed.board(m_ed.undoIndex), False)
     m_ed.board(m_ed.undoIndex).bkgImage.filename = background
+    
     Call initializeEditor(m_ed)
+    Call assignProperties
     Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, True)
 End Sub
 
@@ -1092,6 +1141,7 @@ End Sub
 Public Property Get formType() As Long: On Error Resume Next
     formType = FT_BOARD
 End Property
+
 Private Sub Form_Activate() ':on error resume next
     Set activeBoard = Me
     Set activeForm = Me
@@ -1271,15 +1321,14 @@ Public Sub openFile(ByVal file As String) ': On Error Resume Next
     Call activeBoard.Show
     Call checkSave
     
-    ' copy board to directory
-    ' Call FileCopy(filename(1), projectPath & brdPath & antiPath)
-    
     Call openBoard(file, m_ed, m_ed.board(m_ed.undoIndex))
+    Call assignProperties
         
     Call resetEditor(m_ed)
     Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, True)
     
-    m_ed.boardName = RemovePath(file)
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & brdPath, m_ed.boardName, False)
     Me.Caption = m_ed.boardName
     
     Call Form_Resize
@@ -1316,15 +1365,16 @@ Private Sub saveFileAs() ':on error resume next
     dlg.strFileTypes = "RPG Toolkit Board (*.brd)|*.brd|All files(*.*)|*.*"
 
     ChDir (currentDir)
-    If Not (SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub
-    ChDir (currentDir)
+    If Not SaveFileDialog(dlg, Me.hwnd, True) Then Exit Sub
 
-    ' if no filename entered, exit.
+    'If no filename entered, exit.
     If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
 
-    m_ed.boardName = dlg.strSelectedFileNoPath
-    Call saveBoard(dlg.strSelectedFile, m_ed.board(m_ed.undoIndex))
-    activeBoard.Caption = m_ed.boardName
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, m_ed.boardName, True) Then Exit Sub
+
+    Call saveBoard(dlg.strDefaultFolder & m_ed.boardName, m_ed.board(m_ed.undoIndex))
+    Me.Caption = m_ed.boardName
     
     m_ed.bNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath)
@@ -1406,6 +1456,7 @@ Private Sub mnuCut_Click(): On Error Resume Next
     Call clipCopy(g_boardClipboard, m_sel, True)
     Call clipCut(g_boardClipboard, True)
 End Sub
+
 Private Sub mnuPaste_Click(): On Error Resume Next
     'Start a move, retaining selection information.
     Call setUndo
@@ -1413,15 +1464,13 @@ Private Sub mnuPaste_Click(): On Error Resume Next
     m_sel.yDrag = m_sel.y1
     m_sel.status = SS_PASTING
 End Sub
-
 Private Sub mnusave_Click(index As Integer) ': On Error Resume Next
     Select Case index
         Case 0: Call saveFile
         Case 1: Call saveFileAs
-        Case 2: 'tbd
+        Case 2: Call tkMainForm.saveallmnu_Click
     End Select
 End Sub
-
 Private Sub mnuSelectAll_Click() ': On Error Resume Next
     If m_ed.optTool <> BT_SELECT Then Exit Sub
     Select Case m_ed.optSetting
@@ -1435,6 +1484,7 @@ Private Sub mnuSelectAll_Click() ': On Error Resume Next
     End Select
     Call m_sel.draw(Me, m_ed.pCEd)
 End Sub
+
 Private Sub mnuUndo_Click() ': On Error Resume Next
     m_ed.undoIndex = nextUndo
     Call toolbarRefresh
@@ -1474,7 +1524,7 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
     Dim curVector As CVector
     Set curVector = currentVector
     
-    'Currently handling Ctrl+letter through menus.
+    'Ctrl+letter through menus.
     If Shift And (vbCtrlMask Or vbAltMask) Then Exit Sub
     
     Select Case keyCode
@@ -1485,6 +1535,7 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
         Case vbKeyT: tkMainForm.brdOptSetting(BS_PROGRAM).value = True
         Case vbKeyY: tkMainForm.brdOptSetting(BS_SPRITE).value = True
         Case vbKeyU: tkMainForm.brdOptSetting(BS_IMAGE).value = True
+        Case vbKeyI: tkMainForm.brdOptSetting(BS_LIGHTING).value = True
         Case vbKeyA: tkMainForm.brdOptTool(BT_DRAW).value = True
         Case vbKeyS: tkMainForm.brdOptTool(BT_SELECT).value = True
         Case vbKeyD: tkMainForm.brdOptTool(BT_FLOOD).value = True
@@ -1934,12 +1985,6 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
     End Select
 End Sub
 
-Private Sub sstBoard_Click(PreviousTab As Integer) ': On Error Resume Next
-    If sstBoard.Tab = BTAB_BOARD Then
-        Call Form_Resize
-    End If
-End Sub
-
 '========================================================================
 '========================================================================
 Private Sub vScroll_Change() ': On Error Resume Next
@@ -2041,13 +2086,13 @@ Public Sub mdiChkGrid(ByVal value As Integer) ': On Error Resume Next
 End Sub
 Public Sub mdiChkHideLayers(ByVal value As Integer, ByVal bRedraw As Boolean) ':on error resume next
     Dim i As Integer
+    m_ed.bHideAllLayers = CBool(value)
     If value Then
         For i = 1 To m_ed.board(m_ed.undoIndex).sizeL
             If i <> m_ed.currentLayer Then m_ed.bLayerVisible(i) = False
         Next i
         tkMainForm.brdChkShowLayers.value = 0
         m_ed.bShowAllLayers = False
-        m_ed.bHideAllLayers = True
     Else
         'Revert to combo list.
          Call setVisibleLayersByCombo
@@ -2056,21 +2101,26 @@ Public Sub mdiChkHideLayers(ByVal value As Integer, ByVal bRedraw As Boolean) ':
 End Sub
 Public Sub mdiChkShowLayers(ByVal value As Integer, ByVal bRedraw As Boolean) ':on error resume next
     Dim i As Integer
+    m_ed.bShowAllLayers = CBool(value)
     If value Then
         For i = 1 To m_ed.board(m_ed.undoIndex).sizeL
             m_ed.bLayerVisible(i) = True
         Next i
         tkMainForm.brdChkHideLayers.value = 0
         m_ed.bHideAllLayers = False
-        m_ed.bShowAllLayers = True
-   Else
+    Else
          'Revert to combo list.
          Call setVisibleLayersByCombo
     End If
     If bRedraw Then Call drawBoard
 End Sub
 Public Sub mdiCmbCurrentLayer(ByVal layer As Long) ':on error resume next
+    'Hide the current layer if 'Hide all layers' selected.
+    If m_ed.bHideAllLayers Then m_ed.bLayerVisible(m_ed.currentLayer) = False
     m_ed.currentLayer = layer
+    m_ed.bLayerVisible(layer) = True
+    tkMainForm.brdCmbVisibleLayers.list(layer) = layer & " *"
+    Call drawAll
 End Sub
 Public Sub mdiCmbVisibleLayers() ':on error resume next
     'Invert the selected layer.
@@ -2078,15 +2128,17 @@ Public Sub mdiCmbVisibleLayers() ':on error resume next
     With tkMainForm.brdCmbVisibleLayers
         If (.ListIndex >= 0) Then
             Text = .list(.ListIndex)
-            layer = Right$(Text, 1)
+            layer = Left$(Text, 1)
             i = IIf(.ListIndex > 0, CInt(val(layer)), 0)
-            If (Left$(Text, 1) = "*" And i <> m_ed.currentLayer) Then
+            If (Right$(Text, 1) = "*" And i <> m_ed.currentLayer) Then
                 'Do not disable current layer.
                 .list(.ListIndex) = layer
-                m_ed.bLayerVisible(i) = False
+                'Do not alter the layer list if an override check button is down.
+                If (m_ed.bShowAllLayers = m_ed.bHideAllLayers) Then m_ed.bLayerVisible(i) = False
             Else
-                .list(.ListIndex) = "* " & layer
-                m_ed.bLayerVisible(i) = True
+                .list(.ListIndex) = layer & " *"
+                'Do not alter the layer list if an override check button is down.
+                If (m_ed.bShowAllLayers = m_ed.bHideAllLayers) Then m_ed.bLayerVisible(i) = True
             End If
         End If
         .ListIndex = -1
@@ -2104,8 +2156,8 @@ Private Sub setVisibleLayersByCombo() ':on error resume next
     For i = 1 To tkMainForm.brdCmbVisibleLayers.ListCount
         'Zeroth list entry is the background.
         Text = tkMainForm.brdCmbVisibleLayers.list(i)
-        layer = CInt(val(Right$(Text, 1)))
-        'm_ed.bLayerVisible(layer) = (Left$(Text, 1) = "*")
+        layer = CInt(val(Left$(Text, 1)))
+        m_ed.bLayerVisible(layer) = (Right$(Text, 1) = "*")
     Next i
 End Sub
 
@@ -2114,10 +2166,10 @@ End Sub
 Private Sub resetLayerCombos() ':on error resume next
     tkMainForm.brdCmbCurrentLayer.clear
     tkMainForm.brdCmbVisibleLayers.clear
-    Call tkMainForm.brdCmbVisibleLayers.AddItem("* B", 0)
+    Call tkMainForm.brdCmbVisibleLayers.AddItem("B *", 0)
     Dim i As Integer, Text As String
     For i = 1 To m_ed.board(m_ed.undoIndex).sizeL
-        Call tkMainForm.brdCmbVisibleLayers.AddItem(IIf(m_ed.bLayerVisible(i), "* " & i, i))
+        Call tkMainForm.brdCmbVisibleLayers.AddItem(IIf(m_ed.bLayerVisible(i), i & " *", i))
         Call tkMainForm.brdCmbCurrentLayer.AddItem(i)
     Next i
     'Combo box is zero-indexed.
@@ -2417,8 +2469,8 @@ End Sub
 '========================================================================
 Private Sub gridDraw() ': On Error Resume Next
     
-    Dim color As Long, offsetY As Long, x As Long, y As Long, oldMode As Long, intHeight As Long
-    color = m_ed.gridColor
+    Dim Color As Long, offsetY As Long, x As Long, y As Long, oldMode As Long, intHeight As Long
+    Color = m_ed.gridColor
     
     oldMode = picBoard.DrawMode
     picBoard.DrawMode = vbInvert
@@ -2429,7 +2481,7 @@ Private Sub gridDraw() ': On Error Resume Next
             
             ' Top right to bottom left.
             Do While y < picBoard.ScaleWidth / 2 + picBoard.ScaleHeight
-                picBoard.Line (0, y + offsetY)-(x + offsetY * 2, 0), color
+                picBoard.Line (0, y + offsetY)-(x + offsetY * 2, 0), Color
                 x = x + tileWidth(m_ed): y = y + tileHeight(m_ed)
             Loop
 
@@ -2438,16 +2490,16 @@ Private Sub gridDraw() ': On Error Resume Next
             intHeight = picBoard.ScaleHeight + (picBoard.ScaleHeight Mod tileHeight(m_ed))
             y = intHeight
             Do While y > -picBoard.ScaleWidth / 2
-                picBoard.Line (0, y + offsetY)-(x, intHeight + offsetY), color
+                picBoard.Line (0, y + offsetY)-(x, intHeight + offsetY), Color
                 x = x + tileWidth(m_ed):  y = y - tileHeight(m_ed)
             Loop
         Else
             Do While x < picBoard.ScaleWidth
-                picBoard.Line (x, 0)-(x, picBoard.ScaleHeight), color
+                picBoard.Line (x, 0)-(x, picBoard.ScaleHeight), Color
                 x = x + tileWidth(m_ed)
             Loop
             Do While y < picBoard.ScaleHeight
-                picBoard.Line (0, y)-(picBoard.ScaleWidth, y), color
+                picBoard.Line (0, y)-(picBoard.ScaleWidth, y), Color
                 y = y + tileHeight(m_ed)
             Loop
         End If 'isIsometric
@@ -2819,10 +2871,10 @@ Public Sub spriteUpdateImageData(ByRef spr As CBoardSprite, ByVal filename As St
         'Render tst/tbm here because actkrt does not have easy access to tbm format.
         'actkrt3 creates a blank canvas to render onto, which is a member of CBoard.m_images
         If LCase$(extention(img.filename)) = "tst" Then
-            Call drawTileCnv(img.pCnv, projectPath & img.filename, 1, 1, 0, 0, 0, False)
+            Call drawTileCnv(img.pCnv, projectPath & tilePath & img.filename, 1, 1, 0, 0, 0, False)
         ElseIf LCase$(extention(img.filename)) = "tbm" Then
             Dim tbm As TKTileBitmap
-            Call OpenTileBitmap(projectPath & img.filename, tbm)
+            Call OpenTileBitmap(projectPath & bmpPath & img.filename, tbm)
             Call CNVResize(img.pCnv, picBoard.hdc, tbm.sizex * 32, tbm.sizey * 32)
             Call DrawTileBitmapCNV(img.pCnv, -1, 0, 0, tbm)
         End If
@@ -3162,6 +3214,8 @@ Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelecti
     Call drawBoard
 End Sub
 
+'========================================================================
+'========================================================================
 Public Sub boardPixelToTile(ByRef x As Long, ByRef y As Long, ByVal bRemoveBasePoint As Boolean, Optional ByVal bIgnorePxAbsolute As Boolean = True): On Error Resume Next
     Dim pt As POINTAPI
     If bIgnorePxAbsolute Or ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) = 0) Then
@@ -3184,5 +3238,268 @@ Private Sub toolsRefresh(): On Error Resume Next
     tkMainForm.brdOptTool(BT_SELECT).Enabled = (m_ed.optSetting > BS_ZOOM)
     tkMainForm.brdOptTool(BT_FLOOD).Enabled = (m_ed.optSetting = BS_TILE)
     tkMainForm.brdOptTool(BT_ERASE).Enabled = (m_ed.optSetting = BS_TILE)
+End Sub
+
+'========================================================================
+'========================================================================
+Private Sub assignProperties() ': on error resume next
+    Dim i As Long
+    With m_ed.board(m_ed.undoIndex)
+        For i = 0 To UBound(.directionalLinks)
+            txtLinks(i).Text = .directionalLinks(i)
+        Next i
+        
+        txtBackgroundImage.Text = .bkgImage.filename
+        picBackgroundColor.backColor = .bkgColor
+        txtBackgroundMusic.Text = .bkgMusic
+    
+        lbThreads.clear
+        For i = 0 To UBound(.Threads)
+            lbThreads.AddItem (.Threads(i))
+        Next i
+    
+        txtDims(0).Text = str(.sizex)
+        txtDims(1).Text = str(.sizey)
+        txtDims(2).Text = str(.sizeL)
+        lblProperties(10).Caption = modBoard.absWidth(.sizex, .coordType) & " pixels"
+        lblProperties(11).Caption = modBoard.absHeight(.sizey, .coordType) & " pixels"
+        
+        Select Case (.coordType And Not PX_ABSOLUTE)
+            Case ISO_STACKED: lblProperties(13).Caption = "Isometric stacked" & vbCrLf
+            Case ISO_ROTATED: lblProperties(13).Caption = "Isometric rotated" & vbCrLf
+            Case TILE_NORMAL: lblProperties(13).Caption = "Standard 2D " & vbCrLf
+        End Select
+        lblProperties(13).Caption = lblProperties(13).Caption & IIf(.coordType And PX_ABSOLUTE, "Pixel ", "Tile ") & "coordinates"
+        
+        cmbConstants.clear
+        For i = 0 To UBound(.constants)
+            cmbConstants.AddItem ("constant[" & i & "]")
+        Next i
+        cmbConstants.AddItem vbNullString           'Provision for the next board constant.
+        cmbConstants.ListIndex = -1
+        
+        Call assignLayerTitles
+        
+        chkEnableBattles.value = Abs(.bAllowBattles)
+        Call chkEnableBattles_Click
+        txtBoardSkill.Text = str(.battleSkill)
+        txtBattleBackground.Text = .battleBackground
+        
+        chkDisableSaving.value = Abs(.bDisableSaving)
+        txtPrgEnterBoard.Text = .enterPrg
+    End With
+End Sub
+Private Sub assignLayerTitles() ': on error resume next
+    Dim i As Long
+    cmbLayerTitles.clear
+    For i = 0 To UBound(m_ed.board(m_ed.undoIndex).layerTitles)
+        cmbLayerTitles.AddItem ("boardTitle[" & i & "]")
+    Next i
+    cmbLayerTitles.ListIndex = -1
+End Sub
+Private Sub chkDisableSaving_Click() ': on error resume next
+    m_ed.board(m_ed.undoIndex).bDisableSaving = chkDisableSaving.value
+End Sub
+Private Sub chkEnableBattles_Click() ': on error resume next
+    m_ed.board(m_ed.undoIndex).bAllowBattles = chkEnableBattles.value
+    txtBattleBackground.Enabled = chkEnableBattles.value
+    txtBoardSkill.Enabled = chkEnableBattles.value
+    lblProperties(18).Enabled = chkEnableBattles.value
+    lblProperties(19).Enabled = chkEnableBattles.value
+End Sub
+Private Sub cmbConstants_Click() ': on error resume next
+    With cmbConstants
+        If .ListIndex = -1 Then Exit Sub
+        If .ListIndex = .ListCount - 1 Then
+            'Add a new constant.
+            .list(.ListIndex) = "constant[" & .ListIndex & "]"
+            ReDim Preserve m_ed.board(m_ed.undoIndex).constants(.ListIndex)
+            .AddItem vbNullString
+        End If
+        txtConstant.Text = m_ed.board(m_ed.undoIndex).constants(.ListIndex)
+        txtConstant.SetFocus
+    End With
+End Sub
+Private Sub cmbLayerTitles_Click() ': on error resume next
+    If cmbLayerTitles.ListIndex <> -1 Then
+        txtLayerTitle.Text = m_ed.board(m_ed.undoIndex).layerTitles(cmbLayerTitles.ListIndex)
+        txtLayerTitle.SetFocus
+    End If
+End Sub
+Private Sub cmdBrowse_Click(index As Integer) ': On Error Resume Next
+    Dim file As String, fileTypes As String, i As Long
+    Select Case index
+         Case 0, 1, 2, 3:
+            fileTypes = "Supported Files|*.brd;*.prg|RPG Toolkit Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
+            If browseFileDialog(Me.hwnd, projectPath & brdPath, "Linking board or program", ".brd", fileTypes, file) Then
+                txtLinks(index).Text = file
+            End If
+        Case 4:
+            If browseFileDialog(Me.hwnd, projectPath & bmpPath, "Background image", ".jpg", strFileDialogFilterGfx, file) Then
+                txtBackgroundImage.Text = file
+            End If
+        Case 5:
+            i = ColorDialog()
+            If i >= 0 Then
+                picBackgroundColor.backColor = i
+                m_ed.board(m_ed.undoIndex).bkgColor = i
+            End If
+        Case 6:
+            If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Background music", ".mid", strFileDialogFilterMedia, file) Then
+                txtBackgroundMusic.Text = file
+            End If
+        Case 7:
+            fileTypes = "RPG Toolkit Background (*.bkg)|*.bkg|All files(*.*)|*.*"
+            If browseFileDialog(Me.hwnd, projectPath & bkgPath, "Battle background", ".bkg", fileTypes, file) Then
+                txtBattleBackground.Text = file
+            End If
+        Case 8:
+            fileTypes = "RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
+            If browseFileDialog(Me.hwnd, projectPath & prgPath, "Program to run on entering board", ".prg", fileTypes, file) Then
+                txtPrgEnterBoard.Text = file
+            End If
+    End Select
+End Sub
+Private Sub cmdThreadsAdd_Click() ': On Error Resume Next
+    Dim file As String, fileTypes As String, ub As Long
+    fileTypes = "RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
+    
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Board thread", ".prg", fileTypes, file) Then
+        ub = UBound(m_ed.board(m_ed.undoIndex).Threads) + 1
+        ReDim Preserve m_ed.board(m_ed.undoIndex).Threads(ub)
+        m_ed.board(m_ed.undoIndex).Threads(ub) = file
+        lbThreads.AddItem (file)
+    End If
+End Sub
+Private Sub cmdThreadsRemove_Click() ': On Error Resume Next
+   Dim i As Long
+    If lbThreads.ListIndex <> -1 Then
+        lbThreads.RemoveItem (lbThreads.ListIndex)
+        If lbThreads.ListCount <> 0 Then
+            ReDim m_ed.board(m_ed.undoIndex).Threads(lbThreads.ListCount - 1)
+            For i = 0 To UBound(m_ed.board(m_ed.undoIndex).Threads)
+                m_ed.board(m_ed.undoIndex).Threads(i) = lbThreads.list(i)
+            Next i
+        Else
+            ReDim m_ed.board(m_ed.undoIndex).Threads(0)
+        End If
+    End If
+End Sub
+Private Sub hsbDims_Change(index As Integer) ': on error resume next
+    Dim i As Long
+    If hsbDims(index).value <> 1 Then
+        i = val(txtDims(index).Text) + hsbDims(index).value - 1
+        txtDims(index).Text = IIf(i < 1, " 1", str(i))
+    End If
+    hsbDims(index).value = 1
+    
+    Dim KeyAscii As Integer
+    Call txtDims_KeyPress(index, KeyAscii)
+End Sub
+Private Sub sstBoard_Click(PreviousTab As Integer) ': On Error Resume Next
+    If PreviousTab = BTAB_PROPERTIES And picProperties.Tag = "Resize" Then
+        'The dimensions textboxes have been edited; resize the board.
+        picProperties.Tag = vbNullString
+        Call setUndo
+        Call boardSetSize(val(txtDims(0).Text), val(txtDims(1).Text), val(txtDims(2).Text), m_ed, m_ed.board(m_ed.undoIndex), True)
+        Call resetLayerCombos
+        Call assignLayerTitles
+        Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, True)
+    End If
+    If sstBoard.Tab = BTAB_BOARD Then
+        Call Form_Resize
+    End If
+End Sub
+Private Sub txtBackgroundImage_Change(): On Error Resume Next
+    m_ed.board(m_ed.undoIndex).bkgImage.filename = txtBackgroundImage.Text
+    Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).bkgImage))
+End Sub
+Private Sub txtBackgroundMusic_Change(): On Error Resume Next
+    m_ed.board(m_ed.undoIndex).bkgMusic = txtBackgroundMusic.Text
+End Sub
+Private Sub txtBattleBackground_Change(): On Error Resume Next
+    m_ed.board(m_ed.undoIndex).battleBackground = txtBattleBackground.Text
+End Sub
+Private Sub txtBoardSkill_Change(): On Error Resume Next
+    m_ed.board(m_ed.undoIndex).battleSkill = val(txtBoardSkill.Text)
+End Sub
+Private Sub txtConstant_Change(): On Error Resume Next
+    If cmbConstants.ListIndex <> -1 Then
+        m_ed.board(m_ed.undoIndex).constants(cmbConstants.ListIndex) = txtConstant.Text
+    End If
+End Sub
+Private Sub txtDims_KeyPress(index As Integer, KeyAscii As Integer): On Error Resume Next
+    'Indicate that we want to resize the board when the tab is switched.
+    'Do not resize after every validation, since it is a big operation.
+    picProperties.Tag = "Resize"
+    lblProperties(10).Caption = modBoard.absWidth(val(txtDims(0).Text), m_ed.board(m_ed.undoIndex).coordType) & " pixels"
+    lblProperties(11).Caption = modBoard.absHeight(val(txtDims(1).Text), m_ed.board(m_ed.undoIndex).coordType) & " pixels"
+End Sub
+Private Sub txtLayerTitle_Change(): On Error Resume Next
+    If cmbLayerTitles.ListIndex <> -1 Then
+        m_ed.board(m_ed.undoIndex).layerTitles(cmbLayerTitles.ListIndex) = txtLayerTitle.Text
+    End If
+End Sub
+Private Sub txtLinks_Change(index As Integer): On Error Resume Next
+    m_ed.board(m_ed.undoIndex).directionalLinks(index) = txtLinks(index).Text
+End Sub
+Private Sub txtPrgEnterBoard_Change(): On Error Resume Next
+    m_ed.board(m_ed.undoIndex).enterPrg = txtPrgEnterBoard.Text
+End Sub
+
+'========================================================================
+' Common menu items
+'========================================================================
+Private Sub mnubuild_Click(index As Integer): On Error Resume Next
+    Select Case index
+        Case 0: Call tkMainForm.createpakfilemnu_Click
+        Case 1: Call tkMainForm.makeexemnu_Click
+        Case 3: Call tkMainForm.createsetupmnu_Click
+    End Select
+End Sub
+Private Sub mnuCloseBoard_Click(): On Error Resume Next
+    Unload Me
+End Sub
+Private Sub mnuExitEditor_Click(): On Error Resume Next
+    Call tkMainForm.exitmnu_Click
+End Sub
+Private Sub mnuHelp_Click(index As Integer): On Error Resume Next
+    Select Case index
+        Case 0: Call tkMainForm.usersguidemnu_Click
+        Case 2: Call tkMainForm.historytxtmnu_Click
+        Case 4: Call tkMainForm.aboutmnu_Click
+    End Select
+End Sub
+Private Sub mnunew_Click(index As Integer): On Error Resume Next
+    Select Case index
+        Case 0: Call tkMainForm.newtilemnu_Click
+        Case 1: Call tkMainForm.newanimtilemnu_Click
+        Case 2: Call tkMainForm.newboardmnu_Click
+        Case 3: Call tkMainForm.newplayermnu_Click
+        Case 4: Call tkMainForm.newitemmnu_Click
+        Case 5: Call tkMainForm.newenemymnu_Click
+        Case 6: Call tkMainForm.newrpgcodemnu_Click
+        Case 7: Call tkMainForm.mnuNewFightBackground_Click
+        Case 8: Call tkMainForm.newspecialmovemnu_Click
+        Case 9: Call tkMainForm.newstatuseffectmnu_Click
+        Case 10: Call tkMainForm.newanimationmnu_Click
+        Case 11: Call tkMainForm.newtilebitmapmnu_Click
+    End Select
+End Sub
+Private Sub mnunewproject_Click(): On Error Resume Next
+    Call tkMainForm.newprojectmnu_Click
+End Sub
+Private Sub mnuOpenProject_Click(index As Integer): On Error Resume Next
+    Call tkMainForm.mnuOpenProject_Click
+End Sub
+Private Sub mnuToolkit_Click(index As Integer)
+    Select Case index
+        Case 0: Call tkMainForm.testgamemnu_Click
+    End Select
+End Sub
+Private Sub mnuWindow_Click(index As Integer)
+    Select Case index
+        Case 0: Call tkMainForm.showtoolsmnu_Click
+    End Select
 End Sub
 

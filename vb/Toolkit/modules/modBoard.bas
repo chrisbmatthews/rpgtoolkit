@@ -132,7 +132,7 @@ Public Type TKBoard
     bkgMusic As String                    'Background music file
     battleBackground As String            'Battle background
     bAllowBattles As Boolean              'Allow random battles on board?
-    bAllowSaving As Boolean               'Can player save on board?
+    bDisableSaving As Boolean             'Is saving disabled on board?
     ambientEffect As Integer              'Ambient effect applied to the board 0: none, 1: fog, 2: darkness, 3: watery
     battleSkill As Integer                'Random enemy skill level
        
@@ -153,6 +153,7 @@ Public Enum eBrdSetting
     BS_PROGRAM
     BS_SPRITE
     BS_IMAGE
+    BS_LIGHTING
 End Enum
 Public Enum eBrdTool
     BT_DRAW
@@ -174,7 +175,7 @@ Public Enum eBoardTabs
     BTAB_SPRITE
     BTAB_IMAGE
 End Enum
-Public g_tabMap(BS_IMAGE) As Long              'Map eBrdSettings to eBoardTabs
+Public g_tabMap(BS_LIGHTING) As Long              'Map eBrdSettings to eBoardTabs
 
 '=========================================================================
 ' A board editor document
@@ -538,7 +539,7 @@ End Sub
 ' Extract a rest graphic (or other) to display an item on the board
 '=========================================================================
 Public Sub spriteGetDisplayImage(ByVal filename As String, ByRef image As String, ByRef transpcolor As Long) ':on error resume next
-    If Not fileExists(projectPath & filename) Then Exit Sub
+    If Not fileExists(projectPath & itmPath & filename) Then Exit Sub
     If UCase$(commonRoutines.extention(filename)) = "ITM" Then
         Call itemGetDisplayImage(filename, image, transpcolor)
     Else
@@ -549,7 +550,7 @@ Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String,
     Dim anm As TKAnimation, Item As TKItem, i As Long, str As String
     
     'Check standing and walking graphics.
-    Item = CommonItem.openItem(projectPath & filename)
+    Item = CommonItem.openItem(projectPath & itmPath & filename)
     For i = 0 To UBound(Item.standingGfx)
         If LenB(Item.standingGfx(i)) Then Exit For
     Next i
@@ -568,7 +569,7 @@ Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String,
     Call CommonAnimation.openAnimation(projectPath & miscPath & str, anm)
     For i = 0 To UBound(anm.animFrame)
         If LenB(anm.animFrame(i)) Then
-            image = IIf(LCase$(extention(anm.animFrame(i))) = "tst", tilePath, bmpPath) & anm.animFrame(i)
+            image = anm.animFrame(i)
             transpcolor = anm.animTransp(i)
             Exit Sub
         End If

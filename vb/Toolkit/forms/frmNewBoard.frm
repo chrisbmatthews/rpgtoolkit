@@ -303,11 +303,18 @@ End Enum
 Private Sub chkPxAbsolute_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     m_coordOpt = m_coordOpt Xor PX_ABSOLUTE
 End Sub
-Private Sub cmdBrowseBkgImg_Click()
-    MsgBox "tbd"
+Private Sub cmdBrowseBkgImg_Click(): On Error Resume Next
+    Dim file As String
+    If browseFileDialog(Me.hwnd, projectPath & bmpPath, "Background image", ".jpg", strFileDialogFilterGfx, file) Then
+        txtBackgroundImage.Text = file
+    End If
 End Sub
-Private Sub cmdBrowseDefaultBoard_Click()
-    MsgBox "tbd"
+Private Sub cmdBrowseDefaultBoard_Click(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Board (*.brd)|*.brd|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & brdPath, "Default board", ".brd", fileTypes, file) Then
+        txtDefaultBoard.Text = file
+    End If
 End Sub
 
 '========================================================================
@@ -391,19 +398,19 @@ Private Sub loadNewBoard(): On Error Resume Next
     Call tkMainForm.refreshTabs
 End Sub
 
-Private Sub hsbDims_Change(Index As Integer): On Error Resume Next
+Private Sub hsbDims_Change(index As Integer): On Error Resume Next
     Dim i As Long
-    If hsbDims(Index).value <> 1 Then
-        i = val(txtDims(Index).Text) + hsbDims(Index).value - 1
-        txtDims(Index).Text = IIf(i < 0, "0", str(i))
+    If hsbDims(index).value <> 1 Then
+        i = val(txtDims(index).Text) + hsbDims(index).value - 1
+        txtDims(index).Text = IIf(i < 1, " 1", str(i))
     End If
-    hsbDims(Index).value = 1
+    hsbDims(index).value = 1
 End Sub
 
 '========================================================================
 '========================================================================
-Private Sub optCoords_Click(Index As Integer): On Error Resume Next
-    Select Case Index
+Private Sub optCoords_Click(index As Integer): On Error Resume Next
+    Select Case index
         Case 0:
             m_coordOpt = (m_coordOpt And PX_ABSOLUTE) Or TILE_NORMAL
         Case 1:
@@ -416,10 +423,10 @@ End Sub
 
 '========================================================================
 '========================================================================
-Private Sub txtDims_Change(Index As Integer): On Error Resume Next
+Private Sub txtDims_Change(index As Integer): On Error Resume Next
     Dim i As Long
-    i = IIf(val(txtDims(Index).Text) > 0, val(txtDims(Index).Text), 10)
-    Select Case Index
+    i = IIf(val(txtDims(index).Text) > 0, val(txtDims(index).Text), 10)
+    Select Case index
         Case NB_W: m_width = i
         Case NB_H: m_height = i
         Case NB_L: m_layers = i
