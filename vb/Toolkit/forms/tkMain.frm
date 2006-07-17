@@ -419,72 +419,71 @@ Begin VB.MDIForm tkMainForm
       End
       Begin TabDlg.SSTab bTools_Tabs 
          Height          =   7215
-         Left            =   20
+         Left            =   120
          TabIndex        =   51
-         Top             =   300
-         Width           =   3510
-         _ExtentX        =   6191
+         Top             =   330
+         Width           =   3255
+         _ExtentX        =   5741
          _ExtentY        =   12726
          _Version        =   393216
          Style           =   1
          Tabs            =   4
-         Tab             =   2
          TabsPerRow      =   4
-         TabHeight       =   635
+         TabHeight       =   529
          ShowFocusRect   =   0   'False
-         TabCaption(0)   =   "Vectors"
+         TabCaption(0)   =   "&Vectors"
          TabPicture(0)   =   "tkMain.frx":10476
-         Tab(0).ControlEnabled=   0   'False
+         Tab(0).ControlEnabled=   -1  'True
          Tab(0).Control(0)=   "bTools_ctlVector"
+         Tab(0).Control(0).Enabled=   0   'False
          Tab(0).ControlCount=   1
-         TabCaption(1)   =   "Programs"
+         TabCaption(1)   =   "P&rograms"
          TabPicture(1)   =   "tkMain.frx":10492
          Tab(1).ControlEnabled=   0   'False
          Tab(1).Control(0)=   "bTools_ctlPrg"
          Tab(1).ControlCount=   1
-         TabCaption(2)   =   "Sprites"
+         TabCaption(2)   =   "&Sprites"
          TabPicture(2)   =   "tkMain.frx":104AE
-         Tab(2).ControlEnabled=   -1  'True
+         Tab(2).ControlEnabled=   0   'False
          Tab(2).Control(0)=   "bTools_ctlSprite"
-         Tab(2).Control(0).Enabled=   0   'False
          Tab(2).ControlCount=   1
-         TabCaption(3)   =   "Images"
+         TabCaption(3)   =   "Im&ages"
          TabPicture(3)   =   "tkMain.frx":104CA
          Tab(3).ControlEnabled=   0   'False
          Tab(3).Control(0)=   "bTools_ctlImage"
          Tab(3).ControlCount=   1
          Begin Toolkit.ctlBrdSprite bTools_ctlSprite 
             Height          =   6495
-            Left            =   240
+            Left            =   -74880
             TabIndex        =   163
-            Top             =   480
+            Top             =   360
             Width           =   3015
             _ExtentX        =   5318
             _ExtentY        =   11456
          End
          Begin Toolkit.ctlBrdImage bTools_ctlImage 
             Height          =   4575
-            Left            =   -74760
+            Left            =   -74880
             TabIndex        =   162
-            Top             =   480
+            Top             =   360
             Width           =   3015
             _ExtentX        =   5318
             _ExtentY        =   8070
          End
          Begin Toolkit.ctlBrdVector bTools_ctlVector 
             Height          =   5055
-            Left            =   -74760
+            Left            =   120
             TabIndex        =   160
-            Top             =   480
+            Top             =   360
             Width           =   3015
             _ExtentX        =   5318
             _ExtentY        =   8916
          End
          Begin Toolkit.ctlBrdProgram bTools_ctlPrg 
             Height          =   6375
-            Left            =   -74760
+            Left            =   -74880
             TabIndex        =   161
-            Top             =   480
+            Top             =   360
             Width           =   3015
             _ExtentX        =   5318
             _ExtentY        =   11245
@@ -678,6 +677,7 @@ Begin VB.MDIForm tkMainForm
                TabStop         =   0   'False
                ToolTipText     =   "Lighting tools (I)"
                Top             =   1920
+               Visible         =   0   'False
                Width           =   375
             End
             Begin VB.PictureBox brdPicCurrentTile 
@@ -2142,7 +2142,7 @@ Begin VB.MDIForm tkMainForm
          Picture         =   "tkMain.frx":3298A
          Style           =   1  'Graphical
          TabIndex        =   9
-         ToolTipText     =   "board data"
+         ToolTipText     =   "Toggle board object toolbar"
          Top             =   1080
          Visible         =   0   'False
          Width           =   375
@@ -2154,6 +2154,7 @@ Begin VB.MDIForm tkMainForm
          Picture         =   "tkMain.frx":32D14
          Style           =   1  'Graphical
          TabIndex        =   7
+         ToolTipText     =   "Toggle tileset browser"
          Top             =   720
          Width           =   375
       End
@@ -2164,6 +2165,7 @@ Begin VB.MDIForm tkMainForm
          Picture         =   "tkMain.frx":339DE
          Style           =   1  'Graphical
          TabIndex        =   5
+         ToolTipText     =   "Toggle new editor list"
          Top             =   360
          Width           =   375
       End
@@ -2174,6 +2176,7 @@ Begin VB.MDIForm tkMainForm
          Picture         =   "tkMain.frx":33F68
          Style           =   1  'Graphical
          TabIndex        =   4
+         ToolTipText     =   "Toggle project file tree"
          Top             =   0
          Width           =   375
       End
@@ -2314,13 +2317,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "15/07/2006"
+            TextSave        =   "17/07/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "14:58"
+            TextSave        =   "11:31"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty

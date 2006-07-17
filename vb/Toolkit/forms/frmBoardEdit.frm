@@ -1448,16 +1448,34 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
 End Function
 
 Private Sub mnuCopy_Click() ': On Error Resume Next
+    'Deal with text ccp.
+    If TypeOf getActiveControl Is TextBox Then
+        Clipboard.clear
+        Clipboard.SetText getActiveControl.SelText
+        Exit Sub
+    End If
+
     tkMainForm.brdOptTool(BT_SELECT).value = True
     Call clipCopy(g_boardClipboard, m_sel, True)
 End Sub
 Private Sub mnuCut_Click(): On Error Resume Next
+    If TypeOf getActiveControl Is TextBox Then
+        Clipboard.clear
+        Clipboard.SetText getActiveControl.SelText
+        getActiveControl.SelText = vbNullString
+        Exit Sub
+    End If
+
     Call setUndo
     Call clipCopy(g_boardClipboard, m_sel, True)
     Call clipCut(g_boardClipboard, True)
 End Sub
-
 Private Sub mnuPaste_Click(): On Error Resume Next
+    If TypeOf getActiveControl Is TextBox Then
+        getActiveControl.SelText = Clipboard.GetText
+        Exit Sub
+    End If
+    
     'Start a move, retaining selection information.
     Call setUndo
     m_sel.xDrag = m_sel.x1
@@ -1484,7 +1502,6 @@ Private Sub mnuSelectAll_Click() ': On Error Resume Next
     End Select
     Call m_sel.draw(Me, m_ed.pCEd)
 End Sub
-
 Private Sub mnuUndo_Click() ': On Error Resume Next
     m_ed.undoIndex = nextUndo
     Call toolbarRefresh
@@ -1516,6 +1533,16 @@ Public Sub setUndo() ': On Error Resume Next
     mnuUndo.Enabled = True
     mnuRedo.Enabled = False
 End Sub
+Private Function getActiveControl() As Control ':on error resume next
+    'Doesn't seem to be a clean way to do this: typeOf ... is UserControl does not work.
+    'Could go by activeControl.tag/.name etc., but this is fallible.
+    Dim ctl As Control
+    Set ctl = Screen.ActiveControl
+    If TypeOf ctl Is ctlBrdImage Or TypeOf ctl Is ctlBrdSprite Or TypeOf ctl Is ctlBrdProgram Then
+        Set ctl = ctl.ActiveControl
+    End If
+    Set getActiveControl = ctl
+End Function
 
 '========================================================================
 '========================================================================
