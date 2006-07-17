@@ -251,6 +251,9 @@ Public Sub moveCurrentTo(ByRef sel As CBoardSelection) ':on error resume next
     Call activeBoard.drawAll
 End Sub
 
+Public Property Get ActiveControl() As Control ': On Error Resume Next
+    Set ActiveControl = UserControl.ActiveControl
+End Property
 Public Property Get getCombo() As ComboBox: On Error Resume Next
     Set getCombo = cmbImage
 End Property

@@ -321,7 +321,6 @@ Attribute VB_Exposed = False
 '========================================================================
 
 Option Explicit
-
 Private Sub apply() ': On Error Resume Next
     Dim prg As CBoardProgram
     'Set undo before getting current program because undo creates new objects.
@@ -405,6 +404,9 @@ Public Sub populate(ByVal index As Long, ByRef prg As CBoardProgram) ': On Error
     
 End Sub
 
+Public Property Get ActiveControl() As Control ': On Error Resume Next
+    Set ActiveControl = UserControl.ActiveControl
+End Property
 Public Property Get getCombo() As ComboBox: On Error Resume Next
     Set getCombo = cmbPrg
 End Property
