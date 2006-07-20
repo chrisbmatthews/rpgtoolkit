@@ -33,7 +33,7 @@ End Sub
 
 '=========================================================================
 '=========================================================================
-Public Sub draw(ByRef edFrm As frmBoardEdit, ByRef pCEd As CBoardEditor) ':on error resume next
+Public Sub draw(ByRef edfrm As frmBoardEdit, ByRef pCEd As CBoardEditor) ':on error resume next
     If status <> SS_NONE Then
         'Call vbPicRect(picBoard, sel.area.Left, sel.area.Top, sel.area.Right, sel.area.Bottom, m_ed.sel.Color)
         
@@ -42,31 +42,60 @@ Public Sub draw(ByRef edFrm As frmBoardEdit, ByRef pCEd As CBoardEditor) ':on er
         Call pCEd.boardPixelToScreen(pt1.x, pt1.y)
         Call pCEd.boardPixelToScreen(pt2.x, pt2.y)
         
-        edFrm.lineSelection(0).x1 = pt1.x: edFrm.lineSelection(0).x2 = pt2.x: edFrm.lineSelection(0).y1 = pt1.y: edFrm.lineSelection(0).y2 = pt1.y
-        edFrm.lineSelection(1).x1 = pt1.x: edFrm.lineSelection(1).x2 = pt2.x: edFrm.lineSelection(1).y1 = pt2.y: edFrm.lineSelection(1).y2 = pt2.y
-        edFrm.lineSelection(2).x1 = pt1.x: edFrm.lineSelection(2).x2 = pt1.x: edFrm.lineSelection(2).y1 = pt1.y: edFrm.lineSelection(2).y2 = pt2.y
-        edFrm.lineSelection(3).x1 = pt2.x: edFrm.lineSelection(3).x2 = pt2.x: edFrm.lineSelection(3).y1 = pt1.y: edFrm.lineSelection(3).y2 = pt2.y
+        edfrm.lineSelection(0).x1 = pt1.x: edfrm.lineSelection(0).x2 = pt2.x: edfrm.lineSelection(0).y1 = pt1.y: edfrm.lineSelection(0).y2 = pt1.y
+        edfrm.lineSelection(1).x1 = pt1.x: edfrm.lineSelection(1).x2 = pt2.x: edfrm.lineSelection(1).y1 = pt2.y: edfrm.lineSelection(1).y2 = pt2.y
+        edfrm.lineSelection(2).x1 = pt1.x: edfrm.lineSelection(2).x2 = pt1.x: edfrm.lineSelection(2).y1 = pt1.y: edfrm.lineSelection(2).y2 = pt2.y
+        edfrm.lineSelection(3).x1 = pt2.x: edfrm.lineSelection(3).x2 = pt2.x: edfrm.lineSelection(3).y1 = pt1.y: edfrm.lineSelection(3).y2 = pt2.y
     
         For i = 0 To 3
-            edFrm.lineSelection(i).Visible = True
+            edfrm.lineSelection(i).Visible = True
         Next i
     End If
 End Sub
-Public Sub drawLine(ByRef edFrm As frmBoardEdit, ByRef pCEd As CBoardEditor) ':on error resume next
+Public Sub drawLine(ByRef edfrm As frmBoardEdit, ByRef pCEd As CBoardEditor) ':on error resume next
     If status <> SS_NONE Then
         Dim pt1 As POINTAPI, pt2 As POINTAPI
         pt1.x = x1: pt1.y = y1: pt2.x = x2: pt2.y = y2
         Call pCEd.boardPixelToScreen(pt1.x, pt1.y)
         Call pCEd.boardPixelToScreen(pt2.x, pt2.y)
         
-        edFrm.lineSelection(0).x1 = pt1.x
-        edFrm.lineSelection(0).x2 = pt2.x
-        edFrm.lineSelection(0).y1 = pt1.y
-        edFrm.lineSelection(0).y2 = pt2.y
-        edFrm.lineSelection(0).Visible = True
+        edfrm.lineSelection(0).x1 = pt1.x
+        edfrm.lineSelection(0).x2 = pt2.x
+        edfrm.lineSelection(0).y1 = pt1.y
+        edfrm.lineSelection(0).y2 = pt2.y
+        edfrm.lineSelection(0).Visible = True
     End If
 End Sub
-Public Function isEmpty() As Boolean ':on error resume next
+
+'=========================================================================
+'Draw the selection as a rectangular projection onto the coordinate system
+'=========================================================================
+Public Sub drawProjectedRect(ByRef edfrm As frmBoardEdit, ByRef pCEd As CBoardEditor, ByVal coordType As Integer) ':on error resume next
+    
+    Dim i As Long, j As Long, pts() As POINTAPI
+    If status = SS_NONE Then Exit Sub
+    
+    If isIsometric(coordType) Then
+        
+        pts = modBoard.rectProjectIsometric(Me)
+
+        For i = 0 To 3
+            Call pCEd.boardPixelToScreen(pts(i).x, pts(i).y)
+            edfrm.lineSelection(i).x1 = pts(i).x: edfrm.lineSelection(i).y1 = pts(i).y
+
+            j = (i + 1) Mod 4
+            Call pCEd.boardPixelToScreen(pts(j).x, pts(j).y)
+            edfrm.lineSelection(i).x2 = pts(j).x: edfrm.lineSelection(i).y2 = pts(j).y
+            
+            edfrm.lineSelection(i).Visible = True
+        Next i
+
+    Else
+        Call draw(edfrm, pCEd)
+    End If
+End Sub
+
+Public Function isEmpty() As Boolean: On Error Resume Next
     isEmpty = (x1 = x2) And (y1 = y2)
 End Function
 
@@ -95,26 +124,26 @@ Public Sub expandToGrid(ByVal coordType As Long, ByVal brdSizeX As Long) ':on er
         x2 = pt.x: y2 = pt.y
     End If
 End Sub
-Public Sub clear(ByRef edFrm As frmBoardEdit) ':on error resume next
-    Dim i As Integer
+Public Sub clear(ByRef edfrm As frmBoardEdit): On Error Resume Next
+    Dim i As Long
     status = SS_NONE
-    For i = 0 To edFrm.lineSelection.count - 1
-        edFrm.lineSelection(i).Visible = False
+    For i = 0 To edfrm.lineSelection.count - 1
+        edfrm.lineSelection(i).Visible = False
     Next i
 End Sub
-Public Function containsPoint(ByVal x As Long, ByVal y As Long) As Boolean ':on error resume next
+Public Function containsPoint(ByVal x As Long, ByVal y As Long) As Boolean: On Error Resume Next
     containsPoint = (x >= x1 And x <= x2 And y >= y1 And y <= y2)
 End Function
-Public Sub move(ByVal dx As Long, ByVal dy As Long)  ':on error resume next
+Public Sub move(ByVal dx As Long, ByVal dy As Long): On Error Resume Next
     x1 = x1 + dx: x2 = x2 + dx
     y1 = y1 + dy: y2 = y2 + dy
 End Sub
-Public Sub restart(ByVal x As Long, ByVal y As Long) ':on error resume next
+Public Sub restart(ByVal x As Long, ByVal y As Long): On Error Resume Next
     status = SS_DRAWING
     x1 = x:    y1 = y
     x2 = x:    y2 = y
 End Sub
-Public Sub reorientate() ':on error resume next
+Public Sub reorientate(): On Error Resume Next
     Dim dx As Long, dy As Long
     'Reorientate.
     dx = x1: dy = y1
