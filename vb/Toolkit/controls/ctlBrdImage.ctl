@@ -7,13 +7,21 @@ Begin VB.UserControl ctlBrdImage
    DefaultCancel   =   -1  'True
    ScaleHeight     =   4740
    ScaleWidth      =   3135
+   Begin VB.CheckBox chkDraw 
+      Caption         =   "Draw images"
+      Height          =   375
+      Left            =   120
+      TabIndex        =   21
+      Top             =   120
+      Width           =   1575
+   End
    Begin VB.CommandButton cmdDefault 
       Caption         =   "Ok"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2640
-      TabIndex        =   21
-      Top             =   480
+      Left            =   1800
+      TabIndex        =   20
+      Top             =   120
       Visible         =   0   'False
       Width           =   375
    End
@@ -21,7 +29,7 @@ Begin VB.UserControl ctlBrdImage
       Caption         =   "Properties"
       Height          =   3615
       Left            =   0
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   960
       Width           =   3015
       Begin VB.CheckBox chkTransp 
@@ -29,7 +37,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Left            =   1680
          Style           =   1  'Graphical
-         TabIndex        =   20
+         TabIndex        =   19
          TabStop         =   0   'False
          Top             =   1800
          Width           =   1095
@@ -43,7 +51,7 @@ Begin VB.UserControl ctlBrdImage
          Left            =   1680
          ScaleHeight     =   255
          ScaleWidth      =   1095
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   2160
          Width           =   1095
       End
@@ -56,7 +64,7 @@ Begin VB.UserControl ctlBrdImage
          Left            =   240
          ScaleHeight     =   855
          ScaleWidth      =   2295
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   2640
          Visible         =   0   'False
          Width           =   2295
@@ -65,7 +73,7 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Index           =   2
             Left            =   0
-            TabIndex        =   19
+            TabIndex        =   18
             Top             =   480
             Width           =   2295
          End
@@ -74,7 +82,7 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   18
+            TabIndex        =   17
             Top             =   240
             Width           =   2295
          End
@@ -83,7 +91,7 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Index           =   0
             Left            =   0
-            TabIndex        =   17
+            TabIndex        =   16
             Top             =   0
             Value           =   -1  'True
             Width           =   2295
@@ -93,7 +101,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   285
          Index           =   1
          Left            =   1260
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   1320
          Width           =   495
       End
@@ -101,7 +109,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   285
          Index           =   2
          Left            =   2280
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   1320
          Width           =   495
       End
@@ -109,14 +117,14 @@ Begin VB.UserControl ctlBrdImage
          Height          =   285
          Index           =   0
          Left            =   360
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   1320
          Width           =   495
       End
       Begin VB.TextBox txtFilename 
          Height          =   285
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   480
          Width           =   2055
       End
@@ -128,14 +136,14 @@ Begin VB.UserControl ctlBrdImage
          Left            =   2280
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   480
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
             Caption         =   "..."
             Height          =   255
             Left            =   0
-            TabIndex        =   5
+            TabIndex        =   4
             Top             =   0
             Width           =   495
          End
@@ -145,7 +153,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Index           =   1
          Left            =   120
-         TabIndex        =   14
+         TabIndex        =   13
          Top             =   2160
          Width           =   1575
       End
@@ -154,7 +162,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Index           =   0
          Left            =   120
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   1800
          Width           =   1575
       End
@@ -163,7 +171,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Index           =   1
          Left            =   180
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   1360
          Width           =   2655
       End
@@ -172,7 +180,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Index           =   0
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   960
          Width           =   1935
       End
@@ -180,7 +188,7 @@ Begin VB.UserControl ctlBrdImage
          Caption         =   "Image filename"
          Height          =   255
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   240
          Width           =   2655
       End
@@ -189,24 +197,16 @@ Begin VB.UserControl ctlBrdImage
       Height          =   315
       Left            =   0
       Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   120
+      TabIndex        =   1
+      Top             =   600
       Width           =   3015
    End
    Begin VB.CommandButton cmdDelete 
       Caption         =   "Delete"
       Height          =   375
-      Left            =   0
-      TabIndex        =   1
-      Top             =   480
-      Width           =   855
-   End
-   Begin VB.CommandButton cmdDuplicate 
-      Caption         =   "Duplicate"
-      Height          =   375
-      Left            =   840
+      Left            =   2160
       TabIndex        =   0
-      Top             =   480
+      Top             =   120
       Width           =   855
    End
 End
@@ -242,6 +242,7 @@ Public Sub enableAll(): On Error Resume Next
     For Each i In UserControl
         i.Enabled = True
     Next i
+    chkDraw.value = Abs(activeBoard.toolbarDrawObject(BS_IMAGE))
 End Sub
 Public Sub moveCurrentTo(ByRef sel As CBoardSelection) ':on error resume next
     Call activeBoard.setUndo
@@ -257,14 +258,14 @@ End Property
 Public Property Get getCombo() As ComboBox: On Error Resume Next
     Set getCombo = cmbImage
 End Property
-Public Property Get getOptType(ByVal index As Integer) As OptionButton: On Error Resume Next
-    Set getOptType = optType(index)
+Public Property Get getOptType(ByVal Index As Integer) As OptionButton: On Error Resume Next
+    Set getOptType = optType(Index)
 End Property
 Public Property Get getTxtFilename() As TextBox: On Error Resume Next
     Set getTxtFilename = txtFilename
 End Property
-Public Property Get getTxtLoc(ByVal index As Long) As TextBox: On Error Resume Next
-    Set getTxtLoc = txtLoc(index)
+Public Property Get getTxtLoc(ByVal Index As Long) As TextBox: On Error Resume Next
+    Set getTxtLoc = txtLoc(Index)
 End Property
 Public Property Get getChkTransp() As CheckBox: On Error Resume Next
     Set getChkTransp = chkTransp
@@ -277,8 +278,14 @@ Public Property Get transpcolor() As Long: On Error Resume Next
     transpcolor = picTrans.backColor
 End Property
 
+Private Sub chkDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    activeBoard.toolbarDrawObject(BS_IMAGE) = chkDraw.value
+End Sub
 Private Sub chkTransp_Click(): On Error Resume Next
-    If chkTransp.value Then Call activeBoard.mdiOptTool(BT_IMG_TRANSP)
+    If chkTransp.value Then
+        tkMainForm.brdOptSetting(BS_GENERAL).value = True
+        Call activeBoard.mdiOptTool(BT_IMG_TRANSP)
+    End If
 End Sub
 Private Sub cmbImage_Click(): On Error Resume Next
     If cmbImage.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbImage.ListIndex, BS_IMAGE)
@@ -299,20 +306,22 @@ Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.imageDeleteCurrent(cmbImage.ListIndex)
     Call activeBoard.drawAll
 End Sub
-Private Sub cmdDuplicate_Click(): On Error Resume Next
-    MsgBox "tbd"
-End Sub
 Private Sub picTrans_Click(): On Error Resume Next
     transpcolor = ColorDialog()
     Call activeBoard.drawAll
 End Sub
-Private Sub txtLoc_Validate(index As Integer, Cancel As Boolean): On Error Resume Next
-    Call apply
-    Call activeBoard.drawAll
+Private Sub txtFilename_LostFocus(): On Error Resume Next
+    Call cmdDefault_Click
 End Sub
 Private Sub txtFilename_Validate(Cancel As Boolean): On Error Resume Next
-    Call apply
-    Call activeBoard.drawAll
+    Call cmdDefault_Click
 End Sub
+Private Sub txtLoc_LostFocus(Index As Integer): On Error Resume Next
+    Call cmdDefault_Click
+End Sub
+Private Sub txtLoc_Validate(Index As Integer, Cancel As Boolean): On Error Resume Next
+    Call cmdDefault_Click
+End Sub
+
 
 

@@ -7,13 +7,21 @@ Begin VB.UserControl ctlBrdSprite
    DefaultCancel   =   -1  'True
    ScaleHeight     =   6585
    ScaleWidth      =   3135
+   Begin VB.CheckBox chkDraw 
+      Caption         =   "Draw sprites"
+      Height          =   375
+      Left            =   120
+      TabIndex        =   38
+      Top             =   120
+      Width           =   1575
+   End
    Begin VB.CommandButton cmdDefault 
       Caption         =   "Ok"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2640
-      TabIndex        =   38
-      Top             =   480
+      Left            =   1800
+      TabIndex        =   37
+      Top             =   120
       Visible         =   0   'False
       Width           =   375
    End
@@ -21,14 +29,14 @@ Begin VB.UserControl ctlBrdSprite
       Caption         =   "Properties"
       Height          =   5535
       Left            =   0
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   960
       Width           =   3015
       Begin VB.HScrollBar hsbSlot 
          Height          =   255
          Left            =   1260
          Max             =   2
-         TabIndex        =   37
+         TabIndex        =   36
          Top             =   1440
          Value           =   1
          Width           =   495
@@ -36,7 +44,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.TextBox txtMultitask 
          Height          =   285
          Left            =   120
-         TabIndex        =   33
+         TabIndex        =   32
          Top             =   2640
          Width           =   2055
       End
@@ -49,7 +57,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   2280
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   31
+         TabIndex        =   30
          Top             =   2640
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
@@ -57,7 +65,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   2
             Left            =   0
-            TabIndex        =   32
+            TabIndex        =   31
             Top             =   0
             Width           =   495
          End
@@ -71,7 +79,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   2280
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   29
+         TabIndex        =   28
          Top             =   2040
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
@@ -79,7 +87,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   30
+            TabIndex        =   29
             Top             =   0
             Width           =   495
          End
@@ -87,7 +95,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.TextBox txtActivate 
          Height          =   285
          Left            =   120
-         TabIndex        =   28
+         TabIndex        =   27
          Top             =   2040
          Width           =   2055
       End
@@ -99,7 +107,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   240
          ScaleHeight     =   495
          ScaleWidth      =   2415
-         TabIndex        =   25
+         TabIndex        =   24
          Top             =   3000
          Width           =   2415
          Begin VB.OptionButton optActivationType 
@@ -107,7 +115,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   0
             Left            =   0
-            TabIndex        =   27
+            TabIndex        =   26
             Top             =   0
             Width           =   2055
          End
@@ -116,7 +124,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   26
+            TabIndex        =   25
             Top             =   240
             Width           =   2055
          End
@@ -125,7 +133,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   1
          Left            =   1260
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   1080
          Width           =   495
       End
@@ -133,7 +141,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   2
          Left            =   2280
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   1080
          Width           =   495
       End
@@ -141,14 +149,14 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   0
          Left            =   360
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   1080
          Width           =   495
       End
       Begin VB.TextBox txtFilename 
          Height          =   285
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   480
          Width           =   2055
       End
@@ -161,7 +169,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   2280
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   480
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
@@ -169,7 +177,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   0
             Left            =   0
-            TabIndex        =   5
+            TabIndex        =   4
             Top             =   0
             Width           =   495
          End
@@ -179,7 +187,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Conditional activation"
          Height          =   2055
          Left            =   120
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   3360
          Width           =   2775
          Begin VB.PictureBox picConditionallyActive 
@@ -190,7 +198,7 @@ Begin VB.UserControl ctlBrdSprite
             Left            =   120
             ScaleHeight     =   615
             ScaleWidth      =   2535
-            TabIndex        =   18
+            TabIndex        =   17
             Top             =   240
             Width           =   2535
             Begin VB.OptionButton optConditionallyActive 
@@ -198,7 +206,7 @@ Begin VB.UserControl ctlBrdSprite
                Height          =   255
                Index           =   1
                Left            =   0
-               TabIndex        =   20
+               TabIndex        =   19
                Top             =   240
                Width           =   1815
             End
@@ -207,7 +215,7 @@ Begin VB.UserControl ctlBrdSprite
                Height          =   255
                Index           =   0
                Left            =   0
-               TabIndex        =   19
+               TabIndex        =   18
                Top             =   0
                Width           =   1815
             End
@@ -216,7 +224,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   285
             Index           =   0
             Left            =   120
-            TabIndex        =   17
+            TabIndex        =   16
             Text            =   "<variable_A>"
             Top             =   1080
             Width           =   1455
@@ -225,7 +233,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   285
             Index           =   1
             Left            =   1920
-            TabIndex        =   16
+            TabIndex        =   15
             Text            =   "<value>"
             Top             =   1080
             Width           =   735
@@ -234,7 +242,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   285
             Index           =   2
             Left            =   120
-            TabIndex        =   15
+            TabIndex        =   14
             Text            =   "<variable_B>"
             Top             =   1680
             Width           =   1455
@@ -243,7 +251,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   285
             Index           =   3
             Left            =   1920
-            TabIndex        =   14
+            TabIndex        =   13
             Text            =   "<value>"
             Top             =   1680
             Width           =   735
@@ -252,7 +260,7 @@ Begin VB.UserControl ctlBrdSprite
             Caption         =   "Active if variable:"
             Height          =   255
             Left            =   120
-            TabIndex        =   24
+            TabIndex        =   23
             Top             =   840
             Width           =   1455
          End
@@ -261,7 +269,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   0
             Left            =   1680
-            TabIndex        =   23
+            TabIndex        =   22
             Top             =   1080
             Width           =   255
          End
@@ -269,7 +277,7 @@ Begin VB.UserControl ctlBrdSprite
             Caption         =   "After activation:"
             Height          =   255
             Left            =   120
-            TabIndex        =   22
+            TabIndex        =   21
             Top             =   1440
             Width           =   1815
          End
@@ -278,7 +286,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   1
             Left            =   1680
-            TabIndex        =   21
+            TabIndex        =   20
             Top             =   1680
             Width           =   255
          End
@@ -287,7 +295,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Slot index: 99"
          Height          =   255
          Left            =   120
-         TabIndex        =   36
+         TabIndex        =   35
          Top             =   1500
          Width           =   1215
       End
@@ -295,7 +303,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Override multitasking program"
          Height          =   375
          Left            =   120
-         TabIndex        =   35
+         TabIndex        =   34
          Top             =   2400
          Width           =   2655
       End
@@ -303,7 +311,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Override program to run on activation"
          Height          =   375
          Left            =   120
-         TabIndex        =   34
+         TabIndex        =   33
          Top             =   1800
          Width           =   2655
       End
@@ -312,7 +320,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   255
          Index           =   1
          Left            =   180
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   1125
          Width           =   2655
       End
@@ -321,7 +329,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   255
          Index           =   0
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   840
          Width           =   975
       End
@@ -329,7 +337,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Sprite filename"
          Height          =   255
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   240
          Width           =   2655
       End
@@ -338,24 +346,16 @@ Begin VB.UserControl ctlBrdSprite
       Height          =   315
       Left            =   0
       Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   120
+      TabIndex        =   1
+      Top             =   600
       Width           =   3015
    End
    Begin VB.CommandButton cmdDelete 
       Caption         =   "Delete"
       Height          =   375
-      Left            =   0
-      TabIndex        =   1
-      Top             =   480
-      Width           =   855
-   End
-   Begin VB.CommandButton cmdDuplicate 
-      Caption         =   "Duplicate"
-      Height          =   375
-      Left            =   840
+      Left            =   2160
       TabIndex        =   0
-      Top             =   480
+      Top             =   120
       Width           =   855
    End
 End
@@ -413,6 +413,7 @@ Public Sub enableAll(): On Error Resume Next
     For Each i In UserControl
         i.Enabled = True
     Next i
+    chkDraw.value = Abs(activeBoard.toolbarDrawObject(BS_SPRITE))
 End Sub
 Public Sub moveCurrentTo(ByRef sel As CBoardSelection) ':on error resume next
     Dim x As Long, y As Long
@@ -426,7 +427,7 @@ Public Sub moveCurrentTo(ByRef sel As CBoardSelection) ':on error resume next
     Call activeBoard.drawAll
 End Sub
 
-Public Sub populate(ByVal index As Long, ByRef spr As CBoardSprite) ':on error resume next
+Public Sub populate(ByVal Index As Long, ByRef spr As CBoardSprite) ':on error resume next
     Dim i As Long, x As Long, y As Long
     
     If spr Is Nothing Then
@@ -434,11 +435,11 @@ Public Sub populate(ByVal index As Long, ByRef spr As CBoardSprite) ':on error r
         Exit Sub
     End If
     
-    Call activeBoard.toolbarSetCurrent(BTAB_SPRITE, index)
+    Call activeBoard.toolbarSetCurrent(BTAB_SPRITE, Index)
     Call enableAll
     
-    If cmbSprite.ListIndex <> index Then cmbSprite.ListIndex = index
-    cmbSprite.list(index) = str(index) & ": " & IIf(LenB(spr.filename), spr.filename, "<sprite>")
+    If cmbSprite.ListIndex <> Index Then cmbSprite.ListIndex = Index
+    cmbSprite.list(Index) = str(Index) & ": " & IIf(LenB(spr.filename), spr.filename, "<sprite>")
     txtFilename.Text = spr.filename
     x = spr.x
     y = spr.y
@@ -448,7 +449,7 @@ Public Sub populate(ByVal index As Long, ByRef spr As CBoardSprite) ':on error r
     txtLoc(2).Text = str(spr.layer)
     txtActivate = spr.prgActivate
     txtMultitask = spr.prgMultitask
-    lblSlot.Caption = "Slot index: " & str(index)
+    lblSlot.Caption = "Slot index: " & str(Index)
     
     optConditionallyActive(spr.activate).value = True
     If spr.activate = SPR_CONDITIONAL Then
@@ -470,12 +471,15 @@ Public Property Get getCombo() As ComboBox: On Error Resume Next
     Set getCombo = cmbSprite
 End Property
 
+Private Sub chkDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    activeBoard.toolbarDrawObject(BS_SPRITE) = chkDraw.value
+End Sub
 Private Sub cmbSprite_Click(): On Error Resume Next
     If cmbSprite.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbSprite.ListIndex, BS_SPRITE)
 End Sub
-Private Sub cmdBrowse_Click(index As Integer): On Error Resume Next
+Private Sub cmdBrowse_Click(Index As Integer): On Error Resume Next
     Dim file As String, fileTypes As String
-    Select Case index
+    Select Case Index
         Case 0:
             fileTypes = "Item (*.itm)|*.itm|All files(*.*)|*.*"
             If browseFileDialog(tkMainForm.hwnd, projectPath & itmPath, "Board sprite", ".itm", fileTypes, file) Then
@@ -506,34 +510,41 @@ Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.spriteDeleteCurrent(cmbSprite.ListIndex)
     Call activeBoard.drawAll
 End Sub
-Private Sub cmdDuplicate_Click(): On Error Resume Next
-    MsgBox "tbd"
-End Sub
 Private Sub hsbSlot_Change(): On Error Resume Next
     If hsbSlot.value <> 1 Then
         Call activeBoard.spriteSwapSlots(cmbSprite.ListIndex, cmbSprite.ListIndex + hsbSlot.value - 1)
     End If
     hsbSlot.value = 1
 End Sub
-Private Sub optActivationType_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub optActivationType_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply
 End Sub
-Private Sub optConditionallyActive_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub optConditionallyActive_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call apply
+End Sub
+Private Sub txtActivate_LostFocus(): On Error Resume Next
     Call apply
 End Sub
 Private Sub txtActivate_Validate(Cancel As Boolean): On Error Resume Next
     Call apply
 End Sub
-Private Sub txtConditionVars_Validate(index As Integer, Cancel As Boolean): On Error Resume Next
+Private Sub txtConditionVars_Validate(Index As Integer, Cancel As Boolean): On Error Resume Next
     Call apply
+End Sub
+Private Sub txtFilename_LostFocus(): On Error Resume Next
+    Call cmdDefault_Click
 End Sub
 Private Sub txtFilename_Validate(Cancel As Boolean): On Error Resume Next
-    Call apply
-    Call activeBoard.drawAll
+    Call cmdDefault_Click
 End Sub
-Private Sub txtLoc_Validate(index As Integer, Cancel As Boolean): On Error Resume Next
+Private Sub txtLoc_LostFocus(Index As Integer): On Error Resume Next
+    Call cmdDefault_Click
+End Sub
+Private Sub txtLoc_Validate(Index As Integer, Cancel As Boolean): On Error Resume Next
+    Call cmdDefault_Click
+End Sub
+Private Sub txtMultitask_LostFocus(): On Error Resume Next
     Call apply
-    Call activeBoard.drawAll
 End Sub
 Private Sub txtMultitask_Validate(Cancel As Boolean): On Error Resume Next
     Call apply

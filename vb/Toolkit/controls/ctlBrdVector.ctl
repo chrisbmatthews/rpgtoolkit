@@ -8,12 +8,20 @@ Begin VB.UserControl ctlBrdVector
    DefaultCancel   =   -1  'True
    ScaleHeight     =   4965
    ScaleWidth      =   3120
+   Begin VB.CheckBox chkDraw 
+      Caption         =   "Draw vectors"
+      Height          =   375
+      Left            =   120
+      TabIndex        =   17
+      Top             =   120
+      Width           =   1455
+   End
    Begin VB.CommandButton cmdDefault 
       Caption         =   "Ok"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2640
-      TabIndex        =   17
+      Left            =   1800
+      TabIndex        =   16
       Top             =   120
       Visible         =   0   'False
       Width           =   375
@@ -22,13 +30,13 @@ Begin VB.UserControl ctlBrdVector
       Caption         =   "Properties"
       Height          =   4215
       Left            =   0
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   600
       Width           =   3015
       Begin MSComctlLib.ListView lvPoints 
          Height          =   1095
          Left            =   360
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   2880
          Width           =   1935
          _ExtentX        =   3413
@@ -67,7 +75,7 @@ Begin VB.UserControl ctlBrdVector
          Left            =   120
          ScaleHeight     =   735
          ScaleWidth      =   2655
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   240
          Width           =   2655
          Begin VB.OptionButton optType 
@@ -75,7 +83,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   1
             Left            =   0
-            TabIndex        =   13
+            TabIndex        =   12
             Top             =   0
             Value           =   -1  'True
             Width           =   855
@@ -85,7 +93,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   2
             Left            =   0
-            TabIndex        =   12
+            TabIndex        =   11
             Top             =   360
             Width           =   855
          End
@@ -94,7 +102,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   8
             Left            =   1320
-            TabIndex        =   11
+            TabIndex        =   10
             Top             =   0
             Width           =   855
          End
@@ -103,7 +111,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   4
             Left            =   1320
-            TabIndex        =   10
+            TabIndex        =   9
             Top             =   360
             Visible         =   0   'False
             Width           =   1335
@@ -114,7 +122,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Index           =   0
          Left            =   360
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   1200
          Width           =   2295
       End
@@ -123,7 +131,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Index           =   1
          Left            =   360
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   1440
          Width           =   2295
       End
@@ -132,14 +140,14 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Index           =   2
          Left            =   360
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   1680
          Width           =   2295
       End
       Begin VB.TextBox txtStairs 
          Height          =   285
          Left            =   360
-         TabIndex        =   5
+         TabIndex        =   4
          Text            =   "1"
          Top             =   2400
          Width           =   495
@@ -148,14 +156,14 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Closed vector"
          Height          =   255
          Left            =   360
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   960
          Width           =   1815
       End
       Begin VB.TextBox txtLayer 
          Height          =   285
          Left            =   360
-         TabIndex        =   3
+         TabIndex        =   2
          Text            =   "1"
          Top             =   2085
          Width           =   495
@@ -164,7 +172,7 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Stairs to layer"
          Height          =   255
          Left            =   960
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   2445
          Width           =   975
       End
@@ -172,7 +180,7 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Layer"
          Height          =   255
          Left            =   960
-         TabIndex        =   14
+         TabIndex        =   13
          Top             =   2145
          Width           =   975
       End
@@ -180,15 +188,7 @@ Begin VB.UserControl ctlBrdVector
    Begin VB.CommandButton cmdDelete 
       Caption         =   "Delete"
       Height          =   375
-      Left            =   0
-      TabIndex        =   1
-      Top             =   120
-      Width           =   855
-   End
-   Begin VB.CommandButton cmdDuplicate 
-      Caption         =   "Duplicate"
-      Height          =   375
-      Left            =   840
+      Left            =   2160
       TabIndex        =   0
       Top             =   120
       Width           =   855
@@ -251,9 +251,10 @@ Private Sub enableAll(): On Error Resume Next
     For Each i In UserControl
         i.Enabled = True
     Next i
+    chkDraw.value = Abs(activeBoard.toolbarDrawObject(BS_VECTOR))
 End Sub
 
-Public Sub populate(ByVal index As Long, ByRef vector As CVector)  ':on error resume next
+Public Sub populate(ByVal Index As Long, ByRef vector As CVector)  ':on error resume next
     Dim i As Long, j As Long
     
     tkMainForm.bTools_Tabs.Height = tkMainForm.pTools.Height - tkMainForm.bTools_Tabs.Top
@@ -266,7 +267,7 @@ Public Sub populate(ByVal index As Long, ByRef vector As CVector)  ':on error re
         Exit Sub
     End If
     
-    Call activeBoard.toolbarSetCurrent(BTAB_VECTOR, index)
+    Call activeBoard.toolbarSetCurrent(BTAB_VECTOR, Index)
     Call enableAll
     
     'Option buttons have been assigned TT_ values as indices.
@@ -297,33 +298,43 @@ Public Sub populate(ByVal index As Long, ByRef vector As CVector)  ':on error re
     
 End Sub
 
-Private Sub chkUnder_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub chkDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    activeBoard.toolbarDrawObject(BS_VECTOR) = chkDraw.value
+End Sub
+Private Sub chkUnder_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply
 End Sub
 Private Sub chkClosed_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply
 End Sub
-
 Private Sub cmdDefault_Click(): On Error Resume Next
     'Default button on form: hitting the Enter key calls this function.
     Call apply
     Call activeBoard.drawAll
 End Sub
-
-Private Sub optType_MouseUp(index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub optType_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call apply
+End Sub
+Private Sub txtLayer_LostFocus(): On Error Resume Next
     Call apply
 End Sub
 Private Sub txtLayer_Validate(Cancel As Boolean): On Error Resume Next
     Call apply
 End Sub
+Private Sub txtStairs_LostFocus(): On Error Resume Next
+    Call apply
+End Sub
 Private Sub txtStairs_Validate(Cancel As Boolean): On Error Resume Next
+    Call apply
+End Sub
+Private Sub lvPoints_LostFocus(): On Error Resume Next
     Call apply
 End Sub
 Private Sub lvPoints_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call modBoard.vectorLvColumn(lvPoints, x)
 End Sub
-Private Sub lvPoints_KeyDown(keyCode As Integer, Shift As Integer): On Error Resume Next
-    If modBoard.vectorLvKeyDown(lvPoints, keyCode) Then Call apply
+Private Sub lvPoints_KeyDown(KeyCode As Integer, Shift As Integer): On Error Resume Next
+    If modBoard.vectorLvKeyDown(lvPoints, KeyCode) Then Call apply
 End Sub
 Private Sub lvPoints_Validate(Cancel As Boolean): On Error Resume Next
     Call apply
@@ -332,7 +343,4 @@ Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.setUndo
     Call activeBoard.vectorDeleteCurrent(BS_VECTOR)
     Call activeBoard.drawAll
-End Sub
-Private Sub cmdDuplicate_Click(): On Error Resume Next
-    MsgBox "tbd"
 End Sub
