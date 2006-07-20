@@ -436,16 +436,12 @@ pvVersion:
 		file >> sizeL;
 		setSize(sizeX, sizeY, sizeL);
 
-		// Start position moved to main file.
-		short spX, spY, spL;
-		file >> spX;
-		file >> spY;
-		file >> spL;
-
-		extern MAIN_FILE g_mainFile;
-		if (!g_mainFile.startX) g_mainFile.startX = spX;
-		if (!g_mainFile.startY) g_mainFile.startY = spY;
-		if (!g_mainFile.startL) g_mainFile.startL = spL;
+		// Start position moved to main file; hold
+		// onto until after isometric byte is read.
+		int pStartX, pStartY, pStartL;
+		file >> var; pStartX = int(var);
+		file >> var; pStartY = int(var);
+		file >> var; pStartL = int(var);
 
 		file >> var; bDisableSaving = bool(var);
     
@@ -736,6 +732,13 @@ lutEndB:
 		{
 			// Required only for the active board.
 
+			// Convert to pixel co-ordinates.
+			coords::tileToPixel(pStartX, pStartY, coordType, true, sizeX);
+			extern MAIN_FILE g_mainFile;
+			if (!g_mainFile.startX) g_mainFile.startX = short(pStartX);
+			if (!g_mainFile.startY) g_mainFile.startY = short(pStartY);
+			if (!g_mainFile.startL) g_mainFile.startL = short(pStartL);
+
 			// Create program bases.
 			std::vector<LPBRD_PROGRAM>::iterator p = programs.begin();
 			std::vector<OBJ_POSITION>::iterator pos = prgPos.begin();
@@ -747,7 +750,7 @@ lutEndB:
 			// Setup the background image as an attached image.
 			if (!bkgImage->file.empty())
 			{
-				bkgImage->type = BI_STRETCH;
+				bkgImage->type = BI_PARALLAX;
 				bkgImage->createCanvas(*this);
 			}
 			else
@@ -907,10 +910,12 @@ void tagBoardVector::createCanvas(BOARD &board)
 		// are affected, or just the specified layer.
 		const int lLower = (attributes & TA_ALL_LAYERS_BELOW ? 1 : layer); 
 	
+		// If the under tile applies to the background.
 		if (attributes & TA_BRD_BACKGROUND)
 		{
-			// If the under tile applies to the background.
-			board.renderBackground(cnv, rAlign);
+			// Does not apply to parallaxed images.
+			if (board.bkgImage && board.bkgImage->type != BI_PARALLAX)
+				board.renderBackground(cnv, rAlign);
 		}
 
 		// Draw the board layer within the bounds to the intermediate canvas.
@@ -966,6 +971,10 @@ void tagBoardImage::createCanvas(BOARD &board)
 	FIBITMAP *bmp = FreeImage_Load (FreeImage_GetFileType(path.c_str(), 16), path.c_str());
 	if (bmp)
 	{
+		// Remove unnecessary drawing types.
+		if ((board.pxWidth() == FreeImage_GetWidth(bmp)) && (board.pxHeight() == FreeImage_GetHeight(bmp)))
+			type = BI_NORMAL;
+
 		// Successfully loaded. Size the canvas to the image size.
 		const DWORD width  = (type == BI_STRETCH) ? board.pxWidth() : FreeImage_GetWidth(bmp),
 					height = (type == BI_STRETCH) ? board.pxHeight() : FreeImage_GetHeight(bmp);

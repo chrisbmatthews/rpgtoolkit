@@ -246,7 +246,7 @@ void setUpGame()
 			g_mainFile.startX ? g_mainFile.startX : 2,
 			g_mainFile.startY ? g_mainFile.startY : 2,
 			g_mainFile.startL ? g_mainFile.startL : 1,
-			g_mainFile.startX ? g_pBoard->coordType : COORD_TYPE(g_pBoard->coordType & ~PX_ABSOLUTE)
+			g_mainFile.startX ? PX_ABSOLUTE : COORD_TYPE(g_pBoard->coordType & ~PX_ABSOLUTE)
 		);
 
 		g_pSelectedPlayer->alignBoard(g_screen, true);

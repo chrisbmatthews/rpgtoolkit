@@ -250,5 +250,12 @@ bool tagMainFile::open(const STRING fileName)
 		file >> bFpsInTitleBar;
 	}
 
+	if (minorVer >= 9)
+	{
+		file >> startX;
+		file >> startY;
+		file >> startL;
+	}
+
 	return true;
 }
