@@ -12,9 +12,9 @@ Begin VB.Form frmBoardEdit
    ScaleWidth      =   11340
    Begin TabDlg.SSTab sstBoard 
       Height          =   6255
-      Left            =   120
+      Left            =   0
       TabIndex        =   0
-      Top             =   120
+      Top             =   0
       Width           =   10335
       _ExtentX        =   18230
       _ExtentY        =   11033
@@ -908,8 +908,35 @@ Begin VB.Form frmBoardEdit
       End
    End
    Begin VB.Menu mnu 
-      Caption         =   "Toolkit"
+      Caption         =   "Board"
       Index           =   2
+      Begin VB.Menu mnuBoard 
+         Caption         =   "Preferences..."
+         Index           =   0
+      End
+      Begin VB.Menu mnuBoard 
+         Caption         =   "Set Player Start Location"
+         Enabled         =   0   'False
+         Index           =   1
+      End
+      Begin VB.Menu mnuBoard 
+         Caption         =   "Convert co-ordinates"
+         Index           =   2
+         Begin VB.Menu mnuCoords 
+            Caption         =   "to isometric rotated"
+            Index           =   0
+            Shortcut        =   ^I
+         End
+         Begin VB.Menu mnuCoords 
+            Caption         =   "to pixel"
+            Index           =   1
+            Shortcut        =   ^P
+         End
+      End
+   End
+   Begin VB.Menu mnu 
+      Caption         =   "Toolkit"
+      Index           =   3
       Begin VB.Menu mnuToolkit 
          Caption         =   "Test Game"
          Index           =   0
@@ -923,7 +950,7 @@ Begin VB.Form frmBoardEdit
    End
    Begin VB.Menu mnu 
       Caption         =   "Build"
-      Index           =   3
+      Index           =   4
       Begin VB.Menu mnuBuild 
          Caption         =   "Create PakFile"
          Index           =   0
@@ -944,7 +971,7 @@ Begin VB.Form frmBoardEdit
    End
    Begin VB.Menu mnu 
       Caption         =   "Window"
-      Index           =   4
+      Index           =   5
       WindowList      =   -1  'True
       Begin VB.Menu mnuWindow 
          Caption         =   "Show/Hide Tools"
@@ -953,7 +980,7 @@ Begin VB.Form frmBoardEdit
    End
    Begin VB.Menu mnu 
       Caption         =   "Help"
-      Index           =   5
+      Index           =   6
       Begin VB.Menu mnuHelp 
          Caption         =   "User's Guide"
          Index           =   0
@@ -1060,6 +1087,10 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
         For i = 0 To UBound(m_ed.currentObject)
             m_ed.currentObject(i) = -1              'Initialise the selected objects.
         Next i
+        ReDim m_ed.bDrawObjects(BS_LIGHTING)
+        For i = 0 To UBound(m_ed.bDrawObjects)
+            m_ed.bDrawObjects(i) = True
+        Next i
     End With
     Set m_sel = New CBoardSelection
     Me.Caption = "Untitled board"
@@ -1072,11 +1103,8 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
     m_ed.programColor = RGB(255, 255, 0)
     m_ed.waypointColor = RGB(255, 0, 0)
     m_ed.gridColor = RGB(255, 255, 255)
+    m_ed.pStartColor = RGB(255, 255, 255)
     m_ed.bShowVectorIndices = True
-    m_ed.bShowImages = True
-    m_ed.bShowPrograms = True
-    m_ed.bShowSprites = True
-    m_ed.bShowVectors = True
 End Sub
 '=========================================================================
 '=========================================================================
@@ -1109,7 +1137,7 @@ End Sub
 '========================================================================
 ' change selected tile {from tkMainForm: currentTilesetForm_MouseDown}
 '========================================================================
-Public Sub changeSelectedTile(ByVal file As String) ': On Error Resume Next
+Public Sub changeSelectedTile(ByVal file As String, Optional ByVal bChangeTool As Boolean = True) ': On Error Resume Next
 
     tkMainForm.brdPicCurrentTile.Cls
     If (LenB(file) = 0) Then Exit Sub
@@ -1118,7 +1146,7 @@ Public Sub changeSelectedTile(ByVal file As String) ': On Error Resume Next
     m_ed.selectedTile = file
     
     ' change setting/tool to tile/draw.
-    If m_ed.optSetting <> BS_TILE Then
+    If bChangeTool And m_ed.optSetting <> BS_TILE Then
         m_ed.optSetting = BS_TILE
         m_ed.optTool = BT_DRAW
         tkMainForm.brdOptSetting(m_ed.optSetting).value = True
@@ -1156,10 +1184,16 @@ Private Sub Form_Activate() ':on error resume next
     tkMainForm.brdOptTool(m_ed.optTool).value = True
     tkMainForm.brdChkGrid.value = Abs(m_ed.bGrid)
     tkMainForm.brdChkAutotile.value = Abs(m_ed.bAutotiler)
+    Call changeSelectedTile(m_ed.selectedTile)
     Call toolsRefresh
     
     mnuUndo.Enabled = m_ed.bUndoData(nextUndo)
     mnuRedo.Enabled = m_ed.bUndoData(nextRedo)
+    'Player start location.
+    mnuBoard(1).Enabled = (mainMem.initBoard = m_ed.boardName)
+    'Co-ordinate conversions.
+    mnuCoords(0).Enabled = (m_ed.board(m_ed.undoIndex).coordType And ISO_STACKED)
+    mnuCoords(1).Enabled = (m_ed.board(m_ed.undoIndex).coordType Xor PX_ABSOLUTE)
     
     Call resetLayerCombos
     
@@ -1181,13 +1215,6 @@ Private Sub Form_Activate() ':on error resume next
     Call Form_Resize
     
     Exit Sub
-    
-    'Redraw the selected tile.
-    'tkMainForm.currenttile.Cls
-    'tkMainForm.currenttileIso.Cls
-    'tkMainForm.bFrame(2).Caption = "Current Tile - None" & "       "
-    'Call changeSelectedTile(boardList(activeBoardIndex).selectedTile)
-    'tkMainForm.animTileTimer.Enabled = m_bAnimating
 
 End Sub
 Public Sub Form_Deactivate() ':on error resume next
@@ -1201,8 +1228,8 @@ Public Sub Form_Deactivate() ':on error resume next
     tkMainForm.popButton(3).Visible = False
     tkMainForm.pTools.Visible = False
 End Sub
-Private Sub Form_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
-    Call picBoard_KeyDown(keyCode, Shift)
+Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer) ':on error resume next
+    Call picBoard_KeyDown(KeyCode, Shift)
 End Sub
 Private Sub Form_Load() ':on error resume next
     'Board loading performed explicitly through newBoard()
@@ -1233,8 +1260,8 @@ Private Sub Form_Resize() ':on error resume next
     Dim brdWidth As Integer, brdHeight As Integer
     
     'Available space.
-    sstBoard.width = activeBoard.width - sstBoard.Left * 3
-    sstBoard.Height = activeBoard.Height - sstBoard.Top * 6
+    sstBoard.width = activeBoard.width - 120
+    sstBoard.Height = activeBoard.Height - 480
     
     If sstBoard.Tab = BTAB_PROPERTIES Then
         picProperties.Left = (sstBoard.width - picProperties.width) / 2
@@ -1447,6 +1474,28 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
     End If
 End Function
 
+Private Sub mnuBoard_Click(Index As Integer): On Error Resume Next
+    Select Case Index
+        Case 0:
+            'Preferences
+        Case 1:
+            'Player start location.
+            tkMainForm.brdOptSetting(BS_GENERAL).value = True
+            m_ed.optTool = BT_SET_PSTART
+    End Select
+End Sub
+Private Sub mnuCoords_Click(Index As Integer): On Error Resume Next
+    Call setUndo
+    Select Case Index
+        Case 0:
+            Call Commonboard.boardToIsoRotated(m_ed, m_ed.board(m_ed.undoIndex))
+        Case 1:
+             m_ed.board(m_ed.undoIndex).coordType = m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE
+    End Select
+    mnuCoords(Index).Enabled = False            'Only allow operation once.
+    Call assignProperties                       'Update coordinate display.
+End Sub
+
 Private Sub mnuCopy_Click() ': On Error Resume Next
     'Deal with text ccp.
     If TypeOf getActiveControl Is TextBox Then
@@ -1482,8 +1531,9 @@ Private Sub mnuPaste_Click(): On Error Resume Next
     m_sel.yDrag = m_sel.y1
     m_sel.status = SS_PASTING
 End Sub
-Private Sub mnusave_Click(index As Integer) ': On Error Resume Next
-    Select Case index
+
+Private Sub mnusave_Click(Index As Integer) ': On Error Resume Next
+    Select Case Index
         Case 0: Call saveFile
         Case 1: Call saveFileAs
         Case 2: Call tkMainForm.saveallmnu_Click
@@ -1546,7 +1596,7 @@ End Function
 
 '========================================================================
 '========================================================================
-Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
+Private Sub picBoard_KeyDown(KeyCode As Integer, Shift As Integer) ':on error resume next
 
     Dim curVector As CVector
     Set curVector = currentVector
@@ -1554,28 +1604,30 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
     'Ctrl+letter through menus.
     If Shift And (vbCtrlMask Or vbAltMask) Then Exit Sub
     
-    Select Case keyCode
-        Case vbKeyQ: tkMainForm.brdOptSetting(BS_GENERAL).value = True
-        Case vbKeyW: tkMainForm.brdOptSetting(BS_ZOOM).value = True
-        Case vbKeyE: tkMainForm.brdOptSetting(BS_TILE).value = True
-        Case vbKeyR: tkMainForm.brdOptSetting(BS_VECTOR).value = True
-        Case vbKeyT: tkMainForm.brdOptSetting(BS_PROGRAM).value = True
-        Case vbKeyY: tkMainForm.brdOptSetting(BS_SPRITE).value = True
-        Case vbKeyU: tkMainForm.brdOptSetting(BS_IMAGE).value = True
-        Case vbKeyI: tkMainForm.brdOptSetting(BS_LIGHTING).value = True
-        Case vbKeyA: tkMainForm.brdOptTool(BT_DRAW).value = True
-        Case vbKeyS: tkMainForm.brdOptTool(BT_SELECT).value = True
-        Case vbKeyD: tkMainForm.brdOptTool(BT_FLOOD).value = True
-        Case vbKeyF: tkMainForm.brdOptTool(BT_ERASE).value = True
-        Case vbKeyG: tkMainForm.brdChkGrid.value = Not tkMainForm.brdChkGrid.value
-        Case vbKeyH: tkMainForm.brdChkAutotile.value = Not tkMainForm.brdChkAutotile.value
-        Case vbKeyN: tkMainForm.brdChkHideLayers.value = Not tkMainForm.brdChkHideLayers.value
-        Case vbKeyM: tkMainForm.brdChkShowLayers.value = Not tkMainForm.brdChkShowLayers.value
-    End Select
+    With tkMainForm
+        Select Case KeyCode
+            Case vbKeyQ: .brdOptSetting(BS_GENERAL).value = True
+            Case vbKeyW: .brdOptSetting(BS_ZOOM).value = True
+            Case vbKeyE: .brdOptSetting(BS_TILE).value = True
+            Case vbKeyR: .brdOptSetting(BS_VECTOR).value = True
+            Case vbKeyT: .brdOptSetting(BS_PROGRAM).value = True
+            Case vbKeyY: .brdOptSetting(BS_SPRITE).value = True
+            Case vbKeyU: .brdOptSetting(BS_IMAGE).value = True
+            Case vbKeyI: .brdOptSetting(BS_LIGHTING).value = True
+            Case vbKeyA: If .brdOptTool(BT_DRAW).Enabled Then .brdOptTool(BT_DRAW).value = True
+            Case vbKeyS: If .brdOptTool(BT_SELECT).Enabled Then .brdOptTool(BT_SELECT).value = True
+            Case vbKeyD: If .brdOptTool(BT_FLOOD).Enabled Then .brdOptTool(BT_FLOOD).value = True
+            Case vbKeyF: If .brdOptTool(BT_ERASE).Enabled Then .brdOptTool(BT_ERASE).value = True
+            Case vbKeyG: .brdChkGrid.value = Not .brdChkGrid.value
+            Case vbKeyH: .brdChkAutotile.value = Not .brdChkAutotile.value
+            Case vbKeyN: .brdChkHideLayers.value = Not .brdChkHideLayers.value
+            Case vbKeyM: .brdChkShowLayers.value = Not .brdChkShowLayers.value
+        End Select
+    End With
 
     Select Case m_ed.optSetting
         Case BS_VECTOR, BS_PROGRAM
-            Select Case keyCode
+            Select Case KeyCode
                 Case vbKeyDelete, vbKeyBack
                     Call vectorDeleteSelection(m_sel)
                 Case vbKeyZ
@@ -1593,7 +1645,7 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
             Call toolbarRefresh
 
         Case BS_TILE
-            Select Case keyCode
+            Select Case KeyCode
                 Case vbKeyDelete, vbKeyBack
                     'Create a local clipboard and cut to it.
                     Dim clip As TKBoardClipboard
@@ -1605,7 +1657,7 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
             End Select 'Key
             
         Case BS_IMAGE
-            Select Case keyCode
+            Select Case KeyCode
                 Case vbKeyDelete, vbKeyBack
                     Call imageDeleteCurrent(tkMainForm.bTools_ctlImage.getCombo.ListIndex)
             End Select
@@ -1654,7 +1706,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                             m_sel.xDrag = pxCoord.x
                             m_sel.yDrag = pxCoord.y
                         Else
-                            Dim img As TKBoardImage, index  As Long
+                            Dim img As TKBoardImage, Index  As Long
                             Select Case m_ed.optSetting
                                 Case BS_TILE, BS_VECTOR, BS_PROGRAM
                                     'Start new selection.
@@ -1662,13 +1714,13 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                                     Call m_sel.restart(pxCoord.x, pxCoord.y)
                                 Case BS_SPRITE
                                     'Start moving the selected sprite.
-                                    If imageHitTest(pxCoord.x, pxCoord.y, index, img, m_ed.board(m_ed.undoIndex).spriteImages) Then
-                                        Call toolbarChange(index, m_ed.optSetting)
+                                    If imageHitTest(pxCoord.x, pxCoord.y, Index, img, m_ed.board(m_ed.undoIndex).spriteImages) Then
+                                        Call toolbarChange(Index, m_ed.optSetting)
                                         Call m_sel.assign(img.bounds.Left, img.bounds.Top, img.bounds.Right, img.bounds.Bottom)
                                     End If
                                 Case BS_IMAGE
-                                    If imageHitTest(pxCoord.x, pxCoord.y, index, img, m_ed.board(m_ed.undoIndex).Images) Then
-                                        Call toolbarChange(index, m_ed.optSetting)
+                                    If imageHitTest(pxCoord.x, pxCoord.y, Index, img, m_ed.board(m_ed.undoIndex).Images) Then
+                                        Call toolbarChange(Index, m_ed.optSetting)
                                         Call m_sel.assign(img.bounds.Left, img.bounds.Top, img.bounds.Right, img.bounds.Bottom)
                                     End If
                             End Select
@@ -1716,6 +1768,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
         Case BT_IMG_TRANSP
             tkMainForm.bTools_ctlImage.transpcolor = picBoard.point(x, y)
             Exit Sub
+                    
     End Select
     
     Select Case m_ed.optSetting
@@ -1756,7 +1809,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
     End If
       
     Select Case m_ed.optTool
-        Case BT_SELECT, BT_IMG_TRANSP
+        Case BT_SELECT, BT_RECT, BT_IMG_TRANSP
             If Button <> 0 Or m_sel.status = SS_PASTING Then Call picBoard_MouseDown(Button, Shift, x, y)
             Exit Sub
     End Select
@@ -1859,20 +1912,49 @@ Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y
             m_sel.status = SS_FINISHED
             Call m_sel.draw(Me, m_ed.pCEd)
             
+        Case BT_RECT
+            Select Case m_ed.optSetting
+                Case BS_TILE
+                    m_ed.bLayerOccupied(0) = True
+                    m_ed.bLayerOccupied(m_ed.currentLayer) = True
+                    
+                    Call tileDrawRect(m_sel, Shift)
+                    Call m_sel.clear(Me)
+                    
+                    Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, False, m_ed.currentLayer)
+                    Call drawBoard
+                    
+                Case BS_VECTOR, BS_PROGRAM
+                    Call vectorCreateRect(m_sel)
+            End Select
         Case BT_IMG_TRANSP
             'Reset the tool.
-            tkMainForm.brdOptTool(BT_SELECT).value = True
-            Call mdiOptTool(BT_SELECT)
+            Call mdiOptTool(BT_DRAW)
             tkMainForm.bTools_ctlImage.getChkTransp.value = 0
-            Call imageApply(tkMainForm.bTools_ctlImage.getCombo.ListIndex)
+            Call imageApply(toolbarGetIndex(BS_IMAGE))
+            Call drawAll
+            
+        Case BT_SET_PSTART
+            If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord, True)
+            mainMem.pStartX = pxCoord.x
+            mainMem.pStartY = pxCoord.y
+            mainMem.pStartL = m_ed.currentLayer
+            Call saveMain(gamPath & CommonMainFile.mainFile, mainMem)
+            Call mdiOptTool(BT_DRAW)
             Call drawAll
     End Select
          
 End Sub
-Private Function snapToGrid(ByRef pxCoord As POINTAPI, Optional ByVal bAddBasePoint As Boolean = False) As POINTAPI: On Error Resume Next
-    Dim pt As POINTAPI: pt = pxCoord
+Private Function snapToGrid(ByRef pxCoord As POINTAPI, Optional ByVal bAddBasePoint As Boolean = False, Optional ByVal bToIsoCentre As Boolean = True) As POINTAPI: On Error Resume Next
+    Dim pt As POINTAPI
+    pt = pxCoord
     pt = modBoard.boardPixelToTile(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
     snapToGrid = modBoard.tileToBoardPixel(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, bAddBasePoint, m_ed.board(m_ed.undoIndex).sizex)
+    
+    If (Not bToIsoCentre) And isIsometric(m_ed.board(m_ed.undoIndex).coordType) Then
+        'Align the rect to the grid (tileToBoardPixel() returns the centre of isometric tiles).
+        snapToGrid.x = snapToGrid.x - 32
+    End If
 End Function
 
 '========================================================================
@@ -2008,7 +2090,21 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
             Else
                 Call placeTile("", tileCoord.x, tileCoord.y)
             End If
-    
+            
+        Case BT_RECT
+            If LenB(m_ed.selectedTile) = 0 Then Exit Sub
+            If m_ed.bAutotiler Then
+                MsgBox "The rectangle tool is disabled in AutoTiler mode!"
+                Exit Sub
+            End If
+            
+            If m_sel.status <> SS_DRAWING Then
+                Call m_sel.restart(pxCoord.x, pxCoord.y)
+            Else
+                m_sel.x2 = pxCoord.x: m_sel.y2 = pxCoord.y
+                Call m_sel.drawProjectedRect(Me, m_ed.pCEd, m_ed.board(m_ed.undoIndex).coordType)
+            End If
+            
     End Select
 End Sub
 
@@ -2080,9 +2176,30 @@ Private Sub drawBoard(Optional ByVal bRefresh As Boolean = True) ': On Error Res
     
     If bRefresh Then
         Call vectorDrawAll
+        Call drawStartPosition
         Call gridDraw
         picBoard.Refresh
     End If
+End Sub
+Private Sub drawStartPosition() ':on error resume next
+    If mainMem.initBoard <> m_ed.boardName Then Exit Sub
+
+    Dim p As POINTAPI, rgn As Long, brush As Long
+    p = modBoard.boardPixelToScreen(mainMem.pStartX, mainMem.pStartY, m_ed)
+    
+    picBoard.currentX = p.x
+    picBoard.currentY = p.y
+    picBoard.ForeColor = m_ed.pStartColor
+    picBoard.Print "Player start location layer" & str(mainMem.pStartL)
+    
+    p.x = p.x - tileWidth(m_ed) / 4
+    p.y = p.y - tileHeight(m_ed) / 4
+    
+    rgn = CreateEllipticRgn(p.x, p.y, p.x + tileWidth(m_ed) / 2 + 1, p.y + tileHeight(m_ed) / 2 + 1)
+    brush = CreateSolidBrush(m_ed.pStartColor)
+    Call FrameRgn(picBoard.hdc, rgn, brush, 1, 1)
+    Call DeleteObject(rgn)
+    Call DeleteObject(brush)
 End Sub
 
 '========================================================================
@@ -2090,8 +2207,8 @@ End Sub
 Public Sub mdiChkAutotile(ByVal value As Integer) ':on error resume next
     m_ed.bAutotiler = (value <> 0)
 End Sub
-Public Sub mdiOptSetting(ByVal index As Integer) ': On Error Resume Next
-    m_ed.optSetting = index
+Public Sub mdiOptSetting(ByVal Index As Integer) ': On Error Resume Next
+    m_ed.optSetting = Index
     If Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
     
     'Switch to BT_DRAW for general/zoom.
@@ -2099,13 +2216,13 @@ Public Sub mdiOptSetting(ByVal index As Integer) ': On Error Resume Next
     Call toolsRefresh
     
     'Switch the object toolbar pane.
-    If g_tabMap(index) <> -1 Then tkMainForm.bTools_Tabs.Tab = g_tabMap(index)
+    If g_tabMap(Index) <> -1 Then tkMainForm.bTools_Tabs.Tab = g_tabMap(Index)
     Call toolbarRefresh
     Call drawBoard
 End Sub
-Public Sub mdiOptTool(ByVal index As Integer) ': On Error Resume Next
-    m_ed.optTool = index
-    If (index <> BT_SELECT) And Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
+Public Sub mdiOptTool(ByVal Index As Integer) ': On Error Resume Next
+    m_ed.optTool = Index
+    If (Index <> BT_SELECT) And Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
 End Sub
 Public Sub mdiChkGrid(ByVal value As Integer) ': On Error Resume Next
     m_ed.bGrid = value
@@ -2491,6 +2608,27 @@ Private Sub floodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long
         
     End With
 End Sub
+Private Sub tileDrawRect(ByRef sel As CBoardSelection, ByVal Shift As Integer) ':on error resume next
+    Dim Index As Integer, i As Long, j As Long, p1 As POINTAPI, p2 As POINTAPI
+    'sel.x,y doesn't seem to like byRef.
+    p1 = modBoard.boardPixelToTile(sel.x1, sel.y1, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
+    p2 = modBoard.boardPixelToTile(sel.x2, sel.y2, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
+    Index = boardTileInLut(m_ed.selectedTile, m_ed.board(m_ed.undoIndex))
+    
+    'Reorientate
+    i = p1.x: j = p1.y
+    If p1.x > p2.x Then p1.x = p2.x: p2.x = i
+    If p1.y > p2.y Then p1.y = p2.y: p2.y = j
+    
+    For i = p1.x To p2.x
+        For j = p1.y To p2.y
+            If Shift Or ((i = p1.x Or i = p2.x) Or (j = p1.y Or j = p2.y)) Then
+                m_ed.board(m_ed.undoIndex).board(i, j, m_ed.currentLayer) = Index
+            End If
+        Next j
+    Next i
+    
+End Sub
 
 '========================================================================
 '========================================================================
@@ -2568,7 +2706,7 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
                 'Start new point.
                 
                 'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
-                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord)
+                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord, , False)
                 
                 'CBoardSlection stores board pixel coordinate.
                 Call m_sel.restart(pxCoord.x, pxCoord.y)
@@ -2577,10 +2715,19 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
                 Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
             Else
                 'Finish the vector.
+                If curVector Is Nothing Then Exit Sub
                 Call curVector.closeVector(Shift, m_ed.currentLayer)
                 Call m_sel.clear(Me)
                 Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
                 Call toolbarRefresh
+            End If
+        Case BT_RECT
+            If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord, , False)
+            If m_sel.status <> SS_DRAWING Then
+                Call m_sel.restart(pxCoord.x, pxCoord.y)
+            Else
+                m_sel.x2 = pxCoord.x: m_sel.y2 = pxCoord.y
+                Call m_sel.drawProjectedRect(Me, m_ed.pCEd, m_ed.board(m_ed.undoIndex).coordType)
             End If
     End Select
 
@@ -2606,6 +2753,30 @@ Private Sub vectorBuildCurrentSet() ':on error resume next
             Next i
     End Select
 End Sub
+Private Sub vectorCreateRect(ByRef sel As CBoardSelection) ':on error resum next
+    If sel.isEmpty Then Exit Sub
+    Dim i As Long, pts() As POINTAPI, vect As CVector
+    
+    Call setUndo
+    Set vect = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
+    
+    If isIsometric(m_ed.board(m_ed.undoIndex).coordType) Then
+        pts = modBoard.rectProjectIsometric(sel)
+        For i = 0 To UBound(pts)
+            Call vect.addPoint(pts(i).x, pts(i).y)
+        Next i
+    Else
+        Call vect.addPoint(sel.x1, sel.y1)
+        Call vect.addPoint(sel.x2, sel.y1)
+        Call vect.addPoint(sel.x2, sel.y2)
+        Call vect.addPoint(sel.x1, sel.y2)
+    End If
+    
+    Call vect.closeVector(0, m_ed.currentLayer)
+    Call sel.clear(Me)
+    Call vect.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
+    Call toolbarRefresh
+End Sub
 Private Function currentVector() As CVector ': On Error Resume Next
     Dim i As Long
     Set currentVector = Nothing
@@ -2626,7 +2797,7 @@ Private Sub vectorDrawAll() ': On Error Resume Next
     Dim i As Long, p1 As POINTAPI, p2 As POINTAPI
     With m_ed.board(m_ed.undoIndex)
         'Vectors
-        If m_ed.bShowVectors Or m_ed.optSetting = BS_VECTOR Then
+        If m_ed.bDrawObjects(BS_VECTOR) Or m_ed.optSetting = BS_VECTOR Then
             For i = 0 To UBound(.vectors)
                 If Not (.vectors(i) Is Nothing) Then
                     If .vectors(i).layer <= .sizeL And m_ed.bLayerVisible(.vectors(i).layer) And (.vectors(i).tiletype <> TT_NULL) Then _
@@ -2635,7 +2806,7 @@ Private Sub vectorDrawAll() ': On Error Resume Next
             Next i
         End If
         'Programs
-        If m_ed.bShowPrograms Or m_ed.optSetting = BS_PROGRAM Then
+        If m_ed.bDrawObjects(BS_PROGRAM) Or m_ed.optSetting = BS_PROGRAM Then
             For i = 0 To UBound(.prgs)
                 If Not (.prgs(i) Is Nothing) Then
                     If m_ed.bLayerVisible(.prgs(i).layer) Then _
@@ -2740,11 +2911,11 @@ End Sub
 
 '========================================================================
 '========================================================================
-Public Sub imageApply(ByVal index As Long) ':on error resume next
+Public Sub imageApply(ByVal Index As Long) ':on error resume next
     Dim ctl As ctlBrdImage, w As Long, h As Long, img As TKBoardImage
     Set ctl = tkMainForm.bTools_ctlImage
     
-    img = m_ed.board(m_ed.undoIndex).Images(index)
+    img = m_ed.board(m_ed.undoIndex).Images(Index)
     w = img.bounds.Right - img.bounds.Left
     h = img.bounds.Bottom - img.bounds.Top
     
@@ -2763,7 +2934,7 @@ Public Sub imageApply(ByVal index As Long) ':on error resume next
     End If
     img.filename = ctl.getTxtFilename.Text
     
-    m_ed.board(m_ed.undoIndex).Images(index) = img
+    m_ed.board(m_ed.undoIndex).Images(Index) = img
     Call imagePopulate(ctl.getCombo.ListIndex, img)
 End Sub
 Private Sub imageCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Long) ':on error resume next
@@ -2786,12 +2957,12 @@ Private Sub imageCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Long
     
     Call imagePopulate(i, board.Images(i))
 End Sub
-Public Sub imageDeleteCurrent(ByVal index As Long) ':on error resume next
+Public Sub imageDeleteCurrent(ByVal Index As Long) ':on error resume next
     Dim i As Long, img As TKBoardImage
-    If index >= 0 Then
+    If Index >= 0 Then
         Call setUndo
-        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).Images(index)))
-        For i = index To UBound(m_ed.board(m_ed.undoIndex).Images) - 1
+        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).Images(Index)))
+        For i = Index To UBound(m_ed.board(m_ed.undoIndex).Images) - 1
            m_ed.board(m_ed.undoIndex).Images(i) = m_ed.board(m_ed.undoIndex).Images(i + 1)
         Next i
         If i = 0 Then
@@ -2803,19 +2974,19 @@ Public Sub imageDeleteCurrent(ByVal index As Long) ':on error resume next
         Call toolbarPopulateImages
     End If
 End Sub
-Private Function imageHitTest(ByVal x As Long, ByVal y As Long, ByRef index As Long, ByRef img As TKBoardImage, ByRef imgs() As TKBoardImage) As Boolean ':on error resume next
+Private Function imageHitTest(ByVal x As Long, ByVal y As Long, ByRef Index As Long, ByRef img As TKBoardImage, ByRef imgs() As TKBoardImage) As Boolean ':on error resume next
     Dim i As Long
     For i = UBound(imgs) To 0 Step -1
         If x > imgs(i).bounds.Left And x < imgs(i).bounds.Right And _
             y > imgs(i).bounds.Top And y < imgs(i).bounds.Bottom Then
             img = imgs(i)
-            index = i
+            Index = i
             imageHitTest = True
             Exit Function
         End If
     Next i
 End Function
-Private Sub imagePopulate(ByVal index As Long, ByRef img As TKBoardImage) ':on error resume next
+Private Sub imagePopulate(ByVal Index As Long, ByRef img As TKBoardImage) ':on error resume next
     Dim ctl As ctlBrdImage, cmb As ComboBox
     Set ctl = m_ctls(BTAB_IMAGE)
     Set cmb = ctl.getCombo
@@ -2825,11 +2996,11 @@ Private Sub imagePopulate(ByVal index As Long, ByRef img As TKBoardImage) ':on e
         Exit Sub
     End If
     
-    Call toolbarSetCurrent(BTAB_IMAGE, index)
+    Call toolbarSetCurrent(BTAB_IMAGE, Index)
     Call ctl.enableAll
     
-    If cmb.ListIndex <> index Then cmb.ListIndex = index
-    cmb.list(index) = str(index) & ": " & IIf(LenB(img.filename), img.filename, "<image>")
+    If cmb.ListIndex <> Index Then cmb.ListIndex = Index
+    cmb.list(Index) = str(Index) & ": " & IIf(LenB(img.filename), img.filename, "<image>")
     ctl.getTxtFilename.Text = img.filename
     ctl.getTxtLoc(0).Text = str(img.bounds.Left)
     ctl.getTxtLoc(1).Text = str(img.bounds.Top)
@@ -2866,12 +3037,12 @@ Private Sub spriteCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Lon
     
     Call m_ctls(BTAB_SPRITE).populate(i, board.sprites(i))
 End Sub
-Public Sub spriteDeleteCurrent(ByVal index As Long) ':on error resume next
+Public Sub spriteDeleteCurrent(ByVal Index As Long) ':on error resume next
     Dim i As Long
-    If index >= 0 Then
+    If Index >= 0 Then
         Call setUndo
-        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).spriteImages(index)))
-        For i = index To UBound(m_ed.board(m_ed.undoIndex).sprites) - 1
+        Call BRDFreeImage(m_ed.pCBoard, VarPtr(m_ed.board(m_ed.undoIndex).spriteImages(Index)))
+        For i = Index To UBound(m_ed.board(m_ed.undoIndex).sprites) - 1
             Set m_ed.board(m_ed.undoIndex).sprites(i) = m_ed.board(m_ed.undoIndex).sprites(i + 1)
            m_ed.board(m_ed.undoIndex).spriteImages(i) = m_ed.board(m_ed.undoIndex).spriteImages(i + 1)
         Next i
@@ -2936,19 +3107,19 @@ Private Sub spriteSetImageData(ByRef spr As CBoardSprite, img As TKBoardImage) '
         End If
     Next i
 End Sub
-Public Function spriteSwapSlots(ByVal index As Long, ByVal newIndex As Long) As Boolean ':on error resume next
-    If newIndex = index Or newIndex < 0 Or newIndex > UBound(m_ed.board(m_ed.undoIndex).sprites) Then Exit Function
+Public Function spriteSwapSlots(ByVal Index As Long, ByVal newIndex As Long) As Boolean ':on error resume next
+    If newIndex = Index Or newIndex < 0 Or newIndex > UBound(m_ed.board(m_ed.undoIndex).sprites) Then Exit Function
     
     Dim spr As CBoardSprite, img As TKBoardImage
     'Hold the data in the new slot.
     Set spr = m_ed.board(m_ed.undoIndex).sprites(newIndex)
     img = m_ed.board(m_ed.undoIndex).spriteImages(newIndex)
     
-    Set m_ed.board(m_ed.undoIndex).sprites(newIndex) = m_ed.board(m_ed.undoIndex).sprites(index)
-    m_ed.board(m_ed.undoIndex).spriteImages(newIndex) = m_ed.board(m_ed.undoIndex).spriteImages(index)
+    Set m_ed.board(m_ed.undoIndex).sprites(newIndex) = m_ed.board(m_ed.undoIndex).sprites(Index)
+    m_ed.board(m_ed.undoIndex).spriteImages(newIndex) = m_ed.board(m_ed.undoIndex).spriteImages(Index)
     
-    Set m_ed.board(m_ed.undoIndex).sprites(index) = spr
-    m_ed.board(m_ed.undoIndex).spriteImages(index) = img
+    Set m_ed.board(m_ed.undoIndex).sprites(Index) = spr
+    m_ed.board(m_ed.undoIndex).spriteImages(Index) = img
         
     Call toolbarSetCurrent(BTAB_SPRITE, newIndex)
     Call toolbarPopulateSprites
@@ -2964,16 +3135,16 @@ Public Sub toolbarRefresh() ':on error resume next
         Case BTAB_IMAGE:      Call toolbarPopulateImages
     End Select
 End Sub
-Public Sub toolbarChange(ByVal index As Long, ByVal setting As eBrdSetting) ':on error resume next
+Public Sub toolbarChange(ByVal Index As Long, ByVal setting As eBrdSetting) ':on error resume next
     Select Case setting
         Case BS_VECTOR
-            Call m_ctls(BTAB_VECTOR).populate(index, m_ed.board(m_ed.undoIndex).vectors(index))
+            Call m_ctls(BTAB_VECTOR).populate(Index, m_ed.board(m_ed.undoIndex).vectors(Index))
         Case BS_PROGRAM
-            Call m_ctls(BTAB_PROGRAM).populate(index, m_ed.board(m_ed.undoIndex).prgs(index))
+            Call m_ctls(BTAB_PROGRAM).populate(Index, m_ed.board(m_ed.undoIndex).prgs(Index))
         Case BS_SPRITE
-            Call m_ctls(BTAB_SPRITE).populate(index, m_ed.board(m_ed.undoIndex).sprites(index))
+            Call m_ctls(BTAB_SPRITE).populate(Index, m_ed.board(m_ed.undoIndex).sprites(Index))
         Case BS_IMAGE
-            Call imagePopulate(index, m_ed.board(m_ed.undoIndex).Images(index))
+            Call imagePopulate(Index, m_ed.board(m_ed.undoIndex).Images(Index))
     End Select
     Call drawAll
 End Sub
@@ -3084,9 +3255,16 @@ End Function
 Public Function toolbarGetIndex(ByVal setting As eBrdSetting) As Long ':on error resume next
     toolbarGetIndex = m_ed.currentObject(g_tabMap(setting))
 End Function
-Public Sub toolbarSetCurrent(ByVal obj As eBoardTabs, ByVal index As Long) ':on error resume next
-    m_ed.currentObject(obj) = index
+Public Sub toolbarSetCurrent(ByVal obj As eBoardTabs, ByVal Index As Long) ':on error resume next
+    m_ed.currentObject(obj) = Index
 End Sub
+Public Property Get toolbarDrawObject(ByVal setting As eBrdSetting) As Boolean ':on error resume next
+    toolbarDrawObject = m_ed.bDrawObjects(setting)
+End Property
+Public Property Let toolbarDrawObject(ByVal setting As eBrdSetting, ByVal value As Boolean) ':on error resume next
+    m_ed.bDrawObjects(setting) = value
+    Call drawAll
+End Property
 
 '========================================================================
 '========================================================================
@@ -3265,6 +3443,14 @@ Private Sub toolsRefresh(): On Error Resume Next
     tkMainForm.brdOptTool(BT_SELECT).Enabled = (m_ed.optSetting > BS_ZOOM)
     tkMainForm.brdOptTool(BT_FLOOD).Enabled = (m_ed.optSetting = BS_TILE)
     tkMainForm.brdOptTool(BT_ERASE).Enabled = (m_ed.optSetting = BS_TILE)
+    tkMainForm.brdOptTool(BT_RECT).Enabled = False
+    Select Case m_ed.optSetting
+        Case BS_TILE, BS_LIGHTING
+            'Only allow rectangle tool in ISO_ROTATED and TILE_NORMAL modes.
+            tkMainForm.brdOptTool(BT_RECT).Enabled = (m_ed.board(m_ed.undoIndex).coordType Xor ISO_STACKED)
+        Case BS_VECTOR, BS_PROGRAM
+            tkMainForm.brdOptTool(BT_RECT).Enabled = True
+    End Select
 End Sub
 
 '========================================================================
@@ -3353,13 +3539,13 @@ Private Sub cmbLayerTitles_Click() ': on error resume next
         txtLayerTitle.SetFocus
     End If
 End Sub
-Private Sub cmdBrowse_Click(index As Integer) ': On Error Resume Next
+Private Sub cmdBrowse_Click(Index As Integer) ': On Error Resume Next
     Dim file As String, fileTypes As String, i As Long
-    Select Case index
+    Select Case Index
          Case 0, 1, 2, 3:
             fileTypes = "Supported Files|*.brd;*.prg|RPG Toolkit Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
             If browseFileDialog(Me.hwnd, projectPath & brdPath, "Linking board or program", ".brd", fileTypes, file) Then
-                txtLinks(index).Text = file
+                txtLinks(Index).Text = file
             End If
         Case 4:
             If browseFileDialog(Me.hwnd, projectPath & bmpPath, "Background image", ".jpg", strFileDialogFilterGfx, file) Then
@@ -3412,16 +3598,16 @@ Private Sub cmdThreadsRemove_Click() ': On Error Resume Next
         End If
     End If
 End Sub
-Private Sub hsbDims_Change(index As Integer) ': on error resume next
+Private Sub hsbDims_Change(Index As Integer) ': on error resume next
     Dim i As Long
-    If hsbDims(index).value <> 1 Then
-        i = val(txtDims(index).Text) + hsbDims(index).value - 1
-        txtDims(index).Text = IIf(i < 1, " 1", str(i))
+    If hsbDims(Index).value <> 1 Then
+        i = val(txtDims(Index).Text) + hsbDims(Index).value - 1
+        txtDims(Index).Text = IIf(i < 1, " 1", str(i))
     End If
-    hsbDims(index).value = 1
+    hsbDims(Index).value = 1
     
     Dim KeyAscii As Integer
-    Call txtDims_KeyPress(index, KeyAscii)
+    Call txtDims_KeyPress(Index, KeyAscii)
 End Sub
 Private Sub sstBoard_Click(PreviousTab As Integer) ': On Error Resume Next
     If PreviousTab = BTAB_PROPERTIES And picProperties.Tag = "Resize" Then
@@ -3436,6 +3622,42 @@ Private Sub sstBoard_Click(PreviousTab As Integer) ': On Error Resume Next
     If sstBoard.Tab = BTAB_BOARD Then
         Call Form_Resize
     End If
+End Sub
+'========================================================================
+' Enable vectors to be drawn up to the edge of the board
+'========================================================================
+Private Sub sstBoard_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    If sstBoard.Tab <> BTAB_BOARD Then Exit Sub
+    If m_ed.optSetting = BS_PROGRAM Or m_ed.optSetting = BS_VECTOR Then
+        'Reject events on the the tabs themselves.
+        If y > sstBoard.TabHeight Then
+            Call sstBoardToPicBoard(x, y)
+            Call picBoard_MouseDown(Button, Shift, x, y)
+        End If
+    End If
+End Sub
+Private Sub sstBoard_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    If sstBoard.Tab <> BTAB_BOARD Then Exit Sub
+    If m_ed.optSetting = BS_PROGRAM Or m_ed.optSetting = BS_VECTOR Then
+        'Reject events on the the tabs themselves.
+        If y > sstBoard.TabHeight Then
+            Call sstBoardToPicBoard(x, y)
+            Call picBoard_MouseMove(Button, Shift, x, y)
+        End If
+    End If
+End Sub
+'========================================================================
+' Round a coordinate on picBoard's container to the nearest picBoard edge
+'========================================================================
+Private Sub sstBoardToPicBoard(ByRef x As Single, ByRef y As Single): On Error Resume Next
+    x = x - picBoard.Left
+    y = y - picBoard.Top
+    If x < 0 Then x = 0
+    If x > picBoard.width Then x = picBoard.width
+    If y < 0 Then y = 0
+    If y > picBoard.Height Then y = picBoard.Height
+    x = picBoard.ScaleX(x, vbTwips, vbPixels)
+    y = picBoard.ScaleY(y, vbTwips, vbPixels)
 End Sub
 Private Sub txtBackgroundImage_Change(): On Error Resume Next
     m_ed.board(m_ed.undoIndex).bkgImage.filename = txtBackgroundImage.Text
@@ -3455,7 +3677,7 @@ Private Sub txtConstant_Change(): On Error Resume Next
         m_ed.board(m_ed.undoIndex).constants(cmbConstants.ListIndex) = txtConstant.Text
     End If
 End Sub
-Private Sub txtDims_KeyPress(index As Integer, KeyAscii As Integer): On Error Resume Next
+Private Sub txtDims_KeyPress(Index As Integer, KeyAscii As Integer): On Error Resume Next
     'Indicate that we want to resize the board when the tab is switched.
     'Do not resize after every validation, since it is a big operation.
     picProperties.Tag = "Resize"
@@ -3467,8 +3689,8 @@ Private Sub txtLayerTitle_Change(): On Error Resume Next
         m_ed.board(m_ed.undoIndex).layerTitles(cmbLayerTitles.ListIndex) = txtLayerTitle.Text
     End If
 End Sub
-Private Sub txtLinks_Change(index As Integer): On Error Resume Next
-    m_ed.board(m_ed.undoIndex).directionalLinks(index) = txtLinks(index).Text
+Private Sub txtLinks_Change(Index As Integer): On Error Resume Next
+    m_ed.board(m_ed.undoIndex).directionalLinks(Index) = txtLinks(Index).Text
 End Sub
 Private Sub txtPrgEnterBoard_Change(): On Error Resume Next
     m_ed.board(m_ed.undoIndex).enterPrg = txtPrgEnterBoard.Text
@@ -3477,8 +3699,8 @@ End Sub
 '========================================================================
 ' Common menu items
 '========================================================================
-Private Sub mnubuild_Click(index As Integer): On Error Resume Next
-    Select Case index
+Private Sub mnubuild_Click(Index As Integer): On Error Resume Next
+    Select Case Index
         Case 0: Call tkMainForm.createpakfilemnu_Click
         Case 1: Call tkMainForm.makeexemnu_Click
         Case 3: Call tkMainForm.createsetupmnu_Click
@@ -3490,15 +3712,15 @@ End Sub
 Private Sub mnuExitEditor_Click(): On Error Resume Next
     Call tkMainForm.exitmnu_Click
 End Sub
-Private Sub mnuHelp_Click(index As Integer): On Error Resume Next
-    Select Case index
+Private Sub mnuHelp_Click(Index As Integer): On Error Resume Next
+    Select Case Index
         Case 0: Call tkMainForm.usersguidemnu_Click
         Case 2: Call tkMainForm.historytxtmnu_Click
         Case 4: Call tkMainForm.aboutmnu_Click
     End Select
 End Sub
-Private Sub mnunew_Click(index As Integer): On Error Resume Next
-    Select Case index
+Private Sub mnunew_Click(Index As Integer): On Error Resume Next
+    Select Case Index
         Case 0: Call tkMainForm.newtilemnu_Click
         Case 1: Call tkMainForm.newanimtilemnu_Click
         Case 2: Call tkMainForm.newboardmnu_Click
@@ -3516,16 +3738,16 @@ End Sub
 Private Sub mnunewproject_Click(): On Error Resume Next
     Call tkMainForm.newprojectmnu_Click
 End Sub
-Private Sub mnuOpenProject_Click(index As Integer): On Error Resume Next
+Private Sub mnuOpenProject_Click(Index As Integer): On Error Resume Next
     Call tkMainForm.mnuOpenProject_Click
 End Sub
-Private Sub mnuToolkit_Click(index As Integer)
-    Select Case index
+Private Sub mnuToolkit_Click(Index As Integer)
+    Select Case Index
         Case 0: Call tkMainForm.testgamemnu_Click
     End Select
 End Sub
-Private Sub mnuWindow_Click(index As Integer)
-    Select Case index
+Private Sub mnuWindow_Click(Index As Integer)
+    Select Case Index
         Case 0: Call tkMainForm.showtoolsmnu_Click
     End Select
 End Sub

@@ -809,15 +809,15 @@ Begin VB.MDIForm tkMainForm
                   Width           =   375
                End
                Begin VB.OptionButton brdOptTool 
-                  Caption         =   "Un"
+                  Caption         =   "Rct"
                   Height          =   375
                   Index           =   4
                   Left            =   0
                   Style           =   1  'Graphical
                   TabIndex        =   148
                   TabStop         =   0   'False
+                  ToolTipText     =   "(Filled) Rectangle"
                   Top             =   720
-                  Visible         =   0   'False
                   Width           =   375
                End
                Begin VB.OptionButton brdOptTool 
@@ -2317,13 +2317,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "17/07/2006"
+            TextSave        =   "20/07/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "11:31"
+            TextSave        =   "13:05"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -3391,7 +3391,7 @@ End Sub
 
 Private Sub mainToolbar_ButtonMenuClick(ByVal ButtonMenu As MSComctlLib.ButtonMenu): On Error Resume Next
     Dim frm As Form
-    Select Case ButtonMenu.index
+    Select Case ButtonMenu.Index
         Case 1:
             Set frm = New tileedit
         Case 2:
@@ -3737,12 +3737,12 @@ End Sub
 
 '=========================================================================================
 ' ADDED FOURTH BUTTON FOR BOARD TOOLBAR
-Private Sub popButton_Click(index As Integer): On Error Resume Next
+Private Sub popButton_Click(Index As Integer): On Error Resume Next
     
-    Select Case index
+    Select Case Index
         Case 0
             'File tree.
-            If popButton(index).value = 1 Then
+            If popButton(Index).value = 1 Then
                 popButton(1).value = 0
                 popButton(2).value = 0
                 popButton(3).value = 0
@@ -3754,7 +3754,7 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
             
         Case 1
             'Open editors.
-            If popButton(index).value = 1 Then
+            If popButton(Index).value = 1 Then
                 popButton(0).value = 0
                 popButton(2).value = 0
                 popButton(3).value = 0
@@ -3765,7 +3765,7 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
             
         Case 2
             'Tileset browser.
-            If popButton(index).value = 1 Then
+            If popButton(Index).value = 1 Then
                 popButton(0).value = 0
                 popButton(1).value = 0
                 popButton(3).value = 0
@@ -3779,7 +3779,7 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
             
         Case 3
             'Board editor toolbar.
-            If popButton(index).value = 1 Then
+            If popButton(Index).value = 1 Then
                 popButton(0).value = 0
                 popButton(1).value = 0
                 popButton(2).value = 0
@@ -4027,8 +4027,8 @@ Private Sub tilesetBar_LostFocus(): On Error Resume Next
     End If
 End Sub
 
-Private Sub tileTool_Click(index As Integer): On Error Resume Next
-    Call activeTile.ToolSet(index)
+Private Sub tileTool_Click(Index As Integer): On Error Resume Next
+    Call activeTile.ToolSet(Index)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -4127,11 +4127,11 @@ End Sub
 Private Sub brdCmbVisibleLayers_Click(): On Error Resume Next
     Call activeBoard.mdiCmbVisibleLayers
 End Sub
-Private Sub brdOptSetting_Click(index As Integer): On Error Resume Next
-    Call activeBoard.mdiOptSetting(index)
+Private Sub brdOptSetting_Click(Index As Integer): On Error Resume Next
+    Call activeBoard.mdiOptSetting(Index)
 End Sub
-Private Sub brdOptTool_Click(index As Integer): On Error Resume Next
-    Call activeBoard.mdiOptTool(index)
+Private Sub brdOptTool_Click(Index As Integer): On Error Resume Next
+    Call activeBoard.mdiOptTool(Index)
 End Sub
 Private Sub brdChkAutotile_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call activeBoard.mdiChkAutotile(brdChkAutotile.value)
@@ -4213,8 +4213,8 @@ End Sub
 ' ANIMATION EDITOR RELATED EVENTS
 '=========================================================================================
 'Set the size of the animation
-Private Sub optAnimSize_Click(index As Integer): On Error Resume Next
-    Call activeAnimation.setAnimSize(index)
+Private Sub optAnimSize_Click(Index As Integer): On Error Resume Next
+    Call activeAnimation.setAnimSize(Index)
 End Sub
 'Set the X-Size (Custom anim only)
 Private Sub txtAnimXSize_Change(): On Error Resume Next

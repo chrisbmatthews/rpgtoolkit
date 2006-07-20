@@ -160,7 +160,9 @@ Public Enum eBrdTool
     BT_SELECT
     BT_FLOOD
     BT_ERASE
+    BT_RECT
     BT_IMG_TRANSP                         'Getting the transparent colour for an image.
+    BT_SET_PSTART                         'Setting the player start location.
 End Enum
 Public Enum eBrdSelectStatus
     SS_NONE
@@ -187,8 +189,7 @@ Public Type TKBoardEditorData
     optSetting As eBrdSetting
     bLayerOccupied() As Boolean           'layer contains tiles
     bLayerVisible() As Boolean            'layer visibility in the editor
-    bShowSprites As Boolean
-    bShowImages As Boolean
+    bDrawObjects() As Boolean
         
     ' Unordered
     
@@ -206,8 +207,6 @@ Public Type TKBoardEditorData
     currentLayer As Integer               'Current board layer
     bHideAllLayers As Boolean
     bShowAllLayers As Boolean
-    bShowVectors As Boolean
-    bShowPrograms As Boolean
     bNeedUpdate As Boolean                'tbd:have any changes been made to the board data?
         
     currentVectorSet() As CVector         'References to vectors of current optSetting
@@ -225,6 +224,7 @@ Public Type TKBoardEditorData
     programColor As Long
     waypointColor As Long
     gridColor As Long
+    pStartColor As Long                   'Player start location colour.
 
     'Pre 3.0.7
     boardName As String                   'filename
@@ -468,27 +468,27 @@ Public Sub vectorLvColumn(ByRef lv As ListView, ByRef x As Single): On Error Res
     'Store the subitem column in the tag (first subitem column is the second column).
     lv.Tag = i - 1
 End Sub
-Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal keyCode As Integer) As Boolean ':on error resume next
+Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal KeyCode As Integer) As Boolean ':on error resume next
     
     Dim i As Long
     i = val(lv.Tag)
-    If i = 0 And keyCode = vbKeyDelete Then
+    If i = 0 And KeyCode = vbKeyDelete Then
         'Whole row selected - delete the point.
-        lv.ListItems.Remove lv.SelectedItem.index
+        lv.ListItems.Remove lv.SelectedItem.Index
         vectorLvKeyDown = True
     End If
     If i <> 1 And i <> 2 Then Exit Function
         
-    Select Case keyCode
+    Select Case KeyCode
         Case vbKeyBack, vbKeyDelete
             lv.SelectedItem.SubItems(i) = vbNullString
         Case vbKeyReturn
             vectorLvKeyDown = True
         Case vbKey0 To vbKey9
-            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(keyCode)
+            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(KeyCode)
         Case vbKeyNumpad0 To vbKeyNumpad9
-            keyCode = keyCode - (vbKeyNumpad0 - vbKey0)
-            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(keyCode)
+            KeyCode = KeyCode - (vbKeyNumpad0 - vbKey0)
+            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(KeyCode)
         Case vbKeyAdd
             lv.SelectedItem.SubItems(i) = str(val(lv.SelectedItem.SubItems(i)) + 32)
              vectorLvKeyDown = True
@@ -575,3 +575,27 @@ Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String,
         End If
     Next i
 End Sub
+
+'=========================================================================
+' Given the left and right pixel points of an isometric projection
+' of a rectangle, calculate the top and bottom points
+'=========================================================================
+Public Function rectProjectIsometric(ByRef sel As CBoardSelection) As POINTAPI() ': on error resume next
+    Dim dx As Long, dy As Long, sgnDy As Long, pts(3) As POINTAPI
+   
+    dx = sel.x2 - sel.x1
+    dy = sel.y2 - sel.y1
+    sgnDy = IIf(dy = 0, 1, Sgn(dy))
+    
+    'Either tedious maths or lots of coordinate transforms.
+    pts(0).x = sel.x1
+    pts(0).y = sel.y1
+    pts(1).x = sel.x1 + (dx / 2 + Abs(dy))
+    pts(1).y = sel.y1 + sgnDy * (dx / 2 + Abs(dy)) / 2
+    pts(2).x = sel.x2
+    pts(2).y = sel.y2
+    pts(3).x = sel.x1 + (sel.x2 - pts(1).x)
+    pts(3).y = sel.y1 - sgnDy * (sel.x2 - pts(1).x) / 2
+    
+    rectProjectIsometric = pts
+End Function
