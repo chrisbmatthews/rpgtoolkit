@@ -16,6 +16,10 @@ Option Explicit
 '=========================================================================
 Public Const MAX_GAMESPEED = 4        'highest gamespeed settings
 
+Public Const TILE_MOVEMENT = 0        'for MainMem.PixelMovement
+Public Const PIXEL_MOVEMENT_TILE_PUSH = 1
+Public Const PIXEL_MOVEMENT_PIXEL_PUSH = 2
+
 '=========================================================================
 ' Public variables
 '=========================================================================
@@ -71,6 +75,12 @@ Public Type TKMain
     resX As Long                      'custom x resolution
     resY As Long                      'custom y resolution
     bFpsInTitleBar As Byte            'show FPS in the title bar?
+    
+    '3.0.7
+    pStartX As Integer                'Pixel start position of the player.
+    pStartY As Integer
+    pStartL As Integer
+    
 End Type
 
 '=========================================================================
@@ -80,12 +90,9 @@ Public Const COLOR16 As Byte = 0      '16-bit color
 Public Const COLOR24 As Byte = 1      '24-bit color
 Public Const COLOR32 As Byte = 2      '32-bit color
 
-'=========================================================================
-' Constants for MainMem.PixelMovement (see PixelMovementRPG)
-'=========================================================================
-Public Const TILE_MOVEMENT = 0
-Public Const PIXEL_MOVEMENT_TILE_PUSH = 1
-Public Const PIXEL_MOVEMENT_PIXEL_PUSH = 2
+
+
+Private Const MF_MINOR = 9         '3.0.7
 
 '=========================================================================
 ' Store a gamespeed value between -127 and +127 in the mainMem byte.
@@ -413,6 +420,12 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
             If (minorVer >= 8) Then
                 mainMem.bFpsInTitleBar = BinReadByte(num)
             End If
+            
+            If (minorVer >= 9) Then
+                mainMem.pStartX = BinReadInt(num)
+                mainMem.pStartY = BinReadInt(num)
+                mainMem.pStartL = BinReadInt(num)
+            End If
 
         Close num
 
@@ -572,7 +585,7 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
     Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT MAIN")    'Filetype
         Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 8)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
+        Call BinWriteInt(num, MF_MINOR)    'Minor version (1= ie 2.1 (ascii) 2= 2.19 (binary), 3- 3.0, interim)
         Call BinWriteInt(num, 1)    'registered
         Call BinWriteString(num, "NOCODE")            'No reg code
     
@@ -644,6 +657,10 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         Call BinWriteLong(num, theMain.resY)
 
         Call BinWriteByte(num, theMain.bFpsInTitleBar)
+        
+        Call BinWriteInt(num, theMain.pStartX)
+        Call BinWriteInt(num, theMain.pStartY)
+        Call BinWriteInt(num, theMain.pStartL)
 
     Close num
 
@@ -706,5 +723,8 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .hotSpotY = 0
         .transpcolor = RGB(255, 0, 0)
         .bFpsInTitleBar = 0
+        .pStartL = 0
+        .pStartX = 0
+        .pStartY = 0
     End With
 End Sub
