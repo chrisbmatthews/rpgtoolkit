@@ -147,6 +147,7 @@ End Type
 '=========================================================================
 ' Integral variables
 '=========================================================================
+'tbd: remove
 Public boardList() As boardDoc            'list of board documents
 Public boardListOccupied() As Boolean     'position used?
 Public currentBoard As String             'current board
@@ -1038,7 +1039,7 @@ Public Sub boardSetSize( _
     ByRef board As TKBoard, _
     ByVal bPreserveContents As Boolean): On Error Resume Next
     
-    Dim i As Long, j As Long, k As Long
+    Dim i As Long, j As Long, k As Long, u As Long, v As Long, oldSizeX As Long
     Dim Data() As Integer, r() As Integer, g() As Integer, b() As Integer
     
     If x < 1 Then x = 1
@@ -1046,6 +1047,7 @@ Public Sub boardSetSize( _
     If z < 1 Then z = 1
     
     With board
+        oldSizeX = .sizex               'For ISO_ROTATED
         .sizex = x
         .sizey = y
         .sizeL = z
@@ -1079,10 +1081,20 @@ Public Sub boardSetSize( _
             For k = 0 To z
                 For j = 0 To y
                     For i = 0 To x
-                        .board(i, j, k) = Data(i, j, k)
-                        .ambientRed(i, j, k) = r(i, j, k)
-                        .ambientGreen(i, j, k) = g(i, j, k)
-                        .ambientBlue(i, j, k) = b(i, j, k)
+                        If .coordType And ISO_ROTATED Then
+                            'The pixel position of a tile is dependent on the board width.
+                            '(Equate pixel positions for different board sizes and solve.)
+                            u = i
+                            v = j - oldSizeX + .sizex
+                        Else
+                            u = i
+                            v = j
+                        End If
+                    
+                        .board(u, v, k) = Data(i, j, k)
+                        .ambientRed(u, v, k) = r(i, j, k)
+                        .ambientGreen(u, v, k) = g(i, j, k)
+                        .ambientBlue(u, v, k) = b(i, j, k)
                     Next i
                 Next j
             Next k

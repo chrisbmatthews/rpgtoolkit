@@ -93,7 +93,7 @@ Public activeBackground As editBackground
 Public activeSpecialMove As editsm
 Public activeEnemy As editenemy
 Public activeRPGCode As rpgcodeedit
-Public activeItem As EditItem
+Public activeItem As edititem
 Public activePlayer As characteredit
 Public activeBoard As frmBoardEdit
 Public activeTile As tileedit
@@ -124,12 +124,10 @@ Public rpgcodeListOccupied() As Boolean
 Public openTileEditors() As tileedit
 Public openTileEditorDocs() As tileDoc
 
-Public g_boardClipboard As TKBoardClipboard     'One clip for all boards.
-
 '=========================================================================
 ' Editor vector procedures
 '=========================================================================
-
+'tbd: Remove
 Public Sub VectBoardKillSlot(ByVal idx As Long)
     On Error Resume Next
     'free up memory in the board list vector

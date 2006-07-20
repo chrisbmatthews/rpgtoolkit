@@ -23,6 +23,7 @@ Public Sub Main()
     Call StartTracing("tktrace.txt")
     Call Randomize(timer)
     'wip:'Call BoardInit(boardList(activeBoardIndex).theData)
+    Set g_CBoardPreferences = New CBoardPreferences
     Call TileAnmClear(tileAnmList(activeTileAnmIndex).theData)
     Call initCanvasEngine
     Call initDirectories

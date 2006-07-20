@@ -1016,6 +1016,7 @@ Attribute VB_Exposed = False
 '========================================================================
 'Note to self: wip = temporary additions to old code.
 'Files to consider (remember to remove from cvs after use)
+'   ambienteffectsform
 '   boardinformation
 '   boardlighting
 '   boardgradientdefine
@@ -1082,7 +1083,6 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
         .pCEd.zoom = 1
         If (.pCBoard) Then Call BRDFree(.pCBoard)
         .pCBoard = BRDNewCBoard(projectPath)
-        .bRevertToDraw = True
         .currentLayer = 1
         For i = 0 To UBound(m_ed.currentObject)
             m_ed.currentObject(i) = -1              'Initialise the selected objects.
@@ -1094,17 +1094,7 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
     End With
     Set m_sel = New CBoardSelection
     Me.Caption = "Untitled board"
-    
-    'testing
-    m_ed.board(m_ed.undoIndex).bkgColor = 0 'RGB(255, 255, 255)
-    m_ed.vectorColor(TT_SOLID) = RGB(255, 255, 255)
-    m_ed.vectorColor(TT_UNDER) = RGB(0, 255, 0)
-    m_ed.vectorColor(TT_STAIRS) = RGB(0, 255, 255)
-    m_ed.programColor = RGB(255, 255, 0)
-    m_ed.waypointColor = RGB(255, 0, 0)
-    m_ed.gridColor = RGB(255, 255, 255)
-    m_ed.pStartColor = RGB(255, 255, 255)
-    m_ed.bShowVectorIndices = True
+
 End Sub
 '=========================================================================
 '=========================================================================
@@ -1208,10 +1198,6 @@ Private Sub Form_Activate() ':on error resume next
     
     tkMainForm.StatusBar1.Panels(4).Text = "Zoom: " & str(m_ed.pCEd.zoom * 100) & "%"
    
-    'Tick the flood option if entry made.
-    'mnuRecursiveFlooding.Checked = False
-    'If GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then mnuRecursiveFlooding.Checked = True
-    
     Call Form_Resize
     
     Exit Sub
@@ -1477,7 +1463,7 @@ End Function
 Private Sub mnuBoard_Click(Index As Integer): On Error Resume Next
     Select Case Index
         Case 0:
-            'Preferences
+            frmBoardPreferences.Show vbModal
         Case 1:
             'Player start location.
             tkMainForm.brdOptSetting(BS_GENERAL).value = True
@@ -1489,6 +1475,8 @@ Private Sub mnuCoords_Click(Index As Integer): On Error Resume Next
     Select Case Index
         Case 0:
             Call Commonboard.boardToIsoRotated(m_ed, m_ed.board(m_ed.undoIndex))
+            Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, True)
+            Call Form_Resize
         Case 1:
              m_ed.board(m_ed.undoIndex).coordType = m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE
     End Select
@@ -1556,7 +1544,8 @@ Private Sub mnuUndo_Click() ': On Error Resume Next
     m_ed.undoIndex = nextUndo
     Call toolbarRefresh
     Call BRDRender(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), picBoard.hdc, True)
-    Call drawAll
+    Call assignProperties
+    Call Form_Resize
     mnuUndo.Enabled = m_ed.bUndoData(nextUndo)
     mnuRedo.Enabled = True
 End Sub
@@ -1638,7 +1627,7 @@ Private Sub picBoard_KeyDown(KeyCode As Integer, Shift As Integer) ':on error re
                     If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) And (Not curVector Is Nothing) Then
                         Call curVector.closeVector(Shift, m_ed.currentLayer)
                         Call m_sel.clear(Me)
-                        Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
+                        Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, g_CBoardPreferences.bShowVectorIndices, True)
                     End If
             End Select 'Key
             
@@ -1850,7 +1839,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
             If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) Then
                 
                 'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
-                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord)
+                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord, , False)
 
                 m_sel.x2 = pxCoord.x: m_sel.y2 = pxCoord.y
                 Call m_sel.drawLine(Me, m_ed.pCEd)
@@ -2067,7 +2056,7 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
                 m_ed.bLayerOccupied(m_ed.currentLayer) = True
             
                 'Use gdi version as recursive routine crashes on large boards (3.0.6)
-                If GetSetting("RPGToolkit3", "Settings", "Recursive Flooding", "0") = "1" Then
+                If g_CBoardPreferences.bUseRecursiveFlooding Then
                     'User has enabled recursive flooding - when gdi doesn't work.
                     Call floodRecursive(tileCoord.x, tileCoord.y, m_ed.currentLayer, m_ed.selectedTile)
                 Else
@@ -2075,7 +2064,7 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
                     Call floodGdi(tileCoord.x, tileCoord.y, m_ed.currentLayer, m_ed.selectedTile)
                 End If
             End If
-            If (m_ed.bRevertToDraw) Then
+            If (g_CBoardPreferences.bRevertToDraw) Then
                 m_ed.optTool = BT_DRAW
                 tkMainForm.brdOptTool(m_ed.optTool).value = True
             End If
@@ -2189,14 +2178,14 @@ Private Sub drawStartPosition() ':on error resume next
     
     picBoard.currentX = p.x
     picBoard.currentY = p.y
-    picBoard.ForeColor = m_ed.pStartColor
+    picBoard.ForeColor = g_CBoardPreferences.pStartColor
     picBoard.Print "Player start location layer" & str(mainMem.pStartL)
     
     p.x = p.x - tileWidth(m_ed) / 4
     p.y = p.y - tileHeight(m_ed) / 4
     
     rgn = CreateEllipticRgn(p.x, p.y, p.x + tileWidth(m_ed) / 2 + 1, p.y + tileHeight(m_ed) / 2 + 1)
-    brush = CreateSolidBrush(m_ed.pStartColor)
+    brush = CreateSolidBrush(g_CBoardPreferences.pStartColor)
     Call FrameRgn(picBoard.hdc, rgn, brush, 1, 1)
     Call DeleteObject(rgn)
     Call DeleteObject(brush)
@@ -2634,8 +2623,7 @@ End Sub
 '========================================================================
 Private Sub gridDraw() ': On Error Resume Next
     
-    Dim Color As Long, offsetY As Long, x As Long, y As Long, oldMode As Long, intHeight As Long
-    Color = m_ed.gridColor
+    Dim color As Long, offsetY As Long, x As Long, y As Long, oldMode As Long, intHeight As Long
     
     oldMode = picBoard.DrawMode
     picBoard.DrawMode = vbInvert
@@ -2646,7 +2634,7 @@ Private Sub gridDraw() ': On Error Resume Next
             
             ' Top right to bottom left.
             Do While y < picBoard.ScaleWidth / 2 + picBoard.ScaleHeight
-                picBoard.Line (0, y + offsetY)-(x + offsetY * 2, 0), Color
+                picBoard.Line (0, y + offsetY)-(x + offsetY * 2, 0), color
                 x = x + tileWidth(m_ed): y = y + tileHeight(m_ed)
             Loop
 
@@ -2655,16 +2643,16 @@ Private Sub gridDraw() ': On Error Resume Next
             intHeight = picBoard.ScaleHeight + (picBoard.ScaleHeight Mod tileHeight(m_ed))
             y = intHeight
             Do While y > -picBoard.ScaleWidth / 2
-                picBoard.Line (0, y + offsetY)-(x, intHeight + offsetY), Color
+                picBoard.Line (0, y + offsetY)-(x, intHeight + offsetY), color
                 x = x + tileWidth(m_ed):  y = y - tileHeight(m_ed)
             Loop
         Else
             Do While x < picBoard.ScaleWidth
-                picBoard.Line (x, 0)-(x, picBoard.ScaleHeight), Color
+                picBoard.Line (x, 0)-(x, picBoard.ScaleHeight), color
                 x = x + tileWidth(m_ed)
             Loop
             Do While y < picBoard.ScaleHeight
-                picBoard.Line (0, y)-(picBoard.ScaleWidth, y), Color
+                picBoard.Line (0, y)-(picBoard.ScaleWidth, y), color
                 y = y + tileHeight(m_ed)
             Loop
         End If 'isIsometric
@@ -2712,13 +2700,13 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
                 Call m_sel.restart(pxCoord.x, pxCoord.y)
                 
                 Call curVector.addPoint(pxCoord.x, pxCoord.y)
-                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
+                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, g_CBoardPreferences.bShowVectorIndices, True)
             Else
                 'Finish the vector.
                 If curVector Is Nothing Then Exit Sub
                 Call curVector.closeVector(Shift, m_ed.currentLayer)
                 Call m_sel.clear(Me)
-                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
+                Call curVector.draw(picBoard, m_ed.pCEd, vectorGetColor, g_CBoardPreferences.bShowVectorIndices, True)
                 Call toolbarRefresh
             End If
         Case BT_RECT
@@ -2774,7 +2762,7 @@ Private Sub vectorCreateRect(ByRef sel As CBoardSelection) ':on error resum next
     
     Call vect.closeVector(0, m_ed.currentLayer)
     Call sel.clear(Me)
-    Call vect.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
+    Call vect.draw(picBoard, m_ed.pCEd, vectorGetColor, g_CBoardPreferences.bShowVectorIndices, True)
     Call toolbarRefresh
 End Sub
 Private Function currentVector() As CVector ': On Error Resume Next
@@ -2801,7 +2789,7 @@ Private Sub vectorDrawAll() ': On Error Resume Next
             For i = 0 To UBound(.vectors)
                 If Not (.vectors(i) Is Nothing) Then
                     If .vectors(i).layer <= .sizeL And m_ed.bLayerVisible(.vectors(i).layer) And (.vectors(i).tiletype <> TT_NULL) Then _
-                        Call .vectors(i).draw(picBoard, m_ed.pCEd, m_ed.vectorColor(.vectors(i).tiletype), m_ed.bShowVectorIndices)
+                        Call .vectors(i).draw(picBoard, m_ed.pCEd, g_CBoardPreferences.vectorColor(.vectors(i).tiletype), g_CBoardPreferences.bShowVectorIndices)
                 End If
             Next i
         End If
@@ -2810,14 +2798,14 @@ Private Sub vectorDrawAll() ': On Error Resume Next
             For i = 0 To UBound(.prgs)
                 If Not (.prgs(i) Is Nothing) Then
                     If m_ed.bLayerVisible(.prgs(i).layer) Then _
-                        Call .prgs(i).draw(picBoard, m_ed.pCEd, m_ed.programColor, m_ed.bShowVectorIndices)
+                        Call .prgs(i).draw(picBoard, m_ed.pCEd, g_CBoardPreferences.programColor, g_CBoardPreferences.bShowVectorIndices)
                     End If
             Next i
         End If
     End With
     
     'Selected vector
-    If Not currentVector Is Nothing Then Call currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, m_ed.bShowVectorIndices, True)
+    If Not currentVector Is Nothing Then Call currentVector.draw(picBoard, m_ed.pCEd, vectorGetColor, g_CBoardPreferences.bShowVectorIndices, True)
 End Sub
 Public Sub vectorDeleteCurrent(ByVal setting As eBrdSetting) ': on error resume next
     Dim i As Long
@@ -2877,9 +2865,9 @@ End Sub
 Private Function vectorGetColor() As Long: On Error Resume Next
     Select Case m_ed.optSetting
         Case BS_VECTOR
-            vectorGetColor = m_ed.vectorColor(currentVector.tiletype)
+            vectorGetColor = g_CBoardPreferences.vectorColor(currentVector.tiletype)
         Case BS_PROGRAM
-            vectorGetColor = m_ed.programColor
+            vectorGetColor = g_CBoardPreferences.programColor
     End Select
 End Function
 Private Sub vectorSetCurrent(ByRef sel As CBoardSelection) ': on error resume next

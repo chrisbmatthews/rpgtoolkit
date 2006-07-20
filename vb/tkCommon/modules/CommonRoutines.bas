@@ -69,7 +69,7 @@ Option Explicit
         Dim t As Long
         Do Until done
             t = t + 1
-            TabStrip1.Tabs.Item(t).Caption = LoadStringLoc(TabStrip1.Tabs.Item(t).tag, TabStrip1.Tabs.Item(t).Caption)
+            TabStrip1.Tabs.Item(t).Caption = LoadStringLoc(TabStrip1.Tabs.Item(t).Tag, TabStrip1.Tabs.Item(t).Caption)
         Loop
         Exit Sub
 tabErr:
@@ -750,6 +750,7 @@ loadtileerr:
         Call closeCanvasEngine
         Call GFXKill
         Set configfile = Nothing
+        Set g_CBoardPreferences = Nothing
     End Sub
 
     Public Function toColor(ByVal longColor As Long, ByVal level As Long) As Long

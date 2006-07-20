@@ -321,18 +321,16 @@ End Sub
 '========================================================================
 Private Sub cmdOK_Click(): On Error Resume Next
     
-    If chkDoNotShow.value = 1 Then
-        Call SaveSetting("RPGToolkit3", "BRD Editor", "Show frmNewBoard", "1")
-    End If
+    g_CBoardPreferences.bShowNewBoardDialog = (chkDoNotShow.value = 0)
     
     If optType(0).value = True Then
         m_height = IIf(val(txtDims(NB_H).Text) > 0, val(txtDims(NB_H).Text), 10)
         m_layers = IIf(val(txtDims(NB_L).Text) > 0, val(txtDims(NB_L).Text), 10)
         
-        Call SaveSetting("RPGToolkit3", "BRD Editor", "New width", str(m_width))
-        Call SaveSetting("RPGToolkit3", "BRD Editor", "New height", str(m_height))
-        Call SaveSetting("RPGToolkit3", "BRD Editor", "New layers", str(m_layers))
-        Call SaveSetting("RPGToolkit3", "BRD Editor", "New coords", str(m_coordOpt))
+        Call SaveSetting("RPGToolkit3", "BRD Editor", "New width", CStr(m_width))
+        Call SaveSetting("RPGToolkit3", "BRD Editor", "New height", CStr(m_height))
+        Call SaveSetting("RPGToolkit3", "BRD Editor", "New layers", CStr(m_layers))
+        Call SaveSetting("RPGToolkit3", "BRD Editor", "New coords", CStr(m_coordOpt))
         
         Call loadNewBoard
     Else
@@ -354,13 +352,14 @@ Private Sub Form_Load(): On Error Resume Next
     m_coordOpt = val(GetSetting("RPGToolkit3", "BRD Editor", "New coords", "0"))
     m_default = GetSetting("RPGToolkit3", "BRD Editor", "Default board", vbNullString)
         
-    If GetSetting("RPGToolkit3", "BRD Editor", "Show frmNewBoard", "0") = "1" Then
+    If Not g_CBoardPreferences.bShowNewBoardDialog Then
         If m_default = vbNullString Then
             Call loadNewBoard
         Else
             Call loadDefaultBoard
         End If
         Unload Me
+        Exit Sub
     End If
     
     txtDims(NB_W).Text = str(m_width)
@@ -398,19 +397,19 @@ Private Sub loadNewBoard(): On Error Resume Next
     Call tkMainForm.refreshTabs
 End Sub
 
-Private Sub hsbDims_Change(index As Integer): On Error Resume Next
+Private Sub hsbDims_Change(Index As Integer): On Error Resume Next
     Dim i As Long
-    If hsbDims(index).value <> 1 Then
-        i = val(txtDims(index).Text) + hsbDims(index).value - 1
-        txtDims(index).Text = IIf(i < 1, " 1", str(i))
+    If hsbDims(Index).value <> 1 Then
+        i = val(txtDims(Index).Text) + hsbDims(Index).value - 1
+        txtDims(Index).Text = IIf(i < 1, " 1", str(i))
     End If
-    hsbDims(index).value = 1
+    hsbDims(Index).value = 1
 End Sub
 
 '========================================================================
 '========================================================================
-Private Sub optCoords_Click(index As Integer): On Error Resume Next
-    Select Case index
+Private Sub optCoords_Click(Index As Integer): On Error Resume Next
+    Select Case Index
         Case 0:
             m_coordOpt = (m_coordOpt And PX_ABSOLUTE) Or TILE_NORMAL
         Case 1:
@@ -423,10 +422,10 @@ End Sub
 
 '========================================================================
 '========================================================================
-Private Sub txtDims_Change(index As Integer): On Error Resume Next
+Private Sub txtDims_Change(Index As Integer): On Error Resume Next
     Dim i As Long
-    i = IIf(val(txtDims(index).Text) > 0, val(txtDims(index).Text), 10)
-    Select Case index
+    i = IIf(val(txtDims(Index).Text) > 0, val(txtDims(Index).Text), 10)
+    Select Case Index
         Case NB_W: m_width = i
         Case NB_H: m_height = i
         Case NB_L: m_layers = i

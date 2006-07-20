@@ -177,7 +177,6 @@ Public Enum eBoardTabs
     BTAB_SPRITE
     BTAB_IMAGE
 End Enum
-Public g_tabMap(BS_LIGHTING) As Long              'Map eBrdSettings to eBoardTabs
 
 '=========================================================================
 ' A board editor document
@@ -215,16 +214,6 @@ Public Type TKBoardEditorData
     effectiveBoardY As Long               '(different from sizeX/Y for ISO_ROTATED)
     
     currentObject(BTAB_IMAGE) As Long     'Selected object indices
-    
-    'Common to all board editors
-    bShowBackColour As Boolean            'tbd:show background colour in editor
-    bRevertToDraw As Boolean              'After flooding revert to draw tool
-    bShowVectorIndices As Boolean
-    vectorColor(TT_STAIRS) As Long
-    programColor As Long
-    waypointColor As Long
-    gridColor As Long
-    pStartColor As Long                   'Player start location colour.
 
     'Pre 3.0.7
     boardName As String                   'filename
@@ -258,7 +247,6 @@ Public Type TKBoardEditorData
     
 End Type
 
-
 '=========================================================================
 ' Board clipboard
 '=========================================================================
@@ -274,7 +262,6 @@ Public Type TKBoardClipboard
     obj As Object           'BS_VECTOR,BS_PROGRAM,BS_SPRITE
     img As TKBoardImage
 End Type
-
 
 '=========================================================================
 ' Converted vector from actkrt3
@@ -294,6 +281,13 @@ Public Const TILE_NORMAL = 0
 Public Const ISO_STACKED = 1              ' (Old) staggered column method.
 Public Const ISO_ROTATED = 2              ' x-y axes rotated by 60 / 30 degrees.
 Public Const PX_ABSOLUTE = 4              ' Absolute co-ordinates (iso and 2D).
+
+'=========================================================================
+' Board editor globals (common to all board editors)
+'=========================================================================
+Public g_tabMap(BS_LIGHTING) As Long            'Map eBrdSettings to eBoardTabs
+Public g_boardClipboard As TKBoardClipboard     'One clip for all boards.
+Public g_CBoardPreferences As CBoardPreferences
 
 '=========================================================================
 ' Absolute board pixel dimensions
