@@ -148,8 +148,7 @@ typedef struct tagVBBoardEditor
 	LONG optSetting;					// The current setting (eBrdSetting enumeration)
     LPSAFEARRAY bLayerOccupied;			// layer contains tiles (VARIANT_BOOL)
     LPSAFEARRAY bLayerVisible;			// layer visibility in the editor
-	VARIANT_BOOL bShowSprites;
-	VARIANT_BOOL bShowImages;
+	LPSAFEARRAY bDrawObjects;			// Object visibility.
 //	VB_BOARD board; //Note to self: pass pointer from vb
 	/* Fragment... */
 
@@ -166,7 +165,8 @@ typedef enum tagVBBoardSettings
 	BS_VECTOR,
 	BS_PROGRAM,
 	BS_SPRITE,
-	BS_IMAGE
+	BS_IMAGE,
+	BS_LIGHTING
 } VB_EBRDSETTING;
 
 typedef struct tagEditorLayer

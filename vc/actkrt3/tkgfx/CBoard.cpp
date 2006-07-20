@@ -278,10 +278,17 @@ std::vector<LPVB_BRDIMAGE> CBoard::getImages(CONST LPVB_BRDEDITOR pEditor)
 	LONG length = 0;
 	SafeArrayGetUBound(m_pBoard->m_images, 1, &length);
 
+	// Object visibility in the editor.
+	LONG ub = 0, i = BS_IMAGE;
+	SafeArrayGetUBound(pEditor->bDrawObjects, 1, &ub);
+	
+	VARIANT_BOOL visible = VARIANT_TRUE;
+	if (BS_IMAGE <= ub) SafeArrayGetElement(pEditor->bDrawObjects, &i, LPVOID(&visible));
+
 	std::vector<LPVB_BRDIMAGE> vect;
-	if (pEditor->bShowImages == VARIANT_TRUE || pEditor->optSetting == BS_IMAGE)
+	if (visible == VARIANT_TRUE || pEditor->optSetting == BS_IMAGE)
 	{
-		for (LONG i = 0; i <= length; ++i)
+		for (i = 0; i <= length; ++i)
 		{
 			LPVB_BRDIMAGE pImg = NULL;
 			SafeArrayPtrOfIndex(m_pBoard->m_images, &i, (void **)&pImg);
@@ -291,12 +298,15 @@ std::vector<LPVB_BRDIMAGE> CBoard::getImages(CONST LPVB_BRDEDITOR pEditor)
 
 	// Treat board sprites as images for the purposes of drawing them in the editor.
 	SafeArrayGetUBound(m_pBoard->m_spriteImages, 1, &length);
+	i = BS_SPRITE;
+	visible = VARIANT_TRUE;
+	if (BS_SPRITE <= ub) SafeArrayGetElement(pEditor->bDrawObjects, &i, LPVOID(&visible));
 
 	std::map<int, LPVB_BRDIMAGE> spr;
 
-	if (pEditor->bShowSprites == VARIANT_TRUE || pEditor->optSetting == BS_SPRITE)
+	if (visible == VARIANT_TRUE || pEditor->optSetting == BS_SPRITE)
 	{
-		for (LONG i = 0; i <= length; ++i)
+		for (i = 0; i <= length; ++i)
 		{
 			LPVB_BRDIMAGE pImg = NULL;
 			SafeArrayPtrOfIndex(m_pBoard->m_spriteImages, &i, (void **)&pImg);
