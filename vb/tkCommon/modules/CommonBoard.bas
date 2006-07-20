@@ -16,6 +16,8 @@ Attribute VB_Name = "Commonboard"
 
 Option Explicit
 
+Private Declare Function BRDIsometricTransform Lib "actkrt3.dll" (ByRef x As Double, ByRef y As Double, ByVal oldType As Integer, ByVal newType As Integer, ByVal brdSizeX As Integer) As Long
+
 '=========================================================================
 ' Member constants
 '=========================================================================
@@ -530,29 +532,29 @@ vVersion:
                 For y = 1 To .sizey
                     For x = 1 To .sizex
                     
-                        Dim index As Integer, count As Integer
-                        index = BinReadInt(num)
+                        Dim Index As Integer, count As Integer
+                        Index = BinReadInt(num)
                         
                         'Negative index indicates compression:
                         'the next 'index' tiles are indentical.
-                        If index < 0 Then
-                            count = -index
+                        If Index < 0 Then
+                            count = -Index
                             
                             Dim r As Long, b As Long, g As Long, tiletype As Byte
-                            index = BinReadInt(num)
+                            Index = BinReadInt(num)
                             r = BinReadInt(num)
                             g = BinReadInt(num)
                             b = BinReadInt(num)
                             
                             'Determine if the layer contains tiles (editor use).
                             '(0) indicates if the whole board contains tiles.
-                            If index Then
+                            If Index Then
                                 ed.bLayerOccupied(z) = True
                                 ed.bLayerOccupied(0) = True
                             End If
                     
                             For i = 1 To count
-                                .board(x, y, z) = index
+                                .board(x, y, z) = Index
                                 .ambientRed(x, y, z) = r
                                 .ambientGreen(x, y, z) = g
                                 .ambientBlue(x, y, z) = b
@@ -571,7 +573,7 @@ vVersion:
                                         End If
                                         
                                         'Spans onto next layer (editor use).
-                                        If (index) Then ed.bLayerOccupied(z) = True
+                                        If (Index) Then ed.bLayerOccupied(z) = True
                                     End If
                                 End If
                             Next i
@@ -580,12 +582,12 @@ vVersion:
                             'Single tile.
                             
                             'Determine if the layer contains tiles (editor use).
-                            If index Then
+                            If Index Then
                                 ed.bLayerOccupied(z) = True
                                 ed.bLayerOccupied(0) = True
                             End If
                             
-                            .board(x, y, z) = index
+                            .board(x, y, z) = Index
                             .ambientRed(x, y, z) = BinReadInt(num)
                             .ambientGreen(x, y, z) = BinReadInt(num)
                             .ambientBlue(x, y, z) = BinReadInt(num)
@@ -736,6 +738,7 @@ exitForA:
         Exit Function
 
 pvVersion:
+
             Dim bReg As Integer, regCode As String
             bReg = BinReadInt(num)                  'Created with a registered version?
             regCode = BinReadString(num)            'Registration code
@@ -766,14 +769,14 @@ pvVersion:
                 For y = 1 To .sizey
                     For x = 1 To .sizex
                     
-                        index = BinReadInt(num)
+                        Index = BinReadInt(num)
                         
                         'Negative index indicates compression:
                         'the next 'index' tiles are indentical.
-                        If index < 0 Then
-                            count = -index
+                        If Index < 0 Then
+                            count = -Index
                             
-                            index = BinReadInt(num)
+                            Index = BinReadInt(num)
                             r = BinReadInt(num)
                             g = BinReadInt(num)
                             b = BinReadInt(num)
@@ -781,13 +784,13 @@ pvVersion:
                             
                             'Determine if the layer contains tiles (editor use).
                             '(0) indicates if the whole board contains tiles.
-                            If index Then
+                            If Index Then
                                 ed.bLayerOccupied(z) = True
                                 ed.bLayerOccupied(0) = True
                             End If
                     
                             For i = 1 To count
-                                .board(x, y, z) = index
+                                .board(x, y, z) = Index
                                 .ambientRed(x, y, z) = r
                                 .ambientGreen(x, y, z) = g
                                 .ambientBlue(x, y, z) = b
@@ -807,7 +810,7 @@ pvVersion:
                                         End If
                                         
                                         'Spans onto next layer (editor use).
-                                        If (index) Then ed.bLayerOccupied(z) = True
+                                        If (Index) Then ed.bLayerOccupied(z) = True
                                     End If
                                 End If
                             Next i
@@ -816,12 +819,12 @@ pvVersion:
                             'Single tile.
                             
                             'Determine if the layer contains tiles (editor use).
-                            If index Then
+                            If Index Then
                                 ed.bLayerOccupied(z) = True
                                 ed.bLayerOccupied(0) = True
                             End If
                             
-                            .board(x, y, z) = index
+                            .board(x, y, z) = Index
                             .ambientRed(x, y, z) = BinReadInt(num)
                             .ambientGreen(x, y, z) = BinReadInt(num)
                             .ambientBlue(x, y, z) = BinReadInt(num)
@@ -1048,8 +1051,8 @@ Public Sub boardSetSize( _
         .sizeL = z
         
         'Data matrix must be reshaped for ISO_ROTATED
-        x = IIf(.coordType And ISO_ROTATED, x + y, x)
-        y = IIf(.coordType And ISO_ROTATED, x + y, y)
+        x = IIf(.coordType And ISO_ROTATED, .sizex + .sizey, .sizex)
+        y = IIf(.coordType And ISO_ROTATED, .sizex + .sizey, .sizey)
         ed.effectiveBoardX = x
         ed.effectiveBoardY = y
         
@@ -1107,4 +1110,40 @@ Public Sub boardSetTile(ByVal x As Long, ByVal y As Long, ByVal z As Long, ByVal
     Dim i As Long
     i = boardTileInLut(filename, board)
     board.board(x, y, z) = i
+End Sub
+
+Public Sub boardToIsoRotated(ByRef ed As TKBoardEditorData, ByRef board As TKBoard) ':on error resume next
+    
+    Dim backup As TKBoard, i As Long, j As Long, k As Long, x As Long, y As Long, dx As Double, dy As Double
+    If board.coordType <> ISO_STACKED Then Exit Sub
+    
+    Call modBoard.boardCopy(board, backup)
+    board.coordType = ISO_ROTATED
+    
+    'Convert the tile arrays - programs and sprites are converted to pixel co-ordinates regardless.
+    
+    'Resize the board arrays to the correct size for ISO_ROTATED.
+    
+    'Calculate the ISO_ROTATED dimensions from the pixel dimensions.
+    x = modBoard.absWidth(board.sizex, ISO_STACKED)
+    x = (x + 32) / 64
+    y = modBoard.absHeight(board.sizey, ISO_STACKED)
+    y = CInt((y + 16) / 32)
+    
+    'Preserve non-tile contents.
+    Call boardSetSize(x, y, board.sizeL, ed, board, True)
+    For i = 1 To backup.sizex
+        For j = 1 To backup.sizey
+            dx = CDbl(i): dy = CDbl(j)
+            Call BRDIsometricTransform(dx, dy, ISO_STACKED, ISO_ROTATED, board.sizex)
+            x = CInt(dx): y = CInt(dy)
+            For k = 1 To board.sizeL
+                board.board(x, y, k) = backup.board(i, j, k)
+                board.ambientRed(x, y, k) = backup.ambientRed(i, j, k)
+                board.ambientGreen(x, y, k) = backup.ambientGreen(i, j, k)
+                board.ambientBlue(x, y, k) = backup.ambientBlue(i, j, k)
+            Next k
+        Next j
+    Next i
+    
 End Sub
