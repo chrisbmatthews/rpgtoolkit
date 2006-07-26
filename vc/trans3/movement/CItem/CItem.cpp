@@ -106,7 +106,7 @@ CItemThread *CItemThread::create(const STRING str, CItem *pItem)
 /*
  * Execute an item thread.
  */
-bool CItemThread::execute()
+bool CItemThread::execute(const unsigned int units)
 {
 	extern ENTITY g_target, g_source;
 
@@ -117,8 +117,12 @@ bool CItemThread::execute()
 	g_target.p = g_source.p = m_pItem;
 	g_target.type = g_source.type = ET_ITEM;
 
-	m_i->execute(this);
-	++m_i;
+	unsigned int i = 0;
+	do
+	{
+		m_i->execute(this);
+		++m_i;
+	} while ((++i < units) && (m_i != m_units.end()) && m_pItem->isActive());
 
 	g_target = t; g_source = s;
 

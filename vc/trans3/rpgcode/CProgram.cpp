@@ -70,14 +70,14 @@ void CThread::destroyAll()
 }
 
 // Multitask now.
-void CThread::multitask()
+void CThread::multitask(const unsigned int units)
 {
 	std::set<CThread *>::iterator i = m_threads.begin();
 	for (; i != m_threads.end(); ++i)
 	{
 		if (!(*i)->isSleeping())
 		{
-			(*i)->execute();
+			(*i)->execute(units);
 		}
 	}
 }
@@ -112,9 +112,10 @@ unsigned long CThread::sleepRemaining() const
 }
 
 // Execute one unit from a program.
-bool CThread::execute()
+bool CThread::execute(const unsigned int units)
 {
-	if (m_i != m_units.end())
+	unsigned int i = 0;
+	while ((m_i != m_units.end()) && (i++ < units))
 	{
 		m_i->execute(this);
 		++m_i;

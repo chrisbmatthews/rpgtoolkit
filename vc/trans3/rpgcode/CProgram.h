@@ -344,7 +344,7 @@ class CThread : public CProgram
 public:
 	static CThread *create(const STRING str);
 	static void destroy(CThread *p);
-	static void multitask();
+	static void multitask(const unsigned int units);
 	static bool isThread(CThread *p) { return (m_threads.find(p) != m_threads.end()); }
 	static void destroyAll();
 
@@ -354,7 +354,7 @@ public:
 	unsigned long sleepRemaining() const;
 	void wakeUp() { m_bSleeping = false; }
 
-	virtual bool execute();
+	virtual bool execute(const unsigned int units);
 	virtual ~CThread() { }
 
 private:

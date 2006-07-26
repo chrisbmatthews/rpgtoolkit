@@ -46,7 +46,7 @@ class CItemThread : public CThread
 {
 public:
 	static CItemThread *create(const STRING str, CItem *pItem);
-	bool execute();
+	bool execute(const unsigned int units);
 private:
 	CItemThread(const STRING str): CThread(str) { }
 	CItem *m_pItem;

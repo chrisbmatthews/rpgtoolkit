@@ -37,6 +37,9 @@
 #include <sstream>
 #include <iostream>
 
+#define FPS_CAP 120.0					// Maximum number of fps to render.
+#define HALF_FPS_CAP 60.0				// Half said value.
+
 /*
  * Globals.
  */
@@ -431,11 +434,13 @@ GAME_STATE gameLogic()
 
 		case GS_MOVEMENT:
 		{
+			const unsigned long fps = ((g_renderCount * MILLISECONDS) / g_renderTime);
+
 			extern HWND g_hHostWnd;
 			STRINGSTREAM ss;
 			ss <<	g_mainFile.gameTitle.c_str()
 				<< _T(" — ") << g_pBoard->vectors.size()
-				<< _T(" vectors, ") << ((g_renderCount * MILLISECONDS) / g_renderTime)
+				<< _T(" vectors, ") << fps
 				<< _T(" FPS");
 #if _DEBUG
 			ss << _T(", ") << g_allocated << _T(" bytes");
@@ -443,7 +448,8 @@ GAME_STATE gameLogic()
 			SetWindowText(g_hHostWnd, ss.str().c_str());
 
 			// Multitask.
-			CThread::multitask();
+			unsigned int units = HALF_FPS_CAP / fps;
+			CThread::multitask((units < 1) ? units : ((units > 8) ? 8 : units));
 
 			// Movement.
 			std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
@@ -479,7 +485,6 @@ int mainEventLoop()
 	std::cerr << "MainEventLoop()\n";
 
 	// Calculate how long one frame should take, in milliseconds
-	#define FPS_CAP 120.0
 	const DWORD dwOneFrame = DWORD(1000.0 / FPS_CAP);
 
 	// Define a structure to hold the messages we recieve
@@ -548,8 +553,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
 	path = dev;
 
 	set_terminate(termFunc);
