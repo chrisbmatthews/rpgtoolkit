@@ -20,6 +20,13 @@ Public Const TILE_MOVEMENT = 0        'for MainMem.PixelMovement
 Public Const PIXEL_MOVEMENT_TILE_PUSH = 1
 Public Const PIXEL_MOVEMENT_PIXEL_PUSH = 2
 
+Private Enum ePfHeuristic              'Pathfinding heuristic (see CPathFind.h)
+    PF_PREVIOUS
+    PF_AXIAL
+    PF_DIAGONAL
+    PF_VECTOR
+End Enum
+
 '=========================================================================
 ' Public variables
 '=========================================================================
@@ -80,6 +87,7 @@ Public Type TKMain
     pStartX As Integer                'Pixel start position of the player.
     pStartY As Integer
     pStartL As Integer
+    pfHeuristic As Integer            'Default pathfinding heuristic.
     
 End Type
 
@@ -421,10 +429,12 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                 mainMem.bFpsInTitleBar = BinReadByte(num)
             End If
             
+            
             If (minorVer >= 9) Then
                 mainMem.pStartX = BinReadInt(num)
                 mainMem.pStartY = BinReadInt(num)
                 mainMem.pStartL = BinReadInt(num)
+                mainMem.pfHeuristic = BinReadInt(num)
             End If
 
         Close num
@@ -661,6 +671,7 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         Call BinWriteInt(num, theMain.pStartX)
         Call BinWriteInt(num, theMain.pStartY)
         Call BinWriteInt(num, theMain.pStartL)
+        Call BinWriteInt(num, theMain.pfHeuristic)
 
     Close num
 
@@ -726,5 +737,6 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .pStartL = 0
         .pStartX = 0
         .pStartY = 0
+        .pfHeuristic = PF_AXIAL
     End With
 End Sub

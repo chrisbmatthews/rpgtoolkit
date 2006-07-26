@@ -39,7 +39,7 @@ Begin VB.Form editmainfile
       Height          =   285
       Left            =   4080
       TabIndex        =   13
-      Top             =   5280
+      Top             =   5400
       Visible         =   0   'False
       Width           =   3135
    End
@@ -76,14 +76,16 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "fraSettings"
-      Tab(1).Control(1)=   "startframe"
+      Tab(1).Control(0)=   "startframe"
+      Tab(1).Control(0).Enabled=   0   'False
+      Tab(1).Control(1)=   "fraSettings"
+      Tab(1).Control(1).Enabled=   0   'False
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "actionframe"
-      Tab(2).Control(1)=   "prgframe"
+      Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(1)=   "actionframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
@@ -727,20 +729,39 @@ Begin VB.Form editmainfile
             Italic          =   -1  'True
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   2535
+         Height          =   2655
          Left            =   -74760
          TabIndex        =   14
          Top             =   2520
          Width           =   6615
          Begin VB.PictureBox Picture4 
             BorderStyle     =   0  'None
-            Height          =   2175
+            Height          =   2295
             Left            =   120
-            ScaleHeight     =   2175
+            ScaleHeight     =   2295
             ScaleWidth      =   6375
             TabIndex        =   40
             Top             =   240
             Width           =   6375
+            Begin VB.ComboBox cmbPfHeuristic 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   315
+               ItemData        =   "EDITMAINv2.frx":1098
+               Left            =   4320
+               List            =   "EDITMAINv2.frx":10A5
+               Style           =   2  'Dropdown List
+               TabIndex        =   111
+               Top             =   1920
+               Width           =   1815
+            End
             Begin VB.OptionButton optPixelBased 
                Caption         =   "Pixel Based"
                BeginProperty Font 
@@ -789,7 +810,7 @@ Begin VB.Form editmainfile
                Height          =   375
                Left            =   0
                TabIndex        =   42
-               Top             =   1800
+               Top             =   1920
                Width           =   1455
             End
             Begin VB.CheckBox chkUsePixelPush 
@@ -822,6 +843,23 @@ Begin VB.Form editmainfile
                LargeChange     =   2
                Min             =   -4
                Max             =   4
+            End
+            Begin VB.Label lblPfHeuristic 
+               Caption         =   "Default pathfinding algorithm"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   1920
+               TabIndex        =   112
+               Top             =   1950
+               Width           =   2175
             End
             Begin VB.Label Label15 
                Caption         =   "Additional speed adjustment: (GameSpeed() initial value)."
@@ -858,7 +896,7 @@ Begin VB.Form editmainfile
                Width           =   1215
             End
             Begin VB.Label lblGamesSpeedNote 
-               Caption         =   $"EDITMAINv2.frx":1098
+               Caption         =   $"EDITMAINv2.frx":10C2
                BeginProperty Font 
                   Name            =   "MS Sans Serif"
                   Size            =   8.25
@@ -1881,7 +1919,7 @@ Begin VB.Form editmainfile
          ForeColor       =   &H00FF0000&
          Height          =   255
          Left            =   -74760
-         MouseIcon       =   "EDITMAINv2.frx":1150
+         MouseIcon       =   "EDITMAINv2.frx":117A
          MousePointer    =   99  'Custom
          TabIndex        =   7
          Tag             =   "1158"
@@ -2095,7 +2133,7 @@ End Property
 '=========================================================================
 Private Sub pluginInfoFill()
     On Error GoTo error
-    Call plugList.Clear
+    Call plugList.clear
     Dim t As Integer
     For t = 0 To UBound(mainMem.plugins)
         If mainMem.plugins(t) <> "" Then
@@ -2144,8 +2182,8 @@ End Sub
 '=========================================================================
 ' Change screen style
 '=========================================================================
-Private Sub chkScreenStyle_Click(ByRef index As Integer)
-    mainMem.extendToFullScreen = index
+Private Sub chkScreenStyle_Click(ByRef Index As Integer)
+    mainMem.extendToFullScreen = Index
 End Sub
 
 '=========================================================================
@@ -2158,7 +2196,7 @@ End Sub
 '=========================================================================
 ' #Push() in pixel increments.
 '=========================================================================
-Private Sub chkUsePixelPush_Click()
+Private Sub chkUsePixelPush_Click(): On Error Resume Next
     If (optPixelBased.value) Then
         If (chkUsePixelPush.value) Then
             mainMem.pixelMovement = PIXEL_MOVEMENT_PIXEL_PUSH
@@ -2166,6 +2204,13 @@ Private Sub chkUsePixelPush_Click()
             mainMem.pixelMovement = PIXEL_MOVEMENT_TILE_PUSH
         End If
     End If
+End Sub
+
+'=========================================================================
+' Default pathfinding algorithm combo-box
+'=========================================================================
+Private Sub cmbPfHeuristic_Click(): On Error Resume Next
+    mainMem.pfHeuristic = cmbPfHeuristic.ListIndex + 1
 End Sub
 
 '=========================================================================
@@ -2745,6 +2790,8 @@ Private Sub infofill()
     sliGameSpeed.value = getGameSpeed(mainMem.gameSpeed)
 
     chkShowFps.value = mainMem.bFpsInTitleBar
+    
+    cmbPfHeuristic.ListIndex = mainMem.pfHeuristic - 1
 
 End Sub
 
@@ -3221,7 +3268,7 @@ End Sub
 '=========================================================================
 ' Custom resolution stuff
 '=========================================================================
-Private Sub txtResX_KeyDown(ByRef keyCode As Integer, ByRef Shift As Integer)
+Private Sub txtResX_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
     optResCustom.value = True
     mainMem.mainResolution = 4
 End Sub
@@ -3253,7 +3300,7 @@ End Sub
 Private Sub txtResY_Change()
     mainMem.resY = val(txtResY.Text) ' val *must* be used - CDbl is no good here
 End Sub
-Private Sub txtResY_KeyDown(ByRef keyCode As Integer, ByRef Shift As Integer)
+Private Sub txtResY_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
     optResCustom.value = True
     mainMem.mainResolution = 4
 End Sub
