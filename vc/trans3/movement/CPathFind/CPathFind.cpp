@@ -18,6 +18,7 @@
 #include "../CSprite/CSprite.h"
 #include "../../common/board.h"
 #include "../../../tkCommon/movement/coords.h"
+#include "../../common/mainfile.h"
 
 /*
  * Defines
@@ -31,7 +32,7 @@ const DB_POINT SEPARATOR = {-1, -1};// Invalid point to separate board and sprit
  * Default constructor.
  */
 CPathFind::CPathFind():
-m_heuristic(PF_DIAGONAL),
+m_heuristic(PF_AXIAL),
 m_goal(),
 m_layer(0),
 m_start(),
@@ -39,6 +40,8 @@ m_steps(0)
 {
 	// Insufficient information is available when CSprite is constructed
 	// to be able to do anything here.
+	extern MAIN_FILE g_mainFile;
+	m_heuristic = PF_HEURISTIC(g_mainFile.pfHeuristic);
 	m_u.v = NULL;
 }
 
