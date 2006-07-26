@@ -484,22 +484,23 @@ int CVector::estimateCurl(void)
 	m_p.push_back(*(m_p.begin() + 1));
 	
 	// Find the bottom right corner.
-	DB_POINT corner = {0, 0};
-	for (DB_ITR i = m_p.begin() + 1; i != m_p.end() - 1; ++i)
+	DB_ITR i = m_p.begin() + 1, j = i;
+	for (; i != m_p.end() - 1; ++i)
 	{
-		if (i->y > corner.y || (i->y == corner.y && i->x > corner.x))
+		if (i->y > j->y || (i->y == j->y && i->x > j->x))
 		{
-			corner = *i;
+			j = i;
 		}
 	}
+
+	// Dimensions of vectors.
+	const DB_POINT  a = {j->x - (j - 1)->x, j->y - (j - 1)->y},
+					b = {(j + 1)->x - j->x, (j + 1)->y - j->y};
+
 	// Remove the extra point.
 	m_p.pop_back();
 
-	// Dimensions of vectors.
-	const DB_POINT  a = {i->x - (i - 1)->x, i->y - (i - 1)->y},
-					b = {(i + 1)->x - i->x, (i + 1)->y - i->y};
-
-	return ((a.x * b.y - a.y * b.x > 0) ? CURL_RIGHT : CURL_LEFT);
+	return ((a.x * b.y - a.y * b.x < 0) ? CURL_RIGHT : CURL_LEFT);
 }
 
 /*
