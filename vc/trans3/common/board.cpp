@@ -219,7 +219,7 @@ lutEndA:
 				file >> var; vect.pV->close(var != 0);
 				file >> var; vect.layer = int(var);
 				file >> var; vect.type = TILE_TYPE(var);
-
+				
 				vectors.push_back(vect);
 			}
 		}
@@ -575,7 +575,7 @@ lutEndB:
 		file >> var;					// boardDayNight.
 		file >> var;					// boardNightBattleOverride.
 		file >> var;					// boardSkillNight.
-		file >> var;					// boardBackgroundNight.
+		file >> sUnused;				// boardBackgroundNight.
 
 		constants.clear();
 		for (i = 0; i <= 10; ++i)
@@ -865,7 +865,7 @@ void tagBoard::vectorize(const unsigned int layer)
 void tagBoard::createVectorCanvases()
 {
 	// After vectorize() on old formats.
-	
+
 	for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
 	{
 		i->createCanvas(*this);
