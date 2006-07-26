@@ -49,11 +49,12 @@ public:
 	void setQueuedPath(						// Queue up a path-finding path.
 		PF_PATH &path, 
 		const bool bClearQueue);	
-	void setQueuedPoint(const DB_POINT pt)	// Queue just one point to create a path.
+	void setQueuedPoint(					// Queue just one point to create a path.
+		const DB_POINT pt, 
+		const bool bClearQueue)	
 	{
-		//if (!m_pend.path.empty() || m_pos.loopFrame > LOOP_MOVE) return;
-		m_pend.path.clear();
-		m_pend.path.push_back(pt);
+		if (bClearQueue) m_pos.path.clear();
+		m_pos.path.push_back(pt);
 	}
 
 	void drawPath(CCanvas *const cnv);		// Draw the path this sprite is on.
@@ -86,7 +87,6 @@ public:
 	void setActive(const bool bActive) { m_bActive = bActive; }
 	void setPosition(int x, int y, const int l, const COORD_TYPE coord);
 	BRD_SPRITE *getBoardSprite(void) { return &m_brdData; }
-	MV_PATH getPath(void) const { return m_pend.path; } // tbd: put path in m_pos
 
 	// Create default vectors, overwriting any user-defined (PRE_VECTOR_ITEMs).
 	void createVectors(void) { m_attr.createVectors(m_brdData.activationType); };
@@ -140,7 +140,6 @@ protected:
 	BRD_SPRITE m_brdData;					// Board-set sprite data (activation variables).
 	CCanvas *m_pCanvas;						// Pointer to sprite's frame.
 	SPRITE_POSITION m_pos;					// Current location and frame details.
-	PENDING_MOVEMENT m_pend;				// Pending movements of the player, including queue.
 	TILE_TYPE m_tileType;					// The tiletypes at the sprite's location (NOT the "tiletype" of the sprite).
 	DB_POINT m_v;							// Position vector in movement direction
 	CPathFind m_pathFind;					// Sprite-specific pathfinding information.
@@ -157,21 +156,20 @@ private:
 	
 	TILE_TYPE boardEdges(const bool bSend);	// Tests for movement at the board edges.
 	void checkIdling(void);					// Update idle and custom animations.
-	MV_ENUM getDirection(void);				// Take the angle of movement and return a MV_ENUM direction.
-	DB_POINT getTarget(void);				// Get the next position co-ordinates.
+	MV_ENUM getDirection(void) const;		// Take the angle of movement and return a MV_ENUM direction.
+	DB_POINT getTarget(void) const;			// Get the next position co-ordinates.
 	bool push(const bool bScroll);			// Complete a single frame's movement of the sprite.
 	void setPathTarget(void);				// Insert target co-ordinates from the path.
 	void setTarget(MV_ENUM direction);		// Increment target co-ordinates based on a direction.
+	bool findDiversion(void);
 
 	// Calculate the loopSpeed - the number of renders that equate to
 	// the sprite's movement speed (and any offsets).
 	inline int calcLoops() const
 	{
-		extern double g_renderCount, g_renderTime;
-
 		// Frames per millisecond.
-		const double fpms = g_renderCount / g_renderTime;
-		const int result = round(m_attr.speed * fpms) + (m_loopOffset * round(fpms * 100.0));
+		extern double g_fpms;
+		const int result = round(m_attr.speed * g_fpms) + (m_loopOffset * round(g_fpms * 100.0));
 		return (result < 1 ? 1 : result);
 	};
 };
