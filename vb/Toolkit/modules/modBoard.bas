@@ -42,6 +42,7 @@ Public Enum eTileType
     TT_UNDER = 2
     TT_UNIDIRECTIONAL = 4
     TT_STAIRS = 8
+    TT_WAYPOINT = 16
 End Enum
 
 'Under vector attributes. See board.h
@@ -464,6 +465,7 @@ Public Sub vectorLvColumn(ByRef lv As ListView, ByRef x As Single): On Error Res
 End Sub
 Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal KeyCode As Integer) As Boolean ':on error resume next
     
+    Const vbKeyDash = 189
     Dim i As Long
     i = val(lv.Tag)
     If i = 0 And KeyCode = vbKeyDelete Then
@@ -489,6 +491,8 @@ Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal KeyCode As Integer) 
        Case vbKeySubtract
             lv.SelectedItem.SubItems(i) = str(val(lv.SelectedItem.SubItems(i)) - 32)
             vectorLvKeyDown = True
+       Case vbKeyDash
+            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & "-"
        Case vbKeyRight
             'Switch columns.
             If i = 1 Then lv.Tag = "2": vectorLvKeyDown = True
