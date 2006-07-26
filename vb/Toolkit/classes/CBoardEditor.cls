@@ -30,3 +30,6 @@ Public Sub boardPixelToScreen(ByRef x As Long, ByRef y As Long)
     x = x * zoom - topX
     y = y * zoom - topY
 End Sub
+Private Sub Class_Initialize()
+    zoom = 1
+End Sub

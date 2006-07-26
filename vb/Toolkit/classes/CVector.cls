@@ -91,32 +91,45 @@ Public Sub draw( _
     ByVal bShowIndices As Boolean, _
     Optional ByVal bCurrentVector As Boolean = False): 'on error resume next
     
-    Dim oldColor As Long, i As Long, pt1 As POINTAPI, pt2 As POINTAPI
+    Dim oldColor As Long, i As Long, j As Long, pt1 As POINTAPI, pt2 As POINTAPI, dx As Long, dy As Long
     If m_tiletype = TT_NULL Or UBound(m_pts) = 0 Then Exit Sub
     
     oldColor = pic.ForeColor
     pic.ForeColor = color
     pic.DrawWidth = IIf(bCurrentVector, 2, 1)
     
-    'Straight onto the hdc.
-    For i = 0 To UBound(m_pts) - 1
+    'Straight onto the dc.
+   
+    For i = 0 To UBound(m_pts)
+        j = i + 1
+        If i = UBound(m_pts) Then j = 0
+        
         pt1.x = m_pts(i).x: pt1.y = m_pts(i).y
-        pt2.x = m_pts(i + 1).x: pt2.y = m_pts(i + 1).y
+        pt2.x = m_pts(j).x: pt2.y = m_pts(j).y
+        
         Call pCEd.boardPixelToScreen(pt1.x, pt1.y)
         Call pCEd.boardPixelToScreen(pt2.x, pt2.y)
-        pic.Line (pt1.x, pt1.y)-(pt2.x, pt2.y)
+        
         pic.currentX = pt1.x
         pic.currentY = pt1.y
         If bShowIndices Then pic.Print str(i)
-    Next i
-    pic.currentX = pt2.x
-    pic.currentY = pt2.y
-    If bShowIndices Then pic.Print str(i)
-    If m_bClosed Then
-        pt1.x = m_pts(0).x: pt1.y = m_pts(0).y
-        Call pCEd.boardPixelToScreen(pt1.x, pt1.y)
+        
+        'Exit after drawing the last digit.
+        If j = 0 And Not m_bClosed Then Exit For
+        
         pic.Line (pt1.x, pt1.y)-(pt2.x, pt2.y)
-    End If
+        
+        
+        If m_tiletype = TT_UNIDIRECTIONAL And Not bCurrentVector Then
+            'Do not draw for current vector as dotted lines cover each other.
+            dy = 3 * Sgn(pt2.x - pt1.x)
+            dx = 3 * Sgn(pt1.y - pt2.y)
+            pic.DrawStyle = vbDot
+            pic.Line (pt1.x + dx, pt1.y + dy)-(pt2.x + dx, pt2.y + dy)
+            pic.DrawStyle = vbSolid
+        End If
+    Next i
+    
     pic.ForeColor = oldColor
     pic.DrawWidth = 1
 End Sub
@@ -156,6 +169,19 @@ Public Sub deletePoints(Optional ByVal p As Long = -1) ':on error resume next
                 ReDim Preserve pts(UBound(pts) + 1)
             End If
         Next i
+        
+        If UBound(pts) <= 1 Then
+            'Zero or one point - delete.
+            m_tiletype = TT_NULL
+            m_bClosed = False
+            ReDim m_pts(0)
+        Else
+            ReDim Preserve pts(UBound(pts) - 1)
+            m_pts = pts
+            'Two points - open vector.
+            If UBound(pts) = 1 Then m_bClosed = False
+        End If
+    
     End If
 End Sub
 
@@ -365,12 +391,16 @@ Public Sub lvPopulate(ByRef lv As ListView) ':on error resume next
     lv.SelectedItem.EnsureVisible
 End Sub
 
-Public Sub lvApply(ByRef lv As ListView) ':on error resume next
+Public Sub lvApply(ByRef lv As ListView, Optional ByVal bAllowNegatives As Boolean = False) ':on error resume next
     Dim i As Long
     ReDim m_pts(lv.ListItems.count - 1)
     For i = 0 To lv.ListItems.count - 1
-        m_pts(i).x = Abs(val(lv.ListItems(i + 1).SubItems(1)))
-        m_pts(i).y = Abs(val(lv.ListItems(i + 1).SubItems(2)))
+        m_pts(i).x = val(lv.ListItems(i + 1).SubItems(1))
+        m_pts(i).y = val(lv.ListItems(i + 1).SubItems(2))
+        If Not bAllowNegatives Then
+            m_pts(i).x = Abs(m_pts(i).x)
+            m_pts(i).y = Abs(m_pts(i).y)
+        End If
     Next i
 End Sub
 
@@ -386,4 +416,43 @@ Public Sub copy(ByRef rhs As CVector) ':on error resume next
     For i = 0 To UBound(m_pts)
         Call rhs.setPoint(i, m_pts(i).x, m_pts(i).y, False)
     Next i
+End Sub
+
+'=========================================================================
+' Set a default sprite vector - see trans3/common/sprite.cpp
+'=========================================================================
+Public Sub defaultSpriteVector(ByVal bCollisionVector As Boolean, ByVal bIsometric As Boolean): On Error Resume Next
+
+    deletePoints
+    If bCollisionVector Then
+        If bIsometric Then
+            addPoint -15, 0
+            addPoint 0, 7
+            addPoint 15, 0
+            addPoint 0, -7
+        Else
+            m_tiletype = TT_SOLID
+            setPoint 0, 0, 0, True
+            setPoint 1, 30, 0, True
+            setPoint 2, 30, 14, True
+            setPoint 3, 0, 14, True
+            moveSelectionBy -15, -15
+        End If
+    Else
+        If bIsometric Then
+            addPoint -31, 0
+            addPoint 0, 15
+            addPoint 31, 0
+            addPoint 0, -15
+        Else
+            m_tiletype = TT_SOLID
+            setPoint 0, 0, 0, True
+            setPoint 1, 48, 0, True
+            setPoint 2, 48, 32, True
+            setPoint 3, 0, 32, True
+            moveSelectionBy -24, -24
+        End If
+    End If
+    m_bClosed = True
+    
 End Sub

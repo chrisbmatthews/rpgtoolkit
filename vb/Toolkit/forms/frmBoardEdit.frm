@@ -1080,7 +1080,6 @@ Private Sub initializeEditor(ByRef ed As TKBoardEditorData) ': On Error Resume N
     Dim i As Long
     Call resetEditor(ed)
     With ed
-        .pCEd.zoom = 1
         If (.pCBoard) Then Call BRDFree(.pCBoard)
         .pCBoard = BRDNewCBoard(projectPath)
         .currentLayer = 1
@@ -1839,7 +1838,8 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
             If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) Then
                 
                 'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
-                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord, , False)
+                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = ((Shift And vbCtrlMask) <> 0) Then pxCoord = snapToGrid(pxCoord, , False)
+                If (Shift And vbShiftMask) Then pxCoord = snapToAxis(pxCoord, m_sel.x1, m_sel.y1)
 
                 m_sel.x2 = pxCoord.x: m_sel.y2 = pxCoord.y
                 Call m_sel.drawLine(Me, m_ed.pCEd)
@@ -1943,6 +1943,21 @@ Private Function snapToGrid(ByRef pxCoord As POINTAPI, Optional ByVal bAddBasePo
     If (Not bToIsoCentre) And isIsometric(m_ed.board(m_ed.undoIndex).coordType) Then
         'Align the rect to the grid (tileToBoardPixel() returns the centre of isometric tiles).
         snapToGrid.x = snapToGrid.x - 32
+    End If
+End Function
+Private Function snapToAxis(ByRef pt As POINTAPI, ByVal x1 As Long, ByVal y1 As Long) As POINTAPI: On Error Resume Next
+    Dim iso As Long, dx As Long, dy As Long
+    snapToAxis = pt
+    iso = IIf(isIsometric(m_ed.board(m_ed.undoIndex).coordType), 2, 1)
+    
+    'x1, y1 are the start coordinates of the line.
+    dx = pt.x - x1
+    dy = pt.y - y1
+    
+    If Abs(dx) > Abs(dy) Then
+        snapToAxis.y = IIf(Abs(dx) > 2 * iso * Abs(dy), y1, y1 + Abs(dx / iso) * Sgn(dy))
+    Else
+        snapToAxis.x = IIf(Abs(dy) > 2 * iso * Abs(dx), x1, x1 + Abs(dy * iso) * Sgn(dx))
     End If
 End Function
 
@@ -2687,14 +2702,13 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
                     Call setUndo
                     Set curVector = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
                     Call drawBoard
-                Else
-                    'Close the last point.
                 End If
                         
-                'Start new point.
+                'New point.
                 
                 'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
-                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord, , False)
+                If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = ((Shift And vbCtrlMask) <> 0) Then pxCoord = snapToGrid(pxCoord, , False)
+                If (Shift And vbShiftMask) Then pxCoord = snapToAxis(pxCoord, m_sel.x1, m_sel.y1)
                 
                 'CBoardSlection stores board pixel coordinate.
                 Call m_sel.restart(pxCoord.x, pxCoord.y)
@@ -2782,13 +2796,15 @@ Private Function currentVector() As CVector ': On Error Resume Next
     End Select
 End Function
 Private Sub vectorDrawAll() ': On Error Resume Next
-    Dim i As Long, p1 As POINTAPI, p2 As POINTAPI
+    Dim i As Long, p1 As POINTAPI, p2 As POINTAPI, vis As Boolean
     With m_ed.board(m_ed.undoIndex)
         'Vectors
         If m_ed.bDrawObjects(BS_VECTOR) Or m_ed.optSetting = BS_VECTOR Then
             For i = 0 To UBound(.vectors)
                 If Not (.vectors(i) Is Nothing) Then
-                    If .vectors(i).layer <= .sizeL And m_ed.bLayerVisible(.vectors(i).layer) And (.vectors(i).tiletype <> TT_NULL) Then _
+                    'Check visibility. Draw if layer exceeds ubound.
+                    If .vectors(i).layer <= UBound(m_ed.bLayerVisible) Then vis = m_ed.bLayerVisible(.vectors(i).layer)
+                    If vis Or .vectors(i).layer > .sizeL Then _
                         Call .vectors(i).draw(picBoard, m_ed.pCEd, g_CBoardPreferences.vectorColor(.vectors(i).tiletype), g_CBoardPreferences.bShowVectorIndices)
                 End If
             Next i
@@ -2797,7 +2813,8 @@ Private Sub vectorDrawAll() ': On Error Resume Next
         If m_ed.bDrawObjects(BS_PROGRAM) Or m_ed.optSetting = BS_PROGRAM Then
             For i = 0 To UBound(.prgs)
                 If Not (.prgs(i) Is Nothing) Then
-                    If m_ed.bLayerVisible(.prgs(i).layer) Then _
+                    If .prgs(i).layer <= UBound(m_ed.bLayerVisible) Then vis = m_ed.bLayerVisible(.prgs(i).layer)
+                    If vis Or .prgs(i).layer > .sizeL Then _
                         Call .prgs(i).draw(picBoard, m_ed.pCEd, g_CBoardPreferences.programColor, g_CBoardPreferences.bShowVectorIndices)
                     End If
             Next i
@@ -2911,7 +2928,7 @@ Public Sub imageApply(ByVal Index As Long) ':on error resume next
     img.bounds.Top = val(ctl.getTxtLoc(1).Text)
     img.bounds.Right = img.bounds.Left + w
     img.bounds.Bottom = img.bounds.Top + h
-    img.layer = val(ctl.getTxtLoc(2).Text)
+    img.layer = Abs(val(ctl.getTxtLoc(2).Text))
     
     img.drawType = BI_NORMAL                        'Until parallax/stretch implemented.
     img.transpcolor = ctl.transpcolor
