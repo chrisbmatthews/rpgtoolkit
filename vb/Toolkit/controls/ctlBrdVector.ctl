@@ -1,12 +1,12 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.UserControl ctlBrdVector 
-   ClientHeight    =   4965
+   ClientHeight    =   5280
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3120
    DefaultCancel   =   -1  'True
-   ScaleHeight     =   4965
+   ScaleHeight     =   5280
    ScaleWidth      =   3120
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw vectors"
@@ -28,7 +28,7 @@ Begin VB.UserControl ctlBrdVector
    End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
-      Height          =   4215
+      Height          =   4455
       Left            =   0
       TabIndex        =   1
       Top             =   600
@@ -37,7 +37,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   1095
          Left            =   360
          TabIndex        =   15
-         Top             =   2880
+         Top             =   3240
          Width           =   1935
          _ExtentX        =   3413
          _ExtentY        =   1931
@@ -71,13 +71,22 @@ Begin VB.UserControl ctlBrdVector
          Appearance      =   0  'Flat
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
-         Height          =   735
+         Height          =   1095
          Left            =   120
-         ScaleHeight     =   735
+         ScaleHeight     =   1095
          ScaleWidth      =   2655
          TabIndex        =   8
          Top             =   240
          Width           =   2655
+         Begin VB.OptionButton optType 
+            Caption         =   "Waypoint"
+            Height          =   375
+            Index           =   16
+            Left            =   1320
+            TabIndex        =   18
+            Top             =   360
+            Width           =   1335
+         End
          Begin VB.OptionButton optType 
             Caption         =   "Solid"
             Height          =   375
@@ -101,9 +110,9 @@ Begin VB.UserControl ctlBrdVector
             Caption         =   "Stairs"
             Height          =   375
             Index           =   8
-            Left            =   1320
+            Left            =   0
             TabIndex        =   10
-            Top             =   0
+            Top             =   720
             Width           =   855
          End
          Begin VB.OptionButton optType 
@@ -112,8 +121,7 @@ Begin VB.UserControl ctlBrdVector
             Index           =   4
             Left            =   1320
             TabIndex        =   9
-            Top             =   360
-            Visible         =   0   'False
+            Top             =   0
             Width           =   1335
          End
       End
@@ -123,7 +131,7 @@ Begin VB.UserControl ctlBrdVector
          Index           =   0
          Left            =   360
          TabIndex        =   7
-         Top             =   1200
+         Top             =   1560
          Width           =   2295
       End
       Begin VB.CheckBox chkUnder 
@@ -132,7 +140,7 @@ Begin VB.UserControl ctlBrdVector
          Index           =   1
          Left            =   360
          TabIndex        =   6
-         Top             =   1440
+         Top             =   1800
          Width           =   2295
       End
       Begin VB.CheckBox chkUnder 
@@ -141,7 +149,7 @@ Begin VB.UserControl ctlBrdVector
          Index           =   2
          Left            =   360
          TabIndex        =   5
-         Top             =   1680
+         Top             =   2040
          Width           =   2295
       End
       Begin VB.TextBox txtStairs 
@@ -149,7 +157,7 @@ Begin VB.UserControl ctlBrdVector
          Left            =   360
          TabIndex        =   4
          Text            =   "1"
-         Top             =   2400
+         Top             =   2760
          Width           =   495
       End
       Begin VB.CheckBox chkClosed 
@@ -157,7 +165,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Left            =   360
          TabIndex        =   3
-         Top             =   960
+         Top             =   1320
          Width           =   1815
       End
       Begin VB.TextBox txtLayer 
@@ -165,7 +173,7 @@ Begin VB.UserControl ctlBrdVector
          Left            =   360
          TabIndex        =   2
          Text            =   "1"
-         Top             =   2085
+         Top             =   2445
          Width           =   495
       End
       Begin VB.Label lblStairs 
@@ -173,7 +181,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Left            =   960
          TabIndex        =   14
-         Top             =   2445
+         Top             =   2805
          Width           =   975
       End
       Begin VB.Label lblLayer 
@@ -181,7 +189,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Left            =   960
          TabIndex        =   13
-         Top             =   2145
+         Top             =   2505
          Width           =   975
       End
    End
@@ -208,28 +216,31 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub apply(): On Error Resume Next
-    Dim vector As CVector
+    Dim vector As CVector, i As Long, ctl As OptionButton
     Call activeBoard.setUndo
     Set vector = activeBoard.toolbarGetCurrent(BS_VECTOR)
     If Not vector Is Nothing Then
         With vector
-            Dim i As Long
-            If optType(TT_SOLID).value Then
-                .tiletype = TT_SOLID
-            ElseIf optType(TT_UNDER).value Then
-                .bClosed = True
-                .tiletype = TT_UNDER
-                .attributes = 0
-                For i = 0 To 3 - 1
-                    If chkUnder(i).value Then .attributes = .attributes Or (2 ^ i)
-                Next i
-            ElseIf optType(TT_STAIRS).value Then
-                .tiletype = TT_STAIRS
-                .attributes = val(txtStairs.Text)
-            End If
+            For Each ctl In optType
+                If ctl.value Then .tiletype = ctl.Index
+            Next ctl
+            
             .bClosed = ((chkClosed.value <> 0) Or optType(TT_UNDER).value)
-            .layer = val(txtLayer.Text)
-        
+
+            Select Case .tiletype
+                Case TT_UNDER
+                    .bClosed = True
+                    .attributes = 0
+                    For i = 0 To 3 - 1
+                        If chkUnder(i).value Then .attributes = .attributes Or (2 ^ i)
+                    Next i
+                Case TT_STAIRS
+                    .attributes = val(txtStairs.Text)
+                Case TT_UNIDIRECTIONAL
+                    .bClosed = False
+            End Select
+            
+            .layer = Abs(val(txtLayer.Text))
             Call vector.lvApply(lvPoints)
         End With
     End If
@@ -276,21 +287,25 @@ Public Sub populate(ByVal Index As Long, ByRef vector As CVector)  ':on error re
     txtLayer.Text = str(vector.layer)
     txtStairs.Enabled = (vector.tiletype = TT_STAIRS)
     lblStairs.Enabled = (vector.tiletype = TT_STAIRS)
-    chkClosed.Enabled = (vector.tiletype <> TT_UNDER)
+    chkClosed.Enabled = (vector.tiletype <> TT_UNIDIRECTIONAL)
+    txtLayer.Enabled = (vector.tiletype <> TT_WAYPOINT)
+    lblLayer.Enabled = (vector.tiletype <> TT_WAYPOINT)
     
     For i = 0 To chkUnder.count - 1
         chkUnder(i).Enabled = (vector.tiletype = TT_UNDER)
         chkUnder(i).value = 0
     Next i
     
-    If vector.tiletype = TT_UNDER Then
-        chkUnder(0).value = Abs((vector.attributes And TA_BRD_BACKGROUND) <> 0)
-        chkUnder(1).value = Abs((vector.attributes And TA_ALL_LAYERS_BELOW) <> 0)
-        chkUnder(2).value = Abs((vector.attributes And TA_RECT_INTERSECT) <> 0)
-        chkClosed.value = 1
-    ElseIf vector.tiletype = TT_STAIRS Then
-        txtStairs.Text = str(vector.attributes)
-    End If
+    Select Case vector.tiletype
+        Case TT_UNDER
+            chkUnder(0).value = Abs((vector.attributes And TA_BRD_BACKGROUND) <> 0)
+            chkUnder(1).value = Abs((vector.attributes And TA_ALL_LAYERS_BELOW) <> 0)
+            chkUnder(2).value = Abs((vector.attributes And TA_RECT_INTERSECT) <> 0)
+        Case TT_STAIRS
+            txtStairs.Text = str(vector.attributes)
+        Case TT_UNIDIRECTIONAL
+            chkClosed.value = 0
+    End Select
     
     If vector.tiletype = TT_NULL Then Exit Sub
         
