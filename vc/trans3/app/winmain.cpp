@@ -58,15 +58,19 @@ ZO_VECTOR g_sprites;					// z-ordered players and items.
 CPlayer *g_pSelectedPlayer = NULL;		// Pointer to selected player?
 int g_selectedPlayer = 0;				// Index of current player.
 
-
 HINSTANCE g_hInstance = NULL;			// Handle to application.
-double g_renderCount = 0;				// Count of GS_MOVEMENT state loops.
-double g_renderTime = 0;				// Millisecond cumulative GS_MOVEMENT state loop time.
-
 IPlugin *g_pMenuPlugin = NULL;			// The menu plugin.
+double g_fpms = 0.0;					// Frames per millisecond (renderCount / renderTime).
 
-bool CSprite::m_bPxMovement = false;	// Using pixel or tile movement.
+/*
+ * Locals.
+ */
+double m_renderCount = 0.0;				// Count of GS_MOVEMENT state loops.
+double m_renderTime = 0.0;				// Millisecond cumulative GS_MOVEMENT state loop time.
 
+/*
+ * Defines.
+ */
 #ifdef _DEBUG
 
 unsigned long g_allocated = 0;
@@ -212,9 +216,9 @@ void setUpGame()
 	// Do an fps estimate.
 	if (avgTime < 0) avgTime = 0.1; 
 
-	g_renderTime = avgTime * MILLISECONDS;
-	g_renderCount = 100;
-	g_renderTime *= g_renderCount;
+	m_renderTime = avgTime * MILLISECONDS;
+	m_renderCount = 100;
+	m_renderTime *= m_renderCount;
 
 	// Create and load start player.
 	for (std::vector<CPlayer *>::const_iterator j = g_players.begin(); j != g_players.end(); ++j)
@@ -434,13 +438,15 @@ GAME_STATE gameLogic()
 
 		case GS_MOVEMENT:
 		{
-			const unsigned long fps = ((g_renderCount * MILLISECONDS) / g_renderTime);
+			// Frames per millisecond.
+			g_fpms = (m_renderCount / m_renderTime);
+			const unsigned long fps = g_fpms * MILLISECONDS;
 
 			extern HWND g_hHostWnd;
 			STRINGSTREAM ss;
 			ss <<	g_mainFile.gameTitle.c_str()
 				<< _T(" — ") << g_pBoard->vectors.size()
-				<< _T(" vectors, ") << fps
+				<< _T(" vectors, ") << (g_fpms * MILLISECONDS)
 				<< _T(" FPS");
 #if _DEBUG
 			ss << _T(", ") << g_allocated << _T(" bytes");
@@ -449,7 +455,7 @@ GAME_STATE gameLogic()
 
 			// Multitask.
 			unsigned int units = HALF_FPS_CAP / fps;
-			CThread::multitask((units < 1) ? units : ((units > 8) ? 8 : units));
+			CThread::multitask((units < 1) ? 1 : ((units > 8) ? 8 : units));
 
 			// Movement.
 			std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
@@ -485,7 +491,7 @@ int mainEventLoop()
 	std::cerr << "MainEventLoop()\n";
 
 	// Calculate how long one frame should take, in milliseconds
-	const DWORD dwOneFrame = DWORD(1000.0 / FPS_CAP);
+	const DWORD dwOneFrame = DWORD(MILLISECONDS / FPS_CAP);
 
 	// Define a structure to hold the messages we recieve
 	MSG message;
@@ -529,8 +535,8 @@ int mainEventLoop()
 			// Add only if this is a "short" loop.
 			if (dwTimeNow < 200)
 			{
-				g_renderTime += dwTimeNow;
-				++g_renderCount;
+				m_renderTime += dwTimeNow;
+				++m_renderCount;
 			}
 		}
 
@@ -553,8 +559,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
 	path = dev;
 
 	set_terminate(termFunc);
