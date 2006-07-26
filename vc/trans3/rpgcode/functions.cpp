@@ -1913,7 +1913,7 @@ void wander(CALL_DATA &params)
 	if (!p) throw CError(_T("Wander(): item not found"));
 	
 	// Break early if the item is already moving.
-	if (!p->getPath().empty()) return;
+	if (!p->getPosition().path.empty()) return;
 
 	const int isIso = int(g_pBoard->isIsometric());
 
@@ -3527,7 +3527,7 @@ void fade(CALL_DATA &params)
 void zoom(CALL_DATA &params)
 {
 	extern RECT g_screen;
-	extern double g_renderCount, g_renderTime;
+	extern double g_fpms;
 
 	const int width = g_screen.right - g_screen.left,
 			  height = g_screen.bottom - g_screen.top;
@@ -3538,7 +3538,7 @@ void zoom(CALL_DATA &params)
 	}
 	CCanvas cnv(*g_cnvRpgCode);
 	const double percent = 1.0 - params[0].getNum() / 100;
-	const double speed = (g_renderTime / g_renderCount) * 0.05;
+	const double speed = g_fpms * 0.05;
 
 	for (double i = 1.0; i > percent; i -= 0.01 * speed)
 	{
@@ -3630,7 +3630,7 @@ void wipe(CALL_DATA &params)
 {
 	extern RECT g_screen;
 	extern STRING g_projectPath;
-	extern double g_renderCount, g_renderTime;
+	extern double g_fpms;
 
 	const int width = g_screen.right - g_screen.left,
 			  height = g_screen.bottom - g_screen.top;
@@ -3646,7 +3646,7 @@ void wipe(CALL_DATA &params)
 	int speed = (params.params == 3 ? abs(params[2].getNum()) : 1);
 
 	// Skip pixels for low fps. Factor by 20th of millisecond frametime.
-	const int factor = round((g_renderTime / g_renderCount) * 0.05);
+	const int factor = round(g_fpms * 0.05);
 	speed *= (!factor ? 1 : factor);
 
 	int x = 0, y = 0;
