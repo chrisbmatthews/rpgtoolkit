@@ -79,6 +79,9 @@ typedef struct tagIdleInfo
 
 } IDLE_INFO;
 
+typedef std::deque<DB_POINT> MV_PATH;
+typedef std::deque<DB_POINT>::iterator MV_PATH_ITR;
+
 /*
  * Position of a sprite.
  */
@@ -96,44 +99,22 @@ typedef struct tagSpritePosition
 							//		= LOOP_STANCE - running a custom stance through the mainloop.
 	int loopSpeed;			// speed converted to loops.
     IDLE_INFO idle;
+
+	DB_POINT target;		// Target co-ordinates.
 	bool bIsPath;			// Is the current movement part of a path?
-	int pathAttributes;		// Path flags (PF_).
+	MV_PATH path;
 
 	tagSpritePosition(void): 
 		pAnm(NULL),
 		frame(0),
 		x(0), y(0), l(1),
 		loopFrame(LOOP_WAIT),
-		bIsPath(false),
+		bIsPath(true),
 		loopSpeed(1),
 		idle(),
-		pathAttributes(0) {};
+		path() { target.x = target.y = 0.0; };
 
 } SPRITE_POSITION;
-
-typedef std::deque<DB_POINT> MV_PATH;
-typedef std::deque<DB_POINT>::iterator MV_PATH_ITR;
-
-/*
- * A pending movement.
- */
-typedef struct tagPendingMovement
-{
-    double xOrig;			// Origin PIXEL co-ordinates.
-    double yOrig;
-    int lOrig;				// Integer levels.
-    double xTarg;			// Target PIXEL co-ordinates.
-    double yTarg;
-    int lTarg;
-	MV_PATH path;
-
-
-	tagPendingMovement(void):
-		xOrig(0), yOrig(0), lOrig(1),
-		xTarg(0), yTarg(0), lTarg(1),
-		path() {};
-
-} PENDING_MOVEMENT;
 
 /*
  * Round a floating point.
