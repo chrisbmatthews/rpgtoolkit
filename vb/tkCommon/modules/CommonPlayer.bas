@@ -14,19 +14,19 @@ Option Explicit
 '=========================================================================
 ' Indices of built in GFX
 '=========================================================================
-Private Const PLYR_WALK_S = 0
-Private Const PLYR_WALK_N = 1
-Private Const PLYR_WALK_E = 2
-Private Const PLYR_WALK_W = 3
-Private Const PLYR_WALK_NW = 4
-Private Const PLYR_WALK_NE = 5
-Private Const PLYR_WALK_SW = 6
-Private Const PLYR_WALK_SE = 7
-Private Const PLYR_FIGHT = 8
-Private Const PLYR_DEFEND = 9
-Private Const PLYR_SPC = 10
-Private Const PLYR_DIE = 11
-Private Const PLYR_REST = 12
+Public Const PLYR_WALK_S = 0
+Public Const PLYR_WALK_N = 1
+Public Const PLYR_WALK_E = 2
+Public Const PLYR_WALK_W = 3
+Public Const PLYR_WALK_NW = 4
+Public Const PLYR_WALK_NE = 5
+Public Const PLYR_WALK_SW = 6
+Public Const PLYR_WALK_SE = 7
+Public Const PLYR_FIGHT = 8
+Public Const PLYR_DEFEND = 9
+Public Const PLYR_SPC = 10
+Public Const PLYR_DIE = 11
+Public Const PLYR_REST = 12
 
 '=========================================================================
 ' An RPGToolkit player
@@ -80,6 +80,9 @@ Public Type TKPlayer
     speed As Double                 'Seconds between each frame increase
     
     loopSpeed As Long               '.speed converted to loops
+    
+    vBase As CVector                'Interaction vectors - 3.0.7
+    vActivate As CVector
 
 #If (isToolkit = 0) Then            '--Trans3 only
     status(10) As FighterStatus     '  status effects applied to player
@@ -101,6 +104,8 @@ Public Type playerDoc
     specialMoveNumber As Long       '  which spc move is selected?
 #End If
 End Type
+
+Private Const CHR_MINOR = 8         'Character format minor version (3.0.7)
 
 '=========================================================================
 ' Add a custom graphic to a player
@@ -355,7 +360,7 @@ Public Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
     Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT CHAR")   'Filetype
         Call BinWriteInt(num, major)               'Version
-        Call BinWriteInt(num, 7)            'Minor version (ie 2.5 = Version 3.0 file  2.3-- binary 2.2-- 64x64 fight gfx, 2.1-- 64x32 chars (2.0== 32x32 chars))
+        Call BinWriteInt(num, CHR_MINOR)            'Minor version (ie 2.5 = Version 3.0 file  2.3-- binary 2.2-- 64x64 fight gfx, 2.1-- 64x32 chars (2.0== 32x32 chars))
         Call BinWriteString(num, thePlayer.charname$)      'Charactername
         Call BinWriteString(num, thePlayer.experienceVar$)
         Call BinWriteString(num, thePlayer.defenseVar$)
@@ -419,6 +424,27 @@ Public Sub saveChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             Call BinWriteString(num, thePlayer.customGfx(t))
             Call BinWriteString(num, thePlayer.customGfxNames(t))
         Next t
+        
+        'Vectors
+        Call BinWriteInt(num, 1)                            'Currently 2 interaction vectors.
+            
+        'Collision vector
+        Call BinWriteInt(num, thePlayer.vBase.getPoints)
+        Dim i As Long, x As Long, y As Long
+        For i = 0 To thePlayer.vBase.getPoints
+            Call thePlayer.vBase.getPoint(i, x, y)
+            Call BinWriteLong(num, x)                        'Stored by pixel (Longs)
+            Call BinWriteLong(num, y)
+        Next i
+        
+        'Activation vector
+        Call BinWriteInt(num, thePlayer.vActivate.getPoints)
+        For i = 0 To thePlayer.vActivate.getPoints
+            Call thePlayer.vActivate.getPoint(i, x, y)
+            Call BinWriteLong(num, x)
+            Call BinWriteLong(num, y)
+        Next i
+        
     Close num
 End Sub
 
@@ -585,7 +611,40 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                 handle$ = BinReadString(num)
                 Call playerAddCustomGfx(thePlayer, handle$, an$)
             Next t
+            
+            If (minorVer >= 8) Then
+                'Vector bases.
+                Dim i As Long, j As Long, ub As Integer, pts As Integer, vect As CVector
+                
+                'Provision for directional bases.
+                ub = BinReadInt(num)
+                For i = 0 To ub
+                    Set vect = New CVector
+                    pts = BinReadInt(num)
+                    For j = 0 To pts
+                        x = BinReadLong(num)
+                        y = BinReadLong(num)
+                        Call vect.addPoint(x, y)
+                    Next j
+                    
+                    If i = 0 Then
+                        Set thePlayer.vBase = vect
+                    Else
+                        Set thePlayer.vActivate = vect
+                    End If
+                    Set vect = Nothing
+                Next i
+            Else
+                'Load defaults.
+                Set thePlayer.vBase = New CVector
+                Call thePlayer.vBase.defaultSpriteVector(True, False)
+                Set thePlayer.vActivate = New CVector
+                Call thePlayer.vActivate.defaultSpriteVector(False, False)
+            End If
+            
         Else
+        
+        
             'old version 2 char (convert the gfx to animations and tile bitmaps
             ReDim walkGfx(15, 1) As String      'walking graphics filenames (64x32) (xx,0 or 1) 0=top, 1=bottom
             ReDim fightingGfx(3, 1, 1) As String 'fight gfx filenames (64x64) (xx,yy ,0 or 1)
@@ -1253,6 +1312,11 @@ Public Sub PlayerClear(ByRef thePlayer As TKPlayer)
     
     ReDim thePlayer.customGfx(5)
     ReDim thePlayer.customGfxNames(5)
+    
+    Set thePlayer.vBase = New CVector
+    Call thePlayer.vBase.defaultSpriteVector(True, False)
+    Set thePlayer.vActivate = New CVector
+    Call thePlayer.vActivate.defaultSpriteVector(False, False)
 
 #If (isToolkit = 0) Then
     'Clear status effects if in engine

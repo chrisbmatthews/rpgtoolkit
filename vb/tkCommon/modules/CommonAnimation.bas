@@ -229,6 +229,7 @@ Public Sub AnimateAt(ByRef theAnim As TKAnimation, _
     Dim i As Long
     
     For i = 0 To animGetMaxFrame(theAnim)
+        pic.Cls
         Call AnimDrawFrame(theAnim, i, x, y, pic.hdc)
         pic.Refresh
         Call animDelay(theAnim.animPause)
@@ -263,7 +264,7 @@ Public Sub AnimDrawFrame(ByRef theAnim As TKAnimation, ByVal framenum As Long, B
         
             Call TileBitmapSize(tbm, 1, 1)
             tbm.tiles(0, 0) = theAnim.animFrame(framenum)
-            Call DrawSizedTileBitmap(tbm, 0, 0, theAnim.animSizeX, theAnim.animSizeY, hdc)
+            Call DrawSizedTileBitmap(tbm, x, y, theAnim.animSizeX, theAnim.animSizeY, hdc)
             
         Else
         
