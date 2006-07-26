@@ -11,6 +11,7 @@
 #include "mainfile.h"
 #include "CFile.h"
 #include "mbox.h"
+#include "../movement/CPathFind/CPathFind.h"
 
 /*
  * Open a main file.
@@ -250,11 +251,13 @@ bool tagMainFile::open(const STRING fileName)
 		file >> bFpsInTitleBar;
 	}
 
+	pfHeuristic = PF_AXIAL;				// Pre-vector tile pathfinding.
 	if (minorVer >= 9)
 	{
 		file >> startX;
 		file >> startY;
 		file >> startL;
+		file >> pfHeuristic;
 	}
 
 	return true;

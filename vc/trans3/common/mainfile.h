@@ -75,6 +75,7 @@ typedef struct tagMainFile
 	short startX;						// Coordinates for the player to start from,
 	short startY;						// moved from tagBoard.
 	short startL;
+	short pfHeuristic;					// Default heuristic for pathfinding.
 
 	int getGameSpeed() { return gameSpeed - 128; }
 	void setGameSpeed(const int gs) { gameSpeed = gs + 128; }
