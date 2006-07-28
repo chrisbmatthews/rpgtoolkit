@@ -47,12 +47,12 @@ typedef double DOUBLE;
 //-------------------------------------------------------------------
 // A tileset header
 //-------------------------------------------------------------------
-struct tilesetHeader
+typedef struct tagTilesetHeader
 {
 	WORD version;  		// 20=2.0, 21=2.1, etc
 	WORD tilesInSet;	// number of tiles in set
 	WORD detail;		// detail level in set MUST BE UNIFORM!
-};
+} TS_HEADER, *LPTS_HEADER;
 
 #define SHADE_UNIFORM 0
 
@@ -237,6 +237,11 @@ class CTile
 			VOID
 		);
 
+		// Get the tileset's header
+		STATIC TS_HEADER FAST_CALL getTilesetInfo(
+			CONST std::string strFilename
+		);
+
 	private:
 		// Create an isometric mask
 		VOID FAST_CALL createIsometricMask(
@@ -258,11 +263,6 @@ class CTile
 		INT FAST_CALL openFromTileSet(
 			CONST std::string strFilename,
 			CONST INT number
-		);
-
-		// Get the tileset's header
-		tilesetHeader FAST_CALL getTilesetInfo(
-			CONST std::string strFilename
 		);
 
 		// Calculate the insertation position

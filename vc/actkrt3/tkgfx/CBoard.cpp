@@ -133,6 +133,21 @@ LONG APIENTRY BRDIsometricTransform(
 //--------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------
+LONG APIENTRY BRDRoundToTile(
+	DOUBLE *x, 
+	DOUBLE *y, 
+	CONST SHORT bIsometric, 
+	CONST SHORT bAddBasePoint)
+{
+	DOUBLE dx = *x, dy = *y;
+	coords::roundToTile(dx, dy, bIsometric == VARIANT_TRUE, bAddBasePoint == VARIANT_TRUE);
+	*x = dx; *y = dy;
+	return 0;
+}
+
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
 LONG APIENTRY BRDRenderTileToBoard(
 	CBoard *pBoard, 
 	CONST LPVB_BOARD pData,

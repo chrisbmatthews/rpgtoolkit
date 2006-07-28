@@ -54,7 +54,7 @@ int g_nNumCallbacks;			//number of elements in the above array.
 #include "stdafx.h"
 #include "CBoard.h"
 #include "tkgfx.h"
-tilesetHeader tileset;
+TS_HEADER tileset;
 #include "../../tkCommon/tkGfx/CUtil.h"
 #include "tkpluglocalfns.h"
 #include <vector>
@@ -886,6 +886,82 @@ int APIENTRY GFXdrawpixel ( long hdc,
 //	stop flickering during scrolling.
 //=====================================================
 ///////////////////////////////////////////////////////
+
+LONG APIENTRY GFXdrawTileset(
+	CONST CHAR *file,
+	CONST LONG hdc,
+	CONST LONG startIdx,
+	CONST LONG pxWidth,
+	CONST LONG pxHeight,
+	CONST SHORT isometric)
+{
+	CONST std::string filename = file;
+
+	CONST std::string ext = util::upperCase(util::getExt(file));
+	if(ext.compare("TST") == 0 || ext.compare("ISO") == 0)
+	{
+		CONST TS_HEADER header = CTile::getTilesetInfo(filename);
+		if (startIdx > header.tilesInSet) return 0;
+
+		CONST tWidth = pxWidth / 32;
+		CONST tHeight = pxHeight / 32;
+
+		int idx = startIdx - 1;
+
+		if (!isometric)
+		{
+			for (int y = 1; y <= tHeight; ++y)
+			{				
+				for (int x = 1; x <= tWidth; ++x)
+				{
+					if (++idx > header.tilesInSet) return 0;
+
+					std::stringstream ss;
+					ss << filename << idx;
+
+					CTile::drawByBoardCoordHdc(
+						ss.str(),
+						x, y,
+						0, 0, 0,
+						reinterpret_cast<HDC>(hdc),
+						TM_NONE,
+						0, 0,
+						TILE_NORMAL,
+						0, 0
+					);
+				}
+			} // for(i)
+		}
+		else // if(isometric)
+		{
+			for (int y = 0; y < pxHeight - 16; y += 16)
+			{
+				int x = (y % 32 ? 32 : 0);
+				for (; x < pxWidth - 32; x += 64)
+				{
+					if (++idx > header.tilesInSet) return 0;
+
+					std::stringstream ss;
+					ss << filename << idx;
+
+					CTile::drawByBoardCoordHdc(
+						ss.str(),
+						1, 1,
+						0, 0, 0,
+						reinterpret_cast<HDC>(hdc),
+						TM_NONE,
+						x, y + 16,
+						ISO_STACKED,
+						0, 0
+					);
+				}
+			} // for(y)
+		} // if (isometric)
+	} // if (tileset)
+
+	return 0;
+}
+
 int APIENTRY GFXdrawTstWindow ( char fname[],
 								int hdc,
 								int start,

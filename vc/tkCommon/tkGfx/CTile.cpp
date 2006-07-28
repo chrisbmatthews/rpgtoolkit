@@ -1133,7 +1133,7 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 	UCHAR rrr = '\0', ggg = '\0', bbb = '\0';
 	INT detail = -1;
 
-	CONST tilesetHeader tileset = getTilesetInfo(strFilename);
+	CONST TS_HEADER tileset = getTilesetInfo(strFilename);
 
 	if (number < 1 || number > tileset.tilesInSet) return detail;
 	
@@ -1282,23 +1282,17 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 // Called by: CTile::openFromTileset only.
 //
 ///////////////////////////////////////////////////////
-tilesetHeader FAST_CALL CTile::getTilesetInfo(CONST std::string strFilename) 
+TS_HEADER FAST_CALL CTile::getTilesetInfo(CONST std::string strFilename) 
 {
-	//gets tileset header for filename.
-	//returns 0-success, 1 failure.
-	tilesetHeader tileset;
-	tileset.detail=0;
-	tileset.tilesInSet = 0;
-	tileset.version = 0;
+	TS_HEADER header = {0, 0, 0};
 
-	FILE* infile = fopen(strFilename.c_str(), "rb");
-	if (!infile) 
-		return tileset;
+	FILE* file = fopen(strFilename.c_str(), "rb");
+	if (!file) return header;
 
-	fread(&tileset, 6, 1, infile);
-	fclose(infile);
+	fread(&header, 6, 1, file);
+	fclose(file);
 
-	return tileset;
+	return header;
 }
 
 
@@ -1593,7 +1587,7 @@ BOOL CTile::drawByBoardCoord(
 	CONST INT nIsoEvenOdd)
 {
 	// Remove any PX_ABSOLUTE flag - tiles are always given in tile coordinates.
-	coordType = COORD_TYPE(coordType & (TILE_NORMAL | ISO_STACKED | ISO_ROTATED));
+	coordType = COORD_TYPE(coordType & ~PX_ABSOLUTE);
 
 	CONST BOOL bIsometric = coordType & (ISO_STACKED | ISO_ROTATED);
 	coords::tileToPixel(x, y, coordType, FALSE, brdSizeX);
@@ -1639,7 +1633,7 @@ BOOL CTile::drawByBoardCoordHdc(
 	CONST INT nIsoEvenOdd)
 {
 	// Remove any PX_ABSOLUTE flag - tiles are always given in tile coordinates.
-	coordType = COORD_TYPE(coordType & (TILE_NORMAL | ISO_STACKED | ISO_ROTATED));
+	coordType = COORD_TYPE(coordType & ~PX_ABSOLUTE);
 	
 	CONST BOOL bIsometric = coordType & (ISO_STACKED | ISO_ROTATED);
 	coords::tileToPixel(x, y, coordType, FALSE, brdSizeX);
