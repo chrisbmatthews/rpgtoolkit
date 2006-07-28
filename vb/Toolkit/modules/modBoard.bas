@@ -597,3 +597,49 @@ Public Function rectProjectIsometric(ByRef sel As CBoardSelection) As POINTAPI()
     
     rectProjectIsometric = pts
 End Function
+
+'========================================================================
+' Draw a tile grid onto a picturebox
+'========================================================================
+Public Sub gridDraw( _
+    ByRef pic As PictureBox, _
+    ByRef pCEd As CBoardEditor, _
+    ByVal isometric As Boolean, _
+    ByVal tileWidth As Long, _
+    ByVal tileHeight As Long) ': On Error Resume Next
+    
+    Dim color As Long, offsetY As Long, x As Long, y As Long, oldMode As Long, intHeight As Long
+    
+    oldMode = pic.DrawMode
+    pic.DrawMode = vbInvert
+        
+    If isometric Then
+        offsetY = IIf((pCEd.topY Mod tileHeight = 0) = (pCEd.topX Mod tileWidth = 0), 0, 16 * pCEd.zoom)
+        
+        ' Top right to bottom left.
+        Do While y < pic.ScaleWidth / 2 + pic.ScaleHeight
+            pic.Line (0, y + offsetY)-(x + offsetY * 2, 0), color
+            x = x + tileWidth: y = y + tileHeight
+        Loop
+
+        ' Top left to bottom right.
+        x = 0
+        intHeight = pic.ScaleHeight + (pic.ScaleHeight Mod tileHeight)
+        y = intHeight
+        Do While y > -pic.ScaleWidth / 2
+            pic.Line (0, y + offsetY)-(x, intHeight + offsetY), color
+            x = x + tileWidth:  y = y - tileHeight
+        Loop
+    Else
+        Do While x < pic.ScaleWidth
+            pic.Line (x, 0)-(x, pic.ScaleHeight), color
+            x = x + tileWidth
+        Loop
+        Do While y < pic.ScaleHeight
+            pic.Line (0, y)-(pic.ScaleWidth, y), color
+            y = y + tileHeight
+        Loop
+    End If 'isometric
+    
+    pic.DrawMode = oldMode
+End Sub

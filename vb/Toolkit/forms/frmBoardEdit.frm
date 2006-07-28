@@ -1144,9 +1144,9 @@ Public Sub changeSelectedTile(ByVal file As String, Optional ByVal bChangeTool A
     
     Call BRDRenderTile( _
         projectPath & tilePath & file, _
-        isIsometric(m_ed.board(m_ed.undoIndex).coordType), _
+        isIsometric, _
         tkMainForm.brdPicCurrentTile.hdc, _
-        IIf(isIsometric(m_ed.board(m_ed.undoIndex).coordType), 0, 16), 0, _
+        IIf(isIsometric, 0, 16), 0, _
         GetSysColor(tkMainForm.brdPicCurrentTile.backColor And &HFFFFFF) _
     )
     tkMainForm.brdPicCurrentTile.ToolTipText = file
@@ -1159,14 +1159,18 @@ Public Property Get formType() As Long: On Error Resume Next
     formType = FT_BOARD
 End Property
 
+Public Property Get isIsometric() As Boolean: On Error Resume Next
+    isIsometric = modBoard.isIsometric(m_ed.board(m_ed.undoIndex).coordType)
+End Property
+
 Private Sub Form_Activate() ':on error resume next
     Set activeBoard = Me
     Set activeForm = Me
         
     'Show tools.
     hideAllTools
-    tkMainForm.popButton(3).Visible = True              'Board toolbar
-    tkMainForm.boardTools.Visible = True                'Lefthand tools
+    tkMainForm.popButton(3).visible = True              'Board toolbar
+    tkMainForm.boardTools.visible = True                'Lefthand tools
     tkMainForm.boardTools.Top = tkMainForm.toolTop
     
     tkMainForm.brdOptSetting(m_ed.optSetting).value = True
@@ -1192,7 +1196,7 @@ Private Sub Form_Activate() ':on error resume next
     Call toolbarPopulateSprites
     
     If tkMainForm.popButton(3).value = 1 Then
-        tkMainForm.pTools.Visible = True
+        tkMainForm.pTools.visible = True
     End If
     
     tkMainForm.StatusBar1.Panels(4).Text = "Zoom: " & str(m_ed.pCEd.zoom * 100) & "%"
@@ -1210,8 +1214,8 @@ Public Sub Form_Deactivate() ':on error resume next
     'Reset visible layers list.
     Call setVisibleLayersByCombo
     
-    tkMainForm.popButton(3).Visible = False
-    tkMainForm.pTools.Visible = False
+    tkMainForm.popButton(3).visible = False
+    tkMainForm.pTools.visible = False
 End Sub
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer) ':on error resume next
     Call picBoard_KeyDown(KeyCode, Shift)
@@ -1268,13 +1272,13 @@ Private Sub Form_Resize() ':on error resume next
        
     If picBoard.ScaleX(brdWidth, vbPixels, vbTwips) > picBoard.width Then
         picBoard.width = picBoard.width - (picBoard.width Mod picBoard.ScaleX(scrollUnitWidth(m_ed), vbPixels, vbTwips))
-        hScroll.Visible = True
+        hScroll.visible = True
         hScroll.width = picBoard.width
         hScroll.max = brdWidth - picBoard.ScaleWidth
         hScroll.SmallChange = scrollUnitWidth(m_ed)
         hScroll.LargeChange = picBoard.ScaleWidth - scrollUnitWidth(m_ed)
     Else
-        hScroll.Visible = False
+        hScroll.visible = False
         hScroll.max = 0
         picBoard.width = picBoard.ScaleX(brdWidth, vbPixels, vbTwips)
         m_ed.pCEd.topX = 0
@@ -1282,20 +1286,20 @@ Private Sub Form_Resize() ':on error resume next
          
     If picBoard.ScaleY(brdHeight, vbPixels, vbTwips) > picBoard.Height Then
         picBoard.Height = picBoard.Height - (picBoard.Height Mod picBoard.ScaleY(scrollUnitHeight(m_ed), vbPixels, vbTwips))
-        vScroll.Visible = True
+        vScroll.visible = True
         vScroll.Height = picBoard.Height
         vScroll.max = brdHeight - picBoard.ScaleHeight
         vScroll.SmallChange = scrollUnitHeight(m_ed)
         vScroll.LargeChange = picBoard.ScaleHeight - scrollUnitHeight(m_ed)
     Else
-        vScroll.Visible = False
+        vScroll.visible = False
         vScroll.max = 0
         picBoard.Height = picBoard.ScaleY(brdHeight, vbPixels, vbTwips)
         m_ed.pCEd.topY = 0
     End If
     
-    picBoard.Left = (sstBoard.width - (picBoard.width + IIf(vScroll.Visible, vScroll.width, 0))) / 2
-    picBoard.Top = (sstBoard.Height + sstBoard.TabHeight - (picBoard.Height + IIf(hScroll.Visible, hScroll.Height, 0))) / 2
+    picBoard.Left = (sstBoard.width - (picBoard.width + IIf(vScroll.visible, vScroll.width, 0))) / 2
+    picBoard.Top = (sstBoard.Height + sstBoard.TabHeight - (picBoard.Height + IIf(hScroll.visible, hScroll.Height, 0))) / 2
     hScroll.Top = picBoard.Height + picBoard.Top
     vScroll.Left = picBoard.width + picBoard.Left
     vScroll.Top = picBoard.Top
@@ -1307,8 +1311,8 @@ Private Sub Form_Unload(Cancel As Integer) ': On Error Resume Next
     Call BRDFree(m_ed.pCBoard)
     'wip - no need 'Call BoardClear(m_ed.board(m_ed.undoIndex))
     Call hideAllTools
-    tkMainForm.popButton(3).Visible = False         'Before Set m_sel = Nothing
-    tkMainForm.pTools.Visible = False
+    tkMainForm.popButton(3).visible = False         'Before Set m_sel = Nothing
+    tkMainForm.pTools.visible = False
     Set m_sel = Nothing
     'tbc
 
@@ -1790,9 +1794,9 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
     
     If m_sel.status = SS_DRAWING Or m_sel.status = SS_MOVING Then
         'Scroll the board to expand selection.
-        If x > picBoard.ScaleWidth - 8 And hScroll.value <> hScroll.max And hScroll.Visible Then hScroll.value = hScroll.value + hScroll.SmallChange
+        If x > picBoard.ScaleWidth - 8 And hScroll.value <> hScroll.max And hScroll.visible Then hScroll.value = hScroll.value + hScroll.SmallChange
         If x < 8 And hScroll.value <> hScroll.min Then hScroll.value = hScroll.value - hScroll.SmallChange
-        If y > picBoard.ScaleHeight - 8 And vScroll.value <> vScroll.max And vScroll.Visible Then vScroll.value = vScroll.value + vScroll.SmallChange
+        If y > picBoard.ScaleHeight - 8 And vScroll.value <> vScroll.max And vScroll.visible Then vScroll.value = vScroll.value + vScroll.SmallChange
         If y < 8 And vScroll.value <> vScroll.min Then vScroll.value = vScroll.value - vScroll.SmallChange
     End If
       
@@ -1805,7 +1809,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
     Select Case m_ed.optSetting
         Case BS_GENERAL
             'Move the board by dragging.
-            If Button <> 0 And (hScroll.Visible Or vScroll.Visible) Then
+            If Button <> 0 And (hScroll.visible Or vScroll.visible) Then
                 Dim dx As Long, dy As Long, hx As Long, hy As Long, tX As Long, tY As Long
                 dx = m_sel.xDrag - x:           dy = m_sel.yDrag - y
                 hx = scrollUnitWidth(m_ed) / 2
@@ -1940,7 +1944,7 @@ Private Function snapToGrid(ByRef pxCoord As POINTAPI, Optional ByVal bAddBasePo
     pt = modBoard.boardPixelToTile(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
     snapToGrid = modBoard.tileToBoardPixel(pt.x, pt.y, m_ed.board(m_ed.undoIndex).coordType, bAddBasePoint, m_ed.board(m_ed.undoIndex).sizex)
     
-    If (Not bToIsoCentre) And isIsometric(m_ed.board(m_ed.undoIndex).coordType) Then
+    If (Not bToIsoCentre) And isIsometric Then
         'Align the rect to the grid (tileToBoardPixel() returns the centre of isometric tiles).
         snapToGrid.x = snapToGrid.x - 32
     End If
@@ -1948,7 +1952,7 @@ End Function
 Private Function snapToAxis(ByRef pt As POINTAPI, ByVal x1 As Long, ByVal y1 As Long) As POINTAPI: On Error Resume Next
     Dim iso As Long, dx As Long, dy As Long
     snapToAxis = pt
-    iso = IIf(isIsometric(m_ed.board(m_ed.undoIndex).coordType), 2, 1)
+    iso = IIf(isIsometric, 2, 1)
     
     'x1, y1 are the start coordinates of the line.
     dx = pt.x - x1
@@ -2181,7 +2185,7 @@ Private Sub drawBoard(Optional ByVal bRefresh As Boolean = True) ': On Error Res
     If bRefresh Then
         Call vectorDrawAll
         Call drawStartPosition
-        Call gridDraw
+        Call drawGrid
         picBoard.Refresh
     End If
 End Sub
@@ -2636,44 +2640,18 @@ End Sub
 
 '========================================================================
 '========================================================================
-Private Sub gridDraw() ': On Error Resume Next
+Private Sub drawGrid() ': On Error Resume Next
     
-    Dim color As Long, offsetY As Long, x As Long, y As Long, oldMode As Long, intHeight As Long
+    If m_ed.bGrid Then
+        Call modBoard.gridDraw( _
+            picBoard, _
+            m_ed.pCEd, _
+            isIsometric, _
+            modBoard.tileWidth(m_ed), _
+            modBoard.tileHeight(m_ed) _
+        )
+    End If
     
-    oldMode = picBoard.DrawMode
-    picBoard.DrawMode = vbInvert
-        
-    If m_ed.bGrid = True Then
-        If isIsometric(m_ed.board(m_ed.undoIndex).coordType) Then
-            offsetY = IIf((m_ed.pCEd.topY Mod tileHeight(m_ed) = 0) = (m_ed.pCEd.topX Mod tileWidth(m_ed) = 0), 0, 16 * m_ed.pCEd.zoom)
-            
-            ' Top right to bottom left.
-            Do While y < picBoard.ScaleWidth / 2 + picBoard.ScaleHeight
-                picBoard.Line (0, y + offsetY)-(x + offsetY * 2, 0), color
-                x = x + tileWidth(m_ed): y = y + tileHeight(m_ed)
-            Loop
-
-            ' Top left to bottom right.
-            x = 0
-            intHeight = picBoard.ScaleHeight + (picBoard.ScaleHeight Mod tileHeight(m_ed))
-            y = intHeight
-            Do While y > -picBoard.ScaleWidth / 2
-                picBoard.Line (0, y + offsetY)-(x, intHeight + offsetY), color
-                x = x + tileWidth(m_ed):  y = y - tileHeight(m_ed)
-            Loop
-        Else
-            Do While x < picBoard.ScaleWidth
-                picBoard.Line (x, 0)-(x, picBoard.ScaleHeight), color
-                x = x + tileWidth(m_ed)
-            Loop
-            Do While y < picBoard.ScaleHeight
-                picBoard.Line (0, y)-(picBoard.ScaleWidth, y), color
-                y = y + tileHeight(m_ed)
-            Loop
-        End If 'isIsometric
-    End If 'bGrid
-    
-    picBoard.DrawMode = oldMode
 End Sub
 
 '=========================================================================
@@ -2762,7 +2740,7 @@ Private Sub vectorCreateRect(ByRef sel As CBoardSelection) ':on error resum next
     Call setUndo
     Set vect = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
     
-    If isIsometric(m_ed.board(m_ed.undoIndex).coordType) Then
+    If isIsometric Then
         pts = modBoard.rectProjectIsometric(sel)
         For i = 0 To UBound(pts)
             Call vect.addPoint(pts(i).x, pts(i).y)
@@ -3292,7 +3270,7 @@ Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelectio
         Case BS_TILE
             ReDim clip.tiles(0)
             k = 0
-            If isIsometric(m_ed.board(m_ed.undoIndex).coordType) Then
+            If isIsometric Then
                 'Find the centres of the contained tiles by pixel coordinates.
                 i = O.x + 32
                 Do While i < O.x + d.x

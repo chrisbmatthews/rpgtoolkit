@@ -155,6 +155,7 @@ UserControl=controls\ctlBrdSprite.ctl
 Class=CBoardSprite; classes\CBoardSprite.cls
 Form=forms\frmBoardPreferences.frm
 Class=CBoardPreferences; classes\CBoardPreferences.cls
+UserControl=controls\ctlTilesetToolbar.ctl
 ResFile32="toolkit3.res"
 IconForm="frmMain"
 Startup="Sub Main"
