@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin VB.UserControl ctlTilesetToolbar 
-   ClientHeight    =   6360
+   ClientHeight    =   4035
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4800
-   ScaleHeight     =   424
+   ScaleHeight     =   269
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
    Begin VB.CommandButton cmdOpen 
@@ -12,35 +12,17 @@ Begin VB.UserControl ctlTilesetToolbar
       Left            =   4320
       Picture         =   "ctlTilesetToolbar.ctx":0000
       Style           =   1  'Graphical
-      TabIndex        =   6
-      Top             =   360
-      Width           =   375
-   End
-   Begin VB.CommandButton cmdClose 
-      BeginProperty Font 
-         Name            =   "Courier New"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   220
-      Left            =   4560
-      Picture         =   "ctlTilesetToolbar.ctx":038A
-      Style           =   1  'Graphical
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   0
-      Width           =   220
+      Width           =   375
    End
    Begin VB.CheckBox chkGrid 
       Height          =   375
       Left            =   3960
-      Picture         =   "ctlTilesetToolbar.ctx":04D4
+      Picture         =   "ctlTilesetToolbar.ctx":038A
       Style           =   1  'Graphical
       TabIndex        =   2
-      Top             =   360
+      Top             =   0
       Width           =   375
    End
    Begin VB.PictureBox picTileset 
@@ -49,48 +31,29 @@ Begin VB.UserControl ctlTilesetToolbar
       BackColor       =   &H00808080&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5535
+      Height          =   3495
       Left            =   60
-      ScaleHeight     =   369
+      ScaleHeight     =   233
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   288
       TabIndex        =   1
-      Top             =   720
+      Top             =   360
       Width           =   4320
    End
    Begin VB.VScrollBar hsbTileset 
-      Height          =   5535
-      Left            =   4470
+      Height          =   3495
+      Left            =   4440
       TabIndex        =   0
       TabStop         =   0   'False
-      Top             =   720
+      Top             =   360
       Width           =   255
-   End
-   Begin VB.Label lblCurrentTileset 
-      BackColor       =   &H00808080&
-      Caption         =   "Current Tileset"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H8000000F&
-      Height          =   225
-      Left            =   0
-      TabIndex        =   5
-      Top             =   0
-      Width           =   4800
    End
    Begin VB.Label lblTileset 
       Caption         =   "Current tileset"
       Height          =   255
       Left            =   0
-      TabIndex        =   4
-      Top             =   390
+      TabIndex        =   3
+      Top             =   30
       Width           =   4335
    End
 End
@@ -110,9 +73,11 @@ Option Explicit
 Private Declare Function GFXdrawTileset Lib "actkrt3.dll" (ByVal file As String, ByVal hdc As Long, ByVal startIdx As Long, ByVal pxWidth As Long, ByVal pxHeight As Long, ByVal isometric As Boolean) As Long
 Private Declare Function BRDRoundToTile Lib "actkrt3.dll" (ByRef x As Double, ByRef y As Double, ByVal bIsometric As Boolean, ByVal bAddBasePoint As Boolean) As Long
 
+Private m_extraTile As Boolean
 Private m_isometric As Boolean
 Private m_ignoreResize As Boolean
 Private m_tsHeader As tilesetHeader
+Private m_filename As String
 
 '============================================================================
 'Open tileset button at the top of the flyout tileset viewer.
@@ -131,22 +96,19 @@ Private Sub cmdOpen_Click(): On Error Resume Next
     If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
     
     'Globals
+    m_filename = dlg.strSelectedFileNoPath
     configfile.lastTileset = dlg.strSelectedFileNoPath
     tstFile = dlg.strSelectedFileNoPath
-    tstnum = 0
+    tstnum = 1
     
-    Call resize
-End Sub
-
-Private Sub cmdclose_Click(): On Error Resume Next
-    tkMainForm.popButton(2).value = 0
+    Call resize(m_filename, m_extraTile)
 End Sub
 
 '============================================================================
 ' Current tileset browser draw grid check button.
 '============================================================================
 Private Sub chkGrid_Click(): On Error Resume Next
-    Call resize
+    Call resize(m_filename, m_extraTile)
 End Sub
 
 Private Sub draw(): On Error Resume Next
@@ -181,12 +143,15 @@ Private Sub draw(): On Error Resume Next
     
 End Sub
 
-Public Sub resize(Optional ByVal visible As Boolean = True): On Error Resume Next
+Public Sub resize(ByVal filename As String, Optional ByVal allowExtraTile As Boolean, Optional ByVal visible As Boolean = True): On Error Resume Next
     
     Dim setType As Long
             
     'Prevent the scroller changing for this sub.
     m_ignoreResize = True
+    'Allow 1 + last tile to be selected for saving into tileset.
+    m_extraTile = allowExtraTile
+    m_filename = filename
     
     picTileset.Height = UserControl.ScaleHeight - picTileset.Top
     picTileset.Height = picTileset.Height - (picTileset.Height Mod 32)
@@ -195,29 +160,29 @@ Public Sub resize(Optional ByVal visible As Boolean = True): On Error Resume Nex
     hsbTileset.Height = picTileset.Height
     hsbTileset.Left = picTileset.Left + picTileset.width
         
-    If LenB(configfile.lastTileset) Then
+    If LenB(m_filename) Then
     
         'Load the tileset details via the global 'tileset'.
-        setType = tilesetInfo(projectPath & tilePath & configfile.lastTileset)
+        setType = tilesetInfo(projectPath & tilePath & m_filename)
         If setType <> TSTTYPE And setType <> ISOTYPE Then Exit Sub
         
         m_tsHeader = tileset
         m_isometric = (setType = ISOTYPE)
         
         'Override the isometric setting for isometric boards.
-        If Not (tkMainForm.activeForm Is Nothing) Then
-            If tkMainForm.activeForm.formType = FT_BOARD Then
+        If Not (activeForm Is Nothing) Then
+            If activeForm.formType = FT_BOARD Then
                 If activeBoard.isIsometric Then m_isometric = True
             End If
         End If
         
-        lblTileset.Caption = configfile.lastTileset & " (0 /" & CStr(m_tsHeader.tilesInSet) & ")"
+        lblTileset.Caption = m_filename & " (0 / " & CStr(m_tsHeader.tilesInSet) & ")"
 
         'Set the scroller depending on the tileset type.
         Dim tWidth As Long, tHeight As Long
         If m_isometric Then
             tWidth = picTileset.width / 32 - 1
-            tHeight = picTileset.Height / 32
+            tHeight = picTileset.Height / 32 - 1
         Else
             tWidth = picTileset.width / 32
             tHeight = picTileset.Height / 32
@@ -240,6 +205,7 @@ Public Sub resize(Optional ByVal visible As Boolean = True): On Error Resume Nex
         End If
                 
         hsbTileset.value = 0
+        tstnum = 1
         
         If visible Then Call draw
     
@@ -250,41 +216,23 @@ Public Sub resize(Optional ByVal visible As Boolean = True): On Error Resume Nex
     
     cmdOpen.Left = hsbTileset.Left - (cmdOpen.width - hsbTileset.width)
     chkGrid.Left = cmdOpen.Left - chkGrid.width
-    cmdClose.Left = tkMainForm.tilesetBar.ScaleWidth - cmdClose.width
-    lblCurrentTileset.width = tkMainForm.tilesetBar.ScaleWidth
     
     'Activate the scroller.
     m_ignoreResize = False
 End Sub
 
-Private Sub picTileset_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub picTileset_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
 
-    Dim idx As Long, formType As Long, filename As String
+    Dim idx As Long, formType As Long
     
-    If LenB(configfile.lastTileset) = 0 Then Exit Sub
+    If LenB(m_filename) = 0 Then Exit Sub
 
     idx = getTileIndex(x, y)
     
-    filename = configfile.lastTileset & CStr(idx)
-    
     'Assign the global
-    setFilename = filename
+    setFilename = m_filename & CStr(idx)
     
-    'Inform the system that the set filename has changed. For loading into whichever editor is active.
-    formType = activeForm.formType
-    Select Case formType
-        Case FT_BOARD, FT_ANIMATION, FT_TILEBITMAP, FT_TILEANIM
-            'These editors have specific uses for the tileset browser.
-            Call activeForm.changeSelectedTile(filename)
-            
-        Case Else
-            'It's not a form that uses the tile browser, so load it in the tile editor.
-            Dim newTile As New tileedit
-            Set activeTile = newTile
-            activeTile.Show
-            Call activeTile.openFile(projectPath & tilePath & filename)
-            
-    End Select
+    Call UserControl.Parent.ctlTilesetMouseUp(m_filename & CStr(idx))
 
 End Sub
 
@@ -310,7 +258,7 @@ End Sub
 Private Sub picTileset_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim idx As Long
     idx = getTileIndex(x, y)
-    lblTileset.Caption = configfile.lastTileset & " (" & CStr(idx) & " /" & CStr(m_tsHeader.tilesInSet) & ")"
+    lblTileset.Caption = m_filename & " (" & CStr(idx) & " / " & CStr(m_tsHeader.tilesInSet) & ")"
 End Sub
 
 Private Function getTileIndex(ByVal x As Double, ByVal y As Double) As Long ':on error resume next
@@ -348,7 +296,11 @@ Private Function getTileIndex(ByVal x As Double, ByVal y As Double) As Long ':on
         
     End If
     
-    If idx > m_tsHeader.tilesInSet Then idx = m_tsHeader.tilesInSet
+    Dim max As Long
+    max = m_tsHeader.tilesInSet + IIf(m_extraTile, 1, 0)
+    
+    If idx > max Then idx = max
     If idx < 1 Then idx = 1
+    
     getTileIndex = idx
 End Function

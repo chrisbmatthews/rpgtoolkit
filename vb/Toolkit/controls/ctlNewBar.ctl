@@ -207,11 +207,11 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Sub CommandDock_Click(index As Integer)
+Private Sub CommandDock_Click(Index As Integer)
 
     With tkMainForm
         .ignoreFocus = False
-        Select Case index
+        Select Case Index
             Case 0: Call editmainfile.Show
             Case 1: Call .newtilemnu_Click
             Case 15: Call .newanimtilemnu_Click
@@ -230,6 +230,6 @@ Private Sub CommandDock_Click(index As Integer)
     
     'Collapse the bar.
     ' tkMainForm.NewBarTop.theForm.Visible = False
-    tkMainForm.popButton(1).value = 0
+    tkMainForm.popButton(PB_NEWEDITOR).value = 0
     
 End Sub
