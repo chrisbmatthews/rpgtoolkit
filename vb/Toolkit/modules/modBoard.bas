@@ -207,8 +207,8 @@ Public Type TKBoardEditorData
     currentLayer As Integer               'Current board layer
     bHideAllLayers As Boolean
     bShowAllLayers As Boolean
-    bNeedUpdate As Boolean                'tbd:have any changes been made to the board data?
-        
+    bUnsavedData As Boolean
+    
     currentVectorSet() As CVector         'References to vectors of current optSetting
     
     effectiveBoardX As Long               'Board data matrix dimensions
@@ -470,7 +470,7 @@ Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal KeyCode As Integer) 
     i = val(lv.Tag)
     If i = 0 And KeyCode = vbKeyDelete Then
         'Whole row selected - delete the point.
-        lv.ListItems.Remove lv.SelectedItem.Index
+        lv.ListItems.Remove lv.SelectedItem.index
         vectorLvKeyDown = True
     End If
     If i <> 1 And i <> 2 Then Exit Function

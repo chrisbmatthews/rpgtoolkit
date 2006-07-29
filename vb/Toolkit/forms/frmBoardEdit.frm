@@ -974,8 +974,18 @@ Begin VB.Form frmBoardEdit
       Index           =   5
       WindowList      =   -1  'True
       Begin VB.Menu mnuWindow 
-         Caption         =   "Show/Hide Tools"
+         Caption         =   "Toggle Tileset Browser"
          Index           =   0
+         Shortcut        =   ^L
+      End
+      Begin VB.Menu mnuWindow 
+         Caption         =   "Toggle Board Toolbar"
+         Index           =   1
+         Shortcut        =   ^B
+      End
+      Begin VB.Menu mnuWindow 
+         Caption         =   "Show/Hide Tools"
+         Index           =   2
       End
    End
    Begin VB.Menu mnu 
@@ -1169,7 +1179,7 @@ Private Sub Form_Activate() ':on error resume next
         
     'Show tools.
     hideAllTools
-    tkMainForm.popButton(3).visible = True              'Board toolbar
+    tkMainForm.popButton(PB_TOOLBAR).visible = True              'Board toolbar
     tkMainForm.boardTools.visible = True                'Lefthand tools
     tkMainForm.boardTools.Top = tkMainForm.toolTop
     
@@ -1195,7 +1205,7 @@ Private Sub Form_Activate() ':on error resume next
     Call toolbarPopulateImages
     Call toolbarPopulateSprites
     
-    If tkMainForm.popButton(3).value = 1 Then
+    If tkMainForm.popButton(PB_TOOLBAR).value = 1 Then
         tkMainForm.pTools.visible = True
     End If
     
@@ -1214,7 +1224,7 @@ Public Sub Form_Deactivate() ':on error resume next
     'Reset visible layers list.
     Call setVisibleLayersByCombo
     
-    tkMainForm.popButton(3).visible = False
+    tkMainForm.popButton(PB_TOOLBAR).visible = False
     tkMainForm.pTools.visible = False
 End Sub
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer) ':on error resume next
@@ -1308,13 +1318,20 @@ Private Sub Form_Resize() ':on error resume next
     Call drawAll
 End Sub
 Private Sub Form_Unload(Cancel As Integer) ': On Error Resume Next
+    
+    If checkSave(vbYesNoCancel) = vbCancel Then
+        Cancel = 1
+        Exit Sub
+    End If
+    
     Call BRDFree(m_ed.pCBoard)
-    'wip - no need 'Call BoardClear(m_ed.board(m_ed.undoIndex))
     Call hideAllTools
-    tkMainForm.popButton(3).visible = False         'Before Set m_sel = Nothing
+    tkMainForm.popButton(PB_TOOLBAR).visible = False         'Before Set m_sel = Nothing
     tkMainForm.pTools.visible = False
+    
     Set m_sel = Nothing
-    'tbc
+    Set activeBoard = Nothing
+    Set activeForm = Nothing
 
     ' Unhook scroll wheel.
     Call DetachMessage(Me, hwnd, WM_MOUSEWHEEL)
@@ -1335,7 +1352,7 @@ End Sub
 Public Sub openFile(ByVal file As String) ': On Error Resume Next
 
     Call activeBoard.Show
-    Call checkSave
+    Call checkSave(vbYesNo)
     
     Call openBoard(file, m_ed, m_ed.board(m_ed.undoIndex))
     Call assignProperties
@@ -1366,7 +1383,7 @@ Public Sub saveFile() ':on error resume next
         End If
     End If
 
-    m_ed.bNeedUpdate = False
+    m_ed.bUnsavedData = False
     Call saveBoard(projectPath & brdPath & m_ed.boardName, m_ed.board(m_ed.undoIndex))
     Me.Caption = m_ed.boardName
 
@@ -1392,17 +1409,16 @@ Private Sub saveFileAs() ':on error resume next
     Call saveBoard(dlg.strDefaultFolder & m_ed.boardName, m_ed.board(m_ed.undoIndex))
     Me.Caption = m_ed.boardName
     
-    m_ed.bNeedUpdate = False
+    m_ed.bUnsavedData = False
     Call tkMainForm.fillTree("", projectPath)
 End Sub
 
-Private Sub checkSave(): On Error Resume Next
-    If m_ed.bNeedUpdate Then
-        If MsgBox("Would you like to save your changes to the current board?", vbYesNo, "Save board") = vbYes Then
-            Call saveFile
-        End If
+Private Function checkSave(ByVal style As VbMsgBoxStyle) As VbMsgBoxResult: On Error Resume Next
+    If m_ed.bUnsavedData Then
+        checkSave = MsgBox("Would you like to save your changes to the current board?", style + vbExclamation, "Board editor")
+        If checkSave = vbYes Then Call saveFile
     End If
-End Sub
+End Function
 
 '==========================================================================
 ' Get the high or low order word.
@@ -1574,6 +1590,7 @@ Public Sub setUndo() ': On Error Resume Next
     m_ed.bUndoData(nextRedo) = False            'Clear redo data.
     mnuUndo.Enabled = True
     mnuRedo.Enabled = False
+    m_ed.bUnsavedData = True                    'Set to prompt to save.
 End Sub
 Private Function getActiveControl() As Control ':on error resume next
     'Doesn't seem to be a clean way to do this: typeOf ... is UserControl does not work.
@@ -1612,6 +1629,9 @@ Private Sub picBoard_KeyDown(KeyCode As Integer, Shift As Integer) ':on error re
             Case vbKeyF: If .brdOptTool(BT_ERASE).Enabled Then .brdOptTool(BT_ERASE).value = True
             Case vbKeyG: .brdChkGrid.value = Not .brdChkGrid.value
             Case vbKeyH: .brdChkAutotile.value = Not .brdChkAutotile.value
+            Case vbKeyL
+                tstFile = configfile.lastTileset
+                tilesetForm.Show vbModal
             Case vbKeyN: .brdChkHideLayers.value = Not .brdChkHideLayers.value
             Case vbKeyM: .brdChkShowLayers.value = Not .brdChkShowLayers.value
         End Select
@@ -1836,7 +1856,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
             End If
             
         Case BS_TILE
-            If Button <> 0 Then Call tileSettingMouseDown(Button, Shift, x, y)
+            If Button And (vbLeftButton Or vbRightButton) Then Call tileSettingMouseDown(Button, Shift, x, y)
             
         Case BS_VECTOR, BS_PROGRAM
             If (m_ed.optTool = BT_DRAW And m_sel.status = SS_DRAWING) Then
@@ -3724,14 +3744,16 @@ End Sub
 Private Sub mnuOpenProject_Click(Index As Integer): On Error Resume Next
     Call tkMainForm.mnuOpenProject_Click
 End Sub
-Private Sub mnuToolkit_Click(Index As Integer)
+Private Sub mnuToolkit_Click(Index As Integer): On Error Resume Next
     Select Case Index
         Case 0: Call tkMainForm.testgamemnu_Click
     End Select
 End Sub
-Private Sub mnuWindow_Click(Index As Integer)
+Private Sub mnuWindow_Click(Index As Integer): On Error Resume Next
     Select Case Index
-        Case 0: Call tkMainForm.showtoolsmnu_Click
+        Case 0: tkMainForm.popButton(PB_TILESET).value = Abs(tkMainForm.popButton(PB_TILESET).value - 1)
+        Case 1: tkMainForm.popButton(PB_TOOLBAR).value = Abs(tkMainForm.popButton(PB_TOOLBAR).value - 1)
+        Case 2: Call tkMainForm.showtoolsmnu_Click
     End Select
 End Sub
 

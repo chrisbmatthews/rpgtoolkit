@@ -2211,14 +2211,51 @@ Begin VB.MDIForm tkMainForm
       Top             =   360
       Visible         =   0   'False
       Width           =   4800
+      Begin VB.CommandButton cmdTilesetClose 
+         BeginProperty Font 
+            Name            =   "Courier New"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   220
+         Left            =   4560
+         Picture         =   "tkMain.frx":342F2
+         Style           =   1  'Graphical
+         TabIndex        =   159
+         Top             =   0
+         Width           =   220
+      End
       Begin Toolkit.ctlTilesetToolbar ctlTileset 
-         Height          =   5535
+         Height          =   3975
          Left            =   0
          TabIndex        =   158
-         Top             =   0
+         Top             =   360
          Width           =   4815
          _ExtentX        =   8493
          _ExtentY        =   9763
+      End
+      Begin VB.Label lblCurrentTileset 
+         BackColor       =   &H00808080&
+         Caption         =   "Current Tileset"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H8000000F&
+         Height          =   225
+         Left            =   0
+         TabIndex        =   160
+         Top             =   0
+         Width           =   4800
       End
    End
    Begin MSComctlLib.StatusBar StatusBar1 
@@ -2235,13 +2272,13 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "28/07/2006"
+            TextSave        =   "29/07/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   5027
-            TextSave        =   "18:22"
+            TextSave        =   "11:18"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
          EndProperty
@@ -2488,6 +2525,16 @@ Private Type TK_BARD_INFO
 End Type
 
 '============================================================================
+' Right toolbar indices
+'============================================================================
+Public Enum ePopButton
+    PB_FILETREE
+    PB_NEWEDITOR
+    PB_TILESET
+    PB_TOOLBAR
+End Enum
+
+'============================================================================
 ' Declarations
 '============================================================================
 Private Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
@@ -2675,9 +2722,44 @@ End Sub
 '============================================================================
 Private Sub tilesetBar_Resize(): On Error Resume Next
     If tilesetBar.ScaleWidth < 192 Then tilesetBar.width = 192 * Screen.TwipsPerPixelX
-    ctlTileset.Height = tilesetBar.ScaleHeight
+    cmdTilesetClose.Left = tilesetBar.ScaleWidth - cmdTilesetClose.width
+    lblCurrentTileset.width = tilesetBar.ScaleWidth
+    
+    ctlTileset.Height = tilesetBar.ScaleHeight - ctlTileset.Top
     ctlTileset.width = tilesetBar.ScaleWidth
-    Call ctlTileset.resize(tilesetBar.visible)
+    Call ctlTileset.resize(configfile.lastTileset, False, tilesetBar.visible)
+End Sub
+
+'============================================================================
+' Tileset browser close button
+'============================================================================
+Private Sub cmdTilesetClose_Click(): On Error Resume Next
+    tkMainForm.popButton(PB_TILESET).value = 0
+End Sub
+
+'============================================================================
+' Process selected tile information from tileset browser control
+'============================================================================
+Public Sub ctlTilesetMouseUp(ByVal filename As String) ':on error resume next
+    
+    'Inform the system that the set filename has changed. Load into whichever editor is active.
+    Dim formType As Long
+    If Not (activeForm Is Nothing) Then formType = activeForm.formType
+    
+    Select Case formType
+        Case FT_BOARD, FT_ANIMATION, FT_TILEBITMAP, FT_TILEANIM
+            'These editors have specific uses for the tileset browser.
+            Call activeForm.changeSelectedTile(filename)
+            
+        Case Else
+            'It's not a form that uses the tile browser, so load it in the tile editor.
+            Dim newTile As New tileedit
+            Set activeTile = newTile
+            activeTile.Show
+            Call activeTile.openFile(projectPath & tilePath & filename)
+            
+    End Select
+
 End Sub
 
 '============================================================================
@@ -2868,8 +2950,7 @@ Private Sub Command14_Click()
 End Sub
 
 Private Sub Command2_Click()
-    popButton(1).value = 0
-    Call popButton_Click(1)
+    popButton(PB_NEWEDITOR).value = 0
 End Sub
 
 Private Sub Command3_Click()
@@ -2899,8 +2980,7 @@ Public Sub createsetupmnu_Click(): On Error Resume Next
 End Sub
 
 Private Sub exitbutton_Click()
-    popButton(0).value = 0
-    Call popButton_Click(0)
+    popButton(PB_FILETREE).value = 0
 End Sub
 
 Public Sub exitmnu_Click(): On Error Resume Next
@@ -2932,7 +3012,7 @@ Public Sub installupgrademnu_Click(): On Error Resume Next
 End Sub
 
 Private Sub killNewBar_Click()
-    popButton(1).value = 0
+    popButton(PB_NEWEDITOR).value = 0
 End Sub
 
 '============================================================================
@@ -3082,7 +3162,7 @@ End Sub
 
 Private Sub mainToolbar_ButtonMenuClick(ByVal ButtonMenu As MSComctlLib.ButtonMenu): On Error Resume Next
     Dim frm As Form
-    Select Case ButtonMenu.Index
+    Select Case ButtonMenu.index
         Case 1:
             Set frm = New tileedit
         Case 2:
@@ -3428,52 +3508,52 @@ End Sub
 
 '=========================================================================================
 ' ADDED FOURTH BUTTON FOR BOARD TOOLBAR
-Private Sub popButton_Click(Index As Integer): On Error Resume Next
+Private Sub popButton_Click(index As Integer): On Error Resume Next
     
-    Select Case Index
-        Case 0
+    Select Case index
+        Case PB_FILETREE
             'File tree.
-            If popButton(Index).value = 1 Then
-                popButton(1).value = 0
-                popButton(2).value = 0
-                popButton(3).value = 0
+            If popButton(index).value = 1 Then
+                popButton(PB_NEWEDITOR).value = 0
+                popButton(PB_TILESET).value = 0
+                popButton(PB_TOOLBAR).value = 0
                 rightbar.visible = True
                 rightbar.SetFocus
             Else
                 rightbar.visible = False
             End If
             
-        Case 1
+        Case PB_NEWEDITOR
             'Open editors.
-            If popButton(Index).value = 1 Then
-                popButton(0).value = 0
-                popButton(2).value = 0
-                popButton(3).value = 0
+            If popButton(index).value = 1 Then
+                popButton(PB_FILETREE).value = 0
+                popButton(PB_TILESET).value = 0
+                popButton(PB_TOOLBAR).value = 0
                 newBarContainerContainer.visible = True
             Else
                 newBarContainerContainer.visible = False
             End If
             
-        Case 2
+        Case PB_TILESET
             'Tileset browser.
-            If popButton(Index).value = 1 Then
-                popButton(0).value = 0
-                popButton(1).value = 0
-                popButton(3).value = 0
+            If popButton(index).value = 1 Then
+                popButton(PB_FILETREE).value = 0
+                popButton(PB_NEWEDITOR).value = 0
+                popButton(PB_TOOLBAR).value = 0
                 tstnum = 0
                 tilesetBar.visible = True
-                Call ctlTileset.resize
+                Call ctlTileset.resize(configfile.lastTileset)
                 tilesetBar.SetFocus
             Else
                 tilesetBar.visible = False
             End If
             
-        Case 3
+        Case PB_TOOLBAR
             'Board editor toolbar.
-            If popButton(Index).value = 1 Then
-                popButton(0).value = 0
-                popButton(1).value = 0
-                popButton(2).value = 0
+            If popButton(index).value = 1 Then
+                popButton(PB_FILETREE).value = 0
+                popButton(PB_NEWEDITOR).value = 0
+                popButton(PB_TILESET).value = 0
                 pTools.visible = True
                 Call activeBoard.toolbarRefresh
                 pTools.SetFocus
@@ -3505,7 +3585,7 @@ End Sub
 
 Private Sub rightbar_LostFocus(): On Error Resume Next
     If Not (ignoreFocus) Then
-        popButton(0).value = 0
+        popButton(PB_FILETREE).value = 0
         'rightbar.width = 400
         'Command7.caption = "<"
     End If
@@ -3712,8 +3792,8 @@ Private Sub tileRedraw_Click(): On Error Resume Next
     Call activeTile.tileRedraw
 End Sub
 
-Private Sub tileTool_Click(Index As Integer): On Error Resume Next
-    Call activeTile.ToolSet(Index)
+Private Sub tileTool_Click(index As Integer): On Error Resume Next
+    Call activeTile.ToolSet(index)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -3792,7 +3872,7 @@ End Sub
 
 ' close toolbar
 Private Sub bTools_Close_Click(): On Error Resume Next
-    popButton(3).value = 0
+    popButton(PB_TOOLBAR).value = 0
     pTools.visible = False
 End Sub
 
@@ -3812,11 +3892,11 @@ End Sub
 Private Sub brdCmbVisibleLayers_Click(): On Error Resume Next
     Call activeBoard.mdiCmbVisibleLayers
 End Sub
-Private Sub brdOptSetting_Click(Index As Integer): On Error Resume Next
-    Call activeBoard.mdiOptSetting(Index)
+Private Sub brdOptSetting_Click(index As Integer): On Error Resume Next
+    Call activeBoard.mdiOptSetting(index)
 End Sub
-Private Sub brdOptTool_Click(Index As Integer): On Error Resume Next
-    Call activeBoard.mdiOptTool(Index)
+Private Sub brdOptTool_Click(index As Integer): On Error Resume Next
+    Call activeBoard.mdiOptTool(index)
 End Sub
 Private Sub brdChkAutotile_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call activeBoard.mdiChkAutotile(brdChkAutotile.value)
@@ -3898,8 +3978,8 @@ End Sub
 ' ANIMATION EDITOR RELATED EVENTS
 '=========================================================================================
 'Set the size of the animation
-Private Sub optAnimSize_Click(Index As Integer): On Error Resume Next
-    Call activeAnimation.setAnimSize(Index)
+Private Sub optAnimSize_Click(index As Integer): On Error Resume Next
+    Call activeAnimation.setAnimSize(index)
 End Sub
 'Set the X-Size (Custom anim only)
 Private Sub txtAnimXSize_Change(): On Error Resume Next
