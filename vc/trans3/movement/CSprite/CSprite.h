@@ -20,6 +20,8 @@
 
 class CProgram;
 class CThread;
+struct tagBoard;
+typedef struct tagBoard BOARD, *LPBOARD;
 
 class CSprite  
 {
@@ -56,9 +58,15 @@ public:
 		if (bClearQueue) m_pos.path.clear();
 		m_pos.path.push_back(pt);
 	}
+	void setBoardPath(						// Set a board vector as a path.
+		CVector *const pV, 
+		const int cycles, 
+		const int flags);
 
 	void drawPath(CCanvas *const cnv);		// Draw the path this sprite is on.
 	void drawVector(CCanvas *const cnv);	// Debug: draw the sprite's base vector.
+	void drawPfObjects(int x, int y, CCanvas *cnv) { m_pathFind.drawObstructions(x, y , cnv); }
+	
 	bool render( 							// Render frame to canvas.
 		const CCanvas *cnv,
 		const int layer,
@@ -134,6 +142,7 @@ public:
 	};
 	CFacing *getFacing(void) { return &m_facing; }
 
+
 protected:
 	SPRITE_ATTR m_attr;						// Sprite attributes (common file data).
 	bool m_bActive;							// Is the sprite visible?
@@ -152,7 +161,6 @@ private:
 
 	// Evaluate board vectors.
 	TILE_TYPE boardCollisions(LPBOARD board, const bool recursing = false);
-
 	
 	TILE_TYPE boardEdges(const bool bSend);	// Tests for movement at the board edges.
 	void checkIdling(void);					// Update idle and custom animations.

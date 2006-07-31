@@ -433,14 +433,6 @@ void CSprite::setPathTarget(void)
 	if (!m_pos.path.empty())
 	{
 		m_pos.target = m_pos.path.front();
-
-		// Null the board path if one exists and it is set to run
-		// only until interrupted (do not delete the vector since
-		// it belongs to the board).
-		if (m_brdData.boardPath.attributes & BP_STOP_ON_INTERRUPT)
-		{
-			m_brdData.boardPath.pVector = NULL;
-		}
 	}
 	else if (m_brdData.boardPath())
 	{
@@ -714,6 +706,29 @@ void CSprite::doMovement(const CProgram *prg, const bool bPauseThread)
 		else 
 		{
 			// Hold movement until MultiRun closes, then run.
+		}
+	}
+}
+
+/*
+ * Assign a board vector as a path.
+ */
+void CSprite::setBoardPath(CVector *const pV, const int cycles, const int flags)
+{
+	// tbd: access tkMV_ flags
+	if (flags & 16/*tkMV_PATH_BACKGROUND*/)
+	{
+		m_brdData.boardPath.pVector = pV;
+		m_brdData.boardPath.cycles = cycles;
+		m_brdData.boardPath.nextNode = 0;
+		m_brdData.boardPath.attributes = flags;
+	}
+	else
+	{
+		// Standard queued path.
+		for (int i = 0; i < cycles; ++i)
+		{
+			for (unsigned int j = 0; j != pV->size(); ++j) m_pos.path.push_back((*pV)[j]);
 		}
 	}
 }
@@ -1185,8 +1200,7 @@ bool CSprite::programTest(void)
 	DB_POINT p = getTarget();
 	CVector sprBase = m_attr.vBase + p;
 
-	// Construct merged origin / target?
-
+	/** Currently unused
 	// Players 
 	for (std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
@@ -1199,21 +1213,23 @@ bool CSprite::programTest(void)
 		{
 			// Standing in another player's area.
 		}
-	}
+	} **/
 
 	CItem *itm = NULL; DB_POINT f = {0, 0}; double fs = -1;
 
 	// Items
 	for (std::vector<CItem *>::iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j)
 	{
+		CItem *pItm = *j;
+
 		// Some item entries may be NULL since users
 		// can insert items at any slot number.
-		if (!*j || this == *j || m_pos.l != (*j)->m_pos.l) continue;
-		if ((*j)->m_brdData.prgActivate.empty()) continue;
+		if (!pItm || this == pItm || m_pos.l != pItm->m_pos.l) continue;
+		if (pItm->m_brdData.prgActivate.empty()) continue;
 
-		DB_POINT pt = {(*j)->m_pos.x, (*j)->m_pos.y};
+		DB_POINT pt = {pItm->m_pos.x, pItm->m_pos.y};
 
-		CVector tarActivate = (*j)->m_attr.vActivate + pt;
+		CVector tarActivate = pItm->m_attr.vActivate + pt;
 
 		if (tarActivate.contains(sprBase, p))
 		{
@@ -1222,15 +1238,15 @@ bool CSprite::programTest(void)
 			// Are there any other items that are closer?
 
 			// The separation of the two sprites (should use centre-points of m_bounds).
-			DB_POINT s = {(*j)->m_pos.x - m_pos.x, (*j)->m_pos.y - m_pos.y};
+			const DB_POINT s = {pItm->m_pos.x - m_pos.x, pItm->m_pos.y - m_pos.y};
 			
 			// Is the target in the facing direction?
-			DB_POINT d = {double(sgn(s.x) == m_v.x), double(sgn(s.y) == m_v.y)};
+			const DB_POINT d = {double(sgn(s.x) == m_v.x), double(sgn(s.y) == m_v.y)};
 
 			// This item is less directly in front of the player.
 			if (d.x + d.y < f.x + f.y) continue;
 
-			double ds = s.x * s.x + s.y * s.y; 
+			const double ds = s.x * s.x + s.y * s.y; 
 			if (d.x + d.y == f.x + f.y)
 			{
 				// Check the separation when we 
@@ -1238,7 +1254,7 @@ bool CSprite::programTest(void)
 				if (ds > fs && fs != -1) continue;
 			}
 
-			if ((*j)->m_brdData.activationType & SPR_KEYPRESS)
+			if (pItm->m_brdData.activationType & SPR_KEYPRESS)
 			{
 				// General activation key. GetAsyncKeyState is
 				// negative if key is currently down.
@@ -1247,9 +1263,9 @@ bool CSprite::programTest(void)
 			}
 
 			// Check activation conditions.
-			if ((*j)->m_brdData.activate == SPR_CONDITIONAL)
+			if (pItm->m_brdData.activate == SPR_CONDITIONAL)
 			{
-				if (CProgram::getGlobal((*j)->m_brdData.initialVar)->getLit() != (*j)->m_brdData.initialValue)
+				if (CProgram::getGlobal(pItm->m_brdData.initialVar)->getLit() != pItm->m_brdData.initialValue)
 				{
 					// Activation conditions not met.
 					continue;
@@ -1257,7 +1273,7 @@ bool CSprite::programTest(void)
 			}
 
 			// Hold on to these results.
-			f = d; itm = *j; fs = ds;
+			f = d; itm = pItm; fs = ds;
 		}
 	}
 
@@ -1310,21 +1326,26 @@ bool CSprite::programTest(void)
 
 	for (; k != g_pBoard->programs.end(); ++k)
 	{
-		if ((*k)->layer != m_pos.l) continue;
+		// Local copy of the program to avoid derefencing.
+		const BRD_PROGRAM bp = **k;
+		double *const distance = &(*k)->distance;
+
+		if (bp.layer != m_pos.l) continue;
+
 		// Check that the board vector contains the player.
 		// We check *every* vector, in order to reset the 
 		// distance of those we have left.
-		if (!(*k)->vBase.contains(sprBase, p))
+		if (!bp.vBase.contains(sprBase, p))
 		{
 			// Not inside this vector. Set the distance to the 
 			// value to trigger program when we re-enter.
-			if ((*k)->activationType & PRG_REPEAT) 
+			if (bp.activationType & PRG_REPEAT) 
 			{
-				(*k)->distance = (*k)->distanceRepeat;
+				*distance = bp.distanceRepeat;
 			}
 			else
 			{
-				(*k)->distance = 0;
+				*distance = 0;
 			}
 		}
 		else
@@ -1332,27 +1353,27 @@ bool CSprite::programTest(void)
 			// Standing in a program activation area.
 
 			// Increase distance travelled within the vector.
-			(*k)->distance += moveSize();
+			*distance += moveSize();
 
 			// Check activation conditions.
-			if ((*k)->activationType & PRG_REPEAT)
+			if (bp.activationType & PRG_REPEAT)
 			{
 				// Repeat triggers - check player has moved
 				// the required distance.
-				if ((*k)->distance < (*k)->distanceRepeat) continue;
+				if (*distance < bp.distanceRepeat) continue;
 			}
 			else
 			{
 				// Single trigger - check the player has moved at all,
 				// but only in the case of step-activations (key-press
 				// without the PRG_REPEAT can always trigger).
-				if (!((*k)->activationType & PRG_KEYPRESS))
+				if (!(bp.activationType & PRG_KEYPRESS))
 				{
-					if ((*k)->distance != moveSize()) continue;
+					if (*distance != moveSize()) continue;
 				}
 			}
 
-			if ((*k)->activationType & PRG_KEYPRESS)
+			if (bp.activationType & PRG_KEYPRESS)
 			{
 				// General activation key - if not pressed, continue.
 				const short state = GetAsyncKeyState(MapVirtualKey(g_mainFile.key, 1));
@@ -1360,9 +1381,9 @@ bool CSprite::programTest(void)
 			}
 
 			// Check activation conditions.
-			if ((*k)->activate == PRG_CONDITIONAL)
+			if (bp.activate == PRG_CONDITIONAL)
 			{
-				if (CProgram::getGlobal((*k)->initialVar)->getLit() != (*k)->initialValue)
+				if (CProgram::getGlobal(bp.initialVar)->getLit() != bp.initialValue)
 				{
 					// Activation conditions not met.
 					continue;
