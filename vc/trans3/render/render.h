@@ -14,6 +14,9 @@
 #include "../../tkCommon/movement/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 
+// Uncomment to show debug vectors.
+#define DEBUG_VECTORS
+
 /*
  * Typedefs.
  */
@@ -62,9 +65,6 @@ void renderRpgCodeScreen();
 bool renderNow(CCanvas *cnv = NULL, const bool bForce = false);
 
 /*** These functions are looking for homes ***/
-
-struct tagBoard;
-typedef struct tagBoard BOARD, *LPBOARD;
 
 bool drawTileCnv(CCanvas *cnv, 
 				 const STRING file, 

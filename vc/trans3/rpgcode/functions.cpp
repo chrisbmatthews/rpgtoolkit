@@ -82,8 +82,14 @@ const CLSID CLSID_REGEXP = {0x3F4DACA4, 0x160D, 0x11D2, {0xA8, 0xE9, 0x00, 0x10,
  */
 // Movement functions (Push(), ItemStep()...)
 // Feel free to rename these.
-#define tkMV_PAUSE_THREAD	1
-#define tkMV_CLEAR_QUEUE	2
+typedef enum tkMV_CONSTANTS
+{
+	tkMV_PAUSE_THREAD		= 1,
+	tkMV_CLEAR_QUEUE		= 2,
+	tkMV_PATH_FIND			= 4,
+	tkMV_WAYPOINT_PATH		= 8,
+	tkMV_PATH_BACKGROUND	= 16
+};
 
 /*
  * Become ready to run a program.
@@ -5881,7 +5887,7 @@ void getitemcost(CALL_DATA &params)
 
 	if ((params.params != 1) && (params.params != 2))
 	{
-		throw CError(_T("GetItemDesc() requires one or two parameters."));
+		throw CError(_T("GetItemCost() requires one or two parameters."));
 	}
 
 	const STRING file = g_projectPath + ITM_PATH + params[0].getLit();
@@ -5910,7 +5916,7 @@ void getitemsellprice(CALL_DATA &params)
 
 	if ((params.params != 1) && (params.params != 2))
 	{
-		throw CError(_T("GetItemDesc() requires one or two parameters."));
+		throw CError(_T("GetItemSellPrice() requires one or two parameters."));
 	}
 
 	const STRING file = g_projectPath + ITM_PATH + params[0].getLit();
@@ -6719,6 +6725,273 @@ void regExpReplace(CALL_DATA &params)
 }
 
 /*
+ * Common itempath/playerPath code.
+ */
+void spritepath(CALL_DATA &params, CSprite *p)
+{
+	extern LPBOARD g_pBoard;
+
+	const unsigned int flags = (unsigned int)params[1].getNum();
+
+	if (flags & tkMV_CLEAR_QUEUE) p->clearQueue();
+
+	if (flags & tkMV_PATH_FIND)
+	{
+		int x = int(params[2].getNum()), y = int(params[3].getNum());
+		coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->sizeX);
+
+		PF_PATH path = p->pathFind(x, y, PF_PREVIOUS, 0);
+		if (!path.empty())
+		{
+			// Initiate movement by program type.
+			p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
+		}
+	}
+	else if (flags & tkMV_WAYPOINT_PATH)
+	{
+		int id = int(params[2].getNum()), cycles = int(params[3].getNum());
+		
+		const BRD_VECTOR* brd = g_pBoard->getVector(id);
+		if (brd)
+		{
+			p->setBoardPath(brd->pV, cycles, flags);
+			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
+		}
+	}
+	else
+	{
+		for (int i = 2; i < params.params; ++i)
+		{
+			int x = int(params[i].getNum()), y = int(params[++i].getNum());
+			coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->sizeX);
+			const DB_POINT pt = {double(x), double(y)};
+			p->setQueuedPoint(pt, false);
+		}
+		p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
+	}
+}
+
+/*
+ * void ItemPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
+ * void ItemPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
+ * void ItemPath(variant handle, int flags | tkMV_WAYPOINT_PATH, int boardpath, int cycles)
+ *
+ * Causes the sprite to walk a path between a given set of co-ordinates,
+ * depending on the flags parameter.
+ * 1) Sprite walks the explicit path given by x1, y1 to xn, yn.
+ * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
+ * 3) Sprite walks a board-set waypoint path.
+ *
+ */
+void itempath(CALL_DATA &params)
+{
+	if (params.params < 4)
+		throw CError(_T("ItemPath() requires at least four parameters."));
+	else if (params.params % 2)
+		throw CError(_T("ItemPath() requires an even number of parameters."));
+
+	CItem *p = getItemPointer(params[0]);
+	if (!p) throw CError(_T("ItemPath(): item not found"));
+	spritepath(params, p);
+}
+
+/*
+ * void PlayerPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
+ * void PlayerPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
+ * void PlayerPath(variant handle, int flags | tkMV_WAYPOINT_PATH, int boardpath, int cycles)
+ *
+ * Causes the sprite to walk a path between a given set of co-ordinates,
+ * depending on the flags parameter.
+ * 1) Sprite walks the explicit path given by x1, y1 to xn, yn.
+ * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
+ * 3) Sprite walks a board-set waypoint path.
+ *
+ */
+void playerpath(CALL_DATA &params)
+{
+	if (params.params < 4)
+		throw CError(_T("PlayerPath() requires at least four parameters."));
+	else if (params.params % 2)
+		throw CError(_T("PlayerPath() requires an even number of parameters."));
+
+	CPlayer *p = getPlayerPointer(params[0]);
+	if (!p) throw CError(_T("PlayerPath(): player not found"));
+	spritepath(params, p);
+}
+
+/* 
+ * int BoardGetVector([tbd: int tileType])
+ * 
+ * Returns the number of vectors on the board.
+ *
+ * BoardGetVector(int vectorIndex, int &tileType, int &pointCount, int &layer, int &isClosed, int &attributes)
+ */
+void boardgetvector(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	if (params.params == 0)
+	{
+		params.ret().udt = UDT_NUM;
+		params.ret().num = double(g_pBoard->vectors.size());
+		return;
+	}
+
+	if (params.params != 6)
+	{
+		throw CError(_T("BoardGetVector() requires six parameters."));
+	}
+	
+	const LPBRD_VECTOR brd = g_pBoard->getVector(int(params[0].getNum()));
+	if (brd)
+	{
+		LPSTACK_FRAME pSf = NULL;
+		const bool bClosed = brd->pV->closed();
+
+		pSf = params.prg->getVar(params[1].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(brd->type);
+
+		// The first point is added to the back of closed vectors.
+		pSf = params.prg->getVar(params[2].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(brd->pV->size() - (bClosed ? 1 : 0));
+
+		pSf = params.prg->getVar(params[3].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(brd->layer);
+
+		pSf = params.prg->getVar(params[4].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(bClosed);
+
+		pSf = params.prg->getVar(params[5].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(brd->attributes);
+	}
+}
+
+/* 
+ * BoardSetVector(int vectorIndex, int tileType, int pointCount, int layer, int isClosed, int attributes)
+ */
+void boardsetvector(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+	extern ZO_VECTOR g_sprites;
+
+	if (params.params != 6)
+	{
+		throw CError(_T("BoardGetVector() requires six parameters."));
+	}
+
+	// If one-past-end index is given, create a new vector.
+	const unsigned int id = (unsigned int)params[0].getNum();
+	if (id == g_pBoard->vectors.size())
+	{
+		g_pBoard->vectors.push_back(BRD_VECTOR());
+		g_pBoard->vectors.back().pV = new CVector(0.0, 0.0);
+	}
+
+	LPBRD_VECTOR brd = g_pBoard->getVector(id);
+	if (brd)
+	{
+		brd->pV->resize((unsigned int)params[2].getNum());
+		brd->layer = int(params[3].getNum());
+		brd->pV->close(params[4].getNum() != 0.0);
+		brd->attributes = int(params[5].getNum());
+
+		// Redraw the 'under' canvas.
+		TILE_TYPE tt = TILE_TYPE(int(params[1].getNum()));
+		if (~tt & TT_UNDER)
+		{
+			delete brd->pCnv;
+			brd->pCnv = NULL;
+		}
+		brd->type = tt;
+		if (tt & TT_UNDER) 
+		{
+			brd->createCanvas(*g_pBoard);
+		}
+
+		// Reset pathfinding as the collision landscape has changed.
+		g_sprites.freePaths();
+
+#ifdef DEBUG_VECTORS
+		extern SCROLL_CACHE g_scrollCache;
+		g_scrollCache.render(true);
+#endif
+	}
+
+}
+
+/* 
+ * BoardGetVectorPoint(int vectorIndex, int pointIndex, int &x, int &y)
+ *
+ * Get a single point on a board vector. x, y are always pixel values.
+ */
+void boardgetvectorpoint(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	if (params.params != 4)
+	{
+		throw CError(_T("BoardGetVectorPoint() requires four parameters."));
+	}
+	
+	const LPBRD_VECTOR brd = g_pBoard->getVector(int(params[0].getNum()));
+	if (brd)
+	{
+		const DB_POINT pt = (*brd->pV)[(unsigned int)params[1].getNum()];
+
+		LPSTACK_FRAME pSf = NULL;
+		pSf = params.prg->getVar(params[2].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = pt.x;
+
+		pSf = params.prg->getVar(params[3].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = pt.y;
+	}
+}
+
+/* 
+ * BoardSetVectorPoint(int vectorIndex, int pointIndex, int x, int y, bool apply)
+ *
+ * Set/move a single point on a board vector. x, y are always pixel values.
+ * Set apply = true for last change, to improve speed.
+ */
+void boardsetvectorpoint(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+	extern ZO_VECTOR g_sprites;
+
+	if (params.params != 5)
+	{
+		throw CError(_T("BoardSetVectorPoint() requires five parameters."));
+	}
+	
+	LPBRD_VECTOR brd = g_pBoard->getVector((unsigned int)params[0].getNum());
+	if (brd)
+	{
+		brd->pV->setPoint((unsigned int)params[1].getNum(), params[2].getNum(), params[3].getNum());
+		if (params[4].getBool())
+		{
+			// Redraw the 'under' canvas.
+			if (brd->type & TT_UNDER) brd->createCanvas(*g_pBoard);
+
+			// Reset pathfinding as the collision landscape has changed.
+			g_sprites.freePaths();
+
+#ifdef DEBUG_VECTORS
+			extern SCROLL_CACHE g_scrollCache;
+			g_scrollCache.render(true);
+#endif
+		}
+	}
+}
+
+/*
  * Initialize RPGCode.
  */
 void initRpgCode()
@@ -6993,4 +7266,11 @@ void initRpgCode()
 	CProgram::addFunction(_T("playerlocation"), playerlocation);
 	CProgram::addFunction(_T("canvasdrawpart"), canvasDrawPart);
 	CProgram::addFunction(_T("canvasgetscreen"), canvasGetScreen);
+	CProgram::addFunction(_T("itempath"), itempath);
+	CProgram::addFunction(_T("playerpath"), playerpath);
+	CProgram::addFunction(_T("boardgetvector"), boardgetvector);
+	CProgram::addFunction(_T("boardsetvector"), boardsetvector);
+	CProgram::addFunction(_T("boardgetvectorpoint"), boardgetvectorpoint);
+	CProgram::addFunction(_T("boardsetvectorpoint"), boardsetvectorpoint);
+
 }

@@ -26,9 +26,6 @@
 
 #define CLASS_NAME _T("TK Window")
 
-// Uncomment to show debug vectors.
-#define DEBUG_VECTORS
-
 /*
  * Globals.
  */
@@ -456,6 +453,9 @@ void tagScrollCache::render(const bool bForceRedraw)
 			int color = c->type == TT_SOLID ? RGB(255, 255, 255) : RGB(0, 255, 0);
 			c->pV->draw(color, true, r.left, r.top, &cnv);
 		}
+		// Draw pathfinding obstructions (grown vectors).
+		g_pSelectedPlayer->drawPfObjects(r.left, r.top, &cnv);
+
 		cnv.Unlock();
 #endif
 	}
