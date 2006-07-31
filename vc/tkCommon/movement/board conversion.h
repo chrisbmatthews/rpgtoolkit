@@ -36,7 +36,7 @@ typedef enum tagTileType
 	TT_UNDER = 2,
 	TT_UNIDIRECTIONAL = 4,
 	TT_STAIRS = 8,
-	TT_TERRAIN = 16			// TBD: speed modifier!
+	TT_WAYPOINT = 16
 
 } TILE_TYPE;
 
