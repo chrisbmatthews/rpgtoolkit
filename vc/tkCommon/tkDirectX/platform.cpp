@@ -206,6 +206,9 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 //------------------------------------------------------------------------
 BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 {
+	// Kill back buffer
+	delete m_pBackBuffer;
+	m_pBackBuffer = NULL;
 
 	// Kill clipper
 	if (m_lpddClip)
@@ -235,12 +238,7 @@ BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 		m_lpdd = NULL;
 	}
 
-	// Kill back buffer
-	delete m_pBackBuffer;
-	m_pBackBuffer = NULL;
-
 	return TRUE;
-
 }
 
 //------------------------------------------------------------------------
