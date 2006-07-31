@@ -78,14 +78,11 @@ CVector &CVector::operator+= (const DB_POINT p)
  */
 void CVector::push_back(DB_POINT p)
 {
-	// If closed, don't allow more points to be added.
-	if (m_closed) return;
-
 	// Check we're not adding the same point twice.
-	if (size() > 1)
-	{
-		if (p == m_p.back()) return;
-	}
+//	if (size() > 1)
+//	{
+//		if (p == m_p.back()) return;
+//	}
 
 	// Push a point onto the vector.
 	m_p.push_back(p);
@@ -112,15 +109,49 @@ void CVector::push_back(const DB_POINT pts[], const short size)
 }
 
 /*
+ * Resize the vector.
+ */
+void CVector::resize(const unsigned int length)
+{
+	if (length < 1) return;
+	const bool closed = (length < 2 ? false : m_closed);
+	int i = 0;
+	
+	// Unclose the vector.
+	close(false);
+
+	// New points must be at different coordinates.
+	while (length < size()) m_p.pop_back();
+	while (size() < length) push_back(m_p.back().x + (++i), m_p.back().y);
+	
+	// Reclose the vector.
+	close(closed);
+}
+
+/*
+ * Alter an existing point.
+ */
+void CVector::setPoint(const unsigned int i, const double x, const double y)
+{
+	if (i < size())
+	{
+		m_p[i].x = x; 
+		m_p[i].y = y; 
+		if (i == 0 && m_closed) m_p.back() = m_p[0];
+		boundingBox(m_bounds);
+	}
+}
+
+/*
  * Create the bounding box of the vector.
  */
-void CVector::boundingBox(RECT &rect)
+void CVector::boundingBox(RECT &rect) const
 {
 	// Create a box in which the vector is contained.
 	rect.bottom = rect.left = rect.right = rect.top = 0;
 
 	// Loop over subvectors and find biggest and smallest points.
-	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
+	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
 		if ((i->x < rect.left) || (i == m_p.begin())) rect.left = i->x;
 		if ((i->y < rect.top) || (i == m_p.begin())) rect.top = i->y;
@@ -133,20 +164,26 @@ void CVector::boundingBox(RECT &rect)
  * Seal the vector: create a polygon and prevent 
  * further points from being added.
  */
-bool CVector::close(const bool isClosed)
+void CVector::close(const bool isClosed)
 {
-	boundingBox(m_bounds);			// Make the bounding box.
+	m_closed = isClosed;
 
-	if ((size() > 1) && (isClosed))
+	// Do not close a single line element.
+	if (size() < 2) m_closed = false;
+
+	if (m_closed)
 	{
-		// If this is closed, add the first points as the last (for curl estimate).
-		push_back(m_p.front().x, m_p.front().y);
-		m_closed = true;
-
-		// Assign the curl. Estimate if needed.
+		// Add the first point as the last, if not already done.
+		if (m_p.back() != m_p.front()) push_back(m_p.front());
 		m_curl = estimateCurl();
 	}
-	return true;
+	else
+	{
+		// Remove the duplicate last/first point if it was added.
+		if (size() > 1 && m_p.back() == m_p.front()) m_p.pop_back();
+		m_curl = CURL_NDEF;
+	}
+	boundingBox(m_bounds);
 }
 
 /*
@@ -169,7 +206,7 @@ bool CVector::operator== (const CVector &rhs) const
  * Return a point that represents the intersecting subvector
  * as a position vector for use in sliding tests, etc.
  */
-bool CVector::contains(CVector &rhs, DB_POINT &ref)
+bool CVector::contains(CVector &rhs, DB_POINT &ref) const
 {
 	/*
 	 * The rhs CVector intersects the polygon if any of the rhs's
@@ -178,7 +215,7 @@ bool CVector::contains(CVector &rhs, DB_POINT &ref)
 	 */
 
 	// Reset ref, but not to zero (div 0 error).
-	ref.x = ref.y = 1;
+	ref.x = ref.y = 1.0;
 
 	// Check the pointer (for selected player checking).
 	if (&rhs == this) return false;
@@ -194,9 +231,9 @@ bool CVector::contains(CVector &rhs, DB_POINT &ref)
 
 	/* BOARD VECTOR */
 
-	DB_POINT unused = {0, 0};
+	DB_POINT unused = {0.0, 0.0};
 	// Loop over the subvectors in this vector (to size() - 1).
-	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
+	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
 		if (intersect(i, rhs, unused))
 		{
@@ -238,7 +275,7 @@ bool CVector::contains(CVector &rhs, DB_POINT &ref)
  * whether the source is above or below the target (based on the
  * number of times the target's boundaries are crossed.
  */
-ZO_ENUM CVector::contains(CVector &rhs/*, DB_POINT &ref*/)
+ZO_ENUM CVector::contains(CVector &rhs/*, DB_POINT &ref*/) const
 {
 	/*
 	 * The rhs CVector intersects the polygon if any of the rhs's
@@ -294,7 +331,7 @@ ZO_ENUM CVector::contains(CVector &rhs/*, DB_POINT &ref*/)
 /*
  * Determine if a point lies on a subvector.
  */		
-bool CVector::pointOnLine(const DB_ITR &i, const DB_POINT &p) const
+bool CVector::pointOnLine(const DB_CITR &i, const DB_POINT &p) const
 {
 	/*
 	 * In some cases, due to the finite capacity of variables, some
@@ -328,7 +365,7 @@ bool CVector::pointOnLine(const DB_ITR &i, const DB_POINT &p) const
  * Determine if a polygon contains a point (a CVector point, or any other).
  * Return the number of times the boundary was crossed - the "winding number" for z-ordering.
  */
-int CVector::windingNumber(const DB_POINT p)
+int CVector::windingNumber(const DB_POINT p) const
 {
 	/*
 	 * Determine if a point lies within a polygon by counting the number
@@ -353,7 +390,7 @@ int CVector::windingNumber(const DB_POINT p)
 	if	(p.y > m_bounds.bottom) return 2;
 
 	int count = 0; 
-	for (DB_ITR i = m_p.begin(), j = m_p.end() - 2; i != m_p.end() - 1; j = i++)	
+	for (DB_CITR i = m_p.begin(), j = m_p.end() - 2; i != m_p.end() - 1; j = i++)	
 	{
 		// Check the point is in the column created by the vector.
 		// Node intersections and vertical lines are handled by these conditions.
@@ -376,7 +413,7 @@ int CVector::windingNumber(const DB_POINT p)
  * Create a mask by drawing a closed area and flooding.
  * (Currently using the GDI).
  */
-bool CVector::createMask(CCanvas *cnv, const int x, const int y, CONST LONG color)
+bool CVector::createMask(CCanvas *cnv, const int x, const int y, CONST LONG color) const
 {
 	// Can't create a mask from an open vector (or a null canvas).
 	if (!m_closed || !cnv) return false;
@@ -390,7 +427,7 @@ bool CVector::createMask(CCanvas *cnv, const int x, const int y, CONST LONG colo
 	HGDIOBJ m = SelectObject(hdc, pen);
 
 	// Draw the bounding box.
-	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
+	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
 		if (i != m_p.end() - 1)
 		{
@@ -436,9 +473,9 @@ bool CVector::createMask(CCanvas *cnv, const int x, const int y, CONST LONG colo
 /*
  * Draw the vector / polygon onto a canvas, offset by x,y. 
  */
-void CVector::draw(CONST LONG color, const bool drawText, const int x, const int y, CCanvas *const cnv)
+void CVector::draw(CONST LONG color, const bool drawText, const int x, const int y, CCanvas *const cnv) const
 {
-	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
+	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
 		if (i != m_p.end() - 1)
 		{
@@ -507,7 +544,7 @@ int CVector::estimateCurl(void)
  * Calculate gradient. Return GRAD_INF for vertical lines
  * (need something other than zero for gradient comparisons).
  */				
-inline double CVector::gradient(const DB_ITR &i) const
+inline double CVector::gradient(const DB_CITR &i) const
 {
 	// Avoid divide by zero.
 	if (isVertical(i)) return GRAD_INF;
@@ -518,7 +555,7 @@ inline double CVector::gradient(const DB_ITR &i) const
 /*
  * Calculate Y-axis intercept, c = y - mx.
  */
-double CVector::intercept(const DB_ITR &i) const
+double CVector::intercept(const DB_CITR &i) const
 {
 	// Avoid vertical lines - return (unless other?).
 	if (isVertical(i)) return 0;
@@ -531,7 +568,7 @@ double CVector::intercept(const DB_ITR &i) const
  * Return a point that represents the intersecting subvector
  * as a position vector for use in sliding tests, etc.
  */
-bool CVector::intersect(CVector &rhs, DB_POINT &ref)
+bool CVector::intersect(CVector &rhs, DB_POINT &ref) const
 {
 	// Check the rhs vector.
 	if (&rhs == this) return false;
@@ -539,7 +576,7 @@ bool CVector::intersect(CVector &rhs, DB_POINT &ref)
 	DB_POINT unused = {0, 0};
 
 	// Loop over the subvectors in this vector (to size() - 1).
-	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
+	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
 		if (intersect(i, rhs, unused))
 		{
@@ -564,12 +601,12 @@ bool CVector::intersect(CVector &rhs, DB_POINT &ref)
  * Determine if a CVector intersects this CVector.
  * Return the point of intersection (passed in).
  */
-bool CVector::intersect(DB_ITR &i, CVector &rhs, DB_POINT &ref)
+bool CVector::intersect(DB_CITR &i, CVector &rhs, DB_POINT &ref) const
 {
 	const double m1 = gradient(i), c1 = i->y - (m1 * i->x);
 
 	// Loop over the subvectors in the target vector.
-	for (DB_ITR j = rhs.m_p.begin(); j != rhs.m_p.end() - 1; ++j)	
+	for (DB_CITR j = rhs.m_p.begin(); j != rhs.m_p.end() - 1; ++j)	
 	{
 		if (*j == *i || *j == *(i + 1)) 
 		{ 
@@ -617,7 +654,7 @@ bool CVector::intersect(DB_ITR &i, CVector &rhs, DB_POINT &ref)
 /*
  * Path-find ::contains() equivalent.
  */
-bool CPfVector::contains(CPfVector &rhs)
+bool CPfVector::contains(CPfVector &rhs) const
 {
 	/*
 	 * pathfinding: the nodes of the path are corners of the
@@ -640,10 +677,10 @@ bool CPfVector::contains(CPfVector &rhs)
 	if (rhs.size() != 2) return false;
 	const DB_POINT start = rhs.m_p.front(), end = rhs.m_p.back();
 
-	DB_ITR first = NULL, last = NULL;
+	DB_CITR first = NULL, last = NULL;
 
 	// Loop over the subvectors in this vector (to size() - 1).
-	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
+	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
 		// Check if *both* of the points of the rhs vector are in this vector.
 		if (*i == start || *i == end)
@@ -719,8 +756,13 @@ void CPfVector::grow(const int offset)
 
 	if (!m_closed)
 	{
+		m_p.push_back(m_p.front());
+		m_curl = estimateCurl();
+		m_p.pop_back();
+
 		// Create a closed vector from the open vector to expand.
 		// Add each point to m_p in reverse to close.
+
 		p = m_p;
 		for (std::vector<DB_POINT>::reverse_iterator i = p.rbegin() + 1; i != p.rend(); ++i)
 		{
@@ -728,7 +770,6 @@ void CPfVector::grow(const int offset)
 		}
 		p.clear();
 
-		m_curl = estimateCurl();
 	}
 	// Push the second point so we can start from begin()++ and
 	// go up to end()--. The last point of a closed vector is a 
@@ -755,17 +796,23 @@ void CPfVector::grow(const int offset)
 			// Place two points diagonally.
 			// Parallel extension.
 			extendPoint(pt, a, offset);
-			DB_POINT q = pt;
+			DB_POINT u = pt, v = pt;
 
-			// Perpendicular extension.
-			const DB_POINT c = {-a.y, a.x};
-			extendPoint(q, c, offset);
-			p.push_back(q);
+			// Perpendicular extensions.
+			const DB_POINT c = {-a.y, a.x}, d = {a.y, -a.x};
+			extendPoint(u, c, offset);
+			extendPoint(v, d, offset);
 
-			q = pt;
-			const DB_POINT d = {a.y, -a.x};
-			extendPoint(q, d, offset);
-			p.push_back(q);
+			if (m_curl == CURL_RIGHT)
+			{
+				p.push_back(u);
+				p.push_back(v);
+			}
+			else
+			{
+				p.push_back(v);
+				p.push_back(u);
+			}
 		}
 		else if (curl == m_curl)
 		{
@@ -838,9 +885,9 @@ void CPfVector::grow(const int offset)
 /*
  * Construct CPathFind nodes from a CVector and add to the nodes vector.
  */
-void CPfVector::createNodes(std::vector<DB_POINT> &points, const DB_POINT max)
+void CPfVector::createNodes(std::vector<DB_POINT> &points, const DB_POINT max) const
 {
-	for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
+	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
 		if (i->x > 0 && i->y > 0 && i->x < max.x && i->y < max.y) 
 		{
@@ -852,7 +899,7 @@ void CPfVector::createNodes(std::vector<DB_POINT> &points, const DB_POINT max)
 /*
  * Find the nearest point on the edge of a vector to a point.
  */
-DB_POINT CPfVector::nearestPoint(const DB_POINT start)
+DB_POINT CPfVector::nearestPoint(const DB_POINT start) const
 {
 	// Take a perpendicular line to each vector and intersect()
 	// to give point, or find nearest point.
@@ -860,7 +907,7 @@ DB_POINT CPfVector::nearestPoint(const DB_POINT start)
 	const int PX_OFFSET = 1;
 	DB_POINT best = {0, 0};
 
-	for (DB_ITR i = m_p.begin(); i != m_p.end() - 1; ++i)
+	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)
 	{
 		DB_POINT p = {0, 0};
 
@@ -929,7 +976,7 @@ DB_POINT CPfVector::nearestPoint(const DB_POINT start)
 /*
  * Extend a point 'a' at the end of a (position) vector 'd' by 'offset' pixels.
  */
-void CPfVector::extendPoint(DB_POINT &a, const DB_POINT &d, const int offset)
+void CPfVector::extendPoint(DB_POINT &a, const DB_POINT &d, const int offset) const
 {
 	const double grad = (!d.x ? GRAD_INF : dAbs(d.y / d.x));
 
