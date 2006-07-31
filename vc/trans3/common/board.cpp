@@ -1026,7 +1026,7 @@ void tagBoardImage::createCanvas(BOARD &board)
 			}
 		}
 
-#ifdef _DEBUG
+#ifdef DEBUG_VECTORS
 		if (this == board.bkgImage && type != BI_PARALLAX)
 		{
 			// Draw program and tile vectors onto the background image.
@@ -1466,6 +1466,18 @@ LPBRD_VECTOR tagBoard::getVector(const int unsigned index)
 	if (index < vectors.size())
 	{
 		return &vectors.at(index);
+	}
+	return NULL;
+}
+
+/*
+ * Get a program by index.
+ */
+LPBRD_PROGRAM tagBoard::getProgram(const unsigned int index)
+{
+	if (index < programs.size())
+	{
+		return programs.at(index);
 	}
 	return NULL;
 }

@@ -115,17 +115,16 @@ void CVector::resize(const unsigned int length)
 {
 	if (length < 1) return;
 	const bool closed = (length < 2 ? false : m_closed);
-	int i = 0;
 	
 	// Unclose the vector.
-	close(false);
+	if (m_closed) m_p.pop_back();
 
-	// New points must be at different coordinates.
 	while (length < size()) m_p.pop_back();
-	while (size() < length) push_back(m_p.back().x + (++i), m_p.back().y);
-	
-	// Reclose the vector.
-	close(closed);
+	while (size() < length) m_p.push_back(m_p.back());
+		
+	// Reclose the vector, if the new length permits.
+	if (closed) m_p.push_back(m_p.front());
+	else m_closed = false;
 }
 
 /*
@@ -137,7 +136,13 @@ void CVector::setPoint(const unsigned int i, const double x, const double y)
 	{
 		m_p[i].x = x; 
 		m_p[i].y = y; 
-		if (i == 0 && m_closed) m_p.back() = m_p[0];
+
+		// Shift the last point if closed.
+		if (m_closed)
+		{
+			if(i == 0) m_p.back() = m_p[0];
+			m_curl = estimateCurl();
+		}
 		boundingBox(m_bounds);
 	}
 }
@@ -164,24 +169,26 @@ void CVector::boundingBox(RECT &rect) const
  * Seal the vector: create a polygon and prevent 
  * further points from being added.
  */
-void CVector::close(const bool isClosed)
+void CVector::close(bool isClosed)
 {
-	m_closed = isClosed;
-
 	// Do not close a single line element.
-	if (size() < 2) m_closed = false;
+	if (size() < 2) isClosed = false;
 
-	if (m_closed)
+	if (m_closed != isClosed)
 	{
-		// Add the first point as the last, if not already done.
-		if (m_p.back() != m_p.front()) push_back(m_p.front());
-		m_curl = estimateCurl();
-	}
-	else
-	{
-		// Remove the duplicate last/first point if it was added.
-		if (size() > 1 && m_p.back() == m_p.front()) m_p.pop_back();
-		m_curl = CURL_NDEF;
+		if (m_closed)
+		{
+			// Remove the duplicate end point.
+			if (size() > 1) m_p.pop_back();
+			m_curl = CURL_NDEF;
+		}
+		else
+		{
+			// Add a duplicate of the first point to form a polygon.
+			push_back(m_p.front());
+			m_curl = estimateCurl();
+		}
+		m_closed = isClosed;
 	}
 	boundingBox(m_bounds);
 }

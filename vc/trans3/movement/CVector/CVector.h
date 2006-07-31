@@ -106,7 +106,7 @@ public:
 	void push_back(const DB_POINT pts[], const short size);
 
 	// Seal the vector to create a polygon.
-	void close(const bool isClosed);
+	void close(bool isClosed);
 
 	bool closed(void) const { return m_closed; }
 

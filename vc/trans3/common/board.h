@@ -232,6 +232,7 @@ typedef struct tagBoard
 	void createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const;
 	const BRD_VECTOR *getVectorFromTile(const int x, const int y, const int z) const;
 	LPBRD_VECTOR getVector(const unsigned int index);
+	LPBRD_PROGRAM getProgram(const unsigned int index);
 
 	void render(
 		CCanvas *cnv,

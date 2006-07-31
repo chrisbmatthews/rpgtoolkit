@@ -81,7 +81,6 @@ const CLSID CLSID_REGEXP = {0x3F4DACA4, 0x160D, 0x11D2, {0xA8, 0xE9, 0x00, 0x10,
  * Rpgcode flags.
  */
 // Movement functions (Push(), ItemStep()...)
-// Feel free to rename these.
 typedef enum tkMV_CONSTANTS
 {
 	tkMV_PAUSE_THREAD		= 1,
@@ -89,6 +88,15 @@ typedef enum tkMV_CONSTANTS
 	tkMV_PATH_FIND			= 4,
 	tkMV_WAYPOINT_PATH		= 8,
 	tkMV_PATH_BACKGROUND	= 16
+};
+
+// BoardGetProgram() to BoardSetProgramPoint().
+typedef enum tkPRG_CONSTANTS
+{
+	tkPRG_STEP				= PRG_STEP,
+	tkPRG_KEYPRESS			= PRG_KEYPRESS,
+	tkPRG_REPEAT			= PRG_REPEAT,
+	tkPRG_STOPS_MOVEMENT	= PRG_STOPS_MOVEMENT
 };
 
 /*
@@ -6826,6 +6834,8 @@ void playerpath(CALL_DATA &params)
  * Returns the number of vectors on the board.
  *
  * BoardGetVector(int vectorIndex, int &tileType, int &pointCount, int &layer, int &isClosed, int &attributes)
+ *
+ * Returns the properties of a given vector.
  */
 void boardgetvector(CALL_DATA &params)
 {
@@ -6843,7 +6853,7 @@ void boardgetvector(CALL_DATA &params)
 		throw CError(_T("BoardGetVector() requires six parameters."));
 	}
 	
-	const LPBRD_VECTOR brd = g_pBoard->getVector(int(params[0].getNum()));
+	const LPBRD_VECTOR brd = g_pBoard->getVector((unsigned int)params[0].getNum());
 	if (brd)
 	{
 		LPSTACK_FRAME pSf = NULL;
@@ -6874,6 +6884,8 @@ void boardgetvector(CALL_DATA &params)
 
 /* 
  * BoardSetVector(int vectorIndex, int tileType, int pointCount, int layer, int isClosed, int attributes)
+ *
+ * Sets the properties of a given vector; creates a new vector if one-past-the-end index is given.
  */
 void boardsetvector(CALL_DATA &params)
 {
@@ -6882,7 +6894,7 @@ void boardsetvector(CALL_DATA &params)
 
 	if (params.params != 6)
 	{
-		throw CError(_T("BoardGetVector() requires six parameters."));
+		throw CError(_T("BoardSetVector() requires six parameters."));
 	}
 
 	// If one-past-end index is given, create a new vector.
@@ -6922,7 +6934,6 @@ void boardsetvector(CALL_DATA &params)
 		g_scrollCache.render(true);
 #endif
 	}
-
 }
 
 /* 
@@ -6939,7 +6950,7 @@ void boardgetvectorpoint(CALL_DATA &params)
 		throw CError(_T("BoardGetVectorPoint() requires four parameters."));
 	}
 	
-	const LPBRD_VECTOR brd = g_pBoard->getVector(int(params[0].getNum()));
+	const LPBRD_VECTOR brd = g_pBoard->getVector((unsigned int)params[0].getNum());
 	if (brd)
 	{
 		const DB_POINT pt = (*brd->pV)[(unsigned int)params[1].getNum()];
@@ -6988,6 +6999,161 @@ void boardsetvectorpoint(CALL_DATA &params)
 			g_scrollCache.render(true);
 #endif
 		}
+	}
+}
+
+/* 
+ * int BoardGetProgram()
+ * 
+ * Returns the number of programs on the board.
+ *
+ * BoardGetProgram(int programIndex, string &program, int &pointCount, int &layer, int &isClosed, int &attributes, int &distanceRepeat)
+ *
+ * Returns the properties of a given program.
+ */
+void boardgetprogram(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	if (params.params == 0)
+	{
+		params.ret().udt = UDT_NUM;
+		params.ret().num = double(g_pBoard->programs.size());
+		return;
+	}
+
+	if (params.params != 7)
+	{
+		throw CError(_T("BoardGetProgram() requires seven parameters."));
+	}
+	
+	const LPBRD_PROGRAM prg = g_pBoard->getProgram((unsigned int)params[0].getNum());
+	if (prg)
+	{
+		LPSTACK_FRAME pSf = NULL;
+		const bool bClosed = prg->vBase.closed();
+
+		pSf = params.prg->getVar(params[1].lit);
+		pSf->udt = UDT_LIT;
+		pSf->lit = prg->fileName;
+
+		// The first point is added to the back of closed vectors.
+		pSf = params.prg->getVar(params[2].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(prg->vBase.size() - (bClosed ? 1 : 0));
+
+		pSf = params.prg->getVar(params[3].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(prg->layer);
+
+		pSf = params.prg->getVar(params[4].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(bClosed);
+
+		// PRG_STEP, PRG_KEYPRESS etc...
+		pSf = params.prg->getVar(params[5].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(prg->activationType);
+
+		pSf = params.prg->getVar(params[6].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = double(prg->distanceRepeat);
+	}
+}
+
+/* 
+ * BoardSetProgram(int programIndex, string program, int pointCount, int layer, int isClosed, int attributes, int distanceRepeat)
+ *
+ * Sets the properties of a given program; creates a new program if one-past-the-end index is given.
+ * distanceRepeat in pixels always.
+ */
+void boardsetprogram(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	if (params.params != 7)
+	{
+		throw CError(_T("BoardSetProgram() requires seven parameters."));
+	}
+
+	// If one-past-end index is given, create a new program.
+	const unsigned int id = (unsigned int)params[0].getNum();
+	if (id == g_pBoard->programs.size())
+	{
+		g_pBoard->programs.push_back(new BRD_PROGRAM());
+		g_pBoard->programs.back()->vBase.push_back(0.0, 0.0);
+	}
+
+	LPBRD_PROGRAM prg = g_pBoard->getProgram(id);
+	if (prg)
+	{
+		prg->fileName = params[1].getLit();
+		prg->vBase.resize((unsigned int)params[2].getNum());
+		prg->layer = int(params[3].getNum());
+		prg->vBase.close(params[4].getNum() != 0.0);
+		prg->activationType = int(params[5].getNum());
+		prg->distanceRepeat = int(params[6].getNum());
+
+#ifdef DEBUG_VECTORS
+		extern SCROLL_CACHE g_scrollCache;
+		g_scrollCache.render(true);
+#endif
+	}
+}
+
+/* 
+ * BoardGetProgramPoint(int programIndex, int pointIndex, int &x, int &y)
+ *
+ * Get a single point on a board program. x, y are always pixel values.
+ */
+void boardgetprogrampoint(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	if (params.params != 4)
+	{
+		throw CError(_T("BoardGetProgramPoint() requires four parameters."));
+	}
+	
+	const LPBRD_PROGRAM prg = g_pBoard->getProgram((unsigned int)params[0].getNum());
+	if (prg)
+	{
+		const DB_POINT pt = prg->vBase[(unsigned int)params[1].getNum()];
+
+		LPSTACK_FRAME pSf = NULL;
+		pSf = params.prg->getVar(params[2].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = pt.x;
+
+		pSf = params.prg->getVar(params[3].lit);
+		pSf->udt = UDT_NUM;
+		pSf->num = pt.y;
+	}
+}
+
+/* 
+ * BoardSetProgramPoint(int programIndex, int pointIndex, int x, int y)
+ *
+ * Set/move a single point on a board program. x, y are always pixel values.
+ */
+void boardsetprogrampoint(CALL_DATA &params)
+{
+	extern LPBOARD g_pBoard;
+
+	if (params.params != 4)
+	{
+		throw CError(_T("BoardSetProgramPoint() requires four parameters."));
+	}
+	
+	LPBRD_PROGRAM prg = g_pBoard->getProgram((unsigned int)params[0].getNum());
+	if (prg)
+	{
+		prg->vBase.setPoint((unsigned int)params[1].getNum(), params[2].getNum(), params[3].getNum());
+
+#ifdef DEBUG_VECTORS
+		extern SCROLL_CACHE g_scrollCache;
+		g_scrollCache.render(true);
+#endif
 	}
 }
 
@@ -7272,5 +7438,9 @@ void initRpgCode()
 	CProgram::addFunction(_T("boardsetvector"), boardsetvector);
 	CProgram::addFunction(_T("boardgetvectorpoint"), boardgetvectorpoint);
 	CProgram::addFunction(_T("boardsetvectorpoint"), boardsetvectorpoint);
+	CProgram::addFunction(_T("boardgetprogram"), boardgetprogram);
+	CProgram::addFunction(_T("boardsetprogram"), boardsetprogram);
+	CProgram::addFunction(_T("boardgetprogrampoint"), boardgetprogrampoint);
+	CProgram::addFunction(_T("boardsetprogrampoint"), boardsetprogrampoint);
 
 }
