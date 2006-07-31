@@ -288,11 +288,14 @@ void scanKeys()
 		if (GetCursorPos(&p))
 		{
 			ScreenToClient(g_hHostWnd, &p);
-			// No flags - walk up to any sprite that blocks the goal.
-			PF_PATH pf = g_pSelectedPlayer->pathFind(p.x + g_screen.left, p.y + g_screen.top, PF_VECTOR, 0);
-			if (pf.size())
+			if (p.x > 0 && p.y > 0)
 			{
-				g_pSelectedPlayer->setQueuedPath(pf, true);
+				// No flags - walk up to any sprite that blocks the goal.
+				PF_PATH pf = g_pSelectedPlayer->pathFind(p.x + g_screen.left, p.y + g_screen.top, PF_PREVIOUS, 0);
+				if (pf.size())
+				{
+					g_pSelectedPlayer->setQueuedPath(pf, true);
+				}
 			}
 		}
 	}
