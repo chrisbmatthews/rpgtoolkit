@@ -204,12 +204,6 @@ typedef struct tagSpriteBoardPath
 
 } SPR_BRDPATH, *LPSPR_BRDPATH;
 
-/*
- * Board path attributes (flags).
- */
-#define BP_STOP_ON_INTERRUPT	1		// Making other movements stops the path.
-
-
 typedef struct tagBoardSprite
 {
 	STRING fileName;					// Filename of item.

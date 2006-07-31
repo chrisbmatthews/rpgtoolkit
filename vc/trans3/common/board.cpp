@@ -880,12 +880,13 @@ void tagBoardVector::createCanvas(BOARD &board)
 	CONST LONG SOLID_COLOR = 0;
 
 	// Only need to do this for under tiles.
-	if (!(type & TT_UNDER)) return;
+	if (~type & TT_UNDER) return;
 
 	// Get the bounding box of the vector.
 	const RECT r = pV->getBounds();
 	if (r.right - r.left < 1 || r.bottom - r.top < 1) return;
 
+	delete pCnv;
 	pCnv = new CCanvas();
 	pCnv->CreateBlank(NULL, r.right - r.left, r.bottom - r.top, TRUE);
 	pCnv->ClearScreen(TRANSP_COLOR);
@@ -1432,7 +1433,7 @@ void tagBoard::setSize(const int width, const int height, const int depth)
 /*
  * Get the vector that contains a given tile.
  */
-const BRD_VECTOR *tagBoard::getVectorFromTile(const int x, const int y, const int z) const
+const BRD_VECTOR* tagBoard::getVectorFromTile(const int x, const int y, const int z) const
 {
 	// Convert the point to pixels.
 	int px = x, py = y;
@@ -1454,6 +1455,18 @@ const BRD_VECTOR *tagBoard::getVectorFromTile(const int x, const int y, const in
 
 	// Didn't find it -- point may still be valid, as normal tiles
 	// do not have vectors.
+	return NULL;
+}
+
+/*
+ * Get a vector by index.
+ */
+LPBRD_VECTOR tagBoard::getVector(const int unsigned index)
+{
+	if (index < vectors.size())
+	{
+		return &vectors.at(index);
+	}
 	return NULL;
 }
 

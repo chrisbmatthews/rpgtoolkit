@@ -231,6 +231,7 @@ typedef struct tagBoard
 	bool isIsometric() const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	void createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const;
 	const BRD_VECTOR *getVectorFromTile(const int x, const int y, const int z) const;
+	LPBRD_VECTOR getVector(const unsigned int index);
 
 	void render(
 		CCanvas *cnv,
