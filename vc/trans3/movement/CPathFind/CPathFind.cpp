@@ -575,3 +575,12 @@ bool CPathFind::reset(
 
 	return true;
 }
+
+void CPathFind::drawObstructions(int x, int y, CCanvas *cnv)
+{
+	for (std::vector<CPfVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
+	{
+		if (!*i) break;
+		(*i)->draw(RGB(255,0,128), false, x, y, cnv);
+	}
+}

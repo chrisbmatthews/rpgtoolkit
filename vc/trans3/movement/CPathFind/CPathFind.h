@@ -99,6 +99,8 @@ public:
 		const int flags
 	);
 
+	void drawObstructions(int x, int y, CCanvas *cnv);
+
 private:
 	CPathFind (CPathFind &rhs);
 	CPathFind &operator= (CPathFind &rhs);
