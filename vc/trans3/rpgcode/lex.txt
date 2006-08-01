@@ -72,7 +72,28 @@ unsigned int g_lines = 0;
 [fF][aA][lL][sS][eE]			{ yylval = 0; return NUMBER; }
 [iI][nN][cC][lL][uU][dD][eE]		{ return INCLUDE; }
 
-~?[A-Za-z_:][A-Za-z0-9_]*		{ char *str = _strlwr(_strdup(yytext)); yylval = str; free(str); return IDENTIFIER; }
+~?[A-Za-z_:][A-Za-z0-9_]*		{
+						char *str = _strlwr(_strdup(yytext));
+						const STD_NATURAL_STRING s = str;
+						free(str);
+
+						std::map<STD_NATURAL_STRING, STACK_FRAME>::iterator i = CProgram::m_constants.find(s);
+						if (i != CProgram::m_constants.end())
+						{
+							STACK_FRAME &cst = i->second;
+							if (cst.udt & UDT_LIT)
+							{
+								yylval = "\"" + cst.lit + "\"";
+								return STRING;
+							}
+							yylval = cst.num;
+							return NUMBER;
+						}
+
+						yylval = s;
+						return IDENTIFIER;
+					}
+
 ([0-9]+(\.[0-9]+)?|([0-9]+)?(\.[0-9]+))	{ yylval = atof(yytext); return NUMBER; }
 \"[^\"]*\"				{ yylval = yytext; return STRING; }
 

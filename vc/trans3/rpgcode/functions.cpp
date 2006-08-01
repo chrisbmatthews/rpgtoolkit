@@ -7157,6 +7157,15 @@ void boardsetprogrampoint(CALL_DATA &params)
 	}
 }
 
+// Get a numerical stack frame.
+inline STACK_FRAME makeNumStackFrame(const double num)
+{
+	STACK_FRAME ret;
+	ret.num = num;
+	ret.udt = UDT_NUM;
+	return ret;
+}
+
 /*
  * Initialize RPGCode.
  */
@@ -7434,6 +7443,8 @@ void initRpgCode()
 	CProgram::addFunction(_T("canvasgetscreen"), canvasGetScreen);
 	CProgram::addFunction(_T("itempath"), itempath);
 	CProgram::addFunction(_T("playerpath"), playerpath);
+
+	// Vector functions.
 	CProgram::addFunction(_T("boardgetvector"), boardgetvector);
 	CProgram::addFunction(_T("boardsetvector"), boardsetvector);
 	CProgram::addFunction(_T("boardgetvectorpoint"), boardgetvectorpoint);
@@ -7443,4 +7454,16 @@ void initRpgCode()
 	CProgram::addFunction(_T("boardgetprogrampoint"), boardgetprogrampoint);
 	CProgram::addFunction(_T("boardsetprogrampoint"), boardsetprogrampoint);
 
+	// Movement constants.
+	CProgram::addConstant(_T("tkMV_PAUSE_THREAD"), makeNumStackFrame(tkMV_PAUSE_THREAD));
+	CProgram::addConstant(_T("tkMV_CLEAR_QUEUE"), makeNumStackFrame(tkMV_CLEAR_QUEUE));
+	CProgram::addConstant(_T("tkMV_PATH_FIND"), makeNumStackFrame(tkMV_PATH_FIND));
+	CProgram::addConstant(_T("tkMV_WAYPOINT_PATH"), makeNumStackFrame(tkMV_WAYPOINT_PATH));
+	CProgram::addConstant(_T("tkMV_PATH_BACKGROUND"), makeNumStackFrame(tkMV_PATH_BACKGROUND));
+
+	// Program-related board constants.
+	CProgram::addConstant(_T("tkPRG_STEP"), makeNumStackFrame(tkPRG_STEP));
+	CProgram::addConstant(_T("tkPRG_KEYPRESS"), makeNumStackFrame(tkPRG_KEYPRESS));
+	CProgram::addConstant(_T("tkPRG_REPEAT"), makeNumStackFrame(tkPRG_REPEAT));
+	CProgram::addConstant(_T("tkPRG_STOPS_MOVEMENT"), makeNumStackFrame(tkPRG_STOPS_MOVEMENT));
 }

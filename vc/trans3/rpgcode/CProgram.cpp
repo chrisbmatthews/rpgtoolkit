@@ -32,6 +32,7 @@ std::map<unsigned int, STRING> CProgram::m_objects;
 std::vector<unsigned int> *CProgram::m_pLines = NULL;
 std::vector<STRING> CProgram::m_inclusions;
 std::vector<IPlugin *> CProgram::m_plugins;
+std::map<STRING, STACK_FRAME> CProgram::m_constants;
 std::set<CThread *> CThread::m_threads;
 STRING CProgram::m_parsing;
 unsigned long CProgram::m_runningPrograms = 0;
