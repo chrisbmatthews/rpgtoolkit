@@ -456,7 +456,7 @@ InputDir=.\rpgcode
 InputPath=.\rpgcode\lex.txt
 
 "$(InputDir)\lex.yy.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$(InputDir)\flex -o"$(InputDir)\lex.yy.c" $(InputPath)
+	$(InputDir)\flex -Cfa -o"$(InputDir)\lex.yy.c" $(InputPath)
 
 # End Custom Build
 
