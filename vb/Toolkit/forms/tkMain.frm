@@ -2272,30 +2272,42 @@ Begin VB.MDIForm tkMainForm
          NumPanels       =   7
          BeginProperty Panel1 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   6
-            TextSave        =   "29/07/2006"
+            AutoSize        =   1
+            Object.Width           =   2884
+            TextSave        =   "02/08/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
-            Object.Width           =   5027
-            TextSave        =   "11:18"
+            Object.Width           =   2884
+            TextSave        =   "11:03"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
+            AutoSize        =   1
+            Object.Width           =   2884
          EndProperty
          BeginProperty Panel4 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
+            AutoSize        =   1
+            Object.Width           =   2884
          EndProperty
          BeginProperty Panel5 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   2
+            AutoSize        =   1
+            Object.Width           =   2884
             TextSave        =   "NUM"
          EndProperty
          BeginProperty Panel6 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   3
+            AutoSize        =   1
             Enabled         =   0   'False
+            Object.Width           =   2884
             TextSave        =   "INS"
          EndProperty
          BeginProperty Panel7 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   1
+            AutoSize        =   1
             Enabled         =   0   'False
+            Object.Width           =   2884
             TextSave        =   "CAPS"
          EndProperty
       EndProperty
@@ -3162,7 +3174,7 @@ End Sub
 
 Private Sub mainToolbar_ButtonMenuClick(ByVal ButtonMenu As MSComctlLib.ButtonMenu): On Error Resume Next
     Dim frm As Form
-    Select Case ButtonMenu.index
+    Select Case ButtonMenu.Index
         Case 1:
             Set frm = New tileedit
         Case 2:
@@ -3508,12 +3520,12 @@ End Sub
 
 '=========================================================================================
 ' ADDED FOURTH BUTTON FOR BOARD TOOLBAR
-Private Sub popButton_Click(index As Integer): On Error Resume Next
+Private Sub popButton_Click(Index As Integer): On Error Resume Next
     
-    Select Case index
+    Select Case Index
         Case PB_FILETREE
             'File tree.
-            If popButton(index).value = 1 Then
+            If popButton(Index).value = 1 Then
                 popButton(PB_NEWEDITOR).value = 0
                 popButton(PB_TILESET).value = 0
                 popButton(PB_TOOLBAR).value = 0
@@ -3525,7 +3537,7 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
             
         Case PB_NEWEDITOR
             'Open editors.
-            If popButton(index).value = 1 Then
+            If popButton(Index).value = 1 Then
                 popButton(PB_FILETREE).value = 0
                 popButton(PB_TILESET).value = 0
                 popButton(PB_TOOLBAR).value = 0
@@ -3536,7 +3548,7 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
             
         Case PB_TILESET
             'Tileset browser.
-            If popButton(index).value = 1 Then
+            If popButton(Index).value = 1 Then
                 popButton(PB_FILETREE).value = 0
                 popButton(PB_NEWEDITOR).value = 0
                 popButton(PB_TOOLBAR).value = 0
@@ -3550,7 +3562,7 @@ Private Sub popButton_Click(index As Integer): On Error Resume Next
             
         Case PB_TOOLBAR
             'Board editor toolbar.
-            If popButton(index).value = 1 Then
+            If popButton(Index).value = 1 Then
                 popButton(PB_FILETREE).value = 0
                 popButton(PB_NEWEDITOR).value = 0
                 popButton(PB_TILESET).value = 0
@@ -3623,65 +3635,10 @@ ErrorHandler:
 End Sub
 
 Public Sub saveallmnu_Click(): On Error Resume Next
-    'save all...
-    'KSNiloc says: If/when we upgrade to vb.net this can be improved
-    '              via inheritance
-    Dim frm As VB.Form
-    Dim ani As animationeditor
-    Dim brd As frmBoardEdit
-    Dim chr As characteredit
-    Dim bkg As editBackground
-    Dim ene As editenemy
-    Dim itm As edititem
-    Dim man As editmainfile
-    Dim spcMove As editsm
-    Dim sta As editstatus
-    Dim tbm As editTileBitmap
-    Dim rpg As rpgcodeedit
-    Dim aniTile As tileanim
-    Dim tile As tileedit
+    Dim frm As Form
     For Each frm In Forms
-        Select Case frm.Tag
-            Case 1
-                Set ani = frm
-                ani.saveFile
-            Case 2
-                Set brd = frm
-                brd.saveFile
-            Case 3
-                Set chr = frm
-                chr.saveFile
-            Case 4
-                Set bkg = frm
-                bkg.saveFile
-            Case 5
-                Set ene = frm
-                ene.saveFile
-            Case 6
-                Set itm = frm
-                itm.saveFile
-            Case 7
-                Set man = frm
-                man.saveFile
-            Case 8
-                Set spcMove = frm
-                spcMove.saveFile
-            Case 9
-                Set sta = frm
-                sta.saveFile
-            Case 10
-                Set tbm = frm
-                tbm.saveFile
-            Case 12
-                Set rpg = frm
-                rpg.saveFile
-            Case 13
-                Set aniTile = frm
-                aniTile.saveFile
-            Case 14
-                Set tile = frm
-                tile.saveFile
-        End Select
+        'Any forms without the saveFile() sub will error.
+        Call frm.saveFile
     Next frm
 End Sub
 
@@ -3792,8 +3749,8 @@ Private Sub tileRedraw_Click(): On Error Resume Next
     Call activeTile.tileRedraw
 End Sub
 
-Private Sub tileTool_Click(index As Integer): On Error Resume Next
-    Call activeTile.ToolSet(index)
+Private Sub tileTool_Click(Index As Integer): On Error Resume Next
+    Call activeTile.ToolSet(Index)
 End Sub
 
 Public Sub tileverticallymnu_Click(): On Error Resume Next
@@ -3892,11 +3849,11 @@ End Sub
 Private Sub brdCmbVisibleLayers_Click(): On Error Resume Next
     Call activeBoard.mdiCmbVisibleLayers
 End Sub
-Private Sub brdOptSetting_Click(index As Integer): On Error Resume Next
-    Call activeBoard.mdiOptSetting(index)
+Private Sub brdOptSetting_Click(Index As Integer): On Error Resume Next
+    Call activeBoard.mdiOptSetting(Index)
 End Sub
-Private Sub brdOptTool_Click(index As Integer): On Error Resume Next
-    Call activeBoard.mdiOptTool(index)
+Private Sub brdOptTool_Click(Index As Integer): On Error Resume Next
+    Call activeBoard.mdiOptTool(Index)
 End Sub
 Private Sub brdChkAutotile_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call activeBoard.mdiChkAutotile(brdChkAutotile.value)
@@ -3978,8 +3935,8 @@ End Sub
 ' ANIMATION EDITOR RELATED EVENTS
 '=========================================================================================
 'Set the size of the animation
-Private Sub optAnimSize_Click(index As Integer): On Error Resume Next
-    Call activeAnimation.setAnimSize(index)
+Private Sub optAnimSize_Click(Index As Integer): On Error Resume Next
+    Call activeAnimation.setAnimSize(Index)
 End Sub
 'Set the X-Size (Custom anim only)
 Private Sub txtAnimXSize_Change(): On Error Resume Next
