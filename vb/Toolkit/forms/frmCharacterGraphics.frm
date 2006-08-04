@@ -131,7 +131,7 @@ Begin VB.Form frmCharacterGraphics
             ScaleHeight     =   315
             ScaleWidth      =   315
             TabIndex        =   35
-            ToolTipText     =   "Alter vector display color (for this window)"
+            ToolTipText     =   "Vector display color (for this window)"
             Top             =   2040
             Width           =   375
          End
@@ -203,22 +203,22 @@ Begin VB.Form frmCharacterGraphics
             Top             =   2040
             Width           =   2175
             Begin VB.CommandButton cmdVectorDefault 
-               Caption         =   "Default"
+               Caption         =   "Collision"
                Height          =   375
                Index           =   0
                Left            =   0
                TabIndex        =   15
-               ToolTipText     =   "Load standard (2D) vector"
+               ToolTipText     =   "Default collision vector / activation vector for automatic activation (""step-on"")"
                Top             =   0
                Width           =   1095
             End
             Begin VB.CommandButton cmdVectorDefault 
-               Caption         =   "Isometric"
+               Caption         =   "Interaction"
                Height          =   375
                Index           =   1
                Left            =   1080
                TabIndex        =   14
-               ToolTipText     =   "Load standard (isometric) vector"
+               ToolTipText     =   "Default interaction vector for key-press activation"
                Top             =   0
                Width           =   1095
             End
@@ -615,15 +615,14 @@ End Sub
 ' The OK Button
 '========================================================================
 Private Sub cmdDefault_Click(): On Error Resume Next
-    Call Unload(Me)
+    Unload Me
 End Sub
 
 '========================================================================
 ' Load a default vector base (isometric or 2D)
 '========================================================================
 Private Sub cmdVectorDefault_Click(Index As Integer): On Error Resume Next
-    optCoord(Index).value = True
-    Call m_vector.defaultSpriteVector(optType(0).value, Index <> 0)
+    Call m_vector.defaultSpriteVector(Index = 0, Not optCoord(0).value)
     Call m_vector.lvPopulate(lvVector)
     Call setAnimation
 End Sub
@@ -675,6 +674,28 @@ Private Sub cmdWizard_Click(): On Error Resume Next
     
     Call lvUpdate
     Call setAnimation
+End Sub
+
+Public Sub disableAll(): On Error Resume Next
+    Dim i As Control
+    For Each i In Me
+        i.Enabled = False
+    Next i
+    
+    'Enable the picture holder and its containers.
+    picHolder(0).Enabled = True
+    fra(3).Enabled = True
+    picPreviewHolder.Enabled = True
+    picPreview.Enabled = True
+End Sub
+Private Sub enableAll(): On Error Resume Next
+    Dim i As Control
+    For Each i In Me
+        i.Enabled = True
+    Next i
+    
+    'Disable any controls that should remain disabled.
+    Call lvApply
 End Sub
 
 '========================================================================
@@ -786,10 +807,6 @@ Private Sub picColor_Click(): On Error Resume Next
     End If
 End Sub
 
-Private Sub picPreview_LostFocus(): On Error Resume Next
-    Call picPreview_MouseDown(vbRightButton, 0, 0, 0)
-End Sub
-
 '========================================================================
 ' Vector editing - draw or edit
 '========================================================================
@@ -798,6 +815,7 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
         'Drawing
         If Button = vbLeftButton Then
             If Not m_editing Then
+                Call disableAll
                 m_editing = True
                 m_vector.deletePoints
                 m_vector.tiletype = TT_SOLID
@@ -807,6 +825,7 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
             Call m_vector.setPoint(m_vector.getPoints, x - m_base.x, y - m_base.y, False)
             Call m_vector.addPoint(x - m_base.x + 1, y - m_base.y + 1)
         Else
+            Call enableAll
             chkEdit(0).value = 0
             m_editing = False
             Call m_vector.deletePoints(m_vector.getPoints)
