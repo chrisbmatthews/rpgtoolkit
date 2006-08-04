@@ -48,7 +48,7 @@ Public Sub draw(ByRef edfrm As frmBoardEdit, ByRef pCEd As CBoardEditor) ':on er
         edfrm.lineSelection(3).x1 = pt2.x: edfrm.lineSelection(3).x2 = pt2.x: edfrm.lineSelection(3).y1 = pt1.y: edfrm.lineSelection(3).y2 = pt2.y
     
         For i = 0 To 3
-            edfrm.lineSelection(i).Visible = True
+            edfrm.lineSelection(i).visible = True
         Next i
     End If
 End Sub
@@ -63,7 +63,7 @@ Public Sub drawLine(ByRef edfrm As frmBoardEdit, ByRef pCEd As CBoardEditor) ':o
         edfrm.lineSelection(0).x2 = pt2.x
         edfrm.lineSelection(0).y1 = pt1.y
         edfrm.lineSelection(0).y2 = pt2.y
-        edfrm.lineSelection(0).Visible = True
+        edfrm.lineSelection(0).visible = True
     End If
 End Sub
 
@@ -72,7 +72,7 @@ End Sub
 '=========================================================================
 Public Sub drawProjectedRect(ByRef edfrm As frmBoardEdit, ByRef pCEd As CBoardEditor, ByVal coordType As Integer) ':on error resume next
     
-    Dim i As Long, j As Long, pts() As POINTAPI
+    Dim i As Long, j As Long, pts() As POINTAPI, pt As POINTAPI
     If status = SS_NONE Then Exit Sub
     
     If isIsometric(coordType) Then
@@ -80,14 +80,14 @@ Public Sub drawProjectedRect(ByRef edfrm As frmBoardEdit, ByRef pCEd As CBoardEd
         pts = modBoard.rectProjectIsometric(Me)
 
         For i = 0 To 3
-            Call pCEd.boardPixelToScreen(pts(i).x, pts(i).y)
-            edfrm.lineSelection(i).x1 = pts(i).x: edfrm.lineSelection(i).y1 = pts(i).y
+            pt = modBoard.boardPixelToScreen(pts(i).x, pts(i).y, pCEd)
+            edfrm.lineSelection(i).x1 = pt.x: edfrm.lineSelection(i).y1 = pt.y
 
             j = (i + 1) Mod 4
-            Call pCEd.boardPixelToScreen(pts(j).x, pts(j).y)
-            edfrm.lineSelection(i).x2 = pts(j).x: edfrm.lineSelection(i).y2 = pts(j).y
+            pt = modBoard.boardPixelToScreen(pts(j).x, pts(j).y, pCEd)
+            edfrm.lineSelection(i).x2 = pt.x: edfrm.lineSelection(i).y2 = pt.y
             
-            edfrm.lineSelection(i).Visible = True
+            edfrm.lineSelection(i).visible = True
         Next i
 
     Else
@@ -128,7 +128,7 @@ Public Sub clear(ByRef edfrm As frmBoardEdit): On Error Resume Next
     Dim i As Long
     status = SS_NONE
     For i = 0 To edfrm.lineSelection.count - 1
-        edfrm.lineSelection(i).Visible = False
+        edfrm.lineSelection(i).visible = False
     Next i
 End Sub
 Public Function containsPoint(ByVal x As Long, ByVal y As Long) As Boolean: On Error Resume Next
