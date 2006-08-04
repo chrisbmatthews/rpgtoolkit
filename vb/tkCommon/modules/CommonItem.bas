@@ -24,6 +24,8 @@ Private Const ITEM_WALK_SW = 6
 Private Const ITEM_WALK_SE = 7
 Private Const ITEM_REST = 8
 
+Private Const ITM_MINOR = 7         'Minor version, 3.0.7 (vectors)
+
 '=========================================================================
 ' An item
 '=========================================================================
@@ -66,6 +68,9 @@ Public Type TKItem
     speed As Double                 'Speed of this item
     
     loopSpeed As Long               '.speed converted to loops (3.0.5)
+    
+    vBase As CVector                'Interaction vectors - 3.0.7
+    vActivate As CVector
     
 #If isToolkit = 0 Then
     bIsActive As Boolean            'is item active?
@@ -302,6 +307,11 @@ Public Sub ItemClear(ByRef theItem As TKItem)
         Next t
         ReDim .customGfx(5)
         ReDim .customGfxNames(5)
+        
+        Set .vBase = New CVector
+        Call .vBase.defaultSpriteVector(True, False)
+        Set .vActivate = New CVector
+        Call .vActivate.defaultSpriteVector(False, False)
     End With
 End Sub
 
@@ -447,14 +457,40 @@ Public Function openItem(ByVal file As String) As TKItem
                 theItem.standingGfx(ITEM_WALK_S) = theItem.gfx(ITEM_REST)
                 theItem.gfx(ITEM_REST) = vbNullString
             End If
-            Dim cnt As Long
-            cnt = BinReadLong(num)
-            For t = 0 To cnt
-                Dim an As String, handle As String
-                an$ = BinReadString(num)
-                handle$ = BinReadString(num)
-                Call itemAddCustomGfx(theItem, handle$, an$)
+            
+            'Custom animations
+            Dim count As Long, animation As String, handle As String
+            count = BinReadLong(num)
+            For t = 0 To count
+                animation = BinReadString(num)
+                handle = BinReadString(num)
+                Call itemAddCustomGfx(theItem, handle, animation)
             Next t
+            
+            'Vector bases. Pre-vector version bases loaded in ItemClear()
+            If (minorVer >= 7) Then
+                Dim i As Long, j As Long, ub As Integer, pts As Integer, vect As CVector
+                
+                'Provision for directional bases.
+                ub = BinReadInt(num)
+                For i = 0 To ub
+                    Set vect = New CVector
+                    pts = BinReadInt(num)
+                    For j = 0 To pts
+                        x = BinReadLong(num)
+                        y = BinReadLong(num)
+                        Call vect.addPoint(x, y)
+                    Next j
+                    
+                    If i = 0 Then
+                        Set theItem.vBase = vect
+                    Else
+                        Set theItem.vActivate = vect
+                    End If
+                    Set vect = Nothing
+                Next i
+            End If
+            
         Else
             'old version 2 item (convert the gfx to animations and tile bitmaps)
             For x = 0 To 15
@@ -760,16 +796,16 @@ Public Sub saveItem(ByVal file As String, ByRef theItem As TKItem)
     On Error Resume Next
     
     Dim num As Long, t As Long
-    If (LenB(file$) = 0) Then Exit Sub
+    If (LenB(file) = 0) Then Exit Sub
     
     num = FreeFile()
     
     Call Kill(file)
     
-    Open file For Binary Access Write As #num
+    Open file For Binary Access Write As num
         Call BinWriteString(num, "RPGTLKIT ITEM")    'Filetype
         Call BinWriteInt(num, major)
-        Call BinWriteInt(num, 6)    'Minor version (1= ie 2.1 = 64x32 cgfx allowed 2= binary, 3=longs used instead of ints, 4=Version 3 item-- use animations for gfx)
+        Call BinWriteInt(num, ITM_MINOR)
         
         Call BinWriteString(num, theItem.itemName)
         Call BinWriteString(num, theItem.itmDescription)
@@ -815,11 +851,14 @@ Public Sub saveItem(ByVal file As String, ByRef theItem As TKItem)
         For t = 0 To UBound(theItem.gfx)
             Call BinWriteString(num, theItem.gfx(t))
         Next t
+        
         For t = 0 To UBound(theItem.standingGfx)
             Call BinWriteString(num, theItem.standingGfx(t))
         Next t
+        
         Call BinWriteDouble(num, theItem.speed)
         Call BinWriteDouble(num, theItem.idleTime)
+        
         Dim sz As Long
         sz = UBound(theItem.customGfxNames)
         Call BinWriteLong(num, sz)
@@ -827,6 +866,27 @@ Public Sub saveItem(ByVal file As String, ByRef theItem As TKItem)
             Call BinWriteString(num, theItem.customGfx(t))
             Call BinWriteString(num, theItem.customGfxNames(t))
         Next t
-    Close #num
+        
+        'Vectors
+        Call BinWriteInt(num, 1)                            'Currently 2 interaction vectors.
+            
+        'Collision vector
+        Call BinWriteInt(num, theItem.vBase.getPoints)
+        Dim i As Long, x As Long, y As Long
+        For i = 0 To theItem.vBase.getPoints
+            Call theItem.vBase.getPoint(i, x, y)
+            Call BinWriteLong(num, x)                        'Stored by pixel (Longs)
+            Call BinWriteLong(num, y)
+        Next i
+        
+        'Activation vector
+        Call BinWriteInt(num, theItem.vActivate.getPoints)
+        For i = 0 To theItem.vActivate.getPoints
+            Call theItem.vActivate.getPoint(i, x, y)
+            Call BinWriteLong(num, x)
+            Call BinWriteLong(num, y)
+        Next i
+        
+    Close num
 
 End Sub

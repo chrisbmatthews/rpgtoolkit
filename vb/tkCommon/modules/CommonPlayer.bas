@@ -603,17 +603,17 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
 #End If
             End If
 
-            Dim cnt As Long
-            cnt = BinReadLong(num)
-            For t = 0 To cnt
-                Dim an As String, handle As String
-                an$ = BinReadString(num)
-                handle$ = BinReadString(num)
-                Call playerAddCustomGfx(thePlayer, handle$, an$)
+            'Custom animations
+            Dim count As Long, animation As String, handle As String
+            count = BinReadLong(num)
+            For t = 0 To count
+                animation = BinReadString(num)
+                handle = BinReadString(num)
+                Call playerAddCustomGfx(thePlayer, handle, animation)
             Next t
             
+            'Vector bases. Pre-vector version bases loaded in PlayerClear()
             If (minorVer >= 8) Then
-                'Vector bases.
                 Dim i As Long, j As Long, ub As Integer, pts As Integer, vect As CVector
                 
                 'Provision for directional bases.
@@ -634,18 +634,11 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                     End If
                     Set vect = Nothing
                 Next i
-            Else
-                'Load defaults.
-                Set thePlayer.vBase = New CVector
-                Call thePlayer.vBase.defaultSpriteVector(True, False)
-                Set thePlayer.vActivate = New CVector
-                Call thePlayer.vActivate.defaultSpriteVector(False, False)
             End If
-            
+                       
         Else
-        
-        
-            'old version 2 char (convert the gfx to animations and tile bitmaps
+                
+            'old version 2 char (convert the gfx to animations and tile bitmaps)
             ReDim walkGfx(15, 1) As String      'walking graphics filenames (64x32) (xx,0 or 1) 0=top, 1=bottom
             ReDim fightingGfx(3, 1, 1) As String 'fight gfx filenames (64x64) (xx,yy ,0 or 1)
             ReDim defenseGfx(3, 1, 1) As String  'def gfx filenames (64x64) (xx,yy ,0 or 1)
