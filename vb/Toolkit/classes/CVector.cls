@@ -137,17 +137,18 @@ End Sub
 '=========================================================================
 ' Close the vector (to make a polygon)
 '=========================================================================
-Public Sub closeVector(ByVal shiftState As Integer, ByVal layer As Long) ':on error resume next
+Public Function closeVector(ByVal shiftState As Integer, ByVal layer As Long) As Boolean ':on error resume next
     If UBound(m_pts) = 0 Then
         'Delete vectors with only one point (create a free slot).
         m_tiletype = TT_NULL
-        Exit Sub
+        Exit Function
     End If
     
     'Keep the vector open if a shift* key is down or there are only two points.
     m_bClosed = ((shiftState = 0) And (UBound(m_pts) > 1))
     m_layer = layer
-End Sub
+    closeVector = True
+End Function
 
 '=========================================================================
 ' Delete one or all points by index
@@ -381,7 +382,7 @@ End Sub
 Public Sub lvPopulate(ByRef lv As ListView) ':on error resume next
     Dim i As Long, j As Long
     lv.ListItems.clear
-    If Not lv.SelectedItem Is Nothing Then j = lv.SelectedItem.index
+    If Not lv.SelectedItem Is Nothing Then j = lv.SelectedItem.Index
     For i = 0 To UBound(m_pts)
         Call lv.ListItems.Add(i + 1, , str(i))
         lv.ListItems(i + 1).SubItems(1) = str(m_pts(i).x)
