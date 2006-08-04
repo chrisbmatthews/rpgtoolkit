@@ -325,13 +325,13 @@ End Property
 '=========================================================================
 ' Conversion routines
 '=========================================================================
-Public Function screenToBoardPixel(ByVal x As Long, ByVal y As Long, ByRef ed As TKBoardEditorData) As POINTAPI
-    Call ed.pCEd.screenToBoardPixel(x, y)
+Public Function screenToBoardPixel(ByVal x As Long, ByVal y As Long, ByRef pCEd As CBoardEditor) As POINTAPI
+    Call pCEd.screenToBoardPixel(x, y)
     screenToBoardPixel.x = x
     screenToBoardPixel.y = y
 End Function
-Public Function boardPixelToScreen(ByVal x As Long, ByVal y As Long, ByRef ed As TKBoardEditorData) As POINTAPI
-    Call ed.pCEd.boardPixelToScreen(x, y)
+Public Function boardPixelToScreen(ByVal x As Long, ByVal y As Long, ByRef pCEd As CBoardEditor) As POINTAPI
+    Call pCEd.boardPixelToScreen(x, y)
     boardPixelToScreen.x = x
     boardPixelToScreen.y = y
 End Function
@@ -470,7 +470,7 @@ Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal KeyCode As Integer) 
     i = val(lv.Tag)
     If i = 0 And KeyCode = vbKeyDelete Then
         'Whole row selected - delete the point.
-        lv.ListItems.Remove lv.SelectedItem.index
+        lv.ListItems.Remove lv.SelectedItem.Index
         vectorLvKeyDown = True
     End If
     If i <> 1 And i <> 2 Then Exit Function
