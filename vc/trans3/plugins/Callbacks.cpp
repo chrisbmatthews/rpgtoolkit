@@ -1576,7 +1576,7 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_AMBIENTRED:
 			try
 			{
-				*pRet = g_pBoard->ambientRed[arrayPos1][arrayPos2][arrayPos3];
+				*pRet = g_pBoard->ambientRed[arrayPos3][arrayPos2][arrayPos1];
 			}
 			catch (...)
 			{
@@ -1586,7 +1586,7 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_AMBIENTGREEN:
 			try
 			{
-				*pRet = g_pBoard->ambientGreen[arrayPos1][arrayPos2][arrayPos3];
+				*pRet = g_pBoard->ambientGreen[arrayPos3][arrayPos2][arrayPos1];
 			}
 			catch (...)
 			{
@@ -1596,7 +1596,7 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_AMBIENTBLUE:
 			try
 			{
-				*pRet = g_pBoard->ambientBlue[arrayPos1][arrayPos2][arrayPos3];
+				*pRet = g_pBoard->ambientBlue[arrayPos3][arrayPos2][arrayPos1];
 			}
 			catch (...)
 			{
@@ -1709,7 +1709,7 @@ STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int array
 		case BRD_TILE:
 			try
 			{
-				str = g_pBoard->tileIndex[g_pBoard->board[arrayPos1][arrayPos2][arrayPos3]];
+				str = g_pBoard->tileIndex[g_pBoard->board[arrayPos3][arrayPos2][arrayPos1]];
 			}
 			catch (...) { }
 			break;
@@ -1813,21 +1813,21 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			// TBD: ambient level recalculations?
 			try
 			{
-				g_pBoard->ambientRed[arrayPos1][arrayPos2][arrayPos3] = short(nValue);
+				g_pBoard->ambientRed[arrayPos3][arrayPos2][arrayPos1] = short(nValue);
 			}
 			catch (...)	{ } 
 			break;
 		case BRD_AMBIENTGREEN:
 			try
 			{
-				g_pBoard->ambientGreen[arrayPos1][arrayPos2][arrayPos3] = short(nValue);
+				g_pBoard->ambientGreen[arrayPos3][arrayPos2][arrayPos1] = short(nValue);
 			}
 			catch (...)	{ } 
 			break;
 		case BRD_AMBIENTBLUE:
 			try
 			{
-				g_pBoard->ambientBlue[arrayPos1][arrayPos2][arrayPos3] = short(nValue);
+				g_pBoard->ambientBlue[arrayPos3][arrayPos2][arrayPos1] = short(nValue);
 			}
 			catch (...)	{ } 
 			break;
