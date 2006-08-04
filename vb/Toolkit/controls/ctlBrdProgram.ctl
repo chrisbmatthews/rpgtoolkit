@@ -329,7 +329,7 @@ Private Sub apply() ': On Error Resume Next
     If Not prg Is Nothing Then
         With prg
             .filename = txtFilename.Text
-            .layer = val(txtLayer.Text)
+            .layer = Abs(val(txtLayer.Text))
             .activate = Abs(optConditionallyActive(PRG_CONDITIONAL).value)
             .initialVar = txtConditionVars(0).Text
             .initialValue = txtConditionVars(1).Text
@@ -341,8 +341,8 @@ Private Sub apply() ': On Error Resume Next
             .distanceRepeat = val(txtRepeatTrigger.Text)
             Call .vBase.lvApply(lvPoints)
         End With
+        Call populate(cmbPrg.ListIndex, prg)
     End If
-    Call populate(cmbPrg.ListIndex, prg)
 End Sub
 Public Sub disableAll(): On Error Resume Next
     Dim i As Control
