@@ -227,7 +227,6 @@ typedef struct tagBoard
 	int pxWidth() const;
 	int pxHeight() const;
 	bool insertTile(const STRING tile, const int x, const int y, const int z);
-	void setSize(const int width, const int height, const int depth);
 	bool isIsometric() const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	void createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const;
 	const BRD_VECTOR *getVectorFromTile(const int x, const int y, const int z) const;
@@ -259,6 +258,7 @@ private:
 	tagBoard(tagBoard &rhs);
 	void addAnimTile(const STRING fileName, const int x, const int y, const int z);
 	int lutIndex(const STRING tile);
+	void setSize(const int width, const int height, const int depth, const bool createTiletypeArray);
 	int tileWidth() const { return (isIsometric() ? 64 : 32); }
 	int tileHeight() const { return (isIsometric() ? 16 : 32); }
 	void renderImages(

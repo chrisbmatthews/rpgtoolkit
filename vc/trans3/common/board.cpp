@@ -86,7 +86,13 @@ vVersion:
 		file >> sizeY;
 		file >> sizeL;
 		file >> var; coordType = COORD_TYPE(var);
-		setSize(sizeX, sizeY, sizeL); //tbd
+
+		// Effective matrix dimensions.
+		const int effectiveWidth = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeX); 
+		const int effectiveHeight = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeY);
+
+		// Dimension the board matrices.
+		setSize(effectiveWidth, effectiveHeight, sizeL, false);
 
 		// Build the tile look-up-table.
 		short lutSize;
@@ -116,9 +122,9 @@ vVersion:
 		int x, y, z;
 		for (z = 1; z <= sizeL; ++z)
 		{
-			for (y = 1; y <= sizeY; ++y)
+			for (y = 1; y <= effectiveHeight; ++y)
 			{
-				for (x = 1; x <= sizeX; ++x)
+				for (x = 1; x <= effectiveWidth; ++x)
 				{
 					short index = 0, count = 0;
 					file >> index;
@@ -139,24 +145,24 @@ vVersion:
 
 						for (short i = 1; i <= count; ++i)
 						{
-							board[x][y][z] = index;
-							ambientRed[x][y][z] = r;
-							ambientGreen[x][y][z] = g;
-							ambientBlue[x][y][z] = b;
+							board[z][y][x] = index;
+							ambientRed[z][y][x] = r;
+							ambientGreen[z][y][x] = g;
+							ambientBlue[z][y][x] = b;
 
 							std::vector<int>::const_iterator j = tanLutIndices.begin();
 							for (; j != tanLutIndices.end(); ++j)
 							{
-								if (board[x][y][z] == *j)
+								if (board[z][y][x] == *j)
 								{
-									addAnimTile(tileIndex[board[x][y][z]], x, y, z);
+									addAnimTile(tileIndex[board[z][y][x]], x, y, z);
 								}
 							}
 
-							if (++x > sizeX)
+							if (++x > effectiveWidth)
 							{
 								x = 1;
-								if (++y > sizeY)
+								if (++y > effectiveHeight)
 								{
 									y = 1;
 									if (++z > sizeL)
@@ -174,17 +180,17 @@ vVersion:
 					{
 						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
 
-						board[x][y][z] = index;
-						file >> ambientRed[x][y][z];
-						file >> ambientGreen[x][y][z];
-						file >> ambientBlue[x][y][z];
+						board[z][y][x] = index;
+						file >> ambientRed[z][y][x];
+						file >> ambientGreen[z][y][x];
+						file >> ambientBlue[z][y][x];
 					
 						std::vector<int>::const_iterator i = tanLutIndices.begin();
 						for (; i != tanLutIndices.end(); ++i)
 						{
-							if (board[x][y][z] == *i)
+							if (board[z][y][x] == *i)
 							{
-								addAnimTile(tileIndex[board[x][y][z]], x, y, z);
+								addAnimTile(tileIndex[board[z][y][x]], x, y, z);
 							}
 						}
 					}
@@ -362,7 +368,7 @@ lutEndA:
 		for (i = 0; i <= ub; ++i)
 		{
 			file >> str;
-			constants.push_back(str);  // tbd strings!
+			constants.push_back(str);
 		}
 
 		// Layer titles.
@@ -434,7 +440,7 @@ pvVersion:
 		file >> sizeX;
 		file >> sizeY;
 		file >> sizeL;
-		setSize(sizeX, sizeY, sizeL);
+		setSize(sizeX, sizeY, sizeL, true);
 
 		// Start position moved to main file; hold
 		// onto until after isometric byte is read.
@@ -497,18 +503,18 @@ pvVersion:
 
 						for (int i = 1; i <= count; ++i)
 						{
-							board[x][y][z] = index;
-							ambientRed[x][y][z] = r;
-							ambientGreen[x][y][z] = g;
-							ambientBlue[x][y][z] = b;
+							board[z][y][x] = index;
+							ambientRed[z][y][x] = r;
+							ambientGreen[z][y][x] = g;
+							ambientBlue[z][y][x] = b;
 							tiletype[z][y][x] = type;
 
 							std::vector<int>::const_iterator j = tanLutIndices.begin();
 							for (; j != tanLutIndices.end(); ++j)
 							{
-								if (board[x][y][z] == *j)
+								if (board[z][y][x] == *j)
 								{
-									addAnimTile(tileIndex[board[x][y][z]], x, y, z);
+									addAnimTile(tileIndex[board[z][y][x]], x, y, z);
 								}
 							}
 
@@ -533,18 +539,18 @@ pvVersion:
 					{
 						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
 
-						board[x][y][z] = index;
-						file >> ambientRed[x][y][z];
-						file >> ambientGreen[x][y][z];
-						file >> ambientBlue[x][y][z];
+						board[z][y][x] = index;
+						file >> ambientRed[z][y][x];
+						file >> ambientGreen[z][y][x];
+						file >> ambientBlue[z][y][x];
 						file >> tiletype[z][y][x];
 					
 						std::vector<int>::const_iterator i = tanLutIndices.begin();
 						for (; i != tanLutIndices.end(); ++i)
 						{
-							if (board[x][y][z] == *i)
+							if (board[z][y][x] == *i)
 							{
-								addAnimTile(tileIndex[board[x][y][z]], x, y, z);
+								addAnimTile(tileIndex[board[z][y][x]], x, y, z);
 							}
 						}
 					}
@@ -1071,66 +1077,61 @@ void tagBoard::render(
 	int nWidth = (width + topX > pxWidth() ? pxWidth() - topX : width) / tileWidth(),
 		nHeight = (height + topY > pxHeight() ? pxHeight() - topY : height) / tileHeight();
 
-	// Grow the board to draw the outer edges (of large boards).
-	if (coordType & ISO_STACKED) 
-	{ 
-		++nWidth; 
-		++nHeight; 
-
-		// Note to self: could be dangerous.
-		if (topX % 64) destX -= 32;
-	}
-
-	// Is the top-left corner at the corner of a tile or at the centre?
-	const int parity = !(topY % 32);
-
-	// Tile start co-ordinates.
-	topX /= tileWidth();
-	topY /= tileHeight();
-
 	// Effective matrix dimensions.
 	const int effectiveWidth = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeX); 
 	const int effectiveHeight = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeY);
-	
+
+	// Tile start co-ordinates.
+	int x = topX, y = topY;
+	coords::pixelToTile(x, y, COORD_TYPE(coordType & ~PX_ABSOLUTE), false, sizeX);
+
+	if (coordType & ISO_STACKED)
+	{
+		// Brute force draw edges in all situations.
+		--x; ++nWidth;
+		--y; ++nHeight;
+	}
+	else if (coordType & ISO_ROTATED)
+	{
+		y = y - nWidth;
+		nWidth = nHeight = (nWidth + nHeight);
+	}
+
 	// For each layer
 	for (unsigned int i = lLower; i <= lUpper; ++i)
 	{
 		if (!bLayerOccupied[i]) continue;
 
 		// For the x axis
-		for (unsigned int j = 1; j <= nWidth; ++j)
+		for (unsigned int j = x; j <= x + nWidth; ++j)
 		{
-			const int x = j + topX;
-			if (x < 0 || x > effectiveWidth) continue;
+			if (j > effectiveWidth) continue;
 
 			// For the y axis
-			for (unsigned int k = 1; k <= nHeight; ++k)
+			for (unsigned int k = y; k <= y + nHeight; ++k)
 			{
-				// The tile co-ordinates.
-				const int  y = k + topY;
-				if (y < 0 || y > effectiveHeight) continue;
+				if (k > effectiveHeight) continue;
 
-				if (board[x][y][i])
+				if (board[i][k][j])
 				{
-					const STRING tile = tileIndex[board[x][y][i]];
+					const STRING tile = tileIndex[board[i][k][j]];
 					if (!tile.empty())
 					{
 						// Tile exists at this location.
 						CTile::drawByBoardCoord(
 							g_projectPath + TILE_PATH + tile,
 							j, k, 
-							ambientRed[x][y][i] + aR,
-							ambientGreen[x][y][i] + aG,
-							ambientBlue[x][y][i] + aB,
+							ambientRed[i][k][j] + aR,
+							ambientGreen[i][k][j] + aG,
+							ambientBlue[i][k][j] + aB,
 							cnv, 
 							TM_NONE,
-							destX, destY,
+							destX - topX, destY - topY,
 							coordType,
-							sizeX,
-							parity
+							sizeX
 						);
 					} // if (!strTile.empty())
-				} // if (brd.board[x][y][i])
+				} // if (board[i][k][j])
 			} // for k
 		} // for j
 
@@ -1399,34 +1400,32 @@ void tagBoard::addAnimTile(const STRING fileName, const int x, const int y, cons
  * height (in) - new height
  * depth (in) - new depth
  */
-void tagBoard::setSize(const int width, const int height, const int depth)
+void tagBoard::setSize(const int width, const int height, const int depth, const bool createTiletypeArray)
 {
-	sizeX = width;
-	sizeY = height;
-	sizeL = depth;
-	// tbd Should probably reverse ([z][y][x]) these too.
+	// Arrays accessed as board[z][y][x].
 	{
 		VECTOR_SHORT row;
 		VECTOR_SHORT2D face;
 		unsigned int i;
-		for (i = 0; i <= sizeL; i++)
+		board.clear();
+		for (i = 0; i <= width; ++i) row.push_back(0);
+		for (i = 0; i <= height; ++i) face.push_back(row);
+		for (i = 0; i <= depth; ++i) 
 		{
-			row.push_back(0);
+			board.push_back(face);
 			bLayerOccupied.push_back(false);
 		}
-		for (i = 0; i <= sizeY; i++) face.push_back(row);
-		ambientBlue.clear();
-		for (i = 0; i <= sizeX; i++) ambientBlue.push_back(face);
-		board = ambientRed = ambientGreen = ambientBlue;
+		ambientRed = ambientGreen = ambientBlue = board;
 	}
+	if (createTiletypeArray)
 	{
 		VECTOR_CHAR row;
 		VECTOR_CHAR2D face;
 		unsigned int i;
-		for (i = 0; i <= sizeX; i++) row.push_back(_T('\0'));
-		for (i = 0; i <= sizeY; i++) face.push_back(row);
+		for (i = 0; i <= width; ++i) row.push_back(_T('\0'));
+		for (i = 0; i <= height; ++i) face.push_back(row);
 		tiletype.clear();
-		for (i = 0; i <= sizeL; i++) tiletype.push_back(face);
+		for (i = 0; i <= depth; ++i) tiletype.push_back(face);
 	}
 }
 
@@ -1503,7 +1502,7 @@ bool tagBoard::insertTile(const STRING tile, const int x, const int y, const int
 {
 	try
 	{
-		board[x][y][z] = lutIndex(tile);
+		board[z][y][x] = lutIndex(tile);
 		bLayerOccupied[z] = true;
 		bLayerOccupied[0] = true;			// Any layer occupied.
 	}
@@ -1551,7 +1550,7 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
 			tan->frameTime = GetTickCount();
 
 			// Change the LUT index to point to a TST.
-			board[i->x][i->y][i->z] = i->lutIndices[tan->currentFrame];
+			board[i->z][i->y][i->x] = i->lutIndices[tan->currentFrame];
 
 			// Pixel bounds of tile stack.
 			int x = i->x, y = i->y;
@@ -1609,25 +1608,24 @@ void tagBoard::renderStack(
 	{
 		if (!bLayerOccupied[i]) continue;
 
-		if (board[x][y][i])
+		if (board[i][y][x])
 		{
-			const STRING tile = tileIndex[board[x][y][i]];
+			const STRING tile = tileIndex[board[i][y][x]];
 			if (!tile.empty())
 			{
 				// Tile exists at this location.
 				CTile::drawByBoardCoord(
 					g_projectPath + TILE_PATH + tile,
 					x, y, 
-					ambientRed[x][y][i] + aR,
-					ambientGreen[x][y][i] + aG,
-					ambientBlue[x][y][i] + aB,
+					ambientRed[i][y][x] + aR,
+					ambientGreen[i][y][x] + aG,
+					ambientBlue[i][y][x] + aB,
 					cnv, 
 					TM_NONE,
 					destX - bounds.left, 
 					destY - bounds.top,
 					coordType,
-					sizeX,
-					!(y % 32)
+					sizeX
 				);
 			}
 		}
