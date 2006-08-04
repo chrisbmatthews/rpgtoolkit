@@ -1,12 +1,12 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.UserControl ctlBrdVector 
-   ClientHeight    =   5280
+   ClientHeight    =   5685
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3120
    DefaultCancel   =   -1  'True
-   ScaleHeight     =   5280
+   ScaleHeight     =   5685
    ScaleWidth      =   3120
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw vectors"
@@ -28,16 +28,25 @@ Begin VB.UserControl ctlBrdVector
    End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
-      Height          =   4455
+      Height          =   4935
       Left            =   0
       TabIndex        =   1
       Top             =   600
       Width           =   3015
+      Begin VB.HScrollBar hsbSlot 
+         Height          =   255
+         Left            =   1500
+         Max             =   2
+         TabIndex        =   19
+         Top             =   3120
+         Value           =   1
+         Width           =   495
+      End
       Begin MSComctlLib.ListView lvPoints 
          Height          =   1095
-         Left            =   360
+         Left            =   480
          TabIndex        =   15
-         Top             =   3240
+         Top             =   3600
          Width           =   1935
          _ExtentX        =   3413
          _ExtentY        =   1931
@@ -176,6 +185,15 @@ Begin VB.UserControl ctlBrdVector
          Top             =   2445
          Width           =   495
       End
+      Begin VB.Label lblSlot 
+         Caption         =   "Slot index: 0"
+         Height          =   255
+         Left            =   360
+         TabIndex        =   20
+         ToolTipText     =   "Index for use with vector access RPGCode functions"
+         Top             =   3180
+         Width           =   1215
+      End
       Begin VB.Label lblStairs 
          Caption         =   "Stairs to layer"
          Height          =   255
@@ -290,6 +308,7 @@ Public Sub populate(ByVal Index As Long, ByRef vector As CVector)  ':on error re
     chkClosed.Enabled = (vector.tiletype <> TT_UNIDIRECTIONAL)
     txtLayer.Enabled = (vector.tiletype <> TT_WAYPOINT)
     lblLayer.Enabled = (vector.tiletype <> TT_WAYPOINT)
+    lblSlot.Caption = "Slot index: " & CStr(Index)
     
     For i = 0 To chkUnder.count - 1
         chkUnder(i).Enabled = (vector.tiletype = TT_UNDER)
@@ -326,6 +345,14 @@ Private Sub cmdDefault_Click(): On Error Resume Next
     'Default button on form: hitting the Enter key calls this function.
     Call apply
     Call activeBoard.drawAll
+End Sub
+Private Sub hsbSlot_Change(): On Error Resume Next
+    Dim i As Long
+    If hsbSlot.value <> 1 Then
+        i = activeBoard.toolbarGetIndex(BS_VECTOR)
+        Call activeBoard.vectorSwapSlots(i, i + hsbSlot.value - 1)
+    End If
+    hsbSlot.value = 1
 End Sub
 Private Sub optType_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply
