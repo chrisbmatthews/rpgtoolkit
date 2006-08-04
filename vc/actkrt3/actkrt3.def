@@ -27,6 +27,8 @@ EXPORTS
 	GFXdrawpixel		@17
 	GFXdrawboard		@18
 	GFXdrawTstWindow	@19
+	GFXdrawTileset		@20
+	GFXdeleteTileFromCache @21
 	GFXBitBltTransparent @23
 	GFXBitBltTranslucent @24
 	GFXBitBltAdditive	 @25
@@ -62,10 +64,11 @@ EXPORTS
 	BRDPixelToTile		@57
 	BRDTileToPixel		@58
 	BRDIsometricTransform @59
-	BRDVectorize		@60
-	BRDTileToVector		@61
-	BRDFreeImage		@62
-	BRDRenderImage		@63
+	BRDRoundToTile		@60
+	BRDVectorize		@61
+	BRDTileToVector		@62
+	BRDFreeImage		@63
+	BRDRenderImage		@64
 
 	;tkzip...
 	ZIPTest				@71
