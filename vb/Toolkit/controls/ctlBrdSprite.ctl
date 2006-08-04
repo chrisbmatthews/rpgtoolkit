@@ -292,7 +292,7 @@ Begin VB.UserControl ctlBrdSprite
          End
       End
       Begin VB.Label lblSlot 
-         Caption         =   "Slot index: 99"
+         Caption         =   "Slot index: 0"
          Height          =   255
          Left            =   120
          TabIndex        =   35
@@ -383,7 +383,7 @@ Private Sub apply() ': On Error Resume Next
             Call activeBoard.tileToBoardPixel(x, y, True, False)
             .x = x
             .y = y
-            .layer = val(txtLoc(2).Text)
+            .layer = Abs(val(txtLoc(2).Text))
             .activate = Abs(optConditionallyActive(SPR_CONDITIONAL).value)
             .initialVar = txtConditionVars(0).Text
             .initialValue = txtConditionVars(1).Text
@@ -449,7 +449,7 @@ Public Sub populate(ByVal Index As Long, ByRef spr As CBoardSprite) ':on error r
     txtLoc(2).Text = str(spr.layer)
     txtActivate = spr.prgActivate
     txtMultitask = spr.prgMultitask
-    lblSlot.Caption = "Slot index: " & str(Index)
+    lblSlot.Caption = "Slot index: " & CStr(Index)
     
     optConditionallyActive(spr.activate).value = True
     If spr.activate = SPR_CONDITIONAL Then

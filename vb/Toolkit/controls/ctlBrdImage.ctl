@@ -270,9 +270,9 @@ End Property
 Public Property Get getChkTransp() As CheckBox: On Error Resume Next
     Set getChkTransp = chkTransp
 End Property
-Public Property Let transpcolor(ByVal Color As Long): On Error Resume Next
-    lblTrans(1).Caption = "RGB (" & red(Color) & ", " & green(Color) & ", " & blue(Color) & ")"
-    picTrans.backColor = Color
+Public Property Let transpcolor(ByVal color As Long): On Error Resume Next
+    lblTrans(1).Caption = "RGB (" & red(color) & ", " & green(color) & ", " & blue(color) & ")"
+    picTrans.backColor = color
 End Property
 Public Property Get transpcolor() As Long: On Error Resume Next
     transpcolor = picTrans.backColor
@@ -294,6 +294,7 @@ Private Sub cmdBrowse_Click(): On Error Resume Next
     Dim file As String
     If browseFileDialog(tkMainForm.hwnd, projectPath & bmpPath, "Board image", ".jpg", strFileDialogFilterGfx, file) Then
         txtFilename.Text = file
+        Call cmdDefault_Click
     End If
 End Sub
 Private Sub cmdDefault_Click(): On Error Resume Next
