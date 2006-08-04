@@ -175,9 +175,9 @@ Public Function boardFindConsecutive(ByRef x As Long, ByRef y As Long, ByRef z A
     Dim count As Integer, i As Long, j As Long, k As Long
     count = 0
     
-    For k = z To board.sizeL
-        For j = y To board.sizey
-            For i = x To board.sizex
+    For k = z To UBound(board.board, 3)
+        For j = y To UBound(board.board, 2)
+            For i = x To UBound(board.board, 1)
                 
                 If board.board(i, j, k) <> tile Or _
                     board.ambientRed(i, j, k) <> r Or _
@@ -264,14 +264,14 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
             
             'Tile look-up-table (lut)
             'Remove unused tiles from the lut by recording used indices.
-            Dim bLutIndexUsed() As Boolean
             ReDim bLutIndexUsed(UBound(.tileIndex)) As Boolean
             
             'Do this before the board tile loop since trans3 needs the lut indices
             'to load animated tiles.
-            For k = 1 To .sizeL
-                For j = 1 To .sizey
-                    For i = 1 To .sizex
+           
+            For k = 1 To UBound(.board, 3)
+                For j = 1 To UBound(.board, 2)
+                    For i = 1 To UBound(.board, 1)
                         'Denote this lut index as in use.
                         bLutIndexUsed(.board(i, j, k)) = True
                     Next i
@@ -288,9 +288,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
             Next j
             
             'Board tiles
-            For k = 1 To .sizeL
-                For j = 1 To .sizey
-                    For i = 1 To .sizex
+            For k = 1 To UBound(.board, 3)
+                For j = 1 To UBound(.board, 2)
+                    For i = 1 To UBound(.board, 1)
                         '"Compress" identical tiles:
                         x = i: y = j: z = k
                         
@@ -529,9 +529,14 @@ vVersion:
             
             'Read off the Lut indices for each tile.
             Dim x As Long, y As Long, z As Long
-            For z = 1 To .sizeL
-                For y = 1 To .sizey
-                    For x = 1 To .sizex
+            
+            z = UBound(.board, 3)
+            y = UBound(.board, 2)
+            x = UBound(.board, 1)
+            
+            For z = 1 To UBound(.board, 3)
+                For y = 1 To UBound(.board, 2)
+                    For x = 1 To UBound(.board, 1)
                     
                         Dim Index As Integer, count As Integer
                         Index = BinReadInt(num)
@@ -562,13 +567,13 @@ vVersion:
 
                                 'Check whether compression spans rows/layers.
                                 x = x + 1
-                                If x > .sizex Then
+                                If x > UBound(.board, 1) Then
                                     x = 1
                                     y = y + 1
-                                    If y > .sizey Then
+                                    If y > UBound(.board, 2) Then
                                         y = 1
                                         z = z + 1
-                                        If z > .sizeL Then
+                                        If z > UBound(.board, 3) Then
                                             'Compression to end of board - exit.
                                             GoTo exitForA
                                         End If
@@ -598,7 +603,6 @@ vVersion:
                 Next y
             Next z
 exitForA:
-
 
             'Vectors
             Dim ub As Integer, pts As Integer
