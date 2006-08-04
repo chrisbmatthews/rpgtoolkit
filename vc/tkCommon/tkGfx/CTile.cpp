@@ -32,11 +32,11 @@ CCanvasPool *CTile::m_pCnvAlphaMaskIso = NULL;
 CCanvasPool *CTile::m_pCnvMaskMaskIso = NULL;
 BOOL CTile::bCTileCreateIsoMaskOnce = FALSE;
 LONG CTile::isoMaskCTile[64][32] = {NULL};
+std::vector<CTile *> CTile::m_tiles;
 
 //-------------------------------------------------------------------
 // actkrt3 and trans3 globals
 //-------------------------------------------------------------------
-std::vector<CTile *> g_tiles;				// Cache of tiles.
 STRING (*resolve)(const STRING path) = NULL; // How to resolve tile file names.
 
 //-------------------------------------------------------------------
@@ -1583,8 +1583,7 @@ BOOL CTile::drawByBoardCoord(
 	CONST INT eMaskValue,
 	CONST INT pxOffsetX, CONST INT pxOffsetY, 
 	COORD_TYPE coordType,
-	CONST INT brdSizeX,
-	CONST INT nIsoEvenOdd)
+	CONST INT brdSizeX)
 {
 	// Remove any PX_ABSOLUTE flag - tiles are always given in tile coordinates.
 	coordType = COORD_TYPE(coordType & ~PX_ABSOLUTE);
@@ -1602,7 +1601,7 @@ BOOL CTile::drawByBoardCoord(
 
 	CONST RGBSHADE rgb = {r, g, b};
 
-	CTile *CONST pTile = findCacheMatch(filename, eMaskValue, rgb, bIsometric, NULL);
+	CTile *CONST pTile = getTile(filename, eMaskValue, rgb, bIsometric, NULL);
 
 	switch (eMaskValue)
 	{
@@ -1629,8 +1628,7 @@ BOOL CTile::drawByBoardCoordHdc(
 	CONST INT eMaskValue,
 	CONST INT pxOffsetX, CONST INT pxOffsetY, 
 	COORD_TYPE coordType,
-	CONST INT brdSizeX,
-	CONST INT nIsoEvenOdd)
+	CONST INT brdSizeX)
 {
 	// Remove any PX_ABSOLUTE flag - tiles are always given in tile coordinates.
 	coordType = COORD_TYPE(coordType & ~PX_ABSOLUTE);
@@ -1648,7 +1646,7 @@ BOOL CTile::drawByBoardCoordHdc(
 
 	CONST RGBSHADE rgb = {r, g, b};
 
-	CTile *CONST pTile = findCacheMatch(filename, eMaskValue, rgb, bIsometric, hdc);
+	CTile *CONST pTile = getTile(filename, eMaskValue, rgb, bIsometric, hdc);
 	if (pTile)
 	{
 		switch (eMaskValue)
@@ -1667,14 +1665,32 @@ BOOL CTile::drawByBoardCoordHdc(
 }
 
 //-------------------------------------------------------------------
-// Find a tile match in g_tiles by name. If not found, create new.
+// Get a tile from m_tiles by name. If not found, create new.
 //-------------------------------------------------------------------
-CTile *CTile::findCacheMatch(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb, CONST BOOL bIsometric, CONST HDC hdcCompat)
+CTile *CTile::getTile(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb, CONST BOOL bIsometric, CONST HDC hdcCompat)
 {
-	if (g_tiles.size() > TILE_CACHE_SIZE) clearTileCache();
+	if (m_tiles.size() > TILE_CACHE_SIZE) clearTileCache();
 
 	// Check if this tile has already been drawn.
-	for (std::vector<CTile*>::iterator i = g_tiles.begin(); i != g_tiles.end(); ++i)
+	CTile **itrTile = findCacheMatch(filename, eMask, rgb, bIsometric);
+	
+	if (itrTile) return *itrTile;
+
+	// Load the tile.
+	CTile *CONST pTile = new CTile(INT(hdcCompat), filename, rgb, SHADE_UNIFORM, bIsometric);
+
+	// Push it into the vector.
+	m_tiles.push_back(pTile);
+
+	return pTile;
+}
+
+//-------------------------------------------------------------------
+// Find a tile match in m_tiles by name.
+//-------------------------------------------------------------------
+CTile **CTile::findCacheMatch(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb, CONST BOOL bIsometric)
+{
+	for (std::vector<CTile *>::iterator i = m_tiles.begin(); i != m_tiles.end(); ++i)
 	{
 		CONST STRING strVect = (*i)->getFilename();
 		if (strVect.compare(filename) == 0)
@@ -1684,27 +1700,44 @@ CTile *CTile::findCacheMatch(CONST STRING filename, CONST INT eMask, CONST RGBSH
 				// Check isometrics match.
 				if (bIsometric == (*i)->isIsometric())
 				{
-					return *i;
+					return i;
 				}
 			}
 		}
 	}
-
-	// Load the tile.
-	CTile *CONST pTile = new CTile(INT(hdcCompat), filename, rgb, SHADE_UNIFORM, bIsometric);
-
-	// Push it into the vector.
-	g_tiles.push_back(pTile);
-
-	return pTile;
+	return NULL;
 }
 
+//-------------------------------------------------------------------
+// Erase a single tile from the cache, if found.
+//-------------------------------------------------------------------
+VOID CTile::deleteFromCache(CONST STRING filename)
+{
+	CONST RGBSHADE rgb = {0, 0, 0};
 
+	// Standard tile.
+	CTile **itrTile = findCacheMatch(filename, TM_NONE, rgb, FALSE);
+	if (itrTile)
+	{
+		m_tiles.erase(itrTile);
+	}
+
+	// Isometric.
+	itrTile = findCacheMatch(filename, TM_NONE, rgb, TRUE);
+	if (itrTile)
+	{
+		m_tiles.erase(itrTile);
+	}
+}
+
+//-------------------------------------------------------------------
+// Clear the tile cache.
+//-------------------------------------------------------------------
 VOID CTile::clearTileCache(VOID)
 {
-	for (int i = 0; i < g_tiles.size(); ++i)
+	for (std::vector<CTile *>::iterator i = m_tiles.begin(); i != m_tiles.end(); ++i)
 	{
-		delete g_tiles[i];
+		delete *i;
 	}
-	g_tiles.clear();
+	m_tiles.clear();
 }

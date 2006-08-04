@@ -209,8 +209,7 @@ class CTile
 			CONST INT eMaskValue,
 			CONST INT pxOffsetX, CONST INT pxOffsetY, 
 			COORD_TYPE coordType, 
-			CONST INT brdSizeX,
-			CONST INT nIsoEvenOdd
+			CONST INT brdSizeX
 		);
 
 		STATIC BOOL CTile::drawByBoardCoordHdc(
@@ -221,11 +220,10 @@ class CTile
 			CONST INT eMaskValue,
 			CONST INT pxOffsetX, CONST INT pxOffsetY, 
 			COORD_TYPE coordType,
-			CONST INT brdSizeX,
-			CONST INT nIsoEvenOdd
+			CONST INT brdSizeX
 		);
 
-		STATIC CTile *findCacheMatch(
+		STATIC CTile *getTile(
 			CONST STRING filename, 
 			CONST INT eMask, 
 			CONST RGBSHADE rgb, 
@@ -237,9 +235,12 @@ class CTile
 			VOID
 		);
 
-		// Get the tileset's header
 		STATIC TS_HEADER FAST_CALL getTilesetInfo(
 			CONST std::string strFilename
+		);
+
+		STATIC VOID deleteFromCache(
+			CONST STRING filename
 		);
 
 	private:
@@ -274,6 +275,13 @@ class CTile
 		// Increase this tile's detail
 		VOID FAST_CALL increaseDetail(
 			VOID
+		);
+
+		STATIC CTile **findCacheMatch(
+			CONST STRING filename, 
+			CONST INT eMask, 
+			CONST RGBSHADE rgb, 
+			CONST BOOL bIsometric
 		);
 
 		// Filename of the tile
@@ -317,6 +325,9 @@ class CTile
 		// Indices into canvas pools
 		INT m_nFgIdx, m_nAlphaIdx, m_nMaskIdx;
 		INT m_nFgIdxIso, m_nAlphaIdxIso, m_nMaskIdxIso;
+
+		// Tile cache.
+		STATIC std::vector<CTile *> m_tiles;
 };
 
 #endif
