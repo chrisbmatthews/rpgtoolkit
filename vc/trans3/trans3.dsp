@@ -537,6 +537,7 @@ SOURCE=.\common\board.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
 
+# ADD CPP /FR
 # SUBTRACT CPP /YX /Yc /Yu
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
