@@ -90,7 +90,6 @@ bool drawTileCnv(CCanvas *cnv,
     
 	int tileSizeX = 1;		// Width of tbm(or other) in tiles, for ISO_ROTATED.
 	int iso = (bIsometric ? 1 : 0);
-	int isoEO = (isoEvenOdd ? 0 : 1);
 
 //    if (pakFileRunning)
 	if (false)
@@ -124,8 +123,7 @@ bool drawTileCnv(CCanvas *cnv,
 				TM_NONE,
 				0, 0,
 				COORD_TYPE(iso),
-				tileSizeX,		// Width of tbm(or other) in tiles, for ISO_ROTATED.
-				isoEO
+				tileSizeX		// Width of tbm(or other) in tiles, for ISO_ROTATED.
 			);
 		}
 		else
@@ -138,8 +136,7 @@ bool drawTileCnv(CCanvas *cnv,
 				bNonTransparentMask ? TM_COPY : TM_AND,
 				0, 0,
 				COORD_TYPE(iso),
-				tileSizeX,		// Width of tbm(or other) in tiles, for ISO_ROTATED.
-				isoEO
+				tileSizeX		// Width of tbm(or other) in tiles, for ISO_ROTATED.
 			);
 		}
 //		_chdir (currentDir$);
@@ -166,8 +163,7 @@ bool drawTileCnv(CCanvas *cnv,
 				TM_NONE,
 				0, 0,
 				COORD_TYPE(iso),
-				tileSizeX,		// Width of tbm(or other) in tiles, for ISO_ROTATED.
-				isoEO
+				tileSizeX		// Width of tbm(or other) in tiles, for ISO_ROTATED.
 			);
 		}
 		else
@@ -180,8 +176,7 @@ bool drawTileCnv(CCanvas *cnv,
 				bNonTransparentMask ? TM_COPY : TM_AND,
 				0, 0,
 				COORD_TYPE(iso),
-				tileSizeX,		// Width of tbm(or other) in tiles, for ISO_ROTATED.
-				isoEO
+				tileSizeX		// Width of tbm(or other) in tiles, for ISO_ROTATED.
 			);
 		}
 //        _chdir(WORKING_DIRECTOY);
@@ -605,20 +600,20 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 	CThreadAnimation::renderAll(cnv);
 
 
+#ifdef DEBUG_VECTORS
 	cnv->Lock();
 
-#ifdef DEBUG_VECTORS
 	// Draw sprite bases for debugging.
 	for (std::vector<CSprite *>::iterator a = g_sprites.v.begin(); a != g_sprites.v.end(); ++a)
 	{
 		(*a)->drawVector(cnv);
 	}
-#endif
 
 	// Draw the path the selected player is on.
 	g_pSelectedPlayer->drawPath(cnv);
 
 	cnv->Unlock();
+#endif
 
 	if (bScreen) g_pDirectDraw->Refresh();
 	return true;
