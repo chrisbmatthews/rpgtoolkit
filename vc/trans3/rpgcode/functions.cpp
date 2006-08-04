@@ -86,8 +86,8 @@ typedef enum tkMV_CONSTANTS
 	tkMV_PAUSE_THREAD		= 1,
 	tkMV_CLEAR_QUEUE		= 2,
 	tkMV_PATH_FIND			= 4,
-	tkMV_WAYPOINT_PATH		= 8,
-	tkMV_PATH_BACKGROUND	= 16
+	tkMV_WAYPOINT_PATH		= 8,				// Apply a waypoint path.
+	tkMV_PATH_BACKGROUND	= 16				// Walk a waypoint path repeatedly.
 };
 
 // BoardGetProgram() to BoardSetProgramPoint().
@@ -4802,7 +4802,7 @@ void getBoardTile(CALL_DATA &params)
 	params.ret().udt = UDT_LIT;
 	try
 	{
-		params.ret().lit = g_pBoard->tileIndex[g_pBoard->board[params[0].getNum()][params[1].getNum()][params[2].getNum()]];
+		params.ret().lit = g_pBoard->tileIndex[g_pBoard->board[int(params[2].getNum())][int(params[1].getNum())][int(params[0].getNum())]];
 	}
 	catch (...)
 	{
@@ -6758,13 +6758,20 @@ void spritepath(CALL_DATA &params, CSprite *p)
 	}
 	else if (flags & tkMV_WAYPOINT_PATH)
 	{
-		int id = int(params[2].getNum()), cycles = int(params[3].getNum());
-		
-		const BRD_VECTOR* brd = g_pBoard->getVector(id);
-		if (brd)
+		const int id = int(params[2].getNum()), cycles = int(params[3].getNum());
+
+		if (id < 0)
 		{
-			p->setBoardPath(brd->pV, cycles, flags);
-			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
+			p->setBoardPath(NULL, 0, tkMV_PATH_BACKGROUND);
+		}
+		else
+		{
+			const LPBRD_VECTOR brd = g_pBoard->getVector(id);
+			if (brd)
+			{
+				p->setBoardPath(brd->pV, cycles, flags);
+				p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
+			}
 		}
 	}
 	else
@@ -6789,8 +6796,7 @@ void spritepath(CALL_DATA &params, CSprite *p)
  * depending on the flags parameter.
  * 1) Sprite walks the explicit path given by x1, y1 to xn, yn.
  * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
- * 3) Sprite walks a board-set waypoint path.
- *
+ * 3) Sprite walks a board-set waypoint path (Set boardPath < 0 to clear path tkMV_PATH_BACKGROUND).
  */
 void itempath(CALL_DATA &params)
 {
@@ -6813,8 +6819,7 @@ void itempath(CALL_DATA &params)
  * depending on the flags parameter.
  * 1) Sprite walks the explicit path given by x1, y1 to xn, yn.
  * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
- * 3) Sprite walks a board-set waypoint path.
- *
+ * 3) Sprite walks a board-set waypoint path (Set boardPath < 0 to clear path tkMV_PATH_BACKGROUND).
  */
 void playerpath(CALL_DATA &params)
 {
