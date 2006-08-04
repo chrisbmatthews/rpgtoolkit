@@ -447,11 +447,162 @@ SOURCE=.\rpgcode\functions.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\rpgcode\lex.txt
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# Begin Custom Build -
+InputDir=.\rpgcode
+InputPath=.\rpgcode\lex.txt
+
+"$(InputDir)\lex.yy.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\flex -o"$(InputDir)\lex.yy.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+USERDEP__LEX_T="flex.exe"	
+# Begin Custom Build
+InputDir=.\rpgcode
+InputPath=.\rpgcode\lex.txt
+
+"$(InputDir)\lex.yy.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\flex -o"$(InputDir)\lex.yy.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+USERDEP__LEX_T="flex.exe"	
+# Begin Custom Build
+InputDir=.\rpgcode
+InputPath=.\rpgcode\lex.txt
+
+"$(InputDir)\lex.yy.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\flex -o"$(InputDir)\lex.yy.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+USERDEP__LEX_T="flex.exe"	
+# Begin Custom Build
+InputDir=.\rpgcode
+InputPath=.\rpgcode\lex.txt
+
+"$(InputDir)\lex.yy.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\flex -o"$(InputDir)\lex.yy.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+USERDEP__LEX_T="flex.exe"	
+# Begin Custom Build
+InputDir=.\rpgcode
+InputPath=.\rpgcode\lex.txt
+
+"$(InputDir)\lex.yy.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\flex -o"$(InputDir)\lex.yy.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+USERDEP__LEX_T="flex.exe"	
+# Begin Custom Build
+InputDir=.\rpgcode
+InputPath=.\rpgcode\lex.txt
+
+"$(InputDir)\lex.yy.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\flex -o"$(InputDir)\lex.yy.c" $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\rpgcode\parser\parser.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\rpgcode\virtualvar.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\rpgcode\yacc.txt
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# Begin Custom Build -
+InputDir=.\rpgcode
+InputPath=.\rpgcode\yacc.txt
+
+"$(InputDir)\y.tab.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\byacc -o "$(InputDir)\y.tab.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+# Begin Custom Build -
+InputDir=.\rpgcode
+InputPath=.\rpgcode\yacc.txt
+
+"$(InputDir)\y.tab.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\byacc -o "$(InputDir)\y.tab.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+# Begin Custom Build -
+InputDir=.\rpgcode
+InputPath=.\rpgcode\yacc.txt
+
+"$(InputDir)\y.tab.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\byacc -o "$(InputDir)\y.tab.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+# Begin Custom Build -
+InputDir=.\rpgcode
+InputPath=.\rpgcode\yacc.txt
+
+"$(InputDir)\y.tab.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\byacc -o "$(InputDir)\y.tab.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+# Begin Custom Build -
+InputDir=.\rpgcode
+InputPath=.\rpgcode\yacc.txt
+
+"$(InputDir)\y.tab.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\byacc -o "$(InputDir)\y.tab.c" $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+# Begin Custom Build -
+InputDir=.\rpgcode
+InputPath=.\rpgcode\yacc.txt
+
+"$(InputDir)\y.tab.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(InputDir)\byacc -o "$(InputDir)\y.tab.c" $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # End Group
 # Begin Group "rpgcode - headers"
