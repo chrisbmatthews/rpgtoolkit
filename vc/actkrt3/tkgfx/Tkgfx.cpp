@@ -1,27 +1,23 @@
-//All contents copyright 2003, Christopher Matthews
-//All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-//Read LICENSE.txt for licensing info
+//--------------------------------------------------------------------------
+// All contents copyright 2003 - 2006 
+// Christopher Matthews and contributors
+// All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
+// Read LICENSE.txt for licensing info
+//--------------------------------------------------------------------------
 
-///////////////////////////////////////////////////////
-//
-// MODULE: tkgfx.cpp
-//
-// PURPOSE: dll for toolkit graphics engine
-//
-// Copyright 2000 by Christopher B. Matthews
-//
-///////////////////////////////////////////////////////
+//-------------------------------------------------------------------------
+// Status as of 3.0.7 (8/2006)
+// This file contains the remnants of Tk2's graphics engine
+// shared between trans3 and toolkit3.
+// Some elements are obselete and have been superseded by CTile.
+// Some elements are still in use by toolkit3; entry points are
+// provided here for CTile functions.
+//									- Delano
+//--------------------------------------------------------------------------
 
-//=====================================================
-// Alterations by Delano for 3.0.4 
-// New isometric tile system.
-//
-// Variables added to tkgfx.h
-// GFXDrawTstWindow
-//=====================================================
-
-//////////////////////////////////////////
-// GLOBALS
+/*
+ * Globals...
+ */
 long g_lCallbacks[60];		//array of visual basic function addresses (callbacks)
 int g_nNumCallbacks;			//number of elements in the above array.
 //board...
@@ -62,45 +58,29 @@ TS_HEADER tileset;
 // The tiles in memory
 static std::vector<CTile *> gvTiles;
 
-///////////////////////////////////////////////////////
-// Exported Functions
-
-///////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
+// Action:	return visual basic function address.  
+//			Since VB won't let you use the AddressOf operator to
+//			directly obtain the address of a function, 
+//			we instead call into this dll, which just shoots 
+//			the address back to VB.
 //
-// Function: GFXFunctionPtr
-//
-// Parameters: functionAddr- a long value indicating the 
-//						 address of a visual basic function.
-//
-// Action: return visual basic function address.  Since
-//				VB won't let you use the AddressOf operator to
-//				directly obtain the address of a function, 
-//				we instead call into this dll, which just shoots 
-//				the address back to VB
-//
-// Returns: function address as a long
-//
-///////////////////////////////////////////////////////
+// Parameters: functionAddr -	a long value indicating the 
+//								address of a visual basic function.
+//--------------------------------------------------------------------------
 long APIENTRY GFXFunctionPtr(long functionAddr)
 {
 	return functionAddr;
 }
 
-
-
-///////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
+// Initialise the graphics engine.
 //
-// Function: GFXInit
+// Parameters:	pCBArray	- pointer to array of callbacks
+//							 (addresses of those callbacks)
+//				nCallbacks	- no of callbacks in array.
 //
-// Parameters: pCBArray- pointer to array of callbacks
-//											(addresses of those callbacks)
-//						 nCallbacks- no of callbacks in array.
-//
-// Action: init gfx engine
-//
-// Returns: 1 (TRUE)
-//
-///////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
 int APIENTRY GFXInit(long *pCBArray, int nCallbacks)
 {
 	//copy callback array into our global callback array.
@@ -113,20 +93,25 @@ int APIENTRY GFXInit(long *pCBArray, int nCallbacks)
 }
 
 
-///////////////////////////////////////////////////////
-//
-// Function: GFXKill
-//
-// Parameters: 
-//
-// Action: kill gfx engine
-//
-// Returns: 1 (TRUE)
-//
-///////////////////////////////////////////////////////
+//--------------------------------------------------------------------------
+// Close the graphics engine -- free allocated memory.
+//--------------------------------------------------------------------------
 int APIENTRY GFXKill()
 {
+	CTile::clearTileCache();
 	CTile::KillPools();
+	GFXClearTileCache();			// Obselete tile cache.
+	return 1;
+}
+
+//--------------------------------------------------------------------------
+// Remove a tile from the cache -- to be used when editing tiles
+// that are currently being displayed in (e.g.) the board editor.
+//--------------------------------------------------------------------------
+LONG APIENTRY GFXdeleteTileFromCache(
+	CONST CHAR* filename)
+{
+    CTile::deleteFromCache(filename);
 	return 1;
 }
 
@@ -856,37 +841,11 @@ int APIENTRY GFXdrawpixel ( long hdc,
 	return 1;
 }
 
-
-///////////////////////////////////////////////////////
-//
-// Function: GFXdrawTstWindow
-//
-// Parameters: fname- filename of tile to draw
-//						 hdc- hdc of device to draw to
-//						 start- start location of tileset
-//						 tilesx- number of tiles to draw horizonatally
-//						 tilesy- number of tiles to draw vertically
-//						 nIsometric - 0= draw 2d regular tile
-//													1=draw isometric tile
-//
-// Action: Draws tileset for the tileset window
-//
-// Returns: 1 (TRUE)
-//
-//=====================================================
-// Edited: for 3.0.4 by Delano 
-//		   Added support for new isometric tilesets.
-//
-//	The imported function will give nIsometric = 2 for 
-//  new isometric tiles. This is passed to drawIsoTile 
-//  and openFromTileset.
-//
-//	Transparent pixels are now drawn as the 
-//	background colour (127,127,127) - changed to
-//	stop flickering during scrolling.
-//=====================================================
-///////////////////////////////////////////////////////
-
+//--------------------------------------------------------------------------
+// Update of GFXdrawTstWindow - Delano
+// GFXdrawTstWindow is still used by the multiple tileset editor,
+// until such a time as that is edited to accommodate this function.
+//--------------------------------------------------------------------------
 LONG APIENTRY GFXdrawTileset(
 	CONST CHAR *file,
 	CONST LONG hdc,
@@ -927,7 +886,7 @@ LONG APIENTRY GFXdrawTileset(
 						TM_NONE,
 						0, 0,
 						TILE_NORMAL,
-						0, 0
+						0
 					);
 				}
 			} // for(i)
@@ -952,7 +911,7 @@ LONG APIENTRY GFXdrawTileset(
 						TM_NONE,
 						x, y + 16,
 						ISO_STACKED,
-						0, 0
+						0
 					);
 				}
 			} // for(y)
@@ -962,6 +921,36 @@ LONG APIENTRY GFXdrawTileset(
 	return 0;
 }
 
+///////////////////////////////////////////////////////
+//
+// Function: GFXdrawTstWindow
+//
+// Parameters: fname- filename of tile to draw
+//						 hdc- hdc of device to draw to
+//						 start- start location of tileset
+//						 tilesx- number of tiles to draw horizonatally
+//						 tilesy- number of tiles to draw vertically
+//						 nIsometric - 0= draw 2d regular tile
+//													1=draw isometric tile
+//
+// Action: Draws tileset for the tileset window
+//
+// Returns: 1 (TRUE)
+//
+//=====================================================
+// Edited: for 3.0.4 by Delano 
+//		   Added support for new isometric tilesets.
+//
+//	The imported function will give nIsometric = 2 for 
+//  new isometric tiles. This is passed to drawIsoTile 
+//  and openFromTileset.
+//
+//	Transparent pixels are now drawn as the 
+//	background colour (127,127,127) - changed to
+//	stop flickering during scrolling.
+//=====================================================
+///////////////////////////////////////////////////////
+	
 int APIENTRY GFXdrawTstWindow ( char fname[],
 								int hdc,
 								int start,
