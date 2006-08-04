@@ -173,7 +173,7 @@ LONG APIENTRY BRDRenderTile(
 	CONST LONG backgroundColor)
 {
 	CONST RGBSHADE rgb = {0, 0, 0};
-	CTile *pTile = CTile::findCacheMatch(
+	CTile *pTile = CTile::getTile(
 		filename, 
 		TM_NONE, 
 		rgb, 
@@ -547,8 +547,7 @@ VOID CBoard::renderTile(
 			TM_NONE,
 			0, 0,
 			COORD_TYPE(m_pBoard->m_coordType),
-			m_pBoard->m_bSizeX,
-			1 /*isoEO*/
+			m_pBoard->m_bSizeX
 		);
 		p->cnv->CloseDC(hdc);
 	}
@@ -616,8 +615,7 @@ VOID CBoard::renderLayer(
 					TM_NONE,
 					0, 0,
 					COORD_TYPE(m_pBoard->m_coordType),
-					m_pBoard->m_bSizeX,
-					1 /*isoEO*/
+					m_pBoard->m_bSizeX
 				);			
 			} // if (!strTile.empty())
 		} // for y
