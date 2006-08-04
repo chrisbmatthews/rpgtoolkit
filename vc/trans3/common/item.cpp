@@ -36,11 +36,10 @@
 
 /*
  * Open an item. Return the minor version.
- *
- * fileName (in) - file to open
  */
 short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 {
+	// Allow opening outside of a CItem by creating a local SPRITE_ATTR.
 	const bool bAttr = (pAttr == NULL);
 
 	CFile file(fileName);
@@ -181,6 +180,7 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 	char itmSizeType;
 	file >> itmSizeType;
 
+	// Create local SPRITE_ATTR if none passed in. Create after opening tests.
 	if (bAttr) pAttr = new SPRITE_ATTR();
 
 	if (minorVer >= 4)
@@ -247,6 +247,41 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 				pAttr->mapCustomGfx[handle].file = anim;
 			}
 		}
+
+		// Vector bases.
+		if (minorVer >= 7)
+		{
+			short count = 0, pts = 0;
+			int x = 0, y = 0, i = 0;
+
+			// Number of vectors (= 2 for 3.0.7; provision for further.)
+			file >> count;
+
+			// Clear the vectors.
+			pAttr->vBase = pAttr->vActivate = CVector();
+
+			// Collision base first.
+			file >> pts;
+			for (i = 0; i <= pts; ++i)
+			{
+				file >> x;
+				file >> y;
+				pAttr->vBase.push_back(double(x), double(y));
+			}
+			pAttr->vBase.close(true);
+
+			// Activation base.
+			file >> pts;
+			for (i = 0; i <= pts; ++i)
+			{
+				file >> x;
+				file >> y;
+				pAttr->vActivate.push_back(double(x), double(y));
+			}
+			pAttr->vActivate.close(true);
+		}
+		// Default vectors for non-vector items are created with their
+		// board activation data information via CSprite::createVectors().
 	}
 	else // if (minorVer < 4)
 	{

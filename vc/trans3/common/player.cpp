@@ -235,6 +235,43 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 					spriteAttr.mapCustomGfx[handle].file = anim;
 				}
 			}
+
+			// Vector bases.
+			if (minorVer >= 8)
+			{
+				short count = 0, pts = 0;
+				int x = 0, y = 0, i = 0;
+
+				// Number of vectors (= 2 for 3.0.7; provision for further.)
+				file >> count;
+
+				spriteAttr.vBase = spriteAttr.vActivate = CVector();
+
+				// Collision base first.
+				file >> pts;
+				for (i = 0; i <= pts; ++i)
+				{
+					file >> x;
+					file >> y;
+					spriteAttr.vBase.push_back(double(x), double(y));
+				}
+				spriteAttr.vBase.close(true);
+
+				// Activation base.
+				file >> pts;
+				for (i = 0; i <= pts; ++i)
+				{
+					file >> x;
+					file >> y;
+					spriteAttr.vActivate.push_back(double(x), double(y));
+				}
+				spriteAttr.vActivate.close(true);
+			}
+			else
+			{
+				spriteAttr.createVectors(SPR_STEP);
+			}
+
 			return minorVer;
 		}
 	}

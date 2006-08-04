@@ -23,11 +23,7 @@
 CPlayer::CPlayer(const STRING file, const bool show, const bool createGlobals):
 CSprite(show)				// Is the player visible?
 {
-	if (m_playerMem.open(file, m_attr) <= PRE_VECTOR_PLAYER)
-	{
-		// Create standard vectors for old items.
-		m_attr.createVectors(SPR_STEP);
-	}
+	m_playerMem.open(file, m_attr);
 
 	// Load animations, but do not render frames.
 	m_attr.loadAnimations(false);
