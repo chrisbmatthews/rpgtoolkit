@@ -47,16 +47,16 @@ Option Explicit
         'Hides all toolbars
         '=======================================================
         With tkMainForm
-                .animationExtras.Visible = False
+                .animationExtras.visible = False
                 '.bottomFrame.Visible = False
-                .tileExtras.Visible = False
-                .bBar.Visible = False
-                .tileBmpExtras.Visible = False
-                .tilebmpTools.Visible = False
-                .animationTools.Visible = False
-                .rpgcodeTools.Visible = False
-                .tileTools.Visible = False
-                .boardTools.Visible = False
+                .tileExtras.visible = False
+                .bBar.visible = False
+                .tileBmpExtras.visible = False
+                .tilebmpTools.visible = False
+                .animationTools.visible = False
+                .rpgcodeTools.visible = False
+                .tileTools.visible = False
+                .boardTools.visible = False
         End With
     End Sub
 
@@ -644,7 +644,7 @@ loadtileerr:
         Dim num As Long
         num = FreeFile
         Open file For Output As num
-            Print #num, activeRPGCode.codeForm.Text
+            Print #num, activeRPGCode.CodeForm.Text
         Close num
     End Sub
 
@@ -653,7 +653,10 @@ loadtileerr:
         'Saves the current tile to the file passed in
         '=======================================================
 
-        ' Colin, 3.06: Clear the tile cache
+        ' Clear the tile cache to force an update of the tile if used in other editors.
+        ' Primary cache (board editor...)
+        Call GFXdeleteTileFromCache(filenm)
+        ' Secondary (obselete) cache (animation editors)
         Call GFXClearTileCache
 
         filename(1) = filenm
