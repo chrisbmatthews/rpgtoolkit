@@ -740,7 +740,7 @@ bool CProgram::open(const STRING fileName)
 		const long length = ftell(file);
 		fseek(file, 0, SEEK_SET);
 
-		char *const str = (char *const)malloc(sizeof(char) * length + 3);
+		char *const str = (char *const)malloc(sizeof(char) * (length + 3));
 		fread(str + 3, sizeof(char), length, file);
 
 		str[0] = '1';		// Arbitrary first line.
