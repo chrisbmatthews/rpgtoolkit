@@ -47,7 +47,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "FREEIMAGE_LIB" /D "WIN32" /D "_WINDOWS" /YX"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MTd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /YX"stdafx.h" /FD /GZ /c
 # ADD BASE RSC /l 0x1009 /d "_DEBUG"
 # ADD RSC /l 0x1009 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -56,7 +56,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /nodefaultlib:"LIBCMT" /pdbtype:sept
-# SUBTRACT LINK32 /pdb:none
+# SUBTRACT LINK32 /pdb:none /nodefaultlib
 # Begin Custom Build - Performing registration
 OutDir=.\Debug
 TargetPath=.\Debug\trans3.exe
@@ -84,7 +84,7 @@ SOURCE="$(InputPath)"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_UNICODE" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /W4 /WX /Gm /GX /ZI /Od /Ob2 /D "_DEBUG" /D "_UNICODE" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /FD /GZ /c
+# ADD CPP /nologo /W4 /WX /Gm /GX /ZI /Od /Ob2 /D "_DEBUG" /D "_UNICODE" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /D "ADR_DECL" /FD /GZ /c
 # SUBTRACT CPP /Fr /YX /Yc /Yu
 # ADD BASE RSC /l 0x1009 /d "_DEBUG"
 # ADD RSC /l 0x1009 /d "_DEBUG"
@@ -127,7 +127,7 @@ SOURCE="$(InputPath)"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /W4 /WX /GX /O1 /Ob2 /D "NDEBUG" /D "_MBCS" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /FD /c
+# ADD CPP /nologo /W4 /WX /GX /O1 /Ob2 /D "NDEBUG" /D "_MBCS" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /D "ADR_DECL" /FD /c
 # SUBTRACT CPP /Fr /YX /Yc /Yu
 # ADD BASE RSC /l 0x1009 /d "NDEBUG"
 # ADD RSC /l 0x1009 /d "NDEBUG"
@@ -164,7 +164,7 @@ SOURCE="$(InputPath)"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /W4 /GR /GX /O1 /Ob2 /D "NDEBUG" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /Fr /FD /c
+# ADD CPP /nologo /W4 /GR /GX /O1 /Ob2 /D "NDEBUG" /D "_MBCS" /D "_ATL_STATIC_REGISTRY" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /D "ADR_DECL" /Fr /FD /c
 # ADD BASE RSC /l 0x1009 /d "NDEBUG"
 # ADD RSC /l 0x1009 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -200,7 +200,7 @@ SOURCE="$(InputPath)"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /W4 /WX /GX /O1 /Ob2 /D "NDEBUG" /D "_UNICODE" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /FD /c
+# ADD CPP /nologo /W4 /WX /GX /O1 /Ob2 /D "NDEBUG" /D "_UNICODE" /D "_ATL_DLL" /D "_ATL_MIN_CRT" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /D "ADR_DECL" /FD /c
 # SUBTRACT CPP /Fr /YX /Yc /Yu
 # ADD BASE RSC /l 0x1009 /d "NDEBUG"
 # ADD RSC /l 0x1009 /d "NDEBUG"
@@ -243,7 +243,7 @@ SOURCE="$(InputPath)"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /W4 /WX /GX /O1 /Ob2 /D "NDEBUG" /D "_UNICODE" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /FD /c
+# ADD CPP /nologo /W4 /WX /GX /O1 /Ob2 /D "NDEBUG" /D "_UNICODE" /D "_ATL_STATIC_REGISTRY" /D "_ATL_MIN_CRT" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /D "ADR_DECL" /FD /c
 # SUBTRACT CPP /Fr /YX /Yc /Yu
 # ADD BASE RSC /l 0x1009 /d "NDEBUG"
 # ADD RSC /l 0x1009 /d "NDEBUG"

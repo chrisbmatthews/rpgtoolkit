@@ -32,7 +32,8 @@
 
 
 // DLLs in Windows should use the standard calling convention
-#ifndef ADR_CALL
+
+/*#ifndef ADR_CALL
   #if defined(WIN32) || defined(_WIN32)
     #define ADR_CALL __stdcall
   #else
@@ -51,12 +52,14 @@
 #  else
 #    define ADR_DECL
 #  endif
-#endif
+#endif*/
 
+#define ADR_CALL
+#define ADR_DECL
 
+#pragma comment(lib, "MSVCRT.LIB")
 
 #define ADR_FUNCTION(ret) extern "C" ADR_DECL ret ADR_CALL
-
 
 namespace audiere {
 
