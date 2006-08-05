@@ -178,7 +178,7 @@ params:
 function_identifier_bare:
 	IDENTIFIER
 |	IDENTIFIER DOT IDENTIFIER
-		{ $$ = $1.getLit() + $2.getLit() + $3.getLit(); }
+		{ $$ = $1.getLit() + _T(".") + $3.getLit(); }
 ;
 
 function_identifier:
