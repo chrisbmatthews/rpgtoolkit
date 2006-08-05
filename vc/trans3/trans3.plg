@@ -6,21 +6,20 @@
 --------------------Configuration: trans3 - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP8E3B.tmp" with contents
+Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSPF70D.bat" with contents
 [
-/nologo /MLd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "FREEIMAGE_LIB" /D "WIN32" /D "_WINDOWS" /Fp"Debug/trans3.pch" /YX"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\cvs\vc\trans3\rpgcode\CProgram.cpp"
+@echo off
+.\rpgcode\byacc -o ".\rpgcode\y.tab.c" .\rpgcode\yacc.txt
 ]
-Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSP8E3B.tmp" 
+Creating command line "C:\Users\Colin\AppData\Local\Temp\RSPF70D.bat"
 <h3>Output Window</h3>
 Compiling...
-Skipping... (no relevant changes detected)
-CProgram.cpp
+.\rpgcode\byacc: 5 shift/reduce conflicts, 42 reduce/reduce conflicts.
 
 
 
 <h3>Results</h3>
-CProgram.obj - 0 error(s), 0 warning(s)
+y.tab.c - 0 error(s), 0 warning(s)
 </pre>
 </body>
 </html>
