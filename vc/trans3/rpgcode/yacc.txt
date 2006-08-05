@@ -28,6 +28,7 @@
 %token	LARRAY RARRAY LCURL RCURL LIT FOR COMMA
 %token	QUESTION COLON METHOD RETURN HIGHEST
 %token	CLASS STRUCT PUBLIC PRIVATE VAR DOT INCLUDE
+%token	REDIRECT KILL_REDIRECT KILL_ALL_REDIRECTS
 
 %right	XOR_ASSIGN
 %right	OR_ASSIGN
@@ -174,10 +175,36 @@ params:
 		{ }
 ;
 
-function_identifier:
+function_identifier_bare:
 	IDENTIFIER
 |	IDENTIFIER DOT IDENTIFIER
-		{ CProgram::m_inclusions.push_back($1.getLit() + _T(".prg")); $$ = $3; }
+		{ $$ = $1.getLit() + $2.getLit() + $3.getLit(); }
+;
+
+function_identifier:
+	IDENTIFIER
+		{
+			/* Check for redirected functions. */
+			std::map<STD_NATURAL_STRING, STD_NATURAL_STRING>::iterator i =
+				CProgram::m_redirects.find($1.getLit());
+			if (i != CProgram::m_redirects.end())
+			{
+				STD_NATURAL_STRING str = i->second;
+				const STD_NATURAL_STRING::size_type pos = str.find(_T('.'));
+				if (pos != STD_NATURAL_STRING::npos)
+				{
+					/* It's a function of the form x.y */
+					addInclusion(str.substr(0, pos) + _T(".prg"));
+					$$ = str.substr(pos + 1);
+				}
+				else
+				{
+					$$ = str;
+				}
+			}
+		}
+|	IDENTIFIER DOT IDENTIFIER
+		{ addInclusion($1.getLit() + _T(".prg")); $$ = $3; }
 ;
 
 function:
@@ -576,9 +603,33 @@ class_members:
 
 inclusion:
 	INCLUDE STRING
-		{ CProgram::m_inclusions.push_back($2.getLit().substr(1, $2.getLit().length() - 2)); }
+		{ addInclusion($2.getLit().substr(1, $2.getLit().length() - 2)); }
 |	INCLUDE LPARAN STRING RPARAN
-		{ CProgram::m_inclusions.push_back($3.getLit().substr(1, $3.getLit().length() - 2)); }
+		{ addInclusion($3.getLit().substr(1, $3.getLit().length() - 2)); }
+;
+
+redirection:
+	REDIRECT LPARAN function_identifier_bare COMMA function_identifier_bare RPARAN
+		{ CProgram::addRedirect($3.getLit(), $5.getLit()); }
+|	REDIRECT LPARAN STRING COMMA STRING RPARAN
+		{
+			CProgram::addRedirect(
+				lcase($3.getLit().substr(1, $3.getLit().length() - 2)),
+				lcase($5.getLit().substr(1, $5.getLit().length() - 2))
+			);
+		}
+;
+
+kill_redirection:
+	KILL_REDIRECT LPARAN function_identifier_bare RPARAN
+		{ CProgram::removeRedirect($3.getLit()); }
+|	KILL_REDIRECT LPARAN STRING RPARAN
+		{ CProgram::removeRedirect(lcase($3.getLit().substr(1, $3.getLit().length() - 2))); }
+;
+
+clear_redirections:
+	KILL_ALL_REDIRECTS
+		{ CProgram::clearRedirects(); }
 ;
 
 statement:
@@ -601,6 +652,9 @@ statement:
 			CProgram::m_pyyUnits->push_back(mu);
 		}
 |	inclusion
+|	redirection
+|	kill_redirection
+|	clear_redirections
 |	for_loop
 |	value
 ;
@@ -624,3 +678,14 @@ LPMACHINE_UNITS g_yyOldUnits = NULL;
 std::deque<std::map<STD_NATURAL_STRING, int> > g_methods;
 std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass = NULL;
 CLASS_VISIBILITY g_vis = CV_PRIVATE;
+
+// Include a file, but don't allow the same file to be included twice.
+inline void addInclusion(const STD_NATURAL_STRING file)
+{
+	std::vector<STD_NATURAL_STRING>::const_iterator i = CProgram::m_inclusions.begin();
+	for (; i != CProgram::m_inclusions.end(); ++i)
+	{
+		if (*i == file) return;
+	}
+	CProgram::m_inclusions.push_back(file);
+}

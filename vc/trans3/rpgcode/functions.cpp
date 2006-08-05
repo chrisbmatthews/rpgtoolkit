@@ -5132,36 +5132,6 @@ void staticText(CALL_DATA &params)
 }
 
 /*
- * redirect(...)
- * 
- * Description.
- */
-void redirect(CALL_DATA &params)
-{
-// TBD
-}
-
-/*
- * killredirect(...)
- * 
- * Description.
- */
-void killredirect(CALL_DATA &params)
-{
-// TBD
-}
-
-/*
- * killallredirects(...)
- * 
- * Description.
- */
-void killallredirects(CALL_DATA &params)
-{
-// TBD
-}
-
-/*
  * parallax(int setting)
  * 
  * Obselete.
@@ -7356,9 +7326,6 @@ void initRpgCode()
 	CProgram::addFunction(_T("pathfind"), pathfind);
 	CProgram::addFunction(_T("itemstep"), itemstep);
 	CProgram::addFunction(_T("playerstep"), playerstep);
-	CProgram::addFunction(_T("redirect"), redirect);
-	CProgram::addFunction(_T("killredirect"), killredirect);
-	CProgram::addFunction(_T("killallredirects"), killallredirects);
 	CProgram::addFunction(_T("parallax"), parallax);
 	CProgram::addFunction(_T("giveexp"), giveexp);
 	CProgram::addFunction(_T("animatedtiles"), animatedTiles);

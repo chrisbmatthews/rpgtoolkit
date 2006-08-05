@@ -33,6 +33,7 @@ std::vector<unsigned int> *CProgram::m_pLines = NULL;
 std::vector<STRING> CProgram::m_inclusions;
 std::vector<IPlugin *> CProgram::m_plugins;
 std::map<STRING, STACK_FRAME> CProgram::m_constants;
+std::map<STRING, STRING> CProgram::m_redirects;
 std::set<CThread *> CThread::m_threads;
 STRING CProgram::m_parsing;
 unsigned long CProgram::m_runningPrograms = 0;
@@ -244,6 +245,20 @@ LPSTACK_FRAME CProgram::getVar(const STRING name)
 		return &m_locals.back().find(name)->second;
 	}
 	return m_heap[name];
+}
+
+// Remove a redirect from the list.
+void CProgram::removeRedirect(CONST STRING str)
+{
+	std::map<STRING, STRING>::iterator i = m_redirects.begin();
+	for (; i != m_redirects.end(); ++i)
+	{
+		if (i->first == str)
+		{
+			m_redirects.erase(i);
+			return;
+		}
+	}
 }
 
 // Locate a named method.
@@ -775,7 +790,11 @@ void CProgram::parseFile(FILE *pFile)
 	m_lines.clear();
 	m_pLines = &m_lines;
 	NAMED_METHOD::m_methods.clear();
+
+	// We are parsing a new file.
+	YY_NEW_FILE;
 	yyparse();
+
 	m_methods = NAMED_METHOD::m_methods;
 	m_yyFors.clear();
 

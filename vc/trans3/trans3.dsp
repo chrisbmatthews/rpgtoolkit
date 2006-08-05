@@ -451,7 +451,7 @@ SOURCE=.\rpgcode\lex.txt
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
 
-# Begin Custom Build -
+# Begin Custom Build
 InputDir=.\rpgcode
 InputPath=.\rpgcode\lex.txt
 
@@ -537,7 +537,7 @@ SOURCE=.\rpgcode\yacc.txt
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
 
-# Begin Custom Build -
+# Begin Custom Build
 InputDir=.\rpgcode
 InputPath=.\rpgcode\yacc.txt
 
@@ -548,7 +548,7 @@ InputPath=.\rpgcode\yacc.txt
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
 
-# Begin Custom Build -
+# Begin Custom Build
 InputDir=.\rpgcode
 InputPath=.\rpgcode\yacc.txt
 
@@ -559,7 +559,7 @@ InputPath=.\rpgcode\yacc.txt
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
 
-# Begin Custom Build -
+# Begin Custom Build
 InputDir=.\rpgcode
 InputPath=.\rpgcode\yacc.txt
 
@@ -570,7 +570,7 @@ InputPath=.\rpgcode\yacc.txt
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
 
-# Begin Custom Build -
+# Begin Custom Build
 InputDir=.\rpgcode
 InputPath=.\rpgcode\yacc.txt
 
@@ -581,7 +581,7 @@ InputPath=.\rpgcode\yacc.txt
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
 
-# Begin Custom Build -
+# Begin Custom Build
 InputDir=.\rpgcode
 InputPath=.\rpgcode\yacc.txt
 
@@ -592,7 +592,7 @@ InputPath=.\rpgcode\yacc.txt
 
 !ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
 
-# Begin Custom Build -
+# Begin Custom Build
 InputDir=.\rpgcode
 InputPath=.\rpgcode\yacc.txt
 

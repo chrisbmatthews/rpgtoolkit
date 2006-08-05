@@ -12,21 +12,22 @@ unsigned int g_lines = 0;
 
 %%
 
-"=="		{ return EQ; }
-"->"		{ return MEM; }
-"++"		{ return INC; }
-"--"		{ return DEC; }
-"*="		{ return MUL_ASSIGN; }
-"/="		{ return DIV_ASSIGN; }
-"%="		{ return MOD_ASSIGN; }
-"+="		{ return ADD_ASSIGN; }
-"-="		{ return SUB_ASSIGN; }
-"<<="		{ return LS_ASSIGN; }
-">>="		{ return RS_ASSIGN; }
-"&="		{ return AND_ASSIGN; }
-"|="		{ return OR_ASSIGN; }
-"^="		{ return POW_ASSIGN; }
-"`="		{ return XOR_ASSIGN; }
+	/* String versions of operators. */
+"=="	{ return EQ; }
+"->"	{ return MEM; }
+"++"	{ return INC; }
+"--"	{ return DEC; }
+"*="	{ return MUL_ASSIGN; }
+"/="	{ return DIV_ASSIGN; }
+"%="	{ return MOD_ASSIGN; }
+"+="	{ return ADD_ASSIGN; }
+"-="	{ return SUB_ASSIGN; }
+"<<="	{ return LS_ASSIGN; }
+">>="	{ return RS_ASSIGN; }
+"&="	{ return AND_ASSIGN; }
+"|="	{ return OR_ASSIGN; }
+"^="	{ return POW_ASSIGN; }
+"`="	{ return XOR_ASSIGN; }
 "*"		{ return MUL; }
 "+"		{ return ADD; }
 "-"		{ return SUB; }
@@ -34,19 +35,19 @@ unsigned int g_lines = 0;
 "~"		{ return BNOT; }
 "/"		{ return DIV; }
 "%"		{ return MOD; }
-"<<"		{ return LS; }
-">>"		{ return RS; }
-"<="		{ return LTE; }
-">="		{ return GTE; }
+"<<"	{ return LS; }
+">>"	{ return RS; }
+"<="	{ return LTE; }
+">="	{ return GTE; }
 "<"		{ return LT; }
 ">"		{ return GT; }
-"~="		{ return IEQ; }
+"~="	{ return IEQ; }
 "&"		{ return AND; }
 "^"		{ return POW; }
 "`"		{ return XOR; }
 "|"		{ return OR; }
-"&&"		{ return LAND; }
-"||"		{ return LOR; }
+"&&"	{ return LAND; }
+"||"	{ return LOR; }
 "="		{ return ASSIGN; }
 "("		{ return LPARAN; }
 ")"		{ return RPARAN; }
@@ -60,51 +61,59 @@ unsigned int g_lines = 0;
 ":"		{ return COLON; }
 "$"		{ return LIT; }
 "."		{ return DOT; }
-[fF][oO][rR]				{ return FOR; }
-[mM][eE][tT][hH][oO][dD]		{ return METHOD; }
-[rR][eE][tT][uU][rR][nN]		{ return RETURN; }
-[cC][lL][aA][sS][sS]			{ return CLASS; }
-[sS][tT][rR][uU][cC][tT]		{ return STRUCT; }
-[pP][uU][bB][lL][iI][cC]		{ return PUBLIC; }
+
+	/* Some reserved keywords. */
+[fF][oO][rR]						{ return FOR; }
+[mM][eE][tT][hH][oO][dD]			{ return METHOD; }
+[rR][eE][tT][uU][rR][nN]			{ return RETURN; }
+[cC][lL][aA][sS][sS]				{ return CLASS; }
+[sS][tT][rR][uU][cC][tT]			{ return STRUCT; }
+[pP][uU][bB][lL][iI][cC]			{ return PUBLIC; }
 [pP][rR][iI][vV][aA][tT][eE]		{ return PRIVATE; }
-[vV][aA][rR]				{ return VAR; }
-[tT][rR][uU][eE]			{ yylval = 1; return NUMBER; }
-[fF][aA][lL][sS][eE]			{ yylval = 0; return NUMBER; }
+[vV][aA][rR]						{ return VAR; }
+[tT][rR][uU][eE]					{ yylval = 1; return NUMBER; }
+[fF][aA][lL][sS][eE]				{ yylval = 0; return NUMBER; }
 [iI][nN][cC][lL][uU][dD][eE]		{ return INCLUDE; }
 
-~?[A-Za-z_:][A-Za-z0-9_]*		{
-						char *str = _strlwr(_strdup(yytext));
-						const STD_NATURAL_STRING s = str;
-						free(str);
+	/* Redirects */
+[rR][eE][dD][iI][rR][eE][cC][tT]									{ return REDIRECT; }
+[kK][iI][lL][lL][rR][eE][dD][iI][rR][eE][cC][tT]					{ return KILL_REDIRECT; }
+[kK][iI][lL][lL][aA][lL][lL][rR][eE][dD][iI][rR][eE][cC][tT][sS]	{ return KILL_ALL_REDIRECTS; }
 
-						std::map<STD_NATURAL_STRING, STACK_FRAME>::iterator i = CProgram::m_constants.find(s);
-						if (i != CProgram::m_constants.end())
-						{
-							STACK_FRAME &cst = i->second;
-							if (cst.udt & UDT_LIT)
-							{
-								yylval = "\"" + cst.lit + "\"";
-								return STRING;
+	/* An identifier */
+~?[A-Za-z_:][A-Za-z0-9_]*	{
+								char *str = _strlwr(_strdup(yytext));
+								const STD_NATURAL_STRING s = str;
+								free(str);
+
+								std::map<STD_NATURAL_STRING, STACK_FRAME>::iterator i = CProgram::m_constants.find(s);
+								if (i != CProgram::m_constants.end())
+								{
+									STACK_FRAME &cst = i->second;
+									if (cst.udt & UDT_LIT)
+									{
+										yylval = "\"" + cst.lit + "\"";
+										return STRING;
+									}
+									yylval = cst.num;
+									return NUMBER;
+								}
+
+								yylval = s;
+								return IDENTIFIER;
 							}
-							yylval = cst.num;
-							return NUMBER;
-						}
-
-						yylval = s;
-						return IDENTIFIER;
-					}
 
 ([0-9]+(\.[0-9]+)?|([0-9]+)?(\.[0-9]+))	{ yylval = atof(yytext); return NUMBER; }
 \"[^\"]*\"				{ yylval = yytext; return STRING; }
 
 "//".*$					{ return SEMICOLON; }
 \*\*.*$					{ return SEMICOLON; }
-^[ \t]*\*.*$				{ return SEMICOLON; }
+^[ \t]*\*.*$			{ return SEMICOLON; }
 [ \t]+					{ }
-"#"					{ }
+"#"						{ }
 \r\n					{ _END_FILE_LINE; return SEMICOLON; }
-\r					{ _END_FILE_LINE; return SEMICOLON; }
-\n					{ _END_FILE_LINE; return SEMICOLON; }
+\r						{ _END_FILE_LINE; return SEMICOLON; }
+\n						{ _END_FILE_LINE; return SEMICOLON; }
 
 %%
 

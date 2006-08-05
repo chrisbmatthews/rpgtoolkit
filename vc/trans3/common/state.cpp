@@ -56,13 +56,13 @@ void loadSaveState(const STRING str)
 		return;
 	}
 
-	// tbd:	- clear redirects
-	//		- hide players - default to hidden. No record of whether
+	// tbd:	- hide players - default to hidden. No record of whether
 	//						 they were active or hidden. Use position?
 
 	short majorVer, minorVer;
 	file >> majorVer >> minorVer;
 
+	CProgram::clearRedirects();
 	CProgram::freeGlobals();
 	CThread::destroyAll();
 
@@ -114,7 +114,7 @@ void loadSaveState(const STRING str)
 		file >> varName >> varString;
 		if (!varName.empty())
 		{
-			CProgram::setRedirect(varName, varString);
+			CProgram::addRedirect(varName, varString);
 		}
 	}
 

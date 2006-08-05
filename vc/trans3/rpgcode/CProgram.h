@@ -223,9 +223,6 @@ class IPlugin;
 // A board program;
 struct tagBoardProgram;
 
-// A variant.
-class CVariant;
-
 // A program.
 class CProgram
 {
@@ -257,7 +254,9 @@ public:
 	static void addFunction(const STRING name, const MACHINE_FUNC func);
 	static void addConstant(const STRING name, const STACK_FRAME value) { m_constants[lcase(name)] = value; }
 	static STRING getFunctionName(const MACHINE_FUNC func);
-	static void setRedirect(const STRING oldFunc, const STRING newFunc) { /* tbd */ }
+	static void addRedirect(const STRING oldFunc, const STRING newFunc) { m_redirects[oldFunc] = newFunc; }
+	static void removeRedirect(const STRING oldFunc);
+	static void clearRedirects() { m_redirects.clear(); }
 	static void debugger(const STRING str);
 	static CPtrData<STACK_FRAME> &getGlobal(const STRING var) { return m_heap[lcase(var)]; }
 	static void freeGlobal(const STRING var) { m_heap.erase(lcase(var)); }
@@ -289,7 +288,8 @@ private:
 	static std::deque<int> m_params;
 	static std::vector<unsigned int> *m_pLines;
 	static std::vector<STRING> m_inclusions;
-	static std::map<STRING, STACK_FRAME> m_constants; // Map of compile-time constants.
+	static std::map<STRING, STACK_FRAME> m_constants;	// Map of compile-time constants.
+	static std::map<STRING, STRING> m_redirects;		// Map of redirects.
 	static STRING m_parsing;
 
 	// Other globals.
@@ -318,6 +318,7 @@ private:
 	friend int yylex();
 	friend int yyparse();
 	friend int yyerror(const char *);
+	friend void addInclusion(const STRING file);
 	friend tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg);
 
 	void parseFile(FILE *pFile);
