@@ -731,6 +731,30 @@ bool CProgram::open(const STRING fileName)
 	{
 		const STRING parsing = m_parsing;
 		m_parsing = fileName;
+
+		// Programs starting with include, redirect and possibly
+		// other things crash. As a quick solution, we add "1",
+		// a line that does nothing, to the start of each file.
+
+		fseek(file, 0, SEEK_END);
+		const long length = ftell(file);
+		fseek(file, 0, SEEK_SET);
+
+		char *const str = (char *const)malloc(sizeof(char) * length + 3);
+		fread(str + 3, sizeof(char), length, file);
+
+		str[0] = '1';		// Arbitrary first line.
+		str[1] = '\r';
+		str[2] = '\n';
+
+		fclose(file);		// Close the original file...
+		file = tmpfile();	// ...and create another.
+
+		// Write the updated version to our temp file.
+		fwrite(str, sizeof(char), length + 3, file);
+		free(str);
+
+		// And parse the file.
 		fseek(file, 0, SEEK_SET);
 		parseFile(file);
 		m_parsing = parsing;

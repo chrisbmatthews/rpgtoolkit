@@ -630,6 +630,8 @@ kill_redirection:
 clear_redirections:
 	KILL_ALL_REDIRECTS
 		{ CProgram::clearRedirects(); }
+|	KILL_ALL_REDIRECTS LPARAN RPARAN
+		{ CProgram::clearRedirects(); }
 ;
 
 statement:
