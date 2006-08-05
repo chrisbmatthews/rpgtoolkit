@@ -37,6 +37,7 @@ std::map<STRING, STRING> CProgram::m_redirects;
 std::set<CThread *> CThread::m_threads;
 STRING CProgram::m_parsing;
 unsigned long CProgram::m_runningPrograms = 0;
+EXCEPTION_TYPE CProgram::m_debugLevel = E_WARNING;	// Show all error messages by default.
 
 static std::map<STRING, CProgram> g_cache; // Program cache.
 typedef std::map<STRING, CProgram>::iterator CACHE_ITR;
@@ -1346,13 +1347,19 @@ void tagMachineUnit::execute(CProgram *prg) const
 			}
 			catch (CException exp)
 			{
-				TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
-				CProgram::debugger(STRING(_T("Near line ")) + str + _T(": ") + exp.getMessage());
+				if (CProgram::m_debugLevel >= exp.getType())
+				{
+					TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
+					CProgram::debugger(STRING(_T("Near line ")) + str + _T(": ") + exp.getMessage());
+				}
 			}
 			catch (...)
 			{
-				TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
-				CProgram::debugger(STRING(_T("Near line ")) + str + _T(": Unexpected error."));
+				if (CProgram::m_debugLevel >= E_ERROR)
+				{
+					TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
+					CProgram::debugger(STRING(_T("Near line ")) + str + _T(": Unexpected error."));
+				}
 			}
 		}
  		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);

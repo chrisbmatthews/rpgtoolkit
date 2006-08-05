@@ -1574,11 +1574,15 @@ void fillRect(CALL_DATA &params)
 /*
  * void debug(bool enable)
  * 
- * Toggle debug mode.
+ * Toggle whether to show debug messages.
  */
 void debug(CALL_DATA &params)
 {
-// TBD
+	if (params.params != 1)
+	{
+		throw CError("Debug() requires one parameter.");
+	}
+	CProgram::setDebugLevel(params[0].getBool() ? E_WARNING : E_DISABLED);
 }
 
 /*

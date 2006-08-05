@@ -217,6 +217,14 @@ private:
 	T *m_pData;
 };
 
+// Types of exceptions.
+typedef enum tagExceptionType
+{
+	E_DISABLED,		// All exception messages disabled.
+	E_ERROR,
+	E_WARNING
+} EXCEPTION_TYPE;
+
 // A plugin.
 class IPlugin;
 
@@ -250,26 +258,33 @@ public:
 	virtual LPSTACK_FRAME getVar(const STRING name);
 	virtual bool isThread() const { return false; }
 
+	// Global program set up.
 	static void initialize();
 	static void addFunction(const STRING name, const MACHINE_FUNC func);
 	static void addConstant(const STRING name, const STACK_FRAME value) { m_constants[lcase(name)] = value; }
 	static STRING getFunctionName(const MACHINE_FUNC func);
+
+	// Redirections.
 	static void addRedirect(const STRING oldFunc, const STRING newFunc) { m_redirects[oldFunc] = newFunc; }
 	static void removeRedirect(const STRING oldFunc);
 	static void clearRedirects() { m_redirects.clear(); }
+
+	// Debugger.
 	static void debugger(const STRING str);
+	static void setDebugLevel(const EXCEPTION_TYPE et) { m_debugLevel = et; }
+
+	// Global rpgcode variables.
 	static CPtrData<STACK_FRAME> &getGlobal(const STRING var) { return m_heap[lcase(var)]; }
 	static void freeGlobal(const STRING var) { m_heap.erase(lcase(var)); }
 	static void freeGlobals() { m_heap.clear(); m_objects.clear(); }
+
+	// Plugins
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
 	static void freePlugins();
 
 	// Copy constructor and assignment operator.
 	CProgram(const CProgram &rhs) { *this = rhs; }
 	CProgram &operator=(const CProgram &rhs);
-
-/** Delano: could be unneeded after all. Will check after multiRun().
-	static bool isRunning() { return (m_runningPrograms != 0); } **/
 
 private:
 	std::deque<std::deque<STACK_FRAME> > m_stack;
@@ -298,6 +313,7 @@ private:
 	static std::map<STRING, CPtrData<STACK_FRAME> > m_heap;
 	static std::vector<IPlugin *> m_plugins;
 	static unsigned long m_runningPrograms;
+	static EXCEPTION_TYPE m_debugLevel;
 
 	// Special constructs.
 	static void conditional(CALL_DATA &);
@@ -373,13 +389,6 @@ protected:
 	CThread(const STRING str): CProgram(str), m_bSleeping(false) { }
 	static std::set<CThread *> m_threads;
 };
-
-// Types of exceptions.
-typedef enum tagExceptionType
-{
-	E_ERROR,
-	E_WARNING
-} EXCEPTION_TYPE;
 
 // An exception.
 class CException
