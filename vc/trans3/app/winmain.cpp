@@ -299,9 +299,24 @@ void openSystems()
  */
 void reset()
 {
+	extern IPlugin *g_pFightPlugin;
+
 	CProgram::freeGlobals();
+	CProgram::clearRedirects();
+	CProgram::freePlugins();
+	if (g_pMenuPlugin)
+	{
+		g_pMenuPlugin->terminate();
+		delete g_pMenuPlugin;
+		g_pMenuPlugin = NULL;
+	}
+	if (g_pFightPlugin)
+	{
+		g_pFightPlugin->terminate();
+		delete g_pFightPlugin;
+		g_pFightPlugin = NULL;
+	}
 	CThread::destroyAll();
-	// Other plugin stuff?
 	setUpGame();
 }
 
