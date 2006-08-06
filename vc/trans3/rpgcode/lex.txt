@@ -47,7 +47,9 @@ unsigned int g_lines = 0;
 "`"		{ return XOR; }
 "|"		{ return OR; }
 "&&"	{ return LAND; }
+"and"	{ return LAND; }
 "||"	{ return LOR; }
+"or"	{ return LOR; }
 "="		{ return ASSIGN; }
 "("		{ return LPARAN; }
 ")"		{ return RPARAN; }
