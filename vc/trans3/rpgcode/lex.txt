@@ -46,10 +46,10 @@ unsigned int g_lines = 0;
 "^"		{ return POW; }
 "`"		{ return XOR; }
 "|"		{ return OR; }
-"&&"	{ return LAND; }
-"and"	{ return LAND; }
-"||"	{ return LOR; }
-"or"	{ return LOR; }
+"&&"			{ return LAND; }
+[aA][nN][dD]	{ return LAND; }
+"||"			{ return LOR; }
+[oO][rR]		{ return LOR; }
 "="		{ return ASSIGN; }
 "("		{ return LPARAN; }
 ")"		{ return RPARAN; }
