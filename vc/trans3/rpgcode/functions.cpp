@@ -6178,13 +6178,37 @@ void resumeNext(CALL_DATA &params)
 }
 
 /*
- * msgbox(...)
+ * int msgBox(str text [,str title [, int style [, int textColor [, int backColor [, str bitmap]]]]])
  * 
- * Description.
+ * Display a message box containing one or two buttons, handled using
+ * a cursor map (keyboard input only). 
+ * The background is drawn translucently using the MWin() translucency value.
+ * Any background image supplied is stretched to the size of the box.
+ *
+ * style = 0: 'OK' button; function returns 1.
+ * style = 1: 'Yes' and 'No' buttons: 'Yes' returns 6 and 'No' returns 7.
  */
 void msgbox(CALL_DATA &params)
 {
-// TBD
+	if (params.params < 1 || params.params > 6)
+	{
+		throw CError(_T("MsgBox() requires one to six parameters."));
+	}
+
+	STRING text = params[0].getLit();
+
+	if (params.params > 1)
+	{
+		const STRING title = params[1].getLit();
+		if (!title.empty()) text = title + _T('\n') + text;
+	}
+	int buttons = params.params > 2 ? (params[2].getBool() ? 2 : 1) : 1;
+	const long textColor = params.params > 3 ? long(params[3].getNum()) : RGB(255, 255, 255);
+	const long backColor = params.params > 4 ? long(params[4].getNum()) : 0;
+	const STRING image = params.params > 5 ? params[5].getLit() : _T("");
+
+	params.ret().udt = UDT_NUM;
+	params.ret().num = rpgcodeMsgBox(text, buttons, textColor, backColor, image);
 }
 
 /*
@@ -6573,26 +6597,6 @@ void getTickCount(CALL_DATA &params)
  * Description.
  */
 void setvolume(CALL_DATA &params)
-{
-// TBD
-}
-
-/*
- * createtimer(...)
- * 
- * Description.
- */
-void createtimer(CALL_DATA &params)
-{
-// TBD
-}
-
-/*
- * killtimer(...)
- * 
- * Description.
- */
-void killtimer(CALL_DATA &params)
 {
 // TBD
 }
@@ -7410,8 +7414,6 @@ void initRpgCode()
 	CProgram::addFunction(_T("drawcanvastransparent"), drawcanvastransparent);
 	CProgram::addFunction(_T("gettickcount"), getTickCount);
 	CProgram::addFunction(_T("setvolume"), setvolume);
-	CProgram::addFunction(_T("createtimer"), createtimer);
-	CProgram::addFunction(_T("killtimer"), killtimer);
 	CProgram::addFunction(_T("setmwintranslucency"), setmwintranslucency);
 	CProgram::addFunction(_T("regexpreplace"), regExpReplace);
 	CProgram::addFunction(_T("playerlocation"), playerlocation);
