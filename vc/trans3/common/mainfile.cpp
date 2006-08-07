@@ -251,7 +251,7 @@ bool tagMainFile::open(const STRING fileName)
 		file >> bFpsInTitleBar;
 	}
 
-	pfHeuristic = PF_AXIAL;				// Pre-vector tile pathfinding.
+	pfHeuristic = PF_DIAGONAL;			// Pre-vector tile pathfinding.
 	if (minorVer >= 9)
 	{
 		file >> startX;
