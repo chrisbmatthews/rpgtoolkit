@@ -5,7 +5,10 @@
  */
 
 #include "mbox.h"
+#include "paths.h"
+#include "animation.h"
 #include "../input/input.h"
+#include "../rpgcode/CCursorMap.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 
 /*
@@ -168,4 +171,127 @@ STRING prompt(const STRING str)
 	g_pDirectDraw->Refresh();
 
 	return response;
+}
+
+/*
+ * Rpgcode message box (MsgBox()).
+ */
+int rpgcodeMsgBox(STRING text, int buttons, const long textColor, const long backColor, const STRING image)
+{
+	extern int g_resX, g_resY;
+	extern CDirectDraw *g_pDirectDraw;
+	extern STRING g_projectPath;
+	extern double g_messageWindowTranslucency;
+
+	if (!g_pDirectDraw)
+	{
+		MessageBox(NULL, text.c_str(), _T("RPGToolkit 3 Translator"), 0);
+		return 1;
+	}
+
+	buttons = buttons < 1 ? 1 : (buttons > 2 ? 2 : buttons);
+
+	CCursorMap map;
+
+	// Copy the screen to revert to on finishing.
+	CCanvas backup;
+	backup.CreateBlank(NULL, g_resX, g_resY, TRUE);
+	g_pDirectDraw->CopyScreenToCanvas(&backup);
+
+	// Determine the size of the rect required to hold the text
+	// by setting the DT_CALCRECT flag. r.bottom is extended to
+	// hold the text in the given width. Text is not drawn when
+	// this flag is set.
+
+	HDC hdc = backup.OpenDC();
+	RECT r = {0, 0, g_resX * 0.5, g_resY * 0.5};
+	DrawText(hdc, text.c_str(), text.length(), &r, DT_CALCRECT | DT_WORDBREAK);
+	backup.CloseDC(hdc);
+
+	// Button dimensions, padding.
+	const int buWidth = 80, buHeight = 28, pad = 12;
+
+	// Ensure the box is big enough for the buttons.
+	int minimumWidth = buttons * (buWidth + pad) + pad, width = r.right + 2 * pad;
+	if (width < minimumWidth) width = minimumWidth;
+
+	// Draw a bounding box on a new canvas, with space for buttons.
+	CCanvas box;
+	box.CreateBlank(NULL, width, r.bottom + buHeight + 2 * pad, TRUE);
+	box.ClearScreen(backColor);
+
+	if (image.empty())
+	{
+		box.DrawRect(0, 0, box.GetWidth() - 1, box.GetHeight() - 1, textColor);
+	}
+	else
+	{
+		// Stretch the image to fit.
+		drawImage(g_projectPath + BMP_PATH + image, &box, 0, 0, box.GetWidth(), box.GetHeight());
+	}
+
+	// Offset the rect to the drawing position.
+	OffsetRect(&r, pad, pad / 2);
+
+	// Draw bounding boxes for the buttons.
+	RECT rbu = { 0, box.GetHeight() - buHeight - pad / 2, 0, box.GetHeight() - pad / 2 };
+	
+	if (buttons == 1)
+	{
+		// Single button.
+		rbu.left = (box.GetWidth() - buWidth) / 2;
+		rbu.right = rbu.left + buWidth;
+		box.DrawRect(rbu.left, rbu.top, rbu.right, rbu.bottom, textColor);
+	}
+	else
+	{
+		rbu.left = (box.GetWidth() - 2 * buWidth) / 3;
+		rbu.right = rbu.left + buWidth;
+		box.DrawRect(rbu.left, rbu.top, rbu.right, rbu.bottom, textColor);
+		box.DrawRect(2 * rbu.left + buWidth, rbu.top, 2 * rbu.right, rbu.bottom, textColor);
+	}
+
+	// Draw the text, bounding it inside the rect.
+	hdc = box.OpenDC();
+	SetBkMode(hdc, TRANSPARENT);
+	SetTextColor(hdc, textColor);
+	DrawText(hdc, text.c_str(), text.length(), &r, DT_WORDBREAK);
+
+	// Screen destination.
+	const int x = (g_resX - box.GetWidth()) / 2, y = (g_resY - box.GetHeight()) / 2;
+
+	// Centre in the rect previously used to draw the buttons.
+	// Set the points of the cursor map to handle input.
+	if (buttons == 1)
+	{
+		text = _T("OK");
+		DrawText(hdc, text.c_str(), text.length(), &rbu, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+		map.add(x + rbu.left, y + (rbu.top + rbu.bottom) / 2);
+	}
+	else
+	{
+		text = _T("Yes");
+		DrawText(hdc, text.c_str(), text.length(), &rbu, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+		map.add(x + rbu.left, y + (rbu.top + rbu.bottom) / 2);
+
+		text = _T("No");
+		rbu.left = 2 * rbu.left + buWidth;
+		rbu.right = rbu.left + buWidth;
+		DrawText(hdc, text.c_str(), text.length(), &rbu, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+		map.add(x + rbu.left, y + (rbu.top + rbu.bottom) / 2);
+	}
+
+	box.CloseDC(hdc);
+
+	// Draw translucently with the text drawn solidly.
+	g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, g_messageWindowTranslucency, textColor, -1);
+	g_pDirectDraw->Refresh();
+
+	// Return 1 for OK, 6 for Yes, 7 for No (vbMsgBoxResult constants).
+	const int result = map.run() + (buttons == 2 ? 6 : 1);
+
+	g_pDirectDraw->DrawCanvas(&backup, 0, 0);
+	g_pDirectDraw->Refresh();
+
+	return result;
 }

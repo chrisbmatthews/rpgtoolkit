@@ -15,4 +15,7 @@ void messageBox(const STRING str);
 // Prompt for a response.
 STRING prompt(const STRING question);
 
+// Rpgcode message box.
+int rpgcodeMsgBox(STRING text, int buttons, const long textColor, const long backColor, const STRING image);
+
 #endif
