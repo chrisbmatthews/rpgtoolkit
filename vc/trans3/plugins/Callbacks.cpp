@@ -32,6 +32,7 @@
 #include "../common/item.h"
 #include "../common/spcmove.h"
 #include "../common/mainfile.h"
+#include "../common/mbox.h"
 #include "../input/input.h"
 #include "../misc/misc.h"
 #include "../movement/CPlayer/CPlayer.h"
@@ -2497,7 +2498,7 @@ STDMETHODIMP CCallbacks::CBPlaySound(BSTR soundFile, int *pRet)
 
 STDMETHODIMP CCallbacks::CBMessageWindow(BSTR text, int textColor, int bgColor, BSTR bgPic, int mbtype, int *pRet)
 {
-	// TBD
+	*pRet = rpgcodeMsgBox(getString(text), mbtype == 0 ? 1 : 2, textColor, bgColor, getString(bgPic));
 	return S_OK;
 }
 
