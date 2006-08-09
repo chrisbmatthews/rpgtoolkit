@@ -2504,7 +2504,32 @@ STDMETHODIMP CCallbacks::CBMessageWindow(BSTR text, int textColor, int bgColor, 
 
 STDMETHODIMP CCallbacks::CBFileDialog(BSTR initialPath, BSTR fileFilter, BSTR *pRet)
 {
-	// TBD
+	// Extract the file format of the filter.
+	STRING filter = getString(fileFilter);
+	filter = (filter.empty() ? _T("*") : _T("*.") + getExtension(filter));
+
+	BSTR bstr = getString(
+		fileDialog(
+			getString(initialPath), 
+			filter,
+			_T("Select A File"),		// No parameter to specify anything else.
+			true,
+			RGB(255, 255, 255),
+			0,
+			STRING()
+		)
+	);
+
+	if (bstr)
+	{
+		SysReAllocString(pRet, bstr);
+		SysFreeString(bstr);
+	}
+	else
+	{
+		SysReAllocString(pRet, L"");
+	}
+
 	return S_OK;
 }
 
