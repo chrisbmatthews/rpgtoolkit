@@ -90,6 +90,20 @@ typedef enum tkMV_CONSTANTS
 	tkMV_PATH_BACKGROUND	= 16				// Walk a waypoint path repeatedly.
 };
 
+// Vector type constants.
+typedef enum tkVT_CONSTANTS
+{
+	tkVT_SOLID				= TT_SOLID,
+	tkVT_UNDER				= TT_UNDER,
+	tkVT_STAIRS				= TT_STAIRS,
+	tkVT_WAYPOINT			= TT_WAYPOINT,
+
+	tkVT_BKGIMAGE			= TA_BRD_BACKGROUND,		// Under tiletype attributes.
+	tkVT_ALL_LAYERS_BELOW	= TA_ALL_LAYERS_BELOW,
+	tkVT_RECT_INTERSECT		= TA_RECT_INTERSECT
+};
+
+
 // BoardGetProgram() to BoardSetProgramPoint().
 typedef enum tkPRG_CONSTANTS
 {
@@ -2799,7 +2813,9 @@ void mainFile(CALL_DATA &params)
 }
 
 /*
- * string dirSav([string &ret])
+ * tbd: update reference.
+ * str dirSav([str &ret])
+ * str dirSav(str title, bool allowNewFile, int textColor, int backColor, str image)
  * 
  * Allow the user to choose a *.sav file from the "Saved"
  * directory. For historical reasons, returns "CANCEL" if
@@ -2807,7 +2823,44 @@ void mainFile(CALL_DATA &params)
  */
 void dirSav(CALL_DATA &params)
 {
-// TBD
+	extern STRING g_savePath;
+
+	STRING file;
+	if (params.params == 5)
+	{
+		file = fileDialog(
+			g_savePath,
+			_T("*.sav"),
+			params[0].getLit(),
+			params[1].getBool(),
+			long(params[2].getNum()),
+			long(params[3].getNum()),
+			params[4].getLit()
+		);
+	}
+	else
+	{
+		file = fileDialog(
+			g_savePath, 
+			_T("*.sav"), 
+			_T("Save / Load A Game"), 
+			true, 
+			RGB(255, 255, 255), 
+			0, 
+			STRING()
+		);
+	}
+
+	// Append the filetype.
+	if (_ftcsicmp(getExtension(file).c_str(), _T("sav")) != 0) file += _T(".sav");
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = (file.empty() ? _T("CANCEL") : file);
+	
+	if (params.params == 1) 
+	{
+		*params.prg->getVar(params[0].lit) = params.ret();
+	}
 }
 
 /*
@@ -6816,7 +6869,7 @@ void playerpath(CALL_DATA &params)
  * 
  * Returns the number of vectors on the board.
  *
- * BoardGetVector(int vectorIndex, int &tileType, int &pointCount, int &layer, int &isClosed, int &attributes)
+ * void BoardGetVector(int vectorIndex, int &tileType, int &pointCount, int &layer, bool &isClosed, int &attributes)
  *
  * Returns the properties of a given vector.
  */
@@ -6857,7 +6910,7 @@ void boardgetvector(CALL_DATA &params)
 
 		pSf = params.prg->getVar(params[4].lit);
 		pSf->udt = UDT_NUM;
-		pSf->num = double(bClosed);
+		pSf->num = bClosed ? 1.0 : 0.0;
 
 		pSf = params.prg->getVar(params[5].lit);
 		pSf->udt = UDT_NUM;
@@ -6866,7 +6919,7 @@ void boardgetvector(CALL_DATA &params)
 }
 
 /* 
- * BoardSetVector(int vectorIndex, int tileType, int pointCount, int layer, int isClosed, int attributes)
+ * void BoardSetVector(int vectorIndex, int tileType, int pointCount, int layer, bool isClosed, int attributes)
  *
  * Sets the properties of a given vector; creates a new vector if one-past-the-end index is given.
  */
@@ -6893,7 +6946,7 @@ void boardsetvector(CALL_DATA &params)
 	{
 		brd->pV->resize((unsigned int)params[2].getNum());
 		brd->layer = int(params[3].getNum());
-		brd->pV->close(params[4].getNum() != 0.0);
+		brd->pV->close(params[4].getBool());
 		brd->attributes = int(params[5].getNum());
 
 		// Redraw the 'under' canvas.
@@ -6920,7 +6973,7 @@ void boardsetvector(CALL_DATA &params)
 }
 
 /* 
- * BoardGetVectorPoint(int vectorIndex, int pointIndex, int &x, int &y)
+ * void BoardGetVectorPoint(int vectorIndex, int pointIndex, int &x, int &y)
  *
  * Get a single point on a board vector. x, y are always pixel values.
  */
@@ -6950,7 +7003,7 @@ void boardgetvectorpoint(CALL_DATA &params)
 }
 
 /* 
- * BoardSetVectorPoint(int vectorIndex, int pointIndex, int x, int y, bool apply)
+ * void BoardSetVectorPoint(int vectorIndex, int pointIndex, int x, int y, bool apply)
  *
  * Set/move a single point on a board vector. x, y are always pixel values.
  * Set apply = true for last change, to improve speed.
@@ -6990,7 +7043,7 @@ void boardsetvectorpoint(CALL_DATA &params)
  * 
  * Returns the number of programs on the board.
  *
- * BoardGetProgram(int programIndex, string &program, int &pointCount, int &layer, int &isClosed, int &attributes, int &distanceRepeat)
+ * void BoardGetProgram(int programIndex, string &program, int &pointCount, int &layer, bool &isClosed, int &attributes, int &distanceRepeat)
  *
  * Returns the properties of a given program.
  */
@@ -7031,7 +7084,7 @@ void boardgetprogram(CALL_DATA &params)
 
 		pSf = params.prg->getVar(params[4].lit);
 		pSf->udt = UDT_NUM;
-		pSf->num = double(bClosed);
+		pSf->num = bClosed ? 1.0 : 0.0;
 
 		// PRG_STEP, PRG_KEYPRESS etc...
 		pSf = params.prg->getVar(params[5].lit);
@@ -7045,7 +7098,7 @@ void boardgetprogram(CALL_DATA &params)
 }
 
 /* 
- * BoardSetProgram(int programIndex, string program, int pointCount, int layer, int isClosed, int attributes, int distanceRepeat)
+ * void BoardSetProgram(int programIndex, string program, int pointCount, int layer, bool isClosed, int attributes, int distanceRepeat)
  *
  * Sets the properties of a given program; creates a new program if one-past-the-end index is given.
  * distanceRepeat in pixels always.
@@ -7073,7 +7126,7 @@ void boardsetprogram(CALL_DATA &params)
 		prg->fileName = params[1].getLit();
 		prg->vBase.resize((unsigned int)params[2].getNum());
 		prg->layer = int(params[3].getNum());
-		prg->vBase.close(params[4].getNum() != 0.0);
+		prg->vBase.close(params[4].getBool());
 		prg->activationType = int(params[5].getNum());
 		prg->distanceRepeat = int(params[6].getNum());
 
@@ -7085,7 +7138,7 @@ void boardsetprogram(CALL_DATA &params)
 }
 
 /* 
- * BoardGetProgramPoint(int programIndex, int pointIndex, int &x, int &y)
+ * void BoardGetProgramPoint(int programIndex, int pointIndex, int &x, int &y)
  *
  * Get a single point on a board program. x, y are always pixel values.
  */
@@ -7115,7 +7168,7 @@ void boardgetprogrampoint(CALL_DATA &params)
 }
 
 /* 
- * BoardSetProgramPoint(int programIndex, int pointIndex, int x, int y)
+ * void BoardSetProgramPoint(int programIndex, int pointIndex, int x, int y)
  *
  * Set/move a single point on a board program. x, y are always pixel values.
  */
@@ -7438,6 +7491,15 @@ void initRpgCode()
 	CProgram::addConstant(_T("tkMV_PATH_FIND"), makeNumStackFrame(tkMV_PATH_FIND));
 	CProgram::addConstant(_T("tkMV_WAYPOINT_PATH"), makeNumStackFrame(tkMV_WAYPOINT_PATH));
 	CProgram::addConstant(_T("tkMV_PATH_BACKGROUND"), makeNumStackFrame(tkMV_PATH_BACKGROUND));
+
+	// Vector type constants/attributes.
+	CProgram::addConstant(_T("tkVT_SOLID"), makeNumStackFrame(tkVT_SOLID));
+	CProgram::addConstant(_T("tkVT_UNDER"), makeNumStackFrame(tkVT_UNDER));
+	CProgram::addConstant(_T("tkVT_STAIRS"), makeNumStackFrame(tkVT_STAIRS));
+	CProgram::addConstant(_T("tkVT_WAYPOINT"), makeNumStackFrame(tkVT_WAYPOINT));
+	CProgram::addConstant(_T("tkVT_BKGIMAGE"), makeNumStackFrame(tkVT_BKGIMAGE));
+	CProgram::addConstant(_T("tkVT_ALL_LAYERS_BELOW"), makeNumStackFrame(tkVT_ALL_LAYERS_BELOW));
+	CProgram::addConstant(_T("tkVT_RECT_INTERSECT"), makeNumStackFrame(tkVT_RECT_INTERSECT));
 
 	// Program-related board constants.
 	CProgram::addConstant(_T("tkPRG_STEP"), makeNumStackFrame(tkPRG_STEP));
