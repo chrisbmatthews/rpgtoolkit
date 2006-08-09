@@ -10,6 +10,7 @@
 #include "../input/input.h"
 #include "../rpgcode/CCursorMap.h"
 #include "../../tkCommon/tkDirectX/platform.h"
+#include <set>
 
 /*
  * Show a message box.
@@ -284,7 +285,7 @@ int rpgcodeMsgBox(STRING text, int buttons, const long textColor, const long bac
 	box.CloseDC(hdc);
 
 	// Draw translucently with the text drawn solidly.
-	g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, g_messageWindowTranslucency, textColor, -1);
+	g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, g_messageWindowTranslucency, textColor, TRANSP_COLOR);
 	g_pDirectDraw->Refresh();
 
 	// Return 1 for OK, 6 for Yes, 7 for No (vbMsgBoxResult constants).
@@ -293,5 +294,158 @@ int rpgcodeMsgBox(STRING text, int buttons, const long textColor, const long bac
 	g_pDirectDraw->DrawCanvas(&backup, 0, 0);
 	g_pDirectDraw->Refresh();
 
+	return result;
+}
+
+STRING fileDialog(
+	const STRING path,
+	const STRING filter,		// e.g. "*.sav", or empty.
+	const STRING title,
+	const bool allowNewFile,
+	const long textColor,
+	const long backColor,
+	const STRING image)
+{
+	extern int g_resX, g_resY;
+	extern STRING g_projectPath;
+	extern CDirectDraw *g_pDirectDraw;
+	extern double g_messageWindowTranslucency;
+
+	// Get the save directory contents.
+	WIN32_FIND_DATA wfd;
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	std::set<STRING> files;
+
+	// Find the first file in the directory.
+	hFind = FindFirstFile((path + filter).c_str(), &wfd);
+
+	if (hFind != INVALID_HANDLE_VALUE) 
+	{
+		// List all the other files in the directory.
+		do 
+		{
+			if (wfd.dwFileAttributes & ~FILE_ATTRIBUTE_DIRECTORY)
+				files.insert(wfd.cFileName);
+		}
+		while (FindNextFile(hFind, &wfd) != 0);
+		
+		FindClose(hFind);
+	}
+
+	// Add the new file option.
+	const STRING newFile = _T("<New File>");
+	if (allowNewFile) files.insert(newFile);
+
+	// List dimensions.
+	int width = 320, height = 200, pad = 12;
+
+	// Copy the screen to revert to on finishing.
+	CCanvas backup;
+	backup.CreateBlank(NULL, g_resX, g_resY, TRUE);
+	g_pDirectDraw->CopyScreenToCanvas(&backup);
+
+	// Get the line height.
+	SIZE sz;
+	HDC hdc = backup.OpenDC();
+	GetTextExtentPoint32(hdc, newFile.c_str(), newFile.length(), &sz);
+	backup.CloseDC(hdc);
+
+	unsigned int firstLine = 0, selectedLine = 0;
+	const int lineHeight = sz.cy, lines = height / lineHeight;
+	const int titleHeight = lineHeight + pad;
+	height = lineHeight * lines;
+	STRING result;
+
+	CCanvas box, bitmap;
+	box.CreateBlank(NULL, width + pad, height + titleHeight + pad, TRUE);
+
+	if (!image.empty())
+	{
+		bitmap.CreateBlank(NULL, box.GetWidth(), box.GetHeight(), TRUE);
+		drawImage(g_projectPath + BMP_PATH + image, &bitmap, 0, 0, bitmap.GetWidth(), bitmap.GetHeight());
+	}
+
+	while (true)
+	{
+		box.ClearScreen(backColor);
+		
+		if (image.empty())
+		{
+			box.DrawRect(0, 0, box.GetWidth() - 1, box.GetHeight() - 1, textColor);
+			box.DrawRect(0, 0, box.GetWidth() - 1, titleHeight - 1, textColor);
+		}
+		else
+		{
+			bitmap.Blt(&box, 0, 0, SRCCOPY);
+		}
+
+		hdc = box.OpenDC();
+		SetBkMode(hdc, TRANSPARENT);
+		SetTextColor(hdc, textColor);
+
+		// Draw the title.
+		RECT r = {0, 0, width, titleHeight};
+		DrawText(hdc, title.c_str(), title.length(), &r, DT_CENTER | DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
+	
+		std::set<STRING>::const_iterator i = files.begin();
+		if (!files.empty())
+		{
+			// Advance the iterator to the first visible entry.
+			for (int j = 0; j < firstLine && i != files.end(); ++j) ++i;
+			
+			// Draw each visible entry.
+			for (j = 0; j < lines && i != files.end(); ++i, ++j)
+			{
+				RECT r = {0, lineHeight * j, width, height};
+				OffsetRect(&r, pad / 2, titleHeight + pad / 2);
+				DrawText(hdc, i->c_str(), i->length(), &r, DT_END_ELLIPSIS | DT_SINGLELINE);
+			}
+
+			// Draw the selected item inverted.
+			SetBkMode(hdc, OPAQUE);
+			SetTextColor(hdc, backColor);
+			SetBkColor(hdc, textColor);
+			
+			RECT rs = {0, lineHeight * (selectedLine - firstLine), width, height};
+			OffsetRect(&rs, pad / 2, titleHeight + pad / 2);
+			
+			for (i = files.begin(), j = 0; j != selectedLine; ++j) ++i;
+			DrawText(hdc, i->c_str(), i->length(), &rs, DT_END_ELLIPSIS | DT_SINGLELINE);
+		}
+
+		box.CloseDC(hdc);
+
+		// Screen destination.
+		const int x = (g_resX - box.GetWidth()) / 2, y = (g_resY - box.GetHeight()) / 2;
+
+		// Draw translucently with the text drawn solidly.
+		g_pDirectDraw->DrawCanvasPartial(&backup, x, y, x, y, box.GetWidth(), box.GetHeight(), SRCCOPY);
+		g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, g_messageWindowTranslucency, textColor, TRANSP_COLOR);
+		g_pDirectDraw->Refresh();
+
+		const STRING key = waitForKey(true);
+
+		// Exit if no files to select.
+		if (files.empty()) break;
+
+		if (key == _T("DOWN") && selectedLine != files.size() - 1)
+		{
+			// Scroll down.
+			if (++selectedLine >= lines + firstLine) ++firstLine;
+		}
+		else if (key == _T("UP") && selectedLine != 0)
+		{
+			// Scroll up.
+			if (--selectedLine < firstLine) --firstLine;
+		}
+		else if (key == _T("ENTER") || key == _T(" "))
+		{
+			// Prompt for filename if new file selected.
+			// i still points at the selected file.
+			result = (*i == newFile) ? prompt(_T("Enter a new filename")) : *i;		
+			break;
+		}
+		else if (key == _T("ESC")) break;
+	}
 	return result;
 }

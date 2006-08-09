@@ -18,4 +18,15 @@ STRING prompt(const STRING question);
 // Rpgcode message box.
 int rpgcodeMsgBox(STRING text, int buttons, const long textColor, const long backColor, const STRING image);
 
+// Custom file dialog.
+STRING fileDialog(
+	const STRING path, 
+	const STRING filter,
+	const STRING title,
+	const bool allowNewFile,
+	const long textColor,
+	const long backColor,
+	const STRING image
+);
+
 #endif
