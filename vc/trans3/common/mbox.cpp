@@ -442,7 +442,25 @@ STRING fileDialog(
 		{
 			// Prompt for filename if new file selected.
 			// i still points at the selected file.
-			result = (*i == newFile) ? prompt(_T("Enter a new filename")) : *i;		
+			result = *i;
+			if (*i == newFile)
+			{
+				result = prompt(_T("Enter a new filename"));
+				if (!getExtension(filter).empty())
+				{
+					result = addExtension(result, getExtension(filter));
+				}
+				if (files.find(result) != files.end())
+				{
+					if (rpgcodeMsgBox(
+						result + " already exists. Overwrite file?", 
+						2, 
+						textColor, 
+						backColor,
+						STRING()) == 7
+					) result.erase();
+				}
+			}
 			break;
 		}
 		else if (key == _T("ESC")) break;
