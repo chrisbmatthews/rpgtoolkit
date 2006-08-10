@@ -1346,6 +1346,7 @@ void takeItem(CALL_DATA &params)
 }
 
 /*
+ * tbd: not listed in rpgcode reference -- change name to include sound effect ref.
  * void wav(string file)
  * 
  * Play a wave file (e.g. a sound effect).
@@ -1356,7 +1357,35 @@ void wav(CALL_DATA &params)
 	{
 		throw CError(_T("Wav() requires one parameter."));
 	}
-	CAudioSegment::playSoundEffect(params[0].getLit());
+	// Do not pass \Media path.
+	CAudioSegment::playSoundEffect(params[0].getLit(), false);
+}
+
+/*
+ * tbd: not listed in rpgcode reference -- change name to include sound effect ref.
+ * void wavstop()
+ * 
+ * Stop the current sound effect.
+ */
+void wavstop(CALL_DATA &params)
+{
+	CAudioSegment::stopSoundEffect();
+}
+
+/*
+ * tbd: not listed in rpgcode reference -- change name to include sound effect ref.
+ * void mp3pause()
+ * 
+ * Play a sound effect and pause the engine until it finishes.
+ */
+void mp3pause(CALL_DATA &params)
+{
+	if (params.params != 1)
+	{
+		throw CError(_T("Wav() requires one parameter."));
+	}
+	// Do not pass \Media path.
+	CAudioSegment::playSoundEffect(params[0].getLit(), true);
 }
 
 /*
@@ -3135,16 +3164,6 @@ void getGp(CALL_DATA &params)
 }
 
 /*
- * wavstop(...)
- * 
- * Description.
- */
-void wavstop(CALL_DATA &params)
-{
-// TBD
-}
-
-/*
  * void borderColor(int r, int g, int b)
  * 
  * Obsolete.
@@ -4804,16 +4823,6 @@ void drawEnemy(CALL_DATA &params)
 			renderRpgCodeScreen();
 		}
 	}
-}
-
-/*
- * mp3pause(...)
- * 
- * Description.
- */
-void mp3pause(CALL_DATA &params)
-{
-// TBD
 }
 
 /*

@@ -2480,9 +2480,8 @@ STDMETHODIMP CCallbacks::CBCheckKey(BSTR keyPressed, int *pRet)
 
 STDMETHODIMP CCallbacks::CBPlaySound(BSTR soundFile, int *pRet)
 {
-	extern STRING g_projectPath;
-	const STRING file = g_projectPath + MEDIA_PATH + getString(soundFile);
-	CAudioSegment::playSoundEffect(file);
+	// Do not pass \Media path.
+	CAudioSegment::playSoundEffect(getString(soundFile), false);
 	*pRet = TRUE;
 	return S_OK;
 }
