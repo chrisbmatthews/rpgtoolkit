@@ -39,7 +39,8 @@ bool tagBoard::open(const STRING fileName)
 		return false;
 	}
 
-	strFilename = removePath(fileName);
+	// tbd: preserve subfolder?
+	this->filename = removePath(fileName);
 
 	file.seek(14);
 	char cUnused;

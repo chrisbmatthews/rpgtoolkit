@@ -38,6 +38,8 @@ bool tagMainFile::open(const STRING fileName)
 		return false;
 	}
 
+	this->filename = fileName;
+
 	short majorVer, minorVer;
 	file >> majorVer;
 	file >> minorVer;

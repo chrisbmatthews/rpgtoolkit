@@ -272,6 +272,7 @@ public:
 	// Debugger.
 	static void debugger(const STRING str);
 	static void setDebugLevel(const EXCEPTION_TYPE et) { m_debugLevel = et; }
+	static EXCEPTION_TYPE getDebugLevel(void) { return m_debugLevel; }
 
 	// Global rpgcode variables.
 	static CPtrData<STACK_FRAME> &getGlobal(const STRING var) { return m_heap[lcase(var)]; }

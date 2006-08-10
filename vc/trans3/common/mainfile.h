@@ -77,14 +77,16 @@ typedef struct tagMainFile
 	short startL;
 	short pfHeuristic;					// Default heuristic for pathfinding.
 
-	int getGameSpeed() { return gameSpeed - 128; }
+	int getGameSpeed() const { return gameSpeed - 128; }
 	void setGameSpeed(const int gs) { gameSpeed = gs + 128; }
 	bool open(const STRING fileName);
+	STRING getFilename(void) const { return filename; }
 
 	tagMainFile(): startX(0), startY(0), startL(0) {}
 
 private:
     unsigned char gameSpeed;			// Speed at which game runs.
+	STRING filename;
 } MAIN_FILE;
 
 #endif

@@ -59,6 +59,18 @@ inline STRING getExtension(const STRING str)
 	return (dot == -1) ? _T("") : str.substr(dot + 1);
 }
 
+/*
+ * Add the extension of a file if not present.
+ */
+inline STRING addExtension(const STRING file, const STRING ext)
+{
+	if (_ftcsicmp(getExtension(file).c_str(), ext.c_str()) != 0)
+	{
+		return (file + _T('.') + ext);
+	}
+	return file;
+}
+
 // Resolve a file name.
 extern STRING (*resolve)(const STRING path);
 

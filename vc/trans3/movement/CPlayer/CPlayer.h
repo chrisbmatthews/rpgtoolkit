@@ -14,7 +14,7 @@
 
 //	EQ_SLOT.first = filename
 //	EQ_SLOT.second = handle
-typedef std::pair<STRING, STRING> EQ_SLOT;
+typedef std::pair<STRING, STRING> EQ_SLOT, *LPEQ_SLOT;
 
 class CPlayer : public CSprite, public IFighter
 {
@@ -53,7 +53,7 @@ public:
 	void equipmentFP(const int val) { m_equipment.mFP = val; }
 	void equipmentHP(const int val) { m_equipment.mHP = val; }
 	void equipmentSM(const int val) { m_equipment.mSM = val; }
-	EQ_SLOT *equipment(const int i) { return (m_equipment.data.size() > abs(i) ? &m_equipment.data[i] : NULL); }
+	LPEQ_SLOT equipment(const int i) { return (m_equipment.data.size() > abs(i) ? &m_equipment.data[i] : NULL); }
 	void equipment(const EQ_SLOT eq, const int i) 
 	{ 
 		while (abs(i) >= m_equipment.data.size())
@@ -78,6 +78,8 @@ public:
 
 	// Swap the graphics of this player for those of another.
 	void swapGraphics(const STRING file);
+	// Get the filename of the swapped graphic.
+	STRING swapGraphics(void) const { return m_anmReplacement; }
 
 private:
 	void calculateLevels(const bool init);

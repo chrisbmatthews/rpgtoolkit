@@ -70,15 +70,6 @@ inline T advance(T i, unsigned int j)
 	return i;
 }
 
-inline STRING addExtension(const STRING file, const STRING ext)
-{
-	if (getExtension(file).empty())
-	{
-		return (file + _T('.') + ext);
-	}
-	return file;
-}
-
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
 	CProgram prg;
@@ -703,12 +694,12 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			break;
 		case GEN_EQUIP_FILES:
 			{
-				EQ_SLOT *pEq = pPlayer->equipment(arrayPos);
+				LPEQ_SLOT pEq = pPlayer->equipment(arrayPos);
 				bstr = getString(pEq->first);
 			} break;
 		case GEN_EQUIP_HANDLES:
 			{
-				EQ_SLOT *pEq = pPlayer->equipment(arrayPos);
+				LPEQ_SLOT pEq = pPlayer->equipment(arrayPos);
 				bstr = getString(pEq->second);
 			} break;
 		case GEN_MUSICPLAYING:
@@ -717,7 +708,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			break;
 		case GEN_CURRENTBOARD:
 			extern LPBOARD g_pBoard;
-			bstr = getString(g_pBoard->strFilename);
+			bstr = getString(g_pBoard->filename);
 			break;
 		case GEN_MENUGRAPHIC:
 			bstr = getString(g_menuGraphic);
@@ -931,12 +922,12 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 			break;
 		case GEN_EQUIP_FILES:
 			{
-				EQ_SLOT *pEq = pPlayer->equipment(arrayPos);
+				LPEQ_SLOT pEq = pPlayer->equipment(arrayPos);
 				pEq->first = getString(newVal);
 			} break;		
 		case GEN_EQUIP_HANDLES:
 			{
-				EQ_SLOT *pEq = pPlayer->equipment(arrayPos);
+				LPEQ_SLOT pEq = pPlayer->equipment(arrayPos);
 				pEq->second = getString(newVal);
 			} break;
 		case GEN_MUSICPLAYING:

@@ -210,7 +210,7 @@ typedef struct tagBoard
 
 	std::vector<BOARD_TILEANIM> animatedTiles;		// Animated tiles associated with this board.
 
-	STRING strFilename;								// Filename of the board.
+	STRING filename;								// Filename of the board.
 
 	/* Member functions */
 

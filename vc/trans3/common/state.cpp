@@ -163,7 +163,7 @@ void loadSaveState(const STRING str)
 			file >> fileName >> handle;
 
 			if (!fileName.empty() && j < g_players.size())
-			{
+			{ 
 				CPlayer *p = g_players[j];
 				if (p) p->equipment(EQ_SLOT(fileName, handle), i);
 			}
@@ -194,34 +194,48 @@ void loadSaveState(const STRING str)
 
 	file >> g_selectedPlayer;
 	g_pSelectedPlayer = g_players[g_selectedPlayer];
+
 	int gp;
 	file >> gp;
 	g_gp = gp; // Performs an upcast.
+
 	int colour;
 	file >> colour;
-	g_mwinColor = colour;
+	g_mwinColor = abs(colour);
+
 	file >> g_mwinBkg;
-	if (colour == -1) g_mwinBkg = _T("");
-	int debug;
-	file >> debug; // Show the debugger?
-	// tbd - use 'debug'
+	
+	int debug;			// Show the debugger?
+	file >> debug;
+	CProgram::setDebugLevel(debug != 0 ? E_WARNING : E_DISABLED);
+
 	int fontColour;
 	file >> fontColour;
 	g_color = fontColour;
+
 	file >> g_fontFace;
 	file >> g_fontSize;
-	file >> g_bold >> g_underline >> g_italic;
+
+	int bd, un, it;
+	file >> bd >> un >> it;
+	g_bold = bool(bd);
+	g_underline = bool(un);
+	g_italic = bool(it);
+
 	int gameTime;
 	file >> gameTime;
 	g_gameTime.reset(gameTime);
+
 	int steps;
 	file >> steps;
 	g_pxStepsTaken = steps * 32;
+
 	STRING mainFile;
 	file >> mainFile;
 	g_mainFile.open(GAM_PATH + removePath(mainFile));
 	STRING board;
 	file >> board;
+	// tbd: remove path up to...
 	g_pBoard->open(g_projectPath + BRD_PATH + removePath(board));
 
 	for (i = 0; i < 5; ++i)
@@ -234,6 +248,7 @@ void loadSaveState(const STRING str)
 			CPlayer *p = g_players[i];
 			if (p)
 			{
+				// tbd: increment minor ver and store PX_ABSOLUTE?
 				p->setPosition(int(x), int(y), z, g_pBoard->coordType);
 			}
 		}
@@ -368,13 +383,6 @@ void loadSaveState(const STRING str)
 		}
 	}
 
-	if (minorVer >= 2)
-	{
-		int loopOffset;
-		file >> loopOffset;
-		CSprite::setLoopOffset(loopOffset);
-	}
-
 	// Currently obsolete garbage collection information. But
 	// garbage collection will have to be reintroduced sooner
 	// or later and it might become useful then.
@@ -388,10 +396,260 @@ void loadSaveState(const STRING str)
 		}
 	}
 
+	if (minorVer >= 2)
+	{
+		int loopOffset;
+		file >> loopOffset;
+		CSprite::setLoopOffset(loopOffset);
+	}
+
 	g_pSelectedPlayer->setActive(true);
 	g_pSelectedPlayer->send();
 }
 
-void saveSaveState(const STRING file)
+void saveSaveState(const STRING fileName)
 {
+ 	CFile file(fileName, OF_CREATE | OF_WRITE);
+
+	// Header
+	file << _T("RPGTLKIT SAVE");
+	file << short(3);				// Major version
+	file << short(3);				// Minor version
+                   
+	unsigned int i = 0;
+
+/**
+	// Numerical globals.
+        Dim nCount As Long
+        nCount = countNumVars(globalHeap)
+        
+        Call BinWriteLong(num, nCount)
+        
+        Dim t As Long
+        For t = 1 To nCount
+            Call BinWriteString(num, GetNumName(t - 1, globalHeap))
+            Call BinWriteDouble(num, GetNumVar(GetNumName(t - 1, globalHeap), globalHeap))
+        Next t
+        
+	// Literal globals.
+        nCount = countLitVars(globalHeap)
+        
+        Call BinWriteLong(num, nCount)
+        
+        For t = 1 To nCount
+            Call BinWriteString(num, GetLitName(t - 1, globalHeap))
+            Call BinWriteString(num, GetLitVar(GetLitName(t - 1, globalHeap), globalHeap))
+        Next t
+        
+	// Redirects.
+        nCount = countRedirects()
+        
+        Call BinWriteLong(num, nCount)
+        
+        For t = 1 To nCount
+            Call BinWriteString(num, getRedirectName(t - 1))
+            Call BinWriteString(num, getRedirect(getRedirectName(t - 1)))
+        Next t
+**/
+        
+	// Player information.
+	for (i = 0; i < 5; ++i)
+	{
+		STRING name, filename;
+		if (i < g_players.size() && g_players.at(i))
+		{
+			name = g_players.at(i)->name();
+			filename = g_players.at(i)->getPlayer()->fileName;
+		}
+		file << name << fileName;
+	}
+
+	// Inventory.
+	file << short(g_inv.size());
+
+	for (i = 0; i != g_inv.size(); ++i)
+	{
+		STRING filename, handle;
+		int quantity;
+		filename = g_inv.fileAt(i);
+		handle = g_inv.handleAt(i);
+		quantity = int(g_inv.quantityAt(i));
+		file << filename << handle << quantity;
+	}
+
+	// Equipment - slot numbers run from 1.
+	for (i = 1; i <= 16; ++i)
+	{
+		for (unsigned int j = 0; j < 5; ++j)
+		{
+			STRING filename, handle;
+			if (j < g_players.size() && g_players.at(j))
+			{
+				LPEQ_SLOT pEq = g_players.at(j)->equipment(i);
+				filename = pEq->first;
+				handle = pEq->second;
+			}
+			file << filename << handle;
+		}
+	}
+
+	// Equipment stat modifiers.
+	for (i = 0; i < 5; ++i)
+	{
+		int hp = 0, sm = 0, dp = 0, fp = 0;
+		if (i < g_players.size() && g_players.at(i))
+		{
+			hp = g_players.at(i)->equipmentHP();
+			sm = g_players.at(i)->equipmentSM();
+			dp = g_players.at(i)->equipmentDP();
+			fp = g_players.at(i)->equipmentFP();
+		}
+		file << hp << sm << dp << fp;
+	}
+
+	// Menu color (unused).
+	file << int(0);
+
+	// Miscellaneous variables.
+	file << g_selectedPlayer;
+	file << int(g_gp);
+	file << int(g_mwinColor);
+	file << g_mwinBkg;
+
+	const EXCEPTION_TYPE et = CProgram::getDebugLevel();
+	file << int(et == E_DISABLED ? 0 : 1);
+
+	file << int(g_color);
+	file << g_fontFace;
+	file << int(g_fontSize);
+	file << int(g_bold);
+	file << int(g_underline);
+	file << int(g_italic);
+	file << g_gameTime.gameTime();
+	file << int(g_pxStepsTaken / 32);			// Saved in tiles.
+	file << g_mainFile.getFilename();
+	file << g_pBoard->filename;
+
+	// Player locations.
+	for (i = 0; i < 5; ++i)
+	{
+		SPRITE_POSITION p;
+		if (i < g_players.size() && g_players.at(i))
+		{
+			// tbd: increment minor ver and store PX_ABSOLUTE?
+			int x, y;
+			p = g_players.at(i)->getPosition();
+			x = int(p.x);
+			y = int(p.y);
+			coords::pixelToTile(x, y, g_pBoard->coordType, true, g_pBoard->sizeX);
+			p.x = double(x);
+			p.y = double(y);
+		}
+		file << p.x << p.y << p.l;
+	}
+
+	// Player levels.
+	for (i = 0; i < 5; ++i)
+	{
+		int nl = 0, lp = 0;
+		if (i < g_players.size() && g_players.at(i))
+		{
+			LPPLAYER pPlayer = g_players.at(i)->getPlayer();
+			nl = pPlayer->nextLevel;
+			lp = pPlayer->levelProgression;
+		}
+		file << nl << lp;
+	}
+
+	// Other players (currently unused).
+	for (i = 0; i < 26; ++i)
+	{
+		STRING otherPlayer, otherPlayerHandle;
+		file << otherPlayer << otherPlayerHandle;
+	}
+
+	// Miscellaneous variables.
+	file << g_menuGraphic;
+	file << g_fightMenuGraphic;
+	file << g_mwinSize;
+
+	// Player filename given in the last NewPlayer() call.	
+	file << g_pSelectedPlayer->swapGraphics();
+        
+/**
+	// Active threads.
+        Call BinWriteLong(num, UBound(Threads))
+        For t = 0 To UBound(Threads)
+            Call BinWriteString(num, Threads(t).filename)
+            If Threads(t).bPersistent Then
+                Call BinWriteLong(num, 1)
+            Else
+                Call BinWriteLong(num, 0)
+            End If
+            Call BinWriteLong(num, Threads(t).thread.programPos)
+            If Threads(t).bIsSleeping Then
+                Call BinWriteLong(num, 1)
+            Else
+                Call BinWriteLong(num, 0)
+            End If
+            Dim dDuration As Double
+            dDuration = ThreadSleepRemaining(t)
+            Call BinWriteDouble(num, dDuration)
+            
+            'write local variables...
+            Call BinWriteLong(num, Threads(t).thread.currentHeapFrame)
+            Dim tt As Long
+            For tt = 0 To Threads(t).thread.currentHeapFrame
+                'print num vars...
+                nCount = countNumVars(Threads(t).thread.heapStack(tt))
+                Call BinWriteLong(num, nCount)
+                
+                Dim ttt As Long
+                For ttt = 1 To nCount
+                    Call BinWriteString(num, GetNumName(ttt - 1, Threads(t).thread.heapStack(tt)))
+                    Call BinWriteDouble(num, GetNumVar(GetNumName(ttt - 1, Threads(t).thread.heapStack(tt)), Threads(t).thread.heapStack(tt)))
+                Next ttt
+                
+                'print lit vars...
+                nCount = countLitVars(Threads(t).thread.heapStack(tt))
+                Call BinWriteLong(num, nCount)
+                
+                For ttt = 1 To nCount
+                    Call BinWriteString(num, GetLitName(ttt - 1, Threads(t).thread.heapStack(tt)))
+                    Call BinWriteString(num, GetLitVar(GetLitName(ttt - 1, Threads(t).thread.heapStack(tt)), Threads(t).thread.heapStack(tt)))
+                Next ttt
+            Next tt
+        Next t
+**/
+        
+	// Movement size (pixel movement setting).
+	file << double (CSprite::m_bPxMovement ? 0.0 : 1.0);
+  
+/**
+	// OOP information.
+        Call BinWriteLong(num, UBound(g_objects))
+        For t = 0 To UBound(g_objects)
+            Call BinWriteLong(num, g_objects(t).hClass)
+            Call BinWriteString(num, g_objects(t).strInstancedFrom)
+        Next t
+        Call BinWriteLong(num, UBound(g_objHandleUsed))
+        For t = 0 To UBound(g_objHandleUsed)
+            If (g_objHandleUsed(t)) Then
+                Call BinWriteByte(num, 1)
+            Else
+                Call BinWriteByte(num, 0)
+            End If
+        Next t
+        Dim lngFreeableObjects As Long
+        lngFreeableObjects = countFreeableObjects(g_garbageHeap)
+        Call BinWriteLong(num, lngFreeableObjects)
+        For t = 0 To lngFreeableObjects
+            Call BinWriteLong(num, getFreeableObjectHandle(g_garbageHeap, t))
+        Next t
+**/
+
+	// Loop offset (game speed modifier).
+	file << CSprite::getLoopOffset();
+
 }
+

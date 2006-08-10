@@ -1258,7 +1258,8 @@ bool CSprite::programTest(void)
 			{
 				// General activation key. GetAsyncKeyState is
 				// negative if key is currently down.
-				const short state = GetAsyncKeyState(MapVirtualKey(g_mainFile.key, 1));
+				HKL hkl = GetKeyboardLayout(0);
+				const short state = GetAsyncKeyState(MapVirtualKeyEx(g_mainFile.key, 1, hkl));
 				if (state >= 0) continue;
 			}
 
@@ -1288,6 +1289,8 @@ bool CSprite::programTest(void)
 		const short activate = itm->m_brdData.activate;
 		const STRING finalValue = itm->m_brdData.finalValue;
 		const STRING finalVar = itm->m_brdData.finalVar;
+
+		// tbd: set the source and target types?
 
 		if (CFile::fileExists(g_projectPath + PRG_PATH + itm->m_brdData.prgActivate))
 		{
@@ -1376,7 +1379,8 @@ bool CSprite::programTest(void)
 			if (bp.activationType & PRG_KEYPRESS)
 			{
 				// General activation key - if not pressed, continue.
-				const short state = GetAsyncKeyState(MapVirtualKey(g_mainFile.key, 1));
+				HKL hkl = GetKeyboardLayout(0);
+				const short state = GetAsyncKeyState(MapVirtualKeyEx(g_mainFile.key, 1, hkl));
 				if (state >= 0) continue;
 			}
 

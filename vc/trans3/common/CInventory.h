@@ -93,6 +93,10 @@ public:
 	{
 		if (m_data.size() > i) at(i)->second.second = value;
 	}
+	unsigned int size(void) const
+	{
+		return m_data.size();
+	}
 private:
 	std::map<STRING, DATA_PAIR>::iterator at(const int j)
 	{

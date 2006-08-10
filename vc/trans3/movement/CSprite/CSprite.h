@@ -113,6 +113,7 @@ public:
 		return (result < 1 ? 1 : result);
 	}
 	static void setLoopOffset(const int offset) { m_loopOffset = offset; }
+	static int getLoopOffset(void) { return m_loopOffset; }
 	void setSpeed(const double delay) { m_attr.speed = delay * MILLISECONDS; }
 
 	// The facing direction - tie changes to alter the animation.

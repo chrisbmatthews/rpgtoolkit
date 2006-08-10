@@ -2851,9 +2851,6 @@ void dirSav(CALL_DATA &params)
 		);
 	}
 
-	// Append the filetype.
-	if (_ftcsicmp(getExtension(file).c_str(), _T("sav")) != 0) file += _T(".sav");
-
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = (file.empty() ? _T("CANCEL") : file);
 	
@@ -2870,7 +2867,12 @@ void dirSav(CALL_DATA &params)
  */
 void save(CALL_DATA &params)
 {
-// TBD
+	extern STRING g_savePath;
+	if (params.params != 1)
+	{
+		throw CError(_T("Save() requires one parameter."));
+	}
+	saveSaveState(g_savePath + addExtension(params[0].getLit(), _T("sav")));
 }
 
 /*
@@ -2885,7 +2887,7 @@ void load(CALL_DATA &params)
 	{
 		throw CError(_T("Load() requires one parameter."));
 	}
-	loadSaveState(g_savePath + params[0].getLit());
+	loadSaveState(g_savePath + addExtension(params[0].getLit(), _T("sav")));
 }
 
 /*
@@ -6293,7 +6295,7 @@ void getBoardName(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
 	params.ret().udt = UDT_LIT;
-	params.ret().lit = g_pBoard->strFilename;
+	params.ret().lit = g_pBoard->filename;
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
