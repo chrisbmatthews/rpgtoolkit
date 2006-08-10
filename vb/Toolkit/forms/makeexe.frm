@@ -117,59 +117,32 @@ Option Explicit
 
 Private iconPath As String
 
+Private Declare Function ZIPCreateCompoundFile Lib "actkrt3.dll" (ByVal pstrOrigFile As String, ByVal pstrExtendedFile As String) As Long
+
 '==========================================================================
-'Compiles the currently loaded project [KSNiloc]
+'Compiles the currently loaded project (Colin)
 '==========================================================================
 Private Sub CreateEXE(ByVal file As String)
+    ' Last modified: June 23, 2006
 
     On Error Resume Next
 
+    Dim tmp As String
+    tmp = TempDir() & "temp.tpk"
+
+    Dim trans As String
+    trans = App.path & "\trans3.exe"
+    If Not (fileExists(trans)) Then trans = CurDir$() & "\trans3.exe"
+    If Not (fileExists(trans)) Then
+        Call MsgBox("The RPGToolkit engine cannot be found in the application or working directory." & vbCrLf & vbCrLf & "The engine (trans3.exe) is required to make exes.")
+        Exit Sub
+    End If
+
     Call SaveSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, file)
-
-    Call CreatePakFile(TempDir & "temp2.tpk")
-
-    Dim RC4 As New clsRC4
-    RC4.Key = "TK3 EXE HOST"
-    RC4.EncryptFile TempDir & "temp2.tpk", TempDir & "temp.tpk", True
-
-    Call FileCopy(App.path & "\exeHost.dll", TempDir & "tkTempExe2")
-
-    Dim files(1 To 5) As String
-
-    files(1) = App.path & "\freeImage.dll"
-    files(2) = App.path & "\actkrt3.dll"
-    files(3) = App.path & "\trans3.exe"
-    files(4) = TempDir & "temp.tpk"
-    files(5) = App.path & "\audiere.dll"
-
-    Call addToSelfExtract(TempDir & "tkTempExe2", _
-                          files(5), _
-                          TempDir & "tkTempExe5")
-
-    Call addToSelfExtract(TempDir & "tkTempExe5", _
-                          files(4), _
-                          TempDir & "tkTempExe4")
-
-    Call addToSelfExtract(TempDir & "tkTempExe4", _
-                           files(3), _
-                           TempDir & "tkTempExe3")
-
-    Call addToSelfExtract(TempDir & "tkTempExe3", _
-                          files(2), _
-                          TempDir & "tkTempExe6")
-
-    Call addToSelfExtract(TempDir & "tkTempExe6", _
-                          files(1), _
-                          file)
-
-    Call Kill(TempDir & "temp.tpk")
-    Call Kill(TempDir & "temp2.tpk")
-    Call Kill(TempDir & "tkTempExe")
-    Call Kill(TempDir & "tkTempExe2")
-    Call Kill(TempDir & "tkTempExe3")
-    Call Kill(TempDir & "tkTempExe4")
-    Call Kill(TempDir & "tkTempExe5")
-    Call Kill(TempDir & "tkTempExe6")
+    Call CreatePakFile(tmp)
+    Call FileCopy(trans, file)
+    Call ZIPCreateCompoundFile(file, tmp)
+    Call Kill(tmp)
 
 End Sub
 
@@ -277,5 +250,6 @@ Private Sub Form_Load()
     ' Call LocalizeForm(Me)
     Text1.Text = GetSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, "")
 End Sub
+
 
 
