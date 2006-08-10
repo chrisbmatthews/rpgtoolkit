@@ -9,7 +9,6 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-typedef DWORD *DWORD_PTR;
 #include <dmusici.h>
 #include <set>
 #include "audiere.h"
@@ -25,7 +24,8 @@ public:
 	~CAudioSegment();
 	bool open(const STRING file);
 	void play(const bool repeat);
-	static void playSoundEffect(const STRING file);
+	static void playSoundEffect(const STRING file, const bool waitToFinish);
+	static void stopSoundEffect();
 	void stop();
 
 	STRING getPlayingFile() const { return m_file; }
@@ -34,6 +34,7 @@ protected:
 	CAudioSegment(const CAudioSegment &rhs);			// No implementation.
 	CAudioSegment &operator=(const CAudioSegment &rhs); // No implementation.
 	void init();
+	bool isPlaying();
 	static DWORD WINAPI eventManager(LPVOID lpv);
 
 	static IDirectMusicLoader8 *m_pLoader;
@@ -44,7 +45,6 @@ protected:
 	audiere::OutputStreamPtr m_outputStream;
 	bool m_audiere;
 	STRING m_file;
-	bool m_playing;
 };
 
 #endif

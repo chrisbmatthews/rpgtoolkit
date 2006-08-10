@@ -73,14 +73,13 @@ bool CAudioSegment::open(const STRING file)
  */
 void CAudioSegment::play(const bool repeat)
 {
-	if (m_playing) return;
+	if (isPlaying()) return;
 	if (m_audiere)
 	{
 		if (m_outputStream)
 		{
 			m_outputStream->setRepeat(repeat);
 			m_outputStream->play();
-			m_playing = true;
 		}
 	}
 	else
@@ -89,7 +88,6 @@ void CAudioSegment::play(const bool repeat)
 		{
 			m_pSegment->SetRepeats(repeat ? DMUS_SEG_REPEAT_INFINITE : 0);
 			m_pPerformance->PlaySegmentEx(m_pSegment, NULL, NULL, 0, 0, NULL /* (segment state) */, NULL, NULL);
-			m_playing = true;
 		}
 	}
 }
@@ -111,7 +109,21 @@ void CAudioSegment::stop()
 	{
 		if (m_pPerformance) m_pPerformance->Stop(NULL, NULL, 0, 0);
 	}
-	m_playing = false;
+}
+
+/*
+ * Determine whether the segment is currently playing.
+ */
+bool CAudioSegment::isPlaying()
+{
+	if (m_audiere)
+	{
+		if (m_outputStream) return m_outputStream->isPlaying();
+	}
+	else
+	{
+		if (m_pPerformance) return (m_pPerformance->IsPlaying(m_pSegment, NULL) == S_OK);
+	}
 }
 
 /*
@@ -133,7 +145,6 @@ void CAudioSegment::init()
 
 	m_pSegment = NULL;
 	m_audiere = false;
-	m_playing = false;
 	// Set up Audiere.
 	m_device = audiere::OpenDevice();
 }
@@ -173,14 +184,14 @@ DWORD WINAPI CAudioSegment::eventManager(LPVOID lpv)
 }
 
 /*
- * Play a sound effect.
+ * Play a sound effect, optionally idling until it is finished.
  */
-void CAudioSegment::playSoundEffect(const STRING file)
+void CAudioSegment::playSoundEffect(const STRING file, const bool waitToFinish)
 {
 	// Crappy -- but anything better will take a while
 	// to implement, and I'd like to have some form
 	// of sound effects done.
-	g_pSoundEffect->open(file);
+	if (g_pSoundEffect->open(file)) return;
 	g_pSoundEffect->play(false);
 
 #if 0
@@ -209,6 +220,24 @@ void CAudioSegment::playSoundEffect(const STRING file)
 
 	pSeg->play(false);
 #endif
+
+	if (waitToFinish)
+	{
+		extern void processEvent();
+		// Idle until the sound effect's event comes up.
+		while (!g_pSoundEffect->isPlaying()) processEvent();
+		// Idle until the sound effect ends.
+		while (g_pSoundEffect->isPlaying()) processEvent();
+	}
+
+}
+
+/*
+ * Stop a sound effect.
+ */
+void CAudioSegment::stopSoundEffect()
+{	
+	g_pSoundEffect->stop(); 
 }
 
 /*
@@ -220,7 +249,6 @@ void CAudioSegment::initLoader()
 
 	// Not loader related, but I don't feel like making another function.
 	m_notify = CreateEvent(NULL, FALSE, FALSE, NULL);
-	g_pSoundEffect = new CAudioSegment();
 
 	// Loader related stuff starts now.
 	if (m_pLoader) return;
@@ -241,6 +269,9 @@ void CAudioSegment::initLoader()
 #else
 	m_pLoader->SetSearchDirectory(GUID_DirectMusicAllTypes, resolve(g_projectPath + MEDIA_PATH).c_str(), FALSE);
 #endif
+
+	// Initialise after CoCreateInstance().
+	g_pSoundEffect = new CAudioSegment();
 }
 
 /*
