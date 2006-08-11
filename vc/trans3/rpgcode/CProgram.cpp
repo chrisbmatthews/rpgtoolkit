@@ -266,8 +266,8 @@ void CProgram::removeRedirect(CONST STRING str)
 // Locate a named method.
 tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg)
 {
-	std::vector<NAMED_METHOD>::iterator i = m_methods.begin();
-	for (; i != m_methods.end(); ++i)
+	std::vector<NAMED_METHOD>::iterator i = prg.m_methods.begin();
+	for (; i != prg.m_methods.end(); ++i)
 	{
 		if ((i->name == name) && (i->params == params) && (bMethod || (i->i != 0xffffff)))
 		{
@@ -1186,25 +1186,25 @@ unsigned int CProgram::matchBrace(POS i)
 void CProgram::include(const CProgram prg)
 {
 	{
-		std::map<STRING, tagClass>::const_iterator i = m_classes.begin();
-		for (; i != m_classes.end(); ++i)
+		std::map<STRING, tagClass>::const_iterator i = prg.m_classes.begin();
+		for (; i != prg.m_classes.end(); ++i)
 		{
 			m_classes.insert(*i);
 		}
 	}
 
-	std::vector<NAMED_METHOD>::const_iterator i = m_methods.begin();
-	for (; i != m_methods.end(); ++i)
+	std::vector<NAMED_METHOD>::const_iterator i = prg.m_methods.begin();
+	for (; i != prg.m_methods.end(); ++i)
 	{
 		m_methods.push_back(*i);
 		int depth = 0;
-		CONST_POS j = m_units.begin() + i->i - 1;
+		CONST_POS j = prg.m_units.begin() + i->i - 1;
 		do
 		{
 			m_units.push_back(*j);
 			if (j->udt & UDT_OPEN) ++depth;
 			else if ((j->udt & UDT_CLOSE) && !--depth) break;
-		} while (++j != m_units.end());
+		} while (++j != prg.m_units.end());
 	}
 }
 
