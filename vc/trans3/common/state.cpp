@@ -58,9 +58,6 @@ void loadSaveState(const STRING str)
 		return;
 	}
 
-	// tbd:	- hide players - default to hidden. No record of whether
-	//						 they were active or hidden. Use position?
-
 	short majorVer, minorVer;
 	file >> majorVer >> minorVer;
 
@@ -133,7 +130,10 @@ void loadSaveState(const STRING str)
 		g_players.clear();
 	}
 
-	for (i = 0; i < 5; ++i)
+	int players = 5;
+	if (minorVer >= 4) file >> players;
+
+	for (i = 0; i < players; ++i)
 	{
 		STRING name, fileName;
 		file >> name >> fileName;
@@ -162,7 +162,7 @@ void loadSaveState(const STRING str)
 	// Equipment - slot numbers run from 1.
 	for (i = 1; i <= 16; ++i)
 	{
-		for (unsigned int j = 0; j < 5; ++j)
+		for (unsigned int j = 0; j < players; ++j)
 		{
 			STRING fileName, handle;
 			file >> fileName >> handle;
@@ -176,7 +176,7 @@ void loadSaveState(const STRING str)
 	}
 
 	// Equipment stat modifiers.
-	for (i = 0; i < 5; ++i)
+	for (i = 0; i < players; ++i)
 	{
 		int hp, sm, dp, fp;
 		file >> hp >> sm >> dp >> fp;
@@ -221,11 +221,7 @@ void loadSaveState(const STRING str)
 	file >> g_fontFace;
 	file >> g_fontSize;
 
-	int bd, un, it;
-	file >> bd >> un >> it;
-	g_bold = bool(bd);
-	g_underline = bool(un);
-	g_italic = bool(it);
+	file >> g_bold >> g_underline >> g_italic;
 
 	int gameTime;
 	file >> gameTime;
@@ -243,23 +239,27 @@ void loadSaveState(const STRING str)
 	// tbd: remove path up to...
 	g_pBoard->open(g_projectPath + BRD_PATH + removePath(board));
 
-	for (i = 0; i < 5; ++i)
+	for (i = 0; i < players; ++i)
 	{
 		double x, y;
-		int z;
+		int z, active = 0;
+		COORD_TYPE ct = g_pBoard->coordType;
+
 		file >> x >> y >> z;
-		if (i < g_players.size())
+
+		if (minorVer >= 4)
 		{
-			CPlayer *p = g_players[i];
-			if (p)
-			{
-				// tbd: increment minor ver and store PX_ABSOLUTE?
-				p->setPosition(int(x), int(y), z, g_pBoard->coordType);
-			}
+			file >> active;
+			ct = PX_ABSOLUTE;			// Pre-3.0.7, location stored in tiles.
+		}
+		if (i < g_players.size() && g_players[i])
+		{
+			g_players[i]->setPosition(int(x), int(y), z, ct);
+			g_players[i]->setActive(active != 0);
 		}
 	}
 
-	for (i = 0; i < 5; ++i)
+	for (i = 0; i < players; ++i)
 	{
 		int nl, lp;
 		file >> nl >> lp;
@@ -295,6 +295,8 @@ void loadSaveState(const STRING str)
 	file >> count;
 	for (i = 0; i <= count; ++i)
 	{
+		if (count < 0) break;
+
 		STRING fileName;
 		file >> fileName;
 
@@ -474,10 +476,12 @@ void saveSaveState(const STRING fileName)
 	}
 
 	// Player information.
-	for (i = 0; i < 5; ++i)
+	file <<  int(g_players.size());
+
+	for (i = 0; i < g_players.size(); ++i)
 	{
 		STRING name, filename;
-		if (i < g_players.size() && g_players.at(i))
+		if (g_players.at(i))
 		{
 			name = g_players.at(i)->name();
 			filename = g_players.at(i)->getPlayer()->fileName;
@@ -501,25 +505,27 @@ void saveSaveState(const STRING fileName)
 	// Equipment - slot numbers run from 1.
 	for (i = 1; i <= 16; ++i)
 	{
-		for (unsigned int j = 0; j < 5; ++j)
+		for (unsigned int j = 0; j < g_players.size(); ++j)
 		{
 			STRING filename, handle;
-			// Colin: This commented section crahses for me.
-			/**if (j < g_players.size() && g_players.at(j))
+			if (g_players.at(j))
 			{
-				LPEQ_SLOT pEq = g_players.at(j)->equipment(i);
-				filename = pEq->first;
-				handle = pEq->second;
-			}**/
+				const LPEQ_SLOT pEq = g_players.at(j)->equipment(i);
+				if (pEq)
+				{
+					filename = pEq->first;
+					handle = pEq->second;
+				}
+			}
 			file << filename << handle;
 		}
 	}
 
 	// Equipment stat modifiers.
-	for (i = 0; i < 5; ++i)
+	for (i = 0; i < g_players.size(); ++i)
 	{
 		int hp = 0, sm = 0, dp = 0, fp = 0;
-		if (i < g_players.size() && g_players.at(i))
+		if (g_players.at(i))
 		{
 			hp = g_players.at(i)->equipmentHP();
 			sm = g_players.at(i)->equipmentSM();
@@ -553,30 +559,27 @@ void saveSaveState(const STRING fileName)
 	file << g_pBoard->filename;
 
 	// Player locations.
-	for (i = 0; i < 5; ++i)
+	for (i = 0; i < g_players.size(); ++i)
 	{
 		SPRITE_POSITION p;
-		if (i < g_players.size() && g_players.at(i))
+		bool active = false;
+		if (g_players.at(i))
 		{
-			// tbd: increment minor ver and store PX_ABSOLUTE?
-			int x, y;
 			p = g_players.at(i)->getPosition();
-			x = int(p.x);
-			y = int(p.y);
-			coords::pixelToTile(x, y, g_pBoard->coordType, true, g_pBoard->sizeX);
-			p.x = double(x);
-			p.y = double(y);
+			active = g_players.at(i)->isActive();
 		}
-		file << p.x << p.y << p.l;
+		// Store pixel values always.
+		file << p.x << p.y << p.l; 
+		file << int(active);
 	}
 
 	// Player levels.
-	for (i = 0; i < 5; ++i)
+	for (i = 0; i < g_players.size(); ++i)
 	{
 		int nl = 0, lp = 0;
-		if (i < g_players.size() && g_players.at(i))
+		if (g_players.at(i))
 		{
-			LPPLAYER pPlayer = g_players.at(i)->getPlayer();
+			const LPPLAYER pPlayer = g_players.at(i)->getPlayer();
 			nl = pPlayer->nextLevel;
 			lp = pPlayer->levelProgression;
 		}
