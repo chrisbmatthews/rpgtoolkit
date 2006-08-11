@@ -202,12 +202,12 @@ int MainMenuScanKeys(void)
 					break;
 
 				case 3:
-					//Return
+					// Return
 					bDone = true;
 					break;
 
 				case 4:
-					//Save
+					// Save
 					if (CBGetBoardNum(BRD_SAVING_DISABLED, 0, 0, 0) == 0)
 					{
 						// If saving is enabled on this board.
@@ -216,7 +216,7 @@ int MainMenuScanKeys(void)
 						if (strFile.compare("") != 0)
 						{
 							// If a file was chosen.
-							CBRpgCode("#Save("+strFile+")");
+							CBRpgCode("Save(\"" + strFile + "\");");
 							CBMessageWindow(CBLoadString(834, "Save Complete!"), rgb(255, 255, 255), rgb(0,0,0), "", MW_OK);
 						}
 					}
@@ -231,12 +231,11 @@ int MainMenuScanKeys(void)
 					break;
 
 				case 5:
-					//Load
+					// Load
 					strFile = CBFileDialog(CBGetPathString(PATH_SAVE), "*.sav");
 					if (strFile.compare("") != 0)
 					{
-						strFile = CBFileDialog(CBGetPathString(PATH_SAVE), "*.sav");
-						CBRpgCode("#Load("+strFile+")");
+						CBRpgCode("Load(\"" + strFile + "\");");
 						bDone = true;
 					}
 					break;
