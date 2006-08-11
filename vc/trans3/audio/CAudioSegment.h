@@ -26,6 +26,7 @@ public:
 	void play(const bool repeat);
 	static void playSoundEffect(const STRING file, const bool waitToFinish);
 	static void stopSoundEffect();
+	static void setMasterVolume(int percent);
 	void stop();
 
 	STRING getPlayingFile() const { return m_file; }
@@ -35,6 +36,7 @@ protected:
 	CAudioSegment &operator=(const CAudioSegment &rhs); // No implementation.
 	void init();
 	bool isPlaying();
+	void setVolume(const int percent);
 	static DWORD WINAPI eventManager(LPVOID lpv);
 
 	static IDirectMusicLoader8 *m_pLoader;

@@ -6656,13 +6656,17 @@ void getTickCount(CALL_DATA &params)
 }
 
 /*
- * setvolume(...)
+ * void setvolume(int percent)
  * 
- * Description.
+ * Set the volume of all music and sound using a value between 0 and 100.
  */
 void setvolume(CALL_DATA &params)
 {
-// TBD
+	if (params.params != 1)
+	{
+		throw CError(_T("SetVolume() requires one parameter."));
+	}	
+	CAudioSegment::setMasterVolume(int(params[0].getNum()));
 }
 
 /*

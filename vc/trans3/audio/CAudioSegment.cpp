@@ -191,7 +191,10 @@ void CAudioSegment::playSoundEffect(const STRING file, const bool waitToFinish)
 	// Crappy -- but anything better will take a while
 	// to implement, and I'd like to have some form
 	// of sound effects done.
-	if (g_pSoundEffect->open(file)) return;
+
+	// Try to avoid an infinite loop if the effect isn't loaded,
+	// but allow the same effect to be played repeatedly.
+	if (!g_pSoundEffect->open(file) && _strcmpi(file.c_str(), g_pSoundEffect->m_file.c_str()) != 0) return;
 	g_pSoundEffect->play(false);
 
 #if 0
@@ -238,6 +241,37 @@ void CAudioSegment::playSoundEffect(const STRING file, const bool waitToFinish)
 void CAudioSegment::stopSoundEffect()
 {	
 	g_pSoundEffect->stop(); 
+}
+
+/*
+ * Set the volumes of all performances.
+ */
+void CAudioSegment::setMasterVolume(int percent)
+{
+	extern CAudioSegment *g_bkgMusic;
+	percent = percent < 0 ? 0 : (percent > 100 ? 100 : percent);
+	g_bkgMusic->setVolume(percent);
+	g_pSoundEffect->setVolume(percent);
+}
+
+/*
+ * Set the volume of a performance.
+ */
+void CAudioSegment::setVolume(const int percent)
+{
+	if (m_audiere)
+	{
+		// Volume is a float between 0.0 and 1.0.
+		if (m_outputStream) m_outputStream->setVolume(percent / 100.0);
+	}
+	else
+	{
+		// MasterVolume is a value in 1/100ths of a decibel ranging
+		// between -100dB and +10dB (-30dB is quiet enough, though).
+		// Note this is not really a linear relationship!
+		long db = (percent - 100) * 30;
+		if (m_pPerformance) m_pPerformance->SetGlobalParam(GUID_PerfMasterVolume, (void *)&db, sizeof(db));
+	}
 }
 
 /*
