@@ -1330,6 +1330,7 @@ void CProgram::reconstructState(CFile &stream)
 			{
 				STACK_FRAME sf;
 				reconstructStackFrame(stream, sf);
+				sf.prg = this;
 				frame.push_back(sf);
 			}
 		}
@@ -1357,6 +1358,7 @@ void CProgram::reconstructState(CFile &stream)
 				STRING str; STACK_FRAME sf;
 				stream >> str;
 				reconstructStackFrame(stream, sf);
+				sf.prg = this;
 				frame[str] = sf;
 			}
 		}
