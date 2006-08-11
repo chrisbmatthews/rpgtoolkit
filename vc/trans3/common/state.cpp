@@ -69,7 +69,7 @@ void loadSaveState(const STRING str)
 	double varValue;
 	STRING varString;
 
-	unsigned int i;
+	int i;
 	int count;
 
 	// Read numerical global variables.
@@ -148,7 +148,7 @@ void loadSaveState(const STRING str)
 	g_inv.clear();
 	short itemCount;					// VB recorded this as a short.
 	file >> itemCount;
-	for (i = 0; i <= itemCount; ++i)
+	for (i = 0; i != itemCount; ++i)
 	{
 		STRING fileName, handle;
 		int quantity;
@@ -198,6 +198,7 @@ void loadSaveState(const STRING str)
 	file >> unused; // menuColor
 
 	file >> g_selectedPlayer;
+	if (g_selectedPlayer >= g_players.size()) g_selectedPlayer = 0;
 	g_pSelectedPlayer = g_players[g_selectedPlayer];
 
 	int gp;
@@ -295,8 +296,6 @@ void loadSaveState(const STRING str)
 	file >> count;
 	for (i = 0; i <= count; ++i)
 	{
-		if (count < 0) break;
-
 		STRING fileName;
 		file >> fileName;
 
