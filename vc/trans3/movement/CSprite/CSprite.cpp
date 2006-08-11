@@ -1531,6 +1531,9 @@ void CSprite::drawPath(CCanvas *const cnv)
 	extern LPBOARD g_pBoard;
 	CONST LONG color = RGB(255, 0, 0);
 
+	// Colin: I'm getting a crash on this line after trying to load
+	//		  after already loading once. (The same file was loaded
+	//		  both times.)
 	if (!m_pos.bIsPath ||
 		(round(m_pos.x) == m_pos.target.x &&
 		round(m_pos.y) == m_pos.target.y && 

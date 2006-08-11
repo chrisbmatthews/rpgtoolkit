@@ -112,20 +112,20 @@ EXPORTS
 	CNVUnlock			@113
 
 	;tkDirectX...
-	DXInitGfxMode		@120
-	DXKillGfxMode		@121
-	DXDrawPixel			@122
-	DXRefresh			@123
-	DXLockScreen		@124
-	DXUnlockScreen		@125
-	DXDrawCanvas		@126
-	DXDrawCanvasTransparent	@127
-	DXClearScreen		@128
-	DXDrawText			@129
-	DXDrawCanvasPartial	@130
-	DXDrawCanvasTransparentPartial	@131
-	DXDrawCanvasTranslucent	@132
-	DXCopyScreenToCanvas	@133
+	;DXInitGfxMode		@120
+	;DXKillGfxMode		@121
+	;DXDrawPixel			@122
+	;DXRefresh			@123
+	;DXLockScreen		@124
+	;DXUnlockScreen		@125
+	;DXDrawCanvas		@126
+	;DXDrawCanvasTransparent	@127
+	;DXClearScreen		@128
+	;DXDrawText			@129
+	;DXDrawCanvasPartial	@130
+	;DXDrawCanvasTransparentPartial	@131
+	;DXDrawCanvasTranslucent	@132
+	;DXCopyScreenToCanvas	@133
 
 	;tkMD5...
 	MD5String			@150
@@ -149,31 +149,31 @@ EXPORTS
 	PLUGEventInform		@173
 
 	;tkRPGCode
-	RPGCInit			@180
-	RPGCShutdown		@181
-	RPGCCreateHeap		@182
-	RPGCDestroryHeap	@183
-	RPGCSetNumVar		@184
-	RPGCSetLitVar		@185
-	RPGCGetNumVar		@186
-	RPGCGetLitVar		@187
-	RPGCGetLitVarLen	@188
-	RPGCCountNum		@189
-	RPGCCountLit		@190
-	RPGCGetNumName		@191
-	RPGCGetLitName		@192
-	RPGCClearAll		@193
-	RPGCKillNum			@194
-	RPGCKillLit			@195
-	RPGCNumExists		@196
-	RPGCLitExists		@197
-	RPGCSetRedirect		@198
-	RPGCRedirectExists	@199
-	RPGCGetRedirect		@200
-	RPGCKillRedirect	@201
-	RPGCGetRedirectName	@202
-	RPGCClearRedirects	@203
-	RPGCCountRedirects	@204
+	;RPGCInit			@180
+	;RPGCShutdown		@181
+	;RPGCCreateHeap		@182
+	;RPGCDestroryHeap	@183
+	;RPGCSetNumVar		@184
+	;RPGCSetLitVar		@185
+	;RPGCGetNumVar		@186
+	;RPGCGetLitVar		@187
+	;RPGCGetLitVarLen	@188
+	;RPGCCountNum		@189
+	;RPGCCountLit		@190
+	;RPGCGetNumName		@191
+	;RPGCGetLitName		@192
+	;RPGCClearAll		@193
+	;RPGCKillNum			@194
+	;RPGCKillLit			@195
+	;RPGCNumExists		@196
+	;RPGCLitExists		@197
+	;RPGCSetRedirect		@198
+	;RPGCRedirectExists	@199
+	;RPGCGetRedirect		@200
+	;RPGCKillRedirect	@201
+	;RPGCGetRedirectName	@202
+	;RPGCClearRedirects	@203
+	;RPGCCountRedirects	@204
 
 	;tkAudiere
 	TKAudiereInit		@210
@@ -188,27 +188,27 @@ EXPORTS
 	TKAudiereSetPosition	@219
 
 	;transHost
-	mainEventLoop		@224
-	createHostWindow	@225
-	createEventCallbacks	@226
-	processEvent		@227
+	;mainEventLoop		@224
+	;createHostWindow	@225
+	;createEventCallbacks	@226
+	;processEvent		@227
 
 	;canvasHost
 	CNVCreateCanvasHost	@228
 	CNVKillCanvasHost	@229
 
 	;more transHost
-	showEndForm			@230
-	killHostWindow		@231
-	changeHostWindowCaption	@232
-	endProgram			@233
+	;showEndForm			@230
+	;killHostWindow		@231
+	;changeHostWindowCaption	@232
+	;endProgram			@233
 
-	RPGCGetLitVarByteLen @ 246
+	;RPGCGetLitVarByteLen @ 246
 
-	initCounter			@251
+	;initCounter			@251
 
 	CNVBltCanvasTranslucentPart @ 252
-	DXDrawCanvasTranslucentPartial	@ 253
+	;DXDrawCanvasTranslucentPartial	@ 253
 
 	; IMGCreateIcon	@ 254
 

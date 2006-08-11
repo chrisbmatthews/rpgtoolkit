@@ -14,6 +14,7 @@
 #include "../plugins/constants.h"
 #include "../common/mbox.h"
 #include "../common/paths.h"
+#include "../common/CFile.h"
 #include "../input/input.h"
 #include "../../tkCommon/strings.h"
 #include <typeinfo.h>
@@ -265,8 +266,8 @@ void CProgram::removeRedirect(CONST STRING str)
 // Locate a named method.
 tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg)
 {
-	std::vector<NAMED_METHOD>::iterator i = prg.m_methods.begin();
-	for (; i != prg.m_methods.end(); ++i)
+	std::vector<NAMED_METHOD>::iterator i = m_methods.begin();
+	for (; i != m_methods.end(); ++i)
 	{
 		if ((i->name == name) && (i->params == params) && (bMethod || (i->i != 0xffffff)))
 		{
@@ -741,18 +742,24 @@ bool CProgram::open(const STRING fileName)
 		const long length = ftell(file);
 		fseek(file, 0, SEEK_SET);
 
-		char *const str = (char *const)malloc(sizeof(char) * (length + 3));
+		char *const str = (char *const)malloc(sizeof(char) * (length + 5));
 		fread(str + 3, sizeof(char), length, file);
 
 		str[0] = '1';		// Arbitrary first line.
 		str[1] = '\r';
 		str[2] = '\n';
 
+		// Add a blank line to the end of the file to prevent
+		// an error from occurring when the file has no final
+		// blank line.
+		str[length + 3] = '\r';
+		str[length + 4] = '\n';
+
 		fclose(file);		// Close the original file...
 		file = tmpfile();	// ...and create another.
 
 		// Write the updated version to our temp file.
-		fwrite(str, sizeof(char), length + 3, file);
+		fwrite(str, sizeof(char), length + 5, file);
 		free(str);
 
 		// And parse the file.
@@ -1179,25 +1186,206 @@ unsigned int CProgram::matchBrace(POS i)
 void CProgram::include(const CProgram prg)
 {
 	{
-		std::map<STRING, tagClass>::const_iterator i = prg.m_classes.begin();
-		for (; i != prg.m_classes.end(); ++i)
+		std::map<STRING, tagClass>::const_iterator i = m_classes.begin();
+		for (; i != m_classes.end(); ++i)
 		{
 			m_classes.insert(*i);
 		}
 	}
 
-	std::vector<NAMED_METHOD>::const_iterator i = prg.m_methods.begin();
-	for (; i != prg.m_methods.end(); ++i)
+	std::vector<NAMED_METHOD>::const_iterator i = m_methods.begin();
+	for (; i != m_methods.end(); ++i)
 	{
 		m_methods.push_back(*i);
 		int depth = 0;
-		CONST_POS j = prg.m_units.begin() + i->i - 1;
+		CONST_POS j = m_units.begin() + i->i - 1;
 		do
 		{
 			m_units.push_back(*j);
 			if (j->udt & UDT_OPEN) ++depth;
 			else if ((j->udt & UDT_CLOSE) && !--depth) break;
-		} while (++j != prg.m_units.end());
+		} while (++j != m_units.end());
+	}
+}
+
+// Serialise a stack frame.
+inline void serialiseStackFrame(CFile &stream, const STACK_FRAME &sf)
+{
+	// Do not bother writing 'tag'; it is only for virtual
+	// variables and they cannot be serialised anyway.
+
+	// The member 'prg' is also not written because it is
+	// just a pointer to the current program.
+	stream << sf.num << sf.lit << int(sf.udt);
+}
+inline void reconstructStackFrame(CFile &stream, STACK_FRAME &sf)
+{
+	int udt = 0;
+	stream >> sf.num >> sf.lit >> udt;
+	sf.udt = UNIT_DATA_TYPE(udt);
+}
+
+// Serialise the current state.
+void CProgram::serialiseState(CFile &stream) const
+{
+	// Write the index of the current stack frame.
+	{
+		int idx = -1;
+		STACK_ITR i = m_stack.begin();
+		for (; i != m_stack.end(); ++i)
+		{
+			if (&*i == m_pStack)
+			{
+				idx = i - m_stack.begin();
+				break;
+			}
+		}
+
+		// Write the index.
+		stream << idx;
+
+		if (idx == -1)
+		{
+			// The current stack frame is invalid.
+			return;
+		}
+	}
+
+	// Data stack.
+	{
+		stream << int(m_stack.size());	// Number of stack frames.
+		STACK_ITR i = m_stack.begin();
+		for (; i != m_stack.end(); ++i)
+		{
+			stream << int(i->size());	// Numer of items in this frame.
+
+			std::deque<STACK_FRAME>::const_iterator j = i->begin();
+			for (; j != i->end(); ++j)
+			{
+				// Write each stack frame item.
+				serialiseStackFrame(stream, *j);
+			}
+		}
+	}
+
+	// Local variables.
+	{
+		stream << int(m_locals.size());
+		std::vector<std::map<STRING, STACK_FRAME> >::const_iterator i = m_locals.begin();
+		for (; i != m_locals.end(); ++i)
+		{
+			stream << int(i->size());
+
+			std::map<STRING, STACK_FRAME>::const_iterator j = i->begin();
+			for (; j != i->end(); ++j)
+			{
+				stream << j->first;
+				serialiseStackFrame(stream, j->second);
+			}
+		}
+	}
+
+	// Call stack.
+	{
+		stream << int(m_calls.size());
+		std::vector<CALL_FRAME>::const_iterator i = m_calls.begin();
+		for (; i != m_calls.end(); ++i)
+		{
+			stream << int(i->bReturn ? 1 : 0);
+			stream << i->i << i->j << i->obj;
+		}
+	}
+
+	// Program position.
+	stream << int(m_i - m_units.begin());
+}
+
+// Reconstruct a previously serialised state.
+void CProgram::reconstructState(CFile &stream)
+{
+	int stackIdx = -1;
+	stream >> stackIdx;
+	if (stackIdx == -1)
+	{
+		// The current stack frame is invalid.
+		return;
+	}
+
+	// Data stack.
+	{
+		m_stack.clear();
+
+		int stackSize = 0;
+		stream >> stackSize;
+		for (unsigned int i = 0; i < stackSize; ++i)
+		{
+			m_stack.push_back(std::deque<STACK_FRAME>());
+
+			int frameSize = 0;
+			stream >> frameSize;
+
+			std::deque<STACK_FRAME> &frame = m_stack.back();
+
+			for (unsigned int j = 0; j < frameSize; ++j)
+			{
+				STACK_FRAME sf;
+				reconstructStackFrame(stream, sf);
+				frame.push_back(sf);
+			}
+		}
+	}
+
+	m_pStack = &m_stack[stackIdx];
+
+	// Local variables.
+	{
+		m_locals.clear();
+
+		int stackSize = 0;
+		stream >> stackSize;
+		for (unsigned int i = 0; i < stackSize; ++i)
+		{
+			m_locals.push_back(std::map<STRING, STACK_FRAME>());
+
+			int frameSize = 0;
+			stream >> frameSize;
+
+			std::map<STRING, STACK_FRAME> &frame = m_locals.back();
+
+			for (unsigned int j = 0; j < frameSize; ++j)
+			{
+				STRING str; STACK_FRAME sf;
+				stream >> str;
+				reconstructStackFrame(stream, sf);
+				frame[str] = sf;
+			}
+		}
+	}
+
+	// Call stack.
+	{
+		m_calls.clear();
+
+		int stackSize = 0;
+		stream >> stackSize;
+		for (unsigned int i = 0, j = stackSize + 1; i < stackSize; ++i, --j)
+		{
+			CALL_FRAME cf; int b = 0;
+			stream >> b;
+			cf.bReturn = bool(b);
+			stream >> cf.i;
+			stream >> cf.j;
+			stream >> cf.obj;
+			cf.p = &(m_stack.end() - j)->back();
+			m_calls.push_back(cf);
+		}
+	}
+
+	// Program position.
+	{
+		int ppos = 0;
+		stream >> ppos;
+		m_i = m_units.begin() + ppos;
 	}
 }
 
@@ -1549,7 +1737,22 @@ tagStackFrame tagStackFrame::getValue() const
 	{
 		return prg->getVar(lit)->getValue();
 	}
-	return *this;
+
+	// Ensure proper copying of virtual vars by using
+	// getLit(), getNum(), and getType().
+	tagStackFrame sf;
+	sf.udt = getType();
+	if (sf.udt & UDT_LIT)
+	{
+		sf.lit = getLit();
+	}
+	else
+	{
+		sf.num = getNum();
+	}
+	sf.prg = prg;
+	sf.tag = 0;
+	return sf;
 }
 
 void operators::add(CALL_DATA &call)

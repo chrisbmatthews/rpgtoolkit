@@ -16,7 +16,10 @@
 //------------------------------------------------------------------------
 // Globals
 //------------------------------------------------------------------------
-CDirectDraw *g_pDirectDraw = NULL;	// Main DirectDraw object
+CDirectDraw *g_pDirectDraw = 0;	// Main DirectDraw object
+
+// We no longer need the rest of this file.
+#if 0
 
 //------------------------------------------------------------------------
 // Initiate DirectX
@@ -226,3 +229,5 @@ BOOL APIENTRY DXDrawCanvasTranslucentPartial(
 {
 	return g_pDirectDraw->DrawCanvasTranslucentPartial(reinterpret_cast<CGDICanvas *>(cnv), x, y, xSrc, ySrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor);
 }
+
+#endif

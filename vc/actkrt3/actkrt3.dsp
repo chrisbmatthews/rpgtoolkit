@@ -369,22 +369,6 @@ SOURCE=.\tkPlug\plugDLL.h
 # End Source File
 # End Group
 # End Group
-# Begin Group "tkRPGCode"
-
-# PROP Default_Filter ""
-# Begin Group "vars"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\tkrpgcode\tkrpgcode.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\tkrpgcode\tkrpgcode.h
-# End Source File
-# End Group
-# End Group
 # Begin Group "audiere"
 
 # PROP Default_Filter ""
@@ -413,45 +397,17 @@ SOURCE=.\audiere\TKAudiere.cpp
 SOURCE=.\audiere\audiere.lib
 # End Source File
 # End Group
-# Begin Group "transHost"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\GUISystem\platform\transHost.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\GUISystem\platform\transHost.h
-# End Source File
-# End Group
-# Begin Group "DirectX"
-
-# PROP Default_Filter ""
-# Begin Group "platform"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\tkCommon\tkDirectX\platform.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\tkCommon\tkDirectX\tkDirectX.cpp
-# End Source File
-# End Group
 # Begin Group "tkDirectX"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\tkCommon\tkDirectX\platform.h
+SOURCE=.\tkDirectX\platform.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\tkCommon\tkDirectX\tkDirectX.h
+SOURCE=.\tkDirectX\tkDirectX.cpp
 # End Source File
-# End Group
 # End Group
 # End Target
 # Begin Group "tkzip"

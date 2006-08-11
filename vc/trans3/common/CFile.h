@@ -28,6 +28,7 @@ public:
 	CFile &operator<<(CONST CHAR data);
 	CFile &operator<<(CONST SHORT data);
 	CFile &operator<<(CONST INT data);
+	CFile &operator<<(CONST UINT data);
 	CFile &operator<<(CONST double data);
 	CFile &operator<<(CONST STRING data);
 	//
@@ -37,6 +38,7 @@ public:
 	CFile &operator>>(CHAR &data);
 	CFile &operator>>(SHORT &data);
 	CFile &operator>>(INT &data);
+	CFile &operator>>(UINT &data);
 	CFile &operator>>(double &data);
 	CFile &operator>>(STRING &data);
 	STRING line(VOID);

@@ -1,6 +1,5 @@
 /*
  * All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors.
- * Various port optimizations copyright by Colin James Fitzpatrick, 2005.
  * All rights reserved. You may not remove this notice
  * Read license.txt for licensing details.
  */
@@ -13,6 +12,7 @@
 #include "mainfile.h"
 #include "board.h"
 #include "../rpgcode/CProgram.h"
+#include "../rpgcode/virtualvar.h"
 #include "../misc/misc.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include <vector>
@@ -37,6 +37,8 @@ extern LPBOARD g_pBoard;
 extern STRING g_menuGraphic, g_fightMenuGraphic;
 extern int g_mwinSize;
 extern GAME_TIME g_gameTime;
+
+#include "mbox.h"
 
 void loadSaveState(const STRING str)
 {
@@ -106,6 +108,9 @@ void loadSaveState(const STRING str)
 			pVar->lit = varString;
 		}
 	}
+
+	// Recreate virtual variables.
+	initVirtualVars();
 
 	// Get redirects.
 	file >> count;
@@ -204,7 +209,7 @@ void loadSaveState(const STRING str)
 	g_mwinColor = abs(colour);
 
 	file >> g_mwinBkg;
-	
+
 	int debug;			// Show the debugger?
 	file >> debug;
 	CProgram::setDebugLevel(debug != 0 ? E_WARNING : E_DISABLED);
@@ -296,26 +301,24 @@ void loadSaveState(const STRING str)
 		BOOL bPersist;
 		file >> bPersist;
 
-		// Position in program. Probably cannot be restored.
-		// Theoretically a divergence from the previous
-		// implementation but in practice this should cause
-		// few problems.
-		int pos;
-		file >> pos;
+		if (minorVer < 4)
+		{
+			// In 3.0.7, the position is not saved here. It is saved
+			// as part of the state data (see below).
+			int pos;
+			file >> pos;
+		}
 
 		BOOL bSleep;
 		file >> bSleep;
 		double duration;
 		file >> duration;
 
-		// This whole thread restoration is dubious and has
-		// always been dubious because the id of the restored
-		// thread will not be the same as the id of the original
-		// thread rendering variables holding old thread ids
-		// useless.
+		CThread *pThread = NULL;
+
 		if (!fileName.empty())
 		{
-			CThread *pThread = CThread::create(fileName);
+			pThread = CThread::create(fileName);
 			if (!bPersist)
 			{
 				g_pBoard->threads.push_back(pThread);
@@ -326,35 +329,42 @@ void loadSaveState(const STRING str)
 			}
 		}
 
-		// Read local variables but don't actually attempt to set
-		// them because I can't see any good way of doing this.
-		// An especially futile task when we aren't restoring the
-		// position.
-		int heaps;
-		file >> heaps;
-		if (heaps >= 0)
+		if (minorVer >= 4)
 		{
-			unsigned int j;
-			for (j = 0; j <= heaps; ++j)
+			// If this save file is from 3.0.7 or later, we can
+			// reconstruct the program's state. Otherwise, we do
+			// not have enough information to reconstruct, so we
+			// won't attempt it.
+			if (pThread) pThread->reconstructState(file);
+		}
+		else
+		{
+			int heaps;
+			file >> heaps;
+			if (heaps >= 0)
 			{
-				// Create local heaps...
-				int nums;
-				file >> nums;
-				for (j = 0; j < nums; ++j)
+				unsigned int j;
+				for (j = 0; j <= heaps; ++j)
 				{
-					STRING varName; double varValue;
-					file >> varName >> varValue;
-				}
+					// Create local heaps...
+					int nums;
+					file >> nums;
+					for (j = 0; j < nums; ++j)
+					{
+						STRING varName; double varValue;
+						file >> varName >> varValue;
+					}
 
-				int lits;
-				file >> lits;
-				for (j = 0; j < lits; ++j)
-				{
-					STRING varName, varString;
-					file >> varName >> varString;
+					int lits;
+					file >> lits;
+					for (j = 0; j < lits; ++j)
+					{
+						STRING varName, varString;
+						file >> varName >> varString;
+					}
 				}
 			}
-		}
+		} // if (minorVer >= 4)
 	}
 
 	// Movement size (probably unneeded unless changed halfway through game).
@@ -363,13 +373,14 @@ void loadSaveState(const STRING str)
 	CSprite::m_bPxMovement = (movementSize != 1.0);
 
 	// Partially obsolete OOP information.
-	if (minorVer >= 1)
+	if ((minorVer >= 1) && (minorVer < 4)) // ignore for now
 	{
 		file >> count;
 		for (i = 0; i <= count; ++i)
 		{
 			int hClass; STRING className;
-			file >> hClass >> className;
+			file >> hClass;
+			file >> className;
 			// hClass is obsolete, but the className has potential use.
 			// tbd - recreate the object
 		}
@@ -386,7 +397,7 @@ void loadSaveState(const STRING str)
 	// Currently obsolete garbage collection information. But
 	// garbage collection will have to be reintroduced sooner
 	// or later and it might become useful then.
-	if (minorVer >= 3)
+	if ((minorVer >= 3) && (minorVer < 4)) // ignore for now
 	{
 		file >> count;
 		for (i = 0; i <= count; ++i)
@@ -414,44 +425,54 @@ void saveSaveState(const STRING fileName)
 	// Header
 	file << _T("RPGTLKIT SAVE");
 	file << short(3);				// Major version
-	file << short(3);				// Minor version
-                   
+	file << short(4);				// Minor version - 4 as of 3.0.7
+
 	unsigned int i = 0;
 
-/**
-	// Numerical globals.
-        Dim nCount As Long
-        nCount = countNumVars(globalHeap)
-        
-        Call BinWriteLong(num, nCount)
-        
-        Dim t As Long
-        For t = 1 To nCount
-            Call BinWriteString(num, GetNumName(t - 1, globalHeap))
-            Call BinWriteDouble(num, GetNumVar(GetNumName(t - 1, globalHeap), globalHeap))
-        Next t
-        
-	// Literal globals.
-        nCount = countLitVars(globalHeap)
-        
-        Call BinWriteLong(num, nCount)
-        
-        For t = 1 To nCount
-            Call BinWriteString(num, GetLitName(t - 1, globalHeap))
-            Call BinWriteString(num, GetLitVar(GetLitName(t - 1, globalHeap), globalHeap))
-        Next t
-        
-	// Redirects.
-        nCount = countRedirects()
-        
-        Call BinWriteLong(num, nCount)
-        
-        For t = 1 To nCount
-            Call BinWriteString(num, getRedirectName(t - 1))
-            Call BinWriteString(num, getRedirect(getRedirectName(t - 1)))
-        Next t
-**/
-        
+	// Write globals.
+	{
+		HEAP_ENUM heap = CProgram::enumerateGlobals();
+		HEAP_ENUM::ITR itr = heap.begin();
+
+		// We are going to sort the globals into numerical and literal.
+		// This will keep the file format the same size, even though
+		// it takes a little bit of effort when saving, so it's worth it.
+		std::vector<HEAP_ENUM::ITR> lits, nums;
+		std::vector<HEAP_ENUM::ITR>::const_iterator j;
+
+		for (; itr != heap.end(); ++itr)
+		{
+			((itr->second->udt & UDT_LIT) ? lits : nums).push_back(itr);
+		}
+
+		// Write numerical globals.
+		file << int(nums.size());
+		for (j = nums.begin(); j != nums.end(); ++j)
+		{
+			file << (*j)->first << (*j)->second->num;
+		}
+
+		// Write literal globals.
+		file << int(lits.size());
+		for (j = lits.begin(); j != lits.end(); ++j)
+		{
+			file << (*j)->first << (*j)->second->lit;
+		}
+	}
+
+	// Write redirects.
+	{
+		REDIRECT_ENUM redirects = CProgram::enumerateRedirects();
+		REDIRECT_ENUM::ITR itr = redirects.begin();
+
+		file << int(redirects.size());
+
+		for (; itr != redirects.end(); ++itr)
+		{
+			file << itr->first << itr->second;
+		}
+	}
+
 	// Player information.
 	for (i = 0; i < 5; ++i)
 	{
@@ -461,7 +482,7 @@ void saveSaveState(const STRING fileName)
 			name = g_players.at(i)->name();
 			filename = g_players.at(i)->getPlayer()->fileName;
 		}
-		file << name << fileName;
+		file << name << filename;
 	}
 
 	// Inventory.
@@ -483,12 +504,13 @@ void saveSaveState(const STRING fileName)
 		for (unsigned int j = 0; j < 5; ++j)
 		{
 			STRING filename, handle;
-			if (j < g_players.size() && g_players.at(j))
+			// Colin: This commented section crahses for me.
+			/**if (j < g_players.size() && g_players.at(j))
 			{
 				LPEQ_SLOT pEq = g_players.at(j)->equipment(i);
 				filename = pEq->first;
 				handle = pEq->second;
-			}
+			}**/
 			file << filename << handle;
 		}
 	}
@@ -575,52 +597,37 @@ void saveSaveState(const STRING fileName)
 
 	// Player filename given in the last NewPlayer() call.	
 	file << g_pSelectedPlayer->swapGraphics();
-        
-/**
-	// Active threads.
-        Call BinWriteLong(num, UBound(Threads))
-        For t = 0 To UBound(Threads)
-            Call BinWriteString(num, Threads(t).filename)
-            If Threads(t).bPersistent Then
-                Call BinWriteLong(num, 1)
-            Else
-                Call BinWriteLong(num, 0)
-            End If
-            Call BinWriteLong(num, Threads(t).thread.programPos)
-            If Threads(t).bIsSleeping Then
-                Call BinWriteLong(num, 1)
-            Else
-                Call BinWriteLong(num, 0)
-            End If
-            Dim dDuration As Double
-            dDuration = ThreadSleepRemaining(t)
-            Call BinWriteDouble(num, dDuration)
-            
-            'write local variables...
-            Call BinWriteLong(num, Threads(t).thread.currentHeapFrame)
-            Dim tt As Long
-            For tt = 0 To Threads(t).thread.currentHeapFrame
-                'print num vars...
-                nCount = countNumVars(Threads(t).thread.heapStack(tt))
-                Call BinWriteLong(num, nCount)
-                
-                Dim ttt As Long
-                For ttt = 1 To nCount
-                    Call BinWriteString(num, GetNumName(ttt - 1, Threads(t).thread.heapStack(tt)))
-                    Call BinWriteDouble(num, GetNumVar(GetNumName(ttt - 1, Threads(t).thread.heapStack(tt)), Threads(t).thread.heapStack(tt)))
-                Next ttt
-                
-                'print lit vars...
-                nCount = countLitVars(Threads(t).thread.heapStack(tt))
-                Call BinWriteLong(num, nCount)
-                
-                For ttt = 1 To nCount
-                    Call BinWriteString(num, GetLitName(ttt - 1, Threads(t).thread.heapStack(tt)))
-                    Call BinWriteString(num, GetLitVar(GetLitName(ttt - 1, Threads(t).thread.heapStack(tt)), Threads(t).thread.heapStack(tt)))
-                Next ttt
-            Next tt
-        Next t
-**/
+
+	{
+		THREAD_ENUM threads = CThread::enumerateThreads();
+		THREAD_ENUM::ITR itr = threads.begin();
+		file << int(threads.size() - 1);
+
+		for (; itr != threads.end(); ++itr)
+		{
+			// Threads specific to a board will appear in the threads
+			// member of g_pBoard. These are non-persistent threads.
+			bool bPersist = true;
+			std::vector<CThread *>::const_iterator j = g_pBoard->threads.begin();
+			for (; j != g_pBoard->threads.end(); ++j)
+			{
+				if (&*j == &*itr)
+				{
+					// It is not persistent.
+					bPersist = false;
+					break;
+				}
+			}
+
+			file << (*itr)->getFileName();
+			file << int(bPersist ? 1 : 0);
+			file << int((*itr)->isSleeping() ? 1 : 0);
+			file << double((*itr)->sleepRemaining());
+
+			// Serialise the program state so that it can be reconstucted later.
+			(*itr)->serialiseState(file);
+		}
+	}
         
 	// Movement size (pixel movement setting).
 	file << double (CSprite::m_bPxMovement ? 0.0 : 1.0);
@@ -652,4 +659,3 @@ void saveSaveState(const STRING fileName)
 	file << CSprite::getLoopOffset();
 
 }
-

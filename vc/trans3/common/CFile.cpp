@@ -68,6 +68,13 @@ CFile &CFile::operator<<(CONST INT data)
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
+CFile &CFile::operator<<(CONST UINT data)
+{
+	DWORD write = 0;
+	WriteFile(HANDLE(m_hFile), &data, sizeof(data), &write, &m_ptr);
+	m_ptr.Offset += sizeof(data);
+	return *this;
+}
 CFile &CFile::operator<<(CONST double data)
 {
 	DWORD write = 0;
@@ -111,6 +118,13 @@ CFile &CFile::operator>>(SHORT &data)
 	return *this;
 }
 CFile &CFile::operator>>(INT &data)
+{
+	DWORD read = 0;
+	m_bEof = ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	m_ptr.Offset += sizeof(data);
+	return *this;
+}
+CFile &CFile::operator>>(UINT &data)
 {
 	DWORD read = 0;
 	m_bEof = ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);

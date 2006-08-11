@@ -73,7 +73,7 @@ typedef struct tagStackFrame
 typedef struct tagCallData
 {
 	int params;
-	STACK_FRAME *p;
+	LPSTACK_FRAME p;
 	CProgram *prg;
 
 	STACK_FRAME &operator[](const int i) { return *(p + i); }
@@ -85,7 +85,7 @@ typedef struct tagCallFrame
 {
 	unsigned int i;		// Unit to which to return.
 	unsigned int j;		// Closing brace of the method.
-	STACK_FRAME *p;	// Return value.
+	STACK_FRAME *p;		// Return value.
 	bool bReturn;		// Whether we should return a value.
 	unsigned int obj;	// This pointer.
 } CALL_FRAME;
@@ -212,10 +212,46 @@ public:
 	operator=(T *rhs) { delete m_pData; m_pData = rhs; }
 	operator T*() { return m_pData; }
 	T *operator->() { return m_pData; }
+	const T *operator->() const { return m_pData; }
 	~CPtrData() { delete m_pData; }
 private:
 	T *m_pData;
 };
+
+// A class for enumeration.
+template <class T>
+class CEnumeration
+{
+public:
+	typedef T::const_iterator ITR;
+	typedef T::value_type ITEM;
+	CEnumeration(T &enu): m_enum(enu) { }
+	ITR begin() const { return m_enum.begin(); }
+	ITR end() const { return m_enum.end(); }
+	int size() const { return m_enum.size(); }
+private:
+	T &m_enum;
+};
+
+// A stream.
+/** template <class T>
+class CStream
+{
+public:
+	CStream (T &stream): m_stream(stream) { }
+	template <class _T> CStream &operator<<(const _T out)
+	{
+		m_stream << out;
+		return *this;
+	}
+	template <class _T> CStream &operator>>(const _T in)
+	{
+		m_stream >> in;
+		return *this;
+	}
+private:
+	T &m_stream;
+}; **/
 
 // Types of exceptions.
 typedef enum tagExceptionType
@@ -225,11 +261,16 @@ typedef enum tagExceptionType
 	E_WARNING
 } EXCEPTION_TYPE;
 
-// A plugin.
-class IPlugin;
+// Forward declarations.
+class CThread;			// A thread.
+class IPlugin;			// A plugin.
+class CFile;			// A file stream.
+struct tagBoardProgram;	// A board program;
 
-// A board program;
-struct tagBoardProgram;
+// Some types of enumerations.
+typedef CEnumeration<std::map<STRING, CPtrData<STACK_FRAME> > > HEAP_ENUM;
+typedef CEnumeration<std::map<STRING, STRING> > REDIRECT_ENUM;
+typedef CEnumeration<std::set<CThread *> > THREAD_ENUM;
 
 // A program.
 class CProgram
@@ -258,6 +299,11 @@ public:
 	virtual LPSTACK_FRAME getVar(const STRING name);
 	virtual bool isThread() const { return false; }
 
+	// Serialisation. This feature allows for the program's state
+	// to be written to a stream and then reconstructed later.
+	void serialiseState(CFile &stream) const;
+	void reconstructState(CFile &stream);
+
 	// Global program set up.
 	static void initialize();
 	static void addFunction(const STRING name, const MACHINE_FUNC func);
@@ -268,16 +314,18 @@ public:
 	static void addRedirect(const STRING oldFunc, const STRING newFunc) { m_redirects[oldFunc] = newFunc; }
 	static void removeRedirect(const STRING oldFunc);
 	static void clearRedirects() { m_redirects.clear(); }
+	static REDIRECT_ENUM enumerateRedirects() { return m_redirects; }
 
 	// Debugger.
 	static void debugger(const STRING str);
 	static void setDebugLevel(const EXCEPTION_TYPE et) { m_debugLevel = et; }
-	static EXCEPTION_TYPE getDebugLevel(void) { return m_debugLevel; }
+	static EXCEPTION_TYPE getDebugLevel() { return m_debugLevel; }
 
 	// Global rpgcode variables.
 	static CPtrData<STACK_FRAME> &getGlobal(const STRING var) { return m_heap[lcase(var)]; }
 	static void freeGlobal(const STRING var) { m_heap.erase(lcase(var)); }
 	static void freeGlobals() { m_heap.clear(); m_objects.clear(); }
+	static HEAP_ENUM enumerateGlobals() { return m_heap; }
 
 	// Plugins
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }
@@ -370,12 +418,14 @@ public:
 	static void multitask(const unsigned int units);
 	static bool isThread(CThread *p) { return (m_threads.find(p) != m_threads.end()); }
 	static void destroyAll();
+	static THREAD_ENUM enumerateThreads() { return m_threads; }
 
 	bool isThread() const { return true; }
 	void sleep(const unsigned long milliseconds);
 	bool isSleeping() const;
 	unsigned long sleepRemaining() const;
 	void wakeUp() { m_bSleeping = false; }
+	STRING getFileName() const { return m_fileName; }
 
 	virtual bool execute(const unsigned int units);
 	virtual ~CThread() { }
@@ -383,11 +433,12 @@ public:
 private:
 	mutable bool m_bSleeping;
 	unsigned long m_sleepBegin, m_sleepDuration;
+	STRING m_fileName;
 
 protected:
 	static void *operator new(size_t size) { return malloc(size); }
 	static void operator delete(void *p) { free(p); }
-	CThread(const STRING str): CProgram(str), m_bSleeping(false) { }
+	CThread(const STRING str): CProgram(str), m_bSleeping(false), m_fileName(str) { }
 	static std::set<CThread *> m_threads;
 };
 
