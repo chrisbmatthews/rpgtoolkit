@@ -1218,8 +1218,6 @@ Private Sub Form_Activate() ':on error resume next
     tkMainForm.StatusBar1.Panels(4).Text = "Zoom: " & str(m_ed.pCEd.zoom * 100) & "%"
    
     Call Form_Resize
-    
-    Exit Sub
 
 End Sub
 Public Sub Form_Deactivate() ':on error resume next
@@ -1233,8 +1231,8 @@ Public Sub Form_Deactivate() ':on error resume next
     tkMainForm.popButton(PB_TOOLBAR).visible = False
     tkMainForm.pTools.visible = False
 End Sub
-Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer) ':on error resume next
-    Call picBoard_KeyDown(KeyCode, Shift)
+Private Sub Form_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
+    Call picBoard_KeyDown(keyCode, Shift)
 End Sub
 Private Sub Form_Load() ':on error resume next
     'Board loading performed explicitly through newBoard()
@@ -1334,6 +1332,11 @@ Private Sub Form_Unload(Cancel As Integer) ': On Error Resume Next
     
     Call BRDFree(m_ed.pCBoard)
     Call hideAllTools
+    
+    'Clear status panels.
+    tkMainForm.StatusBar1.Panels(3).Text = vbNullString
+    tkMainForm.StatusBar1.Panels(4).Text = vbNullString
+    
     tkMainForm.popButton(PB_TOOLBAR).visible = False         'Before Set m_sel = Nothing
     tkMainForm.pTools.visible = False
     
@@ -1612,7 +1615,7 @@ End Function
 
 '========================================================================
 '========================================================================
-Private Sub picBoard_KeyDown(KeyCode As Integer, Shift As Integer) ':on error resume next
+Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
 
     Dim curVector As CVector
     Set curVector = currentVector
@@ -1621,7 +1624,7 @@ Private Sub picBoard_KeyDown(KeyCode As Integer, Shift As Integer) ':on error re
     If Shift And (vbCtrlMask Or vbAltMask) Then Exit Sub
     
     With tkMainForm
-        Select Case KeyCode
+        Select Case keyCode
             Case vbKeyQ: .brdOptSetting(BS_GENERAL).value = True
             Case vbKeyW: .brdOptSetting(BS_ZOOM).value = True
             Case vbKeyE: .brdOptSetting(BS_TILE).value = True
@@ -1634,6 +1637,7 @@ Private Sub picBoard_KeyDown(KeyCode As Integer, Shift As Integer) ':on error re
             Case vbKeyS: If .brdOptTool(BT_SELECT).Enabled Then .brdOptTool(BT_SELECT).value = True
             Case vbKeyD: If .brdOptTool(BT_FLOOD).Enabled Then .brdOptTool(BT_FLOOD).value = True
             Case vbKeyF: If .brdOptTool(BT_ERASE).Enabled Then .brdOptTool(BT_ERASE).value = True
+            'tbd: Rect, dropper
             Case vbKeyG: .brdChkGrid.value = Not .brdChkGrid.value
             Case vbKeyH: .brdChkAutotile.value = Not .brdChkAutotile.value
             Case vbKeyL
@@ -1646,9 +1650,9 @@ Private Sub picBoard_KeyDown(KeyCode As Integer, Shift As Integer) ':on error re
 
     Select Case m_ed.optSetting
         Case BS_VECTOR, BS_PROGRAM
-            Select Case KeyCode
+            Select Case keyCode
                 Case vbKeyDelete, vbKeyBack
-                    Call vectorDeleteSelection(m_sel)
+                    If (m_sel.status <> SS_DRAWING) Then Call vectorDeleteSelection(m_sel)
                 Case vbKeyZ
                     Call vectorSubdivideSelection(m_sel)
                 Case vbKeyX
@@ -1669,7 +1673,7 @@ Private Sub picBoard_KeyDown(KeyCode As Integer, Shift As Integer) ':on error re
             Call toolbarRefresh
 
         Case BS_TILE
-            Select Case KeyCode
+            Select Case keyCode
                 Case vbKeyDelete, vbKeyBack
                     'Create a local clipboard and cut to it.
                     Dim clip As TKBoardClipboard
@@ -1681,7 +1685,7 @@ Private Sub picBoard_KeyDown(KeyCode As Integer, Shift As Integer) ':on error re
             End Select 'Key
             
         Case BS_IMAGE
-            Select Case KeyCode
+            Select Case keyCode
                 Case vbKeyDelete, vbKeyBack
                     Call imageDeleteCurrent(tkMainForm.bTools_ctlImage.getCombo.ListIndex)
             End Select
@@ -1819,11 +1823,11 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
 End Sub
 Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
     
-    Dim pxCoord As POINTAPI, tileCoord As POINTAPI
+    Dim pxCoord As POINTAPI, tilecoord As POINTAPI
     pxCoord = screenToBoardPixel(x, y, m_ed.pCEd)
     m_mousePosition = pxCoord
-    tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
-    tkMainForm.StatusBar1.Panels(3).Text = CStr(tileCoord.x) & ", " & CStr(tileCoord.y) & " : " & CStr(pxCoord.x) & ", " & CStr(pxCoord.y)
+    tilecoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
+    tkMainForm.StatusBar1.Panels(3).Text = CStr(tilecoord.x) & ", " & CStr(tilecoord.y) & " : " & CStr(pxCoord.x) & ", " & CStr(pxCoord.y)
     
     If Button = vbMiddleButton Then Exit Sub
     
@@ -1956,6 +1960,19 @@ Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y
                 Case BS_VECTOR, BS_PROGRAM
                     Call vectorCreateRect(m_sel)
             End Select
+            
+        Case BT_DROPPER
+            Call boardPixelToTile(pxCoord.x, pxCoord.y, False)
+            If m_ed.optSetting = BS_TILE Then
+                Call changeSelectedTile(boardGetTile(pxCoord.x, pxCoord.y, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))
+            Else
+                'lighting.
+            End If
+            
+            'Revert to draw.
+            m_ed.optTool = BT_DRAW
+            tkMainForm.brdOptTool(m_ed.optTool).value = True
+        
         Case BT_IMG_TRANSP
             'Reset the tool.
             Call mdiOptTool(BT_DRAW)
@@ -2052,11 +2069,11 @@ End Sub
 '========================================================================
 Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
 
-    Dim tileCoord As POINTAPI, pxCoord As POINTAPI
+    Dim tilecoord As POINTAPI, pxCoord As POINTAPI
     pxCoord = screenToBoardPixel(x, y, m_ed.pCEd)
-    tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
+    tilecoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
 
-    If tileCoord.x > m_ed.effectiveBoardX Or tileCoord.y > m_ed.effectiveBoardY Then Exit Sub
+    If tilecoord.x > m_ed.effectiveBoardX Or tilecoord.y > m_ed.effectiveBoardY Then Exit Sub
 
     Select Case m_ed.optTool
         Case BT_DRAW
@@ -2072,12 +2089,12 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
                 If m_ed.bAutotiler Then
                     Call autoTilerPutTile( _
                         m_ed.selectedTile, _
-                        tileCoord.x, tileCoord.y, _
+                        tilecoord.x, tilecoord.y, _
                         m_ed.board(m_ed.undoIndex).coordType, eo, _
                         ((Shift And vbShiftMask) = vbShiftMask) _
                     )
                 Else
-                    Call placeTile(m_ed.selectedTile, tileCoord.x, tileCoord.y)
+                    Call placeTile(m_ed.selectedTile, tilecoord.x, tilecoord.y)
                 End If
             Else
                 'Tile bitmap.
@@ -2093,7 +2110,7 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
                                    
                 For i = 0 To width
                     For j = 0 To Height
-                        Call placeTile(tbm.tiles(i, j), tileCoord.x + i, tileCoord.y + j)
+                        Call placeTile(tbm.tiles(i, j), tilecoord.x + i, tilecoord.y + j)
                     Next j
                 Next i
             End If ' .selectedTile <> "TBM"
@@ -2113,10 +2130,10 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
                 'Use gdi version as recursive routine crashes on large boards (3.0.6)
                 If g_CBoardPreferences.bUseRecursiveFlooding Then
                     'User has enabled recursive flooding - when gdi doesn't work.
-                    Call floodRecursive(tileCoord.x, tileCoord.y, m_ed.currentLayer, m_ed.selectedTile)
+                    Call floodRecursive(tilecoord.x, tilecoord.y, m_ed.currentLayer, m_ed.selectedTile)
                 Else
                     'Use gdi if no setting exists (default).
-                    Call floodGdi(tileCoord.x, tileCoord.y, m_ed.currentLayer, m_ed.selectedTile)
+                    Call floodGdi(tilecoord.x, tilecoord.y, m_ed.currentLayer, m_ed.selectedTile)
                 End If
             End If
             If (g_CBoardPreferences.bRevertToDraw) Then
@@ -2130,9 +2147,9 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
         Case BT_ERASE
             eo = 0 'TBD: isometric even-odd
             If m_ed.bAutotiler Then
-                Call autoTilerPutTile("", tileCoord.x, tileCoord.y, m_ed.board(m_ed.undoIndex).coordType, eo, ((Shift And vbShiftMask) = vbShiftMask))
+                Call autoTilerPutTile(vbNullString, tilecoord.x, tilecoord.y, m_ed.board(m_ed.undoIndex).coordType, eo, ((Shift And vbShiftMask) = vbShiftMask))
             Else
-                Call placeTile("", tileCoord.x, tileCoord.y)
+                Call placeTile(vbNullString, tilecoord.x, tilecoord.y)
             End If
             
         Case BT_RECT
@@ -2226,6 +2243,11 @@ Private Sub drawBoard(Optional ByVal bRefresh As Boolean = True) ': On Error Res
     )
     
     If bRefresh Then
+        'Update the background image dimensions here because the image's
+        'bounds are assigned only when it is drawn.
+        If LenB(m_ed.board(m_ed.undoIndex).bkgImage.filename) Then
+            lblProperties(5).Caption = "Background image (" & CStr(m_ed.board(m_ed.undoIndex).bkgImage.bounds.Right) & " x " & CStr(m_ed.board(m_ed.undoIndex).bkgImage.bounds.Bottom) & ")"
+        End If
         Call vectorDrawAll
         Call drawStartPosition
         Call drawGrid
@@ -2710,9 +2732,9 @@ End Sub
 '========================================================================
 Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
     
-    Dim tileCoord As POINTAPI, pxCoord As POINTAPI, curVector As CVector
+    Dim tilecoord As POINTAPI, pxCoord As POINTAPI, curVector As CVector
     pxCoord = screenToBoardPixel(x, y, m_ed.pCEd)
-    tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
+    tilecoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
     Set curVector = currentVector
 
     Select Case m_ed.optTool
@@ -3489,6 +3511,7 @@ Private Sub toolsRefresh(): On Error Resume Next
     tkMainForm.brdOptTool(BT_SELECT).Enabled = (m_ed.optSetting > BS_ZOOM)
     tkMainForm.brdOptTool(BT_FLOOD).Enabled = (m_ed.optSetting = BS_TILE)
     tkMainForm.brdOptTool(BT_ERASE).Enabled = (m_ed.optSetting = BS_TILE)
+    tkMainForm.brdOptTool(BT_DROPPER).Enabled = (m_ed.optSetting = BS_TILE)
     tkMainForm.brdOptTool(BT_RECT).Enabled = False
     Select Case m_ed.optSetting
         Case BS_TILE, BS_LIGHTING

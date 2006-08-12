@@ -6,7 +6,7 @@ Begin VB.MDIForm tkMainForm
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
    ClientHeight    =   8190
    ClientLeft      =   165
-   ClientTop       =   855
+   ClientTop       =   105
    ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
@@ -26,12 +26,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox rightbar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5910
+      Height          =   5700
       Left            =   8775
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   2730
       TabIndex        =   65
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   2730
       Begin VB.Frame fileTree1 
@@ -212,13 +212,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   360
+      Height          =   570
       Left            =   0
       TabIndex        =   1
       Top             =   0
       Width           =   11880
       _ExtentX        =   20955
-      _ExtentY        =   635
+      _ExtentY        =   1005
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -406,12 +406,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5910
+      Height          =   5700
       Left            =   465
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   3510
       TabIndex        =   47
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   3510
       Begin VB.CommandButton bTools_Close 
@@ -566,12 +566,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5910
+      Height          =   5700
       Left            =   -1350
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   1815
       TabIndex        =   44
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   1815
       Begin VB.CommandButton Command2 
@@ -637,12 +637,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   5910
+      Height          =   5700
       Left            =   0
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   975
       TabIndex        =   9
-      Top             =   360
+      Top             =   570
       Width           =   975
       Begin VB.CommandButton Command3 
          BeginProperty Font 
@@ -811,7 +811,7 @@ Begin VB.MDIForm tkMainForm
                Top             =   2400
                Width           =   735
                Begin VB.OptionButton brdOptTool 
-                  Caption         =   "Un"
+                  Caption         =   "Drp"
                   Enabled         =   0   'False
                   Height          =   375
                   Index           =   5
@@ -820,7 +820,6 @@ Begin VB.MDIForm tkMainForm
                   TabIndex        =   141
                   TabStop         =   0   'False
                   Top             =   720
-                  Visible         =   0   'False
                   Width           =   375
                End
                Begin VB.OptionButton brdOptTool 
@@ -2143,12 +2142,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5910
+      Height          =   5700
       Left            =   11505
-      ScaleHeight     =   5910
+      ScaleHeight     =   5700
       ScaleWidth      =   375
       TabIndex        =   3
-      Top             =   360
+      Top             =   570
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2202,13 +2201,13 @@ Begin VB.MDIForm tkMainForm
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5910
+      Height          =   5700
       Left            =   3975
-      ScaleHeight     =   394
+      ScaleHeight     =   380
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   320
       TabIndex        =   2
-      Top             =   360
+      Top             =   570
       Visible         =   0   'False
       Width           =   4800
       Begin VB.CommandButton cmdTilesetClose 
@@ -2274,13 +2273,13 @@ Begin VB.MDIForm tkMainForm
             Style           =   6
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "02/08/2006"
+            TextSave        =   "12/08/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "11:03"
+            TextSave        =   "17:36"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             AutoSize        =   1
