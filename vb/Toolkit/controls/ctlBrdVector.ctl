@@ -1,18 +1,18 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.UserControl ctlBrdVector 
-   ClientHeight    =   5685
+   ClientHeight    =   5415
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3120
    DefaultCancel   =   -1  'True
-   ScaleHeight     =   5685
+   ScaleHeight     =   5415
    ScaleWidth      =   3120
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw vectors"
       Height          =   375
       Left            =   120
-      TabIndex        =   17
+      TabIndex        =   16
       Top             =   120
       Width           =   1455
    End
@@ -21,14 +21,14 @@ Begin VB.UserControl ctlBrdVector
       Default         =   -1  'True
       Height          =   375
       Left            =   1800
-      TabIndex        =   16
+      TabIndex        =   15
       Top             =   120
       Visible         =   0   'False
       Width           =   375
    End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
-      Height          =   4935
+      Height          =   4695
       Left            =   0
       TabIndex        =   1
       Top             =   600
@@ -37,16 +37,16 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Left            =   1500
          Max             =   2
-         TabIndex        =   19
-         Top             =   3120
+         TabIndex        =   18
+         Top             =   2880
          Value           =   1
          Width           =   495
       End
       Begin MSComctlLib.ListView lvPoints 
          Height          =   1095
          Left            =   480
-         TabIndex        =   15
-         Top             =   3600
+         TabIndex        =   14
+         Top             =   3360
          Width           =   1935
          _ExtentX        =   3413
          _ExtentY        =   1931
@@ -80,9 +80,9 @@ Begin VB.UserControl ctlBrdVector
          Appearance      =   0  'Flat
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
-         Height          =   1095
+         Height          =   735
          Left            =   120
-         ScaleHeight     =   1095
+         ScaleHeight     =   735
          ScaleWidth      =   2655
          TabIndex        =   8
          Top             =   240
@@ -92,7 +92,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   16
             Left            =   1320
-            TabIndex        =   18
+            TabIndex        =   17
             Top             =   360
             Width           =   1335
          End
@@ -101,7 +101,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   1
             Left            =   0
-            TabIndex        =   12
+            TabIndex        =   11
             Top             =   0
             Value           =   -1  'True
             Width           =   855
@@ -111,7 +111,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   2
             Left            =   0
-            TabIndex        =   11
+            TabIndex        =   10
             Top             =   360
             Width           =   855
          End
@@ -119,19 +119,10 @@ Begin VB.UserControl ctlBrdVector
             Caption         =   "Stairs"
             Height          =   375
             Index           =   8
-            Left            =   0
-            TabIndex        =   10
-            Top             =   720
-            Width           =   855
-         End
-         Begin VB.OptionButton optType 
-            Caption         =   "Unidirectional"
-            Height          =   375
-            Index           =   4
             Left            =   1320
             TabIndex        =   9
             Top             =   0
-            Width           =   1335
+            Width           =   855
          End
       End
       Begin VB.CheckBox chkUnder 
@@ -140,7 +131,7 @@ Begin VB.UserControl ctlBrdVector
          Index           =   0
          Left            =   360
          TabIndex        =   7
-         Top             =   1560
+         Top             =   1320
          Width           =   2295
       End
       Begin VB.CheckBox chkUnder 
@@ -149,7 +140,7 @@ Begin VB.UserControl ctlBrdVector
          Index           =   1
          Left            =   360
          TabIndex        =   6
-         Top             =   1800
+         Top             =   1560
          Width           =   2295
       End
       Begin VB.CheckBox chkUnder 
@@ -158,7 +149,7 @@ Begin VB.UserControl ctlBrdVector
          Index           =   2
          Left            =   360
          TabIndex        =   5
-         Top             =   2040
+         Top             =   1800
          Width           =   2295
       End
       Begin VB.TextBox txtStairs 
@@ -166,7 +157,7 @@ Begin VB.UserControl ctlBrdVector
          Left            =   360
          TabIndex        =   4
          Text            =   "1"
-         Top             =   2760
+         Top             =   2520
          Width           =   495
       End
       Begin VB.CheckBox chkClosed 
@@ -174,7 +165,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Left            =   360
          TabIndex        =   3
-         Top             =   1320
+         Top             =   1080
          Width           =   1815
       End
       Begin VB.TextBox txtLayer 
@@ -182,32 +173,32 @@ Begin VB.UserControl ctlBrdVector
          Left            =   360
          TabIndex        =   2
          Text            =   "1"
-         Top             =   2445
+         Top             =   2205
          Width           =   495
       End
       Begin VB.Label lblSlot 
          Caption         =   "Slot index: 0"
          Height          =   255
          Left            =   360
-         TabIndex        =   20
+         TabIndex        =   19
          ToolTipText     =   "Index for use with vector access RPGCode functions"
-         Top             =   3180
+         Top             =   2940
          Width           =   1215
       End
       Begin VB.Label lblStairs 
          Caption         =   "Stairs to layer"
          Height          =   255
          Left            =   960
-         TabIndex        =   14
-         Top             =   2805
+         TabIndex        =   13
+         Top             =   2565
          Width           =   975
       End
       Begin VB.Label lblLayer 
          Caption         =   "Layer"
          Height          =   255
          Left            =   960
-         TabIndex        =   13
-         Top             =   2505
+         TabIndex        =   12
+         Top             =   2265
          Width           =   975
       End
    End
@@ -375,8 +366,8 @@ End Sub
 Private Sub lvPoints_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call modBoard.vectorLvColumn(lvPoints, x)
 End Sub
-Private Sub lvPoints_KeyDown(KeyCode As Integer, Shift As Integer): On Error Resume Next
-    If modBoard.vectorLvKeyDown(lvPoints, KeyCode) Then Call apply
+Private Sub lvPoints_KeyDown(keyCode As Integer, Shift As Integer): On Error Resume Next
+    If modBoard.vectorLvKeyDown(lvPoints, keyCode) Then Call apply
 End Sub
 Private Sub lvPoints_Validate(Cancel As Boolean): On Error Resume Next
     Call apply

@@ -53,7 +53,7 @@ Begin VB.Form frmBoardPreferences
             Height          =   375
             Left            =   120
             TabIndex        =   16
-            Top             =   1320
+            Top             =   1560
             Width           =   2655
          End
          Begin VB.CheckBox chkRecursiveFlooding 
@@ -61,7 +61,7 @@ Begin VB.Form frmBoardPreferences
             Height          =   375
             Left            =   120
             TabIndex        =   15
-            Top             =   960
+            Top             =   1200
             Width           =   1935
          End
          Begin VB.CheckBox chkVectorIndices 
@@ -69,7 +69,7 @@ Begin VB.Form frmBoardPreferences
             Height          =   375
             Left            =   120
             TabIndex        =   14
-            Top             =   600
+            Top             =   840
             Width           =   1695
          End
          Begin VB.CheckBox chkRevertToDraw 
@@ -77,7 +77,7 @@ Begin VB.Form frmBoardPreferences
             Height          =   375
             Left            =   120
             TabIndex        =   13
-            Top             =   240
+            Top             =   480
             Width           =   2655
          End
       End
@@ -90,22 +90,12 @@ Begin VB.Form frmBoardPreferences
          Width           =   2895
          Begin VB.PictureBox picColors 
             Height          =   255
-            Index           =   6
-            Left            =   120
-            ScaleHeight     =   195
-            ScaleWidth      =   195
-            TabIndex        =   21
-            Top             =   1680
-            Width           =   255
-         End
-         Begin VB.PictureBox picColors 
-            Height          =   255
             Index           =   3
             Left            =   120
             ScaleHeight     =   195
             ScaleWidth      =   195
-            TabIndex        =   19
-            Top             =   1320
+            TabIndex        =   20
+            Top             =   1560
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -115,7 +105,7 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   10
-            Top             =   2400
+            Top             =   2280
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -125,7 +115,7 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   8
-            Top             =   2040
+            Top             =   1920
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -135,7 +125,7 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   6
-            Top             =   960
+            Top             =   1200
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -145,7 +135,7 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   4
-            Top             =   600
+            Top             =   840
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -155,43 +145,34 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   2
-            Top             =   240
+            Top             =   480
             Width           =   255
          End
          Begin VB.Label lblColors 
             Caption         =   "Waypoint vectors"
             Height          =   255
-            Index           =   4
-            Left            =   480
-            TabIndex        =   22
-            Top             =   1680
-            Width           =   2295
-         End
-         Begin VB.Label lblColors 
-            Caption         =   "Unidirectional vectors"
-            Height          =   255
             Index           =   3
             Left            =   480
-            TabIndex        =   20
-            Top             =   1320
+            TabIndex        =   19
+            Top             =   1560
             Width           =   2295
          End
          Begin VB.Label lblColors 
             Caption         =   "Player start location"
             Height          =   255
-            Index           =   6
+            Index           =   5
             Left            =   480
             TabIndex        =   11
-            Top             =   2400
+            Top             =   2280
             Width           =   2295
          End
          Begin VB.Label lblColors 
             Caption         =   "Program vectors"
             Height          =   255
-            Index           =   5
+            Index           =   4
             Left            =   480
             TabIndex        =   9
-            Top             =   2040
+            Top             =   1920
             Width           =   2295
          End
          Begin VB.Label lblColors 
@@ -200,7 +181,7 @@ Begin VB.Form frmBoardPreferences
             Index           =   2
             Left            =   480
             TabIndex        =   7
-            Top             =   960
+            Top             =   1200
             Width           =   2295
          End
          Begin VB.Label lblColors 
@@ -209,7 +190,7 @@ Begin VB.Form frmBoardPreferences
             Index           =   1
             Left            =   480
             TabIndex        =   5
-            Top             =   600
+            Top             =   840
             Width           =   2295
          End
          Begin VB.Label lblColors 
@@ -218,7 +199,7 @@ Begin VB.Form frmBoardPreferences
             Index           =   0
             Left            =   480
             TabIndex        =   3
-            Top             =   240
+            Top             =   480
             Width           =   2295
          End
       End
@@ -249,10 +230,9 @@ Private Sub cmdDefault_Click() ': On Error Resume Next
         .vectorColor(TT_SOLID) = picColors(0).backColor
         .vectorColor(TT_UNDER) = picColors(1).backColor
         .vectorColor(TT_STAIRS) = picColors(2).backColor
-        .vectorColor(TT_UNIDIRECTIONAL) = picColors(3).backColor
-        .vectorColor(TT_WAYPOINT) = picColors(4).backColor
-        .programColor = picColors(5).backColor
-        .pStartColor = picColors(6).backColor
+        .vectorColor(TT_WAYPOINT) = picColors(3).backColor
+        .programColor = picColors(4).backColor
+        .pStartColor = picColors(5).backColor
     End With
     
     Unload Me
@@ -269,10 +249,9 @@ Private Sub Form_Load() ': On Error Resume Next
         picColors(0).backColor = .vectorColor(TT_SOLID)
         picColors(1).backColor = .vectorColor(TT_UNDER)
         picColors(2).backColor = .vectorColor(TT_STAIRS)
-        picColors(3).backColor = .vectorColor(TT_UNIDIRECTIONAL)
-        picColors(4).backColor = .vectorColor(TT_WAYPOINT)
-        picColors(5).backColor = .programColor
-        picColors(6).backColor = .pStartColor
+        picColors(3).backColor = .vectorColor(TT_WAYPOINT)
+        picColors(4).backColor = .programColor
+        picColors(5).backColor = .pStartColor
     End With
 End Sub
 

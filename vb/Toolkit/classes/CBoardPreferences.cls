@@ -51,8 +51,8 @@ Private Sub Class_Initialize(): On Error Resume Next
     vectorColors(TT_UNDER) = val(GetSetting("RPGToolkit3", "BRD Editor", "Color vector-under", "-1"))
     If vectorColors(TT_UNDER) = -1 Then vectorColors(TT_UNDER) = RGB(0, 255, 0)
     
-    vectorColors(TT_UNIDIRECTIONAL) = val(GetSetting("RPGToolkit3", "BRD Editor", "Color vector-unidir", "-1"))
-    If vectorColors(TT_UNIDIRECTIONAL) = -1 Then vectorColors(TT_UNIDIRECTIONAL) = RGB(255, 128, 0)
+'    vectorColors(TT_UNIDIRECTIONAL) = val(GetSetting("RPGToolkit3", "BRD Editor", "Color vector-unidir", "-1"))
+'    If vectorColors(TT_UNIDIRECTIONAL) = -1 Then vectorColors(TT_UNIDIRECTIONAL) = RGB(255, 128, 0)
     
     vectorColors(TT_STAIRS) = val(GetSetting("RPGToolkit3", "BRD Editor", "Color vector-unidir", "-1"))
     If vectorColors(TT_STAIRS) = -1 Then vectorColors(TT_STAIRS) = RGB(0, 255, 255)
@@ -77,7 +77,7 @@ Private Sub Class_Terminate(): On Error Resume Next
     
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-solid", CStr(vectorColors(TT_SOLID)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-under", CStr(vectorColors(TT_UNDER)))
-    Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-unidir", CStr(vectorColors(TT_UNIDIRECTIONAL)))
+'    Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-unidir", CStr(vectorColors(TT_UNIDIRECTIONAL)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-stairs", CStr(vectorColors(TT_STAIRS)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-waypoint", CStr(vectorColors(TT_WAYPOINT)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color program", CStr(programColor))
