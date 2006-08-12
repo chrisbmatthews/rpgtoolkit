@@ -11,6 +11,19 @@ Private Declare Function BRDTileToPixel Lib "actkrt3.dll" (ByRef x As Long, ByRe
 Private Declare Function BRDVectorize Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByRef vectors() As TKConvertedVector) As Long
 Private Declare Function BRDTileToVector Lib "actkrt3.dll" (ByVal pVector As Long, ByVal x As Long, ByVal y As Long, ByVal coordType As Integer) As Long
 
+
+'=========================================================================
+' A globally unique identifier
+'=========================================================================
+Private Type GUID
+    Data1 As Long
+    Data2 As Integer
+    Data3 As Integer
+    Data4(7) As Byte
+End Type
+
+Private Declare Function CoCreateGuid Lib "OLE32.DLL" (pGuid As GUID) As Long
+
 '=========================================================================
 ' A board-set image [tagVBBoardImage]
 '=========================================================================
@@ -40,7 +53,7 @@ Public Enum eTileType
     TT_NORMAL = 0                       'See TILE_TYPE enumeration, board conversion.h
     TT_SOLID = 1
     TT_UNDER = 2
-    TT_UNIDIRECTIONAL = 4
+    TT_UNIDIRECTIONAL = 4               'Incomplete  / unnecessary.
     TT_STAIRS = 8
     TT_WAYPOINT = 16
 End Enum
@@ -162,6 +175,7 @@ Public Enum eBrdTool
     BT_FLOOD
     BT_ERASE
     BT_RECT
+    BT_DROPPER
     BT_IMG_TRANSP                         'Getting the transparent colour for an image.
     BT_SET_PSTART                         'Setting the player start location.
 End Enum
@@ -463,28 +477,28 @@ Public Sub vectorLvColumn(ByRef lv As ListView, ByRef x As Single): On Error Res
     'Store the subitem column in the tag (first subitem column is the second column).
     lv.Tag = i - 1
 End Sub
-Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal KeyCode As Integer) As Boolean ':on error resume next
+Public Function vectorLvKeyDown(ByRef lv As ListView, ByVal keyCode As Integer) As Boolean ':on error resume next
     
     Const vbKeyDash = 189
     Dim i As Long
     i = val(lv.Tag)
-    If i = 0 And KeyCode = vbKeyDelete Then
+    If i = 0 And keyCode = vbKeyDelete Then
         'Whole row selected - delete the point.
         lv.ListItems.Remove lv.SelectedItem.Index
         vectorLvKeyDown = True
     End If
     If i <> 1 And i <> 2 Then Exit Function
         
-    Select Case KeyCode
+    Select Case keyCode
         Case vbKeyBack, vbKeyDelete
             lv.SelectedItem.SubItems(i) = vbNullString
         Case vbKeyReturn
             vectorLvKeyDown = True
         Case vbKey0 To vbKey9
-            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(KeyCode)
+            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(keyCode)
         Case vbKeyNumpad0 To vbKeyNumpad9
-            KeyCode = KeyCode - (vbKeyNumpad0 - vbKey0)
-            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(KeyCode)
+            keyCode = keyCode - (vbKeyNumpad0 - vbKey0)
+            lv.SelectedItem.SubItems(i) = lv.SelectedItem.SubItems(i) & chr(keyCode)
         Case vbKeyAdd
             lv.SelectedItem.SubItems(i) = str(val(lv.SelectedItem.SubItems(i)) + 32)
              vectorLvKeyDown = True
@@ -643,3 +657,26 @@ Public Sub gridDraw( _
     
     pic.DrawMode = oldMode
 End Sub
+
+'========================================================================
+' Create a "unique" variable name from a Guid
+' From Microsoft support article 176790 (c) 2000 Gus Molina
+'========================================================================
+Public Function createGuid() As String: On Error Resume Next
+    Dim id As GUID
+    If (CoCreateGuid(id) = 0) Then
+        createGuid = _
+            String(8 - Len(Hex$(id.Data1)), "0") & Hex$(id.Data1) & _
+            String(4 - Len(Hex$(id.Data2)), "0") & Hex$(id.Data2) & _
+            String(4 - Len(Hex$(id.Data3)), "0") & Hex$(id.Data3) & _
+            IIf((id.Data4(0) < &H10), "0", "") & Hex$(id.Data4(0)) & _
+            IIf((id.Data4(1) < &H10), "0", "") & Hex$(id.Data4(1)) & _
+            IIf((id.Data4(2) < &H10), "0", "") & Hex$(id.Data4(2)) & _
+            IIf((id.Data4(3) < &H10), "0", "") & Hex$(id.Data4(3)) & _
+            IIf((id.Data4(4) < &H10), "0", "") & Hex$(id.Data4(4)) & _
+            IIf((id.Data4(5) < &H10), "0", "") & Hex$(id.Data4(5)) & _
+            IIf((id.Data4(6) < &H10), "0", "") & Hex$(id.Data4(6)) & _
+            IIf((id.Data4(7) < &H10), "0", "") & Hex$(id.Data4(7) _
+        )
+    End If
+End Function
