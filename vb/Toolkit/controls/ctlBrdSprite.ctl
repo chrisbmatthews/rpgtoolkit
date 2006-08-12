@@ -1,17 +1,17 @@
 VERSION 5.00
 Begin VB.UserControl ctlBrdSprite 
-   ClientHeight    =   6585
+   ClientHeight    =   5745
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3135
    DefaultCancel   =   -1  'True
-   ScaleHeight     =   6585
+   ScaleHeight     =   5745
    ScaleWidth      =   3135
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw sprites"
       Height          =   375
       Left            =   120
-      TabIndex        =   38
+      TabIndex        =   26
       Top             =   120
       Width           =   1575
    End
@@ -20,32 +20,41 @@ Begin VB.UserControl ctlBrdSprite
       Default         =   -1  'True
       Height          =   375
       Left            =   1800
-      TabIndex        =   37
+      TabIndex        =   25
       Top             =   120
       Visible         =   0   'False
       Width           =   375
    End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
-      Height          =   5535
+      Height          =   4575
       Left            =   0
       TabIndex        =   2
       Top             =   960
       Width           =   3015
+      Begin VB.CheckBox chkRunOnce 
+         Caption         =   "Run once"
+         Height          =   255
+         Left            =   240
+         TabIndex        =   27
+         ToolTipText     =   "Allow this program to be run only once during the game"
+         Top             =   4080
+         Width           =   2415
+      End
       Begin VB.HScrollBar hsbSlot 
          Height          =   255
          Left            =   1260
          Max             =   2
-         TabIndex        =   36
-         Top             =   1440
+         TabIndex        =   24
+         Top             =   1680
          Value           =   1
          Width           =   495
       End
       Begin VB.TextBox txtMultitask 
          Height          =   285
          Left            =   120
-         TabIndex        =   32
-         Top             =   2640
+         TabIndex        =   20
+         Top             =   3000
          Width           =   2055
       End
       Begin VB.PictureBox picBrowse 
@@ -57,15 +66,15 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   2280
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   30
-         Top             =   2640
+         TabIndex        =   18
+         Top             =   3000
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
             Caption         =   "..."
             Height          =   255
             Index           =   2
             Left            =   0
-            TabIndex        =   31
+            TabIndex        =   19
             Top             =   0
             Width           =   495
          End
@@ -79,15 +88,15 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   2280
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   28
-         Top             =   2040
+         TabIndex        =   16
+         Top             =   2400
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
             Caption         =   "..."
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   29
+            TabIndex        =   17
             Top             =   0
             Width           =   495
          End
@@ -95,8 +104,8 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.TextBox txtActivate 
          Height          =   285
          Left            =   120
-         TabIndex        =   27
-         Top             =   2040
+         TabIndex        =   15
+         Top             =   2400
          Width           =   2055
       End
       Begin VB.PictureBox picActivationType 
@@ -107,15 +116,15 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   240
          ScaleHeight     =   495
          ScaleWidth      =   2415
-         TabIndex        =   24
-         Top             =   3000
+         TabIndex        =   12
+         Top             =   3480
          Width           =   2415
          Begin VB.OptionButton optActivationType 
             Caption         =   "Activation by step-on"
             Height          =   255
             Index           =   0
             Left            =   0
-            TabIndex        =   26
+            TabIndex        =   14
             Top             =   0
             Width           =   2055
          End
@@ -124,7 +133,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   25
+            TabIndex        =   13
             Top             =   240
             Width           =   2055
          End
@@ -134,7 +143,7 @@ Begin VB.UserControl ctlBrdSprite
          Index           =   1
          Left            =   1260
          TabIndex        =   9
-         Top             =   1080
+         Top             =   1200
          Width           =   495
       End
       Begin VB.TextBox txtLoc 
@@ -142,7 +151,7 @@ Begin VB.UserControl ctlBrdSprite
          Index           =   2
          Left            =   2280
          TabIndex        =   8
-         Top             =   1080
+         Top             =   1200
          Width           =   495
       End
       Begin VB.TextBox txtLoc 
@@ -150,7 +159,7 @@ Begin VB.UserControl ctlBrdSprite
          Index           =   0
          Left            =   360
          TabIndex        =   7
-         Top             =   1080
+         Top             =   1200
          Width           =   495
       End
       Begin VB.TextBox txtFilename 
@@ -182,137 +191,28 @@ Begin VB.UserControl ctlBrdSprite
             Width           =   495
          End
       End
-      Begin VB.Frame fraConditionallyActive 
-         BorderStyle     =   0  'None
-         Caption         =   "Conditional activation"
-         Height          =   2055
-         Left            =   120
-         TabIndex        =   12
-         Top             =   3360
-         Width           =   2775
-         Begin VB.PictureBox picConditionallyActive 
-            Appearance      =   0  'Flat
-            BorderStyle     =   0  'None
-            ForeColor       =   &H80000008&
-            Height          =   615
-            Left            =   120
-            ScaleHeight     =   615
-            ScaleWidth      =   2535
-            TabIndex        =   17
-            Top             =   240
-            Width           =   2535
-            Begin VB.OptionButton optConditionallyActive 
-               Caption         =   "Conditionally active"
-               Height          =   255
-               Index           =   1
-               Left            =   0
-               TabIndex        =   19
-               Top             =   240
-               Width           =   1815
-            End
-            Begin VB.OptionButton optConditionallyActive 
-               Caption         =   "Always active"
-               Height          =   255
-               Index           =   0
-               Left            =   0
-               TabIndex        =   18
-               Top             =   0
-               Width           =   1815
-            End
-         End
-         Begin VB.TextBox txtConditionVars 
-            Height          =   285
-            Index           =   0
-            Left            =   120
-            TabIndex        =   16
-            Text            =   "<variable_A>"
-            Top             =   1080
-            Width           =   1455
-         End
-         Begin VB.TextBox txtConditionVars 
-            Height          =   285
-            Index           =   1
-            Left            =   1920
-            TabIndex        =   15
-            Text            =   "<value>"
-            Top             =   1080
-            Width           =   735
-         End
-         Begin VB.TextBox txtConditionVars 
-            Height          =   285
-            Index           =   2
-            Left            =   120
-            TabIndex        =   14
-            Text            =   "<variable_B>"
-            Top             =   1680
-            Width           =   1455
-         End
-         Begin VB.TextBox txtConditionVars 
-            Height          =   285
-            Index           =   3
-            Left            =   1920
-            TabIndex        =   13
-            Text            =   "<value>"
-            Top             =   1680
-            Width           =   735
-         End
-         Begin VB.Label lblInitiallyActive 
-            Caption         =   "Active if variable:"
-            Height          =   255
-            Left            =   120
-            TabIndex        =   23
-            Top             =   840
-            Width           =   1455
-         End
-         Begin VB.Label lblEquals 
-            Caption         =   "="
-            Height          =   255
-            Index           =   0
-            Left            =   1680
-            TabIndex        =   22
-            Top             =   1080
-            Width           =   255
-         End
-         Begin VB.Label lblAfterActivation 
-            Caption         =   "After activation:"
-            Height          =   255
-            Left            =   120
-            TabIndex        =   21
-            Top             =   1440
-            Width           =   1815
-         End
-         Begin VB.Label lblEquals 
-            Caption         =   "="
-            Height          =   255
-            Index           =   1
-            Left            =   1680
-            TabIndex        =   20
-            Top             =   1680
-            Width           =   255
-         End
-      End
       Begin VB.Label lblSlot 
          Caption         =   "Slot index: 0"
          Height          =   255
          Left            =   120
-         TabIndex        =   35
-         Top             =   1500
+         TabIndex        =   23
+         Top             =   1740
          Width           =   1215
       End
       Begin VB.Label lblMultitask 
          Caption         =   "Override multitasking program"
          Height          =   375
          Left            =   120
-         TabIndex        =   34
-         Top             =   2400
+         TabIndex        =   22
+         Top             =   2760
          Width           =   2655
       End
       Begin VB.Label lblActivate 
          Caption         =   "Override program to run on activation"
          Height          =   375
          Left            =   120
-         TabIndex        =   33
-         Top             =   1800
+         TabIndex        =   21
+         Top             =   2160
          Width           =   2655
       End
       Begin VB.Label lblLoc 
@@ -321,7 +221,7 @@ Begin VB.UserControl ctlBrdSprite
          Index           =   1
          Left            =   180
          TabIndex        =   11
-         Top             =   1125
+         Top             =   1245
          Width           =   2655
       End
       Begin VB.Label lblLoc 
@@ -330,7 +230,7 @@ Begin VB.UserControl ctlBrdSprite
          Index           =   0
          Left            =   120
          TabIndex        =   10
-         Top             =   840
+         Top             =   960
          Width           =   975
       End
       Begin VB.Label lblFilename 
@@ -384,11 +284,15 @@ Private Sub apply() ': On Error Resume Next
             .x = x
             .y = y
             .layer = Abs(val(txtLoc(2).Text))
-            .activate = Abs(optConditionallyActive(SPR_CONDITIONAL).value)
-            .initialVar = txtConditionVars(0).Text
-            .initialValue = txtConditionVars(1).Text
-            .finalVar = txtConditionVars(2).Text
-            .finalValue = txtConditionVars(3).Text
+            .activate = IIf(chkRunOnce.value, SPR_CONDITIONAL, SPR_ACTIVE)
+            
+            'Assign a Guid as a unique variable name.
+            .initialVar = vbNullString
+            If .activate = SPR_CONDITIONAL Then .initialVar = modBoard.createGuid()
+            .initialValue = vbNullString            'Uninitialised variables set to "".
+            .finalVar = .initialVar
+            .finalValue = "1"
+                        
             .activationType = Abs(optActivationType(SPR_KEYPRESS).value)
             .prgActivate = txtActivate.Text
             .prgMultitask = txtMultitask.Text
@@ -450,16 +354,7 @@ Public Sub populate(ByVal Index As Long, ByRef spr As CBoardSprite) ':on error r
     txtActivate = spr.prgActivate
     txtMultitask = spr.prgMultitask
     lblSlot.Caption = "Slot index: " & CStr(Index)
-    
-    optConditionallyActive(spr.activate).value = True
-    If spr.activate = SPR_CONDITIONAL Then
-        txtConditionVars(0).Text = spr.initialVar:  txtConditionVars(1).Text = spr.initialValue
-        txtConditionVars(2).Text = spr.finalVar:    txtConditionVars(3).Text = spr.finalValue
-    Else
-        For i = 0 To 4 - 1
-            txtConditionVars(i).Enabled = False
-        Next i
-    End If
+    chkRunOnce.value = spr.activate
     optActivationType(spr.activationType And SPR_KEYPRESS).value = True
 
 End Sub
@@ -474,6 +369,11 @@ End Property
 Private Sub chkDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     activeBoard.toolbarDrawObject(BS_SPRITE) = chkDraw.value
 End Sub
+
+Private Sub chkRunOnce_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call apply
+End Sub
+
 Private Sub cmbSprite_Click(): On Error Resume Next
     If cmbSprite.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbSprite.ListIndex, BS_SPRITE)
 End Sub
@@ -519,16 +419,10 @@ End Sub
 Private Sub optActivationType_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply
 End Sub
-Private Sub optConditionallyActive_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    Call apply
-End Sub
 Private Sub txtActivate_LostFocus(): On Error Resume Next
     Call apply
 End Sub
 Private Sub txtActivate_Validate(Cancel As Boolean): On Error Resume Next
-    Call apply
-End Sub
-Private Sub txtConditionVars_Validate(Index As Integer, Cancel As Boolean): On Error Resume Next
     Call apply
 End Sub
 Private Sub txtFilename_LostFocus(): On Error Resume Next
