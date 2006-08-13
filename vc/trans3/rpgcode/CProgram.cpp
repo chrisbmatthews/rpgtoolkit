@@ -242,11 +242,28 @@ LPSTACK_FRAME CProgram::getVar(const STRING name)
 			}
 		}
 	}
+	return (this->*m_pResolveFunc)(name);
+}
+
+// Prefer the global scope when resolving a variable.
+LPSTACK_FRAME CProgram::resolveVarGlobal(const STRING name)
+{
 	if (m_locals.back().count(name))
 	{
 		return &m_locals.back().find(name)->second;
 	}
 	return m_heap[name];
+}
+
+// Prefer the local scope when resolving a variable.
+LPSTACK_FRAME CProgram::resolveVarLocal(const STRING name)
+{
+	std::map<STRING, CPtrData<STACK_FRAME> >::iterator i = m_heap.find(name);
+	if (i != m_heap.end())
+	{
+		return i->second;
+	}
+	return &m_locals.back()[name];
 }
 
 // Remove a redirect from the list.
@@ -788,6 +805,8 @@ void CProgram::prime()
 	m_locals.clear();
 	m_locals.push_back(std::map<STRING, STACK_FRAME>());
 	m_i = m_units.begin();
+	// Prefer the global scope when resolving a variable by default.
+	m_pResolveFunc = resolveVarGlobal;
 }
 
 // Load the program from a string.
@@ -1298,6 +1317,9 @@ void CProgram::serialiseState(CFile &stream) const
 
 	// Program position.
 	stream << int(m_i - m_units.begin());
+
+	// Default scope resolution (can be changed by autolocal()).
+	stream << int((m_pResolveFunc == resolveVarGlobal) ? 0 : 1);
 }
 
 // Reconstruct a previously serialised state.
@@ -1388,6 +1410,13 @@ void CProgram::reconstructState(CFile &stream)
 		int ppos = 0;
 		stream >> ppos;
 		m_i = m_units.begin() + ppos;
+	}
+
+	// Default scope.
+	{
+		int scope = 0;
+		stream >> scope;
+		m_pResolveFunc = scope ? resolveVarLocal : resolveVarGlobal;
 	}
 }
 

@@ -2607,12 +2607,13 @@ void playerlocation(CALL_DATA &params)
 void sourcelocation(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
+	extern IPlugin *g_pFightPlugin;
 
 	if (params.params != 2)
 	{
 		throw CError(_T("SourceLocation() requires two parameters."));
 	}
-	
+
 	LPSTACK_FRAME x = params.prg->getVar(params[0].lit),
 				  y = params.prg->getVar(params[1].lit);
 	x->udt = UDT_NUM;
@@ -2620,29 +2621,30 @@ void sourcelocation(CALL_DATA &params)
 
 	int dx = 0, dy = 0;
 
-	if (g_source.type == ET_ENEMY)
+	if (isFighting())
 	{
-		/** TBD: get enemy location. **/
+		IFighter *pFighter = (IFighter *)g_source.p;
+		int party = -1, idx = -1;
+		getFighterIndices(pFighter, party, idx);
+		if (!g_pFightPlugin->getFighterLocation(party, idx, dx, dy))
+		{
+			// This call is only supported in the 3.0.7 version of the default
+			// battle system. The readme will explain how to copy in the new
+			// dll from the "basic" folder. If for some reason the call does
+			// not succeed, we return -1 for both coords.
+			dx = dy = -1;
+		}
 	}
-	else
+	else if (g_source.type != ET_ENEMY)
 	{
 		// Player or item.
-		/** TBD:
-		if (fighting)
-		{
-			// Get location from plugin...
-		}
-		else
-		**/
-		{
-			const CSprite *p = (CSprite *)g_source.p;
-			const SPRITE_POSITION s = p->getPosition();
-			dx = int(s.x);
-			dy = int(s.y);
-		}
+		const CSprite *p = (CSprite *)g_source.p;
+		const SPRITE_POSITION s = p->getPosition();
+		dx = int(s.x);
+		dy = int(s.y);
+		// Transform from pixel to board type (e.g. tile).
+		coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
 	}
-	// Transform from pixel to board type (e.g. tile).
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
 	x->num = dx;
 	y->num = dy;
 }
@@ -2655,6 +2657,7 @@ void sourcelocation(CALL_DATA &params)
 void targetlocation(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
+	extern IPlugin *g_pFightPlugin;
 
 	if (params.params != 2)
 	{
@@ -2668,29 +2671,31 @@ void targetlocation(CALL_DATA &params)
 
 	int dx = 0, dy = 0;
 
-	if (g_target.type == ET_ENEMY)
+	if (isFighting())
 	{
-		/** TBD: get enemy location. **/
+		IFighter *pFighter = (IFighter *)g_target.p;
+		int party = -1, idx = -1;
+		getFighterIndices(pFighter, party, idx);
+		if (!g_pFightPlugin->getFighterLocation(party, idx, dx, dy))
+		{
+			// This call is only supported in the 3.0.7 version of the default
+			// battle system. The readme will explain how to copy in the new
+			// dll from the "basic" folder. If for some reason the call does
+			// not succeed, we return -1 for both coords.
+			dx = dy = -1;
+		}
 	}
-	else
+	else if (g_target.type != ET_ENEMY)
 	{
 		// Player or item.
-		/** TBD:
-		if (fighting)
-		{
-			// Get location from plugin...
-		}
-		else
-		**/
-		{
-			const CSprite *p = (CSprite *)g_target.p;
-			const SPRITE_POSITION s = p->getPosition();
-			dx = int(s.x);
-			dy = int(s.y);
-		}
+		const CSprite *p = (CSprite *)g_target.p;
+		const SPRITE_POSITION s = p->getPosition();
+		dx = int(s.x);
+		dy = int(s.y);
+		// Transform from pixel to board type (e.g. tile).
+		coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
 	}
-	// Transform from pixel to board type (e.g. tile).
-	coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
+
 	x->num = dx;
 	y->num = dy;
 }
@@ -2726,8 +2731,14 @@ void sourcehandle(CALL_DATA &params)
 	}
 	else if (g_source.type == ET_ENEMY)
 	{
-		/** TBD: return enemy index... (?) 
-		str = _T("ENEMY") + i; **/
+		// Return the enemy name rather than its index.
+		// Note: Users can no longer determine the enemy index, but
+		//		 I doubt anyone used this string for that before.
+		//			- Colin
+		if (g_source.p)
+		{
+			str = LPENEMY(g_source.p)->name();
+		}
 	}
 
 	params.ret().udt = UDT_LIT;
@@ -2773,8 +2784,14 @@ void targethandle(CALL_DATA &params)
 	}
 	else if (g_target.type == ET_ENEMY)
 	{
-		/** TBD: return enemy index... (?) 
-		str = _T("ENEMY") + i; **/
+		// Return the enemy name rather than its index.
+		// Note: Users can no longer determine the enemy index, but
+		//		 I doubt anyone used this string for that before.
+		//			- Colin
+		if (g_target.p)
+		{
+			str = LPENEMY(g_target.p)->name();
+		}
 	}
 
 	params.ret().udt = UDT_LIT;
@@ -6286,13 +6303,24 @@ void setconstants(CALL_DATA &params)
 }
 
 /*
- * autolocal(...)
+ * void autoLocal(bool bEnabled)
  * 
- * Description.
+ * Set the default scope for variable resolution. When autolocal()
+ * is not enabled, variables are assumed to be global unless a local
+ * variable has been defined. When autolocal() is enabled, variabes
+ * are assumed to be local unless a global variable has been defined.
+ *
+ * Note that if autolocal() is enabled and variables that are not global
+ * are referenced outside of any function, these variables are local to
+ * the program. When the program ends, they will be deleted.
  */
 void autolocal(CALL_DATA &params)
 {
-// TBD
+	if (params.params != 1)
+	{
+		throw CError(_T("AutoLocal() requires one parameter."));
+	}
+	params.prg->setDefaultScope(params[0].getBool() ? VS_LOCAL : VS_GLOBAL);
 }
 
 /*

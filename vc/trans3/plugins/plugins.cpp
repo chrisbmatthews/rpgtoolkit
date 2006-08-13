@@ -25,7 +25,7 @@ interface IPluginInput
 };
 
 // Number of members in a COM-based plugin's interface.
-#define MEMBER_COUNT 11
+#define MEMBER_COUNT 12
 
 // A COM based plugin.
 class CComPlugin : public IPlugin
@@ -43,6 +43,7 @@ public:
 	bool execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn);
 	int fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun);
 	int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode);
+	bool getFighterLocation(const int party, const int idx, int &x, int &y);
 	int menu(const int request);
 	bool plugType(const int request);
 
@@ -83,6 +84,7 @@ public:
 	bool execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn);
 	int fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun);
 	int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode);
+	bool getFighterLocation(const int party, const int idx, int &x, int &y) { return false; }
 	int menu(const int request);
 	bool plugType(const int request);
 	bool inputRequested(const int type);
@@ -109,17 +111,18 @@ static std::set<IPluginInput *> g_inputPlugins;
 
 // Locatation of MEMBERIDs in a CComPlugin::m_members array.
 // The order is arbitrary.
-#define MEMBER_SETCALLBACKS	0
-#define MEMBER_INITIALIZE	1
-#define MEMBER_TERMINATE	2
-#define MEMBER_VERSION		3
-#define MEMBER_DESCRIPTION	4
-#define MEMBER_TYPE			5
-#define MEMBER_QUERY		6
-#define MEMBER_EXECUTE		7
-#define MEMBER_MENU			8
-#define MEMBER_FIGHT		9
-#define MEMBER_FIGHTINFORM	10
+#define MEMBER_SETCALLBACKS			0
+#define MEMBER_INITIALIZE			1
+#define MEMBER_TERMINATE			2
+#define MEMBER_VERSION				3
+#define MEMBER_DESCRIPTION			4
+#define MEMBER_TYPE					5
+#define MEMBER_QUERY				6
+#define MEMBER_EXECUTE				7
+#define MEMBER_MENU					8
+#define MEMBER_FIGHT				9
+#define MEMBER_FIGHTINFORM			10
+#define MEMBER_GETFIGHTERLOCATION	11
 
 /*
  * Load a plugin.
@@ -150,12 +153,13 @@ IPlugin *loadPlugin(const STRING path)
 		return NULL;
 	}
 
-	if (FAILED(((HRESULT (__stdcall *)())pReg)()))
+	// Unrequired to register.
+	/*** if (FAILED(((HRESULT (__stdcall *)())pReg)()))
 	{
 		messageBox(_T("An error occurred while registering ") + file + _T(".\n\nIf this problem persists, please make sure you are running the game in an account with administrator privileges."));
 		FreeLibrary(mod);
 		return NULL;
-	}
+	} ***/
 
 	FreeLibrary(mod);
 
@@ -418,7 +422,8 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 		L"RPGCode_Execute",
 		L"Menu",
 		L"Fight",
-		L"FightInform"
+		L"FightInform",
+		L"GetFighterLocation"
 	};
 
 	// Get the MEMBERIDs of members of the class.
@@ -706,6 +711,43 @@ int COldPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterI
 {
 	if (!m_hModule) return 0;
 	return m_plugFightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, sourceHpLost, sourceSmpLost, targetHpLost, targetSmpLost, (char *)strMessage.c_str(), attackCode);
+}
+
+/*
+ * Get the location of a fighter.
+ */
+bool CComPlugin::getFighterLocation(const int party, const int idx, int &x, int &y)
+{
+	if (!m_plugin) return false;
+
+	const MEMBERID member = m_members[MEMBER_GETFIGHTERLOCATION];
+	if (member == DISPID_UNKNOWN) return false;
+
+	// Arguments in *reverse* order.
+	CComVariant vars[4], ret;
+	vars[3] = party;
+	vars[2] = idx;
+
+	vars[1].vt = VT_I4 | VT_BYREF;
+	vars[1].plVal = (long *)&x;
+
+	vars[0].vt = VT_I4 | VT_BYREF;
+	vars[0].plVal = (long *)&y;
+
+	DISPPARAMS params = {vars, NULL, 4, 0};
+
+	HRESULT hr = m_plugin->Invoke(
+		member,
+		IID_NULL,
+		LOCALE_USER_DEFAULT,
+		DISPATCH_METHOD,
+		&params,
+		&ret,
+		NULL,
+		NULL
+	);
+
+	return (ret.boolVal == VARIANT_TRUE);
 }
 
 /*

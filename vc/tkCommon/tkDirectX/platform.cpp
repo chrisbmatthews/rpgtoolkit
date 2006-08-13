@@ -95,6 +95,13 @@ BOOL FAST_CALL CDirectDraw::InitGraphicsMode(
 	m_bSrcAnd[3] = (ddcA.dwSSBRops[5] & 0x80);
 	m_bSrcPaint[3] = (ddcA.dwSSBRops[8] & 0x2000);
 
+	// The gamma controller can only be used in full screen mode.
+	// This is not really a problem because games _should_ ship in
+	// full screen. However, we may want to emulate it in windowed
+	// mode somehow...
+	//		- Colin
+	m_bGammaEnabled = ((ddcA.dwCaps2 & DDCAPS2_PRIMARYGAMMA) && bFullScreen);
+
 	return TRUE;
 }
 
@@ -115,6 +122,7 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 	m_lpddsPrime = NULL;
 	m_lpddsSecond = NULL;
 	m_lpddClip = NULL;
+	m_lpddGammaControl = NULL;
 	m_nWidth = nWidth;
 	m_nHeight = nHeight;
 	m_bFullScreen = bFullScreen;
@@ -196,6 +204,8 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 
 	}
 
+	m_lpddsPrime->QueryInterface(IID_IDirectDrawGammaControl, (void **)&m_lpddGammaControl);
+
 	// Black out screen
 	DrawFilledRect(0, 0, nWidth, nHeight, 0);
 
@@ -206,39 +216,75 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 //------------------------------------------------------------------------
 BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 {
+	#define SAFE_RELEASE(x) if (x) { x->Release(); x = NULL; } void(0)
+
 	// Kill back buffer
 	delete m_pBackBuffer;
 	m_pBackBuffer = NULL;
 
-	// Kill clipper
-	if (m_lpddClip)
-	{
-		if (FAILED(m_lpddClip->Release())) return FALSE;
-		m_lpddClip = NULL;
-	}
-
-	// Kill backbuffer
-	if (m_lpddsSecond)
-	{
-		if (FAILED(m_lpddsSecond->Release())) return FALSE;
-		m_lpddsSecond = NULL;
-	}
-
-	// Kill primary surface
-	if (m_lpddsPrime)
-	{
-		if (FAILED(m_lpddsPrime->Release())) return FALSE;
-		m_lpddsPrime = NULL;
-	}
-
-	// Kill direct draw
-	if (m_lpdd)
-	{
-		if (FAILED(m_lpdd->Release())) return FALSE;
-		m_lpdd = NULL;
-	}
+	// Release DirectDraw interfaces.
+	SAFE_RELEASE(m_lpddClip);
+	SAFE_RELEASE(m_lpddsSecond);
+	SAFE_RELEASE(m_lpddsPrime);
+	SAFE_RELEASE(m_lpddGammaControl);
+	SAFE_RELEASE(m_lpdd);
 
 	return TRUE;
+}
+
+//------------------------------------------------------------------------
+// Offset the gamma ramp by the colour passed in.
+// Each pixel (x,y,z) is mapped to (x+r,y+g,z+b)
+//------------------------------------------------------------------------
+BOOL CDirectDraw::OffsetGammaRamp(INT r, INT g, INT b)
+{
+	if (!m_lpddGammaControl) return FALSE;
+
+	DDGAMMARAMP ramp;
+
+	// Actual colour variation is greater than 0-255, so we
+	// multiply our colour values by 256 to bring them into the
+	// magnitude of colours in the gamma ramp.
+	r *= 256; g *= 256; b *= 256;
+
+	// Offset the ramp.
+	for (UINT i = 0; i < 256; ++i)
+	{
+		// The typical value for each index.
+		const int base = 256 * i;
+
+		// Permissible values are from 0-65535 (FFFF).
+		// VC++ will not bound these and the gamma ramp uses WORDs,
+		// which are unsigned, so we have to use a temp variable to
+		// check if they are within the range.
+
+		{
+			int dr = base + r;
+			if (dr < 0) dr = 0;
+			else if (dr > 0xffff) dr = 0xffff;
+
+			ramp.red[i] = dr;
+		}
+
+		{
+			int dg = base + g;
+			if (dg < 0) dg = 0;
+			else if (dg > 0xffff) dg = 0xffff;
+
+			ramp.green[i] = dg;
+		}
+
+		{
+			int db = base + b;
+			if (db < 0) db = 0;
+			else if (db > 0xffff) db = 0xffff;
+
+			ramp.blue[i] = db;
+		}
+	}
+
+	// Install the new gamma ramp.
+	return SUCCEEDED(m_lpddGammaControl->SetGammaRamp(0, &ramp));
 }
 
 //------------------------------------------------------------------------

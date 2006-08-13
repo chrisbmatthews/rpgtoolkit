@@ -233,26 +233,6 @@ private:
 	T &m_enum;
 };
 
-// A stream.
-/** template <class T>
-class CStream
-{
-public:
-	CStream (T &stream): m_stream(stream) { }
-	template <class _T> CStream &operator<<(const _T out)
-	{
-		m_stream << out;
-		return *this;
-	}
-	template <class _T> CStream &operator>>(const _T in)
-	{
-		m_stream >> in;
-		return *this;
-	}
-private:
-	T &m_stream;
-}; **/
-
 // Types of exceptions.
 typedef enum tagExceptionType
 {
@@ -260,6 +240,13 @@ typedef enum tagExceptionType
 	E_ERROR,
 	E_WARNING
 } EXCEPTION_TYPE;
+
+// Broad scope categories.
+typedef enum tagVariableScope
+{
+	VS_LOCAL,	// Scope within a function.
+	VS_GLOBAL
+} VAR_SCOPE;
 
 // Forward declarations.
 class CThread;			// A thread.
@@ -291,6 +278,9 @@ public:
 	void freeVar(const STRING var);
 	void end() { m_i = m_units.end() - 1; }
 	void jump(const STRING label);
+	void setDefaultScope(const VAR_SCOPE s)
+		{ m_pResolveFunc = ((s == VS_GLOBAL) ? resolveVarGlobal : resolveVarLocal); }
+
 	CONST_POS getPos() const { return m_i; }
 	CONST_POS getEnd() const { return m_units.end(); }
 	LPSTACK_FRAME getLocal(const STRING var) { return &m_locals.back()[var]; }
@@ -393,8 +383,12 @@ private:
 	static bool resolvePluginCall(LPMACHINE_UNIT pUnit);
 
 protected:
+	LPSTACK_FRAME resolveVarGlobal(const STRING name);
+	LPSTACK_FRAME resolveVarLocal(const STRING name);
+
 	MACHINE_UNITS m_units;
 	CONST_POS m_i;
+	LPSTACK_FRAME (CProgram::*m_pResolveFunc) (const STRING name);
 };
 
 // A child of a program. Used for parsing lines at runtime.

@@ -34,6 +34,7 @@ public:
 	virtual bool execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn) = 0;
 	virtual int fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun) = 0;
 	virtual int fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode) = 0;
+	virtual bool getFighterLocation(const int party, const int idx, int &x, int &y) = 0;
 	virtual int menu(const int request) = 0;
 	virtual bool plugType(const int request) = 0;
 	virtual ~IPlugin() { }

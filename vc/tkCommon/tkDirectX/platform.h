@@ -110,6 +110,10 @@ public:
 		CONST LONG clr
 	) { return m_pBackBuffer->DrawFilledRect(x1, y1, x2, y2, clr); }
 
+	// Offset the gamma ramp.
+	BOOL OffsetGammaRamp(INT r, INT g, INT b);
+	BOOL IsGammaEnabled() CONST { return m_bGammaEnabled; }
+
 	// Flip the backbuffer to the primary surface
 	BOOL Refresh(VOID) { return (this->*m_pRefresh)(); }
 	BOOL FAST_CALL RefreshFullScreen(VOID);
@@ -272,10 +276,12 @@ private:
 	HWND m_hWndMain;					// Handle to host window
 	HINSTANCE m_hInstance;				// Handle of instance to app
 	HDC m_hDCLocked;					// HDC of locked surface
-	CCanvas *m_pBackBuffer;			// Backbuffer
+	CCanvas *m_pBackBuffer;				// Backbuffer
 	BOOL m_bSrcAnd[4];					// SRCAND support?
 	BOOL m_bSrcPaint[4];				// SRCPAINT support?
 	BOOL (FAST_CALL CDirectDraw::*m_pRefresh) (VOID);
+	LPDIRECTDRAWGAMMACONTROL m_lpddGammaControl;		// Gamma control.
+	BOOL m_bGammaEnabled;				// Gamma enabled?
 
 };
 

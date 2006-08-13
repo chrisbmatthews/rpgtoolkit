@@ -457,6 +457,21 @@ void tagScrollCache::render(const bool bForceRedraw)
 }
 
 /*
+ * Set the ambient level.
+ */
+void setAmbientLevel(const int r, const int g, const int b)
+{
+	if (g_pDirectDraw->IsGammaEnabled())
+	{
+		g_pDirectDraw->OffsetGammaRamp(r, g, b);
+		return;
+	}
+
+	// tbd - If we're not in full screen mode, we can't use the
+	// gamma controller, so we need to do something else here.
+}
+
+/*
  * Render the scene now.
  *
  * cnv (in) - canvas to render to (NULL is screen)
