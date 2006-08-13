@@ -2712,7 +2712,7 @@ void sourcehandle(CALL_DATA &params)
 	STRING str;
 	if (g_source.type == ET_PLAYER)
 	{
-		CPlayer *p = (CPlayer *)g_source.p;
+		IFighter *p = (IFighter *)g_source.p;
 		str = p->name();
 	}
 	else if (g_source.type == ET_ITEM)
@@ -2765,7 +2765,7 @@ void targethandle(CALL_DATA &params)
 	STRING str;
 	if (g_target.type == ET_PLAYER)
 	{
-		CPlayer *p = (CPlayer *)g_target.p;
+		IFighter *p = (IFighter *)g_target.p;
 		str = p->name();
 	}
 	else if (g_target.type == ET_ITEM)
