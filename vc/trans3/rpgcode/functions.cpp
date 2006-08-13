@@ -284,6 +284,32 @@ CItem *getItemPointer(STACK_FRAME &param)
 	return NULL;
 }
 
+// Splice variables.
+STRING spliceVariables(CProgram *prg, STRING str)
+{
+	STRING::size_type pos = STRING::npos;
+	while (true)
+	{
+		pos = str.find_first_of(_T('<'), pos + 1);
+		if (pos == STRING::npos) break;
+
+		STRING::size_type	l = str.find_first_of(_T('<'), pos + 1),
+							r = str.find_first_of(_T('>'), pos + 1);
+		if ((l < r) && (l != STRING::npos)) continue;
+		if (r == STRING::npos) break;
+
+		STRING var = str.substr(pos + 1, r - pos - 1);
+		replace(var, _T("!"), _T(""));
+		replace(var, _T("$"), _T(""));
+		const STRING val = prg->getVar(var)->getLit();
+		str.erase(pos, r - pos + 1);
+		str.insert(pos, val);
+
+		pos = STRING::npos;
+	}
+	return str;
+}
+
 /*
  * void mwin(string str)
  * 
@@ -311,7 +337,7 @@ void mwin(CALL_DATA &params)
 		g_bShowMessageWindow = true;
 	}
 	// Write the text.
-	g_cnvMessageWindow->DrawText(0, g_mwinY, params[0].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+	g_cnvMessageWindow->DrawText(0, g_mwinY, spliceVariables(params.prg, params[0].getLit()), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	g_mwinY += g_fontSize;
 
 	CONST_POS i = params.prg->getPos() + 1;
@@ -417,7 +443,7 @@ void text(CALL_DATA &params)
 	CCanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
 	if (cnv)
 	{
-		cnv->DrawText(params[0].getNum() * g_fontSize - g_fontSize, params[1].getNum() * g_fontSize - g_fontSize, params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+		cnv->DrawText(params[0].getNum() * g_fontSize - g_fontSize, params[1].getNum() * g_fontSize - g_fontSize, spliceVariables(params.prg, params[2].getLit()), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	}
 	if (count == 3)
 	{
@@ -442,7 +468,7 @@ void pixelText(CALL_DATA &params)
 	CCanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
 	if (cnv)
 	{
-		cnv->DrawText(int(params[0].getNum()), int(params[1].getNum()), params[2].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+		cnv->DrawText(int(params[0].getNum()), int(params[1].getNum()), spliceVariables(params.prg, params[2].getLit()), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	}
 	if (count == 3)
 	{
@@ -5998,13 +6024,21 @@ void getitemsellprice(CALL_DATA &params)
 }
 
 /*
- * splicevariables(...)
+ * string spliceVariables(string str)
  * 
- * Description.
+ * Replaces substrings within angle brackets by the value of
+ * variables with respective names.
+ *
+ * e.g. "<x>" would be replaced by the value of "x".
  */
 void splicevariables(CALL_DATA &params)
 {
-// TBD
+	if (params.params != 1)
+	{
+		throw CError("SpliceVariables() requires one parameter.");
+	}
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = spliceVariables(params.prg, params[0].getLit());
 }
 
 /*
