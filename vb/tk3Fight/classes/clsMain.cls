@@ -97,6 +97,11 @@ Public Function fightInform( _
                                                               )
 End Function
 
+Public Function getFighterLocation(ByVal party As Long, ByVal idx As Long, ByRef x As Long, ByRef y As Long)
+    getFighterLocation = modBattleSystem.getFighterLocation(party, idx, x, y)
+End Function
+
+
 Public Property Let setCallbacks(ByRef obj As Object)
     Set transPlugin = obj
 End Property

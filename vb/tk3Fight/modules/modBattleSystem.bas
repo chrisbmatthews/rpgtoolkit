@@ -421,6 +421,29 @@ Private Sub positionEnemies()
 End Sub
 
 '====================================================================================
+' Get the location of a fighter.
+'====================================================================================
+Public Function getFighterLocation(ByVal party As Long, ByVal idx As Long, ByRef x As Long, ByRef y As Long)
+    On Error GoTo err
+
+    If (party = ENEMY_PARTY) Then
+        If (idx <= UBound(enemies)) Then
+            x = enemies(idx).x
+            y = enemies(idx).y
+            getFighterLocation = True
+        End If
+    Else
+        If (idx <= UBound(players)) Then
+            x = players(idx).x
+            y = players(idx).y
+            getFighterLocation = True
+        End If
+    End If
+
+err:
+End Function
+
+'====================================================================================
 ' Renders a frame.
 '====================================================================================
 Private Sub renderScene(Optional ByVal pRefreshStats As Long = 0)
