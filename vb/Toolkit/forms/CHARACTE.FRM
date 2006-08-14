@@ -2,7 +2,7 @@ VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.Form characteredit 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "Character Editor (Untitled)"
+   Caption         =   "Untitled character"
    ClientHeight    =   5295
    ClientLeft      =   150
    ClientTop       =   435
@@ -1313,7 +1313,6 @@ Attribute VB_Exposed = False
 '==============================================================================
 'Character Editor
 '==============================================================================
-'Cleaned up for 3.0.5 by Delano.
 
 Option Explicit
 
@@ -1330,48 +1329,23 @@ End Function
 ' Save the player file. Direct to Save As if untitled. Called from TkMain, etc.
 '==============================================================================
 Public Sub saveFile(): On Error Resume Next
-    
-#If (False) Then
-    
-    If playerList(activePlayerIndex).charFile = vbNullString Then
-        'Untitled; prompt Save As.
-        Me.Show
-        Call mnusaveas_Click
-        Exit Sub
-    End If
-    
-    'Save the .tem file.
-    Call saveChar(projectPath & temPath & playerList(activePlayerIndex).charFile, playerList(activePlayerIndex).theData)
-    
-    'Player file is up to date.
-    playerList(activePlayerIndex).charNeedUpdate = False
-
-#Else
-
     Call Show
     Call mnusave_Click
-
-#End If
-
 End Sub
 
 '==============================================================================
 ' Open character file. e.g., from File Tree or Main Form methods.
 '==============================================================================
 Public Sub openFile(ByVal file As String): On Error Resume Next
-
-    Dim antiPath As String
-    
+   
     activePlayer.Show
-    
-    antiPath = RemovePath(file)
-    FileCopy file, projectPath & temPath & antiPath
     
     Call PlayerClear(playerList(activePlayerIndex).theData)
     Call openChar(file, playerList(activePlayerIndex).theData)
     
-    activePlayer.Caption = LoadStringLoc(804, "Character Editor") & "  (" & antiPath & ")"
-    playerList(activePlayerIndex).charFile = antiPath
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & temPath, playerList(activePlayerIndex).charFile, False)
+    activePlayer.Caption = playerList(activePlayerIndex).charFile
     
     Dim i As Integer
     For i = 0 To chkDefault.UBound
@@ -1453,32 +1427,23 @@ End Sub
 Private Sub mnusaveas_Click(): On Error Resume Next
 
     Dim dlg As FileDialogInfo
-    ChDir (currentDir)
     
     dlg.strDefaultFolder = projectPath & temPath
-    dlg.strTitle = "Save Character As (Archives cannot be used with characters!)"
+    dlg.strTitle = "Save Character As"
     dlg.strDefaultExt = "tem"
     dlg.strFileTypes = "RPG Toolkit Character (*.tem)|*.tem|All files(*.*)|*.*"
     
-    'Prompt for overwrite.
-    If Not (SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub
+    ChDir (currentDir)
+    If Not SaveFileDialog(dlg, Me.hwnd, True) Then Exit Sub
     If (LenB(dlg.strSelectedFile) = 0) Then Exit Sub
 
-    Call ChDir(currentDir)
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, playerList(activePlayerIndex).charFile, True) Then Exit Sub
+      
+    Call saveChar(dlg.strDefaultFolder & playerList(activePlayerIndex).charFile, playerList(activePlayerIndex).theData)
 
-    playerList(activePlayerIndex).charFile = dlg.strSelectedFileNoPath
-
-    'Write the file.
-    ' Call saveChar(dlg.strSelectedFile, playerList(activePlayerIndex).theData)
-
-    Call mnusave_Click
-
-    activePlayer.Caption = LoadStringLoc(804, "Character Editor") & " (" & dlg.strSelectedFileNoPath & ")"
-
-    'File is up to date.
-    ' playerList(activePlayerIndex).charNeedUpdate = False
-
-    'Add file to the tree.
+    playerList(activePlayerIndex).charNeedUpdate = False
+    activePlayer.Caption = playerList(activePlayerIndex).charFile
     Call tkMainForm.fillTree("", projectPath)
 
 End Sub
@@ -1500,28 +1465,17 @@ End Sub
 '==============================================================================
 Private Sub cmdProfile_Click(): On Error Resume Next
 
-    ChDir (currentDir)
-    
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath & bmpPath
-    dlg.strTitle = "Select Profile Picture"
-    dlg.strDefaultExt = "bmp"
-    dlg.strFileTypes = strFileDialogFilterWithTiles
-    
-    If Not (OpenFileDialog(dlg, Me.hwnd)) Then Exit Sub    'User pressed cancel.
-    If dlg.strSelectedFile = vbNullString Then Exit Sub
-    
-    ChDir (currentDir)
-    
-    Call FileCopy(dlg.strSelectedFile, projectPath & bmpPath & dlg.strSelectedFileNoPath)
-    
-    'Draw the image, scaled to 64x64.
-    Call DrawSizedImage(projectPath & bmpPath & dlg.strSelectedFileNoPath, 0, 0, 64, 64, profile.hdc)
-    profile.Refresh
-    
-    playerList(activePlayerIndex).theData.profilePic = dlg.strSelectedFileNoPath
-    playerList(activePlayerIndex).charNeedUpdate = True
-    
+    'Tiles can be selected, but must be located in \bmpPath
+    Dim file As String, fileTypes As String
+    fileTypes = strFileDialogFilterWithTiles
+    If browseFileDialog(Me.hwnd, projectPath & bmpPath, "Select profile", "jpg", fileTypes, file) Then
+        playerList(activePlayerIndex).theData.profilePic = file
+        playerList(activePlayerIndex).charNeedUpdate = True
+        
+        Call DrawSizedImage(projectPath & bmpPath & file, 0, 0, 64, 64, profile.hdc)
+        profile.Refresh
+    End If
+   
 End Sub
 
 '==============================================================================
@@ -1735,14 +1689,14 @@ End Sub
 '==============================================================================
 Private Sub tabCharacter_Click(): On Error Resume Next
 
-    frStats.Visible = False
-    frVariables.Visible = False
+    frStats.visible = False
+    frVariables.visible = False
 
     Select Case tabCharacter.SelectedItem.Index
         Case 1:
-            frStats.Visible = True
+            frStats.visible = True
         Case 2:
-            frVariables.Visible = True
+            frVariables.visible = True
     End Select
 End Sub
 

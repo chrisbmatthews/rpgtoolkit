@@ -76,44 +76,42 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "startframe"
-      Tab(1).Control(0).Enabled=   0   'False
-      Tab(1).Control(1)=   "fraSettings"
-      Tab(1).Control(1).Enabled=   0   'False
+      Tab(1).Control(0)=   "fraSettings"
+      Tab(1).Control(1)=   "startframe"
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "prgframe"
-      Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(0)=   "actionframe"
+      Tab(2).Control(1)=   "prgframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
       Tab(3).ControlEnabled=   0   'False
-      Tab(3).Control(0)=   "fightframe"
-      Tab(3).Control(1)=   "Picture7"
+      Tab(3).Control(0)=   "Picture7"
+      Tab(3).Control(1)=   "fightframe"
       Tab(3).ControlCount=   2
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
       Tab(4).ControlEnabled=   0   'False
-      Tab(4).Control(0)=   "screenframe"
-      Tab(4).Control(1)=   "Picture8"
+      Tab(4).Control(0)=   "Picture11"
+      Tab(4).Control(1)=   "Picture10"
       Tab(4).Control(2)=   "Picture9"
-      Tab(4).Control(3)=   "Picture10"
-      Tab(4).Control(4)=   "Picture11"
+      Tab(4).Control(3)=   "Picture8"
+      Tab(4).Control(4)=   "screenframe"
       Tab(4).ControlCount=   5
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label24"
+      Tab(5).Control(0)=   "Frame3"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Frame3"
+      Tab(5).Control(2)=   "Label24"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
       Tab(6).ControlEnabled=   0   'False
-      Tab(6).Control(0)=   "Frame1"
-      Tab(6).Control(1)=   "Picture13"
+      Tab(6).Control(0)=   "Picture13"
+      Tab(6).Control(1)=   "Frame1"
       Tab(6).ControlCount=   2
       Begin VB.PictureBox Picture13 
          BorderStyle     =   0  'None
@@ -2278,125 +2276,65 @@ End Sub
 ' Select initial board
 '=========================================================================
 Private Sub cmdInitialBoard_Click(): On Error Resume Next
-    Call ChDir(currentDir)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ & brdPath$
-    dlg.strTitle = "Select Board"
-    dlg.strDefaultExt = "brd"
-    dlg.strFileTypes = "RPG Toolkit Board (*.brd)|*.brd|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Board (*.brd)|*.brd|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & brdPath, "Select starting board", "brd", fileTypes, file) Then
+        initboardbox.Text = file
+        mainMem.initBoard = file
+        mainNeedUpdate = True
     End If
-    mainNeedUpdate = True
-    Call ChDir(currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    Call FileCopy(filename$(1), projectPath$ & brdPath$ & antiPath$)
-    initboardbox.Text = antiPath$
-    mainMem.initBoard$ = antiPath$
 End Sub
 
 '=========================================================================
 ' Select initial character
 '=========================================================================
 Private Sub cmdInitialChar_Click(): On Error Resume Next
-    Call ChDir(currentDir)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ & temPath$
-    dlg.strTitle = "Select Character"
-    dlg.strDefaultExt = "tem"
-    dlg.strFileTypes = "Supported Files|*.tem|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Character (*.tem)|*.tem|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & temPath, "Select starting character", "tem", fileTypes, file) Then
+        initcharbox.Text = file
+        mainMem.initChar = file
+        mainNeedUpdate = True
     End If
-    mainNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    Call FileCopy(filename$(1), projectPath$ & temPath$ & antiPath$)
-    initcharbox.Text = antiPath$
-    mainMem.initChar$ = antiPath$
 End Sub
 
 '=========================================================================
 ' Select runtime program
 '=========================================================================
 Private Sub cmdRunTimePrg_Click(): On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ & prgPath$
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Select runtime program", "prg", fileTypes, file) Then
+        runtimebox.Text = file
+        mainMem.runTime = file
+        mainNeedUpdate = True
     End If
-    mainNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    Call FileCopy(filename$(1), projectPath$ & prgPath$ & antiPath$)
-    runtimebox.Text = antiPath$
-    mainMem.runTime$ = antiPath$
 End Sub
 
 '=========================================================================
 ' Select startup program
 '=========================================================================
 Private Sub cmdStartUpPrg_Click(): On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ & prgPath$
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Select start-up program", "prg", fileTypes, file) Then
+        startupbox.Text = file
+        mainMem.startupPrg = file
+        mainNeedUpdate = True
     End If
-    mainNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ & prgPath$ & antiPath$
-    startupbox.Text = antiPath$
-    mainMem.startupPrg$ = antiPath$
 End Sub
 
 '=========================================================================
 ' Select game over program
 '=========================================================================
 Private Sub cmdGameOverPrg_Click(): On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ & prgPath$
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Select game over program", "prg", fileTypes, file) Then
+        txtGameOver.Text = file
+        mainMem.gameOverPrg = file
+        mainNeedUpdate = True
     End If
-    mainNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ & prgPath$ & antiPath$
-    txtGameOver.Text = antiPath$
-    mainMem.gameOverPrg$ = antiPath$
 End Sub
 
 '=========================================================================
@@ -2474,90 +2412,51 @@ End Sub
 ' Select cursor move sound
 '=========================================================================
 Private Sub cmdCursorMoveSound_Click(): On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + mediaPath$
-    dlg.strTitle = "Select Sound"
-    dlg.strDefaultExt = "wav"
-    dlg.strFileTypes = dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+    Dim file As String, fileTypes As String
+    fileTypes = strFileDialogFilterMedia
+    If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Select cursor move sound", "wav", fileTypes, file) Then
+        cursormove.Text = file
+        mainMem.cursorMoveSound = file
+        mainNeedUpdate = True
     End If
-    mainNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
-    cursormove.Text = antiPath$
-    mainMem.cursorMoveSound = antiPath$
 End Sub
 
 '=========================================================================
 ' Select cursor select sound
 '=========================================================================
 Private Sub cmdCursorSelectSound_Click(): On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ & mediaPath$
-    dlg.strTitle = "Select Sound"
-    dlg.strDefaultExt = "wav"
-    dlg.strFileTypes = dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+    Dim file As String, fileTypes As String
+    fileTypes = strFileDialogFilterMedia
+    If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Select cursor select sound", "wav", fileTypes, file) Then
+        cursorselect.Text = file
+        mainMem.cursorSelectSound = file
+        mainNeedUpdate = True
     End If
-    mainNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ & mediaPath$ & antiPath$
-    cursorselect.Text = antiPath$
-    mainMem.cursorSelectSound = antiPath$
 End Sub
 
 '=========================================================================
 ' Select cursor cancel sound
 '=========================================================================
 Private Sub cmdCursorCancelSound_Click(): On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ & mediaPath$
-    dlg.strTitle = "Select Sound"
-    dlg.strDefaultExt = "wav"
-    dlg.strFileTypes = dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+    Dim file As String, fileTypes As String
+    fileTypes = strFileDialogFilterMedia
+    If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Select cursor cancel sound", "wav", fileTypes, file) Then
+        cursorcancel.Text = file
+        mainMem.cursorCancelSound = file
+        mainNeedUpdate = True
     End If
-    mainNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ & mediaPath$ & antiPath$
-    cursorcancel.Text = antiPath$
-    mainMem.cursorCancelSound = antiPath$
 End Sub
 
 '=========================================================================
 ' Cursor sound effect changing events
 '=========================================================================
-Private Sub cursorcancel_Change()
-    On Error Resume Next
+Private Sub cursorcancel_Change(): On Error Resume Next
     mainMem.cursorCancelSound = cursorcancel.Text
 End Sub
-Private Sub cursormove_Change()
-    On Error Resume Next
+Private Sub cursormove_Change(): On Error Resume Next
     mainMem.cursorMoveSound = cursormove.Text
 End Sub
-Private Sub cursorselect_Change()
-    On Error Resume Next
+Private Sub cursorselect_Change(): On Error Resume Next
     mainMem.cursorSelectSound = cursorselect.Text
 End Sub
 
@@ -2571,7 +2470,7 @@ End Sub
 Private Sub daynightcheckbox_Click()
     On Error Resume Next
     mainMem.mainUseDayNight = daynightcheckbox.value
-    Frame3.Visible = (mainMem.mainUseDayNight = 1)
+    Frame3.visible = (mainMem.mainUseDayNight = 1)
 End Sub
 Private Sub daynightreal_Click()
     mainMem.mainDayNightType = 0
@@ -2721,7 +2620,7 @@ Private Sub infofill()
     gametitlebox.Text = mainMem.gameTitle$
     gametitlebox2.Text = mainMem.gameTitle$
 
-    editmainfile.Caption = LoadStringLoc(800, "Main Project Editor") + "  (" + mainFile$ + ")"
+    editmainfile.Caption = mainFile
     
     pathbox.Caption = projectPath
     
@@ -2738,7 +2637,7 @@ Private Sub infofill()
     Call pluginInfoFill
 
     daynightcheckbox.value = mainMem.mainUseDayNight
-    Frame3.Visible = (mainMem.mainUseDayNight = 1)
+    Frame3.visible = (mainMem.mainUseDayNight = 1)
     If mainMem.mainDayNightType = 0 Then
         daynightreal.value = True
         daylengthbox.Enabled = False
@@ -2754,7 +2653,7 @@ Private Sub infofill()
         regprotect.value = 0
     End If
 
-    regprotect.Visible = False
+    regprotect.visible = False
 
     cursormove.Text = mainMem.cursorMoveSound
     cursorselect.Text = mainMem.cursorSelectSound
@@ -2960,7 +2859,7 @@ Private Sub mnusaveas_Click()
     If filename$(1) = "" Then Exit Sub
     Call saveMain(filename$(1), mainMem)
     mainFile$ = antiPath$
-    editmainfile.Caption = LoadStringLoc(800, "Project Properties") + " (" + antiPath$ + ")"
+    editmainfile.Caption = mainFile
     mainNeedUpdate = False
     Call tkMainForm.fillTree("", projectPath$)
 End Sub
@@ -3268,7 +3167,7 @@ End Sub
 '=========================================================================
 ' Custom resolution stuff
 '=========================================================================
-Private Sub txtResX_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
+Private Sub txtResX_KeyDown(ByRef keyCode As Integer, ByRef Shift As Integer)
     optResCustom.value = True
     mainMem.mainResolution = 4
 End Sub
@@ -3300,7 +3199,7 @@ End Sub
 Private Sub txtResY_Change()
     mainMem.resY = val(txtResY.Text) ' val *must* be used - CDbl is no good here
 End Sub
-Private Sub txtResY_KeyDown(ByRef KeyCode As Integer, ByRef Shift As Integer)
+Private Sub txtResY_KeyDown(ByRef keyCode As Integer, ByRef Shift As Integer)
     optResCustom.value = True
     mainMem.mainResolution = 4
 End Sub

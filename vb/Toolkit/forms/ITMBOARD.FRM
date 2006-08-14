@@ -25,7 +25,7 @@ Begin VB.Form itmboard
    ScaleWidth      =   8700
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1714"
-   Begin VB.CommandButton Command5 
+   Begin VB.CommandButton cmdOK 
       Appearance      =   0  'Flat
       Caption         =   "OK"
       BeginProperty Font 
@@ -70,7 +70,7 @@ Begin VB.Form itmboard
          TabIndex        =   6
          Top             =   360
          Width           =   1215
-         Begin VB.CommandButton Command1 
+         Begin VB.CommandButton cmdActivate 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -88,7 +88,7 @@ Begin VB.Form itmboard
             Top             =   360
             Width           =   1095
          End
-         Begin VB.CommandButton Command14 
+         Begin VB.CommandButton cmdMultitask 
             Caption         =   "Browse..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
@@ -186,82 +186,48 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
-Private Sub Command1_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgPath$
-    
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+Option Explicit
+
+Private Sub cmdActivate_Click(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Select program", "prg", fileTypes, file) Then
+        equipped.Text = file
+        itemList(activeItemIndex).theData.itmPrgPickUp = file
     End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
-    equipped.Text = antiPath$
-    itemList(activeItemIndex).theData.itmPrgPickUp$ = antiPath$
 End Sub
 
-Private Sub Command14_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgPath$
-    
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+Private Sub cmdMultitask_Click(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Select program", "prg", fileTypes, file) Then
+        onboard.Text = file
+        itemList(activeItemIndex).theData.itmPrgOnBoard = file
     End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
-    onboard.Text = antiPath$
-    itemList(activeItemIndex).theData.itmPrgOnBoard$ = antiPath$
 End Sub
 
-Private Sub Command5_Click()
-    Unload itmboard
+Private Sub cmdOK_Click(): On Error Resume Next
+    Unload Me
 End Sub
 
-Private Sub equipped_Change()
-    On Error Resume Next
-    itemList(activeItemIndex).theData.itmPrgPickUp$ = equipped.Text
+Private Sub equipped_Change(): On Error Resume Next
+    itemList(activeItemIndex).theData.itmPrgPickUp = equipped.Text
 End Sub
 
-Private Sub Form_Load()
-    On Error GoTo ErrorHandler
-    ' Call LocalizeForm(Me)
-    
-    If itemList(activeItemIndex).theData.itmPrgOnBoard$ <> "" Then onboard.Text = itemList(activeItemIndex).theData.itmPrgOnBoard$   'Program to run while item is on board
-    If itemList(activeItemIndex).theData.itmPrgPickUp$ <> "" Then equipped.Text = itemList(activeItemIndex).theData.itmPrgPickUp$    'Program to run when picked up.
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Private Sub Form_Load(): On Error Resume Next
+    With itemList(activeItemIndex).theData
+        If LenB(.itmPrgOnBoard) Then onboard.Text = .itmPrgOnBoard
+        If LenB(.itmPrgPickUp) Then equipped.Text = .itmPrgPickUp
+    End With
 End Sub
 
-Private Sub onboard_Change()
-    On Error Resume Next
-    itemList(activeItemIndex).theData.itmPrgOnBoard$ = onboard.Text
+Private Sub onboard_Change(): On Error Resume Next
+    itemList(activeItemIndex).theData.itmPrgOnBoard = onboard.Text
 End Sub
 

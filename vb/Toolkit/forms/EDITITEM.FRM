@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form edititem 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "Item Editor (Untitled)"
+   Caption         =   "Untitled item"
    ClientHeight    =   5040
    ClientLeft      =   2490
    ClientTop       =   1875
@@ -25,6 +25,16 @@ Begin VB.Form edititem
    ScaleWidth      =   8385
    Tag             =   "6"
    Begin VB.Frame mainFrame 
+      Caption         =   "Item Editor"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   4695
       Left            =   120
       TabIndex        =   0
@@ -741,7 +751,7 @@ Option Explicit
 ' Integral variables
 '=========================================================================
 
-Public dataIndex As Long    'indice in item editor vector
+Public dataIndex As Long    'index in item editor vector
 
 '=========================================================================
 ' Property identifying this form
@@ -758,7 +768,7 @@ Public Sub saveAsFile()
     On Error Resume Next
     If itemList(activeItemIndex).itemNeedUpdate = True Then
         Call Me.Show
-        Call saveasmnu_Click
+        Call saveAsMnu_Click
     End If
 End Sub
 
@@ -766,41 +776,21 @@ End Sub
 ' Save the file
 '=========================================================================
 Public Sub saveFile()
-
-#If (False) Then
-
-    On Error Resume Next
-    filename(2) = itemList(activeItemIndex).itemFile
-    itemList(activeItemIndex).itemNeedUpdate = False
-    If filename$(2) = "" Then
-        Call Me.Show
-        Call saveasmnu_Click
-        Exit Sub
-    End If
-    Call saveItem(projectPath & itmPath & filename(2), itemList(activeItemIndex).theData)
-
-#Else
-
     Call Show
     Call savemnu_Click
-
-#End If
-
 End Sub
 
 '=========================================================================
 ' Open a file
 '=========================================================================
-Public Sub openFile(ByVal file As String)
-    On Error Resume Next
+Public Sub openFile(ByVal file As String): On Error Resume Next
     Call activeItem.Show
-    filename$(1) = file$
-    Dim antiPath As String
-    antiPath$ = absNoPath(file$)
-    FileCopy filename$(1), projectPath$ + itmPath$ + antiPath$
-    itemList(activeItemIndex).theData = openItem(filename$(1))
-    itemList(activeItemIndex).itemFile$ = antiPath$
-    activeItem.Caption = LoadStringLoc(805, "Item Editor") + "  (" + antiPath$ + ")"
+    itemList(activeItemIndex).theData = openItem(file)
+    
+     'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & itmPath, itemList(activeItemIndex).itemFile, False)
+    activeItem.Caption = itemList(activeItemIndex).itemFile
+    
     Call infofill
     itemList(activeItemIndex).itemNeedUpdate = False
 End Sub
@@ -936,7 +926,7 @@ Private Sub infofill()
     Text1.Text = str$(itemList(activeItemIndex).theData.buyPrice)
     Text2.Text = str$(itemList(activeItemIndex).theData.sellPrice)
 
-    Call chars.Clear
+    Call chars.clear
     chars.Text = "Character 1"
     Dim t As Long
     For t = 1 To 50
@@ -1031,64 +1021,67 @@ Private Sub Option1_Click()
     On Error Resume Next
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.usedBy = 0
-    chars.Visible = False
-    charname.Visible = False
-    Label3.Visible = False
+    chars.visible = False
+    charname.visible = False
+    Label3.visible = False
 End Sub
 Private Sub Option2_Click()
     On Error Resume Next
     itemList(activeItemIndex).itemNeedUpdate = True
     itemList(activeItemIndex).theData.usedBy = 1
-    chars.Visible = True
-    charname.Visible = True
-    Label3.Visible = True
+    chars.visible = True
+    charname.visible = True
+    Label3.visible = True
 End Sub
 
 '=========================================================================
 ' Save as menu
 '=========================================================================
-Private Sub saveasmnu_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
+Private Sub saveAsMnu_Click(): On Error Resume Next
+
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + itmPath$
+    
+    dlg.strDefaultFolder = projectPath & itmPath
     dlg.strTitle = "Save Item As"
     dlg.strDefaultExt = "itm"
     dlg.strFileTypes = "RPG Toolkit Item (*.itm)|*.itm|All files(*.*)|*.*"
-    If SaveFileDialog(dlg, Me.hwnd, True) Then  'Prompt overwrite.
-        filename$(1) = dlg.strSelectedFile
-        Dim antiPath As String
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    itemList(activeItemIndex).itemFile$ = antiPath$
-    Call savemnu_Click
-    ' Call saveItem(filename$(1), itemList(activeItemIndex).theData)
-    activeItem.Caption = LoadStringLoc(805, "Item Editor") & " (" & antiPath & ")"
-    ' itemList(activeItemIndex).itemNeedUpdate = False
-    Call tkMainForm.fillTree("", projectPath$)
+    
+    ChDir (currentDir)
+    If Not SaveFileDialog(dlg, Me.hwnd, True) Then Exit Sub
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
+    
+     'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, itemList(activeItemIndex).itemFile, True) Then Exit Sub
+   
+    Call saveItem(dlg.strDefaultFolder & itemList(activeItemIndex).itemFile, itemList(activeItemIndex).theData)
+    activeItem.Caption = itemList(activeItemIndex).itemFile
+    
+    itemList(activeItemIndex).itemNeedUpdate = False
+    Call tkMainForm.fillTree("", projectPath)
 End Sub
 
 '=========================================================================
 ' Save menu
 '=========================================================================
-Private Sub savemnu_Click()
-    On Error Resume Next
-    filename(2) = itemList(activeItemIndex).itemFile
-    If filename(2) = "" Then saveasmnu_Click: Exit Sub
-    Dim strFile As String
-    strFile = projectPath & itmPath & filename(2)
-    If (fileExists(strFile)) Then
-        If (GetAttr(strFile) And vbReadOnly) Then
+Private Sub savemnu_Click(): On Error Resume Next
+
+    If LenB(itemList(activeItemIndex).itemFile) = 0 Then
+        Call saveAsMnu_Click
+        Exit Sub
+    End If
+    
+    Dim file As String
+    file = projectPath & itmPath & itemList(activeItemIndex).itemFile
+    
+    If (fileExists(file)) Then
+        If (GetAttr(file) And vbReadOnly) Then
             Call MsgBox("This file is read-only; please choose a different file.")
-            Call saveasmnu_Click
+            Call saveAsMnu_Click
             Exit Sub
         End If
     End If
-    Call saveItem(strFile, itemList(activeItemIndex).theData)
+    
+    Call saveItem(file, itemList(activeItemIndex).theData)
     itemList(activeItemIndex).itemNeedUpdate = False
 End Sub
 

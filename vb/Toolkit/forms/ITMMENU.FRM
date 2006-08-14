@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form itmmenu 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Menu-Driven Properties"
-   ClientHeight    =   3615
+   ClientHeight    =   1965
    ClientLeft      =   2160
    ClientTop       =   2550
-   ClientWidth     =   8565
+   ClientWidth     =   7665
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -21,11 +21,11 @@ Begin VB.Form itmmenu
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   3615
-   ScaleWidth      =   8565
+   ScaleHeight     =   1965
+   ScaleWidth      =   7665
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1539"
-   Begin VB.CommandButton Command5 
+   Begin VB.CommandButton cmdOK 
       Appearance      =   0  'Flat
       Caption         =   "OK"
       BeginProperty Font 
@@ -38,14 +38,14 @@ Begin VB.Form itmmenu
          Strikethrough   =   0   'False
       EndProperty
       Height          =   345
-      Left            =   7320
+      Left            =   6480
       TabIndex        =   0
       Tag             =   "1022"
       Top             =   240
       Width           =   1095
    End
    Begin VB.Frame Frame3 
-      Caption         =   "Menu Properties"
+      Caption         =   "Effects of using item"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -55,14 +55,13 @@ Begin VB.Form itmmenu
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   3255
+      Height          =   1695
       Left            =   120
       TabIndex        =   1
       Tag             =   "1542"
       Top             =   120
-      Width           =   7095
-      Begin VB.Frame Frame1 
-         Caption         =   "Effects of Using Item            "
+      Width           =   6255
+      Begin VB.TextBox equipped 
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -72,144 +71,172 @@ Begin VB.Form itmmenu
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   1575
+         Height          =   285
+         Left            =   2880
+         TabIndex        =   11
+         Text            =   "None"
+         Top             =   1200
+         Width           =   2055
+      End
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   375
+         Left            =   5040
+         ScaleHeight     =   375
+         ScaleWidth      =   1095
+         TabIndex        =   9
+         Top             =   1200
+         Width           =   1095
+         Begin VB.CommandButton cmdBrowse 
+            Caption         =   "Browse..."
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   345
+            Left            =   0
+            TabIndex        =   10
+            Tag             =   "1021"
+            Top             =   0
+            Width           =   1095
+         End
+      End
+      Begin VB.TextBox hpup 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   285
+         Left            =   2280
+         TabIndex        =   3
+         Text            =   "0"
+         Top             =   360
+         Width           =   495
+      End
+      Begin VB.TextBox smup 
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   285
+         Left            =   2280
+         TabIndex        =   2
+         Text            =   "0"
+         Top             =   720
+         Width           =   495
+      End
+      Begin VB.Label Label7 
+         Caption         =   "Program To Run When Item Is Used:"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   12
+         Tag             =   "1533"
+         Top             =   1200
+         Width           =   2895
+      End
+      Begin VB.Label Label3 
+         Caption         =   "Negative values decrease health/SM Power!"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00808080&
+         Height          =   495
+         Left            =   3600
+         TabIndex        =   8
+         Tag             =   "1537"
+         Top             =   480
+         Width           =   2055
+      End
+      Begin VB.Label Label5 
+         Caption         =   "Health Increases By"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   7
+         Tag             =   "1540"
+         Top             =   360
+         Width           =   1935
+      End
+      Begin VB.Label Label6 
+         Caption         =   "Points"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Index           =   0
+         Left            =   2880
+         TabIndex        =   6
+         Tag             =   "1504"
+         Top             =   360
+         Width           =   615
+      End
+      Begin VB.Label Label5 
+         Caption         =   "SMP Increases By"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Index           =   3
          Left            =   120
          TabIndex        =   5
-         Tag             =   "1534"
-         Top             =   360
-         Width           =   6615
-         Begin VB.TextBox smup 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   7
-            Text            =   "0"
-            Top             =   840
-            Width           =   495
-         End
-         Begin VB.TextBox hpup 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   6
-            Text            =   "0"
-            Top             =   480
-            Width           =   495
-         End
-         Begin VB.Label Label6 
-            Caption         =   "Points"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   3
-            Left            =   2760
-            TabIndex        =   12
-            Tag             =   "1504"
-            Top             =   840
-            Width           =   615
-         End
-         Begin VB.Label Label5 
-            Caption         =   "SMP Increases By"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   3
-            Left            =   120
-            TabIndex        =   11
-            Tag             =   "1541"
-            Top             =   840
-            Width           =   1935
-         End
-         Begin VB.Label Label6 
-            Caption         =   "Points"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   0
-            Left            =   2760
-            TabIndex        =   10
-            Tag             =   "1504"
-            Top             =   480
-            Width           =   615
-         End
-         Begin VB.Label Label5 
-            Caption         =   "Health Increases By"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   0
-            Left            =   120
-            TabIndex        =   9
-            Tag             =   "1540"
-            Top             =   480
-            Width           =   1935
-         End
-         Begin VB.Label Label3 
-            Caption         =   "Negative values decrease health/SM Power!"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00808080&
-            Height          =   255
-            Left            =   120
-            TabIndex        =   8
-            Tag             =   "1537"
-            Top             =   1200
-            Width           =   5415
-         End
+         Tag             =   "1541"
+         Top             =   720
+         Width           =   1935
       End
-      Begin VB.Frame Frame2 
-         Caption         =   "RPGCode     "
+      Begin VB.Label Label6 
+         Caption         =   "Points"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -219,99 +246,13 @@ Begin VB.Form itmmenu
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   975
-         Left            =   120
-         TabIndex        =   2
-         Tag             =   "1196"
-         Top             =   2040
-         Width           =   6615
-         Begin VB.PictureBox Picture1 
-            BorderStyle     =   0  'None
-            Height          =   375
-            Left            =   5280
-            ScaleHeight     =   375
-            ScaleWidth      =   1215
-            TabIndex        =   14
-            Top             =   360
-            Width           =   1215
-            Begin VB.CommandButton Command14 
-               Caption         =   "Browse..."
-               BeginProperty Font 
-                  Name            =   "MS Sans Serif"
-                  Size            =   8.25
-                  Charset         =   0
-                  Weight          =   400
-                  Underline       =   0   'False
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               Height          =   345
-               Left            =   0
-               TabIndex        =   15
-               Tag             =   "1021"
-               Top             =   0
-               Width           =   1095
-            End
-         End
-         Begin VB.TextBox equipped 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   3120
-            TabIndex        =   3
-            Text            =   "None"
-            Top             =   360
-            Width           =   2055
-         End
-         Begin VB.Label Label7 
-            Caption         =   "Program To Run When Item Is Used:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   375
-            Index           =   0
-            Left            =   120
-            TabIndex        =   4
-            Tag             =   "1533"
-            Top             =   360
-            Width           =   2895
-         End
-      End
-      Begin VB.Label link1 
-         Alignment       =   1  'Right Justify
-         Caption         =   "Also see RPGCode Editor"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00FF0000&
          Height          =   255
-         Left            =   1080
-         MouseIcon       =   "ITMMENU.frx":0CCA
-         MousePointer    =   99  'Custom
-         TabIndex        =   13
-         Tag             =   "1150"
-         Top             =   3120
-         Visible         =   0   'False
-         Width           =   5655
+         Index           =   3
+         Left            =   2880
+         TabIndex        =   4
+         Tag             =   "1504"
+         Top             =   720
+         Width           =   615
       End
    End
 End
@@ -320,91 +261,44 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'=========================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'=========================================================================
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
-Private Sub Command14_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgPath$
-    
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+Option Explicit
+
+Private Sub cmdBrowse_Click(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Select program", "prg", fileTypes, file) Then
+        equipped.Text = file
+        itemList(activeItemIndex).theData.mnuUse = file
     End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
-    equipped.Text = antiPath$
-    itemList(activeItemIndex).theData.mnuUse$ = antiPath$
 End Sub
 
-Private Sub Command5_Click()
-    Unload itmmenu
+Private Sub cmdOK_Click(): On Error Resume Next
+    Unload Me
 End Sub
 
-
-Private Sub equipped_Change()
-    On Error Resume Next
-    itemList(activeItemIndex).theData.mnuUse$ = equipped.Text
+Private Sub equipped_Change(): On Error Resume Next
+    itemList(activeItemIndex).theData.mnuUse = equipped.Text
 End Sub
 
-Private Sub Form_Load()
-    On Error GoTo ErrorHandler
-    ' Call LocalizeForm(Me)
-    
-    hpup.Text = str$(itemList(activeItemIndex).theData.mnuHPup)
-    smup.Text = str$(itemList(activeItemIndex).theData.mnuSMup)
-    If itemList(activeItemIndex).theData.mnuUse$ <> "" Then equipped.Text = itemList(activeItemIndex).theData.mnuUse$
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Private Sub Form_Load(): On Error Resume Next
+    hpup.Text = CStr(itemList(activeItemIndex).theData.mnuHPup)
+    smup.Text = CStr(itemList(activeItemIndex).theData.mnuSMup)
+    If LenB(itemList(activeItemIndex).theData.mnuUse) Then
+        equipped.Text = itemList(activeItemIndex).theData.mnuUse
+    End If
 End Sub
 
-'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
-Private Sub hpup_Change()
-    On Error GoTo ErrorHandler
+Private Sub hpup_Change(): On Error Resume Next
     itemList(activeItemIndex).theData.mnuHPup = val(hpup.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub link1_Click()
-    On Error GoTo ErrorHandler
-    activeRPGCode.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
-Private Sub smup_Change()
-    On Error GoTo ErrorHandler
+Private Sub smup_Change(): On Error Resume Next
     itemList(activeItemIndex).theData.mnuSMup = val(smup.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 

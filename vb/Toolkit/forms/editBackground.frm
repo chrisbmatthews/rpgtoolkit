@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form editBackground 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Edit Background"
-   ClientHeight    =   4890
+   ClientHeight    =   4545
    ClientLeft      =   2520
    ClientTop       =   1530
-   ClientWidth     =   6435
+   ClientWidth     =   6615
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -21,11 +21,11 @@ Begin VB.Form editBackground
    MDIChild        =   -1  'True
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   4890
-   ScaleWidth      =   6435
+   ScaleHeight     =   4545
+   ScaleWidth      =   6615
    Tag             =   "4"
-   Begin VB.Frame Frame3 
-      Caption         =   "Image"
+   Begin VB.Frame fraHolder 
+      Caption         =   "Background Editor"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -35,344 +35,25 @@ Begin VB.Form editBackground
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   855
-      Left            =   120
-      TabIndex        =   13
-      Top             =   120
-      Width           =   6135
-      Begin VB.PictureBox Picture1 
-         BorderStyle     =   0  'None
-         Height          =   375
-         Left            =   4800
-         ScaleHeight     =   375
-         ScaleWidth      =   1215
-         TabIndex        =   15
-         Top             =   360
-         Width           =   1215
-         Begin VB.CommandButton Command1 
-            Caption         =   "Browse"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   0
-            TabIndex        =   16
-            Tag             =   "1021"
-            Top             =   0
-            Width           =   1095
-         End
-      End
-      Begin VB.TextBox Text2 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   240
-         TabIndex        =   14
-         Top             =   360
-         Width           =   4335
-      End
-   End
-   Begin VB.Frame Frame2 
-      Caption         =   "Menu Sounds:"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   2295
-      Left            =   120
-      TabIndex        =   4
-      Tag             =   "1028"
-      Top             =   2400
-      Width           =   6135
-      Begin VB.PictureBox Picture3 
-         BorderStyle     =   0  'None
-         Height          =   1695
-         Left            =   4680
-         ScaleHeight     =   1695
-         ScaleWidth      =   1335
-         TabIndex        =   19
-         Top             =   360
-         Width           =   1335
-         Begin VB.CommandButton Command5 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   0
-            TabIndex        =   23
-            Tag             =   "1021"
-            Top             =   720
-            Width           =   1095
-         End
-         Begin VB.CommandButton Command4 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   0
-            TabIndex        =   22
-            Tag             =   "1021"
-            Top             =   1080
-            Width           =   1095
-         End
-         Begin VB.CommandButton Command3 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   0
-            TabIndex        =   21
-            Tag             =   "1021"
-            Top             =   360
-            Width           =   1095
-         End
-         Begin VB.CommandButton Command2 
-            Caption         =   "Browse..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   0
-            TabIndex        =   20
-            Tag             =   "1021"
-            Top             =   0
-            Width           =   1095
-         End
-      End
-      Begin VB.TextBox clickbox 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   2640
-         TabIndex        =   12
-         Text            =   "None"
-         Top             =   360
-         Width           =   1935
-      End
-      Begin VB.TextBox readybox 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   2640
-         TabIndex        =   11
-         Text            =   "None"
-         Top             =   1080
-         Width           =   1935
-      End
-      Begin VB.TextBox selectbox 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   2640
-         TabIndex        =   10
-         Text            =   "None"
-         Top             =   720
-         Width           =   1935
-      End
-      Begin VB.TextBox illegalbox 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   2640
-         TabIndex        =   9
-         Text            =   "None"
-         Top             =   1440
-         Width           =   1935
-      End
-      Begin VB.Label Label2 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "Click in Menu Sound:"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   0
-         Left            =   240
-         TabIndex        =   8
-         Tag             =   "1031"
-         Top             =   360
-         Width           =   2175
-      End
-      Begin VB.Label Label2 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "Select from Menu Sound:"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   1
-         Left            =   240
-         TabIndex        =   7
-         Tag             =   "1030"
-         Top             =   720
-         Width           =   2175
-      End
-      Begin VB.Label Label2 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "Player is Ready Sound:"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   2
-         Left            =   240
-         TabIndex        =   6
-         Tag             =   "1029"
-         Top             =   1080
-         Width           =   2175
-      End
-      Begin VB.Label Label2 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "Illegal Action Command:"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Index           =   3
-         Left            =   240
-         TabIndex        =   5
-         Tag             =   "1027"
-         Top             =   1440
-         Width           =   2175
-      End
-   End
-   Begin VB.Frame Frame1 
-      Caption         =   "Background Fight Music"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   1215
+      Height          =   4335
       Left            =   120
       TabIndex        =   0
-      Tag             =   "1033"
-      Top             =   1080
-      Width           =   6135
-      Begin VB.PictureBox Picture2 
+      Top             =   120
+      Width           =   6375
+      Begin VB.PictureBox picHolder 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
          BorderStyle     =   0  'None
-         Height          =   615
-         Left            =   4680
-         ScaleHeight     =   615
-         ScaleWidth      =   1215
-         TabIndex        =   17
-         Top             =   360
-         Width           =   1215
-         Begin VB.CommandButton Command6 
-            Caption         =   "Browse..."
+         ForeColor       =   &H80000008&
+         Height          =   3975
+         Left            =   120
+         ScaleHeight     =   3975
+         ScaleWidth      =   6135
+         TabIndex        =   1
+         Top             =   240
+         Width           =   6135
+         Begin VB.Frame Frame1 
+            Caption         =   "Background Fight Music"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -382,67 +63,384 @@ Begin VB.Form editBackground
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Height          =   345
+            Height          =   855
             Left            =   0
-            TabIndex        =   18
-            Tag             =   "1021"
-            Top             =   0
-            Width           =   1095
+            TabIndex        =   20
+            Tag             =   "1033"
+            Top             =   960
+            Width           =   6135
+            Begin VB.TextBox Text1 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   240
+               TabIndex        =   23
+               Top             =   360
+               Width           =   4335
+            End
+            Begin VB.PictureBox Picture2 
+               BorderStyle     =   0  'None
+               Height          =   375
+               Left            =   4680
+               ScaleHeight     =   375
+               ScaleWidth      =   1215
+               TabIndex        =   21
+               Top             =   360
+               Width           =   1215
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "Browse..."
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   345
+                  Index           =   1
+                  Left            =   0
+                  TabIndex        =   22
+                  Tag             =   "1021"
+                  Top             =   0
+                  Width           =   1095
+               End
+            End
          End
-      End
-      Begin VB.CommandButton Command9 
-         Appearance      =   0  'Flat
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   6.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   600
-         Picture         =   "editBackground.frx":0CCA
-         Style           =   1  'Graphical
-         TabIndex        =   3
-         Top             =   720
-         Width           =   375
-      End
-      Begin VB.CommandButton Command8 
-         Appearance      =   0  'Flat
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   240
-         Picture         =   "editBackground.frx":1994
-         Style           =   1  'Graphical
-         TabIndex        =   2
-         Top             =   720
-         Width           =   375
-      End
-      Begin VB.TextBox Text1 
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   240
-         TabIndex        =   1
-         Top             =   360
-         Width           =   4335
+         Begin VB.Frame Frame2 
+            Caption         =   "Menu Sounds:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   2055
+            Left            =   0
+            TabIndex        =   6
+            Tag             =   "1028"
+            Top             =   1920
+            Width           =   6135
+            Begin VB.TextBox illegalbox 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2640
+               TabIndex        =   15
+               Text            =   "None"
+               Top             =   1440
+               Width           =   1935
+            End
+            Begin VB.TextBox selectbox 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2640
+               TabIndex        =   14
+               Text            =   "None"
+               Top             =   720
+               Width           =   1935
+            End
+            Begin VB.TextBox readybox 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2640
+               TabIndex        =   13
+               Text            =   "None"
+               Top             =   1080
+               Width           =   1935
+            End
+            Begin VB.TextBox clickbox 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2640
+               TabIndex        =   12
+               Text            =   "None"
+               Top             =   360
+               Width           =   1935
+            End
+            Begin VB.PictureBox Picture3 
+               BorderStyle     =   0  'None
+               Height          =   1575
+               Left            =   4680
+               ScaleHeight     =   1575
+               ScaleWidth      =   1335
+               TabIndex        =   7
+               Top             =   360
+               Width           =   1335
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "Browse..."
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   345
+                  Index           =   2
+                  Left            =   0
+                  TabIndex        =   11
+                  Tag             =   "1021"
+                  Top             =   0
+                  Width           =   1095
+               End
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "Browse..."
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   345
+                  Index           =   3
+                  Left            =   0
+                  TabIndex        =   10
+                  Tag             =   "1021"
+                  Top             =   360
+                  Width           =   1095
+               End
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "Browse..."
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   345
+                  Index           =   5
+                  Left            =   0
+                  TabIndex        =   9
+                  Tag             =   "1021"
+                  Top             =   1080
+                  Width           =   1095
+               End
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "Browse..."
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   345
+                  Index           =   4
+                  Left            =   0
+                  TabIndex        =   8
+                  Tag             =   "1021"
+                  Top             =   720
+                  Width           =   1095
+               End
+            End
+            Begin VB.Label Label2 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BackStyle       =   0  'Transparent
+               Caption         =   "Illegal Action Command:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               ForeColor       =   &H80000008&
+               Height          =   255
+               Index           =   3
+               Left            =   240
+               TabIndex        =   19
+               Tag             =   "1027"
+               Top             =   1440
+               Width           =   2175
+            End
+            Begin VB.Label Label2 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BackStyle       =   0  'Transparent
+               Caption         =   "Player is Ready Sound:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               ForeColor       =   &H80000008&
+               Height          =   255
+               Index           =   2
+               Left            =   240
+               TabIndex        =   18
+               Tag             =   "1029"
+               Top             =   1080
+               Width           =   2175
+            End
+            Begin VB.Label Label2 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BackStyle       =   0  'Transparent
+               Caption         =   "Select from Menu Sound:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               ForeColor       =   &H80000008&
+               Height          =   255
+               Index           =   1
+               Left            =   240
+               TabIndex        =   17
+               Tag             =   "1030"
+               Top             =   720
+               Width           =   2175
+            End
+            Begin VB.Label Label2 
+               Appearance      =   0  'Flat
+               BackColor       =   &H80000005&
+               BackStyle       =   0  'Transparent
+               Caption         =   "Click in Menu Sound:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               ForeColor       =   &H80000008&
+               Height          =   255
+               Index           =   0
+               Left            =   240
+               TabIndex        =   16
+               Tag             =   "1031"
+               Top             =   360
+               Width           =   2175
+            End
+         End
+         Begin VB.Frame Frame3 
+            Caption         =   "Image"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   855
+            Left            =   0
+            TabIndex        =   2
+            Top             =   0
+            Width           =   6135
+            Begin VB.TextBox Text2 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   240
+               TabIndex        =   5
+               Top             =   360
+               Width           =   4335
+            End
+            Begin VB.PictureBox Picture1 
+               BorderStyle     =   0  'None
+               Height          =   375
+               Left            =   4680
+               ScaleHeight     =   375
+               ScaleWidth      =   1215
+               TabIndex        =   3
+               Top             =   360
+               Width           =   1215
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "Browse..."
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   345
+                  Index           =   0
+                  Left            =   0
+                  TabIndex        =   4
+                  Tag             =   "1021"
+                  Top             =   0
+                  Width           =   1095
+               End
+            End
+         End
       End
    End
    Begin VB.Menu filemnu 
@@ -632,35 +630,15 @@ End Property
 '=========================================================================
 ' Save the file
 '=========================================================================
-Public Sub saveFile()
-
-#If (False) Then
-
-    On Error Resume Next
-    Dim file As String
-    file = bkgList(activeBkgIndex).filename
-    bkgList(activeBkgIndex).needUpdate = False
-    If file = "" Then
-        Call Me.Show
-        Call mnusaveas_Click
-        Exit Sub
-    End If
-    Call saveBackground(projectPath$ + enePath$ + filename$(2), bkgList(activeBkgIndex).theData)
-
-#Else
-
+Public Sub saveFile(): On Error Resume Next
     Call Show
     Call mnusave_Click
-
-#End If
-
 End Sub
 
 '=========================================================================
 ' Save file as
 '=========================================================================
-Public Sub saveAsFile()
-    On Error Resume Next
+Public Sub saveAsFile(): On Error Resume Next
     If bkgList(activeBkgIndex).needUpdate = True Then
         Call Me.Show
         Call mnusaveas_Click
@@ -670,15 +648,14 @@ End Sub
 '=========================================================================
 ' Open a file
 '=========================================================================
-Public Sub openFile(ByVal filename As String)
-    On Error Resume Next
-    Dim antiPath As String
+Public Sub openFile(ByVal file As String): On Error Resume Next
     activeBackground.Show
-    If filename$ = "" Then Exit Sub
-    Call openBackground(filename$, bkgList(activeBkgIndex).theData)
-    antiPath$ = absNoPath(filename$)
-    bkgList(activeBkgIndex).filename = antiPath$
-    Me.Caption = LoadStringLoc(1435, "Edit Background") + "  (" + antiPath$ + ")"
+    Call openBackground(file, bkgList(activeBkgIndex).theData)
+    
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & bkgPath, bkgList(activeBkgIndex).filename, False)
+    Me.Caption = bkgList(activeBkgIndex).filename
+    
     Call infofill
     bkgList(activeBkgIndex).needUpdate = False
 End Sub
@@ -686,207 +663,72 @@ End Sub
 '=========================================================================
 ' Fields on the form
 '=========================================================================
-Private Sub clickbox_Change()
-    On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgSelWav$ = clickbox.Text
+Private Sub clickbox_Change(): On Error Resume Next
+    bkgList(activeBkgIndex).theData.bkgSelWav = clickbox.Text
 End Sub
-Private Sub Command1_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim antiPath As String
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + bmpPath$
-    dlg.strTitle = "Open Bitmap"
-    dlg.strDefaultExt = "bmp"
-    dlg.strFileTypes = strFileDialogFilterGfx
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
-    bkgList(activeBkgIndex).theData.image = antiPath$
-    Text2.Text = antiPath$
-End Sub
-Private Sub Command2_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediaPath$
-    dlg.strTitle = "Select Sound"
-    dlg.strDefaultExt = "wav"
-    dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
-    bkgList(activeBkgIndex).theData.bkgSelWav$ = antiPath$
-    clickbox.Text = antiPath$
-End Sub
-Private Sub Command3_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediaPath$
-    dlg.strTitle = "Select Sound"
-    dlg.strDefaultExt = "wav"
-    dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
-    bkgList(activeBkgIndex).theData.bkgChooseWav$ = antiPath$
-    selectbox.Text = antiPath$
-End Sub
-Private Sub Command4_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediaPath$
-    dlg.strTitle = "Select Sound"
-    dlg.strDefaultExt = "wav"
-    dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
-    bkgList(activeBkgIndex).theData.bkgCantDoWav$ = antiPath$
-    illegalbox.Text = antiPath$
-End Sub
-Private Sub Command5_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediaPath$
-    dlg.strTitle = "Select Sound"
-    dlg.strDefaultExt = "wav"
-    dlg.strFileTypes = "Supported Types|*.wav;*.mp3|Wav Digital (*.wav)|*.wav|MP3 Compressed (*.mp3)|*.mp3|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
-    bkgList(activeBkgIndex).theData.bkgReadyWav$ = antiPath$
-    readybox.Text = antiPath$
-End Sub
-Private Sub Command6_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    Dim antiPath As String
-    dlg.strDefaultFolder = projectPath$ + mediaPath$
-    dlg.strTitle = "Select Background Battle Music"
-    dlg.strDefaultExt = "mid"
-    dlg.strFileTypes = strFileDialogFilterMedia
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    bkgList(activeBkgIndex).needUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + mediaPath$ + antiPath$
-    bkgList(activeBkgIndex).theData.bkgMusic$ = antiPath$
-    Text1.Text = antiPath$
-End Sub
-Private Sub Command8_Click()
-    On Error GoTo errmid2
-    If bkgList(activeBkgIndex).theData.bkgMusic$ = "" Then MsgBox LoadStringLoc(957, "Please Select A Filename!"), , LoadStringLoc(958, "Music Player"): Exit Sub
-    Dim ext As String
-    ext$ = extention(bkgList(activeBkgIndex).theData.bkgMusic$)
-    If UCase$(ext$) = "WAV" Then
-        'wFlags% = SND_ASYNC Or SND_NODEFAULT
-        'x% = sndPlaySound(projectPath$ + mediapath$ + bkgList(activeBkgIndex).theData.bkgMusic$, wFlags%)
-    Else
-        'If UCase$(ext$) = "MID" Then
-        '    OLE1.SourceDoc = projectPath$ + mediapath$ + bkgMusic$
-        '    OLE1.Action = 1
-        '    OLE1.Action = 7
-        'Else
-            'mp3player.Show
-            'mp3player.playSong (projectPath$ + mediapath$ + bkgList(activeBkgIndex).theData.bkgMusic$)
-        'End If
-    End If
-errmid2:
 
+Private Sub cmdBrowse_Click(Index As Integer): On Error Resume Next
+    Dim file As String, fileTypes As String, i As Long
+    Select Case Index
+         Case 0:
+            If browseFileDialog(Me.hwnd, projectPath & bmpPath, "Background image", "jpg", strFileDialogFilterGfx, file) Then
+                bkgList(activeBkgIndex).theData.image = file
+                Text2.Text = file
+            End If
+        Case 1:
+            If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Background music", "mid", strFileDialogFilterMedia, file) Then
+                bkgList(activeBkgIndex).theData.bkgMusic = file
+                Text1.Text = file
+            End If
+        Case 2:
+            If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Menu click sound", "wav", strFileDialogFilterMedia, file) Then
+                bkgList(activeBkgIndex).theData.bkgSelWav = file
+                clickbox.Text = file
+            End If
+        Case 3:
+            If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Menu select sound", "wav", strFileDialogFilterMedia, file) Then
+                bkgList(activeBkgIndex).theData.bkgChooseWav = file
+                selectbox.Text = file
+            End If
+        Case 4:
+            If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Player ready sound", "wav", strFileDialogFilterMedia, file) Then
+                bkgList(activeBkgIndex).theData.bkgReadyWav = file
+                readybox.Text = file
+            End If
+        Case 5:
+            If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Illegal action sound", "wav", strFileDialogFilterMedia, file) Then
+                bkgList(activeBkgIndex).theData.bkgCantDoWav = file
+                illegalbox.Text = file
+            End If
+    End Select
+    bkgList(activeBkgIndex).needUpdate = True
 End Sub
-Private Sub Command9_Click()
-    On Error GoTo ErrorHandler
-    
-    Dim ext As String
-    ext$ = extention(bkgList(activeBkgIndex).theData.bkgMusic$)
-    If UCase$(ext$) = "WAV" Then
-        'wFlags% = SND_ASYNC
-        'x% = sndPlaySound("stop.wav", wFlags%)
-    Else
-        'OLE1.Action = 10
-        'Call mp3player.stopMusic
-    End If
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Private Sub Form_Resize(): On Error Resume Next
+    fraHolder.Left = (Me.width - fraHolder.width) / 2
+    fraHolder.Top = (Me.Height - fraHolder.Height) / 2 - 200
 End Sub
-Private Sub illegalbox_Change()
-    On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgCantDoWav$ = illegalbox.Text
+
+Private Sub illegalbox_Change(): On Error Resume Next
+    bkgList(activeBkgIndex).theData.bkgCantDoWav = illegalbox.Text
 End Sub
-Private Sub readybox_Change()
-    On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgReadyWav$ = readybox.Text
+Private Sub readybox_Change(): On Error Resume Next
+    bkgList(activeBkgIndex).theData.bkgReadyWav = readybox.Text
 End Sub
-Private Sub selectbox_Change()
-    On Error Resume Next
-    bkgList(activeBkgIndex).theData.bkgChooseWav$ = selectbox.Text
+Private Sub selectbox_Change(): On Error Resume Next
+    bkgList(activeBkgIndex).theData.bkgChooseWav = selectbox.Text
 End Sub
-Private Sub Text1_Change()
-    bkgList(activeBkgIndex).theData.bkgMusic$ = Text1.Text
+Private Sub Text1_Change(): On Error Resume Next
+    bkgList(activeBkgIndex).theData.bkgMusic = Text1.Text
 End Sub
-Private Sub Text2_Change()
-    On Error Resume Next
+Private Sub Text2_Change(): On Error Resume Next
     bkgList(activeBkgIndex).theData.image = Text2.Text
 End Sub
 
 '=========================================================================
 ' Form activate
 '=========================================================================
-Private Sub Form_Activate()
-    On Error Resume Next
+Private Sub Form_Activate(): On Error Resume Next
     Set activeBackground = Me
     Set activeForm = Me
     activeBkgIndex = dataIndex
@@ -896,9 +738,7 @@ End Sub
 '=========================================================================
 ' Form load
 '=========================================================================
-Private Sub Form_Load()
-    On Error Resume Next
-    ' Call LocalizeForm(Me)
+Private Sub Form_Load(): On Error Resume Next
     Set activeBackground = Me
     dataIndex = VectBackgroundNewSlot()
     activeBkgIndex = dataIndex
@@ -908,8 +748,7 @@ End Sub
 '=========================================================================
 ' Form unload
 '=========================================================================
-Private Sub Form_Unload(Cancel As Integer)
-    On Error Resume Next
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     Call hideAllTools
     Call tkMainForm.refreshTabs
 End Sub
@@ -917,26 +756,15 @@ End Sub
 '=========================================================================
 ' Fill in this form
 '=========================================================================
-Private Sub infofill()
-    On Error Resume Next
-    If bkgList(activeBkgIndex).theData.image <> "" Then
-        Text2.Text = bkgList(activeBkgIndex).theData.image
-    End If
-    If bkgList(activeBkgIndex).theData.bkgMusic$ <> "" Then
-        Text1.Text = bkgList(activeBkgIndex).theData.bkgMusic
-    End If
-    If bkgList(activeBkgIndex).theData.bkgSelWav$ <> "" Then
-        clickbox.Text = bkgList(activeBkgIndex).theData.bkgSelWav
-    End If
-    If bkgList(activeBkgIndex).theData.bkgChooseWav$ <> "" Then
-        selectbox.Text = bkgList(activeBkgIndex).theData.bkgChooseWav
-    End If
-    If bkgList(activeBkgIndex).theData.bkgReadyWav$ <> "" Then
-        readybox.Text = bkgList(activeBkgIndex).theData.bkgReadyWav
-    End If
-    If bkgList(activeBkgIndex).theData.bkgCantDoWav$ <> "" Then
-        illegalbox.Text = bkgList(activeBkgIndex).theData.bkgCantDoWav
-    End If
+Private Sub infofill(): On Error Resume Next
+    With bkgList(activeBkgIndex).theData
+        If LenB(.image) Then Text2.Text = .image
+        If LenB(.bkgMusic) Then Text1.Text = .bkgMusic
+        If LenB(.bkgSelWav) Then clickbox.Text = .bkgSelWav
+        If LenB(.bkgChooseWav) Then selectbox.Text = .bkgChooseWav
+        If LenB(.bkgReadyWav) Then readybox.Text = .bkgReadyWav
+        If LenB(.bkgCantDoWav) Then illegalbox.Text = .bkgCantDoWav
+    End With
 End Sub
 
 '=========================================================================
@@ -949,12 +777,15 @@ End Sub
 '========================================================================='
 ' Save menu
 '=========================================================================
-Private Sub mnusave_Click()
-    On Error Resume Next
+Private Sub mnusave_Click(): On Error Resume Next
     Dim file As String
-    file = bkgList(activeBkgIndex).filename
-    If (LenB(file) = 0) Then Call mnusaveas_Click: Exit Sub
-    file = projectPath & bkgPath & file
+    
+    If (LenB(bkgList(activeBkgIndex).filename) = 0) Then
+        Call mnusaveas_Click
+        Exit Sub
+    End If
+    
+    file = projectPath & bkgPath & bkgList(activeBkgIndex).filename
     If (fileExists(file)) Then
         If (GetAttr(file) And vbReadOnly) Then
             Call MsgBox("This file is read-only; please choose a different file.")
@@ -962,6 +793,7 @@ Private Sub mnusave_Click()
             Exit Sub
         End If
     End If
+    
     Call saveBackground(file, bkgList(activeBkgIndex).theData)
     bkgList(activeBkgIndex).needUpdate = False
 End Sub
@@ -969,31 +801,27 @@ End Sub
 '=========================================================================
 ' Save as
 '=========================================================================
-Private Sub mnusaveas_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
+Private Sub mnusaveas_Click(): On Error Resume Next
+    
     Dim dlg As FileDialogInfo
-    Dim antiPath As String, aa As Long, bb As Long
-    dlg.strDefaultFolder = projectPath$ + bkgPath$
+    
+    dlg.strDefaultFolder = projectPath & bkgPath
     dlg.strTitle = "Save Background As"
     dlg.strDefaultExt = "bkg"
     dlg.strFileTypes = "RPG Toolkit Background (*.bkg)|*.bkg|All files(*.*)|*.*"
-    'dlg2
-    If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-
-    bkgList(activeBkgIndex).filename = antiPath$
-    ' Call saveBackground(filename$(1), bkgList(activeBkgIndex).theData)
-    Call mnusave_Click
-    activeBackground.Caption = LoadStringLoc(1435, "Edit Background") + " (" + antiPath$ + ")"
-    ' bkgList(activeBkgIndex).needUpdate = False
-    Call tkMainForm.fillTree("", projectPath$)
+    
+    ChDir (currentDir)
+    If Not SaveFileDialog(dlg, Me.hwnd) Then Exit Sub
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
+    
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, bkgList(activeBkgIndex).filename, True) Then Exit Sub
+        
+    Call saveBackground(dlg.strDefaultFolder & bkgList(activeBkgIndex).filename, bkgList(activeBkgIndex).theData)
+    activeBackground.Caption = bkgList(activeBkgIndex).filename
+    
+    bkgList(activeBkgIndex).needUpdate = False
+    Call tkMainForm.fillTree("", projectPath)
 End Sub
 
 '=========================================================================
