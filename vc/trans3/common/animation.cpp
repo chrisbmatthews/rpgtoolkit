@@ -17,11 +17,6 @@
 #include <mmsystem.h>
 
 /*
- * Globals
- */
-std::vector<ANIMATION_FRAME> g_anmCache;	// Animation cache.
-
-/*
  * Open an animation.
  *
  * fileName (in) - file to open
@@ -98,20 +93,7 @@ bool tagAnimation::open(const STRING fileName)
 	}
 
 	animFile = removePath(fileName);
-//	currentAnmFrame = -1;
 	return true;
-}
-
-/*
- * Clear the animation cache.
- */
-void clearAnmCache()
-{
-	for (std::vector<ANIMATION_FRAME>::iterator i = g_anmCache.begin(); i != g_anmCache.end(); ++i)
-	{
-		delete i->cnv;
-	}
-	g_anmCache.clear();
 }
 
 /*

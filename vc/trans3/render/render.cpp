@@ -196,11 +196,6 @@ void createCanvases()
 	g_cnvMessageWindow = new CCanvas();
 	g_cnvMessageWindow->CreateBlank(NULL, 600, 100, TRUE);
 
-	// Create sprite cache.
-	extern std::vector<ANIMATION_FRAME> g_anmCache;
-	g_anmCache.clear();
-//	g_anmCache.reserve(128);
-
 	g_scrollCache.createCanvas(g_resX * 2, g_resY * 2);
 
 	g_cnvCursor = new CCanvas();
@@ -666,16 +661,6 @@ void initGraphics()
 
 	// Show the screen.
 	showScreen(width, height);
-
-}
-
-/*
- * Clear the tile cache.
- */
-void clearTileCache()
-{
-	CTile::clearTileCache();
-	clearAnmCache();
 }
 
 /*
@@ -685,7 +670,7 @@ void closeGraphics()
 {
 	extern HINSTANCE g_hInstance;
 
-	clearTileCache();
+	CTile::clearTileCache();
 	destroyCanvases();
 	delete g_pDirectDraw;
 
