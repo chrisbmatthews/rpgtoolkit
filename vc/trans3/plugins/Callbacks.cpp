@@ -687,7 +687,8 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			// TBD. [Not currently held.]
 			break;
 		case GEN_INVENTORY_FILES:
-			bstr = getString(removePath(g_inv.fileAt(arrayPos)));
+			// Remove path up to ITM_PATH (inventory holds whole path).
+			bstr = getString(removePath(g_inv.fileAt(arrayPos), ITM_PATH));
 			break;
 		case GEN_INVENTORY_HANDLES:
 			bstr = getString(g_inv.handleAt(arrayPos));

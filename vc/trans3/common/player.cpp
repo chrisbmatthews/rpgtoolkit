@@ -49,7 +49,8 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 		return 0;
 	}
 
-	this->fileName = removePath(fileName);
+	// Preserve subfolder to ensure loading from saved file.
+	this->fileName = removePath(fileName, TEM_PATH);
 
 	file.seek(13);
 	char cVersion;

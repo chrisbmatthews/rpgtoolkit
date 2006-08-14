@@ -21,6 +21,27 @@ STRING g_pakTempPath;				// Temp path for the pak file.
 STRING g_pakFile;					// The file name of the pak file.
 bool g_bStandalone = false;			// Are we a standalone game?
 
+/*
+ * Remove the path from a filename, optionally perserving folders.
+ * preserveFrom should carry a trailing \.
+ */
+STRING removePath(const STRING str, const STRING preserveFrom)
+{
+	if (!preserveFrom.empty())
+	{
+		const int pos = str.find(preserveFrom);
+		if (pos != str.npos)
+		{
+			return str.substr(pos + preserveFrom.length());
+		}
+		// Return the path unaltered, since it didn't contain the
+		// default folder and any other folders should be subfolders
+		// (although a different default folder may be present).
+		return str;
+	}
+	return str.substr(str.find_last_of(_T('\\')) + 1);
+}
+
 // Don't resolve a file name.
 STRING resolveNonPakFile(const STRING path)
 {

@@ -39,8 +39,8 @@ bool tagBoard::open(const STRING fileName)
 		return false;
 	}
 
-	// tbd: preserve subfolder?
-	this->filename = removePath(fileName);
+	// Preserve subfolder to ensure loading from saved file.
+	this->filename = removePath(fileName, BRD_PATH);
 
 	file.seek(14);
 	char cUnused;
@@ -1602,8 +1602,18 @@ void tagBoard::renderStack(
 	RECT dest = {0, 0, 0, 0};
 	if (!IntersectRect(&dest, &bounds, &g_screen)) return;
 
-	// TBD: draw blank tile rather than rectangle - isometrics!
-//	cnv->DrawFilledRect(bounds.left, bounds.top, bounds.right - 1, bounds.bottom - 1, bkgColor);
+	// Draw a blank tile.
+	HDC hdc = cnv->OpenDC();
+	CTile::drawBlankHdc(
+		x, y, 
+		hdc, 
+		bkgColor,
+		destX - bounds.left, 
+		destY - bounds.top,
+		coordType,
+		sizeX
+	);
+	cnv->CloseDC(hdc);
 
 	for (unsigned int i = lLower; i <= lUpper; ++i)
 	{

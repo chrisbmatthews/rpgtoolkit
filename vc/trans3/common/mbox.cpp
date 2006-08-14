@@ -445,7 +445,7 @@ STRING fileDialog(
 			result = *i;
 			if (*i == newFile)
 			{
-				result = prompt(_T("Enter a new filename"));
+				result = removePath(prompt(_T("Enter a new filename")));
 				if (!getExtension(filter).empty())
 				{
 					result = addExtension(result, getExtension(filter));

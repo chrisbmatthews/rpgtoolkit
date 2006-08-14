@@ -40,12 +40,10 @@
  * Remove the path from a filename.
  *
  * str (in) - filename
+ * preserveFrom (in) - default folder to preserve subfolders within
  * return (out) - pathless filename
  */
-inline STRING removePath(const STRING str)
-{
-	return str.substr(str.find_last_of(_T('\\')) + 1);
-}
+STRING removePath(const STRING str, const STRING preserveFrom = STRING());
 
 /*
  * Get the extension of a file.

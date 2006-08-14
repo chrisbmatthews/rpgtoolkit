@@ -139,7 +139,8 @@ void loadSaveState(const STRING str)
 		file >> name >> fileName;
 		if (!fileName.empty())
 		{
-			CPlayer *p = new CPlayer(g_projectPath + TEM_PATH + removePath(fileName), false, false);
+			if (minorVer < 4) fileName = removePath(fileName);
+			CPlayer *p = new CPlayer(g_projectPath + TEM_PATH + fileName, false, false);
 			p->name(name);
 			g_players.push_back(p);
 		}
@@ -155,7 +156,8 @@ void loadSaveState(const STRING str)
 		file >> fileName >> handle >> quantity;
 		if (!fileName.empty())
 		{
-			g_inv.give(g_projectPath + ITM_PATH + removePath(fileName), quantity);
+			// Remove path up to and including ITM_PATH.
+			g_inv.give(g_projectPath + ITM_PATH + removePath(fileName, ITM_PATH), quantity);
 		}
 	}
 
@@ -235,10 +237,11 @@ void loadSaveState(const STRING str)
 	STRING mainFile;
 	file >> mainFile;
 	g_mainFile.open(GAM_PATH + removePath(mainFile));
+
 	STRING board;
 	file >> board;
-	// tbd: remove path up to...
-	g_pBoard->open(g_projectPath + BRD_PATH + removePath(board));
+	if (minorVer < 4) board = removePath(board);
+	g_pBoard->open(g_projectPath + BRD_PATH + board);
 
 	for (i = 0; i < players; ++i)
 	{
@@ -272,6 +275,7 @@ void loadSaveState(const STRING str)
 				LPPLAYER pPlayer = p->getPlayer();
 				pPlayer->nextLevel = nl;
 				pPlayer->levelProgression = lp;
+				p->restore(false);
 			}
 		}
 	}
@@ -493,6 +497,7 @@ void saveSaveState(const STRING fileName)
 
 	for (i = 0; i != g_inv.size(); ++i)
 	{
+		// filename holds the entire path (from g_projectPath).
 		STRING filename, handle;
 		int quantity;
 		filename = g_inv.fileAt(i);
