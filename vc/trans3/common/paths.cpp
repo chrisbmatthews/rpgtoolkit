@@ -22,23 +22,25 @@ STRING g_pakFile;					// The file name of the pak file.
 bool g_bStandalone = false;			// Are we a standalone game?
 
 /*
- * Remove the path from a filename, optionally perserving folders.
+ * Remove the path from a file name, perserving folders.
  * preserveFrom should carry a trailing \.
  */
 STRING removePath(const STRING str, const STRING preserveFrom)
 {
-	if (!preserveFrom.empty())
+	const int pos = str.find(preserveFrom);
+	if (pos != str.npos)
 	{
-		const int pos = str.find(preserveFrom);
-		if (pos != str.npos)
-		{
-			return str.substr(pos + preserveFrom.length());
-		}
-		// Return the path unaltered, since it didn't contain the
-		// default folder and any other folders should be subfolders
-		// (although a different default folder may be present).
-		return str;
+		return str.substr(pos + preserveFrom.length());
 	}
+	// Return the path unaltered, since it didn't contain the
+	// default folder and any other folders should be subfolders
+	// (although a different default folder may be present).
+	return str;
+}
+
+// Remove the path from a file name.
+STRING removePath(const STRING str)
+{
 	return str.substr(str.find_last_of(_T('\\')) + 1);
 }
 

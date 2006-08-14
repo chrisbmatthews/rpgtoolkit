@@ -43,7 +43,8 @@
  * preserveFrom (in) - default folder to preserve subfolders within
  * return (out) - pathless filename
  */
-STRING removePath(const STRING str, const STRING preserveFrom = STRING());
+STRING removePath(const STRING str);
+STRING removePath(const STRING str, const STRING preserveFrom);
 
 /*
  * Get the extension of a file.
