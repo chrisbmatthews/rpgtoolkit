@@ -9,7 +9,7 @@ Begin VB.UserControl ctlBrdProgram
    ScaleHeight     =   5640
    ScaleWidth      =   3105
    Begin VB.CheckBox chkDraw 
-      Caption         =   "Drarw programs"
+      Caption         =   "Draw programs"
       Height          =   375
       Left            =   120
       TabIndex        =   18
@@ -233,11 +233,18 @@ Private Sub apply() ': On Error Resume Next
             .activate = IIf(chkRunOnce.value, PRG_CONDITIONAL, PRG_ACTIVE)
             
             'Assign a Guid as a unique variable name.
-            .initialVar = vbNullString
-            If .activate = PRG_CONDITIONAL Then .initialVar = modBoard.createGuid()
-            .initialValue = vbNullString            'Uninitialised variables set to "".
-            .finalVar = .initialVar
-            .finalValue = "1"
+            If .activate = PRG_CONDITIONAL Then
+                'Preserve conditional variables from old boards (lenb <> 0)
+                If LenB(.initialVar) = 0 Then
+                    .initialVar = modBoard.createGuid()
+                    .initialValue = vbNullString            'Uninitialised variables set to "".
+                    .finalVar = .initialVar
+                    .finalValue = "a"
+                End If
+            Else
+                'Unsetting Run Once - clear old conditional activation.
+                .initialVar = vbNullString
+            End If
             
             .activationType = Abs(optActivationType(PRG_KEYPRESS).value)
             If chkRepeatTrigger.value Then .activationType = .activationType Or PRG_REPEAT
@@ -326,7 +333,7 @@ End Sub
 Private Sub cmdBrowse_Click(): On Error Resume Next
     Dim file As String, fileTypes As String
     fileTypes = "RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
-    If browseFileDialog(tkMainForm.hwnd, projectPath & prgPath, "Board program", ".prg", fileTypes, file) Then
+    If browseFileDialog(tkMainForm.hwnd, projectPath & prgPath, "Board program", "prg", fileTypes, file) Then
         txtFilename.Text = file
         Call cmdDefault_Click
     End If

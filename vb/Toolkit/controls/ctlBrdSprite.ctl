@@ -287,11 +287,18 @@ Private Sub apply() ': On Error Resume Next
             .activate = IIf(chkRunOnce.value, SPR_CONDITIONAL, SPR_ACTIVE)
             
             'Assign a Guid as a unique variable name.
-            .initialVar = vbNullString
-            If .activate = SPR_CONDITIONAL Then .initialVar = modBoard.createGuid()
-            .initialValue = vbNullString            'Uninitialised variables set to "".
-            .finalVar = .initialVar
-            .finalValue = "1"
+            If .activate = SPR_CONDITIONAL Then
+                'Preserve conditional variables from old boards (lenb <> 0)
+                If LenB(.initialVar) = 0 Then
+                    .initialVar = modBoard.createGuid()
+                    .initialValue = vbNullString            'Uninitialised variables set to "".
+                    .finalVar = .initialVar
+                    .finalValue = "a"
+                End If
+            Else
+                'Unsetting Run Once - clear old conditional activation.
+                .initialVar = vbNullString
+            End If
                         
             .activationType = Abs(optActivationType(SPR_KEYPRESS).value)
             .prgActivate = txtActivate.Text
@@ -382,19 +389,19 @@ Private Sub cmdBrowse_Click(Index As Integer): On Error Resume Next
     Select Case Index
         Case 0:
             fileTypes = "Item (*.itm)|*.itm|All files(*.*)|*.*"
-            If browseFileDialog(tkMainForm.hwnd, projectPath & itmPath, "Board sprite", ".itm", fileTypes, file) Then
+            If browseFileDialog(tkMainForm.hwnd, projectPath & itmPath, "Board sprite", "itm", fileTypes, file) Then
                 txtFilename.Text = file
                 Call cmdDefault_Click
             End If
         Case 1:
             fileTypes = "RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
-            If browseFileDialog(tkMainForm.hwnd, projectPath & prgPath, "Activation program", ".prg", fileTypes, file) Then
+            If browseFileDialog(tkMainForm.hwnd, projectPath & prgPath, "Activation program", "prg", fileTypes, file) Then
                 txtActivate.Text = file
                 Call apply
             End If
         Case 2:
             fileTypes = "RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
-            If browseFileDialog(tkMainForm.hwnd, projectPath & prgPath, "Multitasking program", ".prg", fileTypes, file) Then
+            If browseFileDialog(tkMainForm.hwnd, projectPath & prgPath, "Multitasking program", "prg", fileTypes, file) Then
                 txtMultitask.Text = file
                 Call apply
             End If
