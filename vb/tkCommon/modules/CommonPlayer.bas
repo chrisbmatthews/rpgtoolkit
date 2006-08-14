@@ -819,6 +819,8 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
             Next x
         End If
     
+    Close num
+    
     Exit Sub
     
 ver2oldchar:
