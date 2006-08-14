@@ -537,7 +537,7 @@ VOID CBoard::renderTile(
 		CONST INT g = ambientGreen(x, y, z); //+ aG;
 		CONST INT b = ambientBlue(x, y, z); //+ aB;
 
-		// Set the tile onto it
+		// Set the tile onto the dc.
 		CONST HDC hdc = p->cnv->OpenDC();
 		CTile::drawByBoardCoordHdc(
 			m_projectPath + TILE_PATH + strTile,
@@ -553,7 +553,16 @@ VOID CBoard::renderTile(
 	}
 	else
 	{
-		// TBD: Draw blank tile.
+		CONST HDC hdc = p->cnv->OpenDC();
+		CTile::drawBlankHdc(
+			x, y,
+			hdc,
+			m_pBoard->m_brdColor,
+			0, 0,
+			COORD_TYPE(m_pBoard->m_coordType),
+			m_pBoard->m_bSizeX
+		);
+		p->cnv->CloseDC(hdc);
 	}
 }
 
@@ -565,7 +574,6 @@ VOID CBoard::renderLayer(
 	CONST HDC hdcCompat,
 	CONST BOOL bDestroyCanvas)
 {
-	// TBD: Shrink canvas to used area.
 	while (i >= m_layers.size()) m_layers.push_back(BRD_LAYER());
 	LPBRD_LAYER p = &m_layers[i];
 	
