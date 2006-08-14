@@ -201,7 +201,7 @@ class CTile
 			VOID
 		);
 
-		STATIC BOOL drawByBoardCoord(
+		STATIC VOID drawByBoardCoord(
 			CONST STRING filename, 
 			INT x, INT y, 
 			CONST INT r, CONST INT g, CONST INT b, 
@@ -212,7 +212,7 @@ class CTile
 			CONST INT brdSizeX
 		);
 
-		STATIC BOOL CTile::drawByBoardCoordHdc(
+		STATIC VOID CTile::drawByBoardCoordHdc(
 			CONST STRING filename, 
 			INT x, INT y, 
 			CONST INT r, CONST INT g, CONST INT b, 
@@ -241,6 +241,15 @@ class CTile
 
 		STATIC VOID deleteFromCache(
 			CONST STRING filename
+		);
+		
+		STATIC VOID CTile::drawBlankHdc(
+			INT x, INT y, 
+			CONST HDC hdc,
+			CONST LONG color,
+			CONST INT pxOffsetX, CONST INT pxOffsetY, 
+			COORD_TYPE coordType,
+			CONST INT brdSizeX
 		);
 
 	private:

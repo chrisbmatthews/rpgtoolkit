@@ -365,6 +365,9 @@ CTile::CTile(CONST INT nCompatibleDC, CONST std::string strFilename, CONST RGBSH
 	m_rgb.g = rgb.g;
 	m_rgb.b = rgb.b;
 
+	memset(m_pnTile, 0, sizeof(m_pnTile));
+	memset(m_pnAlphaChannel, 0, sizeof(m_pnAlphaChannel));
+
 	open(strFilename, rgb, nShadeType);
 }
 
@@ -417,7 +420,8 @@ CTile::CTile(CONST INT nCompatibleDC, CONST BOOL bIsometric):
 	}
 
 	m_rgb.r = m_rgb.g = m_rgb.b = 0;
-
+	memset(m_pnTile, 0, sizeof(m_pnTile));
+	memset(m_pnAlphaChannel, 0, sizeof(m_pnAlphaChannel));
 }
 
 //-------------------------------------------------------------------
@@ -1575,7 +1579,7 @@ VOID CTile::toIsometric(LONG *dest, CONST LONG *src)
 // brdSizeX		- board width in tiles, for ISO_ROTATED boards.
 // nIsoEvenOdd	- does the canvas corner occur at a tile centre or corner?
 //-------------------------------------------------------------------
-BOOL CTile::drawByBoardCoord(
+VOID CTile::drawByBoardCoord(
 	CONST STRING filename, 
 	INT x, INT y, 
 	CONST INT r, CONST INT g, CONST INT b, 
@@ -1614,13 +1618,12 @@ BOOL CTile::drawByBoardCoord(
 		default:
 			pTile->cnvDraw(cnv, x, y);
 	}
-	return TRUE;
 }
 
 //-------------------------------------------------------------------
 // HDC equivalent - transparent blt by gdi.
 //-------------------------------------------------------------------
-BOOL CTile::drawByBoardCoordHdc(
+VOID CTile::drawByBoardCoordHdc(
 	CONST STRING filename, 
 	INT x, INT y, 
 	CONST INT r, CONST INT g, CONST INT b, 
@@ -1661,7 +1664,6 @@ BOOL CTile::drawByBoardCoordHdc(
 				pTile->gdiDraw(hdc, x, y);
 		}
 	}
-	return TRUE;
 }
 
 //-------------------------------------------------------------------
@@ -1740,4 +1742,41 @@ VOID CTile::clearTileCache(VOID)
 		delete *i;
 	}
 	m_tiles.clear();
+}
+
+//-------------------------------------------------------------------
+// Draw a blank tile of a given colour
+//-------------------------------------------------------------------
+VOID CTile::drawBlankHdc(
+	INT x, INT y, 
+	CONST HDC hdc,
+	CONST LONG color,
+	CONST INT pxOffsetX, CONST INT pxOffsetY, 
+	COORD_TYPE coordType,
+	CONST INT brdSizeX)
+{	
+	// Remove any PX_ABSOLUTE flag - tiles are always given in tile coordinates.
+	coordType = COORD_TYPE(coordType & ~PX_ABSOLUTE);
+	
+	CONST BOOL bIsometric = coordType & (ISO_STACKED | ISO_ROTATED);
+	coords::tileToPixel(x, y, coordType, FALSE, brdSizeX);
+	if (bIsometric)
+	{
+		// tileToPixel() reports the centre of the tile.
+		x -= 32;
+		y -= 16;
+	}
+	x += pxOffsetX;
+	y += pxOffsetY;
+
+	// Create a local tile and colour it.
+	CTile tile(INT(hdc), bIsometric);
+	memset(tile.m_pnTile, color, sizeof(tile.m_pnTile));
+
+	// Set the necessary canvases.
+	CONST RGBSHADE rgb = {0, 0, 0};
+	tile.prepAlpha();
+	tile.createShading(rgb, SHADE_UNIFORM, bIsometric ? ISOTYPE : TSTTYPE);
+	
+	tile.gdiDraw(hdc, x, y);
 }
