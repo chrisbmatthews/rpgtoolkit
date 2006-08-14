@@ -1153,8 +1153,6 @@ void CSprite::send(void)
 	extern CCanvas *g_cnvRpgCode;
 	extern LPBOARD g_pBoard;
 
-	clearAnmCache();
-
 	extern RECT g_screen;
 	extern SCROLL_CACHE g_scrollCache;
 	alignBoard(g_screen, true);
