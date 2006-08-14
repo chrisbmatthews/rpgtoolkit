@@ -278,8 +278,8 @@ int APIENTRY GFXdrawtile ( const char* fname,
 													 int nIsoEvenOdd ) 
 {
 	std::string strFilename = fname;
-//	std::string strPath = "tiles\\";
-//	strFilename = strPath + strFilename;
+	std::string strPath = "tiles\\";
+	strFilename = strPath + strFilename;
 
 	int xx, yy;
 
