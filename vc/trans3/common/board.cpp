@@ -26,7 +26,7 @@
  *
  * fileName (in) - file to open
  */
-bool tagBoard::open(const STRING fileName)
+bool tagBoard::open(const STRING fileName, const bool startThreads)
 {
 	extern STRING g_projectPath;
 	extern LPBOARD g_pBoard;
@@ -296,7 +296,7 @@ lutEndA:
 					short version = 0;
 					try
 					{
-						CItem *pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, version);
+						CItem *pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, version, startThreads);
 						if (version <= PRE_VECTOR_ITEM)
 						{
 							// Create standard vectors for old items.
@@ -346,7 +346,7 @@ lutEndA:
 		{
 			STRING thread;
 			file >> thread;
-			if (this == g_pBoard)
+			if (startThreads && (this == g_pBoard))
 			{
 				thread = g_projectPath + PRG_PATH + thread;
 				if (CFile::fileExists(thread))
@@ -682,7 +682,7 @@ lutEndB:
 			{
 				try
 				{
-					CItem *pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, pos.version);
+					CItem *pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, pos.version, startThreads);
 					items.push_back(pItem);
 
 					// Hold onto location until isometric byte is read.
@@ -705,7 +705,7 @@ lutEndB:
 			{
 				STRING thread;
 				file >> thread;
-				if (this == g_pBoard)
+				if (startThreads && (this == g_pBoard))
 				{
 					thread = g_projectPath + PRG_PATH + thread;
 					if (CFile::fileExists(thread))

@@ -24,16 +24,22 @@ public:
 	CItem(): CSprite(false), m_pThread(NULL) {};
 
 	// Default constructor.
-	CItem(const STRING file, const bool show);
+	CItem(const STRING file, const bool show, const bool thread = true);
 
 	// Board constructor.
-	CItem(const STRING file, const BRD_SPRITE spr, short &version);
+	CItem(const STRING file, const BRD_SPRITE spr, short &version, const bool thread = true);
 
 	// Open the item's file.
-	short open(const STRING file) throw(CInvalidItem);
+	short open(const STRING file, const bool thread = true) throw(CInvalidItem);
 
 	// Extract the ITEM struct.
 	LPITEM getItem() { return &m_itemMem; }
+
+	// Get the thread for this item.
+	CItemThread *getThread() const { return m_pThread; }
+
+	// Attach a thread to the item.
+	void attachThread(CItemThread *pThread);
 
 	~CItem();
 

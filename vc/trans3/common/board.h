@@ -214,7 +214,7 @@ typedef struct tagBoard
 
 	/* Member functions */
 
-	bool open(const STRING fileName);
+	bool open(const STRING fileName, const bool startThreads = true);
 	void vectorize(const unsigned int layer);
 	void createVectorCanvases();
 	void freeVectors(const int layer = 0);

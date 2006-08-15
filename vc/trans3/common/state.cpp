@@ -15,6 +15,7 @@
 #include "../rpgcode/virtualvar.h"
 #include "../misc/misc.h"
 #include "../movement/CPlayer/CPlayer.h"
+#include "../movement/CItem/CItem.h"
 #include <vector>
 
 extern std::vector<CPlayer *> g_players;
@@ -306,12 +307,23 @@ void loadSaveState(const STRING str)
 		BOOL bPersist;
 		file >> bPersist;
 
+		int itm = -1;	// Item position.
+
 		if (minorVer < 4)
 		{
 			// In 3.0.7, the position is not saved here. It is saved
 			// as part of the state data (see below).
 			int pos;
 			file >> pos;
+		}
+		else if (bPersist)
+		{
+			BOOL bItem = FALSE;
+			file >> bItem;
+			if (bItem)
+			{
+				file >> itm;
+			}
 		}
 
 		BOOL bSleep;
@@ -323,14 +335,24 @@ void loadSaveState(const STRING str)
 
 		if (!fileName.empty())
 		{
-			pThread = CThread::create(fileName);
+			if ((itm != -1) && (g_pBoard->items.size() > itm) && g_pBoard->items[itm])
+			{
+				CItemThread *pItemThread = CItemThread::create(fileName, g_pBoard->items[itm]);
+				g_pBoard->items[itm]->attachThread(pItemThread);
+				pThread = pItemThread;
+			}
+			else
+			{
+				pThread = CThread::create(fileName);
+			}
 			if (!bPersist)
 			{
 				g_pBoard->threads.push_back(pThread);
 			}
 			if (bSleep)
 			{
-				pThread->sleep(int(duration * 1000.0));
+				if (minorVer < 4) duration *= 1000.0;
+				pThread->sleep(int(duration));
 			}
 		}
 
@@ -370,6 +392,14 @@ void loadSaveState(const STRING str)
 				}
 			}
 		} // if (minorVer >= 4)
+
+		if ((itm != -1) && ((g_pBoard->items.size() <= itm) || !g_pBoard->items[itm]))
+		{
+			// This thread formerly belonged to an item created with CreateItem(),
+			// but since rpgcode-created items aren't restored, we shouldn't
+			// restore this thread either.
+			CThread::destroy(pThread);
+		}
 	}
 
 	// Movement size (probably unneeded unless changed halfway through game).
@@ -618,7 +648,7 @@ void saveSaveState(const STRING fileName)
 			std::vector<CThread *>::const_iterator j = g_pBoard->threads.begin();
 			for (; j != g_pBoard->threads.end(); ++j)
 			{
-				if (&*j == &*itr)
+				if (*j == *itr)
 				{
 					// It is not persistent.
 					bPersist = false;
@@ -628,6 +658,30 @@ void saveSaveState(const STRING fileName)
 
 			file << (*itr)->getFileName();
 			file << int(bPersist ? 1 : 0);
+
+			if (bPersist)
+			{
+				// It might still be an item thread.
+				bool bItem = false;
+				std::vector<CItem *>::const_iterator k = g_pBoard->items.begin();
+				for (; k != g_pBoard->items.end(); ++k)
+				{
+					if ((*k)->getThread() == *itr)
+					{
+						bItem = true;
+						break;
+					}
+				}
+
+				file << int(bItem ? 1 : 0);
+
+				if (bItem)
+				{
+					// If it is an item thread, record the item to reattach it to.
+					file << int(k - g_pBoard->items.begin());
+				}
+			}
+
 			file << int((*itr)->isSleeping() ? 1 : 0);
 			file << double((*itr)->sleepRemaining());
 

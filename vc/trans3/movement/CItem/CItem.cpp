@@ -17,11 +17,11 @@
 /*
  * Default constructor.
  */
-CItem::CItem(const STRING file, const bool show):
+CItem::CItem(const STRING file, const bool show, const bool thread):
 CSprite(false),
 m_pThread(NULL)
 {
-	if (open(file) <= PRE_VECTOR_ITEM)
+	if (open(file, thread) <= PRE_VECTOR_ITEM)
 	{
 		// Create standard vectors for old items.
 		createVectors();
@@ -32,19 +32,19 @@ m_pThread(NULL)
 /*
  * Constructor - load an item directly from the board.
  */
-CItem::CItem(const STRING file, const BRD_SPRITE spr, short &version):
+CItem::CItem(const STRING file, const BRD_SPRITE spr, short &version, const bool thread):
 CSprite(false),
 m_pThread(NULL)
 {
 	m_brdData = spr;
 	// Set the version that is passed in.
-	version = open(file);
+	version = open(file, thread);
 }
 
 /*
  * Common opening procedure. Return the minor version.
  */
-short CItem::open(const STRING file) throw(CInvalidItem)
+short CItem::open(const STRING file, const bool thread) throw(CInvalidItem)
 {
 	const short minorVer = m_itemMem.open(file, &m_attr);
 	if (minorVer == 0)
@@ -79,7 +79,7 @@ short CItem::open(const STRING file) throw(CInvalidItem)
 	}
 
 	// Create thread
-	if (!m_brdData.prgMultitask.empty())
+	if (thread && !m_brdData.prgMultitask.empty())
 	{
 		extern STRING g_projectPath;
 		const STRING file = g_projectPath + PRG_PATH + m_brdData.prgMultitask;
@@ -90,6 +90,15 @@ short CItem::open(const STRING file) throw(CInvalidItem)
 	}
 
 	return minorVer;
+}
+
+/*
+ * Attach a thread to the item.
+ */
+void CItem::attachThread(CItemThread *pThread)
+{
+	if (m_pThread) CThread::destroy(m_pThread);
+	m_pThread = pThread;
 }
 
 /*
