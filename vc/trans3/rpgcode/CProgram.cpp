@@ -1690,63 +1690,10 @@ STRING tagStackFrame::getLit() const
 			return STRING();
 		}
 
-		int dec, sign;
-		char *pstr = _fcvt(num, 10, &dec, &sign);
-		sign = sign ? 1 : 0;
-
-		const int abslength = strlen(pstr);
-
-		// Find number of digits.
-		int digits = 0;
-		{
-			char *p = _strrev(_strdup(pstr));
-			int i = 0;
-			do
-			{
-				if ((*p) != '0')
-				{
-					digits = abslength - i;
-					break;
-				}
-			} while (++i && ++p);
-			free(p - i);
-		}
-
-		// Special case: number is zero.
-		if (digits == 0) return "0";
-
-		// Length of string.
-		// (number of digits) + (decimal point) + (negative sign?) + (null)
-		const int decimalchars = (dec < digits) ? ((((dec > 0) ? 1 : (abs(dec) + 2)))) : 0;
-		const int chars = digits + decimalchars + sign + 1;
-
-		char *pRet = new char[chars];
-		memset(pRet, '0', chars * sizeof(char));
-		pRet[chars - 1] = '\0';
-
-		if (sign) pRet[0] = '-';
-
-		if (dec <= 0)	// (zero).(zeros?)(digits)
-		{
-			pRet[1 + sign] = '.';
-			memcpy(pRet + abs(dec) + sign + 2, pstr, digits * sizeof(char));
-		}
-		else if (dec < digits)	// (digits).(digits)
-		{
-			pRet[dec + sign] = '.';
-			memcpy(pRet + sign, pstr, dec * sizeof(char));
-			memcpy(pRet + sign + dec + 1, pstr + dec, (digits - dec) * sizeof(char));
-		}
-		else	// (digits)
-		{
-			memcpy(pRet + sign, pstr, digits * sizeof(char));
-		}
-
-		STRING ret = pRet;
-
-		delete pRet;
-
-		return ret;
+		// Convert the number to a string.
+		STRINGSTREAM ss;
+		ss << num;
+		return ss.str();
 	}
 	return lit;
 }
