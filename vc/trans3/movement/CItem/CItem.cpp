@@ -55,8 +55,7 @@ short CItem::open(const STRING file, const bool thread) throw(CInvalidItem)
 	// Load animations, but do not render frames.
 	m_attr.loadAnimations(false);
 	setAnm(MV_S);
-
-	/* Variable stuff ? */
+	m_brdData.fileName = removePath(file, ITM_PATH);
 
 	// Get these into milliseconds!
 	m_attr.speed *= MILLISECONDS;

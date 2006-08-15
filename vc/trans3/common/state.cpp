@@ -242,7 +242,7 @@ void loadSaveState(const STRING str)
 	STRING board;
 	file >> board;
 	if (minorVer < 4) board = removePath(board);
-	g_pBoard->open(g_projectPath + BRD_PATH + board);
+	g_pBoard->open(g_projectPath + BRD_PATH + board, false);
 
 	for (i = 0; i < players; ++i)
 	{
@@ -296,6 +296,57 @@ void loadSaveState(const STRING str)
 	STRING newPlayerName;
 	file >> newPlayerName;
 	g_pSelectedPlayer->swapGraphics(newPlayerName);
+
+	// Item restoration - restore all board items from the save state
+	// rather than from the board data. (3.0.7)
+	if (minorVer >= 4)
+	{
+		g_pBoard->freeItems();
+		file >> count;
+		for (i = 0; i != count; ++i)
+		{
+			BRD_SPRITE spr;
+			double x, y;
+			int z, active;
+			file >> spr.fileName;
+			if (!spr.fileName.empty())
+			{
+				file >> spr.prgActivate;
+				file >> spr.prgMultitask;
+				file >> spr.initialVar;
+				file >> spr.initialValue;
+				file >> spr.finalVar;
+				file >> spr.finalValue;
+				file >> spr.activate;
+				file >> spr.activationType;
+				file >> x;
+				file >> y;
+				file >> z;
+				file >> active;
+
+				short version = 0;
+				try
+				{
+					CItem *pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, version, false);
+					if (version <= PRE_VECTOR_ITEM)
+					{
+						// Create standard vectors for old items.
+						pItem->createVectors();
+					} 
+					// Set the position. Sprite location is always stored in pixels.
+					pItem->setPosition(x, y, z, PX_ABSOLUTE);
+					pItem->setActive(active != 0);
+					g_pBoard->items.push_back(pItem);
+				}
+				catch (CInvalidItem) { }
+			}
+			else
+			{
+				// Empty slot.
+				g_pBoard->items.push_back(NULL);
+			}
+		}	// for (i)
+	}
 
 	// Restore threads.
 	file >> count;
@@ -635,6 +686,41 @@ void saveSaveState(const STRING fileName)
 	// Player filename given in the last NewPlayer() call.	
 	file << g_pSelectedPlayer->swapGraphics();
 
+	// Items - save all board items, since items may have been 
+	// added, moved or removed since the board was first loaded.
+	file << int(g_pBoard->items.size());
+
+	std::vector<CItem *>::const_iterator j = g_pBoard->items.begin();
+	for (; j != g_pBoard->items.end(); ++j)
+	{
+		if (*j)
+		{
+			const BRD_SPRITE spr = *(*j)->getBoardSprite();
+			const SPRITE_POSITION pos = (*j)->getPosition();
+
+			file << spr.fileName;
+			file << spr.prgActivate;
+			file << spr.prgMultitask;
+			file << spr.initialVar;
+			file << spr.initialValue;
+			file << spr.finalVar;
+			file << spr.finalValue;
+			file << spr.activate;
+			file << spr.activationType;
+
+			file << pos.x;						// Double
+			file << pos.y;						// Double
+			file << pos.l;						// Int
+			file << int((*j)->isActive());		// Int
+		}
+		else 
+		{
+			// Empty slot.
+			file << STRING();
+		}
+	}
+
+	// Threads
 	{
 		THREAD_ENUM threads = CThread::enumerateThreads();
 		THREAD_ENUM::ITR itr = threads.begin();
@@ -666,7 +752,7 @@ void saveSaveState(const STRING fileName)
 				std::vector<CItem *>::const_iterator k = g_pBoard->items.begin();
 				for (; k != g_pBoard->items.end(); ++k)
 				{
-					if ((*k)->getThread() == *itr)
+					if ((*k) && (*k)->getThread() == *itr)
 					{
 						bItem = true;
 						break;
