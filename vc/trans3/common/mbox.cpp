@@ -458,7 +458,12 @@ STRING fileDialog(
 						textColor, 
 						backColor,
 						STRING()) == 7
-					) result.erase();
+					)
+					{
+						result.erase();
+						// Continue so that the user can select another file.
+						continue;
+					}
 				}
 			}
 			break;
