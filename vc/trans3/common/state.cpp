@@ -235,9 +235,11 @@ void loadSaveState(const STRING str)
 	file >> steps;
 	g_pxStepsTaken = steps * 32;
 
+	extern STRING g_pakTempPath;
+
 	STRING mainFile;
 	file >> mainFile;
-	g_mainFile.open(GAM_PATH + removePath(mainFile));
+	g_mainFile.open(((!g_pakTempPath.length()) ? GAM_PATH : _T("")) + removePath(mainFile));
 
 	STRING board;
 	file >> board;
