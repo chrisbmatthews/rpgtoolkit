@@ -16,7 +16,7 @@
 //	EQ_SLOT.second = handle
 typedef std::pair<STRING, STRING> EQ_SLOT, *LPEQ_SLOT;
 
-class CPlayer : public CSprite, public IFighter
+class CPlayer : public IFighter, public CSprite 
 {
 public:
 
