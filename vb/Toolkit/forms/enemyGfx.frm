@@ -1,124 +1,120 @@
 VERSION 5.00
 Begin VB.Form enemyGfx 
-   BorderStyle     =   1  'Fixed Single
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Edit Enemy Graphics"
-   ClientHeight    =   5025
+   ClientHeight    =   2400
    ClientLeft      =   45
    ClientTop       =   330
-   ClientWidth     =   8580
+   ClientWidth     =   7065
    Icon            =   "enemyGfx.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
-   ScaleHeight     =   5025
-   ScaleWidth      =   8580
-   StartUpPosition =   3  'Windows Default
+   MinButton       =   0   'False
+   ScaleHeight     =   2400
+   ScaleWidth      =   7065
+   ShowInTaskbar   =   0   'False
+   StartUpPosition =   2  'CenterScreen
    Tag             =   "1493"
    Begin VB.Frame Frame1 
       Caption         =   "Sprite List"
-      Height          =   4695
+      Height          =   2175
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   120
-      Width           =   6975
-      Begin VB.PictureBox Picture2 
-         BorderStyle     =   0  'None
-         Height          =   615
-         Left            =   5640
-         ScaleHeight     =   615
-         ScaleWidth      =   1215
-         TabIndex        =   9
-         Top             =   600
-         Width           =   1215
-         Begin VB.CommandButton Command14 
-            Caption         =   "Browse..."
-            Height          =   345
-            Left            =   0
-            TabIndex        =   10
-            Tag             =   "1021"
-            Top             =   0
-            Width           =   1095
-         End
-      End
+      Width           =   6855
       Begin VB.PictureBox Picture1 
          BorderStyle     =   0  'None
-         Height          =   855
+         Height          =   1695
          Left            =   3360
-         ScaleHeight     =   855
-         ScaleWidth      =   1335
-         TabIndex        =   6
-         Top             =   3720
-         Width           =   1335
-         Begin VB.CommandButton Command2 
+         ScaleHeight     =   1695
+         ScaleWidth      =   3375
+         TabIndex        =   2
+         Top             =   360
+         Width           =   3375
+         Begin VB.CommandButton cmdOK 
+            Appearance      =   0  'Flat
+            Caption         =   "OK"
+            Default         =   -1  'True
+            Height          =   345
+            Left            =   2160
+            TabIndex        =   9
+            Tag             =   "1022"
+            Top             =   1320
+            Width           =   1095
+         End
+         Begin VB.TextBox Text1 
+            Height          =   285
+            Left            =   0
+            TabIndex        =   7
+            Top             =   240
+            Width           =   2055
+         End
+         Begin VB.CommandButton cmdAnimate 
+            Appearance      =   0  'Flat
+            BeginProperty Font 
+               Name            =   "Arial"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   375
+            Left            =   0
+            Picture         =   "enemyGfx.frx":0CCA
+            Style           =   1  'Graphical
+            TabIndex        =   6
+            ToolTipText     =   "Preview animation"
+            Top             =   600
+            Width           =   375
+         End
+         Begin VB.CommandButton cmdBrowse 
+            Caption         =   "Browse..."
+            Height          =   345
+            Left            =   2160
+            TabIndex        =   5
+            Tag             =   "1021"
+            Top             =   240
+            Width           =   1095
+         End
+         Begin VB.CommandButton cmdRemove 
             Appearance      =   0  'Flat
             Caption         =   "Remove"
             Height          =   345
+            Left            =   2160
+            TabIndex        =   4
+            ToolTipText     =   "Remove custom animation"
+            Top             =   960
+            Width           =   1095
+         End
+         Begin VB.CommandButton cmdAdd 
+            Appearance      =   0  'Flat
+            Caption         =   "Add..."
+            Height          =   345
+            Left            =   2160
+            TabIndex        =   3
+            ToolTipText     =   "Add custom animation"
+            Top             =   600
+            Width           =   1095
+         End
+         Begin VB.Label Label2 
+            Caption         =   "Animation"
+            Height          =   255
             Left            =   0
             TabIndex        =   8
-            Top             =   480
-            Width           =   1095
-         End
-         Begin VB.CommandButton Command1 
-            Appearance      =   0  'Flat
-            Caption         =   "Add"
-            Height          =   345
-            Left            =   0
-            TabIndex        =   7
+            Tag             =   "2061"
             Top             =   0
-            Width           =   1095
+            Width           =   2415
          End
-      End
-      Begin VB.CommandButton Command8 
-         Appearance      =   0  'Flat
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   3480
-         Picture         =   "enemyGfx.frx":0CCA
-         Style           =   1  'Graphical
-         TabIndex        =   4
-         Top             =   960
-         Width           =   375
-      End
-      Begin VB.TextBox Text1 
-         Height          =   285
-         Left            =   3480
-         TabIndex        =   3
-         Top             =   600
-         Width           =   2055
       End
       Begin VB.ListBox spriteList 
-         Height          =   4155
+         Height          =   1620
          Left            =   240
-         TabIndex        =   2
+         TabIndex        =   1
          Top             =   360
          Width           =   3015
       End
-      Begin VB.Label Label2 
-         Caption         =   "Animation"
-         Height          =   255
-         Left            =   3480
-         TabIndex        =   5
-         Tag             =   "2061"
-         Top             =   360
-         Width           =   2415
-      End
-   End
-   Begin VB.CommandButton Command6 
-      Appearance      =   0  'Flat
-      Caption         =   "OK"
-      Height          =   345
-      Left            =   7320
-      TabIndex        =   0
-      Tag             =   "1022"
-      Top             =   240
-      Width           =   1095
    End
 End
 Attribute VB_Name = "enemyGfx"
@@ -126,17 +122,16 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'==============================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'==============================================================================
 
 Option Explicit
 
-Sub infofill()
-    'fill in the info...
-    On Error Resume Next
-    
-    spriteList.Clear
+Private Sub infofill(): On Error Resume Next
+    spriteList.clear
     
     spriteList.AddItem (LoadStringLoc(2060, "Rest"))
     spriteList.AddItem (LoadStringLoc(2057, "Attack"))
@@ -151,62 +146,45 @@ Sub infofill()
         End If
     Next t
     
-    
     spriteList.ListIndex = 0
 End Sub
 
-Private Sub Command1_Click()
+Private Sub cmdAdd_Click(): On Error Resume Next
     'enter new custom anim
-    On Error Resume Next
-    
+   
     Dim idx As Long, newName As String
     idx = spriteList.ListIndex
     If idx = -1 Then idx = 0
     
-    newName$ = InputBox(LoadStringLoc(2063, "Enter the handle for a new animation"))
-    If newName$ <> "" Then
-        Call enemyAddCustomGfx(enemylist(activeEnemyIndex).theData, newName$, "")
+    newName = InputBox(LoadStringLoc(2063, "Enter the handle for a new animation"))
+    If LenB(newName) Then
+        Call enemyAddCustomGfx(enemylist(activeEnemyIndex).theData, newName, vbNullString)
         Call infofill
         spriteList.ListIndex = idx
     End If
 End Sub
 
-Private Sub Command14_Click()
+Private Sub cmdBrowse_Click()
     On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    Dim antiPath As String, idx As Long, dx As Long
+    Dim file As String, fileTypes As String, idx As Long
     
-    dlg.strDefaultFolder = projectPath$ + miscPath$
-    
-    dlg.strTitle = "Select Animation"
-    dlg.strDefaultExt = "anm"
-    dlg.strFileTypes = "RPG Toolkit Animation (*.anm)|*.anm|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + miscPath$ + antiPath$
-    Text1.Text = antiPath$
-    
-    idx = spriteList.ListIndex
-    If idx = -1 Then idx = 0
-    
-    If idx < UBound(enemylist(activeEnemyIndex).theData.gfx) Then
-        enemylist(activeEnemyIndex).theData.gfx(idx) = antiPath$
-    Else
-        dx = enemyGetCustomHandleIdx(enemylist(activeEnemyIndex).theData, idx - UBound(enemylist(activeEnemyIndex).theData.gfx))
-        enemylist(activeEnemyIndex).theData.customGfx(dx) = antiPath$
+    fileTypes = "RPG Toolkit Animation (*.anm)|*.anm|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & miscPath, "Select Animation", "anm", fileTypes, file) Then
+        Text1.Text = file
+   
+        idx = spriteList.ListIndex
+        If idx = -1 Then idx = 0
+        
+        If idx < UBound(enemylist(activeEnemyIndex).theData.gfx) Then
+            enemylist(activeEnemyIndex).theData.gfx(idx) = file
+        Else
+            idx = enemyGetCustomHandleIdx(enemylist(activeEnemyIndex).theData, idx - UBound(enemylist(activeEnemyIndex).theData.gfx))
+            enemylist(activeEnemyIndex).theData.customGfx(idx) = file
+        End If
     End If
 End Sub
 
-Private Sub Command2_Click()
-    On Error Resume Next
+Private Sub cmdRemove_Click(): On Error Resume Next
     
     Dim idx As Long, dx As Long
     
@@ -224,48 +202,37 @@ Private Sub Command2_Click()
     End If
 End Sub
 
-Private Sub Command6_Click()
-    On Error Resume Next
+Private Sub cmdOK_Click(): On Error Resume Next
     Unload Me
 End Sub
 
-
-Private Sub Command8_Click()
+Private Sub cmdAnimate_Click(): On Error Resume Next
     'play animation...
-    
-    On Error Resume Next
     
     Dim idx As Long, anmFile As String, dx As Long
     idx = spriteList.ListIndex
     If idx = -1 Then idx = 0
     
-    anmFile$ = ""
     If idx < UBound(enemylist(activeEnemyIndex).theData.gfx) Then
-        anmFile$ = enemylist(activeEnemyIndex).theData.gfx(idx)
+        anmFile = enemylist(activeEnemyIndex).theData.gfx(idx)
     Else
         dx = enemyGetCustomHandleIdx(enemylist(activeEnemyIndex).theData, idx - UBound(enemylist(activeEnemyIndex).theData.gfx))
-        anmFile$ = enemylist(activeEnemyIndex).theData.customGfx(dx)
+        anmFile = enemylist(activeEnemyIndex).theData.customGfx(dx)
     End If
     
-    If anmFile$ <> "" And fileExists(projectPath$ + miscPath$ + anmFile$) Then
+    If LenB(anmFile) And fileExists(projectPath & miscPath & anmFile) Then
         'play animation
-        animationHost.file = projectPath$ + miscPath$ + anmFile$
+        animationHost.file = projectPath & miscPath & anmFile
         animationHost.repeats = 3
         animationHost.Show vbModal
     End If
 End Sub
 
-Private Sub Form_Load()
-    On Error Resume Next
-    ' Call LocalizeForm(Me)
-    
+Private Sub Form_Load(): On Error Resume Next
     Call infofill
 End Sub
 
-
-Private Sub spriteList_Click()
-    On Error Resume Next
-    
+Private Sub spriteList_Click(): On Error Resume Next
     Dim idx As Long, dx As Long
     idx = spriteList.ListIndex
     If idx = -1 Then idx = 0
@@ -278,16 +245,11 @@ Private Sub spriteList_Click()
     End If
 End Sub
 
-
-Private Sub spriteList_DblClick()
-    On Error Resume Next
-    Call Command8_Click
+Private Sub spriteList_DblClick(): On Error Resume Next
+    Call cmdAnimate_Click
 End Sub
 
-
-Private Sub Text1_Change()
-    On Error Resume Next
-    
+Private Sub Text1_Change(): On Error Resume Next
     Dim idx As Long, dx As Long
     idx = spriteList.ListIndex
     If idx = -1 Then idx = 0

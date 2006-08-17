@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form enemyspecialmoves 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Enemy Special Move Info"
-   ClientHeight    =   3450
+   ClientHeight    =   2760
    ClientLeft      =   795
    ClientTop       =   1560
-   ClientWidth     =   9255
+   ClientWidth     =   8460
    BeginProperty Font 
       Name            =   "MS Sans Serif"
       Size            =   8.25
@@ -21,13 +21,14 @@ Begin VB.Form enemyspecialmoves
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   3450
-   ScaleWidth      =   9255
+   ScaleHeight     =   2760
+   ScaleWidth      =   8460
    StartUpPosition =   1  'CenterOwner
    Tag             =   "1453"
-   Begin VB.CommandButton Command5 
+   Begin VB.CommandButton cmdOK 
       Appearance      =   0  'Flat
       Caption         =   "OK"
+      Default         =   -1  'True
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -38,7 +39,7 @@ Begin VB.Form enemyspecialmoves
          Strikethrough   =   0   'False
       EndProperty
       Height          =   345
-      Left            =   8040
+      Left            =   7320
       TabIndex        =   0
       Tag             =   "1022"
       Top             =   240
@@ -55,24 +56,24 @@ Begin VB.Form enemyspecialmoves
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   2895
-      Left            =   4080
+      Height          =   2535
+      Left            =   3720
       TabIndex        =   2
       Tag             =   "1454"
       Top             =   120
-      Width           =   3855
+      Width           =   3495
       Begin VB.PictureBox Picture2 
          BorderStyle     =   0  'None
          Height          =   975
          Left            =   2280
          ScaleHeight     =   975
-         ScaleWidth      =   1335
-         TabIndex        =   9
+         ScaleWidth      =   1095
+         TabIndex        =   8
          Top             =   240
-         Width           =   1335
-         Begin VB.CommandButton Command3 
+         Width           =   1095
+         Begin VB.CommandButton cmdSetWeakness 
             Appearance      =   0  'Flat
-            Caption         =   "Set"
+            Caption         =   "Set..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -84,12 +85,12 @@ Begin VB.Form enemyspecialmoves
             EndProperty
             Height          =   345
             Left            =   0
-            TabIndex        =   11
+            TabIndex        =   10
             Tag             =   "1455"
             Top             =   0
             Width           =   1095
          End
-         Begin VB.CommandButton Command4 
+         Begin VB.CommandButton cmdRemoveWeakness 
             Appearance      =   0  'Flat
             Caption         =   "Remove"
             BeginProperty Font 
@@ -103,7 +104,7 @@ Begin VB.Form enemyspecialmoves
             EndProperty
             Height          =   345
             Left            =   0
-            TabIndex        =   10
+            TabIndex        =   9
             Tag             =   "1096"
             Top             =   480
             Width           =   1095
@@ -137,24 +138,24 @@ Begin VB.Form enemyspecialmoves
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   2895
+      Height          =   2535
       Left            =   120
       TabIndex        =   1
       Tag             =   "1337"
       Top             =   120
-      Width           =   3855
+      Width           =   3495
       Begin VB.PictureBox Picture1 
          BorderStyle     =   0  'None
          Height          =   1095
          Left            =   2280
          ScaleHeight     =   1095
-         ScaleWidth      =   1335
-         TabIndex        =   6
+         ScaleWidth      =   1095
+         TabIndex        =   5
          Top             =   240
-         Width           =   1335
-         Begin VB.CommandButton Command1 
+         Width           =   1095
+         Begin VB.CommandButton cmdSetSpc 
             Appearance      =   0  'Flat
-            Caption         =   "Set"
+            Caption         =   "Set..."
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -166,12 +167,12 @@ Begin VB.Form enemyspecialmoves
             EndProperty
             Height          =   345
             Left            =   0
-            TabIndex        =   8
+            TabIndex        =   7
             Tag             =   "1455"
             Top             =   0
             Width           =   1095
          End
-         Begin VB.CommandButton Command2 
+         Begin VB.CommandButton cmdRemoveSpc 
             Appearance      =   0  'Flat
             Caption         =   "Remove"
             BeginProperty Font 
@@ -185,7 +186,7 @@ Begin VB.Form enemyspecialmoves
             EndProperty
             Height          =   345
             Left            =   0
-            TabIndex        =   7
+            TabIndex        =   6
             Tag             =   "1096"
             Top             =   480
             Width           =   1095
@@ -208,231 +209,82 @@ Begin VB.Form enemyspecialmoves
          Width           =   1935
       End
    End
-   Begin VB.Label link1 
-      Alignment       =   1  'Right Justify
-      Caption         =   "Also see Special Move Editor"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   -1  'True
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00FF0000&
-      Height          =   255
-      Left            =   4320
-      MouseIcon       =   "ENEMYSPE.frx":0CCA
-      MousePointer    =   99  'Custom
-      TabIndex        =   5
-      Tag             =   "1101"
-      Top             =   3120
-      Visible         =   0   'False
-      Width           =   3615
-   End
 End
 Attribute VB_Name = "enemyspecialmoves"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'==============================================================================
 'All contents copyright 2003, 2004, Christopher Matthews or Contributors
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
+'==============================================================================
 
-'!NEW! Variables used for the currently selected items in the listbox
-Dim currentenesm As Integer
-Dim currenteneweak As Integer
+Option Explicit
 
-
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
-Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
-    If smlist.ListIndex = -1 Then
-        MsgBox LoadStringLoc(973, "Please Select A Slot!")
-        Exit Sub
+Private Sub cmdSetSpc_Click(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    fileTypes = "Special Moves (*.spc)|*.spc|All files (*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & spcPath, "Select special move", "spc", fileTypes, file) Then
+        enemylist(activeEnemyIndex).theData.eneSpecialMove(smlist.ListIndex) = file
     End If
-    n = smlist.ListIndex
-    'open OPEN box
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + spcPath$
-    
-    dlg.strTitle = "Select Special Move"
-    dlg.strDefaultExt = "spc"
-    dlg.strFileTypes = "Special Moves (*.spc)|*.spc|All files (*.*)|*.*"
-    
-    ChDir (currentDir$)
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    If filename$(1) = "" Then Exit Sub
-        
-    enemylist(activeEnemyIndex).theData.eneSpecialMove$(n) = antiPath$
-    ChDir (currentDir$)
-    
-    '!NEW! Check what the current selected item is
-    currentenesm = smlist.ListIndex
     
     Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command2_Click()
-    On Error GoTo ErrorHandler
-    If smlist.ListIndex = -1 Then
-        MsgBox "Please Select A Slot!"
-        Exit Sub
-    End If
-    n = smlist.ListIndex
-    enemylist(activeEnemyIndex).theData.eneSpecialMove$(n) = ""
+Private Sub cmdRemoveSpc_Click(): On Error Resume Next
+    enemylist(activeEnemyIndex).theData.eneSpecialMove(smlist.ListIndex) = vbNullString
     Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command3_Click()
-    On Error GoTo ErrorHandler
-    If weaklist.ListIndex = -1 Then
-        MsgBox "Please Select A Slot!"
-        Exit Sub
+Private Sub cmdSetWeakness_Click(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    fileTypes = "Special Moves (*.spc)|*.spc|All files (*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & spcPath, "Select special move", "spc", fileTypes, file) Then
+        enemylist(activeEnemyIndex).theData.eneWeakness(weaklist.ListIndex) = file
     End If
-    n = weaklist.ListIndex
-    'open OPEN box
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + spcPath$
-    
-    dlg.strTitle = "Select Special Move"
-    dlg.strDefaultExt = "spc"
-    dlg.strFileTypes = "Special Moves (*.spc)|*.spc|All files (*.*)|*.*"
-    
-    ChDir (currentDir$)
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    If filename$(1) = "" Then Exit Sub
-        
-    enemylist(activeEnemyIndex).theData.eneWeakness$(n) = antiPath$
-    ChDir (currentDir$)
-    
-    '!NEW! Check what the current selected item is
-    currenteneweak = weaklist.ListIndex
     
     Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command4_Click()
-    On Error GoTo ErrorHandler
-    If weaklist.ListIndex = -1 Then
-        MsgBox "Please Select A Slot!"
-        Exit Sub
-    End If
-    n = weaklist.ListIndex
-    enemylist(activeEnemyIndex).theData.eneWeakness$(n) = ""
+Private Sub cmdRemoveWeakness_Click(): On Error Resume Next
+    enemylist(activeEnemyIndex).theData.eneWeakness(weaklist.ListIndex) = vbNullString
     Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command5_Click()
-    Unload enemyspecialmoves
+Private Sub cmdOK_Click(): On Error Resume Next
+    Unload Me
 End Sub
 
-Private Sub Form_Load()
-    On Error GoTo ErrorHandler
-    ' Call LocalizeForm(Me)
+Private Sub Form_Load(): On Error Resume Next
     Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub infofill()
-    On Error GoTo ErrorHandler
-    smlist.Clear
-    For t = 0 To 100
-        Text$ = str$(t) + ": "
-        If enemylist(activeEnemyIndex).theData.eneSpecialMove$(t) = "" Then
-            use$ = LoadStringLoc(1010, "None")
-        Else
-            use$ = enemylist(activeEnemyIndex).theData.eneSpecialMove$(t)
-        End If
-        Text$ = Text$ + use$
-        smlist.AddItem (Text$)
-    Next t
+Private Sub infofill(): On Error Resume Next
+    Dim i As Long, sIndex As Long, wIndex As Long
     
-    '!NEW! The selected item is now the same as it was before the refresh
-    smlist.ListIndex = currentenesm
+    sIndex = IIf(smlist.ListIndex < 0, 0, smlist.ListIndex)
+    wIndex = IIf(weaklist.ListIndex < 0, 0, weaklist.ListIndex)
+    smlist.clear
+    weaklist.clear
     
-    weaklist.Clear
-    For t = 0 To 100
-        Text$ = str$(t) + ": "
-        If enemylist(activeEnemyIndex).theData.eneWeakness$(t) = "" Then
-            use$ = LoadStringLoc(1010, "None")
-        Else
-            use$ = enemylist(activeEnemyIndex).theData.eneWeakness$(t)
-        End If
-        Text$ = Text$ + use$
-        weaklist.AddItem (Text$)
-    Next t
+    With enemylist(activeEnemyIndex).theData
+        For i = 0 To 100
+            smlist.AddItem (CStr(i) & ": " & IIf(LenB(.eneSpecialMove(i)), .eneSpecialMove(i), "None"))
+            weaklist.AddItem (CStr(i) & ": " & IIf(LenB(.eneWeakness(i)), .eneWeakness(i), "None"))
+        Next i
+    End With
     
-    '!NEW! The selected item is now the same as it was before the refresh
-    weaklist.ListIndex = currenteneweak
+    smlist.ListIndex = sIndex
+    weaklist.ListIndex = wIndex
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub link1_Click()
-    On Error GoTo ErrorHandler
-    activeSpecialMove.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Private Sub smlist_DblClick(): On Error Resume Next
+    Call cmdSetSpc_Click
 End Sub
 
-'!NEW! Makes it easier to edit the special moves
-Private Sub smlist_DblClick()
-    Call Command1_Click
-End Sub
-
-'!NEW! Makes it easier to edit the weaknesses
-Private Sub weaklist_dblClick()
-    Call Command3_Click
+Private Sub weaklist_dblClick(): On Error Resume Next
+    Call cmdSetWeakness_Click
 End Sub

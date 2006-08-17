@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form editenemy 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "Edit Enemy (Untitled)"
+   Caption         =   "Untitled enemy"
    ClientHeight    =   5280
    ClientLeft      =   1035
    ClientTop       =   1695
@@ -24,154 +24,50 @@ Begin VB.Form editenemy
    ScaleHeight     =   5280
    ScaleWidth      =   8580
    Tag             =   "5"
-   Begin VB.Frame mainFrame 
-      Height          =   4935
+   Begin VB.Frame fraHolder 
+      Caption         =   "Enemy Editor"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   4455
       Left            =   120
       TabIndex        =   0
       Top             =   120
       Width           =   8295
-      Begin VB.PictureBox Picture2 
-         BorderStyle     =   0  'None
-         Height          =   375
-         Left            =   6000
-         ScaleHeight     =   375
-         ScaleWidth      =   2175
-         TabIndex        =   25
-         Top             =   4440
-         Width           =   2175
-         Begin VB.CommandButton Command6 
-            Caption         =   "Add Enemy To Game"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   375
-            Left            =   0
-            TabIndex        =   26
-            Tag             =   "1333"
-            Top             =   0
-            Width           =   1935
-         End
-      End
       Begin VB.PictureBox Picture1 
          BorderStyle     =   0  'None
-         Height          =   1695
-         Left            =   6360
-         ScaleHeight     =   1695
-         ScaleWidth      =   1815
-         TabIndex        =   20
-         Top             =   360
-         Width           =   1815
-         Begin VB.CommandButton Command1 
-            Appearance      =   0  'Flat
-            Caption         =   "Graphics..."
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   375
-            Left            =   0
-            TabIndex        =   24
-            Tag             =   "1300"
-            Top             =   0
-            Width           =   1575
-         End
-         Begin VB.CommandButton Command2 
-            Appearance      =   0  'Flat
-            Caption         =   "Special Moves"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   375
-            Left            =   0
-            TabIndex        =   23
-            Tag             =   "1337"
-            Top             =   360
-            Width           =   1575
-         End
-         Begin VB.CommandButton Command3 
-            Appearance      =   0  'Flat
-            Caption         =   "Tactics"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   375
-            Left            =   0
-            TabIndex        =   22
-            Tag             =   "1336"
-            Top             =   720
-            Width           =   1575
-         End
-         Begin VB.CommandButton Command4 
-            Appearance      =   0  'Flat
-            Caption         =   "Rewards"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   375
-            Left            =   0
-            TabIndex        =   21
-            Tag             =   "1335"
-            Top             =   1080
-            Width           =   1575
-         End
-      End
-      Begin VB.Frame Frame1 
-         Caption         =   "Fighting Conditions                "
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   1815
+         Height          =   4095
+         Index           =   0
          Left            =   120
-         TabIndex        =   12
-         Tag             =   "1338"
-         Top             =   2520
-         Width           =   6135
-         Begin VB.PictureBox Picture3 
-            BorderStyle     =   0  'None
-            Height          =   495
-            Left            =   4920
-            ScaleHeight     =   495
-            ScaleWidth      =   1095
-            TabIndex        =   27
-            Top             =   480
-            Width           =   1095
-            Begin VB.CommandButton Command7 
-               Caption         =   "Browse..."
+         ScaleHeight     =   4095
+         ScaleWidth      =   8055
+         TabIndex        =   1
+         Top             =   240
+         Width           =   8055
+         Begin VB.Frame Frame2 
+            Caption         =   "Basic Info"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   2175
+            Left            =   0
+            TabIndex        =   19
+            Tag             =   "1343"
+            Top             =   0
+            Width           =   6135
+            Begin VB.TextBox ename 
                BeginProperty Font 
                   Name            =   "MS Sans Serif"
                   Size            =   8.25
@@ -181,15 +77,179 @@ Begin VB.Form editenemy
                   Italic          =   0   'False
                   Strikethrough   =   0   'False
                EndProperty
-               Height          =   345
-               Left            =   0
+               Height          =   285
+               Left            =   2160
+               TabIndex        =   24
+               Text            =   "None"
+               Top             =   360
+               Width           =   2655
+            End
+            Begin VB.TextBox ehp 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2160
+               TabIndex        =   23
+               Text            =   "0"
+               Top             =   720
+               Width           =   2655
+            End
+            Begin VB.TextBox esmp 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2160
+               TabIndex        =   22
+               Text            =   "0"
+               Top             =   1080
+               Width           =   2655
+            End
+            Begin VB.TextBox efp 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2160
+               TabIndex        =   21
+               Text            =   "0"
+               Top             =   1440
+               Width           =   2655
+            End
+            Begin VB.TextBox edp 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2160
+               TabIndex        =   20
+               Text            =   "0"
+               Top             =   1800
+               Width           =   2655
+            End
+            Begin VB.Label Label2 
+               Caption         =   "Name:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   0
+               Left            =   120
+               TabIndex        =   29
+               Tag             =   "1112"
+               Top             =   360
+               Width           =   1935
+            End
+            Begin VB.Label Label2 
+               Caption         =   "Max Health Points:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   1
+               Left            =   120
                TabIndex        =   28
-               Tag             =   "1021"
-               Top             =   0
-               Width           =   1095
+               Tag             =   "1347"
+               Top             =   720
+               Width           =   1935
+            End
+            Begin VB.Label Label2 
+               Caption         =   "Special Move Power:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   375
+               Index           =   2
+               Left            =   120
+               TabIndex        =   27
+               Tag             =   "1346"
+               Top             =   1080
+               Width           =   1935
+            End
+            Begin VB.Label Label2 
+               Caption         =   "Fighting Power:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   3
+               Left            =   120
+               TabIndex        =   26
+               Tag             =   "1345"
+               Top             =   1440
+               Width           =   1935
+            End
+            Begin VB.Label Label2 
+               Caption         =   "Defence Power:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   4
+               Left            =   120
+               TabIndex        =   25
+               Tag             =   "1344"
+               Top             =   1800
+               Width           =   1935
             End
          End
-         Begin VB.TextBox rprg 
+         Begin VB.Frame Frame1 
+            Caption         =   "Fighting Conditions"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
@@ -199,317 +259,279 @@ Begin VB.Form editenemy
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Height          =   285
-            Left            =   3360
-            TabIndex        =   13
-            Text            =   "None"
-            Top             =   480
-            Width           =   1455
-         End
-         Begin VB.CheckBox Check1 
-            Caption         =   "Player can run from this enemy"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   120
-            TabIndex        =   16
-            Tag             =   "1339"
-            Top             =   240
-            Value           =   1  'Checked
-            Width           =   4455
-         End
-         Begin VB.TextBox eSneak 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   4080
-            TabIndex        =   15
-            Text            =   "100"
-            Top             =   960
-            Width           =   735
-         End
-         Begin VB.TextBox eSneakYou 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   4080
-            TabIndex        =   14
-            Text            =   "100"
-            Top             =   1320
-            Width           =   735
-         End
-         Begin VB.Label Label4 
-            Caption         =   "Chances of a critical hit on the enemy: (1 in)"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   120
-            TabIndex        =   19
-            Tag             =   "1342"
-            Top             =   960
-            Width           =   3495
-         End
-         Begin VB.Label Label5 
-            Caption         =   "Chances of a critical hit on the player: (1 in)"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   120
-            TabIndex        =   18
-            Tag             =   "1341"
-            Top             =   1320
-            Width           =   3855
-         End
-         Begin VB.Label Label6 
-            Caption         =   "Program to run when player runs:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   495
-            Left            =   480
-            TabIndex        =   17
-            Tag             =   "1340"
-            Top             =   480
-            Width           =   2775
-         End
-      End
-      Begin VB.Frame Frame2 
-         Caption         =   "Basic Info               "
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   2175
-         Left            =   120
-         TabIndex        =   1
-         Tag             =   "1343"
-         Top             =   240
-         Width           =   6135
-         Begin VB.TextBox edp 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   6
-            Text            =   "0"
-            Top             =   1800
-            Width           =   2655
-         End
-         Begin VB.TextBox efp 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   5
-            Text            =   "0"
-            Top             =   1440
-            Width           =   2655
-         End
-         Begin VB.TextBox esmp 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   4
-            Text            =   "0"
-            Top             =   1080
-            Width           =   2655
-         End
-         Begin VB.TextBox ehp 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   3
-            Text            =   "0"
-            Top             =   720
-            Width           =   2655
-         End
-         Begin VB.TextBox ename 
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   2
-            Text            =   "None"
-            Top             =   360
-            Width           =   2655
-         End
-         Begin VB.Label Label2 
-            Caption         =   "Defence Power:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   4
-            Left            =   120
-            TabIndex        =   11
-            Tag             =   "1344"
-            Top             =   1800
-            Width           =   1935
-         End
-         Begin VB.Label Label2 
-            Caption         =   "Fighting Power:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   3
-            Left            =   120
-            TabIndex        =   10
-            Tag             =   "1345"
-            Top             =   1440
-            Width           =   1935
-         End
-         Begin VB.Label Label2 
-            Caption         =   "Special Move Power:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   375
-            Index           =   2
-            Left            =   120
+            Height          =   1815
+            Left            =   0
             TabIndex        =   9
-            Tag             =   "1346"
-            Top             =   1080
-            Width           =   1935
+            Tag             =   "1338"
+            Top             =   2280
+            Width           =   6135
+            Begin VB.TextBox eSneakYou 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   4080
+               TabIndex        =   15
+               Text            =   "100"
+               Top             =   1320
+               Width           =   735
+            End
+            Begin VB.TextBox eSneak 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   4080
+               TabIndex        =   14
+               Text            =   "100"
+               Top             =   960
+               Width           =   735
+            End
+            Begin VB.CheckBox Check1 
+               Caption         =   "Player can run from this enemy"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   120
+               TabIndex        =   13
+               Tag             =   "1339"
+               Top             =   240
+               Value           =   1  'Checked
+               Width           =   2535
+            End
+            Begin VB.TextBox rprg 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Left            =   2880
+               TabIndex        =   12
+               Text            =   "None"
+               Top             =   600
+               Width           =   1935
+            End
+            Begin VB.PictureBox Picture3 
+               BorderStyle     =   0  'None
+               Height          =   495
+               Left            =   4920
+               ScaleHeight     =   495
+               ScaleWidth      =   1095
+               TabIndex        =   10
+               Top             =   480
+               Width           =   1095
+               Begin VB.CommandButton Command7 
+                  Caption         =   "Browse..."
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   345
+                  Left            =   0
+                  TabIndex        =   11
+                  Tag             =   "1021"
+                  Top             =   120
+                  Width           =   1095
+               End
+            End
+            Begin VB.Label Label6 
+               Caption         =   "Program to run when player runs:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   360
+               TabIndex        =   18
+               Tag             =   "1340"
+               Top             =   600
+               Width           =   2415
+            End
+            Begin VB.Label Label5 
+               Caption         =   "Chances of a critical hit on the player: (1 in)"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   120
+               TabIndex        =   17
+               Tag             =   "1341"
+               Top             =   1320
+               Width           =   3855
+            End
+            Begin VB.Label Label4 
+               Caption         =   "Chances of a critical hit on the enemy: (1 in)"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   120
+               TabIndex        =   16
+               Tag             =   "1342"
+               Top             =   960
+               Width           =   3495
+            End
          End
-         Begin VB.Label Label2 
-            Caption         =   "Max Health Points:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
+         Begin VB.PictureBox Picture1 
+            BorderStyle     =   0  'None
+            Height          =   1695
             Index           =   1
-            Left            =   120
-            TabIndex        =   8
-            Tag             =   "1347"
-            Top             =   720
-            Width           =   1935
+            Left            =   6240
+            ScaleHeight     =   1695
+            ScaleWidth      =   1815
+            TabIndex        =   4
+            Top             =   120
+            Width           =   1815
+            Begin VB.CommandButton Command4 
+               Appearance      =   0  'Flat
+               Caption         =   "Rewards..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   375
+               Left            =   0
+               TabIndex        =   8
+               Tag             =   "1335"
+               Top             =   1080
+               Width           =   1815
+            End
+            Begin VB.CommandButton Command3 
+               Appearance      =   0  'Flat
+               Caption         =   "Tactics..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   375
+               Left            =   0
+               TabIndex        =   7
+               Tag             =   "1336"
+               Top             =   720
+               Width           =   1815
+            End
+            Begin VB.CommandButton Command2 
+               Appearance      =   0  'Flat
+               Caption         =   "Special Moves..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   375
+               Left            =   0
+               TabIndex        =   6
+               Tag             =   "1337"
+               Top             =   360
+               Width           =   1815
+            End
+            Begin VB.CommandButton Command1 
+               Appearance      =   0  'Flat
+               Caption         =   "Graphics..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   375
+               Left            =   0
+               TabIndex        =   5
+               Tag             =   "1300"
+               Top             =   0
+               Width           =   1815
+            End
          End
-         Begin VB.Label Label2 
-            Caption         =   "Name:"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   0
-            Left            =   120
-            TabIndex        =   7
-            Tag             =   "1112"
-            Top             =   360
+         Begin VB.PictureBox Picture2 
+            BorderStyle     =   0  'None
+            Height          =   495
+            Left            =   6120
+            ScaleHeight     =   495
+            ScaleWidth      =   1935
+            TabIndex        =   2
+            Top             =   3600
             Width           =   1935
+            Begin VB.CommandButton Command6 
+               Caption         =   "Add Enemy To Game..."
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   375
+               Left            =   120
+               TabIndex        =   3
+               Tag             =   "1333"
+               Top             =   120
+               Width           =   1815
+            End
          End
       End
    End
@@ -684,95 +706,48 @@ Option Explicit
 
 Public dataIndex As Long    'index into the vector of enemies maintained in commonenemy
 
-Public Function formType() As Long
+Public Function formType() As Long: On Error Resume Next
     'identify type of form
-    On Error Resume Next
     formType = FT_ENEMY
 End Function
 
-Public Sub saveAsFile()
+Public Sub saveAsFile(): On Error Resume Next
     'saves the file.
-    On Error GoTo ErrorHandler
     If enemylist(activeEnemyIndex).eneNeedUpdate = True Then
         Me.Show
         mnusaveas_Click
     End If
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Public Sub checkSave()
+Public Sub checkSave(): On Error Resume Next
     'check if the file has changed an it needs to be saved...
-    On Error GoTo ErrorHandler
     If enemylist(activeEnemyIndex).eneNeedUpdate = True Then
-        Dim aa As Long
-        aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current file?"), vbYesNo)
-        If aa = 6 Then
-            'yes-- save
+        If MsgBox("Save your changes to " & Me.Caption & "?", vbYesNo) = vbYes Then
             Call saveFile
         End If
     End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Public Sub saveFile()
-
-#If (False) Then
-
-    'saves the file.
-    On Error GoTo ErrorHandler
-    'If enemylist(activeEnemyIndex).eneNeedUpdate = True Then
-        filename$(2) = enemylist(activeEnemyIndex).eneFile$
-        enemylist(activeEnemyIndex).eneNeedUpdate = False
-        If filename$(2) = "" Then
-            Me.Show
-            Call mnusaveas_Click
-            Exit Sub
-        End If
-        Call saveEnemy(projectPath$ + enePath$ + filename$(2), enemylist(activeEnemyIndex).theData)
-    'End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-
-#Else
-
+Public Sub saveFile(): On Error Resume Next
     Call Show
     Call mnusave_Click
-
-#End If
-
 End Sub
 
-Public Sub openFile(ByVal file$)
-    On Error Resume Next
+Public Sub openFile(ByVal file As String): On Error Resume Next
     'Call checkSave
     activeEnemy.Show
-    filename$(1) = file$
-    Dim antiPath As String
-    antiPath$ = absNoPath(file$)
-    FileCopy filename$(1), projectPath$ + enePath$ + antiPath$
-    enemylist(activeEnemyIndex).theData = openEnemy(filename$(1))
-    enemylist(activeEnemyIndex).eneFile$ = antiPath$
-    activeEnemy.Caption = LoadStringLoc(806, "Edit Enemy") + " (" + antiPath$ + ")"
+    enemylist(activeEnemyIndex).theData = openEnemy(file)
+    
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & enePath, enemylist(activeEnemyIndex).eneFile, False)
+    activeEnemy.Caption = enemylist(activeEnemyIndex).eneFile
+    
     Call infofill
     enemylist(activeEnemyIndex).eneNeedUpdate = False
 End Sub
 
-Private Sub Check1_Click()
-    On Error GoTo ErrorHandler
+Private Sub Check1_Click(): On Error Resume Next
+    
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemylist(activeEnemyIndex).theData.eneRun = Check1.value
     If enemylist(activeEnemyIndex).theData.eneRun = 0 Then
@@ -785,215 +760,92 @@ Private Sub Check1_Click()
         Command7.Enabled = True
     End If
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
+Private Sub Command1_Click(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemyGfx.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command2_Click()
-    On Error GoTo ErrorHandler
+Private Sub Command2_Click(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemyspecialmoves.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command3_Click()
-    On Error GoTo ErrorHandler
+Private Sub Command3_Click(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemytactics.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command4_Click()
-    On Error GoTo ErrorHandler
+Private Sub Command4_Click(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemyrewards.Show vbModal ', me
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command6_Click()
-    On Error GoTo ErrorHandler
+Private Sub Command6_Click(): On Error Resume Next
     If enemylist(activeEnemyIndex).eneNeedUpdate = True Then
         MsgBox LoadStringLoc(995, "Make sure you save your enemy first!")
         Exit Sub
     End If
     editmainfile.Show
     mainfight.Show
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Command7_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim antiPath As String
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgPath$
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "Supported Files|*.prg|RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+Private Sub Command7_Click(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Select program", "prg", fileTypes, file) Then
+        rprg.Text = file
+        enemylist(activeEnemyIndex).theData.eneRunPrg = file
     End If
-    enemylist(activeEnemyIndex).eneNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
-    rprg.Text = antiPath$
-    enemylist(activeEnemyIndex).theData.eneRunPrg$ = antiPath$
 End Sub
 
-'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
-Private Sub edp_Change()
-    On Error GoTo ErrorHandler
+Private Sub edp_Change(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemylist(activeEnemyIndex).theData.eneDP = val(edp.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
-Private Sub efp_Change()
-    On Error GoTo ErrorHandler
+Private Sub efp_Change(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemylist(activeEnemyIndex).theData.eneFP = val(efp.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
-Private Sub ehp_Change()
-    On Error GoTo ErrorHandler
+Private Sub ehp_Change(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemylist(activeEnemyIndex).theData.eneHP = val(ehp.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub ename_Change()
-    On Error GoTo ErrorHandler
+Private Sub ename_Change(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemylist(activeEnemyIndex).theData.eneName$ = ename.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-'FIXIT: p_Change event has no Visual Basic .NET equivalent and will not be upgraded.       FixIT90210ae-R7593-R67265
-Private Sub esmp_Change()
-    On Error GoTo ErrorHandler
+Private Sub esmp_Change(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemylist(activeEnemyIndex).theData.eneSMP = val(esmp.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub eSneak_Change()
-    On Error GoTo ErrorHandler
+Private Sub eSneak_Change(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemylist(activeEnemyIndex).theData.eneSneakChances = val(eSneak.Text)
 
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub eSneakYou_Change()
-    On Error GoTo ErrorHandler
+Private Sub eSneakYou_Change(): On Error Resume Next
     enemylist(activeEnemyIndex).eneNeedUpdate = True
     enemylist(activeEnemyIndex).theData.eneSneakUp = val(eSneakYou.Text)
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Form_Activate()
-    On Error Resume Next
+Private Sub Form_Activate(): On Error Resume Next
     
     Set activeEnemy = Me
     Set activeForm = Me
     activeEnemyIndex = dataIndex
 
     hideAllTools
-
-    'extras
-    'tkMainForm.animationExtras.Visible = False
-    'tkMainForm.bottomFrame.Visible = False
-    'tkMainForm.tileExtras.Visible = False
-    'tkMainForm.tileBmpExtras.Visible = False
-    
-    'tools
-    'tkMainForm.tilebmpTools.Visible = False
-    'tkMainForm.animationTools.Visible = False
-    'tkMainForm.rpgcodeTools.Visible = False
-    'tkMainForm.tileTools.Visible = False
-    'tkMainForm.tileTools.Top = tkMainForm.toolTop
-    'tkMainForm.boardTools.Visible = False
 End Sub
 
-Private Sub Form_Load()
-    On Error GoTo ErrorHandler
-    ' Call LocalizeForm(Me)
+Private Sub Form_Load(): On Error Resume Next
     
     Set activeEnemy = Me
     dataIndex = VectEnemyNewSlot()
@@ -1001,35 +853,19 @@ Private Sub Form_Load()
     Call EnemyClear(enemylist(dataIndex).theData)
     
     Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
 Private Sub Form_Resize(): On Error Resume Next
-
-    mainFrame.Left = (Me.width - mainFrame.width) / 2
-    mainFrame.Top = (Me.Height - mainFrame.Height - 500) / 2
-
+    fraHolder.Left = (Me.width - fraHolder.width) / 2
+    fraHolder.Top = (Me.Height - fraHolder.Height - 500) / 2
 End Sub
 
-Private Sub infofill()
-    'Fills in info
-    On Error GoTo ErrorHandler
+Private Sub infofill(): On Error Resume Next
     Dim use As String
     
-    If enemylist(activeEnemyIndex).eneFile$ = "" Then use$ = "Untitled" Else use$ = enemylist(activeEnemyIndex).eneFile$
-    activeEnemy.Caption = LoadStringLoc(806, "Edit Enemy") + " (" + use$ + ")"
+    If LenB(enemylist(activeEnemyIndex).eneFile) Then Me.Caption = enemylist(activeEnemyIndex).eneFile
     
-    If enemylist(activeEnemyIndex).theData.eneName$ = "" Then
-        use$ = LoadStringLoc(1010, "None")
-    Else
-        use$ = enemylist(activeEnemyIndex).theData.eneName$
-    End If
-    ename.Text = use$
+    ename.Text = IIf(LenB(enemylist(activeEnemyIndex).theData.eneName), enemylist(activeEnemyIndex).theData.eneName, "None")
 
     ehp.Text = str$(enemylist(activeEnemyIndex).theData.eneHP)
     esmp.Text = str$(enemylist(activeEnemyIndex).theData.eneSMP)
@@ -1050,37 +886,26 @@ Private Sub infofill()
     eSneakYou.Text = str$(enemylist(activeEnemyIndex).theData.eneSneakUp)
     
     rprg.Text = enemylist(activeEnemyIndex).theData.eneRunPrg$
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
-    On Error Resume Next
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     Call hideAllTools
     Call tkMainForm.refreshTabs
 End Sub
 
 Private Sub mnuCLose_Click()
-    On Error GoTo ErrorHandler
-    Unload editenemy
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    Unload Me
 End Sub
 
-Private Sub mnusave_Click()
-    On Error GoTo ErrorHandler
-    filename$(2) = enemylist(activeEnemyIndex).eneFile$
-    If filename$(2) = "" Then Call mnusaveas_Click: Exit Sub
+Private Sub mnusave_Click(): On Error Resume Next
+
+    If LenB(enemylist(activeEnemyIndex).eneFile) = 0 Then
+        Call mnusaveas_Click
+        Exit Sub
+    End If
+    
     Dim strFile As String
-    strFile = projectPath & enePath & filename(2)
+    strFile = projectPath & enePath & enemylist(activeEnemyIndex).eneFile
     If (fileExists(strFile)) Then
         If (GetAttr(strFile) And vbReadOnly) Then
             Call MsgBox("This file is read-only; please choose a different file.")
@@ -1088,71 +913,41 @@ Private Sub mnusave_Click()
             Exit Sub
         End If
     End If
+    
     Call saveEnemy(strFile, enemylist(activeEnemyIndex).theData)
     enemylist(activeEnemyIndex).eneNeedUpdate = False
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub mnusaveas_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
+Private Sub mnusaveas_Click(): On Error Resume Next
+    
     Dim dlg As FileDialogInfo
-    Dim antiPath As String, aa As Long, bb As Long
     
-    dlg.strDefaultFolder = projectPath$ + enePath$
-    
+    dlg.strDefaultFolder = projectPath & enePath
     dlg.strTitle = "Save Enemy As"
     dlg.strDefaultExt = "ene"
     dlg.strFileTypes = "RPG Toolkit Enemy (*.ene)|*.ene|All files(*.*)|*.*"
-    'dlg2
-    If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
     
-    If filename$(1) = "" Then Exit Sub
+    ChDir (currentDir)
+    If Not SaveFileDialog(dlg, Me.hwnd) Then Exit Sub
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
 
-    enemylist(activeEnemyIndex).eneFile$ = antiPath$
-    Call mnusave_Click
-    ' Call saveEnemy(filename$(1), enemylist(activeEnemyIndex).theData)
-    activeEnemy.Caption = LoadStringLoc(806, "Edit Enemy") + " (" + antiPath$ + ")"
-    ' enemylist(activeEnemyIndex).eneNeedUpdate = False
-    Call tkMainForm.fillTree("", projectPath$)
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, enemylist(activeEnemyIndex).eneFile, True) Then Exit Sub
+
+    Call saveEnemy(dlg.strDefaultFolder & enemylist(activeEnemyIndex).eneFile, enemylist(activeEnemyIndex).theData)
+    activeEnemy.Caption = enemylist(activeEnemyIndex).eneFile
+    
+    enemylist(activeEnemyIndex).eneNeedUpdate = False
+    Call tkMainForm.fillTree(vbNullString, projectPath)
 End Sub
 
-Private Sub newEnemy()
-    On Error GoTo ErrorHandler
-    
+Private Sub newEnemy(): On Error Resume Next
     Call EnemyClear(enemylist(activeEnemyIndex).theData)
-
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-Private Sub toc_Click()
-    On Error GoTo ErrorHandler
+Private Sub toc_Click(): On Error Resume Next
     Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 
 Private Sub mnutilehorizontally_Click()
     On Error Resume Next
