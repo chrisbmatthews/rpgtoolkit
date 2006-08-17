@@ -21,7 +21,7 @@
 /*
  * Globals.
  */
-std::vector<char> g_keys;
+std::vector<TCHAR> g_keys;
 IDirectInput8A *g_lpdi = NULL;
 IDirectInputDevice8A *g_lpdiKeyboard = NULL;
 IDirectInputDevice8A *g_lpdiMouse = NULL;
@@ -72,10 +72,11 @@ STRING getName(const char chr, const bool bCapital)
 		case 38: return _T("UP");
 		case 40: return _T("DOWN");
 	}
+
 	const TCHAR toRet[] = {
 		bCapital ?
-			toupper(TCHAR(chr)) :
-			((GetAsyncKeyState(VK_SHIFT) < 0) ? toupper(TCHAR(chr)) : tolower(TCHAR(chr))),
+			toupper(chr) :
+			((GetAsyncKeyState(VK_SHIFT) < 0) ? toupper(chr) : tolower(chr)),
 		_T('\0')
 	};
 	return toRet;
@@ -343,12 +344,30 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		// Key down.
 		case WM_KEYDOWN:
 		{
-			// Queue the key.
-			const char key = char(wParam);
+			// wParam is the virtual key down.
+			const UINT vir = UINT(wParam);
+
+			// I am using the esoteric __int16 type here because it is
+			// the fact that the variable is 16 bits that is important,
+			// not the fact that it is an integer.
+			//
+			// Bits 16-24 of lParam are the scan code.
+			const unsigned __int16 scan = *(((__int16 *)&lParam) + 1);
+
+			// Get the current state of the keyboard.
+			BYTE state[256];
+			GetKeyboardState(state);
+
+			// Get an ASCII representation of the key.
+			WORD key = 0;
+			ToAscii(vir, scan, state, &key, 0);
+
+			// Queue the character.
 			g_keys.push_back(key);
 
+			// Pass the virtual key to the plugin.
 			const STRING strKey = getName(key, true);
-			informPluginEvent(key, -1, -1, -1, /*shift*/0, strKey, INPUT_KB);
+			informPluginEvent(vir, -1, -1, -1, state[VK_SHIFT], strKey, INPUT_KB);
 		} break;
 
 		// Mouse moved.
