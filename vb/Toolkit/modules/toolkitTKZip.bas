@@ -106,6 +106,7 @@ Private Sub zipDirectory(ByVal path As String, ByRef fileCount As Long, ByVal to
             End If
             If FindNextFile(hFind, wfd) = 0 Then Exit Do
         Loop
+        Call FindClose(hFind)
     End If
     
 End Sub
@@ -140,6 +141,7 @@ Private Function countDirectoryFiles(ByVal path As String, ByVal recurse As Bool
             End If
             If FindNextFile(hFind, wfd) = 0 Then Exit Do
         Loop
+        Call FindClose(hFind)
     End If
     
     countDirectoryFiles = count
