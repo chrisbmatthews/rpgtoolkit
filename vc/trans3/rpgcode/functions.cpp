@@ -80,15 +80,6 @@ const CLSID CLSID_REGEXP = {0x3F4DACA4, 0x160D, 0x11D2, {0xA8, 0xE9, 0x00, 0x10,
 /*
  * Rpgcode flags.
  */
-// Movement functions (Push(), ItemStep()...)
-typedef enum tkMV_CONSTANTS
-{
-	tkMV_PAUSE_THREAD		= 1,
-	tkMV_CLEAR_QUEUE		= 2,
-	tkMV_PATH_FIND			= 4,
-	tkMV_WAYPOINT_PATH		= 8,				// Apply a waypoint path.
-	tkMV_PATH_BACKGROUND	= 16				// Walk a waypoint path repeatedly.
-};
 
 // Vector type constants.
 typedef enum tkVT_CONSTANTS
@@ -6877,6 +6868,14 @@ void spritepath(CALL_DATA &params, CSprite *p)
 			const LPBRD_VECTOR brd = g_pBoard->getVector(id);
 			if (brd)
 			{
+				// Pathfind to start of vector.
+				PF_PATH path = p->pathFind((*brd->pV)[0].x, (*brd->pV)[0].y, PF_PREVIOUS, 0);
+				if (!path.empty())
+				{
+					// The last point is the same as the first of the waypoint vector.
+					path.pop_back();
+					p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+				}
 				p->setBoardPath(brd->pV, cycles, flags);
 				p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 			}
