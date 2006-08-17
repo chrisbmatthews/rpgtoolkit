@@ -18,6 +18,19 @@
 #include "../CVector/CVector.h"
 #include "../CPathFind/CPathFind.h"
 
+/*
+ * Rpgcode flags.
+ */
+// Movement functions (Push(), ItemStep()...)
+typedef enum tkMV_CONSTANTS
+{
+	tkMV_PAUSE_THREAD		= 1,
+	tkMV_CLEAR_QUEUE		= 2,
+	tkMV_PATH_FIND			= 4,
+	tkMV_WAYPOINT_PATH		= 8,				// Apply a waypoint path.
+	tkMV_PATH_BACKGROUND	= 16				// Walk a waypoint path repeatedly.
+};
+
 class CProgram;
 class CThread;
 struct tagBoard;
@@ -94,7 +107,7 @@ public:
 	bool isActive(void) const { return m_bActive; }
 	void setActive(const bool bActive) { m_bActive = bActive; }
 	void setPosition(int x, int y, const int l, const COORD_TYPE coord);
-	BRD_SPRITE *getBoardSprite(void) { return &m_brdData; }
+	LPBRD_SPRITE getBoardSprite(void) { return &m_brdData; }
 
 	// Create default vectors, overwriting any user-defined (PRE_VECTOR_ITEMs).
 	void createVectors(void) { m_attr.createVectors(m_brdData.activationType); };

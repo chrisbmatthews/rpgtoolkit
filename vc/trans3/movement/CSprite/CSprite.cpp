@@ -595,7 +595,6 @@ void CSprite::getDestination(DB_POINT &p) const
  */
 void CSprite::setQueuedPath(PF_PATH &path, const bool bClearQueue)
 {
-	if (path.empty()) return;
 	if (bClearQueue) clearQueue();
 
 	// PF_PATH is a std::vector<DB_POINT> with the points stored in reverse.
@@ -715,8 +714,7 @@ void CSprite::doMovement(const CProgram *prg, const bool bPauseThread)
  */
 void CSprite::setBoardPath(CVector *const pV, const int cycles, const int flags)
 {
-	// tbd: access tkMV_ flags
-	if (flags & 16/*tkMV_PATH_BACKGROUND*/)
+	if (flags & tkMV_PATH_BACKGROUND)
 	{
 		m_brdData.boardPath.pVector = pV;
 		m_brdData.boardPath.cycles = cycles;
@@ -1288,7 +1286,15 @@ bool CSprite::programTest(void)
 		const STRING finalValue = itm->m_brdData.finalValue;
 		const STRING finalVar = itm->m_brdData.finalVar;
 
-		// tbd: set the source and target types?
+		// Set the source and target types.
+		extern ENTITY g_target, g_source;
+		extern CPlayer *g_pSelectedPlayer;
+		const ENTITY t = g_target, s = g_source;
+
+		g_source.p = itm;
+		g_target.p = g_pSelectedPlayer;
+		g_source.type = ET_ITEM;
+		g_target.type = ET_PLAYER;
 
 		if (CFile::fileExists(g_projectPath + PRG_PATH + itm->m_brdData.prgActivate))
 		{
@@ -1300,6 +1306,10 @@ bool CSprite::programTest(void)
 			p.loadFromString(itm->m_brdData.prgActivate);
 			p.run();
 		}
+
+		// Restore the source and target.
+		g_source = s;
+		g_target = t;
 
 		// Set the requested variable after the program is complete.
 		if (activate == SPR_CONDITIONAL)
