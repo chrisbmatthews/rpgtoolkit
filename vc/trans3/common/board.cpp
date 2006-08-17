@@ -261,8 +261,8 @@ lutEndA:
 					prg->vBase.push_back(double(x), double(y));
 				}
 				file >> var; prg->vBase.close(var != 0);
-
-				programs.push_back(prg);
+				
+				programs.push_back(!prg->fileName.empty() ? prg : NULL);
 			}
 		}
 
