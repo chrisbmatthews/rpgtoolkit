@@ -360,7 +360,11 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 			// Get an ASCII representation of the key.
 			WORD key = 0;
-			ToAscii(vir, scan, state, &key, 0);
+			if (!ToAscii(vir, scan, state, &key, 0))
+			{
+				// If ToAscii() failed, use the virtual code.
+				key = vir;
+			}
 
 			// Queue the character.
 			g_keys.push_back(key);
