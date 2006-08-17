@@ -360,7 +360,7 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 			// Get an ASCII representation of the key.
 			WORD key = 0;
-			if ((vir == VK_SHIFT) && !ToAscii(vir, scan, state, &key, 0))
+			if ((vir != VK_SHIFT) && !ToAscii(vir, scan, state, &key, 0))
 			{
 				// If ToAscii() failed, use the virtual code.
 				key = vir;
