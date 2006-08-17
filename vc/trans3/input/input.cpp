@@ -74,10 +74,7 @@ STRING getName(const char chr, const bool bCapital)
 	}
 
 	const TCHAR toRet[] = {
-		bCapital ?
-			toupper(chr) :
-			((GetAsyncKeyState(VK_SHIFT) < 0) ? toupper(chr) : tolower(chr)),
-		_T('\0')
+		bCapital ? toupper(chr) : chr, _T('\0')
 	};
 	return toRet;
 }
