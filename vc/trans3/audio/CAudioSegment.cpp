@@ -29,6 +29,8 @@ CAudioSegment::CAudioSegment(const STRING file)
  */
 bool CAudioSegment::open(const STRING file)
 {
+	extern STRING g_projectPath;
+
 	if (_strcmpi(file.c_str(), m_file.c_str()) == 0)
 	{
 		// Already playing this file.
@@ -46,7 +48,7 @@ bool CAudioSegment::open(const STRING file)
 		}
 		m_audiere = false;
 		WCHAR wstrFile[MAX_PATH + 1];
-		MultiByteToWideChar(CP_ACP, 0, file.c_str(), -1, wstrFile, MAX_PATH);
+		MultiByteToWideChar(CP_ACP, 0, resolve(g_projectPath + MEDIA_PATH + file).c_str(), -1, wstrFile, MAX_PATH);
 		if (SUCCEEDED(m_pLoader->LoadObjectFromFile(CLSID_DirectMusicSegment, IID_IDirectMusicSegment8, wstrFile, (void **)&m_pSegment)))
 		{
 			m_pSegment->Download(m_pPerformance);
@@ -313,12 +315,12 @@ void CAudioSegment::initLoader()
  */
 void CAudioSegment::freeLoader()
 {
+	delete g_pSoundEffect;
 	if (m_pLoader)
 	{
 		m_pLoader->Release();
 		m_pLoader = NULL;
 	}
-	delete g_pSoundEffect;
 }
 
 /*
