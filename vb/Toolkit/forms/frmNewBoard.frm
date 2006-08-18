@@ -223,6 +223,7 @@ Begin VB.Form frmNewBoard
             End
          End
          Begin VB.TextBox txtDefaultBoard 
+            Enabled         =   0   'False
             Height          =   285
             Left            =   2280
             TabIndex        =   7
@@ -231,6 +232,7 @@ Begin VB.Form frmNewBoard
          End
          Begin VB.CommandButton cmdBrowseDefaultBoard 
             Caption         =   "..."
+            Enabled         =   0   'False
             Height          =   255
             Left            =   5160
             TabIndex        =   6
@@ -305,14 +307,14 @@ Private Sub chkPxAbsolute_MouseDown(Button As Integer, Shift As Integer, x As Si
 End Sub
 Private Sub cmdBrowseBkgImg_Click(): On Error Resume Next
     Dim file As String
-    If browseFileDialog(Me.hwnd, projectPath & bmpPath, "Background image", ".jpg", strFileDialogFilterGfx, file) Then
+    If browseFileDialog(Me.hwnd, projectPath & bmpPath, "Background image", "jpg", strFileDialogFilterGfx, file) Then
         txtBackgroundImage.Text = file
     End If
 End Sub
 Private Sub cmdBrowseDefaultBoard_Click(): On Error Resume Next
     Dim file As String, fileTypes As String
     fileTypes = "RPG Toolkit Board (*.brd)|*.brd|All files(*.*)|*.*"
-    If browseFileDialog(Me.hwnd, projectPath & brdPath, "Default board", ".brd", fileTypes, file) Then
+    If browseFileDialog(Me.hwnd, projectPath & brdPath, "Default board", "brd", fileTypes, file) Then
         txtDefaultBoard.Text = file
     End If
 End Sub
@@ -418,6 +420,25 @@ Private Sub optCoords_Click(Index As Integer): On Error Resume Next
             m_coordOpt = (m_coordOpt And PX_ABSOLUTE) Or ISO_ROTATED
     End Select
     Call updatePxDimensions
+End Sub
+
+Private Sub optType_Click(Index As Integer): On Error Resume Next
+    Dim i As Long
+    chkPxAbsolute.Enabled = optType(0).value
+    cmdBrowseBkgImg.Enabled = optType(0).value
+    lblPxDimensions.Enabled = optType(0).value
+    txtBackgroundImage.Enabled = optType(0).value
+    fraCoordinates.Enabled = optType(0).value
+    fraDimensions.Enabled = optType(0).value
+    For i = NB_W To NB_L
+        hsbDims(i).Enabled = optType(0).value
+        lblDims(i).Enabled = optType(0).value
+        txtDims(i).Enabled = optType(0).value
+    optCoords(i).Enabled = optType(0).value
+    Next i
+    
+    txtDefaultBoard.Enabled = optType(1).value
+    cmdBrowseDefaultBoard.Enabled = optType(1).value
 End Sub
 
 '========================================================================
