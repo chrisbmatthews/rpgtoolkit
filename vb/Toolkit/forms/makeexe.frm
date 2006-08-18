@@ -143,6 +143,8 @@ Private Sub CreateEXE(ByVal file As String)
     Call FileCopy(trans, file)
     Call ZIPCreateCompoundFile(file, tmp)
     Call Kill(tmp)
+    
+    MsgBox "Successfully created executable!", vbInformation
 
 End Sub
 
@@ -195,7 +197,7 @@ Private Sub Command1_Click()
     Dim aa As Long
     Dim bb As Long
 
-    filename(1) = Text1.Text
+    filename(1) = Text1.text
     If filename(1) = "" Then Exit Sub
 
 
@@ -236,7 +238,7 @@ Private Sub Command2_Click()
     
     If filename$(1) = "" Then Exit Sub
     
-    Text1.Text = filename$(1)
+    Text1.text = filename$(1)
 End Sub
 
 Private Sub Command3_Click()
@@ -248,7 +250,7 @@ Private Sub Form_Load()
     Command2.MousePointer = 99
     Command2.MouseIcon = Images.MouseLink
     ' Call LocalizeForm(Me)
-    Text1.Text = GetSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, "")
+    Text1.text = GetSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, "")
 End Sub
 
 
