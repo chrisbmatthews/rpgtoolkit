@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form editsm 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "Special Move Editor (Untitled)"
+   Caption         =   "Untitled special move"
    ClientHeight    =   4545
    ClientLeft      =   1860
    ClientTop       =   1860
@@ -25,6 +25,16 @@ Begin VB.Form editsm
    ScaleWidth      =   7470
    Tag             =   "8"
    Begin VB.Frame mainFrame 
+      Caption         =   "Special Move Editor"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   4215
       Left            =   120
       TabIndex        =   10
@@ -605,7 +615,7 @@ End Function
 Public Sub saveAsFile(): On Error Resume Next
     If specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True Then
         Me.Show
-        saveasmnu_Click
+        saveAsMnu_Click
     End If
 End Sub
 
@@ -624,27 +634,8 @@ End Sub
 'saves the file.
 '==============================================================================
 Public Sub saveFile(): On Error Resume Next
-
-#If (False) Then
-
-    
-    'If specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True Then
-        specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
-        If LenB(specialMoveList(activeSpecialMoveIndex).smFile) = 0 Then
-            Me.Show
-            Call saveasmnu_Click
-            Exit Sub
-        End If
-        Call saveSpecialMove(projectPath & spcPath & specialMoveList(activeSpecialMoveIndex).smFile, specialMoveList(activeSpecialMoveIndex).theData)
-    'End If
-
-#Else
-
     Call Show
     Call savemnu_Click
-
-#End If
-
 End Sub
 
 '==============================================================================
@@ -653,12 +644,11 @@ End Sub
 Public Sub openFile(ByVal file As String): On Error Resume Next
     
     activeSpecialMove.Show
-
-    FileCopy file, projectPath & spcPath & absNoPath(file)
-    
     specialMoveList(activeSpecialMoveIndex).theData = openSpecialMove(file)
-    specialMoveList(activeSpecialMoveIndex).smFile = absNoPath(file)
-    activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") & "  (" & absNoPath(file) & ")"
+    
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & spcPath, specialMoveList(activeSpecialMoveIndex).smFile, False)
+    activeSpecialMove.Caption = specialMoveList(activeSpecialMoveIndex).smFile
     
     Call infofill
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
@@ -667,24 +657,23 @@ End Sub
 '==============================================================================
 'File > Save As
 '==============================================================================
-Private Sub saveasmnu_Click(): On Error Resume Next
+Private Sub saveAsMnu_Click(): On Error Resume Next
 
-    ChDir (currentDir)
-    
     Dim dlg As FileDialogInfo
+    
     dlg.strDefaultFolder = projectPath & spcPath
     dlg.strTitle = "Save Special Move As"
     dlg.strDefaultExt = "spc"
     dlg.strFileTypes = "RPG Toolkit Special Move (*.spc)|*.spc|All files(*.*)|*.*"
-    'dlg2
+    
     If Not SaveFileDialog(dlg, Me.hwnd, True) Then Exit Sub
-    ChDir (currentDir)
     If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
     
-    specialMoveList(activeSpecialMoveIndex).smFile = dlg.strSelectedFileNoPath
-    Call saveSpecialMove(dlg.strSelectedFile, specialMoveList(activeSpecialMoveIndex).theData)
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, specialMoveList(activeSpecialMoveIndex).smFile, True) Then Exit Sub
     
-    activeSpecialMove.Caption = LoadStringLoc(808, "Special Move Editor") & " (" & dlg.strSelectedFileNoPath & ")"
+    Call saveSpecialMove(dlg.strDefaultFolder & specialMoveList(activeSpecialMoveIndex).smFile, specialMoveList(activeSpecialMoveIndex).theData)
+    activeSpecialMove.Caption = specialMoveList(activeSpecialMoveIndex).smFile
     
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
     Call tkMainForm.fillTree(vbNullString, projectPath)
@@ -696,7 +685,7 @@ End Sub
 Private Sub savemnu_Click(): On Error Resume Next
 
     If LenB(specialMoveList(activeSpecialMoveIndex).smFile) = 0 Then
-        saveasmnu_Click
+        saveAsMnu_Click
         Exit Sub
     End If
     
@@ -705,7 +694,7 @@ Private Sub savemnu_Click(): On Error Resume Next
     If (fileExists(strFile)) Then
         If (GetAttr(strFile) And vbReadOnly) Then
             Call MsgBox("This file is read-only; please choose a different file.")
-            Call saveasmnu_Click
+            Call saveAsMnu_Click
             Exit Sub
         End If
     End If
@@ -734,70 +723,39 @@ End Sub
 'Browse > Status Effect
 '==============================================================================
 Private Sub cmdStatusEffect_Click(): On Error Resume Next
-
-    ChDir (currentDir)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath & statusPath
-    dlg.strTitle = "Select Status Effect"
-    dlg.strDefaultExt = "ste"
-    dlg.strFileTypes = "RPG Toolkit Status Effect (*.ste)|*.ste|All files(*.*)|*.*"
-    
-    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
-    ChDir (currentDir)
-    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
-
-    FileCopy dlg.strSelectedFile, projectPath & statusPath & dlg.strSelectedFileNoPath
-    
-    txtStatusEffect.Text = dlg.strSelectedFileNoPath
-    specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect = dlg.strSelectedFileNoPath
-    
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Status Effect (*.ste)|*.ste|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & statusPath, "Select status effect", "ste", fileTypes, file) Then
+        txtStatusEffect.Text = file
+        specialMoveList(activeSpecialMoveIndex).theData.smStatusEffect = file
+        specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    End If
 End Sub
 
 '==============================================================================
 'Browse > Program
 '==============================================================================
 Private Sub cmdProgram_Click(): On Error Resume Next
-
-    ChDir (currentDir)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath & prgPath
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    
-    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
-    ChDir (currentDir)
-    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
-    
-    FileCopy dlg.strSelectedFile, projectPath & prgPath & dlg.strSelectedFileNoPath
-    txtProgram.Text = dlg.strSelectedFileNoPath
-    specialMoveList(activeSpecialMoveIndex).theData.smPrg = dlg.strSelectedFileNoPath
-    
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Select program", "prg", fileTypes, file) Then
+        txtProgram.Text = file
+        specialMoveList(activeSpecialMoveIndex).theData.smPrg = file
+        specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    End If
 End Sub
 
 '==============================================================================
 'Browse > Animation
 '==============================================================================
 Private Sub cmdAnimation_Click(): On Error Resume Next
-    
-    ChDir (currentDir)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath & miscPath
-    dlg.strTitle = "Select Animation"
-    dlg.strDefaultExt = "anm"
-    dlg.strFileTypes = "RPG Toolkit Animation (*.anm)|*.anm|All files(*.*)|*.*"
-    
-    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
-    ChDir (currentDir)
-    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
-    
-    FileCopy dlg.strSelectedFile, projectPath & miscPath & dlg.strSelectedFileNoPath
-    txtAnimation.Text = dlg.strSelectedFileNoPath
-    specialMoveList(activeSpecialMoveIndex).theData.smAnimation = dlg.strSelectedFileNoPath
-    
-    specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Animation (*.anm)|*.anm|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & miscPath, "Select animation", "anm", fileTypes, file) Then
+        txtAnimation.Text = file
+        specialMoveList(activeSpecialMoveIndex).theData.smAnimation = file
+        specialMoveList(activeSpecialMoveIndex).smNeedUpdate = True
+    End If
 End Sub
 
 '==============================================================================
@@ -872,9 +830,6 @@ Private Sub Form_Activate(): On Error Resume Next
     Set activeForm = Me
     activeSpecialMoveIndex = dataIndex
     Call hideAllTools
-    
-    mainFrame.Left = (Me.width - mainFrame.width) \ 2
-    mainFrame.Top = (Me.Height - mainFrame.Height) \ 2
 End Sub
 
 '==============================================================================
@@ -889,9 +844,14 @@ Private Sub Form_Load(): On Error Resume Next
     Call SpecialMoveClear(specialMoveList(dataIndex).theData)
     
     Call infofill
-    
+End Sub
+
+'==============================================================================
+'Form Resize
+'==============================================================================
+Private Sub Form_Resize(): On Error Resume Next
     mainFrame.Left = (Me.width - mainFrame.width) \ 2
-    mainFrame.Top = (Me.Height - mainFrame.Height) \ 2
+    mainFrame.Top = (Me.Height - mainFrame.Height) \ 2 - 200
 End Sub
 
 '==============================================================================

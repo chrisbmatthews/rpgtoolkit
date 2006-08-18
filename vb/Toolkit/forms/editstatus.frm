@@ -1,197 +1,201 @@
 VERSION 5.00
 Begin VB.Form editstatus 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "Status Effect Editor (Untitled)"
-   ClientHeight    =   5550
+   Caption         =   "Untitled status effect"
+   ClientHeight    =   5040
    ClientLeft      =   45
    ClientTop       =   615
-   ClientWidth     =   5715
+   ClientWidth     =   5655
    Icon            =   "editstatus.frx":0000
    LinkTopic       =   "Form2"
    MDIChild        =   -1  'True
    MinButton       =   0   'False
-   ScaleHeight     =   5550
-   ScaleWidth      =   5715
+   ScaleHeight     =   5040
+   ScaleWidth      =   5655
    Tag             =   "9"
    Begin VB.Frame mainFrame 
-      Height          =   5295
+      Caption         =   "Status Effect Editor"
+      Height          =   4815
       Left            =   120
       TabIndex        =   0
       Top             =   120
       Width           =   5415
-      Begin VB.Frame Frame1 
-         Caption         =   "General Info               "
-         Height          =   1575
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   4455
+         Index           =   0
          Left            =   120
-         TabIndex        =   14
-         Tag             =   "1484"
+         ScaleHeight     =   4455
+         ScaleWidth      =   5175
+         TabIndex        =   1
          Top             =   240
          Width           =   5175
-         Begin VB.TextBox statusnamebox 
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   16
-            Top             =   360
-            Width           =   2655
-         End
-         Begin VB.TextBox roundsbox 
-            Height          =   285
-            Left            =   2160
-            TabIndex        =   15
-            Text            =   "0"
-            Top             =   840
-            Width           =   2655
-         End
-         Begin VB.Label Label1 
-            Caption         =   "Status Effect Name:"
-            Height          =   375
-            Left            =   120
-            TabIndex        =   18
-            Tag             =   "1486"
-            Top             =   360
-            Width           =   2055
-         End
-         Begin VB.Label Label5 
-            Caption         =   "Number of Rounds Until Effect is Removed:"
-            Height          =   615
-            Left            =   120
-            TabIndex        =   17
-            Tag             =   "1485"
-            Top             =   840
-            Width           =   2055
-         End
-      End
-      Begin VB.Frame Frame2 
-         Caption         =   "Effects           "
-         Height          =   3015
-         Left            =   120
-         TabIndex        =   2
-         Tag             =   "1475"
-         Top             =   2040
-         Width           =   5175
-         Begin VB.PictureBox Picture1 
-            BorderStyle     =   0  'None
-            Height          =   375
-            Left            =   3720
-            ScaleHeight     =   375
-            ScaleWidth      =   1215
-            TabIndex        =   19
-            Top             =   2520
-            Width           =   1215
-            Begin VB.CommandButton Command14 
-               Caption         =   "Browse..."
-               Height          =   345
-               Left            =   0
+         Begin VB.Frame Frame2 
+            Caption         =   "Effects"
+            Height          =   3015
+            Left            =   0
+            TabIndex        =   7
+            Tag             =   "1475"
+            Top             =   1440
+            Width           =   5175
+            Begin VB.TextBox rpgcodebox 
+               Height          =   285
+               Left            =   2530
+               TabIndex        =   18
+               Top             =   2160
+               Width           =   2400
+            End
+            Begin VB.TextBox removesmpamountbox 
+               Height          =   285
+               Left            =   4320
+               TabIndex        =   17
+               Text            =   "0"
+               Top             =   1800
+               Width           =   615
+            End
+            Begin VB.TextBox removehpamountbox 
+               Height          =   285
+               Left            =   4320
+               TabIndex        =   16
+               Text            =   "0"
+               Top             =   1440
+               Width           =   615
+            End
+            Begin VB.CheckBox runrpgcodebox 
+               Caption         =   "Run RPGCode Program"
+               Height          =   495
+               Left            =   240
+               TabIndex        =   15
+               Tag             =   "1476"
+               Top             =   2040
+               Width           =   2295
+            End
+            Begin VB.CheckBox disablebox 
+               Caption         =   "Disable Target"
+               Height          =   255
+               Left            =   240
+               TabIndex        =   14
+               Tag             =   "1477"
+               Top             =   1080
+               Width           =   3975
+            End
+            Begin VB.CheckBox removesmpbox 
+               Caption         =   "Remove SMP"
+               Height          =   255
+               Left            =   240
+               TabIndex        =   13
+               Tag             =   "1478"
+               Top             =   1800
+               Width           =   1695
+            End
+            Begin VB.CheckBox removehpbox 
+               Caption         =   "Remove HP"
+               Height          =   255
+               Left            =   240
+               TabIndex        =   12
+               Tag             =   "1479"
+               Top             =   1440
+               Width           =   1575
+            End
+            Begin VB.CheckBox slowdownbox 
+               Caption         =   "Slow Target Charge Time"
+               Height          =   255
+               Left            =   240
+               TabIndex        =   11
+               Tag             =   "1480"
+               Top             =   720
+               Width           =   4095
+            End
+            Begin VB.CheckBox speedupbox 
+               Caption         =   "Speed Target Charge Time"
+               Height          =   255
+               Left            =   240
+               TabIndex        =   10
+               Tag             =   "1481"
+               Top             =   360
+               Width           =   3975
+            End
+            Begin VB.PictureBox Picture1 
+               BorderStyle     =   0  'None
+               Height          =   375
+               Index           =   1
+               Left            =   3240
+               ScaleHeight     =   375
+               ScaleWidth      =   1695
+               TabIndex        =   8
+               Top             =   2520
+               Width           =   1695
+               Begin VB.CommandButton cmdBrowse 
+                  Caption         =   "Browse..."
+                  Height          =   345
+                  Left            =   600
+                  TabIndex        =   9
+                  Tag             =   "1021"
+                  Top             =   0
+                  Width           =   1095
+               End
+            End
+            Begin VB.Label lblRemoveSMP 
+               Caption         =   "Amount (neg values give smp)"
+               Height          =   375
+               Left            =   2040
                TabIndex        =   20
-               Tag             =   "1021"
-               Top             =   0
-               Width           =   1095
+               Tag             =   "1482"
+               Top             =   1800
+               Width           =   2175
+            End
+            Begin VB.Label lblRemoveHP 
+               Caption         =   "Amount (neg values give hp)"
+               Height          =   375
+               Left            =   2040
+               TabIndex        =   19
+               Tag             =   "1483"
+               Top             =   1440
+               Width           =   2055
             End
          End
-         Begin VB.CheckBox speedupbox 
-            Caption         =   "Speed Target Charge Time"
-            Height          =   255
-            Left            =   240
-            TabIndex        =   11
-            Tag             =   "1481"
-            Top             =   360
-            Width           =   3975
+         Begin VB.Frame Frame1 
+            Caption         =   "General Info"
+            Height          =   1335
+            Left            =   0
+            TabIndex        =   2
+            Tag             =   "1484"
+            Top             =   0
+            Width           =   5175
+            Begin VB.TextBox roundsbox 
+               Height          =   285
+               Left            =   2160
+               TabIndex        =   4
+               Text            =   "0"
+               Top             =   840
+               Width           =   2655
+            End
+            Begin VB.TextBox statusnamebox 
+               Height          =   285
+               Left            =   2160
+               TabIndex        =   3
+               Top             =   360
+               Width           =   2655
+            End
+            Begin VB.Label Label5 
+               Caption         =   "Number of Rounds Until Effect is Removed:"
+               Height          =   375
+               Left            =   120
+               TabIndex        =   6
+               Tag             =   "1485"
+               Top             =   840
+               Width           =   2055
+            End
+            Begin VB.Label Label1 
+               Caption         =   "Status Effect Name:"
+               Height          =   375
+               Left            =   120
+               TabIndex        =   5
+               Tag             =   "1486"
+               Top             =   360
+               Width           =   2055
+            End
          End
-         Begin VB.CheckBox slowdownbox 
-            Caption         =   "Slow Target Charge Time"
-            Height          =   255
-            Left            =   240
-            TabIndex        =   10
-            Tag             =   "1480"
-            Top             =   720
-            Width           =   4095
-         End
-         Begin VB.CheckBox removehpbox 
-            Caption         =   "Remove HP"
-            Height          =   255
-            Left            =   240
-            TabIndex        =   9
-            Tag             =   "1479"
-            Top             =   1440
-            Width           =   1575
-         End
-         Begin VB.CheckBox removesmpbox 
-            Caption         =   "Remove SMP"
-            Height          =   255
-            Left            =   240
-            TabIndex        =   8
-            Tag             =   "1478"
-            Top             =   1800
-            Width           =   1695
-         End
-         Begin VB.CheckBox disablebox 
-            Caption         =   "Disable Target"
-            Height          =   255
-            Left            =   240
-            TabIndex        =   7
-            Tag             =   "1477"
-            Top             =   1080
-            Width           =   3975
-         End
-         Begin VB.CheckBox runrpgcodebox 
-            Caption         =   "Run RPGCode Program"
-            Height          =   495
-            Left            =   240
-            TabIndex        =   6
-            Tag             =   "1476"
-            Top             =   2160
-            Width           =   2295
-         End
-         Begin VB.TextBox removehpamountbox 
-            Height          =   285
-            Left            =   4320
-            TabIndex        =   5
-            Text            =   "0"
-            Top             =   1440
-            Width           =   615
-         End
-         Begin VB.TextBox removesmpamountbox 
-            Height          =   285
-            Left            =   4320
-            TabIndex        =   4
-            Text            =   "0"
-            Top             =   1800
-            Width           =   615
-         End
-         Begin VB.TextBox rpgcodebox 
-            Height          =   285
-            Left            =   2530
-            TabIndex        =   3
-            Top             =   2160
-            Width           =   2400
-         End
-         Begin VB.Label Label3 
-            Caption         =   "Amount (neg values give hp)"
-            Height          =   375
-            Left            =   2040
-            TabIndex        =   13
-            Tag             =   "1483"
-            Top             =   1440
-            Width           =   2055
-         End
-         Begin VB.Label Label4 
-            Caption         =   "Amount (neg values give smp)"
-            Height          =   375
-            Left            =   2040
-            TabIndex        =   12
-            Tag             =   "1482"
-            Top             =   1800
-            Width           =   2175
-         End
-      End
-      Begin VB.CommandButton Command2 
-         Caption         =   "Until End of Fight"
-         Height          =   255
-         Left            =   2280
-         TabIndex        =   1
-         Tag             =   "1474"
-         Top             =   1440
-         Width           =   2535
       End
    End
    Begin VB.Menu fmnu 
@@ -359,427 +363,210 @@ Attribute VB_Exposed = False
 'Read LICENSE.txt for licensing info
 '==============================================================================
 
-'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
+Option Explicit
 
-Public dataIndex As Long    'index into the vector of ste maintained in commonenemy
+Public dataIndex As Long    'index into the vector of ste
 
-
-Public Function formType() As Long
-    'identify type of form
-    On Error Resume Next
+Public Function formType() As Long: On Error Resume Next
     formType = FT_STATUS
 End Function
 
-
-Public Sub saveAsFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
+Public Sub saveAsFile(): On Error Resume Next
     If statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True Then
         Me.Show
-        saveasmnu_Click
+        saveAsMnu_Click
     End If
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-
-
-
-Public Sub checkSave()
-    'check if the status effect has changed an it needs to be saved...
-    On Error GoTo ErrorHandler
+Public Sub checkSave(): On Error Resume Next
     If statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True Then
-        aa = MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current effect?"), vbYesNo)
-        If aa = 6 Then
-            'yes-- save
+        If MsgBox("Save changes to " & Me.Caption & "?", vbYesNo) = vbYes Then
             Call saveFile
         End If
     End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Public Sub infofill()
-    'fills in data
-    On Error GoTo ErrorHandler
-    If statusEffectList(activeStatusEffectIndex).statusFile$ <> "" Then
-        activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
-    Else
-        activeStatusEffect.Caption = LoadStringLoc(1473, "Status Effect Editor (Untitled)")
-    End If
-    statusnamebox = statusEffectList(activeStatusEffectIndex).theData.statusName$
-    roundsbox.Text = str$(statusEffectList(activeStatusEffectIndex).theData.statusRounds)
-    speedupbox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusSpeed
-    slowdownbox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusSlow
-    disablebox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusDisable
-    removehpbox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusHP
-    removehpamountbox.Text = str$(statusEffectList(activeStatusEffectIndex).theData.nStatusHPAmount)
-    removesmpbox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusSMP
-    removesmpamountbox.Text = str$(statusEffectList(activeStatusEffectIndex).theData.nStatusSMPAmount)
-    runrpgcodebox.value = statusEffectList(activeStatusEffectIndex).theData.nStatusRPGCode
-    rpgcodebox.Text = statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode$
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Private Sub infofill(): On Error Resume Next
+    With statusEffectList(activeStatusEffectIndex)
+        If LenB(.statusFile) Then Me.Caption = statusEffectList(activeStatusEffectIndex).statusFile
+        
+        statusnamebox = .theData.statusName
+        roundsbox.Text = CStr(.theData.statusRounds)
+        speedupbox.value = .theData.nStatusSpeed
+        slowdownbox.value = .theData.nStatusSlow
+        disablebox.value = .theData.nStatusDisable
+        
+        removehpbox.value = .theData.nStatusHP
+        removehpamountbox.Text = CStr(.theData.nStatusHPAmount)
+        removehpamountbox.Enabled = .theData.nStatusHP
+        lblRemoveHP.Enabled = removehpamountbox.Enabled
+        
+        removesmpbox.value = .theData.nStatusSMP
+        removesmpamountbox.Text = CStr(.theData.nStatusSMPAmount)
+        removesmpamountbox.Enabled = .theData.nStatusSMP
+        lblRemoveSMP.Enabled = removesmpamountbox.Enabled
+       
+        runrpgcodebox.value = .theData.nStatusRPGCode
+        rpgcodebox.Text = .theData.sStatusRPGCode
+        rpgcodebox.Enabled = .theData.nStatusRPGCode
+        cmdBrowse.Enabled = rpgcodebox.Enabled
+    End With
 End Sub
 
-Sub newfile()
-    'clears data for a new file
-    On Error GoTo ErrorHandler
-    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
-    Call StatusClear(statusEffectList(activeStatusEffectIndex).theData)
-    statusEffectList(activeStatusEffectIndex).statusFile$ = ""
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Public Sub saveFile()
-
-#If (False) Then
-
-    'saves the file.
-    On Error GoTo ErrorHandler
-    'If statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True Then
-        filename$(2) = statusEffectList(activeStatusEffectIndex).statusFile$
-        boardNeedUpdate = False
-        If filename$(2) = "" Then
-            Me.Show
-            saveasmnu_Click
-            statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
-            Exit Sub
-        End If
-        Call saveStatus(projectPath$ + statusPath$ + statusEffectList(activeStatusEffectIndex).statusFile$, statusEffectList(activeStatusEffectIndex).theData)
-        activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
-        statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
-    'End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-
-#Else
-
+Public Sub saveFile(): On Error Resume Next
     Call Show
     Call savemnu_Click
-
-#End If
-
 End Sub
 
-Public Sub openFile(filename$)
-    'open an effect
-    On Error Resume Next
-    'Call checkSave
+Public Sub openFile(ByVal file As String): On Error Resume Next
+    
     activeStatusEffect.Show
-    If filename$ = "" Then Exit Sub
-    Call openStatus(filename$, statusEffectList(activeStatusEffectIndex).theData)
-    antiPath$ = absNoPath(filename$)
-    statusEffectList(activeStatusEffectIndex).statusFile$ = antiPath$
-    activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + "  (" + antiPath$ + ")"
+    Call openStatus(file, statusEffectList(activeStatusEffectIndex).theData)
+    
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & statusPath, statusEffectList(activeStatusEffectIndex).statusFile, False)
+    activeStatusEffect.Caption = statusEffectList(activeStatusEffectIndex).statusFile
+    
     Call infofill
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
 End Sub
 
-
-Private Sub closemnu_Click()
-    On Error GoTo ErrorHandler
-    Unload editstatus
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+Private Sub closemnu_Click(): On Error Resume Next
+    Unload Me
 End Sub
 
-Private Sub Command1_Click()
-    On Error GoTo ErrorHandler
-    roundsbox.Text = "0"
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-Private Sub Command14_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + prgPath$
-    
-    dlg.strTitle = "Select Program"
-    dlg.strDefaultExt = "prg"
-    dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
-    
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
+Private Sub cmdBrowse_Click(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    fileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
+    If browseFileDialog(Me.hwnd, projectPath & prgPath, "Select program", "prg", fileTypes, file) Then
+        rpgcodebox.Text = file
+        statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode = file
+        statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
     End If
-    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
-    FileCopy filename$(1), projectPath$ + prgPath$ + antiPath$
-    rpgcodebox.Text = antiPath$
-    statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode$ = antiPath$
 End Sub
 
-Private Sub Command2_Click()
-    On Error GoTo ErrorHandler
-    roundsbox.Text = "0"
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
-End Sub
-
-
-Private Sub disablebox_Click()
-    On Error GoTo ErrorHandler
+Private Sub disablebox_Click(): On Error Resume Next
     statusEffectList(activeStatusEffectIndex).theData.nStatusDisable = disablebox.value
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Form_Activate()
-    On Error Resume Next
+Private Sub Form_Activate(): On Error Resume Next
     Set activeStatusEffect = Me
     Set activeForm = Me
     activeStatusEffectIndex = dataIndex
     Call hideAllTools
 End Sub
 
-Private Sub Form_Load()
-    On Error GoTo ErrorHandler
-    ' Call LocalizeForm(Me)
-    
+Private Sub Form_Load(): On Error Resume Next
     Set activeStatusEffect = Me
     dataIndex = VectStatusEffectNewSlot()
     activeStatusEffectIndex = dataIndex
     Call StatusClear(statusEffectList(dataIndex).theData)
     
     Call infofill
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
-    On Error Resume Next
+Private Sub Form_Resize(): On Error Resume Next
+    mainFrame.Left = (Me.width - mainFrame.width) / 2
+    mainFrame.Top = (Me.Height - mainFrame.Height) / 2 - 200
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     Call hideAllTools
     Call tkMainForm.refreshTabs
 End Sub
 
-Private Sub removehpamountbox_Change()
-'Global bStatusSpeed As Boolean  'speed charge time y/n
-'Global bStatusSlow As Boolean   'slow charge time y/n
-'Global bStatusDisable As Boolean 'disbale target y/n
-'Global bStatusHP As Boolean     'remove hp y/n
-'    Global nStatusHPAmount As Integer   'amount of hp
-'Global bStatusSMP As Boolean    'remove smp y/n
-'    Global nStatusSMPAmount As Integer   'amount of smp
-'Global bStatusRPGCode As Boolean 'run rpgcode y/n
-'    Global sStatusRPGCode$      'rpgcode program to run
-    On Error GoTo ErrorHandler
+Private Sub removehpamountbox_Change(): On Error Resume Next
     statusEffectList(activeStatusEffectIndex).theData.nStatusHPAmount = val(removehpamountbox.Text)
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub removehpbox_Click()
-    On Error GoTo ErrorHandler
+Private Sub removehpbox_Click(): On Error Resume Next
     statusEffectList(activeStatusEffectIndex).theData.nStatusHP = removehpbox.value
+    Call infofill
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub removesmpamountbox_Change()
-    On Error GoTo ErrorHandler
+Private Sub removesmpamountbox_Change(): On Error Resume Next
     statusEffectList(activeStatusEffectIndex).theData.nStatusSMPAmount = val(removesmpamountbox.Text)
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub removesmpbox_Click()
-    On Error GoTo ErrorHandler
+Private Sub removesmpbox_Click(): On Error Resume Next
     statusEffectList(activeStatusEffectIndex).theData.nStatusSMP = removesmpbox.value
+    Call infofill
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-Private Sub roundsbox_Change()
-    On Error GoTo ErrorHandler
-    rd = val(roundsbox.Text)
-    If rd < 0 Then rd = 0
-    statusEffectList(activeStatusEffectIndex).theData.statusRounds = rd
+Private Sub roundsbox_Change(): On Error Resume Next
+    statusEffectList(activeStatusEffectIndex).theData.statusRounds = Abs(val(roundsbox.Text))
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-'FIXIT: rpgcodebox_Change event has no Visual Basic .NET equivalent and will not be upgraded.     FixIT90210ae-R7593-R67265
-Private Sub rpgcodebox_Change()
-    On Error Resume Next
-    statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode$ = rpgcodebox.Text
+Private Sub rpgcodebox_Change(): On Error Resume Next
+    statusEffectList(activeStatusEffectIndex).theData.sStatusRPGCode = rpgcodebox.Text
 End Sub
 
-Private Sub runrpgcodebox_Click()
-    On Error GoTo ErrorHandler
+Private Sub runrpgcodebox_Click(): On Error Resume Next
     statusEffectList(activeStatusEffectIndex).theData.nStatusRPGCode = runrpgcodebox.value
+    Call infofill
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-Private Sub saveasmnu_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + statusPath$
+Private Sub saveAsMnu_Click(): On Error Resume Next
     
+    Dim dlg As FileDialogInfo
+    
+    dlg.strDefaultFolder = projectPath & statusPath
     dlg.strTitle = "Save Effect As"
     dlg.strDefaultExt = "ste"
     dlg.strFileTypes = "RPG Toolkit Status Effect (*.ste)|*.ste|All files(*.*)|*.*"
-    'dlg2
-    If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
-    ' statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
     
-    If filename$(1) = "" Then Exit Sub
-    statusEffectList(activeStatusEffectIndex).statusFile$ = antiPath$
-    Call savemnu_Click
-    ' Call saveStatus(filename$(1), statusEffectList(activeStatusEffectIndex).theData)
-    activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + antiPath$ + ")"
-    Call tkMainForm.fillTree("", projectPath$)
+    If Not SaveFileDialog(dlg, Me.hwnd) Then Exit Sub
+    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
+    
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, statusEffectList(activeStatusEffectIndex).statusFile, True) Then Exit Sub
+    
+    Call saveStatus(dlg.strDefaultFolder & statusEffectList(activeStatusEffectIndex).statusFile, statusEffectList(activeStatusEffectIndex).theData)
+    activeStatusEffect.Caption = statusEffectList(activeStatusEffectIndex).statusFile
+    
+    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
+    Call tkMainForm.fillTree(vbNullString, projectPath)
 End Sub
 
-Private Sub savemnu_Click()
-    On Error GoTo ErrorHandler
-    filename$(2) = statusEffectList(activeStatusEffectIndex).statusFile$
-    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
-    If filename$(2) = "" Then
-        saveasmnu_Click
+Private Sub savemnu_Click(): On Error Resume Next
+    If LenB(statusEffectList(activeStatusEffectIndex).statusFile) = 0 Then
+        saveAsMnu_Click
         Exit Sub
     End If
+        
     Dim strFile As String
     strFile = projectPath & statusPath & statusEffectList(activeStatusEffectIndex).statusFile
     If (fileExists(strFile)) Then
         If (GetAttr(strFile) And vbReadOnly) Then
             Call MsgBox("This file is read-only; please choose a different file.")
-            Call saveasmnu_Click
+            Call saveAsMnu_Click
             Exit Sub
         End If
     End If
     Call saveStatus(strFile, statusEffectList(activeStatusEffectIndex).theData)
-    activeStatusEffect.Caption = LoadStringLoc(809, "Status Effect Editor") + " (" + statusEffectList(activeStatusEffectIndex).statusFile$ + ")"
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
 End Sub
 
-Private Sub slowdownbox_Click()
-    On Error GoTo ErrorHandler
+Private Sub slowdownbox_Click(): On Error Resume Next
     statusEffectList(activeStatusEffectIndex).theData.nStatusSlow = slowdownbox.value
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub speedupbox_Click()
-    On Error GoTo ErrorHandler
+Private Sub speedupbox_Click(): On Error Resume Next
     statusEffectList(activeStatusEffectIndex).theData.nStatusSpeed = speedupbox.value
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub statusnamebox_Change()
-    On Error GoTo ErrorHandler
+Private Sub statusnamebox_Change(): On Error Resume Next
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = True
-    statusEffectList(activeStatusEffectIndex).theData.statusName$ = statusnamebox.Text
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
+    statusEffectList(activeStatusEffectIndex).theData.statusName = statusnamebox.Text
 End Sub
 
 
@@ -792,7 +579,6 @@ Private Sub mnutilevertically_Click()
     On Error Resume Next
     Call tkMainForm.tileverticallymnu_Click
 End Sub
-
 
 Private Sub mnuTutorial_Click()
     On Error Resume Next
@@ -879,7 +665,6 @@ Private Sub mnunewplayer_Click()
     Call tkMainForm.newplayermnu_Click
 End Sub
 
-
 Private Sub mnunewproject_Click()
     On Error Resume Next
     Call tkMainForm.newprojectmnu_Click
@@ -895,18 +680,15 @@ Private Sub mnunewspecialmove_Click()
     Call tkMainForm.newspecialmovemnu_Click
 End Sub
 
-
 Private Sub mnunewstatuseffect_Click()
     On Error Resume Next
     Call tkMainForm.newstatuseffectmnu_Click
 End Sub
 
-
 Private Sub mnunewtile_Click()
     On Error Resume Next
     Call tkMainForm.newtilemnu_Click
 End Sub
-
 
 Private Sub mnunewtilebitmap_Click()
     On Error Resume Next
@@ -917,7 +699,6 @@ Private Sub mnuopen_Click()
     On Error Resume Next
     Call tkMainForm.openmnu_Click
 End Sub
-
 
 Private Sub mnuRegistrationInfo_Click()
     On Error Resume Next
@@ -934,12 +715,10 @@ Private Sub mnurpgcodereference_Click()
     Call tkMainForm.rpgcodereferencemnu_Click
 End Sub
 
-
 Private Sub mnusaveall_Click()
     On Error Resume Next
     Call tkMainForm.saveallmnu_Click
 End Sub
-
 
 Private Sub mnuselectlanguage_Click()
     On Error Resume Next
@@ -960,7 +739,6 @@ Private Sub mnutestgame_Click()
     On Error Resume Next
     tkMainForm.testgamemnu_Click
 End Sub
-
 
 Private Sub mnuOpenProject_Click()
     On Error Resume Next
