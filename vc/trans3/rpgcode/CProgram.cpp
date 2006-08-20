@@ -193,7 +193,9 @@ int yyerror(const char *error)
 {
 	extern unsigned int g_lines;
 	TCHAR str[255];
-	_itot(g_lines + 1, str, 10);
+	// No +1 because the first line is a hacky bug fix.
+	// See CProgram::open().
+	_itot(g_lines, str, 10);
 #ifndef _UNICODE
 	STRING strError = error;
 #else
@@ -216,7 +218,9 @@ unsigned int CProgram::getLine(CONST_POS pos) const
 	std::vector<unsigned int>::const_iterator j = m_lines.begin();
 	for (; j != m_lines.end(); ++j)
 	{
-		if (*j > i) return (j - m_lines.begin() + 1);
+		// No +1 because the first line is a hacky bug fix.
+		// See CProgram::open().
+		if (*j > i) return (j - m_lines.begin());
 	}
 	return m_lines.size();
 }
@@ -759,24 +763,22 @@ bool CProgram::open(const STRING fileName)
 		const long length = ftell(file);
 		fseek(file, 0, SEEK_SET);
 
-		char *const str = (char *const)malloc(sizeof(char) * (length + 5));
-		fread(str + 3, sizeof(char), length, file);
+		char *const str = (char *const)malloc(sizeof(char) * (length + 3));
+		fread(str + 2, sizeof(char), length, file);
 
 		str[0] = '1';		// Arbitrary first line.
-		str[1] = '\r';
-		str[2] = '\n';
+		str[1] = '\n';
 
 		// Add a blank line to the end of the file to prevent
 		// an error from occurring when the file has no final
 		// blank line.
-		str[length + 3] = '\r';
-		str[length + 4] = '\n';
+		str[length + 2] = '\n';
 
 		fclose(file);		// Close the original file...
 		file = tmpfile();	// ...and create another.
 
 		// Write the updated version to our temp file.
-		fwrite(str, sizeof(char), length + 5, file);
+		fwrite(str, sizeof(char), length + 3, file);
 		free(str);
 
 		// And parse the file.
