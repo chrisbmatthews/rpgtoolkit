@@ -124,6 +124,8 @@ Private Const OFN_OVERWRITEPROMPT = &H2
 Private Const OFN_HIDEREADONLY = &H4
 Private Const OFN_NOCHANGEDIR = &H8
 Private Const OFN_NOREADONLYRETURN = &H8000&
+Private Const OFN_ALLOWMULTISELECT = &H200
+Private Const OFN_EXPLORER = &H80000
 
 Private Const MAX_BUFFER = 255
 
@@ -307,7 +309,7 @@ Public Function browseFileDialog( _
     If Not getValidPath(dlg.strSelectedFile, defaultPath, returnPath, True) Then Exit Function
     
     'Copy folders outside the default directory into the default directory.
-    If Not fileExists(defaultPath & returnPath) Then
+    If Not fileExists(defaultPath & returnPath) And fileExists(dlg.strSelectedFile) Then
         FileCopy dlg.strSelectedFile, defaultPath & returnPath
     End If
 
@@ -315,4 +317,48 @@ Public Function browseFileDialog( _
     browseFileDialog = True
 End Function
 
-
+'=========================================================================
+' Show an open file dialog allowing multiple file selection.
+'=========================================================================
+Public Function MultiselectFileDialog(ByRef dlgInfo As FileDialogInfo, Optional ByVal hwndParent As Long = 0) As String(): On Error Resume Next
+    
+    Dim opfS As OPENFILENAME
+    With opfS
+          .lStructSize = Len(opfS)                      ' the size of the structure
+          .hwndOwner = hwndParent                       ' the owner of the dialog (the form handle)
+          .hInstance = App.hInstance                    ' instance of the app, use App.hInstance
+          .lpstrTitle = dlgInfo.strTitle                ' the title of the dialog box
+          .lpstrInitialDir = dlgInfo.strDefaultFolder   ' initial directory which the user will see
+          .lpstrFilter = DialogFilterToAPIFilter(dlgInfo.strFileTypes)
+          .nFilterIndex = 1 '
+          .lpstrFile = String(MAX_BUFFER + 1, 0)        ' initialize empty string to get 'filename
+          .nMaxFile = MAX_BUFFER                        ' the maximum length of the filename
+          .lpstrFileTitle = .lpstrFile
+          .nMaxFileTitle = MAX_BUFFER
+          .lpstrDefExt = dlgInfo.strDefaultExt
+          .flags = OFN_HIDEREADONLY Or OFN_NOCHANGEDIR Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
+    End With
+    
+    Call GetOpenFileName(opfS)
+    
+    'opfS.lpstrFile contains the files separated by null chars.
+    Dim files() As String, file As String, i As Long
+    
+    For i = Len(opfS.lpstrFile) To 1 Step -1
+        If Mid$(opfS.lpstrFile, i, 1) <> vbNullChar Then
+            file = Left$(opfS.lpstrFile, i)
+            Exit For
+        End If
+    Next i
+    
+    'Check if only one file is selected (no null char separation).
+    If fileExists(file) Then
+        ReDim files(1)
+        files(0) = GetPath(file)
+        files(1) = RemovePath(file)
+    Else
+        files = Split(file, vbNullChar)
+        If LenB(files(0)) <> 0 Then files(0) = files(0) & "\"
+    End If
+    MultiselectFileDialog = files
+End Function
