@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form tileedit 
-   Caption         =   "Tile Editor (Untitled)"
+   Caption         =   "Untitled tile"
    ClientHeight    =   5520
    ClientLeft      =   1170
    ClientTop       =   1155
@@ -552,7 +552,7 @@ Public Sub isoChange(ByVal isoCheck As Boolean): On Error Resume Next
     'Update tilename.
     openTileEditorDocs(indice).tileName = vbNullString
     'Update caption.
-    Me.Caption = LoadStringLoc(801, "Tile Editor") & "  (Untitled)"
+    Me.Caption = "Untitled tile"
     
     'Resize/Redraw.
     tkMainForm.isoMirror.Cls
@@ -1156,9 +1156,9 @@ Private Sub Form_Activate(): On Error Resume Next
 
     'Hide tools/extras. Show the ones we need.
     Call hideAllTools
-    tkMainForm.bBar.Visible = True
-    tkMainForm.tileExtras.Visible = True
-    tkMainForm.tileTools.Visible = True
+    tkMainForm.bBar.visible = True
+    tkMainForm.tileExtras.visible = True
+    tkMainForm.tileTools.visible = True
     tkMainForm.tileTools.Top = tkMainForm.toolTop
     
     'Tick the flood option if entry made.
@@ -1251,8 +1251,8 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
         openTileEditorDocs(indice).tileName = setFilename
         
         'Update caption.
-        Caption = LoadStringLoc(801, "Tile Editor") & "  (" & setFilename & ")"
-        activeTile.Caption = LoadStringLoc(801, "Tile Editor") & "  (" & setFilename & ")"
+        Caption = setFilename
+        activeTile.Caption = setFilename
 
     End If
 
@@ -1375,19 +1375,19 @@ End Sub
 '========================================================================
 ' Depress tool index, and unpress the others
 '========================================================================
-Public Sub ToolSet(ByVal index As Byte): On Error Resume Next
+Public Sub ToolSet(ByVal Index As Byte): On Error Resume Next
     'If this sub is called during this sub, Exit Sub
     If ignore = 1 Then Exit Sub
     
     ignore = 1
     
     'Update current tool variable
-    openTileEditorDocs(indice).tileMode = index
+    openTileEditorDocs(indice).tileMode = Index
     
     'Go through the tools
     Dim i As Integer
     For i = 0 To 8
-        If i = index Then
+        If i = Index Then
             tkMainForm.tileTool(i).value = 1
         Else
             tkMainForm.tileTool(i).value = 0
@@ -1431,8 +1431,8 @@ Private Sub highRedraw(): On Error Resume Next
             If isoMaskBmp(x, y) <> vbQBColor(0) And openTileEditorDocs(indice).isometric Then
                 
                 'Draw background color pixels at the corners if this tile is isometric
-                Call vbPicFillRect(tileform, xx, yy, xx + (pixelWidth - 1), yy + (pixelHeight - 1), Me.BackColor)
-                Call vbPicPSet(tkMainForm.isoMirror, x - 1, y - 1, Me.BackColor)
+                Call vbPicFillRect(tileform, xx, yy, xx + (pixelWidth - 1), yy + (pixelHeight - 1), Me.backColor)
+                Call vbPicPSet(tkMainForm.isoMirror, x - 1, y - 1, Me.backColor)
                 
                 'Clear the tilemem entry
                 'tileMem(x, y) = -1         'No! This isn't always the active tile! (3.0.6 fix)
@@ -1517,14 +1517,14 @@ Public Sub updateSelectedColor(Optional ByVal color As Long = -2): On Error Resu
     If color = -2 Then color = openTileEditorDocs(indice).currentColor
 
     If color <> -1 Then
-        tkMainForm.selectedcolor.BackColor = color
+        tkMainForm.selectedcolor.backColor = color
         
         tkMainForm.lblTileRGB.Caption = "RGB (" & red(color) & _
                                         ", " & green(color) & _
                                         ", " & blue(color) & ")"
     Else
         'Transparent colour - draw squares.
-        tkMainForm.selectedcolor.BackColor = RGB(255, 255, 255)
+        tkMainForm.selectedcolor.backColor = RGB(255, 255, 255)
         Call vbPicFillRect(tkMainForm.selectedcolor, 0, 0, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, vbQBColor(7))
         Call vbPicFillRect(tkMainForm.selectedcolor, (tkMainForm.selectedcolor.width / 2) / 15, (tkMainForm.selectedcolor.Height / 2) / 15, 100, 100, vbQBColor(7))
         
@@ -1960,7 +1960,7 @@ Public Sub openFile(ByVal tileName As String): On Error Resume Next
         Call highRedraw
         
         openTileEditorDocs(indice).tileName = setFilename
-        Caption = LoadStringLoc(801, "Tile Editor") & "  (" & setFilename & ")"
+        Caption = setFilename
 
     Else
         '.gph
@@ -1969,8 +1969,8 @@ Public Sub openFile(ByVal tileName As String): On Error Resume Next
         Call openTile2(filename(1))
         Call highRedraw
         openTileEditorDocs(indice).tileName = antiPath
-        Caption = LoadStringLoc(801, "Tile Editor") & "  (" & antiPath & ")"
-
+        Caption = antiPath
+        
     End If
 
     Call tileGrid(tkMainForm.tileGrid.value)
@@ -2033,13 +2033,13 @@ Public Sub opentile_Click(): On Error Resume Next
             Call color_16million
             Call highRedraw
             openTileEditorDocs(indice).tileName = setFilename
-            Caption = LoadStringLoc(801, "Tile Editor") + "  (" + setFilename$ + ")"
+            Caption = setFilename
         End If
     Else
         Call openTile2(filename$(1))
         Call highRedraw
         openTileEditorDocs(indice).tileName = antiPath$
-        Caption = LoadStringLoc(801, "Tile Editor") + "  (" + antiPath$ + ")"
+        Caption = antiPath
     End If
     Call tileGrid(tkMainForm.tileGrid.value)
 
@@ -2248,7 +2248,7 @@ Private Sub savetile2_Click(): On Error Resume Next
                 'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
                 MsgBox ("Your tile has been added to the tileset: tile number " & aa & " in " & chr$(13) & filename(1) & ".")
                 openTileEditorDocs(indice).tileName = antiPath$ + CStr(aa)
-                Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName + ")"
+                Caption = openTileEditorDocs(indice).tileName
             End If
         Else
             'Note new argument!
@@ -2257,7 +2257,7 @@ Private Sub savetile2_Click(): On Error Resume Next
                 'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
                 MsgBox ("A new tileset has been created: " & chr$(13) & filename$(1) & chr$(13) & " and the first tile added.")
                 openTileEditorDocs(indice).tileName = antiPath$ + "1"
-                Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName + ")"
+                Caption = openTileEditorDocs(indice).tileName
             End If
         End If
         
@@ -2267,7 +2267,7 @@ Private Sub savetile2_Click(): On Error Resume Next
 
         Call saveTile(filename(1))
         openTileEditorDocs(indice).tileName = antiPath
-        Caption = LoadStringLoc(801, "Tile Editor") + " (" + antiPath$ + ")"
+        Caption = antiPath
         
     End If 'tst, iso.
     
@@ -2340,7 +2340,7 @@ Private Sub mnusts_Click(): On Error Resume Next
             aa = addToTileSet(filename$(1))
             'MsgBox "Your tile has been added to the tileset", , "Save into tileset"
             openTileEditorDocs(indice).tileName = antiPath$ + CStr(tNum)
-            Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName$ + ")"
+            Caption = openTileEditorDocs(indice).tileName
             
         Else
             'Insert at the position indicated - overwrite the tile at that position!
@@ -2350,7 +2350,7 @@ Private Sub mnusts_Click(): On Error Resume Next
             If result = vbCancel Then Exit Sub
             openTileEditorDocs(indice).tileName$ = setFilename$
             Call insertIntoTileSet(projectPath$ + tilePath$ + tilesetFilename(setFilename$), getTileNum(setFilename$))
-            Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName$ + ")"
+            Caption = openTileEditorDocs(indice).tileName
         End If
         
     Else
@@ -2361,7 +2361,7 @@ Private Sub mnusts_Click(): On Error Resume Next
             'MsgBox LoadStringLoc(2019, "Your tile has been added to the tileset")
             MsgBox ("A new tileset has been created: " & chr$(13) & filename$(1) & chr$(13) & " and the first tile added.")
             openTileEditorDocs(indice).tileName = antiPath$ + "1"
-            Caption = LoadStringLoc(801, "Tile Editor") + " (" + openTileEditorDocs(indice).tileName$ + ")"
+            Caption = openTileEditorDocs(indice).tileName
         End If
         
     End If
