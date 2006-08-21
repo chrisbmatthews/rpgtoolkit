@@ -6,6 +6,7 @@ Begin VB.Form frmAnmWizard
    ClientLeft      =   45
    ClientTop       =   435
    ClientWidth     =   9465
+   Icon            =   "frmAnmWizard.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
@@ -94,7 +95,7 @@ Begin VB.Form frmAnmWizard
       Top             =   120
       Width           =   5175
       Begin VB.Label lbl 
-         Caption         =   $"frmAnmWizard.frx":0000
+         Caption         =   $"frmAnmWizard.frx":0CCA
          Height          =   615
          Index           =   0
          Left            =   120
@@ -112,7 +113,7 @@ Begin VB.Form frmAnmWizard
          Width           =   4935
       End
       Begin VB.Label lbl 
-         Caption         =   $"frmAnmWizard.frx":00A8
+         Caption         =   $"frmAnmWizard.frx":0D72
          Height          =   855
          Index           =   5
          Left            =   120
