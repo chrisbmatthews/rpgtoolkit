@@ -80,6 +80,21 @@ Private m_tsHeader As tilesetHeader
 Private m_filename As String
 
 '============================================================================
+'Enable or disable all controls.
+'============================================================================
+Public Property Let Enabled(ByVal enable As Boolean): On Error Resume Next
+    Dim ctl As Control
+    For Each ctl In UserControl
+        ctl.Enabled = enable
+    Next ctl
+    If enable Then
+        Call draw
+    Else
+        picTileset.Cls
+    End If
+End Property
+
+'============================================================================
 'Open tileset button at the top of the flyout tileset viewer.
 '============================================================================
 Private Sub cmdOpen_Click(): On Error Resume Next
@@ -113,12 +128,12 @@ End Sub
 
 Private Sub draw(): On Error Resume Next
 
-    If LenB(configfile.lastTileset) = 0 Then Exit Sub
+    If LenB(m_filename) = 0 Then Exit Sub
     If tstnum = 0 Then tstnum = 1
     
     picTileset.Cls
     Call GFXdrawTileset( _
-        projectPath & tilePath & configfile.lastTileset, _
+        projectPath & tilePath & m_filename, _
         picTileset.hdc, _
         tstnum, _
         picTileset.width, _
@@ -219,6 +234,21 @@ Public Sub resize(ByVal filename As String, Optional ByVal allowExtraTile As Boo
     
     'Activate the scroller.
     m_ignoreResize = False
+End Sub
+
+Private Sub picTileset_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+
+    Dim idx As Long, formType As Long
+    
+    If LenB(m_filename) = 0 Then Exit Sub
+
+    idx = getTileIndex(x, y)
+    
+    'Assign the global
+    setFilename = m_filename & CStr(idx)
+    
+    Call UserControl.Parent.ctlTilesetMouseDown(m_filename & CStr(idx))
+
 End Sub
 
 Private Sub picTileset_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
