@@ -127,6 +127,13 @@ Begin VB.Form animationeditor
          Visible         =   0   'False
       End
    End
+   Begin VB.Menu mnuAnm 
+      Caption         =   "Animation"
+      Begin VB.Menu mnuWizard 
+         Caption         =   "Wizard..."
+         Shortcut        =   ^W
+      End
+   End
    Begin VB.Menu mnuBuild 
       Caption         =   "Build"
       Begin VB.Menu mnuCreatePakFile 
@@ -197,6 +204,15 @@ Option Explicit
 'Index into the vector of animations maintained in commonanimation
 Public dataIndex As Long
 
+'Defines for resizing the animation
+Private Declare Function IMGGetWidth Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
+Private Declare Function IMGGetHeight Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
+Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal filename As String) As Long
+Private Declare Function IMGFree Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
+
+'List entry in tkmainform.anmCmbSize
+Private Const IMAGE_SIZE = "Image Size"
+
 '========================================================================
 ' Identify type of form
 '========================================================================
@@ -208,45 +224,18 @@ End Function
 '========================================================================
 ' Initialize the animation
 '========================================================================
-Private Sub fillInfo(): On Error Resume Next
+Public Sub fillInfo(): On Error Resume Next
 
     With animationList(activeAnimationIndex).theData
     
         'Animation size
-        tkMainForm.txtAnimXSize.Text = str(.animSizeX)
-        tkMainForm.txtAnimYSize.Text = str(.animSizeY)
-        tkMainForm.txtAnimXSize.Enabled = False
-        tkMainForm.txtAnimYSize.Enabled = False
+        tkMainForm.txtAnimXSize.Text = CStr(.animSizeX)
+        tkMainForm.txtAnimYSize.Text = CStr(.animSizeY)
         
-        'If the sizes are 0, set them to 64
-        If .animSizeX = 0 Then .animSizeX = 64
-        If .animSizeY = 0 Then .animSizeY = 64
-        
-        'See which size it is
-        If (.animSizeX = 64 And .animSizeY = 64) Or _
-           (.animSizeX = 128 And .animSizeX = 128) Or _
-           (.animSizeX = 256 And .animSizeY = 256) Or _
-           (.animSizeX = 32 And .animSizeY = 64) Then
-            
-            'Default size
-            If tkMainForm.optAnimSize(4).value Then
-            
-                'Enable textboxes
-                tkMainForm.txtAnimXSize.Enabled = True
-                tkMainForm.txtAnimYSize.Enabled = True
-                
-            End If
-            
-        Else
-            
-            'Custom size, enable textboxes
-            tkMainForm.txtAnimXSize.Enabled = True
-            tkMainForm.txtAnimYSize.Enabled = True
-            
-        End If
-       
         'Set the value of the pausebar
-        tkMainForm.hsbAnimPause.value = .animPause * 30
+        tkMainForm.hsbAnimPause.value = .animPause * 20
+        
+        tkMainForm.anmTxtPause.Text = CStr(.animPause)
         
         'Resize the form
         Call sizeForm
@@ -261,69 +250,29 @@ End Sub
 '========================================================================
 ' Set the size of the animation
 '========================================================================
-Public Sub setAnimSize(ByVal index As Integer): On Error Resume Next
+Public Sub setAnimSize(ByVal dims As String): On Error Resume Next
 
-    'Needs to be updated
     animationList(activeAnimationIndex).animNeedUpdate = True
     
-    If index <> 4 Then
+    If dims = IMAGE_SIZE Then
+        Call resizeToImage(animationList(activeAnimationIndex).theData)
+    Else
+        Dim x As Long, y As Long
+        x = val(Left$(dims, InStr(1, dims, "x", vbTextCompare)))
+        y = val(Mid$(dims, InStr(1, dims, "x", vbTextCompare) + 1))
         
-        'It is not a custom animation, un-enable the 2 textboxes
-        tkMainForm.txtAnimXSize.Enabled = False
-        tkMainForm.txtAnimYSize.Enabled = False
-        
+        If x > 0 Then tkMainForm.txtAnimXSize = x
+        If y > 0 Then tkMainForm.txtAnimYSize = y
     End If
-    
-    With animationList(activeAnimationIndex).theData
         
-        'Now, see which one is clicked and set the width & height
-        Select Case index
-            Case 0
-                
-                'Small
-                .animSizeX = 64
-                .animSizeY = 64
-                
-            Case 1
-            
-                'Medium
-                .animSizeX = 128
-                .animSizeY = 128
-                
-            Case 2
-            
-                'Large
-                .animSizeX = 256
-                .animSizeY = 256
-                
-            Case 3
-                
-                'Sprite
-                .animSizeX = 32
-                .animSizeY = 64
-                
-            Case 4
-            
-                'Custom
-                .animSizeX = val(tkMainForm.txtAnimXSize.Text)
-                .animSizeY = val(tkMainForm.txtAnimYSize.Text)
-                
-                'Enable the textboxes
-                tkMainForm.txtAnimXSize.Enabled = True
-                tkMainForm.txtAnimYSize.Enabled = True
-                
-        End Select
-        
-    End With
-    
     'Resize the form
-    Call sizeForm
     Call Form_Resize
+    Call fillInfo
     
 End Sub
 
 '========================================================================
-' Set the XSize (Custom anim only)
+' Set the XSize
 '========================================================================
 Public Sub setXSize(): On Error Resume Next
 
@@ -343,18 +292,15 @@ Public Sub setXSize(): On Error Resume Next
 End Sub
 
 '========================================================================
-' Set the YSize (Custom anim only)
+' Set the YSize
 '========================================================================
 Public Sub setYSize(): On Error Resume Next
     
     'Needs to be updated
     animationList(activeAnimationIndex).animNeedUpdate = True
     
-    'If it is lower then 0, set it to 0
-    If val(tkMainForm.txtAnimYSize.Text) < 0 Then tkMainForm.txtAnimYSize.Text = 0
-    
     'Set the Y-Size
-    animationList(activeAnimationIndex).theData.animSizeY = val(tkMainForm.txtAnimYSize.Text)
+    animationList(activeAnimationIndex).theData.animSizeY = Abs(val(tkMainForm.txtAnimYSize.Text))
     
     'Resize the form
     Call sizeForm
@@ -369,64 +315,31 @@ Public Sub setPause(): On Error Resume Next
 
     'Needs to be updated
     animationList(activeAnimationIndex).animNeedUpdate = True
-    
     'Update the animation data
-    animationList(activeAnimationIndex).theData.animPause = tkMainForm.hsbAnimPause.value / 30
-
+    animationList(activeAnimationIndex).theData.animPause = Abs(val(tkMainForm.anmTxtPause.Text))
+    
 End Sub
 
 '========================================================================
 ' Set the frame sound
 '========================================================================
-Public Sub setSound(): On Error Resume Next
-    
-    'Info of the Dialog Box we will open
-    Dim dlg As FileDialogInfo
-    ChDir (currentDir$)
-    dlg.strDefaultFolder = projectPath$ + mediaPath$
-    dlg.strTitle = "Select ISound"
-    dlg.strDefaultExt = "wav"
-    dlg.strFileTypes = "Wav Digital (*.wav)|*.wav|All files (*.*)|*.*"
-    
-    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub 'User pressed cancel
-    
-    'Needs to be updated
-    animationList(activeAnimationIndex).animNeedUpdate = True
-    
-    'Choosen filename
-    filename(1) = dlg.strSelectedFile
-    
-    'Choosen filename without path
-    Dim antiPath As String
-    antiPath = dlg.strSelectedFileNoPath
-    
-    ChDir (currentDir$)
-    
-    'If filename is empty, exit sub
-    If filename$(1) = "" Then Exit Sub
-    
-    'Copy the file to the media folder of the current project
-    FileCopy filename(1), projectPath + mediaPath + antiPath
-    
-    'Set the current sound
-    animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame) = antiPath
-    
-    'Put the filename in the textbox
-    tkMainForm.txtAnimSound.Text = antiPath
-
+Public Sub browseSound(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    If browseFileDialog(Me.hwnd, projectPath & mediaPath, "Select frame sound", "wav", strFileDialogFilterMedia, file) Then
+        animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame) = file
+        tkMainForm.anmTxtSound.Text = file
+        animationList(activeAnimationIndex).animNeedUpdate = True
+    End If
 End Sub
 
 '========================================================================
-' Delete the frame sound
+' Change the frame sound
 '========================================================================
-Public Sub delSound(): On Error Resume Next
+Public Sub changeSound(ByVal file As String): On Error Resume Next
 
-    'Clear the textbox
-    tkMainForm.txtAnimSound.Text = ""
+    animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame) = file
+    animationList(activeAnimationIndex).animNeedUpdate = True
     
-    'Clear the data
-    animationList(activeAnimationIndex).theData.animSound(animationList(activeAnimationIndex).theData.animCurrentFrame) = ""
-
 End Sub
 
 '========================================================================
@@ -480,7 +393,7 @@ Public Sub animIns(): On Error Resume Next
         Next i
         
         'Clear the data of the just added frame
-        .animFrame(.animCurrentFrame) = ""
+        .animFrame(.animCurrentFrame) = vbNullString
         .animTransp(.animCurrentFrame) = 0
         
         'Draw the frame
@@ -505,7 +418,7 @@ Public Sub animDel(): On Error Resume Next
         Next i
         
         'Clear the data of the frame
-        .animFrame(50) = ""
+        .animFrame(50) = vbNullString
         .animTransp(50) = 0
         
         'Draw the current frame
@@ -576,9 +489,9 @@ Private Sub DrawFrame(ByVal framenum As Long): On Error Resume Next
     With animationList(activeAnimationIndex).theData
     
         'Update the boxes and such
-        tkMainForm.lblAnimFrameCount.Caption = "Frame " & CStr(.animCurrentFrame + 1) & " / " & CStr(maxFrame + 1)
-        tkMainForm.txtAnimSound.Text = .animSound(.animCurrentFrame)
-        tkMainForm.transpcolor.BackColor = .animTransp(.animCurrentFrame)
+        tkMainForm.lblAnimFrameCount.Caption = CStr(.animCurrentFrame + 1) & " / " & CStr(maxFrame + 1) & ": " & .animFrame(.animCurrentFrame)
+        tkMainForm.anmTxtSound.Text = .animSound(.animCurrentFrame)
+        tkMainForm.transpcolor.backColor = .animTransp(.animCurrentFrame)
         tkMainForm.lblAnimRGB.Caption = "RGB (" & red(.animTransp(.animCurrentFrame)) & _
                                         ", " & green(.animTransp(.animCurrentFrame)) & _
                                         ", " & blue(.animTransp(.animCurrentFrame)) & ")"
@@ -587,13 +500,17 @@ Private Sub DrawFrame(ByVal framenum As Long): On Error Resume Next
 End Sub
 
 '========================================================================
+' Animation wizard
+'========================================================================
+Private Sub mnuWizard_Click(): On Error Resume Next
+    frmAnmWizard.Show vbModal
+End Sub
+
+'========================================================================
 ' Form_Load
 '========================================================================
 Private Sub Form_Load(): On Error Resume Next
-
-    'Localize this form
-    ' Call LocalizeForm(Me)
-    
+   
     'Create new slot
     dataIndex = VectAnimationNewSlot()
     activeAnimationIndex = dataIndex
@@ -601,6 +518,8 @@ Private Sub Form_Load(): On Error Resume Next
     'Clear the animation info
     Call AnimationClear(animationList(dataIndex).theData)
     animationList(dataIndex).theData.animPause = 0.15
+    
+    tkMainForm.anmCmbSize.list(0) = IMAGE_SIZE
 
 End Sub
 '========================================================================
@@ -617,9 +536,9 @@ Private Sub Form_Activate(): On Error Resume Next
     Call hideAllTools
     
     With tkMainForm
-        tkMainForm.bBar.Visible = True
-        tkMainForm.animationExtras.Visible = True
-        tkMainForm.animationTools.Visible = True
+        tkMainForm.bBar.visible = True
+        tkMainForm.animationExtras.visible = True
+        tkMainForm.animationTools.visible = True
         tkMainForm.animationTools.Top = tkMainForm.toolTop
     End With
     
@@ -636,7 +555,7 @@ End Sub
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     With animationList(activeAnimationIndex).theData
         If .animGetTransp Then
-            tkMainForm.transpcolor.BackColor = .animTransp(.animCurrentFrame)
+            tkMainForm.transpcolor.backColor = .animTransp(.animCurrentFrame)
             tkMainForm.lblAnimRGB.Caption = "RGB (" & red(.animTransp(.animCurrentFrame)) & _
                                             ", " & green(.animTransp(.animCurrentFrame)) & _
                                             ", " & blue(.animTransp(.animCurrentFrame)) & ")"
@@ -653,7 +572,7 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     If animationList(activeAnimationIndex).animNeedUpdate Then
         
         'Yup, ask if the user wants to
-        Dim answer As Integer
+        Dim answer As VbMsgBoxResult
         answer = MsgBox("Save changes to " & insideBrackets(Me.Caption) & "?", vbYesNoCancel + vbQuestion)
         
         If answer = vbCancel Then
@@ -678,7 +597,7 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
 End Sub
 
 '========================================================================
-' Form_Resize (NEW for 3.0.4 by Woozy)
+' Form_Resize
 '========================================================================
 Private Sub Form_Resize(): On Error Resume Next
 
@@ -716,10 +635,10 @@ End Sub
 Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
 
     'Check which key is pressed
-    If (UCase(chr(KeyAscii)) = "L") Then
+    If (UCase(chr$(KeyAscii)) = "L") Then
     
         'L, open tileset
-        If configfile.lastTileset = "" Then
+        If LenB(configfile.lastTileset) = 0 Then
         
             'Last tileset is empty
             Call arena_MouseDown(0, 0, 0, 0)
@@ -727,20 +646,11 @@ Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
             
         Else
         
-            'Open it
             tstFile = configfile.lastTileset
-            tilesetForm.Show vbModal ', me
-            
-            'Set it
+            tilesetForm.Show vbModal
             Call changeSelectedTile(setFilename)
             
         End If
-        
-    ElseIf (UCase(chr(KeyAscii)) = "B") Then
-        
-        'B, open new board
-        Call tkMainForm.newboardmnu_Click
-        
     End If
     
 End Sub
@@ -770,7 +680,7 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
             .animTransp(.animCurrentFrame) = colour
             
             'If the next frame is empty, set the transparent color there too
-            If .animFrame(.animCurrentFrame + 1) = "" Then
+            If LenB(.animFrame(.animCurrentFrame + 1)) = 0 Then
                 .animTransp(.animCurrentFrame + 1) = colour
             End If
             
@@ -779,83 +689,62 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
             
         Else
         
-            'User wants to give the current frame an image
+            'Frame click assigns a new image.
+            'Both image files (from the \Bitmap folder) and tiles can be selected here,
+            'so a check for valid subfolders is more tricky than browseFileDialog().
+            
             Dim dlg As FileDialogInfo
             
-            'Info of the Dialog Box we will open
-            ChDir (currentDir$)
-            dlg.strDefaultFolder = projectPath$ + bmpPath$
+            dlg.strDefaultFolder = projectPath & bmpPath
             dlg.strTitle = "Select Image"
             dlg.strDefaultExt = "bmp"
             dlg.strFileTypes = strFileDialogFilterWithTiles
             
-            If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub 'User pressed cancel
-                
-            'Choosen filename
-            filename$(1) = dlg.strSelectedFile
-            
-            'Choosen filename without path
-            Dim antiPath As String
-            antiPath = dlg.strSelectedFileNoPath
+            ChDir (currentDir)
+            If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
+            If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
                 
             'Needs to be updated
             animationList(activeAnimationIndex).animNeedUpdate = True
-            
-            ChDir (currentDir$)
-            
-            'If the filename is empty, exit sub
-            If filename$(1) = "" Then Exit Sub
                 
             'Extension of filename
-            Dim ex As String
-            ex = GetExt(filename$(1))
+            Dim ex As String, file As String, defaultPath As String
+            ex = UCase$(GetExt(dlg.strSelectedFile))
             
-            If UCase(ex) = "TST" Or UCase(ex) = "GPH" Or UCase(ex) = "ISO" Then 'If it's a tile(set)
+            defaultPath = projectPath & IIf(ex = "TST", tilePath, bmpPath)
+            
+            'Preserve the path if a sub-folder is chosen.
+            If Not getValidPath(dlg.strSelectedFile, defaultPath, file, True) Then Exit Sub
+            
+            'Copy folders outside the default directory into the default directory.
+            If Not fileExists(defaultPath & file) Then
+                FileCopy dlg.strSelectedFile, defaultPath & file
+            End If
                 
-                'Copy the file to the tile folder of the current project
-                FileCopy filename(1), projectPath + tilePath + antiPath
-                    
-                If UCase(ex) = "TST" Or UCase(ex) = "ISO" Then 'If it's a tileset, open the tileset browser
-                    tstnum = 0
-                    tstFile = antiPath
-                    
-                    'Update the last tileset variable
-                    configfile.lastTileset = tstFile
-                    tilesetForm.Show vbModal
-                    
-                    'If the filename is empty, exit sub
-                    If setFilename$ = "" Then Exit Sub
-                    
-                    'Update the frame
-                    .animFrame(.animCurrentFrame) = setFilename
-                    
-                Else
-                    
-                    'It's a tile, update the frame
-                    .animFrame(.animCurrentFrame) = antiPath
-                        
-                End If
+            If ex = "TST" Then
+                'Set a few badly-named globals for the tileset browser.
+                tstnum = 0
+                tstFile = file
+                configfile.lastTileset = tstFile
+                
+                tilesetForm.Show vbModal
+                If LenB(setFilename) = 0 Then Exit Sub
+                
+                .animFrame(.animCurrentFrame) = setFilename
                     
             Else
-                
-                'It's not a picture so probably an image. Copy the file to the
-                'bitmap folder of the current project
-                
-                FileCopy filename$(1), projectPath$ + bmpPath$ + antiPath$
-                
-                'Update the frame
-                .animFrame(.animCurrentFrame) = antiPath
-                
+                'All other images should reside in the \Bitmap folder or subfolders therein.
+                .animFrame(.animCurrentFrame) = file
             End If
             
-            'If the next frame is empty, set the transparent color there
-            
-            If .animFrame(.animCurrentFrame + 1) = "" Then
+            'If the next frame is empty, set the transparent color.
+            If LenB(.animFrame(.animCurrentFrame + 1)) = 0 Then
                 .animTransp(.animCurrentFrame + 1) = .animTransp(.animCurrentFrame)
             End If
             
             'Redraw the frame
-            Call DrawFrame(.animCurrentFrame)
+            Call resizeToImage(animationList(activeAnimationIndex).theData)
+            Call fillInfo
             
         End If
         
@@ -870,7 +759,7 @@ Private Sub arena_MouseMove(Button As Integer, Shift As Integer, x As Single, y 
     If animationList(activeAnimationIndex).theData.animGetTransp Then
         Dim color As Long
         color = arena.point(x, y)
-        tkMainForm.transpcolor.BackColor = color
+        tkMainForm.transpcolor.backColor = color
         tkMainForm.lblAnimRGB.Caption = "RGB (" & red(color) & _
                                         ", " & green(color) & _
                                         ", " & blue(color) & ")"
@@ -883,13 +772,13 @@ End Sub
 Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     
     'Exit sub if file is empty
-    If file = "" Then Exit Sub
+    If LenB(file) = 0 Then Exit Sub
     
     With animationList(activeAnimationIndex).theData
     
         'Set the file of the current frame
         .animFrame(.animCurrentFrame) = file
-        If .animFrame(.animCurrentFrame + 1) = "" Then
+        If LenB(.animFrame(.animCurrentFrame + 1)) = 0 Then
         
             'Set the transparent color of the next frame
             .animTransp(.animCurrentFrame + 1) = .animTransp(.animCurrentFrame)
@@ -907,64 +796,24 @@ End Sub
 '========================================================================
 Public Sub openFile(ByVal file As String): On Error Resume Next
 
-    filename(1) = file
+    activeAnimation.Show
+    Call openAnimation(file, animationList(activeAnimationIndex).theData)
     
-    'File without path
-    Dim antiPath As String
-    antiPath = absNoPath(file)
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & miscPath, animationList(activeAnimationIndex).animFile, False)
+    activeAnimation.Caption = animationList(activeAnimationIndex).animFile
     
-    'Copy the file to the misc folder of the current project
-    FileCopy filename(1), projectPath & miscPath & antiPath
-    
-    'Open the animation
-    Call openAnimation(filename(1), animationList(activeAnimationIndex).theData)
-    
-    'Fill the info
     Call fillInfo
-    
-    'No need to update
     animationList(activeAnimationIndex).animNeedUpdate = False
-    
-    'Set the animation file
-    animationList(activeAnimationIndex).animFile = antiPath
-    
-    'Set the caption
-    activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") + "  (" + antiPath + ")"
-    
+   
 End Sub
 
 '========================================================================
 ' Saves the file
 '========================================================================
 Public Sub saveFile(): On Error Resume Next
-    
-#If (False) Then
-    
-    If animationList(activeAnimationIndex).animFile = "" Then
-        
-        'Filename is empty - ask where to save
-        activeAnimation.Show
-        saveasanimmnu_Click
-        Exit Sub
-        
-    End If
-    
-    'If we got here, we know the animfile. Just save
-    Call saveAnimation(projectPath & miscPath & animationList(activeAnimationIndex).animFile, animationList(activeAnimationIndex).theData)
-    
-    'No need to update anymore
-    animationList(activeAnimationIndex).animNeedUpdate = False
-    
-    'Update caption
-    activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") + " (" + animationList(activeAnimationIndex).animFile$ + ")"
-
-#Else
-
     Call Show
     Call saveanimmnu_Click
-
-#End If
-
 End Sub
 
 '========================================================================
@@ -973,12 +822,11 @@ End Sub
 Private Sub saveanimmnu_Click(): On Error Resume Next
 
     ' If the animation hasn't been saved yet, call the "Save As" sub
-    If animationList(activeAnimationIndex).animFile$ = "" Then
-        
+    If LenB(animationList(activeAnimationIndex).animFile) = 0 Then
+    
         Call saveasanimmnu_Click
         
     Else
-
         Dim strFile As String
         strFile = projectPath & miscPath & animationList(activeAnimationIndex).animFile
 
@@ -1009,36 +857,26 @@ End Sub
 '========================================================================
 Private Sub saveasanimmnu_Click(): On Error Resume Next
     
-    ChDir (currentDir)
-    
-    'Info of the Dialog Box we will open
     Dim dlg As FileDialogInfo
+    
     dlg.strDefaultFolder = projectPath & miscPath
     dlg.strTitle = "Save Animation As"
     dlg.strDefaultExt = "anm"
     dlg.strFileTypes = "RPG Toolkit Animation (*.anm)|*.anm|All files(*.*)|*.*"
     
-    If (Not SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub 'User pressed cancel
-    If dlg.strSelectedFile = vbNullString Then Exit Sub
+    If Not SaveFileDialog(dlg, Me.hwnd, True) Then Exit Sub
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
     
-    ChDir (currentDir)
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, animationList(activeAnimationIndex).animFile, True) Then Exit Sub
 
-    ' Set the animation name
-    animationList(activeAnimationIndex).animFile = dlg.strSelectedFileNoPath
-
-    Call saveanimmnu_Click
-    
-    ' No need to update anymore
-    ' animationList(activeAnimationIndex).animNeedUpdate = False
-     
     ' Save the animation
-    ' Call saveAnimation(dlg.strSelectedFile, animationList(activeAnimationIndex).theData)
+    Call saveAnimation(dlg.strDefaultFolder & animationList(activeAnimationIndex).animFile, animationList(activeAnimationIndex).theData)
+    animationList(activeAnimationIndex).animNeedUpdate = False
     
     ' Update the caption
-    activeAnimation.Caption = LoadStringLoc(811, "Animation Editor") & " (" & dlg.strSelectedFileNoPath & ")"
-    
-    ' Update the tree
-    Call tkMainForm.fillTree("", projectPath)
+    activeAnimation.Caption = animationList(activeAnimationIndex).animFile
+    Call tkMainForm.fillTree(vbNullString, projectPath)
     
 End Sub
 
@@ -1046,11 +884,37 @@ End Sub
 ' Close
 '========================================================================
 Private Sub closeanimmnu_Click(): On Error Resume Next
-    
-    'Just unload
     Unload Me
-
 End Sub
+
+'========================================================================
+' Resize the animation to the current frame's image
+'========================================================================
+Private Sub resizeToImage(ByRef anm As TKAnimation): On Error Resume Next
+    
+    Dim ex As String
+    ex = UCase$(GetExt(anm.animFrame(anm.animCurrentFrame)))
+    
+    If Left$(ex, 3) = "TST" Then
+        anm.animSizeX = 32
+        anm.animSizeY = 32
+    ElseIf ex = "TBM" Then
+        Dim tbm As TKTileBitmap
+        Call OpenTileBitmap(projectPath & bmpPath & anm.animFrame(anm.animCurrentFrame), tbm)
+        anm.animSizeX = tbm.sizex * 32
+        anm.animSizeY = tbm.sizey * 32
+    Else
+        Dim img As Long
+        img = IMGLoad(projectPath & bmpPath & anm.animFrame(anm.animCurrentFrame))
+        If (img) Then
+            anm.animSizeX = IMGGetWidth(img)
+            anm.animSizeY = IMGGetHeight(img)
+            Call IMGFree(img)
+        End If
+    End If
+    
+End Sub
+
 
 '========================================================================
 ' A lot of menu commands...
