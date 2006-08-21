@@ -212,6 +212,14 @@ Public Function fileExists(ByVal file As String) As Boolean
 End Function
 
 '=========================================================================
+' Determine if a directory exists
+'=========================================================================
+Public Function dirExists(ByVal path As String) As Boolean
+    On Local Error Resume Next
+    dirExists = (GetAttr(path) And vbDirectory)
+End Function
+
+'=========================================================================
 ' Preserve files saved in subfolders of default directories;
 ' do not allow files outside the default directories
 '=========================================================================
