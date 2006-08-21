@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form tileanim 
    BorderStyle     =   1  'Fixed Single
-   Caption         =   "Animated Tile"
+   Caption         =   "Untitled animated tile"
    ClientHeight    =   2520
    ClientLeft      =   45
    ClientTop       =   615
@@ -38,7 +38,7 @@ Begin VB.Form tileanim
       Begin VB.Timer animTimer 
          Interval        =   5
          Left            =   3960
-         Top             =   720
+         Top             =   840
       End
       Begin VB.PictureBox tform 
          Appearance      =   0  'Flat
@@ -56,7 +56,7 @@ Begin VB.Form tileanim
          Width           =   480
       End
       Begin VB.HScrollBar pausebar 
-         Height          =   135
+         Height          =   255
          Left            =   2280
          Max             =   200
          Min             =   1
@@ -142,7 +142,7 @@ Begin VB.Form tileanim
          Left            =   2280
          TabIndex        =   10
          Tag             =   "1527"
-         Top             =   720
+         Top             =   960
          Width           =   2175
       End
       Begin VB.Label Label2 
@@ -327,86 +327,54 @@ Attribute VB_Exposed = False
 'Read LICENSE.txt for licensing info
 '==============================================================================
 
-'=======================================================
-'Notes by KSNiloc for 3.04
-'
-' ---What is done
-' + Option Explicit added
-' + Swapped +s for &s where appropriate
-' + Removed $s
-'
-'=======================================================
-
 Option Explicit
 
 Public dataIndex As Long
 
-Public Sub changeSelectedTile(ByVal file As String)
-    On Error Resume Next
+Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     If file = "" Then Exit Sub
     Call TileAnmInsert(file, tileAnmList(activeTileAnmIndex).theData, tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
     Call drawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
 End Sub
 
-Public Function formType() As Long
-    On Error Resume Next
+Public Function formType() As Long: On Error Resume Next
     formType = FT_TILEANIM
 End Function
 
-Public Sub saveAsFile()
-    On Error Resume Next
+Public Sub saveAsFile(): On Error Resume Next
     If tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True Then
         Me.Show
-        saveasmnu_Click
+        saveAsMnu_Click
     End If
 End Sub
 
-Public Sub saveFile()
-#If (False) Then
-    On Error Resume Next
-    tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
-    If tileAnmList(activeTileAnmIndex).animTileFile = "" Then
-        Me.Show
-        saveasmnu_Click
-    Else
-        Call saveTileAnm(projectPath & tilePath & tileAnmList(activeTileAnmIndex).animTileFile, tileAnmList(activeTileAnmIndex).theData)
-        Me.Caption = LoadStringLoc(1814, "Create Animated Tile") & " (" & tileAnmList(activeTileAnmIndex).animTileFile & ")"
-    End If
-#Else
+Public Sub saveFile(): On Error Resume Next
     Call Show
     Call savemnu_Click
-#End If
 End Sub
 
-Public Sub checkSave()
-    On Error Resume Next
+Public Sub checkSave(): On Error Resume Next
     If tileAnmList(activeTileAnmIndex).animTileNeedUpdate Then
-        If MsgBox(LoadStringLoc(939, "Would you like to save your changes to the current animation?"), vbYesNo) = vbYes Then
-            'yes-- save
+        If MsgBox("Save your changes to " & tileAnmList(activeTileAnmIndex).animTileFile & "?", vbYesNo) = vbYes Then
             Call saveFile
         End If
     End If
 End Sub
 
-Public Sub openFile(ByVal file As String)
-    'opens animation.
-    On Error Resume Next
+Public Sub openFile(ByVal file As String): On Error Resume Next
     Me.Show
     Call checkSave
-    filename(1) = file
-    Dim antiPath As String
-    antiPath = absNoPath(file)
-    Call FileCopy(filename(1), projectPath & tilePath & antiPath)
-    Call openTileAnm(filename(1), tileAnmList(activeTileAnmIndex).theData)
-    Call infofill
-    tileAnmList(activeTileAnmIndex).animTileFile = antiPath
-    Me.Caption = LoadStringLoc(1814, "Create Animated Tile") + "  (" + antiPath$ + ")"
+    Call openTileAnm(file, tileAnmList(activeTileAnmIndex).theData)
+    
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & tilePath, tileAnmList(activeTileAnmIndex).animTileFile, False)
+    Me.Caption = tileAnmList(activeTileAnmIndex).animTileFile
+    
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
+    Call infofill
 End Sub
 
-Private Sub animateTileFrames()
-    'find max frame...
-    On Error Resume Next
+Private Sub animateTileFrames(): On Error Resume Next
     Dim pauseLen As Double
     pauseLen = 1 / tileAnmList(activeTileAnmIndex).theData.animTilePause
     Dim t As Long
@@ -422,8 +390,7 @@ Private Sub animateTileFrames()
     tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = t
 End Sub
 
-Private Sub fillFrameNum(ByVal framenum As Long)
-    On Error Resume Next
+Private Sub fillFrameNum(ByVal framenum As Long): On Error Resume Next
     Dim t As Long, mf As Long
     For t = 0 To UBound(tileAnmList(activeTileAnmIndex).theData.animTileFrame)
         If TileAnmGet(tileAnmList(activeTileAnmIndex).theData, t) <> "" Then
@@ -438,8 +405,7 @@ Private Sub fillFrameNum(ByVal framenum As Long)
     End If
 End Sub
 
-Private Sub infofill()
-    On Error Resume Next
+Private Sub infofill(): On Error Resume Next
     Dim bf As Boolean
     bf = tileAnmList(activeTileAnmIndex).animTileNeedUpdate
     Call drawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
@@ -447,22 +413,20 @@ Private Sub infofill()
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = bf
 End Sub
 
-Private Sub drawTileFrame(ByVal framenum As Long)
-    'draw the frame number.
-    On Error Resume Next
+Private Sub drawTileFrame(ByVal framenum As Long): On Error Resume Next
     Call GFXClearTileCache
     Call vbPicCls(tform)
     Call vbPicCls(isotForm)
     If TileAnmGet(tileAnmList(activeTileAnmIndex).theData, framenum) <> "" Then
-        Call drawTile(vbPicHDC(tform), projectPath$ + tilePath$ + TileAnmGet(tileAnmList(activeTileAnmIndex).theData, framenum), 1, 1, 0, 0, 0, False)
-        Call drawTile(vbPicHDC(isotForm), projectPath$ + tilePath$ + TileAnmGet(tileAnmList(activeTileAnmIndex).theData, framenum), 1, 2, 0, 0, 0, False, True, True, True)
+        Call drawTile(vbPicHDC(tform), projectPath & tilePath & TileAnmGet(tileAnmList(activeTileAnmIndex).theData, framenum), 1, 1, 0, 0, 0, False)
+        Call drawTile(vbPicHDC(isotForm), projectPath & tilePath & TileAnmGet(tileAnmList(activeTileAnmIndex).theData, framenum), 1, 2, 0, 0, 0, False, True, True, True)
     End If
     Call vbPicRefresh(tform)
     Call vbPicRefresh(isotForm)
     Call fillFrameNum(framenum)
 End Sub
 
-Private Sub animTimer_Timer()
+Private Sub animTimer_Timer(): On Error Resume Next
     If TileAnmShouldDrawFrame(tileAnmList(activeTileAnmIndex).theData) Then
         Call vbPicCls(tform)
         Call vbPicCls(isotForm)
@@ -472,19 +436,17 @@ Private Sub animTimer_Timer()
     End If
 End Sub
 
-Private Sub closemnu_Click()
-    Me.Hide
+Private Sub closemnu_Click(): On Error Resume Next
+    Unload Me
 End Sub
 
-Private Sub Command1_Click()
-    On Error Resume Next
+Private Sub Command1_Click(): On Error Resume Next
     If tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = UBound(tileAnmList(activeTileAnmIndex).theData.animTileFrame) Then Exit Sub
     tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame + 1
     Call drawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
 End Sub
 
-Private Sub Command2_Click()
-    On Error Resume Next
+Private Sub Command2_Click(): On Error Resume Next
     Call GFXClearTileCache
     Command1.Enabled = False
     Command3.Enabled = False
@@ -494,8 +456,7 @@ Private Sub Command2_Click()
     animTimer.Enabled = True
 End Sub
 
-Private Sub Command3_Click()
-    On Error Resume Next
+Private Sub Command3_Click(): On Error Resume Next
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True
     Dim t As Long
     For t = UBound(tileAnmList(activeTileAnmIndex).theData.animTileFrame) To tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame Step -1
@@ -505,15 +466,13 @@ Private Sub Command3_Click()
     Call drawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
 End Sub
 
-Private Sub Command4_Click()
-    On Error Resume Next
+Private Sub Command4_Click(): On Error Resume Next
     If tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = 0 Then Exit Sub
     tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame = tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame - 1
     Call drawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
 End Sub
 
-Private Sub Command5_Click()
-    On Error Resume Next
+Private Sub Command5_Click(): On Error Resume Next
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True
     Dim t As Long
     For t = tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame To UBound(tileAnmList(activeTileAnmIndex).theData.animTileFrame)
@@ -523,8 +482,7 @@ Private Sub Command5_Click()
     Call drawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
 End Sub
 
-Private Sub Command6_Click()
-    On Error Resume Next
+Private Sub Command6_Click(): On Error Resume Next
     Command1.Enabled = True
     Command3.Enabled = True
     Command4.Enabled = True
@@ -533,57 +491,43 @@ Private Sub Command6_Click()
     animTimer.Enabled = False
 End Sub
 
-Private Sub Form_Activate()
-    On Error Resume Next
+Private Sub Form_Activate(): On Error Resume Next
     Set activeTileAnm = Me
     Set activeForm = Me
     activeTileAnmIndex = dataIndex
     Call hideAllTools
 End Sub
 
-Private Sub Form_KeyPress(KeyAscii As Integer)
-    On Error Resume Next
+Private Sub Form_KeyPress(KeyAscii As Integer): On Error Resume Next
     If UCase(chr(KeyAscii)) = "L" Then
-        If configfile.lastTileset = "" Then
-            ChDir (currentDir)
-            Dim dlg As FileDialogInfo
-            With dlg
-                .strDefaultFolder = projectPath & tilePath
-                .strTitle = "Open Tile"
-                .strFileTypes = "RPG Toolkit TileSet (*.tst)|*.tst|RPGToolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
-                If OpenFileDialog(dlg, Me.hwnd) Then
-                    filename(1) = dlg.strSelectedFile
-                    Dim antiPath As String
-                    antiPath = dlg.strSelectedFileNoPath
-                Else
-                    Exit Sub
-                End If
-            End With
-            ChDir (currentDir)
-            If filename(1) = "" Then Exit Sub
-            Call FileCopy(filename(1), projectPath & tilePath & antiPath)
-            Dim whichType As String
-            whichType = UCase(extention(filename(1)))
-            If whichType = "TST" Or whichType = "ISO" Then      'Yipes! we've selected an archive!
+        If LenB(configfile.lastTileset) = 0 Then
+            
+            Dim file As String, fileTypes As String, ext As String
+            fileTypes = "Supported Files|*.gph;*.tst|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Tile (*.gph)|*.gph|RPGToolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
+            
+            If Not browseFileDialog(Me.hwnd, projectPath & tilePath, "Select tile", "tst", fileTypes, file) Then
+                Exit Sub
+            End If
+    
+            ext = UCase$(extention(file))
+            If ext = "TST" Or ext = "ISO" Then
                 tstnum = 0
-                tstFile = antiPath
-                configfile.lastTileset = tstFile
-                Call tilesetForm.Show(vbModal)
+                tstFile = file
+                configfile.lastTileset = file
+                tilesetForm.Show vbModal
                 Call changeSelectedTile(setFilename)
             End If
         Else
             tstFile = configfile.lastTileset
-            Call tilesetForm.Show(vbModal)
-            If setFilename = "" Then Exit Sub
+            tilesetForm.Show vbModal
+            If LenB(setFilename) = 0 Then Exit Sub
             Call TileAnmInsert(setFilename, tileAnmList(activeTileAnmIndex).theData, tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
             Call drawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
         End If
     End If
 End Sub
 
-Private Sub Form_Load()
-    On Error Resume Next
-    ' Call LocalizeForm(Me)
+Private Sub Form_Load(): On Error Resume Next
     Set activeTileAnm = Me
     dataIndex = VectTileAnmNewSlot()
     activeTileAnmIndex = dataIndex
@@ -599,101 +543,91 @@ Private Sub Form_Resize(): On Error Resume Next
 
 End Sub
 
-Private Sub Form_Terminate()
+Private Sub Form_Terminate(): On Error Resume Next
     Call tkMainForm.refreshTabs
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
-    On Error Resume Next
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     Call hideAllTools
 End Sub
 
-Private Sub isotForm_Click()
-    On Error Resume Next
+Private Sub isotForm_Click(): On Error Resume Next
     Call tform_Click
 End Sub
 
-Private Sub pausebar_Change()
-    On Error Resume Next
+Private Sub pausebar_Change(): On Error Resume Next
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True
     tileAnmList(activeTileAnmIndex).theData.animTilePause = pausebar.value
 End Sub
 
-Private Sub saveasmnu_Click()
-    On Error Resume Next
-    ChDir (currentDir)
+Private Sub saveAsMnu_Click(): On Error Resume Next
+    
     Dim dlg As FileDialogInfo
-    With dlg
-        .strDefaultFolder = projectPath & tilePath
-        .strTitle = "Save Animation As"
-        .strDefaultExt = "tan"
-        .strFileTypes = "Tile Animation (*.tan)|*.tan|All files(*.*)|*.*"
-        If SaveFileDialog(dlg, Me.hwnd) Then 'user pressed cancel
-            filename(1) = dlg.strSelectedFile
-            Dim antiPath As String
-            antiPath = dlg.strSelectedFileNoPath
-        Else
-            Exit Sub
-        End If
-    End With
-    ChDir (currentDir)
-    ' tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
-    If filename(1) = "" Then Exit Sub
-    tileAnmList(activeTileAnmIndex).animTileFile = antiPath
-    Call savemnu_Click
-    ' Call saveTileAnm(filename(1), tileAnmList(activeTileAnmIndex).theData)
-    Me.Caption = LoadStringLoc(1814, "Create Animated Tile") + " (" + antiPath$ + ")"
-    Call tkMainForm.fillTree("", projectPath)
+        
+    dlg.strDefaultFolder = projectPath & tilePath
+    dlg.strTitle = "Save Animation As"
+    dlg.strDefaultExt = "tan"
+    dlg.strFileTypes = "Tile Animation (*.tan)|*.tan|All files(*.*)|*.*"
+    
+    If Not SaveFileDialog(dlg, Me.hwnd) Then Exit Sub
+    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
+    
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, tileAnmList(activeTileAnmIndex).animTileFile, True) Then Exit Sub
+    
+    Call saveTileAnm(dlg.strDefaultFolder & tileAnmList(activeTileAnmIndex).animTileFile, tileAnmList(activeTileAnmIndex).theData)
+    Me.Caption = tileAnmList(activeTileAnmIndex).animTileFile
+    
+    tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
+    Call tkMainForm.fillTree(vbNullString, projectPath)
 End Sub
 
-Private Sub savemnu_Click()
-    On Error Resume Next
-    If tileAnmList(activeTileAnmIndex).animTileFile$ = "" Then saveasmnu_Click: Exit Sub
+Private Sub savemnu_Click(): On Error Resume Next
+
+    If LenB(tileAnmList(activeTileAnmIndex).animTileFile) = 0 Then
+        saveAsMnu_Click
+        Exit Sub
+    End If
+    
     Dim strFile As String
     strFile = projectPath & tilePath & tileAnmList(activeTileAnmIndex).animTileFile
+    
     If (fileExists(strFile)) Then
         If (GetAttr(strFile) And vbReadOnly) Then
             Call MsgBox("This file is read-only; please choose a different file.")
-            Call saveasmnu_Click
+            Call saveAsMnu_Click
             Exit Sub
         End If
     End If
+    
     Call saveTileAnm(strFile, tileAnmList(activeTileAnmIndex).theData)
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
 End Sub
 
-Private Sub tform_Click()
-    On Error Resume Next
+Private Sub tform_Click(): On Error Resume Next
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = True
-    ChDir (currentDir)
-    Dim dlg As FileDialogInfo
-    With dlg
-        .strDefaultFolder = projectPath & tilePath
-        .strTitle = "Open Tile"
-        .strFileTypes = "Supported Files|*.gph;*.tst|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Tile (*.gph)|*.gph|RPGToolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
-        If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-            filename(1) = dlg.strSelectedFile
-            Dim antiPath As String
-            antiPath = dlg.strSelectedFileNoPath
-        Else
-            Exit Sub
-        End If
-    End With
-    ChDir (currentDir)
-    If filename(1) = "" Then Exit Sub
-    Call FileCopy(filename(1), projectPath & tilePath & antiPath)
-    Dim whichType As String
-    whichType = UCase(extention(filename(1)))
-    If whichType = "TST" Or whichType = "ISO" Then      'Yipes! we've selected an archive!
+    
+    Dim file As String, fileTypes As String, ext As String
+    fileTypes = "Supported Files|*.gph;*.tst|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Tile (*.gph)|*.gph|RPGToolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
+    
+    If Not browseFileDialog(Me.hwnd, projectPath & tilePath, "Select tile", "tst", fileTypes, file) Then
+        Exit Sub
+    End If
+       
+    ext = UCase$(extention(file))
+    If ext = "TST" Or ext = "ISO" Then
+    
         tstnum = 0
-        tstFile = antiPath
-        configfile.lastTileset = tstFile
+        tstFile = file
+        configfile.lastTileset = file
         tilesetForm.Show vbModal
-        If setFilename = "" Then Exit Sub
+        If LenB(setFilename) = 0 Then Exit Sub
+        
         Call TileAnmInsert(setFilename, tileAnmList(activeTileAnmIndex).theData, tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
     Else
-        Call TileAnmInsert(antiPath, tileAnmList(activeTileAnmIndex).theData, tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
+        Call TileAnmInsert(file, tileAnmList(activeTileAnmIndex).theData, tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
     End If
+    
     Call drawTileFrame(tileAnmList(activeTileAnmIndex).theData.animTileCurrentFrame)
 End Sub
 

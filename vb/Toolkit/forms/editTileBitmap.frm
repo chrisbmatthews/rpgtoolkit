@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form editTileBitmap 
-   Caption         =   "Tile Bitmap (Untitled)"
+   Caption         =   "Untitled tile bitmap"
    ClientHeight    =   4515
    ClientLeft      =   60
    ClientTop       =   630
@@ -191,16 +191,16 @@ Attribute VB_Exposed = False
 '==============================================================================
 
 Option Explicit
-Public dataIndex As Long    'index into the vector of ste maintained in commonenemy
+Public dataIndex As Long    'index into the vector of tbms
 
 Private m_bIgnore As Boolean
 
-Public Sub changeSelectedTile(ByVal file As String)
-    On Error Resume Next
+Public Sub changeSelectedTile(ByVal file As String): On Error Resume Next
     
-    If file = "" Then Exit Sub
-    tileBmpList(activeTileBmpIndex).selectedTile$ = file
-    Call openWinTile(projectPath$ + tilePath$ + file)
+    If LenB(file) = 0 Then Exit Sub
+    tileBmpList(activeTileBmpIndex).selectedTile = file
+    
+    Call openWinTile(projectPath & tilePath & file)
     If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
     
     Dim dx As Long, dy As Long, colorDraw As Long
@@ -217,16 +217,11 @@ Public Sub changeSelectedTile(ByVal file As String)
 
 End Sub
 
-
-Public Function formType() As Long
-    'identify type of form
-    On Error Resume Next
+Public Function formType() As Long: On Error Resume Next
     formType = FT_TILEBITMAP
 End Function
 
-
-Public Sub changeColor()
-    On Error Resume Next
+Public Sub changeColor(): On Error Resume Next
     Dim c As Long
     c = ColorDialog()
     If (c <> -1) Then
@@ -237,19 +232,19 @@ Public Sub changeColor()
     End If
 End Sub
 
-Public Sub saveFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
+Public Sub saveFile(): On Error Resume Next
     'If tileBmpList(activeTileBmpIndex).needUpdate = True Then
-        filename$(2) = tileBmpList(activeTileBmpIndex).filename
+        
         tileBmpList(activeTileBmpIndex).needUpdate = False
-        If filename$(2) = "" Then
+        If LenB(tileBmpList(activeTileBmpIndex).filename) = 0 Then
             Me.Show
             mnusaveas_Click
             Exit Sub
         End If
+        
         Dim strFile As String
         strFile = projectPath & bmpPath & tileBmpList(activeTileBmpIndex).filename
+        
         If (fileExists(strFile)) Then
             If (GetAttr(strFile) And vbReadOnly) Then
                 Call MsgBox("This file is read-only; please choose a different file.")
@@ -257,59 +252,29 @@ Public Sub saveFile()
                 Exit Sub
             End If
         End If
+        
         Call SaveTileBitmap(strFile, tileBmpList(activeTileBmpIndex).theData)
-        Me.Caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + tileBmpList(activeTileBmpIndex).filename + ")"
+        Me.Caption = tileBmpList(activeTileBmpIndex).filename
+        
     'End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-Public Sub saveAsFile()
-    'saves the file.
-    On Error GoTo ErrorHandler
+Public Sub saveAsFile(): On Error Resume Next
     If tileBmpList(activeTileBmpIndex).needUpdate = True Then
         Me.Show
         mnusaveas_Click
     End If
-    
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-
-
-Public Sub checkSave()
-    'check if the status effect has changed an it needs to be saved...
-    On Error GoTo ErrorHandler
-    Dim aa As Long
-    
+Public Sub checkSave(): On Error Resume Next
     If tileBmpList(activeTileBmpIndex).needUpdate = True Then
-        aa = MsgBox(LoadStringLoc(2052, "Would you like to save your changes?"), vbYesNo)
-        If aa = 6 Then
-            'yes-- save
+        If MsgBox("Save changes to " & tileBmpList(activeTileBmpIndex).filename & "?", vbYesNo) = vbYes Then
             Call saveFile
         End If
     End If
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-Sub infofill()
-    On Error Resume Next
+Private Sub infofill(): On Error Resume Next
     
     Dim xx As Long, yy As Long, x As Long, y As Long
     
@@ -367,41 +332,29 @@ Sub infofill()
     End If
 End Sub
 
-
-Public Sub openFile(filename$)
-    'open an effect
-    On Error Resume Next
-    Dim antiPath As String
-    Call checkSave
+Public Sub openFile(ByVal filename As String): On Error Resume Next
     activeTileBmp.Show
-    If filename$ = "" Then Exit Sub
-    Call OpenTileBitmap(filename$, tileBmpList(activeTileBmpIndex).theData)
-    antiPath$ = absNoPath(filename$)
-    tileBmpList(activeTileBmpIndex).filename = antiPath$
-    Me.Caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + antiPath$ + ")"
+    Call checkSave
+    
+    Call OpenTileBitmap(filename, tileBmpList(activeTileBmpIndex).theData)
+    
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(filename, projectPath & bmpPath, tileBmpList(activeTileBmpIndex).filename, False)
+    Me.Caption = tileBmpList(activeTileBmpIndex).filename
     
     Call infofill
-    
     tileBmpList(activeTileBmpIndex).needUpdate = False
 End Sub
 
-Public Sub tileBmpAmbientSlider()
-    On Error Resume Next
-    On Error GoTo ErrorHandler
+Public Sub tileBmpAmbientSlider(): On Error Resume Next
     tileBmpList(activeTileBmpIndex).ambientR = tkMainForm.tileBmpAmbientSlider.value
     tileBmpList(activeTileBmpIndex).ambientG = tkMainForm.tileBmpAmbientSlider.value
     tileBmpList(activeTileBmpIndex).ambientB = tkMainForm.tileBmpAmbientSlider.value
     tkMainForm.tileBmpAmbient.Text = CStr(tkMainForm.tileBmpAmbientSlider.value)
     Call vbPicFillRect(tkMainForm.tilebmpColor, 0, 0, 1000, 1000, RGB(tileBmpList(activeTileBmpIndex).ambientR, tileBmpList(activeTileBmpIndex).ambientG, tileBmpList(activeTileBmpIndex).ambientB))
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub changeDrawState(ByVal lngNewState As Long)
+Private Sub changeDrawState(ByVal lngNewState As Long): On Error Resume Next
     tileBmpList(activeTileBmpIndex).drawState = lngNewState
     m_bIgnore = True
     tkMainForm.tilebmpEraser.value = lngNewState
@@ -409,30 +362,26 @@ Private Sub changeDrawState(ByVal lngNewState As Long)
     m_bIgnore = False
 End Sub
 
-Public Sub tilebmpDrawLock()
+Public Sub tilebmpDrawLock(): On Error Resume Next
     If (m_bIgnore) Then Exit Sub
     Call changeDrawState(0)
 End Sub
 
-Public Sub tilebmpEraser()
+Public Sub tilebmpEraser(): On Error Resume Next
     If (m_bIgnore) Then Exit Sub
     Call changeDrawState(1)
 End Sub
 
-Public Sub tilebmpGrid(ByVal val As Long)
-    On Error Resume Next
+Public Sub tilebmpGrid(ByVal val As Long): On Error Resume Next
     tileBmpList(activeTileBmpIndex).grid = val
     Call infofill
 End Sub
 
-Public Sub tilebmpRedraw()
-    On Error Resume Next
+Public Sub tilebmpRedraw(): On Error Resume Next
     Call infofill
 End Sub
 
-Public Sub tilebmpSelectTile()
-    'tool
-    On Error Resume Next
+Public Sub tilebmpSelectTile(): On Error Resume Next
     ignore = 1
     openTileEditorDocs(activeTile.indice).oldDetail = detail
     
@@ -447,38 +396,26 @@ Public Sub tilebmpSelectTile()
             bufTile(x, y) = tileMem(x, y)
         Next y
     Next x
-    ChDir (currentDir$)
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + tilePath$
     
-    dlg.strTitle = "Select Tile"
-    dlg.strDefaultExt = "gph"
-    dlg.strFileTypes = "Supported Types|*.gph;*.tst|RPG Toolkit Tile (*.gph)|*.gph|RPG Toolkit TileSet (*.tst)|*.tst|All files(*.*)|*.*"
+    Dim file As String, fileTypes As String, ext As String
+    fileTypes = "Supported Types|*.gph;*.tst|RPG Toolkit Tile (*.gph)|*.gph|RPG Toolkit TileSet (*.tst)|*.tst|All files(*.*)|*.*"
     
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
+    If Not browseFileDialog(Me.hwnd, projectPath & tilePath, "Select tile", "tst", fileTypes, file) Then
         Exit Sub
     End If
-    ChDir (currentDir$)
-    If filename$(1) = "" Then Exit Sub
     
-    whichType$ = extention(filename$(1))
-    If UCase$(whichType$) = "TST" Then      'Yipes! we've selected an archive!
+    ext = UCase$(extention(file))
+    If ext = "TST" Then
         tstnum = 0
         
-        FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
-        tstFile$ = antiPath$
-        configfile.lastTileset$ = tstFile$
-        tilesetForm.Show vbModal ', me
+        tstFile = file
+        configfile.lastTileset = file
+        tilesetForm.Show vbModal
         
-        'MsgBox setFilename$
         Call changeSelectedTile(setFilename)
     Else
-        FileCopy filename$(1), projectPath$ + tilePath$ + antiPath$
-        tileBmpList(activeTileBmpIndex).selectedTile$ = antiPath$
-        Call openWinTile(filename$(1))
+        tileBmpList(activeTileBmpIndex).selectedTile = file
+        Call openWinTile(file)
         If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
         'MsgBox boardList(activeBoardIndex).ambient
         detail = openTileEditorDocs(activeTile.indice).oldDetail
@@ -500,24 +437,19 @@ Public Sub tilebmpSelectTile()
     Next x
 End Sub
 
-
-Public Sub tilebmpSizeX()
-    On Error Resume Next
+Public Sub tilebmpSizeX(): On Error Resume Next
     If val(tkMainForm.tilebmpSizeX) > 40 Then
         tkMainForm.tilebmpSizeX.Text = "40"
     End If
 End Sub
 
-Public Sub tileBmpSizeY()
-    On Error Resume Next
+Public Sub tileBmpSizeY(): On Error Resume Next
     If val(tkMainForm.tileBmpSizeY) > 40 Then
         tkMainForm.tileBmpSizeY.Text = "40"
     End If
 End Sub
 
-
-Public Sub tileBmpSizeOK()
-    On Error Resume Next
+Public Sub tileBmpSizeOK(): On Error Resume Next
     Dim sx As Long, sy As Long
     sx = val(tkMainForm.tilebmpSizeX)
     sy = val(tkMainForm.tileBmpSizeY)
@@ -526,35 +458,25 @@ Public Sub tileBmpSizeOK()
     Call infofill
 End Sub
 
-Private Sub arena_KeyPress(ByRef ascii As Integer)
-
+Private Sub arena_KeyPress(ByRef ascii As Integer): On Error Resume Next
     If (UCase$(chr$(ascii)) = "L") Then
-
         If (LenB(configfile.lastTileset)) Then
-
             tstFile = configfile.lastTileset
 
             Dim strExt As String
             strExt = UCase$(commonRoutines.extention(tstFile))
+            
             If (strExt = "TST") Then
-
                 Call tilesetForm.Show(vbModal)
                 Call changeSelectedTile(setFilename)
-
             End If
-
         Else
-
             Call tilebmpSelectTile
-
         End If
-
     End If
-
 End Sub
 
-Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    On Error Resume Next
+Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     
     Dim xx As Long, yy As Long, x2 As Long, y2 As Long
     
@@ -596,8 +518,7 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
     End Select
 End Sub
 
-Private Sub arena_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    On Error Resume Next
+Private Sub arena_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Dim xx As Long, yy As Long
     
     xx = Int(x / 32) + tileBmpList(activeTileBmpIndex).topX
@@ -609,21 +530,18 @@ Private Sub arena_MouseMove(Button As Integer, Shift As Integer, x As Single, y 
 End Sub
 
 
-Private Sub Form_Activate()
-    On Error Resume Next
+Private Sub Form_Activate(): On Error Resume Next
     Set activeTileBmp = Me
     Set activeForm = Me
     activeTileBmpIndex = dataIndex
     Call hideAllTools
-    tkMainForm.bBar.Visible = True
-    tkMainForm.tileBmpExtras.Visible = True
-    tkMainForm.tilebmpTools.Visible = True
+    tkMainForm.bBar.visible = True
+    tkMainForm.tileBmpExtras.visible = True
+    tkMainForm.tilebmpTools.visible = True
     tkMainForm.tilebmpTools.Top = tkMainForm.toolTop
 End Sub
 
-Private Sub Form_Load()
-    On Error GoTo ErrorHandler
-    ' Call LocalizeForm(Me)
+Private Sub Form_Load(): On Error Resume Next
     
     Set activeTileBmp = Me
     dataIndex = VectTileBmpNewSlot()
@@ -631,77 +549,49 @@ Private Sub Form_Load()
     Call TileBitmapClear(tileBmpList(dataIndex).theData)
     
     Call infofill
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-
-Private Sub Form_Resize()
-    On Error Resume Next
+Private Sub Form_Resize(): On Error Resume Next
     'arena.Left = (Me.width - arena.width) / 2
-    'arena.Top = (Me.height - arena.height) / 2
+    'arena.Top = (Me.Height - arena.Height) / 2
 End Sub
 
-
-Private Sub Form_Unload(Cancel As Integer)
-    On Error Resume Next
+Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     Call hideAllTools
     Call tkMainForm.refreshTabs
 End Sub
 
-Private Sub mnuCLose_Click()
-    On Error GoTo ErrorHandler
+Private Sub mnuCLose_Click(): On Error Resume Next
     Unload Me
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
 
-Private Sub mnusaveas_Click()
-    On Error Resume Next
-    ChDir (currentDir$)
+Private Sub mnusaveas_Click(): On Error Resume Next
+    
     Dim dlg As FileDialogInfo
-    Dim antiPath As String, aa As Long, bb As Long
     
-    dlg.strDefaultFolder = projectPath$ + bmpPath$
-    
+    dlg.strDefaultFolder = projectPath & bmpPath
     dlg.strTitle = "Save Tile Bitmap As"
     dlg.strDefaultExt = "tbm"
     dlg.strFileTypes = "RPG Toolkit Tile Bitmap (*.tbm)|*.tbm|All files(*.*)|*.*"
-    'dlg2
-    If SaveFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename$(1) = dlg.strSelectedFile
-        antiPath$ = dlg.strSelectedFileNoPath
-    Else
-        Exit Sub
-    End If
-    ChDir (currentDir$)
-    ' tileBmpList(activeTileBmpIndex).needUpdate = False
     
-    tileBmpList(activeTileBmpIndex).filename = antiPath$
-    Call saveFile
-    ' Call SaveTileBitmap(filename$(1), tileBmpList(activeTileBmpIndex).theData)
-    Me.Caption = LoadStringLoc(2051, "Tile Bitmap") + "  (" + antiPath$ + ")"
-    Call tkMainForm.fillTree("", projectPath$)
+    If Not SaveFileDialog(dlg, Me.hwnd) Then Exit Sub
+    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
+    
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, tileBmpList(activeTileBmpIndex).filename, True) Then Exit Sub
+   
+    Call SaveTileBitmap(dlg.strDefaultFolder & tileBmpList(activeTileBmpIndex).filename, tileBmpList(activeTileBmpIndex).theData)
+    Me.Caption = tileBmpList(activeTileBmpIndex).filename
+
+    tileBmpList(activeTileBmpIndex).needUpdate = False
+    Call tkMainForm.fillTree(vbNullString, projectPath)
 End Sub
 
 
 Private Sub toc_Click()
-    On Error GoTo ErrorHandler
+    On Error Resume Next
     Call BrowseFile(helpPath$ + ObtainCaptionFromTag(DB_Help1, resourcePath$ + m_LangFile))
-
-    Exit Sub
-'Begin error handling code:
-ErrorHandler:
-    Call HandleError
-    Resume Next
 End Sub
-
 
 Private Sub mnutilehorizontally_Click()
     On Error Resume Next
@@ -712,7 +602,6 @@ Private Sub mnutilevertically_Click()
     On Error Resume Next
     Call tkMainForm.tileverticallymnu_Click
 End Sub
-
 
 Private Sub mnuTutorial_Click()
     On Error Resume Next
@@ -799,7 +688,6 @@ Private Sub mnunewplayer_Click()
     Call tkMainForm.newplayermnu_Click
 End Sub
 
-
 Private Sub mnunewproject_Click()
     On Error Resume Next
     Call tkMainForm.newprojectmnu_Click
@@ -815,18 +703,15 @@ Private Sub mnunewspecialmove_Click()
     Call tkMainForm.newspecialmovemnu_Click
 End Sub
 
-
 Private Sub mnunewstatuseffect_Click()
     On Error Resume Next
     Call tkMainForm.newstatuseffectmnu_Click
 End Sub
 
-
 Private Sub mnunewtile_Click()
     On Error Resume Next
     Call tkMainForm.newtilemnu_Click
 End Sub
-
 
 Private Sub mnunewtilebitmap_Click()
     On Error Resume Next
@@ -837,7 +722,6 @@ Private Sub mnuopen_Click()
     On Error Resume Next
     Call tkMainForm.openmnu_Click
 End Sub
-
 
 Private Sub mnuRegistrationInfo_Click()
     On Error Resume Next
@@ -883,7 +767,6 @@ Private Sub mnutestgame_Click()
     On Error Resume Next
     tkMainForm.testgamemnu_Click
 End Sub
-
 
 Private Sub mnuOpenProject_Click()
     On Error Resume Next
