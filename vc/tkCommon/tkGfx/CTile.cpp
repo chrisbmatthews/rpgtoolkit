@@ -625,9 +625,9 @@ VOID FAST_CALL CTile::createShading(
 				{
 					// Loop over the mask and insert the tile data into the 
 					// transparent pixels.
-					if (isoMaskCTile[x][y] == 0)
+					if (isoMaskCTile[x][y])
 					{
-						isometricTile[x * 32 + y] = pnTile[xi * 32 + yi];
+						isometricTile[x * 32 + y] = pnTile[yi * 32 + xi];
 
 						// Increment the entry in pnTile.
 						if (++yi == 32)
@@ -686,7 +686,7 @@ VOID FAST_CALL CTile::createShading(
 //
 // Returns: VOID
 ////////////////////////////////////////////////
-VOID FAST_CALL CTile::prepAlpha(VOID) /* Use VOID for paramless functions */
+VOID FAST_CALL CTile::prepAlpha(VOID)
 {
 	if (!m_bIsometric)
 	{
