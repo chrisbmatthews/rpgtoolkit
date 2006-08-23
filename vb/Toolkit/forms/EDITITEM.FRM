@@ -1057,7 +1057,7 @@ Private Sub saveAsMnu_Click(): On Error Resume Next
     activeItem.Caption = itemList(activeItemIndex).itemFile
     
     itemList(activeItemIndex).itemNeedUpdate = False
-    Call tkMainForm.fillTree("", projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & itemList(activeItemIndex).itemFile)
 End Sub
 
 '=========================================================================

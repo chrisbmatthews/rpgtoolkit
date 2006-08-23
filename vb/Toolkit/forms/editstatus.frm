@@ -532,7 +532,7 @@ Private Sub saveAsMnu_Click(): On Error Resume Next
     activeStatusEffect.Caption = statusEffectList(activeStatusEffectIndex).statusFile
     
     statusEffectList(activeStatusEffectIndex).statusNeedUpdate = False
-    Call tkMainForm.fillTree(vbNullString, projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & statusEffectList(activeStatusEffectIndex).statusFile)
 End Sub
 
 Private Sub savemnu_Click(): On Error Resume Next

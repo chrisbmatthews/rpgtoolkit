@@ -938,7 +938,7 @@ Private Sub mnusaveas_Click(): On Error Resume Next
     activeEnemy.Caption = enemylist(activeEnemyIndex).eneFile
     
     enemylist(activeEnemyIndex).eneNeedUpdate = False
-    Call tkMainForm.fillTree(vbNullString, projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & enemylist(activeEnemyIndex).eneFile)
 End Sub
 
 Private Sub newEnemy(): On Error Resume Next

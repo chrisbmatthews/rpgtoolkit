@@ -2861,7 +2861,6 @@ Private Sub mnusaveas_Click()
     mainFile$ = antiPath$
     editmainfile.Caption = mainFile
     mainNeedUpdate = False
-    Call tkMainForm.fillTree("", projectPath$)
 End Sub
 
 '=========================================================================

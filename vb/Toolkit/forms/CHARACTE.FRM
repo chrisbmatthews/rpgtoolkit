@@ -1444,7 +1444,7 @@ Private Sub mnusaveas_Click(): On Error Resume Next
 
     playerList(activePlayerIndex).charNeedUpdate = False
     activePlayer.Caption = playerList(activePlayerIndex).charFile
-    Call tkMainForm.fillTree("", projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & playerList(activePlayerIndex).charFile)
 
 End Sub
 

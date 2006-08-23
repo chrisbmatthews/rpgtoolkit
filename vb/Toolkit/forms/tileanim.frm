@@ -579,7 +579,7 @@ Private Sub saveAsMnu_Click(): On Error Resume Next
     Me.Caption = tileAnmList(activeTileAnmIndex).animTileFile
     
     tileAnmList(activeTileAnmIndex).animTileNeedUpdate = False
-    Call tkMainForm.fillTree(vbNullString, projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & tileAnmList(activeTileAnmIndex).animTileFile)
 End Sub
 
 Private Sub savemnu_Click(): On Error Resume Next

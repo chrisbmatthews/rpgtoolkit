@@ -584,7 +584,7 @@ Private Sub mnusaveas_Click(): On Error Resume Next
     Me.Caption = tileBmpList(activeTileBmpIndex).filename
 
     tileBmpList(activeTileBmpIndex).needUpdate = False
-    Call tkMainForm.fillTree(vbNullString, projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & tileBmpList(activeTileBmpIndex).filename)
 End Sub
 
 

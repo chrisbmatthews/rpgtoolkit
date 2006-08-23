@@ -962,7 +962,7 @@ Function getTrueCoordX(x As Integer) As Integer
     Dim dRatio As Double
     Dim nRet As Integer
     
-    nWidth = tkvisual.boardform.Width / Screen.TwipsPerPixelX
+    nWidth = tkvisual.boardform.width / Screen.TwipsPerPixelX
     dRatio = nWidth / (19 * 32)
         
     nRet = x * dRatio
@@ -1326,7 +1326,7 @@ Private Sub sizescreen()
     
     buffer.Top = boardform.Top
     buffer.Left = boardform.Left
-    buffer.Width = boardform.Width
+    buffer.width = boardform.width
     buffer.Height = boardform.Height
     
     'size code form...
@@ -1368,7 +1368,7 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
     Dim xx As Integer
     Dim yy As Integer
       
-    xx = x * (19 * 32) / (boardform.Width / Screen.TwipsPerPixelX)
+    xx = x * (19 * 32) / (boardform.width / Screen.TwipsPerPixelX)
     yy = y * (11 * 32) / (boardform.Height / Screen.TwipsPerPixelY)
       
     If bGridOnOff Then
@@ -1384,7 +1384,7 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
         Dim num As Integer
         bClicked = checkButtonClicked(xx, yy, num)
         If bClicked = True Then
-            codeForm.Visible = True
+            codeForm.visible = True
             nButtonNum = num
             codeForm.Text = theButtons(num).rpgcode
         Else
@@ -1392,7 +1392,7 @@ Private Sub boardform_MouseDown(Button As Integer, Shift As Integer, x As Single
             If formLoadRpgCode = "" Then
                 formLoadRpgCode = "* Form Load Event (this code gets run each time the screen is refreshed)" + chr$(13) + chr$(10) + "* TBD: Input your own code here:"
             End If
-            codeForm.Visible = True
+            codeForm.visible = True
             codeForm.Text = formLoadRpgCode
         End If
     End If
@@ -1415,7 +1415,7 @@ Private Sub boardform_MouseMove(Button As Integer, Shift As Integer, x As Single
         Exit Sub
     End If
       
-    xx = x * (19 * 32) / (boardform.Width / Screen.TwipsPerPixelX)
+    xx = x * (19 * 32) / (boardform.width / Screen.TwipsPerPixelX)
     yy = y * (11 * 32) / (boardform.Height / Screen.TwipsPerPixelY)
       
     If bGridOnOff Then
@@ -1555,9 +1555,9 @@ ErrorHandler:
     Resume Next
 End Sub
 
-Private Sub ControlPanel_Click(index As Integer)
+Private Sub ControlPanel_Click(Index As Integer)
     On Error GoTo ErrorHandler
-    toolMode = index
+    toolMode = Index
 
     Exit Sub
 'Begin error handling code:
@@ -1685,7 +1685,7 @@ Public Sub mnusaveas_Click()
     ChDir (currentDir$)
     Call saveForm(filename)
     curfilename = filename
-    Call tkMainForm.fillTree("", projectPath$)
+    Call tkMainForm.tvAddFile(filename)
 End Sub
 
 Private Sub redrawbutton_Click()

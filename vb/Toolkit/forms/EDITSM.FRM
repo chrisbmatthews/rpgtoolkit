@@ -676,7 +676,7 @@ Private Sub saveAsMnu_Click(): On Error Resume Next
     activeSpecialMove.Caption = specialMoveList(activeSpecialMoveIndex).smFile
     
     specialMoveList(activeSpecialMoveIndex).smNeedUpdate = False
-    Call tkMainForm.fillTree(vbNullString, projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & specialMoveList(activeSpecialMoveIndex).smFile)
 End Sub
 
 '==============================================================================

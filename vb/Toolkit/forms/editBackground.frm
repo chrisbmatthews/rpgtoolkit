@@ -821,7 +821,7 @@ Private Sub mnusaveas_Click(): On Error Resume Next
     activeBackground.Caption = bkgList(activeBkgIndex).filename
     
     bkgList(activeBkgIndex).needUpdate = False
-    Call tkMainForm.fillTree("", projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & bkgList(activeBkgIndex).filename)
 End Sub
 
 '=========================================================================

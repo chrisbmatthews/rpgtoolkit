@@ -2271,7 +2271,7 @@ Private Sub savetile2_Click(): On Error Resume Next
         
     End If 'tst, iso.
     
-    Call tkMainForm.fillTree("", projectPath)
+    Call tkMainForm.tvAddFile(filename(1))
 End Sub
 
 '==========================================================================================

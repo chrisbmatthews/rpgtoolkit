@@ -179,8 +179,7 @@ Private Sub Command1_Click()
         
         oldpath$ = currentDir$ + "\" + projectPath$
         'mainoption.Dir1.path = currentdir$ + "\" + projectPath$
-        Call mainoption.TreeView1.Nodes.Clear
-        Call tkMainForm.fillTree("", projectPath$)
+        Call tkMainForm.tvReset
         
         mainMem.gameTitle$ = gamett.Text             'title of game
         mainoption.Caption = "RPG Toolkit Development System, Version 2.2 (" + gamett.Text + ")"

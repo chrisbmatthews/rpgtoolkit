@@ -876,7 +876,7 @@ Private Sub saveasanimmnu_Click(): On Error Resume Next
     
     ' Update the caption
     activeAnimation.Caption = animationList(activeAnimationIndex).animFile
-    Call tkMainForm.fillTree(vbNullString, projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & animationList(activeAnimationIndex).animFile)
     
 End Sub
 

@@ -1266,8 +1266,8 @@ Private Sub resize() 'on error resume next
     Dim brdWidth As Long, brdHeight As Long
     
     'Available space.
-    sstBoard.width = activeBoard.width - 120
-    sstBoard.Height = activeBoard.Height - 480
+    sstBoard.width = Me.width - 120
+    sstBoard.Height = Me.Height - 480
     
     If sstBoard.Tab = BTAB_PROPERTIES Then
         picProperties.Left = (sstBoard.width - picProperties.width) / 2
@@ -1420,7 +1420,7 @@ Private Sub saveFileAs() ':on error resume next
     Me.Caption = m_ed.boardName
     
     m_ed.bUnsavedData = False
-    Call tkMainForm.fillTree("", projectPath)
+    Call tkMainForm.tvAddFile(dlg.strDefaultFolder & m_ed.boardName)
 End Sub
 
 Private Function checkSave(ByVal style As VbMsgBoxStyle) As VbMsgBoxResult: On Error Resume Next

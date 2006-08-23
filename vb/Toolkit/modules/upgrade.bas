@@ -123,8 +123,7 @@ On Error Resume Next
 
     oldpath$ = currentDir$ + "\" + projectPath$
     'mainoption.Dir1.path = currentdir$ + "\" + projectPath$
-    Call mainoption.TreeView1.Nodes.Clear
-    Call tkMainForm.fillTree("", projectPath$)
+    Call tkMainForm.tvReset
 End Sub
 
 

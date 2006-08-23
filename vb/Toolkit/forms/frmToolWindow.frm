@@ -27,8 +27,8 @@ Attribute VB_Exposed = False
 Event Unload()
 
 Private Sub Form_Resize()
- tkMainForm.TreeView1.Height = Me.Height - 400
- tkMainForm.TreeView1.Width = Me.Width - 145
+ tkMainForm.tvProjectList.Height = Me.Height - 400
+ tkMainForm.tvProjectList.width = Me.width - 145
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
