@@ -150,6 +150,13 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
         wallpaper = ""
     End If
 
+    ' Config related, but not actually in the config file.
+    If (GetSetting("RPGToolkit3", "Installation", "Previous", "0") = "1") Then
+        ' The above setting will be set by the installer when it detects the
+        ' previous installation of a pre-3.0.7 version.
+        Call frmRpgCodeUpdate.Show(vbModal)
+    End If
+
 End Sub
 
 '=========================================================================

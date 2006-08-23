@@ -5,8 +5,8 @@ Begin VB.MDIForm tkMainForm
    BackColor       =   &H8000000C&
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
    ClientHeight    =   8190
-   ClientLeft      =   165
-   ClientTop       =   855
+   ClientLeft      =   225
+   ClientTop       =   825
    ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
@@ -473,8 +473,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   131
             Top             =   360
             Width           =   3015
-            _ExtentX        =   5318
-            _ExtentY        =   11456
+            _extentx        =   5318
+            _extenty        =   11456
          End
          Begin Toolkit.ctlBrdImage bTools_ctlImage 
             Height          =   4575
@@ -482,8 +482,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   130
             Top             =   360
             Width           =   3015
-            _ExtentX        =   5318
-            _ExtentY        =   8070
+            _extentx        =   5318
+            _extenty        =   8070
          End
          Begin Toolkit.ctlBrdVector bTools_ctlVector 
             Height          =   5055
@@ -491,8 +491,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   128
             Top             =   360
             Width           =   3015
-            _ExtentX        =   5318
-            _ExtentY        =   8916
+            _extentx        =   5318
+            _extenty        =   8916
          End
          Begin Toolkit.ctlBrdProgram bTools_ctlPrg 
             Height          =   6375
@@ -500,8 +500,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   129
             Top             =   360
             Width           =   3015
-            _ExtentX        =   5318
-            _ExtentY        =   11245
+            _extentx        =   5318
+            _extenty        =   11245
          End
       End
       Begin VB.Label bTools_Title 
@@ -607,8 +607,8 @@ Begin VB.MDIForm tkMainForm
             TabIndex        =   46
             Top             =   0
             Width           =   1815
-            _ExtentX        =   3201
-            _ExtentY        =   8070
+            _extentx        =   3201
+            _extenty        =   8070
          End
       End
       Begin VB.Label lblNew 
@@ -2212,8 +2212,8 @@ Begin VB.MDIForm tkMainForm
          TabIndex        =   134
          Top             =   360
          Width           =   4815
-         _ExtentX        =   8493
-         _ExtentY        =   9763
+         _extentx        =   8493
+         _extenty        =   9763
       End
       Begin VB.Label lblCurrentTileset 
          BackColor       =   &H00808080&
@@ -2251,13 +2251,13 @@ Begin VB.MDIForm tkMainForm
             Style           =   6
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "21/08/2006"
+            TextSave        =   "23/08/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "18:25"
+            TextSave        =   "3:08 AM"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             AutoSize        =   1
@@ -2270,6 +2270,7 @@ Begin VB.MDIForm tkMainForm
          BeginProperty Panel5 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   2
             AutoSize        =   1
+            Enabled         =   0   'False
             Object.Width           =   2884
             TextSave        =   "NUM"
          EndProperty
@@ -2706,6 +2707,13 @@ Private Sub controlSetSizable(ByRef ctl As Control) ':on error resume next
     
     'Redraw the frame.
     Call SetWindowPos(ctl.hwnd, 0, 0, 0, 0, 0, SWP_NOZORDER Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_FRAMECHANGED)
+End Sub
+
+'============================================================================
+' Launch the RPGCode updater.
+'============================================================================
+Private Sub mnuRpgCodeUpdater_Click()
+    Call frmRpgCodeUpdate.Show(vbModal)
 End Sub
 
 '============================================================================

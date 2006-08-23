@@ -100,7 +100,6 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
-      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -273,6 +272,9 @@ Begin VB.Form rpgcodeedit
          Caption         =   "AutoCommand Wizard"
          Visible         =   0   'False
       End
+      Begin VB.Menu mnuUpdateRpgCode 
+         Caption         =   "Update RPGCode"
+      End
       Begin VB.Menu mnuColorCoding 
          Caption         =   "Options"
       End
@@ -438,7 +440,7 @@ Public Sub openProgram(ByVal filename As String)
     On Error GoTo ErrorHandler
 
     ' Load the Program into text box.
-    Call codeForm.LoadFile(filename, rtfText)
+    Call CodeForm.LoadFile(filename, rtfText)
 
     ' Call Syntax Color Routines
     Call SplitLines
@@ -525,11 +527,11 @@ Private Sub mnuBookmarkToolbar_Click()
     
         Case True
             mnuBookmarkToolbar.Checked = False
-            bookmarkToolbar.Visible = False
+            bookmarkToolbar.visible = False
         
         Case False
             mnuBookmarkToolbar.Checked = True
-            bookmarkToolbar.Visible = True
+            bookmarkToolbar.visible = True
     
     End Select
     
@@ -558,26 +560,26 @@ Private Sub mnuCut_Click(): On Error Resume Next
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
     'Call Clipboard.SetText(codeForm.SelText, vbCFText)
     'codeForm.SelText = vbNullString
-    Call SendMessage(codeForm.hwnd, WM_CUT, 0, 0&)
+    Call SendMessage(CodeForm.hwnd, WM_CUT, 0, 0&)
     Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
 End Sub
 
 Private Sub mnuCopy_Click(): On Error Resume Next
     'Call Clipboard.SetText(codeForm.SelText, vbCFText)
-    Call SendMessage(codeForm.hwnd, WM_COPY, 0, 0&)
+    Call SendMessage(CodeForm.hwnd, WM_COPY, 0, 0&)
     Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
 End Sub
 
 Private Sub mnuPaste_Click(): On Error Resume Next
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
     Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
-    Call SendMessage(codeForm.hwnd, WM_PASTE, 0, 0&)
+    Call SendMessage(CodeForm.hwnd, WM_PASTE, 0, 0&)
     Call colorPastedCode                'This is crap!
 End Sub
 
 Private Sub mnuSelectAll_Click(): On Error Resume Next
-    codeForm.selStart = 0
-    codeForm.SelLength = Len(codeForm.Text)
+    CodeForm.selStart = 0
+    CodeForm.SelLength = Len(CodeForm.Text)
 End Sub
 
 '==========================================================================
@@ -610,7 +612,7 @@ Private Sub CodeForm_KeyPress(KeyAscii As Integer): On Error Resume Next
     Select Case KeyAscii
 
         Case 3  ' Ctrl+C
-            Call Clipboard.SetText(codeForm.SelText, vbCFText)
+            Call Clipboard.SetText(CodeForm.SelText, vbCFText)
 
     End Select
 
@@ -623,13 +625,13 @@ Private Sub colorPastedCode()
 
     Dim oldSS As Long
     Dim oldSL As Long
-    oldSS = codeForm.selStart()
-    oldSL = codeForm.SelLength()
-    Call SplitLines(oldLine, codeForm.GetLineFromChar(oldSS))
-    codeForm.selStart = oldSS
-    codeForm.SelLength = oldSL
+    oldSS = CodeForm.selStart()
+    oldSL = CodeForm.SelLength()
+    Call SplitLines(oldLine, CodeForm.GetLineFromChar(oldSS))
+    CodeForm.selStart = oldSS
+    CodeForm.SelLength = oldSL
     blackLine = True
-    Call codeForm.SetFocus
+    Call CodeForm.SetFocus
     blackLine = False
 
 End Sub
@@ -657,13 +659,13 @@ Public Sub mnuNotepadMode_Click()
 
         Case True ' Leaving notepad mode
             mnuNotepadMode.Checked = False
-            tkMainForm.mainToolbar.Visible = True
-            tkMainForm.leftBarContainer.Visible = True
-            tkMainForm.newBarContainerContainer.Visible = True
+            tkMainForm.mainToolbar.visible = True
+            tkMainForm.leftBarContainer.visible = True
+            tkMainForm.newBarContainerContainer.visible = True
             Call tkMainForm.ShowTabs
-            tkMainForm.StatusBar1.Visible = True
+            tkMainForm.StatusBar1.visible = True
             Form_Activate
-            tkMainForm.popTray.Visible = True
+            tkMainForm.popTray.visible = True
             WindowState = 0
             tkMainForm.Caption = oldCaption
             Caption = meOldCaption
@@ -675,12 +677,12 @@ Public Sub mnuNotepadMode_Click()
             tkMainForm.Height = Height
             tkMainForm.Top = Top
             tkMainForm.Left = Left
-            tkMainForm.mainToolbar.Visible = False
-            tkMainForm.popTray.Visible = False
-            tkMainForm.leftBarContainer.Visible = False
-            tkMainForm.newBarContainerContainer.Visible = False
+            tkMainForm.mainToolbar.visible = False
+            tkMainForm.popTray.visible = False
+            tkMainForm.leftBarContainer.visible = False
+            tkMainForm.newBarContainerContainer.visible = False
             Call tkMainForm.hideTabs
-            tkMainForm.StatusBar1.Visible = False
+            tkMainForm.StatusBar1.visible = False
             hideAllTools
             WindowState = 2
             Form_Resize
@@ -711,15 +713,15 @@ Private Sub codeform_MouseDown(Button As Integer, Shift As Integer, x As Single,
         
         'Determine which options to enable.
         If LenB(Clipboard.GetText(vbCFText)) Then mnuPopPrg_Paste.Enabled = True
-        If codeForm.SelLength Then mnuPopPrg_Copy.Enabled = True: mnuPopPrg_Cut.Enabled = True
+        If CodeForm.SelLength Then mnuPopPrg_Copy.Enabled = True: mnuPopPrg_Cut.Enabled = True
     
         PopupMenu mnuPopPrg
         
     Else
         'Highlight code.
-        mouseDownSelStart = codeForm.selStart
-        mouseDownSelLength = codeForm.SelLength
-        oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+        mouseDownSelStart = CodeForm.selStart
+        mouseDownSelLength = CodeForm.SelLength
+        oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
     End If
     
 End Sub
@@ -745,12 +747,12 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
 
     If Not (mnuNotepadMode.Checked) Then
         Dim inf As TextLineInfo
-        inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
-        tkMainForm.StatusBar1.Panels(3).Text = CStr(codeForm.GetLineFromChar(codeForm.selStart) + 1)
+        inf = getTextLineInfo(CodeForm.Text, CodeForm.selStart)
+        tkMainForm.StatusBar1.Panels(3).Text = CStr(CodeForm.GetLineFromChar(CodeForm.selStart) + 1)
         tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
     End If
 
-    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+    oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
 
     'Declare variables...
     Dim enterKey As String
@@ -767,8 +769,8 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
         If (blackLine) Then
             Call reColorLine(blackLine)
             blackLine = False
-            If (codeForm.selStart = Len(codeForm.Text)) Then
-                codeForm.SelItalic = 0
+            If (CodeForm.selStart = Len(CodeForm.Text)) Then
+                CodeForm.SelItalic = 0
             End If
         End If
         Exit Sub
@@ -787,7 +789,7 @@ End Sub
 '==========================================================================
 Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
-    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+    oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
 
     ' Make sure we aren't wasting time coloring a line that's already colored
     If (blackLine) Then
@@ -797,12 +799,12 @@ Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y
         Dim nSL As Long
  
         ' Record where the mouse clicked down
-        nSS = codeForm.selStart
-        nSL = codeForm.SelLength
+        nSS = CodeForm.selStart
+        nSL = CodeForm.SelLength
  
         ' Move back to the line we just left
-        codeForm.selStart = mouseDownSelStart
-        codeForm.SelLength = mouseDownSelLength
+        CodeForm.selStart = mouseDownSelStart
+        CodeForm.SelLength = mouseDownSelLength
 
         ' Color the line we just left
         reColorLine
@@ -811,13 +813,13 @@ Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y
         blackLine = False
  
         ' Move back to where the mouse clicked down
-        codeForm.selStart = nSS
-        codeForm.SelLength = nSL
+        CodeForm.selStart = nSS
+        CodeForm.SelLength = nSL
 
     End If
 
-    If (codeForm.selStart = Len(codeForm.Text)) Then
-        codeForm.SelItalic = 0
+    If (CodeForm.selStart = Len(CodeForm.Text)) Then
+        CodeForm.SelItalic = 0
     End If
 
 End Sub
@@ -827,9 +829,9 @@ End Sub
 '==========================================================================
 Private Sub cboBookmarkType_Change()
     On Error Resume Next
-    cboMethodBookmarks.Visible = False
-    cboCommentBookmarks.Visible = False
-    cboLabelBookmarks.Visible = False
+    cboMethodBookmarks.visible = False
+    cboCommentBookmarks.visible = False
+    cboLabelBookmarks.visible = False
     Select Case cboBookmarkType.list(cboBookmarkType.ListIndex)
         Case "(Methods)": Set secondCombo = cboMethodBookmarks
         Case "(Comments)": Set secondCombo = cboCommentBookmarks
@@ -924,7 +926,7 @@ End Sub
 ' File -> Close
 '==========================================================================
 Private Sub closemnu_Click()
-    rpgcodeList(activeRPGCodeIndex).prgText = codeForm.Text
+    rpgcodeList(activeRPGCodeIndex).prgText = CodeForm.Text
     Call Unload(Me)
 End Sub
 
@@ -934,8 +936,8 @@ End Sub
 Private Sub codeform_Click()
     On Error Resume Next
     Dim inf As TextLineInfo
-    inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
-    tkMainForm.StatusBar1.Panels(3).Text = CStr(codeForm.GetLineFromChar(codeForm.selStart) + 1)
+    inf = getTextLineInfo(CodeForm.Text, CodeForm.selStart)
+    tkMainForm.StatusBar1.Panels(3).Text = CStr(CodeForm.GetLineFromChar(CodeForm.selStart) + 1)
     tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
 End Sub
 
@@ -952,11 +954,11 @@ End Sub
 Public Sub prgEventEdit()
     On Error Resume Next
     Dim numLines As Long
-    numLines = countTextLines(codeForm.Text)
+    numLines = countTextLines(CodeForm.Text)
     ReDim evtList(numLines + 500) As String
     Dim i As Long
     For i = 0 To numLines - 1
-        evtList(i) = getTextLineNumber(codeForm.Text, i)
+        evtList(i) = getTextLineNumber(CodeForm.Text, i)
     Next i
     Call EventEdit.Show
 End Sub
@@ -979,7 +981,7 @@ Private Sub Form_Activate(): On Error Resume Next
      activeRPGCodeIndex = dataIndex
 
      Call hideAllTools
-     tkMainForm.rpgcodeTools.Visible = True
+     tkMainForm.rpgcodeTools.visible = True
      tkMainForm.rpgcodeTools.Top = tkMainForm.toolTop
 
 End Sub
@@ -999,14 +1001,14 @@ Set activeRPGCode = Me
 dataIndex = VectRPGCodeNewSlot()
 activeRPGCodeIndex = dataIndex
     
-codeForm.width = Me.width * 0.9 - 255
-codeForm.Height = Me.Height * 0.9 - 335
-codeForm.Left = (Me.width * 0.1) / 2
-codeForm.Top = 335
+CodeForm.width = Me.width * 0.9 - 255
+CodeForm.Height = Me.Height * 0.9 - 335
+CodeForm.Left = (Me.width * 0.1) / 2
+CodeForm.Top = 335
 
 WindowState = 0
 
-If (tag <> "1") Then
+If (Tag <> "1") Then
     mnuNotepadMode.Checked = False
 Else
     Call mnuNotepadMode_Click
@@ -1014,9 +1016,9 @@ End If
 
 Call Form_Resize
 
-codeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", vbNullString)
-If (LenB(codeForm.Text)) Then codeForm.Text = codeForm.Text & vbCrLf
-codeForm.selStart = Len(codeForm.Text)
+CodeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", vbNullString)
+If (LenB(CodeForm.Text)) Then CodeForm.Text = CodeForm.Text & vbCrLf
+CodeForm.selStart = Len(CodeForm.Text)
 
 Exit Sub
 
@@ -1034,12 +1036,12 @@ Private Sub Form_Resize()
 
     Dim cfTop As Long
     If (mnuBookmarkToolbar.Checked) Then cfTop = 335
-    codeForm.Move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
+    CodeForm.move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
     cboBookmarkType.width = (Me.width - 60) / 2
     If Not (secondCombo Is Nothing) Then
         secondCombo.Left = cboBookmarkType.width
         secondCombo.width = cboBookmarkType.width - 60
-        secondCombo.Visible = True
+        secondCombo.visible = True
     End If
 
 End Sub
@@ -1071,10 +1073,10 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     
     End If
 
-    rpgcodeList(activeRPGCodeIndex).prgText = codeForm.Text
+    rpgcodeList(activeRPGCodeIndex).prgText = CodeForm.Text
     Call hideAllTools
     If (mnuNotepadMode.Checked) Then Call mnuNotepadMode_Click
-    If (tag = "1") Then Call mnuexit_Click
+    If (Tag = "1") Then Call mnuexit_Click
     Call tkMainForm.refreshTabs
 
 End Sub
@@ -1108,6 +1110,13 @@ Private Sub rpgr_Click(): On Error Resume Next
 End Sub
 
 '==========================================================================
+' Launch the RPGCode updater.
+'==========================================================================
+Private Sub mnuUpdateRpgCode_Click()
+    Call frmRpgCodeUpdate.Show(vbModal)
+End Sub
+
+'==========================================================================
 ' Test the program in question
 '==========================================================================
 Private Sub rprg_Click()
@@ -1135,7 +1144,7 @@ Private Sub rprg_Click()
     End If
     
     ' Complete TestPRG String
-    TestPRG = TestPRG & codeForm.Text
+    TestPRG = TestPRG & CodeForm.Text
 
     Dim num As Long
     num = FreeFile()
@@ -1194,7 +1203,7 @@ Private Sub SavePrgMnu_Click(): On Error Resume Next
     
     Dim strFile As String
     
-    If tag = "1" Then
+    If Tag = "1" Then
         strFile = filename(2)
         ' Call saveProgram(filename(2))
     Else
@@ -1457,7 +1466,7 @@ End Sub
 Private Sub mnuopen_Click()
 On Error Resume Next
 
-If tag = "1" Then
+If Tag = "1" Then
     ChDir (currentDir)
     Dim antiPath As String
     Dim dlg As FileDialogInfo
