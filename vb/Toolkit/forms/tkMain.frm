@@ -2243,7 +2243,7 @@ Begin VB.MDIForm tkMainForm
             Style           =   5
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "13:59"
+            TextSave        =   "17:19"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             AutoSize        =   1
@@ -3106,10 +3106,6 @@ Public Sub makeexemnu_Click(): On Error GoTo ErrorHandler
 ErrorHandler:
     Call HandleError
     Resume Next
-End Sub
-
-Private Sub MDIForm_Activate()
-    Call MDIForm_Resize
 End Sub
 
 Private Sub MDIForm_Load(): On Error Resume Next
