@@ -120,7 +120,7 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
                         Dim func As String
                         begin = i + 1
                         Length = j - i - 1
-                        func = Mid$(updateLine, i + 1, j - i - 1)
+                        func = Mid$(updateLine, i + 1, Length)
 
                         ' Quote the function's parameters.
                         updateLine = exchange(updateLine, begin, Length, updateFunction(func, strict))
@@ -130,7 +130,13 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
                 End If
             Next j
         ElseIf Not (updatedFunction) Then
-            If (char = "=") Then
+            Dim nextChar As String
+            If (i <> Len(str)) Then
+                nextChar = Mid$(str, i + 1, 1)
+            Else
+                nextChar = vbNullString
+            End If
+            If ((char = "=") And (nextChar <> "=")) Then
                 begin = i + 1
                 Length = Len(updateLine) - i
 
@@ -142,17 +148,26 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
                     updateLine = exchange(updateLine, i, 1, "==")
                     i = i + 1
                 End If
-            ElseIf (char = "+") Then
-                If ((i <> Len(str)) And (Mid$(str, i + 1, 1) = "=")) Then
-                    begin = i + 2
-                    Length = Len(updateLine) - i - 1
+            ElseIf (char = "=") Then
+                ' == operator
 
-                    ' Quote the right hand side of an addition assignment.
-                    updateLine = exchange(updateLine, begin, Length, updateFunction(Mid$(updateLine, i + 2), strict))
+                begin = i + 2
+                Length = Len(updateLine) - i - 1
 
-                    ' Prevent += from also being processed as =.
-                    i = i + 1
-                End If
+                ' Quote the right hand side of a comparison.
+                updateLine = exchange(updateLine, begin, Length, updateFunction(Mid$(updateLine, i + 2), strict))
+
+                ' Prevent == from also being read as a =.
+                i = i + 1
+            ElseIf ((char = "+") And (nextChar = "=")) Then
+                begin = i + 2
+                Length = Len(updateLine) - i - 1
+
+                ' Quote the right hand side of an addition assignment.
+                updateLine = exchange(updateLine, begin, Length, updateFunction(Mid$(updateLine, i + 2), strict))
+
+                ' Prevent += from also being processed as =.
+                i = i + 1
             End If
         End If
     Next i
@@ -162,21 +177,23 @@ End Function
 '=========================================================================
 ' Strip type declaration characters.
 '=========================================================================
-Private Function stripTypes(ByRef str As String) As String
+Private Function stripTypes(ByRef str As String) As String: On Error GoTo err
     stripTypes = str
     Dim i As Long, quotes As Boolean
     For i = 1 To Len(str)
         Dim c As String
-        c = Mid$(str, i, 1)
+        c = Mid$(stripTypes, i, 1)  ' This will err at the end if any characters are removed.
         If Not (quotes) Then
             If ((c = "!") Or (c = "$")) Then
                 stripTypes = exchange(stripTypes, i, 1, vbNullString)
+                i = i - 1
             End If
         End If
         If (c = """") Then
             quotes = Not (quotes)
         End If
     Next i
+err:
 End Function
 
 '=========================================================================
@@ -191,10 +208,37 @@ Public Sub updateProgram(ByRef prg As String, ByRef SaveAs As String)
     Do While Not (EOF(ffPrg))
         Dim line As String
         Line Input #ffPrg, line
-        If (LCase$(Trim$(replace(line, vbTab, vbNullString))) = "#strict") Then
+
+        ' Get a whitespace-free version.
+        Dim wfree As String
+        wfree = Trim$(replace(line, vbTab, vbNullString))
+
+        If (LCase$(wfree) = "#strict") Then
             strict = True
         Else
-            line = stripTypes(updateLine(line, strict, False))
+            ' Deal with archaic * comments.
+            If (Left$(wfree, 1) <> "*") Then
+                ' No * comment found; update the line.
+                
+                ' Deal with // comments.
+                Dim cpos As Long, comment As String
+                cpos = InStr(1, line, "//")
+                If (cpos) Then
+                    comment = Trim$(Mid$(line, cpos + 2))
+                    line = RTrim$(Mid$(line, 1, cpos - 1))
+                Else
+                    comment = vbNullString
+                End If
+
+                line = stripTypes(updateLine(line, strict, False))
+                If (LenB(comment)) Then
+                    If (LenB(Trim$(replace(line, vbTab, vbNullString)))) Then
+                        ' Set the comment off from the rest of the line.
+                        line = line & " "
+                    End If
+                    line = line & "// " & comment
+                End If
+            End If
             txt = txt & line & vbCrLf
         End If
     Loop
