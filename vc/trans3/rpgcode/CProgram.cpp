@@ -222,7 +222,7 @@ unsigned int CProgram::getLine(CONST_POS pos) const
 		// See CProgram::open().
 		if (*j > i) return (j - m_lines.begin());
 	}
-	return m_lines.size();
+	return m_lines.size() - 1;
 }
 
 // Get a variable.
@@ -423,6 +423,13 @@ void CProgram::freeObject(unsigned int obj)
 // Handle a method call.
 void CProgram::methodCall(CALL_DATA &call)
 {
+	// First, make sure this method has actually be resolved.
+	const int firstLine = (int)call[call.params - 1].num;
+	if (firstLine == -1)
+	{
+		throw CError(_T("Could not find method ") + call[call.params - 1].lit + _T("."));
+	}
+
 	std::map<STRING, STACK_FRAME> local;
 
 	CALL_FRAME fr;
@@ -516,9 +523,6 @@ void CProgram::methodCall(CALL_DATA &call)
 
 	// Record the current position in the program.
 	fr.i = call.prg->m_i - call.prg->m_units.begin();
-
-	// The final parameter has the line this method begins on.
-	const unsigned int firstLine = (unsigned int)call[call.params - 1].num;
 
 	// Push a new stack onto the stack of stacks for this method.
 	// It should be a copy of the stack being used at the time of
@@ -1071,10 +1075,28 @@ void CProgram::parseFile(FILE *pFile)
 		}
 	}
 
-	// Pass IV:
-	//   - Update curly brace pairing and method locations.
-	depth = 0;
-	for (i = m_units.begin(); i != m_units.end(); ++i)
+	// Update curly brace pairing and method locations.
+	if (depth = updateLocations(m_units.begin()))
+	{
+		MACHINE_UNIT mu;
+		mu.udt = UNIT_DATA_TYPE(UDT_CLOSE | UDT_LINE);
+		for (unsigned int i = 0; i < depth; ++i)
+		{
+			TCHAR str[255];
+			_itot(getLine(m_units.begin() + matchBrace(m_units.insert(m_units.end(), mu))) + 1, str, 10);
+			debugger(STRING(_T("Near line ")) + str + _T(": Unmatched curly brace."));
+		}
+	}
+
+	// Resolve function calls.
+	resolveFunctions();
+}
+
+// Match all curly braces and update method locations.
+unsigned int CProgram::updateLocations(POS i)
+{
+	unsigned int depth = 0;
+	for (; i != m_units.end(); ++i)
 	{
 		if ((i->udt & UDT_FUNC) && (i->func == skipMethod))
 		{
@@ -1107,28 +1129,18 @@ void CProgram::parseFile(FILE *pFile)
 			matchBrace(i);
 		}
 	}
+	return depth;
+}
 
-	// Report any unmatched braces.
-	if (depth)
-	{
-		MACHINE_UNIT mu;
-		mu.udt = UNIT_DATA_TYPE(UDT_CLOSE | UDT_LINE);
-		for (unsigned int i = 0; i < depth; ++i)
-		{
-			TCHAR str[255];
-			_itot(getLine(m_units.begin() + matchBrace(m_units.insert(m_units.end(), mu))) + 1, str, 10);
-			debugger(STRING(_T("Near line ")) + str + _T(": Unmatched curly brace."));
-		}
-	}
-
-	// Pass V:
-	//   - Resolve function calls.
-	for (i = m_units.begin(); i != m_units.end(); ++i)
+// Resolve all currently unresolved functions.
+void CProgram::resolveFunctions()
+{
+	for (POS i = m_units.begin(); i != m_units.end(); ++i)
 	{
 		if ((i->udt & UDT_FUNC) && (i->func == methodCall))
 		{
 			POS unit = i - 1;
-			if (unit->udt & UDT_OBJ) continue;
+			if ((unit->udt & UDT_OBJ) || (unit->num != -1)) continue;
 			LPNAMED_METHOD p = NAMED_METHOD::locate(unit->lit, i->params - 1, false, *this);
 			if (p)
 			{
@@ -1139,13 +1151,6 @@ void CProgram::parseFile(FILE *pFile)
 			{
 				// Found it in a plugin.
 				i->func = pluginCall;
-			}
-			else
-			{
-				// Could not find function.
-				TCHAR str[255]; _itot(getLine(i), str, 10);
-				debugger(STRING(_T("Near line ")) + str + _T(": Could not find function \"" + unit->lit + "\"."));
-				i->func = NULL;
 			}
 		}
 	}
@@ -1574,14 +1579,6 @@ void tagMachineUnit::execute(CProgram *prg) const
 					CProgram::debugger(STRING(_T("Near line ")) + str + _T(": ") + exp.getMessage());
 				}
 			}
-			/** catch (...)
-			{
-				if (CProgram::m_debugLevel >= E_ERROR)
-				{
-					TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
-					CProgram::debugger(STRING(_T("Near line ")) + str + _T(": Unexpected error."));
-				}
-			} **/
 		}
  		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
 	}
@@ -2077,16 +2074,6 @@ void operators::member(CALL_DATA &call)
 void operators::array(CALL_DATA &call)
 {
 	call.ret().udt = UDT_ID;
-	/**call.ret().lit = call[0].lit + _T('[');
-	if (call[1].getType() == UDT_NUM)
-	{
-		call.ret().lit += call[1].getLit();
-	}
-	else
-	{
-		call.ret().lit += _T('"') + call[1].getLit() + _T('"');
-	}
-	call.ret().lit += _T(']');**/
 	call.ret().lit = call[0].lit + _T('[') + call[1].getLit() + _T(']');
 }
 
@@ -2161,6 +2148,31 @@ void CProgram::classFactory(CALL_DATA &call)
 	call.ret().num = obj;
 }
 
+void CProgram::runtimeInclusion(CALL_DATA &call)
+{
+	extern STRING g_projectPath;
+
+	CProgram inclusion;
+	if (!inclusion.open(g_projectPath + PRG_PATH + call[0].getLit()))
+	{
+		throw CError(_T("Runtime inclusion: could not find ") + call[0].getLit() + _T("."));
+	}
+
+	// CProgram::include() will modify m_units, which will invalidate m_i,
+	// so we save the value of m_i relative to m_units.begin() here.
+	const unsigned int pos = call.prg->m_i - call.prg->m_units.begin();
+	const unsigned int size = call.prg->m_units.size();
+
+	call.prg->include(inclusion);
+
+	// Restore the position.
+	call.prg->m_i = call.prg->m_units.begin() + pos;
+
+	// And updates references to the code that we just injected into the program.
+	call.prg->updateLocations(call.prg->m_units.begin() + size);
+	call.prg->resolveFunctions();
+}
+
 void CProgram::initialize()
 {
 	// Special.
@@ -2222,6 +2234,7 @@ void CProgram::initialize()
 	addFunction(_T("while"), whileLoop);
 	addFunction(_T("until"), untilLoop);
 	addFunction(_T("for"), forLoop);
+	addFunction(_T(" rtinclude"), runtimeInclusion);
 	addFunction(_T("return"), returnVal);
 	addFunction(_T("returnmethod"), returnVal); // For backwards compatibility.
 }

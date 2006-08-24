@@ -222,6 +222,7 @@ function:
 				MACHINE_UNIT mu;
 				mu.udt = UDT_ID;
 				mu.lit = $1.getLit();
+				mu.num = -1;
 				CProgram::m_pyyUnits->push_back(mu);
 				_FOUND_PARAM;
 				pFunc = CProgram::methodCall;
@@ -606,6 +607,8 @@ inclusion:
 		{ addInclusion($2.getLit().substr(1, $2.getLit().length() - 2)); }
 |	INCLUDE LPARAN STRING RPARAN
 		{ addInclusion($3.getLit().substr(1, $3.getLit().length() - 2)); }
+|	INCLUDE LPARAN value RPARAN
+		{ _MACHINE_UNIT(CProgram::runtimeInclusion, 1); }
 ;
 
 redirection:

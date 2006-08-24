@@ -367,6 +367,7 @@ private:
 	static void pluginCall(CALL_DATA &);
 	static void returnVal(CALL_DATA &);
 	static void classFactory(CALL_DATA &);
+	static void runtimeInclusion(CALL_DATA &);
 
 	friend void operators::member(CALL_DATA &call);
 	friend void tagMachineUnit::execute(CProgram *prg) const;
@@ -381,6 +382,15 @@ private:
 	void include(const CProgram prg);
 	void prime();
 	static bool resolvePluginCall(LPMACHINE_UNIT pUnit);
+
+	// Update curly brace pairs and method locations. Should be called
+	// after new code is injected into the program to prevent errors.
+	// Call this before resolveFunctions().
+	unsigned int updateLocations(POS first);
+
+	// Resolve functions. Can be called to explicitly attempt to
+	// resolve functions that have so far resisted resolution.
+	void resolveFunctions();
 
 protected:
 	LPSTACK_FRAME resolveVarGlobal(const STRING name);
