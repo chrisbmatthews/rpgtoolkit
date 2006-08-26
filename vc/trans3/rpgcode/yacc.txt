@@ -687,10 +687,10 @@ CLASS_VISIBILITY g_vis = CV_PRIVATE;
 // Include a file, but don't allow the same file to be included twice.
 inline void addInclusion(const STD_NATURAL_STRING file)
 {
-	std::vector<STD_NATURAL_STRING>::const_iterator i = CProgram::m_inclusions.begin();
-	for (; i != CProgram::m_inclusions.end(); ++i)
+	std::vector<STD_NATURAL_STRING>::const_iterator i = CProgram::m_pInclusions->begin();
+	for (; i != CProgram::m_pInclusions->end(); ++i)
 	{
 		if (*i == file) return;
 	}
-	CProgram::m_inclusions.push_back(file);
+	CProgram::m_pInclusions->push_back(file);
 }

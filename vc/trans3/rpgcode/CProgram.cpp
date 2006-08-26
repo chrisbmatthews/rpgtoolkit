@@ -31,7 +31,7 @@ std::deque<int> CProgram::m_params;
 std::map<STRING, CLASS> *CProgram::m_pClasses = NULL;
 std::map<unsigned int, STRING> CProgram::m_objects;
 std::vector<unsigned int> *CProgram::m_pLines = NULL;
-std::vector<STRING> CProgram::m_inclusions;
+std::vector<STRING> *CProgram::m_pInclusions = NULL;
 std::vector<IPlugin *> CProgram::m_plugins;
 std::map<STRING, STACK_FRAME> CProgram::m_constants;
 std::map<STRING, STRING> CProgram::m_redirects;
@@ -141,6 +141,7 @@ CProgram &CProgram::operator=(const CProgram &rhs)
 	m_units = rhs.m_units;
 	m_i = rhs.m_i;
 	m_methods = rhs.m_methods;
+	m_inclusions = rhs.m_inclusions;
 
 	// Update the stack pointer.
 	if (!rhs.m_pStack)
@@ -846,6 +847,7 @@ void CProgram::parseFile(FILE *pFile)
 	g_lines = 0;
 	m_lines.clear();
 	m_pLines = &m_lines;
+	m_pInclusions = &m_inclusions;
 	NAMED_METHOD::m_methods.clear();
 
 	// We are parsing a new file.
@@ -1223,6 +1225,16 @@ void CProgram::include(const CProgram prg)
 	std::vector<NAMED_METHOD>::const_iterator i = prg.m_methods.begin();
 	for (; i != prg.m_methods.end(); ++i)
 	{
+		if (NAMED_METHOD::locate(i->name, i->params, false, *this))
+		{
+			// Duplicate method.
+			if (m_debugLevel >= E_ERROR)
+			{
+				debugger(_T("Included file contains method that is already defined: ") + i->name + _T("()"));
+			}
+			continue;
+		}
+
 		m_methods.push_back(*i);
 		int depth = 0;
 		CONST_POS j = prg.m_units.begin() + i->i - 1;
@@ -1328,6 +1340,16 @@ void CProgram::serialiseState(CFile &stream) const
 
 	// Default scope resolution (can be changed by autolocal()).
 	stream << int((m_pResolveFunc == resolveVarGlobal) ? 0 : 1);
+
+	// List of inclusions.
+	{
+		stream << int(m_inclusions.size());
+		std::vector<STRING>::const_iterator i = m_inclusions.begin();
+		for (; i != m_inclusions.end(); ++i)
+		{
+			stream << *i;
+		}
+	}
 }
 
 // Reconstruct a previously serialised state.
@@ -1425,6 +1447,19 @@ void CProgram::reconstructState(CFile &stream)
 		int scope = 0;
 		stream >> scope;
 		m_pResolveFunc = scope ? resolveVarLocal : resolveVarGlobal;
+	}
+
+	// List of inclusions.
+	{
+		m_inclusions.clear();
+		int includes = 0;
+		stream >> includes;
+		for (int i = 0; i < includes; ++i)
+		{
+			STRING str;
+			stream >> str;
+			m_inclusions.push_back(str);
+		}
 	}
 }
 
@@ -1524,7 +1559,7 @@ STACK_FRAME CProgram::run()
 	// This tricky line removes the UDT_LINE flag from the final
 	// unit to prevent the stack from being cleared in execute()
 	// so that the final value can be returned from this function.
-	*(int *)(&m_units.back().udt) ^= UDT_LINE;
+	// *(int *)(&(m_units.back)->udt) &= ~UDT_LINE;
 
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
@@ -2153,11 +2188,27 @@ void CProgram::runtimeInclusion(CALL_DATA &call)
 {
 	extern STRING g_projectPath;
 
+	// Qualify the file name.
+	const STRING file = g_projectPath + PRG_PATH + call[0].getLit();
+
+	std::vector<STRING>::const_iterator i = call.prg->m_inclusions.begin();
+	for (; i != call.prg->m_inclusions.end(); ++i)
+	{
+		if (*i == file)
+		{
+			// Silently fail for backward compatibility.
+			return;
+		}
+	}
+
 	CProgram inclusion;
-	if (!inclusion.open(g_projectPath + PRG_PATH + call[0].getLit()))
+	if (!inclusion.open(file))
 	{
 		throw CError(_T("Runtime inclusion: could not find ") + call[0].getLit() + _T("."));
 	}
+
+	// Add the file to the list of inclusions.
+	call.prg->m_inclusions.push_back(file);
 
 	// CProgram::include() will modify m_units, which will invalidate m_i,
 	// so we save the value of m_i relative to m_units.begin() here.

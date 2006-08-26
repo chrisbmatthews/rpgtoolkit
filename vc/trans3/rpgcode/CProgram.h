@@ -334,6 +334,7 @@ private:
 	std::vector<unsigned int> m_lines;
 	tagBoardProgram *m_pBoardPrg;
 	std::vector<tagNamedMethod> m_methods;
+	std::vector<STRING> m_inclusions;
 
 	// Yacc globals.
 	static LPMACHINE_UNITS m_pyyUnits;
@@ -341,7 +342,7 @@ private:
 	static std::map<STRING, CLASS> *m_pClasses;
 	static std::deque<int> m_params;
 	static std::vector<unsigned int> *m_pLines;
-	static std::vector<STRING> m_inclusions;
+	static std::vector<STRING> *m_pInclusions;
 	static std::map<STRING, STACK_FRAME> m_constants;	// Map of compile-time constants.
 	static std::map<STRING, STRING> m_redirects;		// Map of redirects.
 	static STRING m_parsing;
