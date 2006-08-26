@@ -969,6 +969,7 @@ void CProgram::parseFile(FILE *pFile)
 					MACHINE_UNIT mu;
 					mu.udt = UDT_ID;
 					mu.lit = i->lit;
+					mu.num = -1;
 					i->params = 1;
 					i->func = methodCall;
 					i = m_units.insert(i, mu) + 1;
@@ -2168,7 +2169,7 @@ void CProgram::runtimeInclusion(CALL_DATA &call)
 	// Restore the position.
 	call.prg->m_i = call.prg->m_units.begin() + pos;
 
-	// And updates references to the code that we just injected into the program.
+	// And update references to the code that we just injected into the program.
 	call.prg->updateLocations(call.prg->m_units.begin() + size);
 	call.prg->resolveFunctions();
 }
