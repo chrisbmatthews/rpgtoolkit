@@ -17,7 +17,6 @@
 #include "../common/CFile.h"
 #include "../input/input.h"
 #include "../../tkCommon/strings.h"
-#include <typeinfo.h>
 #include <malloc.h>
 #include <math.h>
 
@@ -426,7 +425,7 @@ void CProgram::freeObject(unsigned int obj)
 // Handle a method call.
 void CProgram::methodCall(CALL_DATA &call)
 {
-	// First, make sure this method has actually be resolved.
+	// First, make sure this method has actually been resolved.
 	const int firstLine = (int)call[call.params - 1].num;
 	if (firstLine == -1)
 	{
@@ -865,11 +864,12 @@ void CProgram::parseFile(FILE *pFile)
 		std::vector<STRING> inclusions = m_inclusions;
 		std::vector<STRING>::const_iterator i = inclusions.begin();
 
-		// (Hacky.) If this is a child program, include its parent.
-		const type_info &info = typeid(*this);
-		if (strcmp(info.name(), "class CProgramChild") == 0)
+		// If this is a child program, include its parent.
+		// dynamic_cast<> returns null if the cast is unsafe.
+		CProgramChild *pChild = dynamic_cast<CProgramChild *>(this);
+		if (pChild)
 		{
-			include(((CProgramChild *)this)->getProgram());
+			include(pChild->getParent());
 		}
 
 		extern STRING g_projectPath;
@@ -1297,7 +1297,7 @@ void CProgram::serialiseState(CFile &stream) const
 		STACK_ITR i = m_stack.begin();
 		for (; i != m_stack.end(); ++i)
 		{
-			stream << int(i->size());	// Numer of items in this frame.
+			stream << int(i->size());	// Number of items in this frame.
 
 			std::deque<STACK_FRAME>::const_iterator j = i->begin();
 			for (; j != i->end(); ++j)
