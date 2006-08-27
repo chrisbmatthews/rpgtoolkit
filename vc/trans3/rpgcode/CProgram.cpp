@@ -877,7 +877,6 @@ void CProgram::parseFile(FILE *pFile)
 		{
 			include(CProgram(g_projectPath + PRG_PATH + *i));
 		}
-		m_inclusions.clear();
 	}
 
 	// Pass III:
