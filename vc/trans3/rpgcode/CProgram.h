@@ -415,7 +415,7 @@ public:
 
 private:
 	CProgram &m_prg;
-	std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_prg.getLocals(); }
+	std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return m_prg.getLocals(); }
 };
 
 // An RPGCode thread.
