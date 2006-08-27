@@ -253,9 +253,10 @@ LPSTACK_FRAME CProgram::getVar(const STRING name)
 // Prefer the global scope when resolving a variable.
 LPSTACK_FRAME CProgram::resolveVarGlobal(const STRING name)
 {
-	if (m_locals.back().count(name))
+	std::map<STRING, STACK_FRAME> *pLocals = &getLocals()->back();
+	if (pLocals->count(name))
 	{
-		return &m_locals.back().find(name)->second;
+		return &pLocals->find(name)->second;
 	}
 	return m_heap[name];
 }
@@ -268,7 +269,7 @@ LPSTACK_FRAME CProgram::resolveVarLocal(const STRING name)
 	{
 		return i->second;
 	}
-	return &m_locals.back()[name];
+	return &getLocals()->back()[name];
 }
 
 // Remove a redirect from the list.
@@ -391,9 +392,10 @@ void CProgram::addFunction(const STRING name, const MACHINE_FUNC func)
 // Free a variable.
 void CProgram::freeVar(const STRING var)
 {
-	if (m_locals.back().count(var))
+	std::map<STRING, STACK_FRAME> *pLocals = &getLocals()->back();
+	if (pLocals->count(var))
 	{
-		m_locals.back().erase(var);
+		pLocals->erase(var);
 		return;
 	}
 	m_heap.erase(var);
@@ -520,7 +522,7 @@ void CProgram::methodCall(CALL_DATA &call)
 	}
 
 	// Push a new local heap onto the stack of heaps for this method.
-	call.prg->m_locals.push_back(local);
+	call.prg->getLocals()->push_back(local);
 
 	// Record the current position in the program.
 	fr.i = call.prg->m_i - call.prg->m_units.begin();
@@ -1641,7 +1643,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 				prg->m_calls.pop_back();
 				prg->m_stack.pop_back();
 				prg->m_pStack = &prg->m_stack.back();
-				prg->m_locals.pop_back();
+				prg->getLocals()->pop_back();
 				if (bReturn) return;
 			}
 			else if (((func == CProgram::conditional) || (func == CProgram::elseIf)) && (prg->m_i != prg->m_units.end()))

@@ -252,6 +252,7 @@ typedef enum tagVariableScope
 class CThread;			// A thread.
 class IPlugin;			// A plugin.
 class CFile;			// A file stream.
+class CProgramChild;	// A child program;
 struct tagBoardProgram;	// A board program;
 
 // Some types of enumerations.
@@ -326,8 +327,8 @@ public:
 	CProgram &operator=(const CProgram &rhs);
 
 private:
-	std::deque<std::deque<STACK_FRAME> > m_stack;
 	std::vector<std::map<STRING, STACK_FRAME> > m_locals;
+	std::deque<std::deque<STACK_FRAME> > m_stack;
 	std::deque<STACK_FRAME> *m_pStack;
 	std::vector<CALL_FRAME> m_calls;
 	std::map<STRING, CLASS> m_classes;
@@ -377,12 +378,14 @@ private:
 	friend int yyerror(const char *);
 	friend void addInclusion(const STRING file);
 	friend tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg);
+	friend CProgramChild;
 
 	void parseFile(FILE *pFile);
 	unsigned int matchBrace(POS i);
 	void include(const CProgram prg);
 	void prime();
 	static bool resolvePluginCall(LPMACHINE_UNIT pUnit);
+	virtual std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_locals; }
 
 	// Update curly brace pairs and method locations. Should be called
 	// after new code is injected into the program to prevent errors.
@@ -408,6 +411,7 @@ class CProgramChild : public CProgram
 public:
 	CProgramChild(CProgram &prg): m_prg(prg) { }
 	LPSTACK_FRAME getVar(const STRING name) { return m_prg.getVar(name); }
+	std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_prg.m_locals; }
 	CProgram &getProgram() { return m_prg; }
 
 private:
