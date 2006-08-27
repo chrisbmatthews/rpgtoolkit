@@ -411,11 +411,11 @@ class CProgramChild : public CProgram
 public:
 	CProgramChild(CProgram &prg): m_prg(prg) { }
 	LPSTACK_FRAME getVar(const STRING name) { return m_prg.getVar(name); }
-	std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_prg.m_locals; }
 	CProgram &getProgram() { return m_prg; }
 
 private:
 	CProgram &m_prg;
+	std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_prg.m_locals; }
 };
 
 // An RPGCode thread.
