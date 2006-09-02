@@ -131,8 +131,8 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
             Next j
         ElseIf Not (updatedFunction) Then
             Dim nextChar As String
-            If (i <> Len(str)) Then
-                nextChar = Mid$(str, i + 1, 1)
+            If (i <> Len(updateLine)) Then
+                nextChar = Mid$(updateLine, i + 1, 1)
             Else
                 nextChar = vbNullString
             End If
