@@ -14,7 +14,7 @@ Begin VB.Form frmAnmWizard
    ScaleHeight     =   5595
    ScaleWidth      =   9465
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   3  'Windows Default
+   StartUpPosition =   2  'CenterScreen
    Begin VB.Frame fra 
       Height          =   2295
       Index           =   2
@@ -71,7 +71,6 @@ Begin VB.Form frmAnmWizard
          Begin VB.ListBox lstFiles 
             Height          =   1035
             Left            =   0
-            Sorted          =   -1  'True
             TabIndex        =   5
             Top             =   360
             Width           =   2295
@@ -356,6 +355,9 @@ Private Sub cmdSelectFile_Click(): On Error Resume Next
     files = MultiselectFileDialog(dlg, Me.hwnd)
     If LenB(files(0)) = 0 Then Exit Sub
     
+    'Sort array manually to allow custom order in list.
+    Call sortArray(files)
+    
     For i = 1 To UBound(files)
         'Preserve the path if a sub-folder is chosen.
         If Not getValidPath(files(0) & files(i), dlg.strDefaultFolder, files(i), i = 1) Then Exit Sub
@@ -365,7 +367,7 @@ Private Sub cmdSelectFile_Click(): On Error Resume Next
             FileCopy dlg.strSelectedFile, dlg.strDefaultFolder & files(i)
         End If
         
-        lstFiles.AddItem files(i)
+        Call lstFiles.AddItem(files(i), lstFiles.ListIndex + i)
     Next i
     
     lblFrames.Caption = "Frames: " & CStr(lstFiles.ListCount)
@@ -454,6 +456,9 @@ Private Sub cmdCreate_Click(): On Error Resume Next
     'Load into active editor.
     animationList(activeAnimationIndex).theData = anm
     Call activeAnimation.fillInfo
+    
+    'Reset the project files list.
+    Call tkMainForm.tvReset
 
     Unload Me
 
@@ -583,4 +588,20 @@ Private Sub drawTbm(): On Error Resume Next
     Call DrawTileBitmap(picTbm.hdc, -1, 0, 0, m_tbm(hsbCurrent.value))
     Call modBoard.gridDraw(picTbm, pCEd, False, 32, 32)
     picTbm.Refresh
+End Sub
+
+'========================================================================
+' Sort a string array alphabetically
+'========================================================================
+Private Sub sortArray(ByRef arr() As String)
+    Dim i As Long, j As Long, swap As String
+    For i = LBound(arr) To UBound(arr)
+        For j = LBound(arr) To UBound(arr)
+            If StrComp(LCase$(arr(i)), LCase$(arr(j)), vbTextCompare) = -1 Then
+                swap = arr(i)
+                arr(i) = arr(j)
+                arr(j) = swap
+            End If
+        Next j
+    Next i
 End Sub
