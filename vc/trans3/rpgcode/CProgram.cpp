@@ -434,7 +434,7 @@ void CProgram::methodCall(CALL_DATA &call)
 
 	bool bNoRet = false;
 
-	unsigned int j = 0;
+	int j = -1;
 
 	if (fra.udt & UDT_OBJ)
 	{
