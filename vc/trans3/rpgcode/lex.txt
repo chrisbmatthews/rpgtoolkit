@@ -83,7 +83,7 @@ unsigned int g_lines = 0;
 [kK][iI][lL][lL][aA][lL][lL][rR][eE][dD][iI][rR][eE][cC][tT][sS]	{ return KILL_ALL_REDIRECTS; }
 
 	/* An identifier */
-~?[A-Za-z_:][A-Za-z0-9_]*	{
+~?[A-Za-z_][A-Za-z0-9_]*	{
 								char *str = _strlwr(_strdup(yytext));
 								const STD_NATURAL_STRING s = str;
 								free(str);

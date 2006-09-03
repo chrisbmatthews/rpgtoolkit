@@ -478,7 +478,7 @@ void branch(CALL_DATA &params)
 	{
 		throw CError(_T("Branch() requires one parameter."));
 	}
-	params.prg->jump((params[0].lit[0] == _T(':')) ? params[0].lit : params[0].getLit());
+	params.prg->jump((params[0].udt & UDT_LABEL) ? params[0].lit : params[0].getLit());
 }
 
 /*

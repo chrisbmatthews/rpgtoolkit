@@ -425,13 +425,6 @@ void CProgram::freeObject(unsigned int obj)
 // Handle a method call.
 void CProgram::methodCall(CALL_DATA &call)
 {
-	// First, make sure this method has actually been resolved.
-	const int firstLine = (int)call[call.params - 1].num;
-	if (firstLine == -1)
-	{
-		throw CError(_T("Could not find method ") + call[call.params - 1].lit + _T("."));
-	}
-
 	std::map<STRING, STACK_FRAME> local;
 
 	CALL_FRAME fr;
@@ -441,63 +434,87 @@ void CProgram::methodCall(CALL_DATA &call)
 
 	bool bNoRet = false;
 
-	for (unsigned int i = 0, j = 0; i < (call.params - 1); ++i)
+	unsigned int j = 0;
+
+	if (fra.udt & UDT_OBJ)
 	{
-		if (call[i].getType() & UDT_OBJ)
+		// Call to a class function.
+
+		// Find the parameter containing the object.
+		LPSTACK_FRAME objp = &call[0];
+
+		if (~objp->getType() & UDT_OBJ)
 		{
-			unsigned int obj = (unsigned int)call[i].getNum();
+			if (~(objp += call.params - 2)->getType() & UDT_OBJ)
 			{
-				const STRING type = CProgram::m_objects[obj];
-				std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
-				if (k == call.prg->m_classes.end())
-				{
-					throw CError(_T("Could not find class ") + type + _T("."));
-				}
-
-				bool bRelease = false;
-				if (fra.lit == _T("release"))
-				{
-					bRelease = true;
-					fra.lit = _T("~") + k->first;
-				}
-
-				const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
-				LPNAMED_METHOD p = k->second.locate(fra.lit, call.params - 2, cv);
-				if (!p)
-				{
-					if (!bRelease)
-					{
-						TCHAR str[255];
-						_itot(call.params - 2, str, 10);
-						throw CError(_T("Class ") + k->first + _T(" has no accessible ") + fra.lit + _T(" method with a parameter count of ") + str + _T("."));
-					}
-					else
-					{
-						call.prg->freeObject(obj);
-						return;
-					}
-				}
-
-				if (type == fra.lit)
-				{
-					call.prg->m_pStack->back() = call[i].getValue();
-					bNoRet = true;
-				}
-
-				fra.num = p->i;
+				// The object was not the first parameter (typical call) or
+				// the last parameter (constructor call), so it's an invalid
+				// object.
+				throw CError(_T("Invalid object."));
 			}
+		}
 
-			STACK_FRAME &lvar = local[_T("this")];
-			lvar.udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
-			lvar.num = fr.obj = obj;
-		}
-		else
+		j = objp - call.p;
+
+		unsigned int obj = (unsigned int)objp->getNum();
+
+		const STRING type = CProgram::m_objects[obj];
+		std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
+		if (k == call.prg->m_classes.end())
 		{
-			++j;
-			TCHAR pos = call.params - j;
-			if (fr.obj) --pos;
-			local[STRING(_T(" ")) + pos] = call[i].getValue();
+			throw CError(_T("Could not find class ") + type + _T("."));
 		}
+
+		bool bRelease = false;
+		if (fra.lit == _T("release"))
+		{
+			bRelease = true;
+			fra.lit = _T("~") + k->first;
+		}
+
+		const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
+		LPNAMED_METHOD p = k->second.locate(fra.lit, call.params - 2, cv);
+		if (!p)
+		{
+			if (!bRelease)
+			{
+				TCHAR str[255];
+				_itot(call.params - 2, str, 10);
+				throw CError(_T("Class ") + k->first + _T(" has no accessible ") + fra.lit + _T(" method with a parameter count of ") + str + _T("."));
+			}
+			else
+			{
+				call.prg->freeObject(obj);
+				return;
+			}
+		}
+
+		if (type == fra.lit)
+		{
+			if (!j)
+			{
+				// The call is of the form p->func(, ...q) where p is not
+				// a valid object but q is so it passed the test above.
+				// However, it does not pass this test.
+				throw CError("Invalid object.");
+			}
+			call.prg->m_pStack->back() = objp->getValue();
+			bNoRet = true;
+		}
+
+		fra.num = p->i;
+
+		STACK_FRAME &lvar = local[_T("this")];
+		lvar.udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
+		lvar.num = fr.obj = obj;
+	}
+
+	// Add each parameter's value to the new local heap.
+	for (unsigned int i = 0; i < (call.params - 1); ++i)
+	{
+		if (i == j) continue;
+		TCHAR pos = call.params - i - (i < j) - (fr.obj != 0);
+		local[STRING(_T(" ")) + pos] = call[i].getValue();
 	}
 
 	if (!fr.obj && call.prg->m_calls.size())
@@ -518,6 +535,13 @@ void CProgram::methodCall(CALL_DATA &call)
 				}
 			}
 		}
+	}
+
+	// Make sure this method has actually been resolved.
+	const int firstLine = (int)fra.num;
+	if (firstLine == -1)
+	{
+		throw CError(_T("Could not find method ") + fra.lit + _T("."));
 	}
 
 	// Push a new local heap onto the stack of heaps for this method.
@@ -934,11 +958,6 @@ void CProgram::parseFile(FILE *pFile)
 		{
 			--nestled;
 			if (depth && !--depth) pClass = NULL;
-		}
-
-		if ((i->udt & UDT_ID) && (i->lit[0] == _T(':')) && ((i == m_units.end()) || !(((i + 1)->udt & UDT_LINE))))
-		{
-			i->udt = UDT_LABEL;
 		}
 
 		if ((i->udt & UDT_ID) && (i->udt & UDT_LINE) && ((i == m_units.begin()) || ((i - 1)->udt & UDT_LINE)) && ((i == m_units.end()) || ((i + 1)->udt & UDT_LINE)))

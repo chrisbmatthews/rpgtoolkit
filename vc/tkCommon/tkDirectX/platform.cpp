@@ -243,15 +243,15 @@ BOOL CDirectDraw::OffsetGammaRamp(INT r, INT g, INT b)
 	DDGAMMARAMP ramp;
 
 	// Actual colour variation is greater than 0-255, so we
-	// multiply our colour values by 256 to bring them into the
+	// multiply our colour values by 255 to bring them into the
 	// magnitude of colours in the gamma ramp.
-	r *= 256; g *= 256; b *= 256;
+	r *= 255; g *= 255; b *= 255;
 
 	// Offset the ramp.
 	for (UINT i = 0; i < 256; ++i)
 	{
 		// The typical value for each index.
-		const int base = 256 * i;
+		const int base = 255 * i;
 
 		// Permissible values are from 0-65535 (FFFF).
 		// VC++ will not bound these and the gamma ramp uses WORDs,
@@ -307,8 +307,14 @@ BOOL FAST_CALL CDirectDraw::RefreshWindowed(VOID)
 	SetRect(&m_destRect, 0, 0, m_nWidth, m_nHeight);
 	OffsetRect(&m_destRect, ptPrimeBlt.x, ptPrimeBlt.y);
 
+	// Emulate the gamma controller.
+	//m_pBackBuffer->EmulateGamma();
+
 	// Blt to the screen
 	return SUCCEEDED(m_lpddsPrime->Blt(&m_destRect, m_lpddsSecond, &m_surfaceRect, DDBLT_WAIT | DDBLT_ROP, &m_bltFx));
+
+	//m_pBackBuffer->BltAdditivePart(m_lpddsPrime, m_destRect.left, m_destRect.top, m_surfaceRect.left, m_surfaceRect.top, m_nWidth, m_nHeight, 50, -1, -1);
+	//return TRUE;
 }
 
 //------------------------------------------------------------------------

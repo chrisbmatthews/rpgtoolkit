@@ -241,6 +241,10 @@ public:
 		CONST HDC hdc
 	) CONST { m_pBackBuffer->CloseDC(hdc); }
 
+	HRESULT GetGammaRamp(
+		DDGAMMARAMP &ramp
+	) CONST { return m_lpddGammaControl->GetGammaRamp(0, &ramp); }
+
 	CCanvas *getBackBuffer(VOID) { return m_pBackBuffer; }
 
 	// Deconstructor

@@ -2354,15 +2354,74 @@ INLINE LONG CCanvas::GetRGBPixel(
 	CONST WORD wRBits = GetNumberOfBits(pddpf->dwRBitMask);
 	CONST WORD wGBits = GetNumberOfBits(pddpf->dwGBitMask);
 	CONST WORD wBBits = GetNumberOfBits(pddpf->dwBBitMask);
-	CONST WORD wRPos = GetMaskPos(pddpf->dwRBitMask);
-	CONST WORD wGPos = GetMaskPos(pddpf->dwGBitMask);
-	CONST WORD wBPos = GetMaskPos(pddpf->dwBBitMask);
+	//CONST WORD wRPos = GetMaskPos(pddpf->dwRBitMask);
+	//CONST WORD wGPos = GetMaskPos(pddpf->dwGBitMask);
+	//CONST WORD wBPos = GetMaskPos(pddpf->dwBBitMask);
 	CONST DWORD offset = y * destSurface->lPitch + x * (pddpf->dwRGBBitCount >> 3);
 	CONST DWORD pixel = *((LPDWORD)((DWORD)destSurface->lpSurface + offset));
 	CONST BYTE r = (pixel & pddpf->dwRBitMask) << (8 - wRBits);
 	CONST BYTE g = (pixel & pddpf->dwGBitMask) << (8 - wGBits);
 	CONST BYTE b = (pixel & pddpf->dwBBitMask) << (8 - wBBits);
 	return RGB(r, g, b);
+}
+
+//--------------------------------------------------------------------------
+// Emulate the gamma controller settings on this surface.
+//--------------------------------------------------------------------------
+VOID CCanvas::EmulateGamma()
+{
+	extern CDirectDraw *g_pDirectDraw;
+
+	DDSURFACEDESC2 ddsd;
+	DD_INIT_STRUCT(ddsd);
+	HRESULT hr = m_lpddsSurface->Lock(NULL, &ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
+	if (FAILED(hr))
+		return;
+
+	DDPIXELFORMAT ddpf;
+	DD_INIT_STRUCT(ddpf);
+	m_lpddsSurface->GetPixelFormat(&ddpf);
+
+	// Calculate the colour masks for the current pixel format.
+	CONST WORD wRBits = GetNumberOfBits(ddpf.dwRBitMask);
+	CONST WORD wGBits = GetNumberOfBits(ddpf.dwGBitMask);
+	CONST WORD wBBits = GetNumberOfBits(ddpf.dwBBitMask);
+	CONST WORD wRPos = GetMaskPos(ddpf.dwRBitMask);
+	CONST WORD wGPos = GetMaskPos(ddpf.dwGBitMask);
+	CONST WORD wBPos = GetMaskPos(ddpf.dwBBitMask);
+	CONST WORD rgbOffset = (ddpf.dwRGBBitCount >> 3);
+
+	// Get the gamma ramp.
+	DDGAMMARAMP ramp;
+	g_pDirectDraw->GetGammaRamp(ramp);
+
+	for (UINT i = 0; i < ddsd.dwWidth; ++i)
+	{
+		const UINT x = i * rgbOffset;
+
+		for (UINT j = 0; j < ddsd.dwHeight; ++j)
+		{
+			const DWORD offset = x + j * ddsd.lPitch;
+
+			CONST DWORD pixel = *((LPDWORD)((DWORD)ddsd.lpSurface + offset));
+			BYTE r = (pixel & ddpf.dwRBitMask) << (8 - wRBits);
+			BYTE g = (pixel & ddpf.dwGBitMask) << (8 - wGBits);
+			BYTE b = (pixel & ddpf.dwBBitMask) << (8 - wBBits);
+
+			// Note: This division is _slow_.
+			r = ramp.red[r] / 255;
+			g = ramp.green[g] / 255;
+			b = ramp.blue[b] / 255;
+
+			*((LPDWORD)((DWORD)ddsd.lpSurface + offset)) =
+				(((((((*((LPDWORD)(DWORD)ddsd.lpSurface + offset)) & ~ddpf.dwRBitMask) |
+				((r >> (8 - wRBits)) << wRPos)) & ~ddpf.dwGBitMask) |
+				((g >> (8 - wGBits)) << wGPos)) & ~ddpf.dwBBitMask) |
+				((b >> (8 - wBBits)) << wBPos));
+		}
+	}
+
+	m_lpddsSurface->Unlock(NULL);
 }
 
 //--------------------------------------------------------------------------

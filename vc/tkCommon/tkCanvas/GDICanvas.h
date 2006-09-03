@@ -474,6 +474,8 @@ public:
 		CONST LONG dxColor
 	) CONST;
 
+	VOID EmulateGamma();
+
 	COLORREF FAST_CALL matchColor(
 		CONST COLORREF rgb
 	) CONST;

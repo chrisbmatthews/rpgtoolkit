@@ -164,6 +164,14 @@ _value:
 			mu.udt = UDT_LIT;
 			CProgram::m_pyyUnits->push_back(mu);
 		}
+|	COLON IDENTIFIER
+		{
+			MACHINE_UNIT mu;
+			mu.udt = UDT_LABEL;
+			mu.lit = _T(":") + $2.getLit();
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+;
 ;
 
 params:
