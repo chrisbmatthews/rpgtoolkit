@@ -26,7 +26,8 @@
 #include <string>					// String class
 #include "stdafx.h"
 #include "../../tkCommon/strings.h"
-#include "../../tkCommon/movement/coords.h"
+#include "../../tkCommon/board/coords.h"
+#include "../../tkCommon/board/lighting.h"
 
 //--------------------------------------------------------------------------
 // Definitions
@@ -78,63 +79,97 @@ typedef struct tagVBBoardImage
 } VB_BRDIMAGE, *LPVB_BRDIMAGE;
 
 //--------------------------------------------------------------------------
+// VB Board tile and layer shading
+//--------------------------------------------------------------------------
+
+// An rgb colorshade.
+typedef tagRgbShade VB_TILESHADE, *LPVB_TILESHADE;
+
+// A layer of tile shading.
+typedef struct tagVBLayerShade
+{
+    LPSAFEARRAY values;					// VB_TILESHADE(x, y)
+	INT layer;							// Top layer to cast onto.
+} VB_LAYERSHADE, *LPVB_LAYERSHADE;
+
+typedef std::vector<VB_TILESHADE> tagRgbVector, RGB_VECTOR;
+typedef std::vector<RGB_VECTOR> tagRgbMatrix, RGB_MATRIX;
+
+// C++ version of tagVBLayerShade.
+typedef struct tagLayerShade
+{
+	RGB_MATRIX shades;
+	INT layer;
+} LAYER_SHADE, *LPLAYER_SHADE;
+
+// Point of a VB CVector.
+typedef struct tagVBVectorPoint
+{
+	LONG x, y;
+	VARIANT_BOOL bSet;
+} VB_CVECTOR_POINT, *LPVB_CVECTOR_POINT;
+
+//--------------------------------------------------------------------------
 // VB structure of the board format.
 //--------------------------------------------------------------------------
 typedef struct tagVBBoard
 {
 	// Ordered for Visual Basic (see modBoard.TKBoard)
-	SHORT m_bSizeX;						// Board size x
-	SHORT m_bSizeY;						// Board size y
-	SHORT m_bSizeL;						// Board size layer
-	SHORT m_coordType;
+	SHORT sizeX;						// Board size x
+	SHORT sizeY;						// Board size y
+	SHORT sizeL;						// Board size layer
+	SHORT coordType;
 
-	LPSAFEARRAY m_tileIndex;			// Lookup table for tiles
-	LPSAFEARRAY m_board;				// Board tiles - codes indicating where the tiles are on the board
-	LPSAFEARRAY m_ambientRed;			// Ambient tile red
-	LPSAFEARRAY m_ambientGreen;			// Ambient tile green
-	LPSAFEARRAY m_ambientBlue;			// Ambient tile blue
-	LPSAFEARRAY m_tileType;				// Tiletypes (3.0.6- boards only)
+	LPSAFEARRAY tileIndex;				// Lookup table for tiles
+	LPSAFEARRAY board;					// Board tiles - codes indicating where the tiles are on the board
+	LPSAFEARRAY ambientRed;				// Ambient tile red
+	LPSAFEARRAY ambientGreen;			// Ambient tile green
+	LPSAFEARRAY ambientBlue;			// Ambient tile blue
+	LPSAFEARRAY tileType;				// Tiletypes (3.0.6- boards only)
 
-	LPSAFEARRAY m_images;				// Array of tagVBBoardImages.
-	LPSAFEARRAY m_spriteImages;			// tagVBBoardImages for sprites.
-	VB_BRDIMAGE m_bkgImage;				// Background image.
-	INT m_brdColor;						// Board color
+	LPSAFEARRAY tileShading;			// Tile shading (3.0.7+)
+	LPSAFEARRAY lights;					// Lighting (3.0.7+)
+
+	LPSAFEARRAY images;					// Array of tagVBBoardImages.
+	LPSAFEARRAY spriteImages;			// tagVBBoardImages for sprites.
+	VB_BRDIMAGE bkgImage;				// Background image.
+	INT brdColor;						// Board color
 
 	// Unordered (not required by actkrt)
-	LPSAFEARRAY m_vectors;
-	LPSAFEARRAY m_programs;
-	LPSAFEARRAY m_sprites;
-	LPSAFEARRAY m_threads;				// Filenames of threads on board
-	LPSAFEARRAY m_brdConst;				// Constants
-	LPSAFEARRAY m_boardTitle;			// Board title (layer)
-	LPSAFEARRAY m_dirLink;				// Direction links 1- N, 2- S, 3- E, 4-W
-	BSTR m_enterPrg;					// Program to run on entrance
-	BSTR m_boardMusic;					// Background music file
-	BSTR m_boardBackground;				// Fighting background
-	SHORT m_boardSkilll;				// Board skill level
-	SHORT m_fightingYN;					// Fighting on boardYN (1- yes, 0- no)
-	SHORT m_brdSavingYn;				// Can player save on board? 0-yes, 1-no
-	SHORT m_ambientEffect;				// Ambient effect applied to the board
+	LPSAFEARRAY vectors;
+	LPSAFEARRAY programs;
+	LPSAFEARRAY sprites;
+	LPSAFEARRAY threads;				// Filenames of threads on board
+	LPSAFEARRAY brdConst;				// Constants
+	LPSAFEARRAY boardTitle;				// Board title (layer)
+	LPSAFEARRAY dirLink;				// Direction links 1- N, 2- S, 3- E, 4-W
+	BSTR enterPrg;						// Program to run on entrance
+	BSTR boardMusic;					// Background music file
+	BSTR boardBackground;				// Fighting background
+	SHORT boardSkilll;					// Board skill level
+	SHORT fightingYN;					// Fighting on boardYN (1- yes, 0- no)
+	SHORT brdSavingYn;					// Can player save on board? 0-yes, 1-no
+	SHORT ambientEffect;				// Ambient effect applied to the board
 
 	// Volatile data (trans3 only)
-	//LPSAFEARRAY m_animatedTile;			// Animated tiles associated with this board
+	//LPSAFEARRAY animatedTile;			// Animated tiles associated with this board
 	//BSTR strFilename;					// Filename of the board
 	
 	INT pxWidth() const
 	{
-		if (m_coordType & ISO_STACKED) return m_bSizeX * 64 - 32;
-		if (m_coordType & ISO_ROTATED) return m_bSizeX * 64 - 32;
-		return m_bSizeX * 32;			// TILE_NORMAL.
+		if (coordType & ISO_STACKED) return sizeX * 64 - 32;
+		if (coordType & ISO_ROTATED) return sizeX * 64 - 32;
+		return sizeX * 32;				// TILE_NORMAL.
 	}
 	INT pxHeight() const
 	{ 
-		if (m_coordType & ISO_STACKED) return m_bSizeY * 16 - 16;
-		if (m_coordType & ISO_ROTATED) return m_bSizeY * 32;
-		return m_bSizeY * 32;			// TILE_NORMAL.
+		if (coordType & ISO_STACKED) return sizeY * 16 - 16;
+		if (coordType & ISO_ROTATED) return sizeY * 32;
+		return sizeY * 32;				// TILE_NORMAL.
 	}
 	BOOL isIsometric() const
 	{
-		return (m_coordType & (ISO_STACKED | ISO_ROTATED));
+		return (coordType & (ISO_STACKED | ISO_ROTATED));
 	}
 
 } VB_BOARD, *LPVB_BOARD;
@@ -166,6 +201,7 @@ typedef enum tagVBBoardSettings
 	BS_PROGRAM,
 	BS_SPRITE,
 	BS_IMAGE,
+	BS_SHADING,
 	BS_LIGHTING
 } VB_EBRDSETTING;
 
@@ -204,35 +240,7 @@ public:
 	}
 	~CBoard();
 
-	// Get ambient red of a tile
-	INT ambientRed(
-		CONST INT x,
-		CONST INT y,
-		CONST INT z
-	) CONST;
-
-	// Get ambient green of a tile
-	INT ambientGreen(
-		CONST INT x,
-		CONST INT y,
-		CONST INT z
-	) CONST;
-
-	// Get ambient blue of a tile
-	INT ambientBlue(
-		CONST INT x,
-		CONST INT y,
-		CONST INT z
-	) CONST;
-
-	// Get the filename of a tile
-	std::string tile(
-		CONST INT x,
-		CONST INT y,
-		CONST INT z
-	) CONST;
-
-	VOID CBoard::draw(
+	VOID draw(
 		CONST LPVB_BRDEDITOR pEditor,
 		CONST LPVB_BOARD pBoard, 
 		CONST HDC hdc,
@@ -251,24 +259,6 @@ public:
 		CONST BOOL bDestroyCanvas
 	);
 
-	VOID renderLayer(
-		CONST LONG i, 
-		CONST HDC hdcCompat,
-		CONST BOOL bDestroyCanvas
-	);
-
-	std::vector<LPVB_BRDIMAGE> getImages(
-		CONST LPVB_BRDEDITOR pEditor
-	);
-
-	VOID renderTile(
-		CONST LPVB_BOARD pBoard, 
-		CONST LONG x, 
-		CONST LONG y, 
-		CONST LONG z, 
-		CONST HDC hdcCompat
-	);
-
 	VOID vectorize(
 		CONST LPVB_BOARD pBoard,
 		LPSAFEARRAY FAR *toRet
@@ -276,6 +266,19 @@ public:
 
 	VOID freeImage(
 		LPVB_BRDIMAGE pImg
+	);
+
+	VOID renderStack(
+		CONST LPVB_BOARD pBoard, 
+		CONST LPVB_BRDEDITOR pEditor,
+		CONST LONG x, 
+		CONST LONG y, 
+		CONST HDC hdcCompat
+	);
+
+	VOID convertLight(
+		CONST LPVB_BOARD pBoard, 
+		CONST LPUNKNOWN pLight
 	);
 
 	VOID insertCnv(CCanvas *CONST cnv)
@@ -287,12 +290,50 @@ public:
 	{
 		return m_projectPath;
 	}
-
+	
 private:
+	std::vector<LPVB_BRDIMAGE> getImages(
+		CONST LPVB_BRDEDITOR pEditor
+	);
+
+	std::string tile(
+		CONST INT x,
+		CONST INT y,
+		CONST INT z
+	) CONST;	
+	
+	VOID renderLayer(
+		CONST LONG i, 
+		CONST HDC hdcCompat,
+		CONST BOOL bDestroyCanvas
+	);
+
+	VOID renderTile(
+		CONST LPVB_BOARD pBoard, 
+		CONST LONG x, 
+		CONST LONG y, 
+		CONST LONG z, 
+		CONST HDC hdcCompat
+	);
+
+	VOID applyLighting(
+		RGB_MATRIX &shades
+	);	
+	
+	VOID recalculateShading(
+		CONST LPVB_BRDEDITOR pEditor
+	);
+
+	VOID getBoardLight(
+		CONST LPUNKNOWN pLight, 
+		BRD_LIGHT &bl
+	);
+
 	LPVB_BOARD m_pBoard;				// Board data passed from vb.
 	std::vector<BRD_LAYER> m_layers;	// Canvases for layers.
 	std::set<CCanvas *> m_images;		// Canvases for images.
 	STRING m_projectPath;				// \Game\$game$
+	LAYER_SHADE m_layerShade;			// Single-layer shading.
 };
 
 #endif

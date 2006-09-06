@@ -124,27 +124,6 @@ SOURCE=.\StdAfx.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE="..\tkCommon\movement\board conversion.cpp"
-# End Source File
-# Begin Source File
-
-SOURCE=.\tkgfx\CBoard.cpp
-
-!IF  "$(CFG)" == "actkrt3 - Win32 Release"
-
-# ADD CPP /YX
-
-!ELSEIF  "$(CFG)" == "actkrt3 - Win32 Debug"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\tkCommon\movement\coords.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\tkCommon\tkGfx\CTile.cpp
 # End Source File
 # Begin Source File
@@ -163,18 +142,6 @@ SOURCE=.\tkgfx\Tkgfx.cpp
 # Begin Group "tkgfx - header"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE="..\tkCommon\movement\board conversion.h"
-# End Source File
-# Begin Source File
-
-SOURCE=.\tkgfx\CBoard.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\tkCommon\movement\coords.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\tkCommon\tkGfx\CTile.h
@@ -402,12 +369,73 @@ SOURCE=.\audiere\audiere.lib
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\tkDirectX\platform.cpp
+SOURCE=..\tkCommon\tkDirectX\platform.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\tkDirectX\tkDirectX.cpp
+SOURCE=..\tkCommon\tkDirectX\platform.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\tkDirectX\tkDirectX.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\tkDirectX\tkDirectX.h
+# End Source File
+# End Group
+# Begin Group "board"
+
+# PROP Default_Filter ""
+# Begin Group "board - source"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\tkgfx\CBoard.cpp
+
+!IF  "$(CFG)" == "actkrt3 - Win32 Release"
+
+# ADD CPP /YX
+
+!ELSEIF  "$(CFG)" == "actkrt3 - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\board\conversion.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\movement\coords.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\board\lighting.cpp
+# End Source File
+# End Group
+# Begin Group "board - header"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\tkgfx\CBoard.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\board\conversion.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\movement\coords.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\board\lighting.h
+# End Source File
+# End Group
 # End Group
 # End Target
 # Begin Group "tkzip"

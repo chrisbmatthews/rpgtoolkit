@@ -59,7 +59,7 @@ EXPORTS
 	BRDFree				@52
 	BRDDraw				@53
 	BRDRender			@54
-	BRDRenderTileToBoard @55
+	BRDRenderStack		@55
 	BRDRenderTile		@56	
 	BRDPixelToTile		@57
 	BRDTileToPixel		@58
@@ -69,6 +69,7 @@ EXPORTS
 	BRDTileToVector		@62
 	BRDFreeImage		@63
 	BRDRenderImage		@64
+	BRDConvertLight		@65
 
 	;tkzip...
 	ZIPTest				@71

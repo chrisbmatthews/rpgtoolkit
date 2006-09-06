@@ -12,14 +12,14 @@
 //--------------------------------------------------------------------------
 // Inclusions
 //--------------------------------------------------------------------------
-#include "CBoard.h"			// Stuff for this file
+#include "CBoard.h"
 #include "../../tkCommon/tkGfx/CUtil.h"			// Utility functions
-#include "CTileAnim.h"		// Animated tiles
+#include "CTileAnim.h"							// Animated tiles
 #include "../../tkCommon/images/FreeImage.h"
 #include "../../tkCommon/tkGfx/CTile.h"
-#include "../../tkCommon/movement/board conversion.h"
-#include <map>
+#include "../../tkCommon/board/conversion.h"
 #include "../../trans3/common/paths.h"
+#include <map>
 
 std::vector<CBoard *> g_boards;
 //--------------------------------------------------------------------------
@@ -148,16 +148,16 @@ LONG APIENTRY BRDRoundToTile(
 //--------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------
-LONG APIENTRY BRDRenderTileToBoard(
+LONG APIENTRY BRDRenderStack(
 	CBoard *pBoard, 
 	CONST LPVB_BOARD pData,
+	CONST LPVB_BRDEDITOR pEditor,
 	CONST LONG hdcCompat,
 	CONST LONG x,
-	CONST LONG y,
-	CONST LONG z)
+	CONST LONG y)
 {
 	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
-		if (*i == pBoard) pBoard->renderTile(pData, x, y, z, reinterpret_cast<HDC>(hdcCompat));
+		if (*i == pBoard) pBoard->renderStack(pData, pEditor, x, y, reinterpret_cast<HDC>(hdcCompat));
 	return 0;
 }
 
@@ -173,6 +173,7 @@ LONG APIENTRY BRDRenderTile(
 	CONST LONG backgroundColor)
 {
 	CONST RGBSHADE rgb = {0, 0, 0};
+	
 	CTile *pTile = CTile::getTile(
 		filename, 
 		TM_NONE, 
@@ -274,6 +275,21 @@ LONG APIENTRY BRDRenderImage(
 //--------------------------------------------------------------------------
 // 
 //--------------------------------------------------------------------------
+LONG APIENTRY BRDConvertLight(
+	CBoard *pBoard, 
+	CONST LPVB_BOARD pData,
+	LPUNKNOWN *ppLight)
+{
+	for (CB_ITR i = g_boards.begin(); i != g_boards.end(); ++i)
+	{
+		if (*i == pBoard) pBoard->convertLight(pData, *ppLight);
+	}
+	return 0;
+}
+
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
 CBoard::~CBoard()
 {
 	BL_ITR i = m_layers.begin();
@@ -291,7 +307,7 @@ std::vector<LPVB_BRDIMAGE> CBoard::getImages(CONST LPVB_BRDEDITOR pEditor)
 {
 	// Get board image array.
 	LONG length = 0;
-	SafeArrayGetUBound(m_pBoard->m_images, 1, &length);
+	SafeArrayGetUBound(m_pBoard->images, 1, &length);
 
 	// Object visibility in the editor.
 	LONG ub = 0, i = BS_IMAGE;
@@ -306,13 +322,13 @@ std::vector<LPVB_BRDIMAGE> CBoard::getImages(CONST LPVB_BRDEDITOR pEditor)
 		for (i = 0; i <= length; ++i)
 		{
 			LPVB_BRDIMAGE pImg = NULL;
-			SafeArrayPtrOfIndex(m_pBoard->m_images, &i, (void **)&pImg);
+			SafeArrayPtrOfIndex(m_pBoard->images, &i, (void **)&pImg);
 			vect.push_back(pImg);
 		}
 	}
 
 	// Treat board sprites as images for the purposes of drawing them in the editor.
-	SafeArrayGetUBound(m_pBoard->m_spriteImages, 1, &length);
+	SafeArrayGetUBound(m_pBoard->spriteImages, 1, &length);
 	i = BS_SPRITE;
 	visible = VARIANT_TRUE;
 	if (BS_SPRITE <= ub) SafeArrayGetElement(pEditor->bDrawObjects, &i, LPVOID(&visible));
@@ -324,7 +340,7 @@ std::vector<LPVB_BRDIMAGE> CBoard::getImages(CONST LPVB_BRDEDITOR pEditor)
 		for (i = 0; i <= length; ++i)
 		{
 			LPVB_BRDIMAGE pImg = NULL;
-			SafeArrayPtrOfIndex(m_pBoard->m_spriteImages, &i, (void **)&pImg);
+			SafeArrayPtrOfIndex(m_pBoard->spriteImages, &i, (void **)&pImg);
 			
 			// Do some basic z-ordering (multiple sprites 
 			// at the same co-ordinate will be invisible).
@@ -373,24 +389,24 @@ VOID CBoard::draw(
 	// Blt onto an intermediate canvas.
 	CCanvas cnv;
 	cnv.CreateBlank(hdc, newWidth, newHeight, TRUE);
-	cnv.ClearScreen(m_pBoard->m_brdColor);
+	cnv.ClearScreen(m_pBoard->brdColor);
 	CONST RECT screen = {brdX, brdY, brdX + newWidth, brdY + newHeight};
 
 	// Background image.
-	CONST LPVB_BRDIMAGE pBkg = &m_pBoard->m_bkgImage;
+	CONST LPVB_BRDIMAGE pBkg = &m_pBoard->bkgImage;
 	if (!pBkg->pCnv && !getString(pBkg->file).empty()) insertCnv(pBkg->render(m_projectPath, hdc));
 	// Find a match in m_images.
 	if (m_images.find(pBkg->pCnv) != m_images.end()) pBkg->draw(cnv, screen, m_pBoard->pxWidth(), m_pBoard->pxHeight());
 
 	// Board images.
 	// Reallocation will not occur during this call so no need to lock.
-	// SafeArrayLock(m_pBoard->m_images);
+	// SafeArrayLock(m_pBoard->images);
 	std::vector<LPVB_BRDIMAGE> imgs = getImages(pEditor);
 	
 	LONG z = 1, length = 0;
 	SafeArrayGetUBound(pEditor->bLayerVisible, 1, &length);
 
-	for (z = 1; z <= m_pBoard->m_bSizeL; ++z)
+	for (z = 1; z <= m_pBoard->sizeL; ++z)
 	{
 		if (z <= length)
 		{
@@ -447,7 +463,7 @@ VOID CBoard::draw(
 							r.top - screen.top,
 							r.right - screen.left,
 							r.bottom - screen.top,
-							(!m_pBoard->m_brdColor ? RGB(255, 255, 255) : 0)
+							(!m_pBoard->brdColor ? RGB(255, 255, 255) : 0)
 						);
 				}
 			}
@@ -473,7 +489,7 @@ VOID CBoard::draw(
 	}
 
 	// Unlock the image array to allow reallocation in VB.
-	// SafeArrayUnlock(m_pBoard->m_images);
+	// SafeArrayUnlock(m_pBoard->images);
 }
 
 //--------------------------------------------------------------------------
@@ -487,8 +503,11 @@ VOID CBoard::render(
 	CONST BOOL bDestroyCanvas)
 {
 	m_pBoard = pBoard;
+		
+	recalculateShading(pEditor);
+
 	LONG length = 0;
-	CONST LONG lower = (layer ? layer : 1), upper = (layer ? layer : m_pBoard->m_bSizeL);
+	CONST LONG lower = (layer ? layer : 1), upper = (layer ? layer : m_pBoard->sizeL);
 	SafeArrayGetUBound(pEditor->bLayerOccupied, 1, &length);
 
 	for (LONG i = lower; i <= upper; ++i)
@@ -533,21 +552,22 @@ VOID CBoard::renderTile(
 	if (!strTile.empty())
 	{
 		// Tile exists at this location.
-		CONST INT r = ambientRed(x, y, z); //+ aR;
-		CONST INT g = ambientGreen(x, y, z); //+ aG;
-		CONST INT b = ambientBlue(x, y, z); //+ aB;
+
+		// Single layer lighting implementation.
+		VB_TILESHADE ts = {0, 0, 0};
+		if (m_layerShade.layer >= z) ts = m_layerShade.shades[x][y];
 
 		// Set the tile onto the dc.
 		CONST HDC hdc = p->cnv->OpenDC();
 		CTile::drawByBoardCoordHdc(
 			m_projectPath + TILE_PATH + strTile,
 			x, y,
-			r, g, b,
+			ts.r, ts.g, ts.b,
 			hdc,
 			TM_NONE,
 			0, 0,
-			COORD_TYPE(m_pBoard->m_coordType),
-			m_pBoard->m_bSizeX
+			COORD_TYPE(m_pBoard->coordType),
+			m_pBoard->sizeX
 		);
 		p->cnv->CloseDC(hdc);
 	}
@@ -557,10 +577,10 @@ VOID CBoard::renderTile(
 		CTile::drawBlankHdc(
 			x, y,
 			hdc,
-			m_pBoard->m_brdColor,
+			m_pBoard->brdColor,
 			0, 0,
-			COORD_TYPE(m_pBoard->m_coordType),
-			m_pBoard->m_bSizeX
+			COORD_TYPE(m_pBoard->coordType),
+			m_pBoard->sizeX
 		);
 		p->cnv->CloseDC(hdc);
 	}
@@ -595,12 +615,12 @@ VOID CBoard::renderLayer(
 	p->cnv->ClearScreen(TRANSP_COLOR);
 	CONST HDC hdc = p->cnv->OpenDC();
 
-	INT effWidth = m_pBoard->m_bSizeX, effHeight = m_pBoard->m_bSizeY;
-	if (m_pBoard->m_coordType & ISO_ROTATED)
+	INT effWidth = m_pBoard->sizeX, effHeight = m_pBoard->sizeY;
+	if (m_pBoard->coordType & ISO_ROTATED)
 	{
 		// Data matrix is square.
-		effWidth += m_pBoard->m_bSizeY;
-		effHeight += m_pBoard->m_bSizeX;
+		effWidth += m_pBoard->sizeY;
+		effHeight += m_pBoard->sizeX;
 	}
 
 	for (INT x = 1; x <= effWidth; ++x)
@@ -610,20 +630,19 @@ VOID CBoard::renderLayer(
 			CONST STRING strTile = tile(x, y, i);
 			if (!strTile.empty())
 			{
-				CONST INT r = ambientRed(x, y, i); //+ aR;
-				CONST INT g = ambientGreen(x, y, i); //+ aG;
-				CONST INT b = ambientBlue(x, y, i); //+ aB;
+				VB_TILESHADE ts = {0, 0, 0};
+				if (m_layerShade.layer >= i) ts = m_layerShade.shades[x][y];
 
 				// Set the tile onto it
 				CTile::drawByBoardCoordHdc(
 					m_projectPath + TILE_PATH + strTile,
 					x, y,
-					r, g, b,
+					ts.r, ts.g, ts.b,
 					hdc,
 					TM_NONE,
 					0, 0,
-					COORD_TYPE(m_pBoard->m_coordType),
-					m_pBoard->m_bSizeX
+					COORD_TYPE(m_pBoard->coordType),
+					m_pBoard->sizeX
 				);			
 			} // if (!strTile.empty())
 		} // for y
@@ -633,7 +652,373 @@ VOID CBoard::renderLayer(
 }	
 
 //--------------------------------------------------------------------------
+// Render all tiles at a single coordinate
+//--------------------------------------------------------------------------
+VOID CBoard::renderStack(
+	CONST LPVB_BOARD pBoard, 
+	CONST LPVB_BRDEDITOR pEditor,
+	CONST LONG x, 
+	CONST LONG y, 
+	CONST HDC hdcCompat)
+{
+	recalculateShading(pEditor);
+	for (LONG z = 1; z <= pBoard->sizeL; ++z)
+	{
+		renderTile(pBoard, x, y, z, hdcCompat);
+	}
+}
+
+//--------------------------------------------------------------------------
+// Get the filename of a tile
+//--------------------------------------------------------------------------
+INLINE std::string CBoard::tile(
+	CONST INT x,
+	CONST INT y,
+	CONST INT z
+		) CONST
+{
+
+	// First, get the lut code
+	LONG lutIndicies[] = {x, y, z};
+	SHORT lut = 0;
+	SafeArrayGetElement(m_pBoard->board, lutIndicies, LPVOID(&lut));
+
+	if (!lut)
+	{
+		// No tile at this location (lut == 0).
+		return std::string();
+	}
+	else
+	{
+		// Now, find the tile with that code
+		LONG tileIndices[] = {lut};
+		BSTR str = NULL;
+		SafeArrayGetElement(m_pBoard->tileIndex, tileIndices, LPVOID(&str));
+
+		// Convert to ASCII
+		CONST INT len = SysStringLen(str);
+		LPSTR toRet = new CHAR[len + 1];
+		for (INT i = 0; i < len; i++)
+		{
+			// Copy over
+			toRet[i] = str[i];
+		}
+
+		// Append NULL
+		toRet[len] = '\0';
+
+		// Create the return string
+		CONST std::string toRetStr = toRet;
+
+		// Clean up
+		delete [] toRet;
+
+		// Get the file's extension
+		CONST std::string strExt = util::upperCase(util::getExt(toRetStr));
+
+		// If it's an animated tile
+		if (strExt.compare("TAN") == 0)
+		{
+			// Use the first frame
+			return CTileAnim(m_projectPath + TILE_PATH + toRetStr).frame(1);
+		}
+
+		// Return the result
+		return toRetStr;
+
+	} // if (lut == 0)
+
+}
+
+//--------------------------------------------------------------------------
 //
+//--------------------------------------------------------------------------
+VOID CBoard::vectorize(
+	CONST LPVB_BOARD pBoard,
+	LPSAFEARRAY FAR *vbArray)
+{
+	m_pBoard = pBoard;
+
+	SAFEARRAYBOUND sabound = {1, 0};
+
+	if (SafeArrayRedim(*vbArray, &sabound) != S_OK) return;
+
+	// Start inserting from zero.
+	sabound.cElements = 0;
+
+	// Construct a vector array from the tiletype SAFEARRAY.
+	for (UINT z = 1; z <= m_pBoard->sizeL; ++z)
+	{
+		VECTOR_CHAR row;
+		VECTOR_CHAR2D matrix;
+		 
+		for (UINT x = 0; x <= m_pBoard->sizeX; ++x) row.push_back('\0');
+		for (UINT y = 0; y <= m_pBoard->sizeY; ++y) matrix.push_back(row);
+
+		for (x = 1; x <= m_pBoard->sizeX; ++x)
+		{
+			for (y = 1; y <= m_pBoard->sizeY; ++y)
+			{
+				LONG indices[] = {x, y, z};
+				CHAR type = 0;
+				SafeArrayGetElement(m_pBoard->tileType, indices, LPVOID(&type));
+
+				matrix[y][x] = type;
+			}
+		}
+
+		// Make a vector of points for each new board vector.
+		std::vector<LPCONV_VECTOR> vects = vectorizeLayer(
+			matrix,
+			m_pBoard->sizeX,
+			m_pBoard->sizeY,
+			COORD_TYPE(m_pBoard->coordType)
+		);
+
+		// Increase the size of the vb array to accomodate.
+		LONG element = sabound.cElements;
+		sabound.cElements += vects.size();
+		if (SafeArrayRedim(*vbArray, &sabound) != S_OK) return;
+
+		// Create a SAFEARRAY for each set of board vector points.
+		std::vector<LPCONV_VECTOR>::iterator j = vects.begin();
+		for (; j != vects.end(); ++j, ++element)
+		{
+			// Get the pointer to the new vector in the vb array.
+			LPVB_CONV_VECTOR pCvVt = NULL;
+			SafeArrayPtrOfIndex(*vbArray, &element, (void **)&pCvVt);
+
+			// Create a new SAFEARRAY for the points.
+			if (SafeArrayAllocDescriptor(1, &pCvVt->pts) != S_OK) continue;
+
+			pCvVt->pts->cbElements = sizeof(CONV_POINT);
+			pCvVt->pts->fFeatures = FADF_EMBEDDED;
+			pCvVt->pts->rgsabound[0].cElements = (*j)->pts.size();
+			pCvVt->pts->rgsabound[0].lLbound = 0;
+
+			if (SafeArrayAllocData(pCvVt->pts) == S_OK)
+			{
+				// Insert the points into the new array.
+				LONG index = 0;
+				std::vector<CONV_POINT>::iterator k = (*j)->pts.begin();
+				for (; k != (*j)->pts.end(); ++k, ++index)
+				{
+					if (SafeArrayPutElement(pCvVt->pts, &index, (void *)k) != S_OK) break;
+				}
+
+				// Set the other properties.
+				pCvVt->closed = VARIANT_TRUE;
+				pCvVt->type = TILE_TYPE((*j)->type);
+				if ((*j)->type >= STAIRS1 && (*j)->type <= STAIRS8)
+				{
+					// Old stairs are stored as targetLayer + 10.
+					pCvVt->attributes = (*j)->type - 10;
+					pCvVt->type = TT_STAIRS;
+				}
+				else if ((*j)->type == NORTH_SOUTH || (*j)->type == EAST_WEST)
+				{
+					pCvVt->type = TT_SOLID;		
+					pCvVt->closed = 0;
+				}
+				pCvVt->layer = z;
+
+			} // Point array allocated.
+		
+			// VectorizeLayer allocated the points.
+			delete *j;
+
+		} // for (vectors on this layer)
+	} // for (z)
+}
+
+//--------------------------------------------------------------------------
+// 
+//--------------------------------------------------------------------------
+VOID CBoard::applyLighting(RGB_MATRIX &shades)
+{
+	// Apply dynamic lighting.
+	LONG ubLights = 0;
+	SafeArrayGetUBound(m_pBoard->lights, 1, &ubLights);
+	for (LONG i = 0; i <= ubLights; ++i)
+	{
+		// Pointer to a CBoardLight.
+		LPUNKNOWN pLight = NULL;
+		SafeArrayGetElement(m_pBoard->lights, &i, (void **)&pLight);
+		if (pLight)
+		{
+			// Extract the object's data into a BRD_LIGHT.
+			BRD_LIGHT bl;
+			getBoardLight(pLight, bl);
+			calculateLighting(shades, bl, COORD_TYPE(m_pBoard->coordType), m_pBoard->sizeX);
+		}
+	} // for (i)
+}
+
+//--------------------------------------------------------------------------
+// Single layer lighting implementation
+//--------------------------------------------------------------------------
+VOID CBoard::recalculateShading(CONST LPVB_BRDEDITOR pEditor)
+{	
+	// Clear current shade array.
+	m_layerShade.shades.clear();
+
+	LONG i, j;
+	for (i = 0; i <= m_pBoard->sizeX; ++i)
+	{
+		RGB_VECTOR row;
+		CONST VB_TILESHADE ts = {0, 0, 0};
+		for (j = 0; j <= m_pBoard->sizeY; ++j) row.push_back(ts);
+		m_layerShade.shades.push_back(row);
+	}
+
+	// Shading visibility in the editor.
+	LONG ub = 0, vs = BS_SHADING, vl = BS_LIGHTING;
+	SafeArrayGetUBound(pEditor->bDrawObjects, 1, &ub);
+	
+	VARIANT_BOOL shade = VARIANT_TRUE, light = VARIANT_TRUE;
+	if (ub >= BS_LIGHTING) 
+	{
+		SafeArrayGetElement(pEditor->bDrawObjects, &vs, LPVOID(&shade));
+		SafeArrayGetElement(pEditor->bDrawObjects, &vl, LPVOID(&light));
+	}
+
+	if (shade)
+	{
+		LPVB_LAYERSHADE plShade = NULL;
+		ub = -1;
+		SafeArrayGetUBound(m_pBoard->tileShading, 1, &ub);
+
+		if (ub == 0)
+		{
+			// Single layer only.
+			SafeArrayPtrOfIndex(m_pBoard->tileShading, &ub, (void **)&plShade);
+			if (plShade)
+			{
+				for (i = 0; i <= m_pBoard->sizeX; ++i)
+				{
+					for (j = 0; j <= m_pBoard->sizeY; ++j)
+					{
+						VB_TILESHADE ts = {0, 0, 0};
+						LONG indices[] = {i, j};
+						SafeArrayGetElement(plShade->values, indices, LPVOID(&ts));
+						m_layerShade.shades[i][j] = ts;
+					}
+				}
+				m_layerShade.layer = plShade->layer;
+			}
+		}
+	} // if (draw shading)
+
+	// Lighting objects.
+	if (light) applyLighting(m_layerShade.shades);
+}
+
+//--------------------------------------------------------------------------
+// Load a VB CBoardLight object into a BRD_LIGHT struct.
+//--------------------------------------------------------------------------
+VOID CBoard::getBoardLight(CONST LPUNKNOWN pLight, BRD_LIGHT &bl)
+{
+	// Obtain the IUnknown * of the light's CVector (VT_DISPATCH, .pdispVal).
+	DISPPARAMS dpNoArgs = {NULL, NULL, 0, 0};
+	CONST VARIANT pNodes = invokeObject(pLight, L"nodes", dpNoArgs, DISPATCH_PROPERTYGET);
+
+	// Invoke() sets the object pointer type to IDispatch *.
+	if (pNodes.pdispVal)
+	{
+		// LPSAFEARRAY *CVector.points() as (VT_I4, .lVal)
+		CONST VARIANT pPts = invokeObject(LPUNKNOWN(pNodes.pdispVal), L"points", dpNoArgs, DISPATCH_PROPERTYGET);
+		
+		CONST LPSAFEARRAY *ppsf = (LPSAFEARRAY *)pPts.lVal;
+		LONG ub = 0;
+		SafeArrayGetUBound(*ppsf, 1, &ub);
+
+		for (LONG i = 0; i <= ub; ++i)
+		{
+			VB_CVECTOR_POINT cvpt = {0, 0, VARIANT_FALSE};
+			SafeArrayGetElement(*ppsf, &i, LPVOID(&cvpt));
+			CONST POINT pt = {cvpt.x, cvpt.y};
+			bl.nodes.push_back(pt);
+		}
+	}
+
+	// Colors.
+
+	// LPSAFEARRAY *CBoardLight.colors() as (VT_I4, .lVal)
+	CONST VARIANT pColors = invokeObject(pLight, L"colors", dpNoArgs, DISPATCH_PROPERTYGET);
+	
+	CONST LPSAFEARRAY *ppsf = (LPSAFEARRAY *)pColors.lVal;
+	LONG ub = 0;
+	SafeArrayGetUBound(*ppsf, 1, &ub);
+
+	for (LONG i = 0; i <= ub; ++i)
+	{
+		VB_TILESHADE color = {0, 0, 0};
+		SafeArrayGetElement(*ppsf, &i, LPVOID(&color));
+		bl.colors.push_back(color);
+	}
+
+	// Light type.
+	// CBoardLight.eType() as (VT_I4, .lVal)
+	CONST VARIANT eType = invokeObject(pLight, L"eType", dpNoArgs, DISPATCH_PROPERTYGET);
+	bl.eType = LIGHT_TYPE(eType.lVal);
+}
+
+//--------------------------------------------------------------------------
+// Render a VB CBoardLight object onto the board's shading array.
+//--------------------------------------------------------------------------
+VOID CBoard::convertLight(CONST LPVB_BOARD pBoard, CONST LPUNKNOWN pLight)
+{
+	if (!pLight) return;
+	m_pBoard = pBoard;
+
+	// Extract the object's data into a BRD_LIGHT.
+	BRD_LIGHT bl;
+	getBoardLight(pLight, bl);
+
+	// Apply the light to a local matrix.
+	RGB_MATRIX matrix;
+	LONG i, j;
+	for (i = 0; i <= m_pBoard->sizeX; ++i)
+	{
+		RGB_VECTOR row;
+		CONST VB_TILESHADE ts = {0, 0, 0};
+		for (j = 0; j <= m_pBoard->sizeY; ++j) row.push_back(ts);
+		matrix.push_back(row);
+	}
+	calculateLighting(matrix, bl, COORD_TYPE(m_pBoard->coordType), m_pBoard->sizeX);
+
+	// Add to board data array tile by tile.
+	LPVB_LAYERSHADE plShade = NULL;
+	LONG ub = -1;
+	SafeArrayGetUBound(m_pBoard->tileShading, 1, &ub);
+
+	if (ub == 0)
+	{
+		// Single layer only.
+		SafeArrayPtrOfIndex(m_pBoard->tileShading, &ub, (void **)&plShade);
+		if (plShade)
+		{
+			for (i = 0; i <= m_pBoard->sizeX; ++i)
+			{
+				for (j = 0; j <= m_pBoard->sizeY; ++j)
+				{
+					VB_TILESHADE ts = {0, 0, 0};
+					LONG indices[] = {i, j};
+					SafeArrayGetElement(plShade->values, indices, LPVOID(&ts));
+
+					ts.r += matrix[i][j].r;
+					ts.g += matrix[i][j].g;
+					ts.b += matrix[i][j].b;
+
+					if (SafeArrayPutElement(plShade->values, indices, LPVOID(&ts)) != S_OK) break;
+				}
+			}
+		}
+	} // (single tileShading element).
+}
+
+//--------------------------------------------------------------------------
+// VB_BRDIMAGE - draw to canvas.
 //--------------------------------------------------------------------------
 void tagVBBoardImage::draw(
 	CONST CCanvas &cnv, 
@@ -722,7 +1107,7 @@ void tagVBBoardImage::draw(
 }
 
 //--------------------------------------------------------------------------
-//
+// VB_BRDIMAGE - render to member canvas.
 //--------------------------------------------------------------------------
 CCanvas *tagVBBoardImage::render(
 	CONST STRING projectPath, 
@@ -774,221 +1159,4 @@ CCanvas *tagVBBoardImage::render(
 	FreeImage_Unload(bmp);
 
 	return pCnv;
-}
-
-//--------------------------------------------------------------------------
-// Get ambient red of a tile
-//--------------------------------------------------------------------------
-INLINE INT CBoard::ambientRed(
-	CONST INT x,
-	CONST INT y,
-	CONST INT z
-		) CONST
-{
-
-	// Obtain the ambient red value
-	LONG indicies[] = {x, y, z};
-	SHORT toRet = 0;
-	SafeArrayGetElement(m_pBoard->m_ambientRed, indicies, LPVOID(&toRet));
-	return toRet;
-
-}
-
-//--------------------------------------------------------------------------
-// Get ambient green of a tile
-//--------------------------------------------------------------------------
-INLINE INT CBoard::ambientGreen(
-	CONST INT x,
-	CONST INT y,
-	CONST INT z
-		) CONST
-{
-
-	// Obtain the ambient green value
-	LONG indicies[] = {x, y, z};
-	SHORT toRet = 0;
-	SafeArrayGetElement(m_pBoard->m_ambientGreen, indicies, LPVOID(&toRet));
-	return toRet;
-
-}
-
-//--------------------------------------------------------------------------
-// Get ambient blue of a tile
-//--------------------------------------------------------------------------
-INLINE INT CBoard::ambientBlue(
-	CONST INT x,
-	CONST INT y,
-	CONST INT z
-		) CONST
-{
-
-	// Obtain the ambient blue value
-	LONG indicies[] = {x, y, z};
-	SHORT toRet = 0;
-	SafeArrayGetElement(m_pBoard->m_ambientBlue, indicies, LPVOID(&toRet));
-	return toRet;
-
-}
-
-//--------------------------------------------------------------------------
-// Get the filename of a tile
-//--------------------------------------------------------------------------
-INLINE std::string CBoard::tile(
-	CONST INT x,
-	CONST INT y,
-	CONST INT z
-		) CONST
-{
-
-	// First, get the lut code
-	LONG lutIndicies[] = {x, y, z};
-	SHORT lut = 0;
-	SafeArrayGetElement(m_pBoard->m_board, lutIndicies, LPVOID(&lut));
-
-	if (!lut)
-	{
-		// No tile at this location (lut == 0).
-		return std::string();
-	}
-	else
-	{
-		// Now, find the tile with that code
-		LONG tileIndices[] = {lut};
-		BSTR str = NULL;
-		SafeArrayGetElement(m_pBoard->m_tileIndex, tileIndices, LPVOID(&str));
-
-		// Convert to ASCII
-		CONST INT len = SysStringLen(str);
-		LPSTR toRet = new CHAR[len + 1];
-		for (INT i = 0; i < len; i++)
-		{
-			// Copy over
-			toRet[i] = str[i];
-		}
-
-		// Append NULL
-		toRet[len] = '\0';
-
-		// Create the return string
-		CONST std::string toRetStr = toRet;
-
-		// Clean up
-		delete [] toRet;
-
-		// Get the file's extension
-		CONST std::string strExt = util::upperCase(util::getExt(toRetStr));
-
-		// If it's an animated tile
-		if (strExt.compare("TAN") == 0)
-		{
-			// Use the first frame
-			return CTileAnim(m_projectPath + TILE_PATH + toRetStr).frame(1);
-		}
-
-		// Return the result
-		return toRetStr;
-
-	} // if (lut == 0)
-
-}
-
-//--------------------------------------------------------------------------
-//
-//--------------------------------------------------------------------------
-VOID CBoard::vectorize(
-	CONST LPVB_BOARD pBoard,
-	LPSAFEARRAY FAR *vbArray)
-{
-	m_pBoard = pBoard;
-
-	SAFEARRAYBOUND sabound = {1, 0};
-
-	if (SafeArrayRedim(*vbArray, &sabound) != S_OK) return;
-
-	// Start inserting from zero.
-	sabound.cElements = 0;
-
-	// Construct a vector array from the tiletype SAFEARRAY.
-	for (UINT z = 1; z <= m_pBoard->m_bSizeL; ++z)
-	{
-		VECTOR_CHAR row;
-		VECTOR_CHAR2D matrix;
-		 
-		for (UINT x = 0; x <= m_pBoard->m_bSizeX; ++x) row.push_back('\0');
-		for (UINT y = 0; y <= m_pBoard->m_bSizeY; ++y) matrix.push_back(row);
-
-		for (x = 1; x <= m_pBoard->m_bSizeX; ++x)
-		{
-			for (y = 1; y <= m_pBoard->m_bSizeY; ++y)
-			{
-				LONG indices[] = {x, y, z};
-				CHAR type = 0;
-				SafeArrayGetElement(m_pBoard->m_tileType, indices, LPVOID(&type));
-
-				matrix[y][x] = type;
-			}
-		}
-
-		// Make a vector of points for each new board vector.
-		std::vector<LPCONV_VECTOR> vects = vectorizeLayer(
-			matrix,
-			m_pBoard->m_bSizeX,
-			m_pBoard->m_bSizeY,
-			COORD_TYPE(m_pBoard->m_coordType)
-		);
-
-		// Increase the size of the vb array to accomodate.
-		LONG element = sabound.cElements;
-		sabound.cElements += vects.size();
-		if (SafeArrayRedim(*vbArray, &sabound) != S_OK) return;
-
-		// Create a SAFEARRAY for each set of board vector points.
-		std::vector<LPCONV_VECTOR>::iterator j = vects.begin();
-		for (; j != vects.end(); ++j, ++element)
-		{
-			// Get the pointer to the new vector in the vb array.
-			LPVB_CONV_VECTOR pCvVt = NULL;
-			SafeArrayPtrOfIndex(*vbArray, &element, (void **)&pCvVt);
-
-			// Create a new SAFEARRAY for the points.
-			if (SafeArrayAllocDescriptor(1, &pCvVt->pts) != S_OK) continue;
-
-			pCvVt->pts->cbElements = sizeof(CONV_POINT);
-			pCvVt->pts->fFeatures = FADF_EMBEDDED;
-			pCvVt->pts->rgsabound[0].cElements = (*j)->pts.size();
-			pCvVt->pts->rgsabound[0].lLbound = 0;
-
-			if (SafeArrayAllocData(pCvVt->pts) == S_OK)
-			{
-				// Insert the points into the new array.
-				LONG index = 0;
-				std::vector<CONV_POINT>::iterator k = (*j)->pts.begin();
-				for (; k != (*j)->pts.end(); ++k, ++index)
-				{
-					if (SafeArrayPutElement(pCvVt->pts, &index, (void *)k) != S_OK) break;
-				}
-
-				// Set the other properties.
-				pCvVt->closed = VARIANT_TRUE;
-				pCvVt->type = TILE_TYPE((*j)->type);
-				if ((*j)->type >= STAIRS1 && (*j)->type <= STAIRS8)
-				{
-					// Old stairs are stored as targetLayer + 10.
-					pCvVt->attributes = (*j)->type - 10;
-					pCvVt->type = TT_STAIRS;
-				}
-				else if ((*j)->type == NORTH_SOUTH || (*j)->type == EAST_WEST)
-				{
-					pCvVt->type = TT_SOLID;		
-					pCvVt->closed = 0;
-				}
-				pCvVt->layer = z;
-
-			} // Point array allocated.
-		
-			// VectorizeLayer allocated the points.
-			delete *j;
-
-		} // for (vectors on this layer)
-	} // for (z)
 }
