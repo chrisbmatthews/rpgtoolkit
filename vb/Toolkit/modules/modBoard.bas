@@ -112,7 +112,27 @@ Public Const SPR_ACTIVE = 0               'Sprite is always active.
 Public Const SPR_CONDITIONAL = 1          'Sprite running depends on RPGCode variables.
 
 '=========================================================================
-' A RPGToolkit board
+' Board tile and layer shading
+'=========================================================================
+Public Type TKTileShade
+    r As Integer
+    b As Integer
+    g As Integer
+End Type
+
+Public Enum eBoardLight
+    BL_SPOTLIGHT
+    BL_GRADIENT
+    BL_GRADIENT_CLIPPED
+End Enum
+
+Public Type TKLayerShade
+    values() As TKTileShade
+    layer As Long
+End Type
+
+'=========================================================================
+' An RPGToolkit board
 '=========================================================================
 Public Type TKBoard
 
@@ -127,8 +147,11 @@ Public Type TKBoard
     ambientRed() As Integer               'ambient tile red
     ambientGreen() As Integer             'ambient tile green
     ambientBlue() As Integer              'ambient tile blue
-    tiletype() As Byte                    'tile types
+    tiletype() As Byte                    'tile types (backwards compatbility)
     
+    tileShading() As TKLayerShade         'Tile shading array (old ambientRed, -Green, -Blue arrays)
+    lights() As CBoardLight               'Dynamic lighting objects (spotlight, gradient)
+        
     Images() As TKBoardImage
     spriteImages() As TKBoardImage        'Image data for board sprites
     bkgImage As TKBoardImage              'background image
@@ -160,14 +183,15 @@ End Type
 'Editing option buttons on the lefthand toolbar.
 '=========================================================================
 Public Enum eBrdSetting
-    BS_GENERAL
+    BS_SCROLL
     BS_ZOOM
     BS_TILE
     BS_VECTOR
     BS_PROGRAM
     BS_SPRITE
     BS_IMAGE
-    BS_LIGHTING
+    BS_SHADING                            'Tile shading
+    BS_LIGHTING                           'Dynamic lighting: spotlight, gradient etc.
 End Enum
 Public Enum eBrdTool
     BT_DRAW
@@ -191,6 +215,7 @@ Public Enum eBoardTabs
     BTAB_PROGRAM
     BTAB_SPRITE
     BTAB_IMAGE
+    BTAB_LIGHTING
 End Enum
 
 '=========================================================================
@@ -228,7 +253,9 @@ Public Type TKBoardEditorData
     effectiveBoardX As Long               'Board data matrix dimensions
     effectiveBoardY As Long               '(different from sizeX/Y for ISO_ROTATED)
     
-    currentObject(BTAB_IMAGE) As Long     'Selected object indices
+    currentObject(BTAB_LIGHTING) As Long  'Selected object indices
+    
+    currentShade As TKTileShade           'Current lighting pen
 
     'Pre 3.0.7
     boardName As String                   'filename
@@ -267,14 +294,14 @@ End Type
 '=========================================================================
 Public Type TKBoardClipboardTile
     file As String
+    shade As TKTileShade
     brdCoord As POINTAPI
-    'tbd: Colour, tiletype.
 End Type
 
 Public Type TKBoardClipboard
-    tiles() As TKBoardClipboardTile
+    tiles() As TKBoardClipboardTile     'BS_TILE, BS_SHADING
     origin As POINTAPI
-    obj As Object           'BS_VECTOR,BS_PROGRAM,BS_SPRITE
+    obj As Object                       'BS_VECTOR, BS_PROGRAM, BS_SPRITE
     img As TKBoardImage
 End Type
 
@@ -545,6 +572,14 @@ Public Sub boardCopy(ByRef Source As TKBoard, ByRef dest As TKBoard) ': on error
             Call Source.sprites(i).copy(dest.sprites(i))
         End If
     Next i
+    ReDim dest.lights(UBound(Source.lights))
+    For i = 0 To UBound(Source.lights)
+        If Not Source.lights(i) Is Nothing Then
+            Set dest.lights(i) = New CBoardLight
+            Call Source.lights(i).copy(dest.lights(i))
+        End If
+    Next i
+    
 End Sub
 
 '=========================================================================

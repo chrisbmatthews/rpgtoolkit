@@ -4,10 +4,10 @@ Begin VB.UserControl ctlBrdProgram
    ClientHeight    =   5640
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   3105
+   ClientWidth     =   3645
    DefaultCancel   =   -1  'True
    ScaleHeight     =   5640
-   ScaleWidth      =   3105
+   ScaleWidth      =   3645
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw programs"
       Height          =   375
@@ -20,7 +20,7 @@ Begin VB.UserControl ctlBrdProgram
       Caption         =   "Ok"
       Default         =   -1  'True
       Height          =   375
-      Left            =   1800
+      Left            =   2160
       TabIndex        =   17
       ToolTipText     =   "Confirmation button"
       Top             =   120
@@ -30,7 +30,7 @@ Begin VB.UserControl ctlBrdProgram
    Begin VB.CommandButton cmdDelete 
       Caption         =   "Delete"
       Height          =   375
-      Left            =   2160
+      Left            =   2520
       TabIndex        =   2
       Top             =   120
       Width           =   855
@@ -41,13 +41,13 @@ Begin VB.UserControl ctlBrdProgram
       Left            =   0
       TabIndex        =   1
       Top             =   960
-      Width           =   3015
+      Width           =   3375
       Begin VB.PictureBox picBrowse 
          Appearance      =   0  'Flat
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   375
-         Left            =   2280
+         Left            =   2760
          ScaleHeight     =   375
          ScaleWidth      =   495
          TabIndex        =   14
@@ -66,14 +66,14 @@ Begin VB.UserControl ctlBrdProgram
          BorderStyle     =   0  'None
          Caption         =   "Activation mechanism            "
          Height          =   1695
-         Left            =   120
+         Left            =   240
          TabIndex        =   7
          Top             =   1320
          Width           =   2775
          Begin VB.CheckBox chkRunOnce 
             Caption         =   "Run once"
             Height          =   255
-            Left            =   120
+            Left            =   240
             TabIndex        =   19
             ToolTipText     =   "Allow this program to be run only once during the game"
             Top             =   1320
@@ -81,7 +81,7 @@ Begin VB.UserControl ctlBrdProgram
          End
          Begin VB.TextBox txtRepeatTrigger 
             Height          =   285
-            Left            =   1440
+            Left            =   1560
             TabIndex        =   12
             Text            =   "32"
             Top             =   720
@@ -90,7 +90,7 @@ Begin VB.UserControl ctlBrdProgram
          Begin VB.CheckBox chkActivationStopsMove 
             Caption         =   "Activation stops movement"
             Height          =   255
-            Left            =   120
+            Left            =   240
             TabIndex        =   13
             Top             =   960
             Width           =   2415
@@ -98,7 +98,7 @@ Begin VB.UserControl ctlBrdProgram
          Begin VB.CheckBox chkRepeatTrigger 
             Caption         =   "Trigger every                 pixels"
             Height          =   255
-            Left            =   120
+            Left            =   240
             TabIndex        =   11
             Top             =   720
             Width           =   2415
@@ -108,7 +108,7 @@ Begin VB.UserControl ctlBrdProgram
             BorderStyle     =   0  'None
             ForeColor       =   &H80000008&
             Height          =   495
-            Left            =   120
+            Left            =   240
             ScaleHeight     =   495
             ScaleWidth      =   2415
             TabIndex        =   8
@@ -136,7 +136,7 @@ Begin VB.UserControl ctlBrdProgram
       End
       Begin VB.TextBox txtLayer 
          Height          =   285
-         Left            =   120
+         Left            =   480
          TabIndex        =   5
          Text            =   "1"
          Top             =   960
@@ -147,11 +147,11 @@ Begin VB.UserControl ctlBrdProgram
          Left            =   120
          TabIndex        =   3
          Top             =   480
-         Width           =   2055
+         Width           =   2535
       End
       Begin MSComctlLib.ListView lvPoints 
          Height          =   1095
-         Left            =   480
+         Left            =   720
          TabIndex        =   16
          Top             =   3120
          Width           =   1935
@@ -186,7 +186,7 @@ Begin VB.UserControl ctlBrdProgram
       Begin VB.Label lblLayer 
          Caption         =   "Layer"
          Height          =   255
-         Left            =   840
+         Left            =   1200
          TabIndex        =   6
          Top             =   1020
          Width           =   615
@@ -206,7 +206,7 @@ Begin VB.UserControl ctlBrdProgram
       Style           =   2  'Dropdown List
       TabIndex        =   0
       Top             =   600
-      Width           =   3015
+      Width           =   3375
    End
 End
 Attribute VB_Name = "ctlBrdProgram"

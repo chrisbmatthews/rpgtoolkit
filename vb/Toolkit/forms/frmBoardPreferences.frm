@@ -2,14 +2,14 @@ VERSION 5.00
 Begin VB.Form frmBoardPreferences 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Board Preferences"
-   ClientHeight    =   3480
+   ClientHeight    =   3795
    ClientLeft      =   45
    ClientTop       =   435
    ClientWidth     =   6120
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3480
+   ScaleHeight     =   3795
    ScaleWidth      =   6120
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
@@ -19,7 +19,7 @@ Begin VB.Form frmBoardPreferences
       Height          =   375
       Left            =   4800
       TabIndex        =   18
-      Top             =   3000
+      Top             =   3360
       Width           =   1215
    End
    Begin VB.CommandButton cmdDefault 
@@ -28,22 +28,22 @@ Begin VB.Form frmBoardPreferences
       Height          =   375
       Left            =   3480
       TabIndex        =   17
-      Top             =   3000
+      Top             =   3360
       Width           =   1215
    End
    Begin VB.PictureBox picContainer 
       BorderStyle     =   0  'None
       HasDC           =   0   'False
-      Height          =   2775
+      Height          =   3135
       Left            =   120
-      ScaleHeight     =   2775
+      ScaleHeight     =   3135
       ScaleWidth      =   5895
       TabIndex        =   0
       Top             =   120
       Width           =   5895
       Begin VB.Frame fraOptions 
          Caption         =   "Miscellaneous"
-         Height          =   2775
+         Height          =   3135
          Left            =   3000
          TabIndex        =   12
          Top             =   0
@@ -83,11 +83,31 @@ Begin VB.Form frmBoardPreferences
       End
       Begin VB.Frame fraColors 
          Caption         =   "Color options"
-         Height          =   2775
+         Height          =   3135
          Left            =   0
          TabIndex        =   1
          Top             =   0
          Width           =   2895
+         Begin VB.PictureBox picColors 
+            Height          =   255
+            Index           =   7
+            Left            =   120
+            ScaleHeight     =   195
+            ScaleWidth      =   195
+            TabIndex        =   23
+            Top             =   2760
+            Width           =   255
+         End
+         Begin VB.PictureBox picColors 
+            Height          =   255
+            Index           =   6
+            Left            =   120
+            ScaleHeight     =   195
+            ScaleWidth      =   195
+            TabIndex        =   21
+            Top             =   2400
+            Width           =   255
+         End
          Begin VB.PictureBox picColors 
             Height          =   255
             Index           =   3
@@ -95,7 +115,7 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   20
-            Top             =   1560
+            Top             =   1320
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -105,7 +125,7 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   10
-            Top             =   2280
+            Top             =   2040
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -115,7 +135,7 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   8
-            Top             =   1920
+            Top             =   1680
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -125,7 +145,7 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   6
-            Top             =   1200
+            Top             =   960
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -135,7 +155,7 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   4
-            Top             =   840
+            Top             =   600
             Width           =   255
          End
          Begin VB.PictureBox picColors 
@@ -145,8 +165,26 @@ Begin VB.Form frmBoardPreferences
             ScaleHeight     =   195
             ScaleWidth      =   195
             TabIndex        =   2
-            Top             =   480
+            Top             =   240
             Width           =   255
+         End
+         Begin VB.Label lblColors 
+            Caption         =   "Dynamic lighting nodes"
+            Height          =   255
+            Index           =   7
+            Left            =   480
+            TabIndex        =   24
+            Top             =   2760
+            Width           =   2295
+         End
+         Begin VB.Label lblColors 
+            Caption         =   "Player start location"
+            Height          =   255
+            Index           =   6
+            Left            =   480
+            TabIndex        =   22
+            Top             =   2400
+            Width           =   2295
          End
          Begin VB.Label lblColors 
             Caption         =   "Waypoint vectors"
@@ -154,16 +192,16 @@ Begin VB.Form frmBoardPreferences
             Index           =   3
             Left            =   480
             TabIndex        =   19
-            Top             =   1560
+            Top             =   1320
             Width           =   2295
          End
          Begin VB.Label lblColors 
-            Caption         =   "Player start location"
+            Caption         =   "Selected sprites and images"
             Height          =   255
             Index           =   5
             Left            =   480
             TabIndex        =   11
-            Top             =   2280
+            Top             =   2040
             Width           =   2295
          End
          Begin VB.Label lblColors 
@@ -172,7 +210,7 @@ Begin VB.Form frmBoardPreferences
             Index           =   4
             Left            =   480
             TabIndex        =   9
-            Top             =   1920
+            Top             =   1680
             Width           =   2295
          End
          Begin VB.Label lblColors 
@@ -181,7 +219,7 @@ Begin VB.Form frmBoardPreferences
             Index           =   2
             Left            =   480
             TabIndex        =   7
-            Top             =   1200
+            Top             =   960
             Width           =   2295
          End
          Begin VB.Label lblColors 
@@ -190,7 +228,7 @@ Begin VB.Form frmBoardPreferences
             Index           =   1
             Left            =   480
             TabIndex        =   5
-            Top             =   840
+            Top             =   600
             Width           =   2295
          End
          Begin VB.Label lblColors 
@@ -199,7 +237,7 @@ Begin VB.Form frmBoardPreferences
             Index           =   0
             Left            =   480
             TabIndex        =   3
-            Top             =   480
+            Top             =   240
             Width           =   2295
          End
       End
@@ -215,6 +253,8 @@ Attribute VB_Exposed = False
 'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
 'Read LICENSE.txt for licensing info
 '========================================================================
+
+Option Explicit
 
 Private Sub cmdCancel_Click(): On Error Resume Next
     Unload Me
@@ -232,7 +272,9 @@ Private Sub cmdDefault_Click() ': On Error Resume Next
         .vectorColor(TT_STAIRS) = picColors(2).backColor
         .vectorColor(TT_WAYPOINT) = picColors(3).backColor
         .programColor = picColors(4).backColor
-        .pStartColor = picColors(5).backColor
+        .highlightColor = picColors(5).backColor
+        .pStartColor = picColors(6).backColor
+        .lightsColor = picColors(7).backColor
     End With
     
     Unload Me
@@ -251,7 +293,9 @@ Private Sub Form_Load() ': On Error Resume Next
         picColors(2).backColor = .vectorColor(TT_STAIRS)
         picColors(3).backColor = .vectorColor(TT_WAYPOINT)
         picColors(4).backColor = .programColor
-        picColors(5).backColor = .pStartColor
+        picColors(5).backColor = .highlightColor
+        picColors(6).backColor = .pStartColor
+        picColors(7).backColor = .lightsColor
     End With
 End Sub
 

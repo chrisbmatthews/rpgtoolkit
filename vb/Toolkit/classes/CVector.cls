@@ -18,6 +18,8 @@ Attribute VB_Exposed = False
 '========================================================================
 Option Explicit
 
+Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Var() As Any) As Long
+
 Private Type TKVectorPoint
     x As Long
     y As Long
@@ -60,6 +62,13 @@ Public Property Get bClosed() As Boolean: On Error Resume Next
 End Property
 Public Property Let bClosed(ByVal bC As Boolean): On Error Resume Next
     m_bClosed = bC
+End Property
+
+'=========================================================================
+' Get a pointer to the points array (for dll use) - returns a SAFEARRAY**
+'=========================================================================
+Public Property Get points() As Long: On Error Resume Next
+    points = VarPtrArray(m_pts())
 End Property
 
 '=========================================================================

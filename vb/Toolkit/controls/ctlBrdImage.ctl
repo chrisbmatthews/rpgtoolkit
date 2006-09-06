@@ -3,10 +3,10 @@ Begin VB.UserControl ctlBrdImage
    ClientHeight    =   4740
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   3135
+   ClientWidth     =   3555
    DefaultCancel   =   -1  'True
    ScaleHeight     =   4740
-   ScaleWidth      =   3135
+   ScaleWidth      =   3555
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw images"
       Height          =   375
@@ -19,7 +19,7 @@ Begin VB.UserControl ctlBrdImage
       Caption         =   "Ok"
       Default         =   -1  'True
       Height          =   375
-      Left            =   1800
+      Left            =   2160
       TabIndex        =   20
       Top             =   120
       Visible         =   0   'False
@@ -27,15 +27,15 @@ Begin VB.UserControl ctlBrdImage
    End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
-      Height          =   3615
+      Height          =   3375
       Left            =   0
       TabIndex        =   2
       Top             =   960
-      Width           =   3015
+      Width           =   3375
       Begin VB.CheckBox chkTransp 
          Caption         =   "Select"
          Height          =   255
-         Left            =   1680
+         Left            =   1800
          Style           =   1  'Graphical
          TabIndex        =   19
          TabStop         =   0   'False
@@ -48,7 +48,7 @@ Begin VB.UserControl ctlBrdImage
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   255
-         Left            =   1680
+         Left            =   1800
          ScaleHeight     =   255
          ScaleWidth      =   1095
          TabIndex        =   14
@@ -61,7 +61,7 @@ Begin VB.UserControl ctlBrdImage
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   855
-         Left            =   240
+         Left            =   360
          ScaleHeight     =   855
          ScaleWidth      =   2295
          TabIndex        =   15
@@ -100,7 +100,7 @@ Begin VB.UserControl ctlBrdImage
       Begin VB.TextBox txtLoc 
          Height          =   285
          Index           =   1
-         Left            =   1260
+         Left            =   1380
          TabIndex        =   9
          Top             =   1320
          Width           =   495
@@ -108,7 +108,7 @@ Begin VB.UserControl ctlBrdImage
       Begin VB.TextBox txtLoc 
          Height          =   285
          Index           =   2
-         Left            =   2280
+         Left            =   2400
          TabIndex        =   8
          Top             =   1320
          Width           =   495
@@ -116,7 +116,7 @@ Begin VB.UserControl ctlBrdImage
       Begin VB.TextBox txtLoc 
          Height          =   285
          Index           =   0
-         Left            =   360
+         Left            =   480
          TabIndex        =   7
          Top             =   1320
          Width           =   495
@@ -126,14 +126,14 @@ Begin VB.UserControl ctlBrdImage
          Left            =   120
          TabIndex        =   5
          Top             =   480
-         Width           =   2055
+         Width           =   2535
       End
       Begin VB.PictureBox picBrowse 
          Appearance      =   0  'Flat
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   375
-         Left            =   2280
+         Left            =   2760
          ScaleHeight     =   375
          ScaleWidth      =   495
          TabIndex        =   3
@@ -152,16 +152,16 @@ Begin VB.UserControl ctlBrdImage
          Caption         =   "RGB (255, 255, 255)"
          Height          =   255
          Index           =   1
-         Left            =   120
+         Left            =   240
          TabIndex        =   13
          Top             =   2160
          Width           =   1575
       End
       Begin VB.Label lblTrans 
-         Caption         =   "Transparent colour"
+         Caption         =   "Transparent color"
          Height          =   255
          Index           =   0
-         Left            =   120
+         Left            =   240
          TabIndex        =   12
          Top             =   1800
          Width           =   1575
@@ -170,16 +170,16 @@ Begin VB.UserControl ctlBrdImage
          Caption         =   "X                  Y              Layer"
          Height          =   255
          Index           =   1
-         Left            =   180
+         Left            =   300
          TabIndex        =   11
-         Top             =   1360
+         Top             =   1365
          Width           =   2655
       End
       Begin VB.Label lblLoc 
          Caption         =   "Location (top left corner)"
          Height          =   255
          Index           =   0
-         Left            =   120
+         Left            =   240
          TabIndex        =   10
          Top             =   960
          Width           =   1935
@@ -199,12 +199,12 @@ Begin VB.UserControl ctlBrdImage
       Style           =   2  'Dropdown List
       TabIndex        =   1
       Top             =   600
-      Width           =   3015
+      Width           =   3375
    End
    Begin VB.CommandButton cmdDelete 
       Caption         =   "Delete"
       Height          =   375
-      Left            =   2160
+      Left            =   2520
       TabIndex        =   0
       Top             =   120
       Width           =   855
@@ -283,7 +283,7 @@ Private Sub chkDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y 
 End Sub
 Private Sub chkTransp_Click(): On Error Resume Next
     If chkTransp.value Then
-        tkMainForm.brdOptSetting(BS_GENERAL).value = True
+        tkMainForm.brdOptSetting(BS_SCROLL).value = True
         Call activeBoard.mdiOptTool(BT_IMG_TRANSP)
     End If
 End Sub
@@ -292,7 +292,7 @@ Private Sub cmbImage_Click(): On Error Resume Next
 End Sub
 Private Sub cmdBrowse_Click(): On Error Resume Next
     Dim file As String
-    If browseFileDialog(tkMainForm.hwnd, projectPath & bmpPath, "Board image", ".jpg", strFileDialogFilterGfx, file) Then
+    If browseFileDialog(tkMainForm.hwnd, projectPath & bmpPath, "Board image", "jpg", strFileDialogFilterGfx, file) Then
         txtFilename.Text = file
         Call cmdDefault_Click
     End If

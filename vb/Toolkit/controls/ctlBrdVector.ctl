@@ -4,10 +4,10 @@ Begin VB.UserControl ctlBrdVector
    ClientHeight    =   5415
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   3120
+   ClientWidth     =   3510
    DefaultCancel   =   -1  'True
    ScaleHeight     =   5415
-   ScaleWidth      =   3120
+   ScaleWidth      =   3510
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw vectors"
       Height          =   375
@@ -20,7 +20,7 @@ Begin VB.UserControl ctlBrdVector
       Caption         =   "Ok"
       Default         =   -1  'True
       Height          =   375
-      Left            =   1800
+      Left            =   2160
       TabIndex        =   15
       Top             =   120
       Visible         =   0   'False
@@ -32,10 +32,10 @@ Begin VB.UserControl ctlBrdVector
       Left            =   0
       TabIndex        =   1
       Top             =   600
-      Width           =   3015
+      Width           =   3375
       Begin VB.HScrollBar hsbSlot 
          Height          =   255
-         Left            =   1500
+         Left            =   1740
          Max             =   2
          TabIndex        =   18
          Top             =   2880
@@ -44,7 +44,7 @@ Begin VB.UserControl ctlBrdVector
       End
       Begin MSComctlLib.ListView lvPoints 
          Height          =   1095
-         Left            =   480
+         Left            =   720
          TabIndex        =   14
          Top             =   3360
          Width           =   1935
@@ -81,12 +81,12 @@ Begin VB.UserControl ctlBrdVector
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   735
-         Left            =   120
+         Left            =   360
          ScaleHeight     =   735
-         ScaleWidth      =   2655
+         ScaleWidth      =   2775
          TabIndex        =   8
          Top             =   240
-         Width           =   2655
+         Width           =   2775
          Begin VB.OptionButton optType 
             Caption         =   "Waypoint"
             Height          =   375
@@ -129,7 +129,7 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Include background"
          Height          =   255
          Index           =   0
-         Left            =   360
+         Left            =   600
          TabIndex        =   7
          Top             =   1320
          Width           =   2295
@@ -138,7 +138,7 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Include all layers below"
          Height          =   255
          Index           =   1
-         Left            =   360
+         Left            =   600
          TabIndex        =   6
          Top             =   1560
          Width           =   2295
@@ -147,14 +147,14 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Trigger on bounding box"
          Height          =   255
          Index           =   2
-         Left            =   360
+         Left            =   600
          TabIndex        =   5
          Top             =   1800
          Width           =   2295
       End
       Begin VB.TextBox txtStairs 
          Height          =   285
-         Left            =   360
+         Left            =   600
          TabIndex        =   4
          Text            =   "1"
          Top             =   2520
@@ -163,14 +163,14 @@ Begin VB.UserControl ctlBrdVector
       Begin VB.CheckBox chkClosed 
          Caption         =   "Closed vector"
          Height          =   255
-         Left            =   360
+         Left            =   600
          TabIndex        =   3
          Top             =   1080
          Width           =   1815
       End
       Begin VB.TextBox txtLayer 
          Height          =   285
-         Left            =   360
+         Left            =   600
          TabIndex        =   2
          Text            =   "1"
          Top             =   2205
@@ -179,7 +179,7 @@ Begin VB.UserControl ctlBrdVector
       Begin VB.Label lblSlot 
          Caption         =   "Slot index: 0"
          Height          =   255
-         Left            =   360
+         Left            =   600
          TabIndex        =   19
          ToolTipText     =   "Index for use with vector access RPGCode functions"
          Top             =   2940
@@ -188,7 +188,7 @@ Begin VB.UserControl ctlBrdVector
       Begin VB.Label lblStairs 
          Caption         =   "Stairs to layer"
          Height          =   255
-         Left            =   960
+         Left            =   1200
          TabIndex        =   13
          Top             =   2565
          Width           =   975
@@ -196,7 +196,7 @@ Begin VB.UserControl ctlBrdVector
       Begin VB.Label lblLayer 
          Caption         =   "Layer"
          Height          =   255
-         Left            =   960
+         Left            =   1200
          TabIndex        =   12
          Top             =   2265
          Width           =   975
@@ -205,7 +205,7 @@ Begin VB.UserControl ctlBrdVector
    Begin VB.CommandButton cmdDelete 
       Caption         =   "Delete"
       Height          =   375
-      Left            =   2160
+      Left            =   2520
       TabIndex        =   0
       Top             =   120
       Width           =   855

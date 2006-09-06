@@ -3,10 +3,10 @@ Begin VB.UserControl ctlBrdSprite
    ClientHeight    =   5745
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   3135
+   ClientWidth     =   3615
    DefaultCancel   =   -1  'True
    ScaleHeight     =   5745
-   ScaleWidth      =   3135
+   ScaleWidth      =   3615
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw sprites"
       Height          =   375
@@ -19,7 +19,7 @@ Begin VB.UserControl ctlBrdSprite
       Caption         =   "Ok"
       Default         =   -1  'True
       Height          =   375
-      Left            =   1800
+      Left            =   2160
       TabIndex        =   25
       Top             =   120
       Visible         =   0   'False
@@ -31,7 +31,7 @@ Begin VB.UserControl ctlBrdSprite
       Left            =   0
       TabIndex        =   2
       Top             =   960
-      Width           =   3015
+      Width           =   3375
       Begin VB.CheckBox chkRunOnce 
          Caption         =   "Run once"
          Height          =   255
@@ -43,7 +43,7 @@ Begin VB.UserControl ctlBrdSprite
       End
       Begin VB.HScrollBar hsbSlot 
          Height          =   255
-         Left            =   1260
+         Left            =   1380
          Max             =   2
          TabIndex        =   24
          Top             =   1680
@@ -52,7 +52,7 @@ Begin VB.UserControl ctlBrdSprite
       End
       Begin VB.TextBox txtMultitask 
          Height          =   285
-         Left            =   120
+         Left            =   240
          TabIndex        =   20
          Top             =   3000
          Width           =   2055
@@ -63,7 +63,7 @@ Begin VB.UserControl ctlBrdSprite
          ForeColor       =   &H80000008&
          Height          =   375
          Index           =   2
-         Left            =   2280
+         Left            =   2400
          ScaleHeight     =   375
          ScaleWidth      =   495
          TabIndex        =   18
@@ -85,7 +85,7 @@ Begin VB.UserControl ctlBrdSprite
          ForeColor       =   &H80000008&
          Height          =   375
          Index           =   1
-         Left            =   2280
+         Left            =   2400
          ScaleHeight     =   375
          ScaleWidth      =   495
          TabIndex        =   16
@@ -103,7 +103,7 @@ Begin VB.UserControl ctlBrdSprite
       End
       Begin VB.TextBox txtActivate 
          Height          =   285
-         Left            =   120
+         Left            =   240
          TabIndex        =   15
          Top             =   2400
          Width           =   2055
@@ -141,7 +141,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.TextBox txtLoc 
          Height          =   285
          Index           =   1
-         Left            =   1260
+         Left            =   1380
          TabIndex        =   9
          Top             =   1200
          Width           =   495
@@ -149,7 +149,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.TextBox txtLoc 
          Height          =   285
          Index           =   2
-         Left            =   2280
+         Left            =   2400
          TabIndex        =   8
          Top             =   1200
          Width           =   495
@@ -157,7 +157,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.TextBox txtLoc 
          Height          =   285
          Index           =   0
-         Left            =   360
+         Left            =   480
          TabIndex        =   7
          Top             =   1200
          Width           =   495
@@ -167,7 +167,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   120
          TabIndex        =   5
          Top             =   480
-         Width           =   2055
+         Width           =   2535
       End
       Begin VB.PictureBox picBrowse 
          Appearance      =   0  'Flat
@@ -175,7 +175,7 @@ Begin VB.UserControl ctlBrdSprite
          ForeColor       =   &H80000008&
          Height          =   375
          Index           =   0
-         Left            =   2280
+         Left            =   2760
          ScaleHeight     =   375
          ScaleWidth      =   495
          TabIndex        =   3
@@ -194,7 +194,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.Label lblSlot 
          Caption         =   "Slot index: 0"
          Height          =   255
-         Left            =   120
+         Left            =   240
          TabIndex        =   23
          Top             =   1740
          Width           =   1215
@@ -202,7 +202,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.Label lblMultitask 
          Caption         =   "Override multitasking program"
          Height          =   375
-         Left            =   120
+         Left            =   240
          TabIndex        =   22
          Top             =   2760
          Width           =   2655
@@ -210,7 +210,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.Label lblActivate 
          Caption         =   "Override program to run on activation"
          Height          =   375
-         Left            =   120
+         Left            =   240
          TabIndex        =   21
          Top             =   2160
          Width           =   2655
@@ -219,7 +219,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "X                  Y              Layer"
          Height          =   255
          Index           =   1
-         Left            =   180
+         Left            =   300
          TabIndex        =   11
          Top             =   1245
          Width           =   2655
@@ -228,7 +228,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Location"
          Height          =   255
          Index           =   0
-         Left            =   120
+         Left            =   240
          TabIndex        =   10
          Top             =   960
          Width           =   975
@@ -248,12 +248,12 @@ Begin VB.UserControl ctlBrdSprite
       Style           =   2  'Dropdown List
       TabIndex        =   1
       Top             =   600
-      Width           =   3015
+      Width           =   3375
    End
    Begin VB.CommandButton cmdDelete 
       Caption         =   "Delete"
       Height          =   375
-      Left            =   2160
+      Left            =   2520
       TabIndex        =   0
       Top             =   120
       Width           =   855

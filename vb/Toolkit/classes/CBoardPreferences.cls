@@ -25,8 +25,11 @@ Public bShowNewBoardDialog As Boolean
 
 Private vectorColors(TT_WAYPOINT) As Long
 Public programColor As Long
-Public gridColor As Long
+Public highlightColor As Long                'Sprite, image highligther.
 Public pStartColor As Long                   'Player start location colour.
+Public lightsColor As Long                   'Lighting object vector colour.
+
+Option Explicit
 
 Public Property Get vectorColor(ByVal tt As eTileType) As Long: On Error Resume Next
     vectorColor = vectorColors(tt)
@@ -63,8 +66,14 @@ Private Sub Class_Initialize(): On Error Resume Next
     programColor = val(GetSetting("RPGToolkit3", "BRD Editor", "Color program", "-1"))
     If programColor = -1 Then programColor = RGB(255, 255, 0)
     
+    highlightColor = val(GetSetting("RPGToolkit3", "BRD Editor", "Color highlight", "-1"))
+    If highlightColor = -1 Then highlightColor = RGB(255, 255, 255)
+    
     pStartColor = val(GetSetting("RPGToolkit3", "BRD Editor", "Color player-start", "-1"))
     If pStartColor = -1 Then pStartColor = RGB(255, 255, 255)
+    
+    lightsColor = val(GetSetting("RPGToolkit3", "BRD Editor", "Color lights", "-1"))
+    If lightsColor = -1 Then lightsColor = RGB(255, 255, 192)
     
 End Sub
 
@@ -81,6 +90,8 @@ Private Sub Class_Terminate(): On Error Resume Next
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-stairs", CStr(vectorColors(TT_STAIRS)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-waypoint", CStr(vectorColors(TT_WAYPOINT)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color program", CStr(programColor))
+    Call SaveSetting("RPGToolkit3", "BRD Editor", "Color highlight", CStr(highlightColor))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color player-start", CStr(pStartColor))
+    Call SaveSetting("RPGToolkit3", "BRD Editor", "Color lights", CStr(lightsColor))
 
 End Sub
