@@ -19,7 +19,7 @@
 // Definitions
 //-------------------------------------------------------------------
 #define CTILE_COMMONCANVAS
-#define TILE_CACHE_SIZE 256
+#define TILE_CACHE_SIZE 1024
 #if !defined(INLINE) && !defined(FAST_CALL)
 #	if defined(_MSC_VER)
 #		define INLINE __inline		// VC++ prefers the __inline keyword
