@@ -986,8 +986,26 @@ exitForB:
         Next i
         
         '3.0.7 - vectorise the tiletypes.
-         Call vectorize(ed)
-        
+        Call vectorize(ed)
+         
+        '3.0.7 - upgrade tile lighting.
+        For z = 1 To .sizeL
+            For y = 1 To .sizey
+                For x = 1 To .sizex
+                    
+                    'Store the highest shading values in the new single layer shade.
+                    If (.ambientRed(x, y, z) Or .ambientGreen(x, y, z) Or .ambientBlue(x, y, z)) Then
+                        .tileShading(0).values(x, y).r = .ambientRed(x, y, z)
+                        .tileShading(0).values(x, y).g = .ambientGreen(x, y, z)
+                        .tileShading(0).values(x, y).b = .ambientBlue(x, y, z)
+                        
+                        'Promote the shading layer to cast onto the highest layer occupied.
+                        .tileShading(0).layer = z
+                    End If
+                Next x
+            Next y
+        Next z
+                    
     End With
 
 End Function
@@ -1017,6 +1035,13 @@ Public Sub boardInitialise(ByRef board As TKBoard): On Error Resume Next
         Set .prgs(0) = Nothing
         Set .sprites(0) = Nothing
         .Images(0).drawType = BI_NULL
+        
+        ReDim .tileShading(0)               'Single layer lighting.
+        ReDim .tileShading(0).values(1, 1)
+        .tileShading(0).layer = 1
+                
+        ReDim .lights(0)                    'Dynamic lighting objects.
+        Set .lights(0) = Nothing
 
         'Pre 3.0.7
         ReDim .tileIndex(0)
@@ -1044,7 +1069,9 @@ Public Sub boardSetSize( _
     ByVal bPreserveContents As Boolean): On Error Resume Next
     
     Dim i As Long, j As Long, k As Long, u As Long, v As Long, oldSizeX As Long
-    Dim Data() As Integer, r() As Integer, g() As Integer, b() As Integer
+    Dim Data() As Integer, r() As Integer, g() As Integer, b() As Integer, shading() As TKLayerShade
+    
+    'tbd: remove r,g,b
     
     If x < 1 Then x = 1
     If y < 1 Then y = 1
@@ -1068,12 +1095,17 @@ Public Sub boardSetSize( _
             r = .ambientRed
             g = .ambientGreen
             b = .ambientBlue
+            shading = .tileShading
         End If
             
         ReDim .board(x, y, z)
         ReDim .ambientRed(x, y, z)
         ReDim .ambientGreen(x, y, z)
         ReDim .ambientBlue(x, y, z)
+        
+        For i = 0 To UBound(.tileShading)
+            ReDim .tileShading(i).values(x, y)
+        Next i
         
         If bPreserveContents Then
                 
@@ -1099,10 +1131,22 @@ Public Sub boardSetSize( _
                         .ambientRed(u, v, k) = r(i, j, k)
                         .ambientGreen(u, v, k) = g(i, j, k)
                         .ambientBlue(u, v, k) = b(i, j, k)
+
                     Next i
                 Next j
             Next k
             
+            'Tile lighting.
+            For j = 0 To y
+                For i = 0 To x
+                    u = i
+                    v = IIf(.coordType And ISO_ROTATED, j - oldSizeX + .sizex, j)
+                    For k = 0 To UBound(.tileShading)
+                        .tileShading(k).values(u, v) = shading(k).values(i, j)
+                    Next k
+                Next i
+            Next j
+                
             ReDim Preserve .layerTitles(.sizeL)
             ReDim Preserve ed.bLayerOccupied(.sizeL)
             ReDim Preserve ed.bLayerVisible(.sizeL)
