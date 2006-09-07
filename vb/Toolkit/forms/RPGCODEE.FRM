@@ -441,7 +441,7 @@ Public Sub openProgram(ByVal filename As String)
     On Error GoTo ErrorHandler
 
     ' Load the Program into text box.
-    Call codeForm.LoadFile(filename, rtfText)
+    Call CodeForm.LoadFile(filename, rtfText)
 
     ' Call Syntax Color Routines
     Call SplitLines
@@ -455,30 +455,16 @@ End Sub
 '==========================================================================
 ' Open a file (called from tkMainForm)
 '==========================================================================
-Public Sub openFile(ByVal FileToOpen As String)
-On Error Resume Next
+Public Sub openFile(ByVal file As String): On Error Resume Next
 
-Dim antiPath As String
-
-' Create a new instant of the Program editor window
-Call activeRPGCode.Show
-
-' Not Sure ?
-filename(1) = FileToOpen
-antiPath = absNoPath(FileToOpen)
-Call FileCopy(filename(1), projectPath & prgPath & antiPath)
-
-' Open The Program
-Call openProgram(filename(1))
-
-' Not Sure ?
-rpgcodeList(activeRPGCodeIndex).prgName = antiPath
-
-' Localization ?
-activeRPGCode.Caption = LoadStringLoc(803, "RPGCode Program Editor") & "  (" & antiPath & ")"
-
-' We Haven't modified this file yet
-rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = False
+    Call activeRPGCode.Show
+    Call openProgram(file)
+    
+    'Preserve the path if file is in a sub-folder.
+    Call getValidPath(file, projectPath & prgPath, rpgcodeList(activeRPGCodeIndex).prgName, False)
+    
+    Me.Caption = rpgcodeList(activeRPGCodeIndex).prgName
+    rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = False
 
 End Sub
 
@@ -486,28 +472,8 @@ End Sub
 ' Save the file (called from tkMainForm)
 '==========================================================================
 Public Sub saveFile(): On Error Resume Next
-
-#If (False) Then
-    
-    filename(2) = rpgcodeList(activeRPGCodeIndex).prgName
-    
-    rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = False
-    
-    If filename(2) = "" Then
-        activeRPGCode.Show
-        Call sasmnu_Click
-        Exit Sub
-    End If
-    
-    Call saveProgram(projectPath & prgPath & filename(2))
-
-#Else
-
     Call Show
     Call SavePrgMnu_Click
-
-#End If
-
 End Sub
 
 '==========================================================================
@@ -561,26 +527,26 @@ Private Sub mnuCut_Click(): On Error Resume Next
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
     'Call Clipboard.SetText(codeForm.SelText, vbCFText)
     'codeForm.SelText = vbNullString
-    Call SendMessage(codeForm.hwnd, WM_CUT, 0, 0&)
+    Call SendMessage(CodeForm.hwnd, WM_CUT, 0, 0&)
     Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
 End Sub
 
 Private Sub mnuCopy_Click(): On Error Resume Next
     'Call Clipboard.SetText(codeForm.SelText, vbCFText)
-    Call SendMessage(codeForm.hwnd, WM_COPY, 0, 0&)
+    Call SendMessage(CodeForm.hwnd, WM_COPY, 0, 0&)
     Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
 End Sub
 
 Private Sub mnuPaste_Click(): On Error Resume Next
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
     Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
-    Call SendMessage(codeForm.hwnd, WM_PASTE, 0, 0&)
+    Call SendMessage(CodeForm.hwnd, WM_PASTE, 0, 0&)
     Call colorPastedCode                'This is crap!
 End Sub
 
 Private Sub mnuSelectAll_Click(): On Error Resume Next
-    codeForm.selStart = 0
-    codeForm.SelLength = Len(codeForm.Text)
+    CodeForm.selStart = 0
+    CodeForm.SelLength = Len(CodeForm.Text)
 End Sub
 
 '==========================================================================
@@ -613,7 +579,7 @@ Private Sub CodeForm_KeyPress(KeyAscii As Integer): On Error Resume Next
     Select Case KeyAscii
 
         Case 3  ' Ctrl+C
-            Call Clipboard.SetText(codeForm.SelText, vbCFText)
+            Call Clipboard.SetText(CodeForm.SelText, vbCFText)
 
     End Select
 
@@ -626,13 +592,13 @@ Private Sub colorPastedCode()
 
     Dim oldSS As Long
     Dim oldSL As Long
-    oldSS = codeForm.selStart()
-    oldSL = codeForm.SelLength()
-    Call SplitLines(oldLine, codeForm.GetLineFromChar(oldSS))
-    codeForm.selStart = oldSS
-    codeForm.SelLength = oldSL
+    oldSS = CodeForm.selStart()
+    oldSL = CodeForm.SelLength()
+    Call SplitLines(oldLine, CodeForm.GetLineFromChar(oldSS))
+    CodeForm.selStart = oldSS
+    CodeForm.SelLength = oldSL
     blackLine = True
-    Call codeForm.SetFocus
+    Call CodeForm.SetFocus
     blackLine = False
 
 End Sub
@@ -714,15 +680,15 @@ Private Sub codeform_MouseDown(Button As Integer, Shift As Integer, x As Single,
         
         'Determine which options to enable.
         If LenB(Clipboard.GetText(vbCFText)) Then mnuPopPrg_Paste.Enabled = True
-        If codeForm.SelLength Then mnuPopPrg_Copy.Enabled = True: mnuPopPrg_Cut.Enabled = True
+        If CodeForm.SelLength Then mnuPopPrg_Copy.Enabled = True: mnuPopPrg_Cut.Enabled = True
     
         PopupMenu mnuPopPrg
         
     Else
         'Highlight code.
-        mouseDownSelStart = codeForm.selStart
-        mouseDownSelLength = codeForm.SelLength
-        oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+        mouseDownSelStart = CodeForm.selStart
+        mouseDownSelLength = CodeForm.SelLength
+        oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
     End If
     
 End Sub
@@ -748,12 +714,12 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
 
     If Not (mnuNotepadMode.Checked) Then
         Dim inf As TextLineInfo
-        inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
-        tkMainForm.StatusBar1.Panels(3).Text = CStr(codeForm.GetLineFromChar(codeForm.selStart) + 1)
+        inf = getTextLineInfo(CodeForm.Text, CodeForm.selStart)
+        tkMainForm.StatusBar1.Panels(3).Text = CStr(CodeForm.GetLineFromChar(CodeForm.selStart) + 1)
         tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
     End If
 
-    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+    oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
 
     'Declare variables...
     Dim enterKey As String
@@ -770,8 +736,8 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
         If (blackLine) Then
             Call reColorLine(blackLine)
             blackLine = False
-            If (codeForm.selStart = Len(codeForm.Text)) Then
-                codeForm.SelItalic = 0
+            If (CodeForm.selStart = Len(CodeForm.Text)) Then
+                CodeForm.SelItalic = 0
             End If
         End If
         Exit Sub
@@ -790,7 +756,7 @@ End Sub
 '==========================================================================
 Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
-    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
+    oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
 
     ' Make sure we aren't wasting time coloring a line that's already colored
     If (blackLine) Then
@@ -800,12 +766,12 @@ Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y
         Dim nSL As Long
  
         ' Record where the mouse clicked down
-        nSS = codeForm.selStart
-        nSL = codeForm.SelLength
+        nSS = CodeForm.selStart
+        nSL = CodeForm.SelLength
  
         ' Move back to the line we just left
-        codeForm.selStart = mouseDownSelStart
-        codeForm.SelLength = mouseDownSelLength
+        CodeForm.selStart = mouseDownSelStart
+        CodeForm.SelLength = mouseDownSelLength
 
         ' Color the line we just left
         reColorLine
@@ -814,13 +780,13 @@ Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y
         blackLine = False
  
         ' Move back to where the mouse clicked down
-        codeForm.selStart = nSS
-        codeForm.SelLength = nSL
+        CodeForm.selStart = nSS
+        CodeForm.SelLength = nSL
 
     End If
 
-    If (codeForm.selStart = Len(codeForm.Text)) Then
-        codeForm.SelItalic = 0
+    If (CodeForm.selStart = Len(CodeForm.Text)) Then
+        CodeForm.SelItalic = 0
     End If
 
 End Sub
@@ -927,7 +893,7 @@ End Sub
 ' File -> Close
 '==========================================================================
 Private Sub closemnu_Click()
-    rpgcodeList(activeRPGCodeIndex).prgText = codeForm.Text
+    rpgcodeList(activeRPGCodeIndex).prgText = CodeForm.Text
     Call Unload(Me)
 End Sub
 
@@ -937,8 +903,8 @@ End Sub
 Private Sub codeform_Click()
     On Error Resume Next
     Dim inf As TextLineInfo
-    inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
-    tkMainForm.StatusBar1.Panels(3).Text = CStr(codeForm.GetLineFromChar(codeForm.selStart) + 1)
+    inf = getTextLineInfo(CodeForm.Text, CodeForm.selStart)
+    tkMainForm.StatusBar1.Panels(3).Text = CStr(CodeForm.GetLineFromChar(CodeForm.selStart) + 1)
     tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
 End Sub
 
@@ -955,11 +921,11 @@ End Sub
 Public Sub prgEventEdit()
     On Error Resume Next
     Dim numLines As Long
-    numLines = countTextLines(codeForm.Text)
+    numLines = countTextLines(CodeForm.Text)
     ReDim evtList(numLines + 500) As String
     Dim i As Long
     For i = 0 To numLines - 1
-        evtList(i) = getTextLineNumber(codeForm.Text, i)
+        evtList(i) = getTextLineNumber(CodeForm.Text, i)
     Next i
     Call EventEdit.Show
 End Sub
@@ -1002,10 +968,10 @@ Set activeRPGCode = Me
 dataIndex = VectRPGCodeNewSlot()
 activeRPGCodeIndex = dataIndex
     
-codeForm.width = Me.width * 0.9 - 255
-codeForm.Height = Me.Height * 0.9 - 335
-codeForm.Left = (Me.width * 0.1) / 2
-codeForm.Top = 335
+CodeForm.width = Me.width * 0.9 - 255
+CodeForm.Height = Me.Height * 0.9 - 335
+CodeForm.Left = (Me.width * 0.1) / 2
+CodeForm.Top = 335
 
 WindowState = 0
 
@@ -1017,9 +983,9 @@ End If
 
 Call Form_Resize
 
-codeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", vbNullString)
-If (LenB(codeForm.Text)) Then codeForm.Text = codeForm.Text & vbCrLf
-codeForm.selStart = Len(codeForm.Text)
+CodeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", vbNullString)
+If (LenB(CodeForm.Text)) Then CodeForm.Text = CodeForm.Text & vbCrLf
+CodeForm.selStart = Len(CodeForm.Text)
 
 Exit Sub
 
@@ -1037,7 +1003,7 @@ Private Sub Form_Resize()
 
     Dim cfTop As Long
     If (mnuBookmarkToolbar.Checked) Then cfTop = 335
-    codeForm.move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
+    CodeForm.move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
     cboBookmarkType.width = (Me.width - 60) / 2
     If Not (secondCombo Is Nothing) Then
         secondCombo.Left = cboBookmarkType.width
@@ -1074,7 +1040,7 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     
     End If
 
-    rpgcodeList(activeRPGCodeIndex).prgText = codeForm.Text
+    rpgcodeList(activeRPGCodeIndex).prgText = CodeForm.Text
     Call hideAllTools
     If (mnuNotepadMode.Checked) Then Call mnuNotepadMode_Click
     If (Tag = "1") Then Call mnuexit_Click
@@ -1145,7 +1111,7 @@ Private Sub rprg_Click()
     End If
     
     ' Complete TestPRG String
-    TestPRG = TestPRG & codeForm.Text
+    TestPRG = TestPRG & CodeForm.Text
 
     Dim num As Long
     num = FreeFile()
@@ -1165,31 +1131,24 @@ End Sub
 '==========================================================================
 Private Sub sasmnu_Click(): On Error Resume Next
 
-    ChDir (currentDir)
-
     Dim dlg As FileDialogInfo
+    
     dlg.strDefaultFolder = projectPath & prgPath
     dlg.strTitle = "Save Program As"
     dlg.strDefaultExt = "prg"
     dlg.strFileTypes = "RPG Toolkit Program (*.prg)|*.prg|All files(*.*)|*.*"
     
-    'Set optional parameter to prompt for overwrite.
-    If Not (SaveFileDialog(dlg, Me.hwnd, True)) Then Exit Sub
-    
     ChDir (currentDir)
+    If Not SaveFileDialog(dlg, Me.hwnd, True) Then Exit Sub
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
     
-    'Exit if filename empty.
-    If dlg.strSelectedFile = "" Then Exit Sub
+     'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, dlg.strDefaultFolder, rpgcodeList(activeRPGCodeIndex).prgName, True) Then Exit Sub
+   
+    Call saveProgram(dlg.strDefaultFolder & rpgcodeList(activeRPGCodeIndex).prgName)
+    activeRPGCode.Caption = rpgcodeList(activeRPGCodeIndex).prgName
     
-    ' Call saveProgram(dlg.strSelectedFile)
-    
-    rpgcodeList(activeRPGCodeIndex).prgName = dlg.strSelectedFileNoPath
-    
-    Call SavePrgMnu_Click
-    
-    activeRPGCode.Caption = LoadStringLoc(803, "Program Editor") & " (" & dlg.strSelectedFileNoPath & ")"
-    
-    'Redraw the file tree, adding new file if created.
+    rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = False
     Call tkMainForm.tvAddFile(dlg.strSelectedFile)
     
 End Sub
@@ -1199,17 +1158,19 @@ End Sub
 '==========================================================================
 Private Sub SavePrgMnu_Click(): On Error Resume Next
 
-    filename(2) = rpgcodeList(activeRPGCodeIndex).prgName$
-    If filename(2) = "" Then Call sasmnu_Click: Exit Sub
+    If LenB(rpgcodeList(activeRPGCodeIndex).prgName) = 0 Then
+        Call sasmnu_Click
+        Exit Sub
+    End If
     
     Dim strFile As String
     
     If Tag = "1" Then
-        strFile = filename(2)
-        ' Call saveProgram(filename(2))
+        strFile = rpgcodeList(activeRPGCodeIndex).prgName
+        ' Call saveProgram(rpgcodeList(activeRPGCodeIndex).prgName)
     Else
-        ' Call saveProgram(projectPath & prgPath & filename(2))
-        strFile = projectPath & prgPath & filename(2)
+        strFile = projectPath & prgPath & rpgcodeList(activeRPGCodeIndex).prgName
+        ' Call saveProgram(projectPath & prgPath & rpgcodeList(activeRPGCodeIndex).prgName)
     End If
     
     If (fileExists(strFile)) Then
@@ -1464,27 +1425,19 @@ Private Sub mnuNewFightBackground_Click()
 End Sub
 
 ' OPEN FILE MENU
-Private Sub mnuopen_Click()
-On Error Resume Next
-
-If Tag = "1" Then
-    ChDir (currentDir)
-    Dim antiPath As String
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath
-    dlg.strTitle = "Open"
-    dlg.strFileTypes = "RPGCode Programs (*.prg)|*.prg"
-    If OpenFileDialog(dlg, Me.hwnd) Then  'user pressed cancel
-        filename(1) = dlg.strSelectedFile
-        antiPath = dlg.strSelectedFileNoPath
+Private Sub mnuopen_Click(): On Error Resume Next
+    
+    If Tag = "1" Then
+    
+        Dim file As String, filetypes As String
+        filetypes = "RPG Toolkit Program (*.prg)|*.prg"
+        
+        If browseFileDialog(Me.hwnd, projectPath, "Open program", "prg", filetypes, file) Then
+            Shell App.path & "\" & App.EXEName & ".exe " & filename(1), vbNormalFocus
+        End If
+        
     Else
-        Exit Sub
+        Call tkMainForm.openmnu_Click
     End If
-    ChDir (currentDir)
-    If filename(1) = "" Then Exit Sub
-    Shell App.path & "\" & App.EXEName & ".exe " & filename(1), vbNormalFocus
-Else
-    Call tkMainForm.openmnu_Click
-End If
 
 End Sub
