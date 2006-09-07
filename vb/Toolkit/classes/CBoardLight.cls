@@ -30,7 +30,7 @@ Private m_layer As Long
 '=========================================================================
 Private Sub Class_Initialize()
     Set m_nodes = New CVector
-    m_type = BL_SPOTLIGHT
+    m_type = BL_ELLIPSE
     m_layer = 1
     Call setType(0, 0)
     Call setColor(1, 128, 128, 128)
@@ -83,9 +83,12 @@ End Property
 '=========================================================================
 ' Get a pointer to the color array (for dll use) - returns a SAFEARRAY**
 '=========================================================================
-Public Property Get colors() As Long: On Error Resume Next
-    colors = VarPtrArray(m_colors())
+Public Property Get ptrColors() As Long: On Error Resume Next
+    ptrColors = VarPtrArray(m_colors())
 End Property
+Public Function getColors() As Long: On Error Resume Next
+    getColors = UBound(m_colors)
+End Function
 Public Sub getColor(ByVal Index As Long, ByRef r As Integer, ByRef g As Integer, ByRef b As Integer): On Error Resume Next
     If Index <= UBound(m_colors) Then
         r = m_colors(Index).r
@@ -101,16 +104,16 @@ Public Sub setColor(ByVal Index As Long, ByVal r As Integer, ByVal g As Integer,
 End Sub
 Public Sub setType(ByVal x As Long, ByVal y As Long): On Error Resume Next
     Select Case m_type
-        Case BL_SPOTLIGHT
+        Case BL_ELLIPSE
             ReDim Preserve m_colors(1)             '3 points, 2 colours.
             nodes.deletePoints
-            nodes.addPoint x, 0
+            nodes.addPoint x, IIf(y < 160, 0, y - 160)
             nodes.addPoint x, y
-            nodes.addPoint 0, y
+            nodes.addPoint IIf(x < 160, 0, x - 160), y
         Case BL_GRADIENT, BL_GRADIENT_CLIPPED
             ReDim Preserve m_colors(1)             '2 points, 2 colours.
             nodes.deletePoints
-            nodes.addPoint 0, 0
+            nodes.addPoint IIf(x < 160, 0, x - 160), IIf(y < 160, 0, y - 160)
             nodes.addPoint x, y
     End Select
 End Sub

@@ -160,17 +160,13 @@ Private Const MAX_INTEGER = &H7FFF
 '=========================================================================
 ' Find the number of consective tiles
 '=========================================================================
-Public Function boardFindConsecutive(ByRef x As Long, ByRef y As Long, ByRef z As Long, ByRef board As TKBoard) As Integer
+Private Function boardFindConsecutiveTiles(ByRef x As Long, ByRef y As Long, ByRef z As Long, ByRef board As TKBoard) As Integer
     'Find and return the number of consecutive identical tiles, starting at x, y, z
     'Also return the terminating x, y, z position ByRef
     On Error Resume Next
 
-    Dim tile As Long, r As Long, g As Long, b As Long
-    
+    Dim tile As Long
     tile = board.board(x, y, z)
-    r = board.ambientRed(x, y, z)
-    g = board.ambientGreen(x, y, z)
-    b = board.ambientBlue(x, y, z)
     
     Dim count As Integer, i As Long, j As Long, k As Long
     count = 0
@@ -178,17 +174,13 @@ Public Function boardFindConsecutive(ByRef x As Long, ByRef y As Long, ByRef z A
     For k = z To UBound(board.board, 3)
         For j = y To UBound(board.board, 2)
             For i = x To UBound(board.board, 1)
+            
+                'First non-matching tile.
+                If board.board(i, j, k) <> tile Then GoTo exitFor
                 
-                If board.board(i, j, k) <> tile Or _
-                    board.ambientRed(i, j, k) <> r Or _
-                    board.ambientGreen(i, j, k) <> g Or _
-                    board.ambientBlue(i, j, k) <> b Then
-                    
-                    'First non-matching tile.
-                    GoTo exitFor
-                End If
-                
+                'Maximum variable value reached (do not use Long since .board() values are Ints)
                 If count = MAX_INTEGER Then GoTo exitFor
+                
                 count = count + 1
             Next i
             'Reset the start column
@@ -201,7 +193,44 @@ exitFor:
     x = i
     y = j
     z = k
-    boardFindConsecutive = count
+    boardFindConsecutiveTiles = count
+End Function
+
+'=========================================================================
+' Find the number of consective shades of a layer
+'=========================================================================
+Private Function boardFindConsecutiveShades(ByRef x As Long, ByRef y As Long, ByRef ls As TKLayerShade) As Integer
+    'Find and return the number of consecutive identical shades, starting at x, y
+    'Also return the terminating x, y position ByRef
+    On Error Resume Next
+
+    Dim r As Long, g As Long, b As Long
+    
+    r = ls.values(x, y).r
+    g = ls.values(x, y).g
+    b = ls.values(x, y).b
+    
+    Dim count As Integer, i As Long, j As Long
+    count = 0
+    
+    For j = y To UBound(ls.values, 2)
+        For i = x To UBound(ls.values, 1)
+            If ls.values(i, j).r <> r Or ls.values(i, j).g <> g Or ls.values(i, j).b <> b Then
+                GoTo exitFor
+            End If
+            
+            If count = MAX_INTEGER Then GoTo exitFor
+            
+            count = count + 1
+        Next i
+        'Reset the start column
+        x = 1
+    Next j
+    
+exitFor:
+    x = i
+    y = j
+    boardFindConsecutiveShades = count
 End Function
 
 '=========================================================================
@@ -288,39 +317,90 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
             Next j
             
             'Board tiles
+            Dim count As Integer
             For k = 1 To UBound(.board, 3)
                 For j = 1 To UBound(.board, 2)
                     For i = 1 To UBound(.board, 1)
                         '"Compress" identical tiles:
                         x = i: y = j: z = k
                         
-                        Dim count As Integer
-                        count = boardFindConsecutive(x, y, z, board)
+                        count = boardFindConsecutiveTiles(x, y, z, board)
                         If count > 1 Then
                             'The next 'count' tiles are identical - write 'count' and the
                             'properties of the first tile only. A negative 'count' will
                             'indicate compression when loading.
                             
                             Call BinWriteInt(num, -count)
-                            
                             Call BinWriteInt(num, .board(i, j, k))
-                            Call BinWriteInt(num, .ambientRed(i, j, k))
-                            Call BinWriteInt(num, .ambientGreen(i, j, k))
-                            Call BinWriteInt(num, .ambientBlue(i, j, k))
                             
                             'Set the new position. Decrement i since the loop will increment it.
                             i = x - 1: j = y: k = z
                         Else
                             'No consecutive identical tiles - write this tile's properties.
-                            
                             Call BinWriteInt(num, .board(i, j, k))
-                            Call BinWriteInt(num, .ambientRed(i, j, k))
-                            Call BinWriteInt(num, .ambientGreen(i, j, k))
-                            Call BinWriteInt(num, .ambientBlue(i, j, k))
                         End If
                     Next i
                 Next j
             Next k
+            
+            'Tile shading (independent layer(s) stored in similar way to tiles)
+            Call BinWriteInt(num, UBound(.tileShading))
+            For k = 0 To UBound(.tileShading)
+                
+                'Write properties of shading layer.
+                Call BinWriteLong(num, .tileShading(k).layer)        'Top layer to cast on to.
+                
+                'Write shades.
+                For j = 1 To UBound(.board, 2)
+                    For i = 1 To UBound(.board, 1)
+                        '"Compress" identical shades:
+                        x = i: y = j: z = k
+                        
+                        'Given that shades can be negative, writing a negative count will
+                        'not work; the simplest solution is to write the count each time.
+                        count = boardFindConsecutiveShades(x, y, board.tileShading(k))
+                    
+                        Call BinWriteInt(num, count)
+                        Call BinWriteInt(num, .tileShading(k).values(i, j).r)
+                        Call BinWriteInt(num, .tileShading(k).values(i, j).g)
+                        Call BinWriteInt(num, .tileShading(k).values(i, j).b)
+                        
+                        'Set the new position. Decrement i since the loop will increment it.
+                        If count > 1 Then i = x - 1: j = y: k = z
+                    Next i
+                Next j
+            Next k
+            
+            'Lights
+            If .lights(0) Is Nothing Then
+                Call BinWriteInt(num, -1)
+            Else
+                Call BinWriteInt(num, UBound(.lights))
+                For i = 0 To UBound(.lights)
+                    
+                    Call BinWriteLong(num, .lights(i).layer)
+                    Call BinWriteLong(num, .lights(i).eType)
+                    
+                    'Nodes
+                    Call BinWriteInt(num, .lights(i).nodes.getPoints)
+                    For j = 0 To .lights(i).nodes.getPoints
+                        Call .lights(i).nodes.getPoint(j, x, y)
+                        Call BinWriteLong(num, x)                   'Stored by pixel (Longs)
+                        Call BinWriteLong(num, y)
+                    Next j
+                    
+                    'Colors
+                    Dim ts As TKTileShade
+                    Call BinWriteInt(num, .lights(i).getColors)
+                    For j = 0 To .lights(i).getColors
+                        Call .lights(i).getColor(j, ts.r, ts.g, ts.b)
+                        Call BinWriteInt(num, ts.r)
+                        Call BinWriteInt(num, ts.g)
+                        Call BinWriteInt(num, ts.b)
+                    Next j
+                    
+                Next i
+            End If
             
             'Vectors
             If .vectors(0) Is Nothing Then
@@ -528,29 +608,18 @@ vVersion:
             Next i
             
             'Read off the Lut indices for each tile.
-            Dim x As Long, y As Long, z As Long
-            
-            z = UBound(.board, 3)
-            y = UBound(.board, 2)
-            x = UBound(.board, 1)
+            Dim x As Long, y As Long, z As Long, Index As Integer, count As Integer
             
             For z = 1 To UBound(.board, 3)
                 For y = 1 To UBound(.board, 2)
                     For x = 1 To UBound(.board, 1)
-                    
-                        Dim Index As Integer, count As Integer
+                        
                         Index = BinReadInt(num)
                         
-                        'Negative index indicates compression:
-                        'the next 'index' tiles are indentical.
+                        'Negative index indicates compression: the next 'index' tiles are indentical.
                         If Index < 0 Then
                             count = -Index
-                            
-                            Dim r As Long, b As Long, g As Long, tiletype As Byte
                             Index = BinReadInt(num)
-                            r = BinReadInt(num)
-                            g = BinReadInt(num)
-                            b = BinReadInt(num)
                             
                             'Determine if the layer contains tiles (editor use).
                             '(0) indicates if the whole board contains tiles.
@@ -561,10 +630,7 @@ vVersion:
                     
                             For i = 1 To count
                                 .board(x, y, z) = Index
-                                .ambientRed(x, y, z) = r
-                                .ambientGreen(x, y, z) = g
-                                .ambientBlue(x, y, z) = b
-
+                                
                                 'Check whether compression spans rows/layers.
                                 x = x + 1
                                 If x > UBound(.board, 1) Then
@@ -594,9 +660,6 @@ vVersion:
                             End If
                             
                             .board(x, y, z) = Index
-                            .ambientRed(x, y, z) = BinReadInt(num)
-                            .ambientGreen(x, y, z) = BinReadInt(num)
-                            .ambientBlue(x, y, z) = BinReadInt(num)
                             
                         End If
                     Next x
@@ -604,8 +667,87 @@ vVersion:
             Next z
 exitForA:
 
-            'Vectors
+            'Tile shading - similar routine as for tiles.
+            Dim ts As TKTileShade, ubShading As Integer
+            
+            ubShading = BinReadInt(num)
+            ReDim .tileShading(ubShading)
+            For z = 0 To ubShading
+            
+                .tileShading(z).layer = BinReadLong(num)
+                ReDim .tileShading(z).values(UBound(.board, 1), UBound(.board, 2))
+                
+                For y = 1 To UBound(.board, 2)
+                    For x = 1 To UBound(.board, 1)
+                                                
+                        'The count is always written since r,g,b can be negative.
+                        count = BinReadInt(num)
+                        ts.r = BinReadInt(num)
+                        ts.g = BinReadInt(num)
+                        ts.b = BinReadInt(num)
+                        
+                        If count > 1 Then
+                            For i = 1 To count
+                                .tileShading(z).values(x, y) = ts
+                                
+                                'Check whether compression spans rows/layers.
+                                x = x + 1
+                                If x > UBound(.tileShading(z).values, 1) Then
+                                    x = 1
+                                    y = y + 1
+                                    If y > UBound(.tileShading(z).values, 2) Then
+                                        'Compression to end of layer - exit.
+                                        GoTo exitForB
+                                    End If
+                                End If
+                            Next i
+                            x = x - 1
+                        Else
+                            'Single shade.
+                            .tileShading(z).values(x, y) = ts
+                        End If
+                    Next x
+                Next y
+'Direct ExitForB to resume with the next tile shading layer.
+exitForB:
+            Next z
+            
+            'Lights
             Dim ub As Integer, pts As Integer
+            ub = BinReadInt(num)
+            If ub >= 0 Then
+                'Negative number indicates no objects.
+            
+                ReDim .lights(ub)
+                For i = 0 To ub
+                    Set .lights(i) = New CBoardLight
+                     
+                     'Read eType before setting nodes.
+                    .lights(i).layer = BinReadLong(num)
+                    .lights(i).eType = BinReadLong(num)
+                   
+                    'Nodes
+                    .lights(i).nodes.deletePoints
+                    pts = BinReadInt(num)
+                    For j = 0 To pts
+                        x = BinReadLong(num)
+                        y = BinReadLong(num)
+                        Call .lights(i).nodes.addPoint(x, y)
+                    Next j
+                    
+                    'Colors
+                    pts = BinReadInt(num)
+                    For j = 0 To pts
+                        ts.r = BinReadInt(num)
+                        ts.g = BinReadInt(num)
+                        ts.b = BinReadInt(num)
+                        Call .lights(i).setColor(j, ts.r, ts.g, ts.b)
+                    Next j
+                    
+                Next i
+            End If
+
+            'Vectors
             ub = BinReadInt(num)
             If ub >= 0 Then
                 'Negative number indicates no objects.
@@ -744,7 +886,7 @@ exitForA:
 
 pvVersion:
 
-            Dim bReg As Integer, regCode As String
+            Dim bReg As Integer, regCode As String, tiletype As Byte
             bReg = BinReadInt(num)                  'Created with a registered version?
             regCode = BinReadString(num)            'Registration code
         
@@ -753,6 +895,10 @@ pvVersion:
             .sizeL = BinReadInt(num)
             Call boardSetSize(.sizex, .sizey, .sizeL, ed, board, False)
             ReDim .tiletype(.sizex, .sizey, .sizeL) 'Not done in boardSetSize
+            
+            'Create only a local versions of the old .ambientRed, -Green, -Blue arrays,
+            'since they are not required outside of this function.
+            ReDim ambientRgb(.sizex, .sizey, .sizeL) As TKTileShade
             
             'tbd: Player start location data has been moved to the main file.
             x = BinReadInt(num)
@@ -773,7 +919,7 @@ pvVersion:
             For z = 1 To .sizeL
                 For y = 1 To .sizey
                     For x = 1 To .sizex
-                    
+                        
                         Index = BinReadInt(num)
                         
                         'Negative index indicates compression:
@@ -782,9 +928,9 @@ pvVersion:
                             count = -Index
                             
                             Index = BinReadInt(num)
-                            r = BinReadInt(num)
-                            g = BinReadInt(num)
-                            b = BinReadInt(num)
+                            ts.r = BinReadInt(num)
+                            ts.g = BinReadInt(num)
+                            ts.b = BinReadInt(num)
                             tiletype = BinReadByte(num)
                             
                             'Determine if the layer contains tiles (editor use).
@@ -796,9 +942,7 @@ pvVersion:
                     
                             For i = 1 To count
                                 .board(x, y, z) = Index
-                                .ambientRed(x, y, z) = r
-                                .ambientGreen(x, y, z) = g
-                                .ambientBlue(x, y, z) = b
+                                ambientRgb(x, y, z) = ts
                                 .tiletype(x, y, z) = tiletype
 
                                 'Check whether compression spans rows/layers.
@@ -811,7 +955,7 @@ pvVersion:
                                         z = z + 1
                                         If z > .sizeL Then
                                             'Compression to end of board - exit.
-                                            GoTo exitForB
+                                            GoTo exitForC
                                         End If
                                         
                                         'Spans onto next layer (editor use).
@@ -830,16 +974,16 @@ pvVersion:
                             End If
                             
                             .board(x, y, z) = Index
-                            .ambientRed(x, y, z) = BinReadInt(num)
-                            .ambientGreen(x, y, z) = BinReadInt(num)
-                            .ambientBlue(x, y, z) = BinReadInt(num)
+                            ambientRgb(x, y, z).r = BinReadInt(num)
+                            ambientRgb(x, y, z).g = BinReadInt(num)
+                            ambientRgb(x, y, z).b = BinReadInt(num)
                             .tiletype(x, y, z) = BinReadByte(num)
                             
                         End If
                     Next x
                 Next y
             Next z
-exitForB:
+exitForC:
             
             Dim strUnused As String, lUnused As Long, iUnused As Integer
 
@@ -994,10 +1138,8 @@ exitForB:
                 For x = 1 To .sizex
                     
                     'Store the highest shading values in the new single layer shade.
-                    If (.ambientRed(x, y, z) Or .ambientGreen(x, y, z) Or .ambientBlue(x, y, z)) Then
-                        .tileShading(0).values(x, y).r = .ambientRed(x, y, z)
-                        .tileShading(0).values(x, y).g = .ambientGreen(x, y, z)
-                        .tileShading(0).values(x, y).b = .ambientBlue(x, y, z)
+                    If (ambientRgb(x, y, z).r Or ambientRgb(x, y, z).g Or ambientRgb(x, y, z).b) Then
+                        .tileShading(0).values(x, y) = ambientRgb(x, y, z)
                         
                         'Promote the shading layer to cast onto the highest layer occupied.
                         .tileShading(0).layer = z
@@ -1046,9 +1188,6 @@ Public Sub boardInitialise(ByRef board As TKBoard): On Error Resume Next
         'Pre 3.0.7
         ReDim .tileIndex(0)
         ReDim .board(1, 1, 1)
-        ReDim .ambientRed(1, 1, 1)
-        ReDim .ambientGreen(1, 1, 1)
-        ReDim .ambientBlue(1, 1, 1)
         ReDim .directionalLinks(3)
         ReDim .constants(0)
         ReDim .layerTitles(0)
@@ -1069,9 +1208,7 @@ Public Sub boardSetSize( _
     ByVal bPreserveContents As Boolean): On Error Resume Next
     
     Dim i As Long, j As Long, k As Long, u As Long, v As Long, oldSizeX As Long
-    Dim Data() As Integer, r() As Integer, g() As Integer, b() As Integer, shading() As TKLayerShade
-    
-    'tbd: remove r,g,b
+    Dim Data() As Integer, shading() As TKLayerShade
     
     If x < 1 Then x = 1
     If y < 1 Then y = 1
@@ -1092,16 +1229,10 @@ Public Sub boardSetSize( _
         If bPreserveContents Then
             'Assignment redims left-hand objects
             Data = .board
-            r = .ambientRed
-            g = .ambientGreen
-            b = .ambientBlue
             shading = .tileShading
         End If
             
         ReDim .board(x, y, z)
-        ReDim .ambientRed(x, y, z)
-        ReDim .ambientGreen(x, y, z)
-        ReDim .ambientBlue(x, y, z)
         
         For i = 0 To UBound(.tileShading)
             ReDim .tileShading(i).values(x, y)
@@ -1126,12 +1257,7 @@ Public Sub boardSetSize( _
                             u = i
                             v = j
                         End If
-                    
                         .board(u, v, k) = Data(i, j, k)
-                        .ambientRed(u, v, k) = r(i, j, k)
-                        .ambientGreen(u, v, k) = g(i, j, k)
-                        .ambientBlue(u, v, k) = b(i, j, k)
-
                     Next i
                 Next j
             Next k
@@ -1180,7 +1306,7 @@ Public Sub boardToIsoRotated(ByRef ed As TKBoardEditorData, ByRef board As TKBoa
     Call modBoard.boardCopy(board, backup)
     board.coordType = ISO_ROTATED
     
-    'Convert the tile arrays - programs and sprites are converted to pixel co-ordinates regardless.
+    'Convert the tile and shading arrays - programs and sprites are converted to pixel co-ordinates regardless.
     
     'Resize the board arrays to the correct size for ISO_ROTATED.
     
@@ -1199,9 +1325,9 @@ Public Sub boardToIsoRotated(ByRef ed As TKBoardEditorData, ByRef board As TKBoa
             x = CInt(dx): y = CInt(dy)
             For k = 1 To board.sizeL
                 board.board(x, y, k) = backup.board(i, j, k)
-                board.ambientRed(x, y, k) = backup.ambientRed(i, j, k)
-                board.ambientGreen(x, y, k) = backup.ambientGreen(i, j, k)
-                board.ambientBlue(x, y, k) = backup.ambientBlue(i, j, k)
+            Next k
+            For k = 0 To UBound(board.tileShading)
+                board.tileShading(k).values(x, y) = backup.tileShading(k).values(i, j)
             Next k
         Next j
     Next i

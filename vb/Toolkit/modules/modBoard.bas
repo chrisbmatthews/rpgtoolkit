@@ -121,7 +121,7 @@ Public Type TKTileShade
 End Type
 
 Public Enum eBoardLight
-    BL_SPOTLIGHT
+    BL_ELLIPSE
     BL_GRADIENT
     BL_GRADIENT_CLIPPED
 End Enum
@@ -144,9 +144,7 @@ Public Type TKBoard
     
     tileIndex() As String                 'lookup table for tiles
     board() As Integer                    'board tiles -- codes indicating where the tiles are on the board
-    ambientRed() As Integer               'ambient tile red
-    ambientGreen() As Integer             'ambient tile green
-    ambientBlue() As Integer              'ambient tile blue
+    
     tiletype() As Byte                    'tile types (backwards compatbility)
     
     tileShading() As TKLayerShade         'Tile shading array (old ambientRed, -Green, -Blue arrays)
@@ -172,7 +170,7 @@ Public Type TKBoard
     bDisableSaving As Boolean             'Is saving disabled on board?
     ambientEffect As Integer              'Ambient effect applied to the board 0: none, 1: fog, 2: darkness, 3: watery
     battleSkill As Integer                'Random enemy skill level
-       
+
     'Volatile data (trans3 only)
     'animatedTile() As TKBoardAnimTile     'animated tiles associated with this board
     'strFileName As String                 'filename of the board
@@ -259,32 +257,32 @@ Public Type TKBoardEditorData
 
     'Pre 3.0.7
     boardName As String                   'filename
-    tilesX As Long                        'x size
-    tilesY As Long                        'y size
-    boardAboutToDefineGradient As Boolean 'about to define a gradient?
-    boardGradTop As Integer               'top tile of board gradient
-    boardGradLeft As Integer              'left tile of board gradient
-    boardGradBottom As Integer            'bottom tile of board gradient
-    boardGradRight As Integer             'right tile of board gradient
-    boardGradientType As Integer          'gradient type 0- l to r, 1- t to b, 2- nw to se, 3- ne to sw
-    boardGradientColor1 As Long           'grad color1
-    boardGradientColor2 As Long           'grad color2
-    boardGradMaintainPrev As Boolean      'retain previous shades?
-    BoardDetail As Integer                'Detail of selected board tile
-    gridBoard As Integer                  'Board grid on off
-    BoardTile(32, 32) As Long             'Tile selected by board
+'    tilesX As Long                        'x size
+'    tilesY As Long                        'y size
+'    boardAboutToDefineGradient As Boolean 'about to define a gradient?
+'    boardGradTop As Integer               'top tile of board gradient
+'    boardGradLeft As Integer              'left tile of board gradient
+'    boardGradBottom As Integer            'bottom tile of board gradient
+'    boardGradRight As Integer             'right tile of board gradient
+'    boardGradientType As Integer          'gradient type 0- l to r, 1- t to b, 2- nw to se, 3- ne to sw
+'    boardGradientColor1 As Long           'grad color1
+'    boardGradientColor2 As Long           'grad color2
+'    boardGradMaintainPrev As Boolean      'retain previous shades?
+'    BoardDetail As Integer                'Detail of selected board tile
+'    gridBoard As Integer                  'Board grid on off
+'    BoardTile(32, 32) As Long             'Tile selected by board
     ambient As Long                       'ambient light
     ambientR As Long                      'ambient red
     ambientG As Long                      'ambient green
     ambientB As Long                      'ambient blue
-    infoX As Long                         'Dummy x value, used for tile info
-    infoY As Long                         'Dummy y value, used for tile info
-    drawState As Integer                  'determines drawState 0- draw lock, 1- type lock, 2- program set, 3- itm set
-    spotLight As Integer                  'spot lighting on (1)/ off (0)
-    spotLightRadius As Double             'Radius of spot light
-    percentFade As Double                 'percent fade of boardList(activeBoardIndex).spotLight
-    prgCondition As Integer               'conditions the program set window- if -1, then we start a new prg.
-    itmCondition As Integer               'conditions the item set window- if -1, then we start a new itm.    theData As TKBoard
+'    infoX As Long                         'Dummy x value, used for tile info
+'    infoY As Long                         'Dummy y value, used for tile info
+'    drawState As Integer                  'determines drawState 0- draw lock, 1- type lock, 2- program set, 3- itm set
+'    spotLight As Integer                  'spot lighting on (1)/ off (0)
+'    spotLightRadius As Double             'Radius of spot light
+'    percentFade As Double                 'percent fade of boardList(activeBoardIndex).spotLight
+'    prgCondition As Integer               'conditions the program set window- if -1, then we start a new prg.
+'    itmCondition As Integer               'conditions the item set window- if -1, then we start a new itm.    theData As TKBoard
     autotiler As Integer                  'is autotiler enabled?
     
 End Type

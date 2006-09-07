@@ -67,8 +67,8 @@ End Property
 '=========================================================================
 ' Get a pointer to the points array (for dll use) - returns a SAFEARRAY**
 '=========================================================================
-Public Property Get points() As Long: On Error Resume Next
-    points = VarPtrArray(m_pts())
+Public Property Get ptrPoints() As Long: On Error Resume Next
+    ptrPoints = VarPtrArray(m_pts())
 End Property
 
 '=========================================================================

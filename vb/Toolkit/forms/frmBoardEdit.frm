@@ -2544,11 +2544,6 @@ Private Sub placeTile(file As String, x As Long, y As Long) ': On Error Resume N
         file, _
         m_ed.board(m_ed.undoIndex) _
     )
-    ' set ambient details
-    m_ed.board(m_ed.undoIndex).ambientRed(x, y, m_ed.currentLayer) = m_ed.ambientR
-    m_ed.board(m_ed.undoIndex).ambientGreen(x, y, m_ed.currentLayer) = m_ed.ambientG
-    m_ed.board(m_ed.undoIndex).ambientBlue(x, y, m_ed.currentLayer) = m_ed.ambientB
-    
     Call drawStack(x, y, m_ed.currentLayer)
 End Sub
 
@@ -2668,18 +2663,10 @@ Private Sub tileFloodRecursive(ByVal x As Long, ByVal y As Long, ByVal l As Long
     newTile = boardTileInLut(tileFile, m_ed.board(m_ed.undoIndex))
     
     ' check if old and new tile are the same.
-    ' also compare rgb ambient levels, in case we're flooding a different shade.
-    If replaceTile = newTile _
-        And m_ed.board(m_ed.undoIndex).ambientRed(x, y, l) = m_ed.ambientR _
-        And m_ed.board(m_ed.undoIndex).ambientGreen(x, y, l) = m_ed.ambientG _
-        And m_ed.board(m_ed.undoIndex).ambientBlue(x, y, l) = m_ed.ambientB _
-        Then Exit Sub
-    
+    If replaceTile = newTile Then Exit Sub
+        
     ' enter the tile data of the copying tile.
     m_ed.board(m_ed.undoIndex).board(x, y, l) = newTile
-    m_ed.board(m_ed.undoIndex).ambientRed(x, y, l) = m_ed.ambientR
-    m_ed.board(m_ed.undoIndex).ambientGreen(x, y, l) = m_ed.ambientG
-    m_ed.board(m_ed.undoIndex).ambientBlue(x, y, l) = m_ed.ambientB
     
     Dim sizex As Long, sizey As Long, x2 As Long, y2 As Long
     sizex = m_ed.effectiveBoardX
@@ -2716,8 +2703,6 @@ End Sub
 '========================================================================
 Private Sub tileFloodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long, ByVal tileFilename As String) ': On Error Resume Next
 
-    Const MAGIC_NUMBER = 32768
-                
     With m_ed.board(m_ed.undoIndex)
     
         Dim curIdx As Long, newIdx As Long
@@ -2725,22 +2710,10 @@ Private Sub tileFloodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As 
         curIdx = .board(xLoc, yLoc, layer)
         newIdx = boardTileInLut(tileFilename, m_ed.board(m_ed.undoIndex))
         
-        If curIdx = newIdx Then
-            'We're flooding the same tile, but does it have the same attributes?
-            If .ambientRed(xLoc, yLoc, layer) = m_ed.ambientR And _
-                .ambientGreen(xLoc, yLoc, layer) = m_ed.ambientG And _
-                .ambientBlue(xLoc, yLoc, layer) = m_ed.ambientB Then
-                    Exit Sub
-            Else
-                'Give the new tile a different "colour" so these tiles get flooded.
-                'The magic number... there aren't going to be this many different tiles on a
-                'board so this is safe.
-                newIdx = MAGIC_NUMBER
-            End If
-        End If
+        If curIdx = newIdx Then Exit Sub
         
         'Draw the board onto a canvas.
-        'We use a different "colour" for each tile, by its LUT entry.
+        'Use a different colour for each tile, by its LUT entry.
         
         Dim cnv As Long, width As Long, Height As Long
         width = m_ed.effectiveBoardX
@@ -2767,25 +2740,10 @@ Private Sub tileFloodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As 
         Call DeleteObject(brush)                        'Destroy the brush.
         Call canvasCloseHDC(cnv, hdc)                   'Close the device context.
             
+        'Copy the flooded image back to the board.
         For x = 1 To width
             For y = 1 To Height
-                'Copy the flooded image back to the board.
-                
-                If .board(x, y, layer) <> canvasGetPixel(cnv, x, y) Then
-                    'This tile has been flooded, copy attributes across.
-                    .board(x, y, layer) = canvasGetPixel(cnv, x, y)
-                    
-                    If newIdx = MAGIC_NUMBER Then
-                        'The magic number - this was the same tile, so change it back.
-                        .board(x, y, layer) = curIdx
-                    End If
-                    
-                    'Set attributes.
-                    .ambientRed(x, y, layer) = m_ed.ambientR
-                    .ambientGreen(x, y, layer) = m_ed.ambientG
-                    .ambientBlue(x, y, layer) = m_ed.ambientB
-                    
-                End If
+                .board(x, y, layer) = canvasGetPixel(cnv, x, y)
             Next y
         Next x
         

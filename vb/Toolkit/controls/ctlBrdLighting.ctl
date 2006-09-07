@@ -1,11 +1,11 @@
 VERSION 5.00
 Begin VB.UserControl ctlBrdLighting 
-   ClientHeight    =   5610
+   ClientHeight    =   6120
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3555
    DefaultCancel   =   -1  'True
-   ScaleHeight     =   5610
+   ScaleHeight     =   6120
    ScaleWidth      =   3555
    Begin VB.CommandButton cmdDefault 
       Caption         =   "Ok"
@@ -22,84 +22,104 @@ Begin VB.UserControl ctlBrdLighting
       Caption         =   "Draw dynamic lighting"
       Height          =   375
       Left            =   1680
-      TabIndex        =   25
+      TabIndex        =   18
+      ToolTipText     =   "Show/hide lights on this board"
       Top             =   120
       Width           =   1815
    End
    Begin VB.Frame fraShade 
       Caption         =   "Current shade"
-      Height          =   1575
+      Height          =   1935
       Left            =   0
       TabIndex        =   5
       Top             =   3960
       Width           =   3375
-      Begin VB.HScrollBar hsbShade 
-         Height          =   255
-         LargeChange     =   15
-         Left            =   360
-         Max             =   255
-         Min             =   -255
-         SmallChange     =   5
-         TabIndex        =   21
-         Top             =   840
-         Width           =   2535
-      End
-      Begin VB.TextBox txtShade 
-         Alignment       =   2  'Center
-         Height          =   285
-         Index           =   2
-         Left            =   2280
+      Begin VB.PictureBox pic 
+         BorderStyle     =   0  'None
+         Height          =   1575
+         Left            =   120
+         ScaleHeight     =   1575
+         ScaleWidth      =   3135
          TabIndex        =   19
-         Text            =   "0"
-         Top             =   480
-         Width           =   615
-      End
-      Begin VB.TextBox txtShade 
-         Alignment       =   2  'Center
-         Height          =   285
-         Index           =   1
-         Left            =   1680
-         TabIndex        =   18
-         Text            =   "0"
-         Top             =   480
-         Width           =   615
-      End
-      Begin VB.TextBox txtShade 
-         Alignment       =   2  'Center
-         Height          =   285
-         Index           =   0
-         Left            =   1080
-         TabIndex        =   17
-         Text            =   "0"
-         Top             =   480
-         Width           =   615
-      End
-      Begin VB.PictureBox picShade 
-         Height          =   375
-         Left            =   360
-         ScaleHeight     =   315
-         ScaleWidth      =   315
-         TabIndex        =   16
-         Top             =   360
-         Width           =   375
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Values are valid in the range -255 to +255"
-         Height          =   255
-         Index           =   2
-         Left            =   240
-         TabIndex        =   22
-         Top             =   1200
-         Width           =   3015
-      End
-      Begin VB.Label lbl 
-         Caption         =   "R           G          B"
-         Height          =   255
-         Index           =   1
-         Left            =   1320
-         TabIndex        =   20
          Top             =   240
-         Width           =   1335
+         Width           =   3135
+         Begin VB.CommandButton cmdShadeZero 
+            Caption         =   "Zero RGB"
+            Height          =   375
+            Left            =   240
+            TabIndex        =   27
+            Top             =   1080
+            Width           =   975
+         End
+         Begin VB.PictureBox picShade 
+            Height          =   375
+            Left            =   240
+            ScaleHeight     =   315
+            ScaleWidth      =   315
+            TabIndex        =   24
+            ToolTipText     =   "Current shade color equivalent"
+            Top             =   120
+            Width           =   375
+         End
+         Begin VB.TextBox txtShade 
+            Alignment       =   2  'Center
+            Height          =   285
+            Index           =   0
+            Left            =   960
+            TabIndex        =   23
+            Text            =   "0"
+            Top             =   240
+            Width           =   615
+         End
+         Begin VB.TextBox txtShade 
+            Alignment       =   2  'Center
+            Height          =   285
+            Index           =   1
+            Left            =   1560
+            TabIndex        =   22
+            Text            =   "0"
+            Top             =   240
+            Width           =   615
+         End
+         Begin VB.TextBox txtShade 
+            Alignment       =   2  'Center
+            Height          =   285
+            Index           =   2
+            Left            =   2160
+            TabIndex        =   21
+            Text            =   "0"
+            Top             =   240
+            Width           =   615
+         End
+         Begin VB.HScrollBar hsbShade 
+            Height          =   255
+            LargeChange     =   15
+            Left            =   240
+            Max             =   255
+            Min             =   -255
+            SmallChange     =   5
+            TabIndex        =   20
+            Top             =   600
+            Width           =   2535
+         End
+         Begin VB.Label lbl 
+            Caption         =   "Values are valid in the range -255 to +255"
+            Height          =   615
+            Index           =   2
+            Left            =   1440
+            TabIndex        =   26
+            Top             =   1080
+            Width           =   1695
+         End
+         Begin VB.Label lbl 
+            Caption         =   "R           G          B"
+            Height          =   255
+            Index           =   1
+            Left            =   1200
+            TabIndex        =   25
+            Top             =   0
+            Width           =   1335
+         End
       End
    End
    Begin VB.Frame fraProperties 
@@ -123,7 +143,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   375
             Index           =   1
             Left            =   480
-            TabIndex        =   24
+            TabIndex        =   17
             ToolTipText     =   "Use current shade"
             Top             =   1200
             Width           =   375
@@ -133,7 +153,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   375
             Index           =   0
             Left            =   480
-            TabIndex        =   23
+            TabIndex        =   16
             ToolTipText     =   "Use current shade"
             Top             =   840
             Width           =   375
@@ -152,6 +172,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   375
             Left            =   1440
             TabIndex        =   11
+            ToolTipText     =   "Delete light"
             Top             =   1800
             Width           =   975
          End
@@ -162,6 +183,7 @@ Begin VB.UserControl ctlBrdLighting
             ScaleHeight     =   315
             ScaleWidth      =   315
             TabIndex        =   10
+            ToolTipText     =   "Color equivalent"
             Top             =   1200
             Width           =   375
          End
@@ -172,6 +194,7 @@ Begin VB.UserControl ctlBrdLighting
             ScaleHeight     =   315
             ScaleWidth      =   315
             TabIndex        =   9
+            ToolTipText     =   "Color equivalent"
             Top             =   840
             Width           =   375
          End
@@ -180,6 +203,7 @@ Begin VB.UserControl ctlBrdLighting
             Left            =   480
             Style           =   2  'Dropdown List
             TabIndex        =   8
+            ToolTipText     =   "Lighting effect"
             Top             =   360
             Width           =   1935
          End
@@ -188,6 +212,7 @@ Begin VB.UserControl ctlBrdLighting
             Left            =   240
             Style           =   2  'Dropdown List
             TabIndex        =   7
+            ToolTipText     =   "Light list"
             Top             =   0
             Width           =   2415
          End
@@ -242,6 +267,7 @@ Begin VB.UserControl ctlBrdLighting
       Height          =   375
       Left            =   120
       TabIndex        =   0
+      ToolTipText     =   "Show/hide tile shading for this board"
       Top             =   120
       Width           =   1455
    End
@@ -333,7 +359,7 @@ Public Sub populate(ByVal Index As Long, ByRef light As CBoardLight) ':on error 
     Dim ts As TKTileShade, cap(1) As String, i As Integer
     
     Select Case light.eType
-        Case BL_SPOTLIGHT
+        Case BL_ELLIPSE
             cap(0) = "Shade at ellipse edge: "
             cap(1) = "Shade at ellipse centre: "
         Case BL_GRADIENT, BL_GRADIENT_CLIPPED
@@ -359,13 +385,15 @@ Public Property Get getTxtLayer() As TextBox: On Error Resume Next
     Set getTxtLayer = txtLayer
 End Property
 
-Private Sub chkDrawLighting_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
-    Call activeBoard.reRenderAllLayers(False)
+Private Sub chkDrawLighting_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     activeBoard.toolbarDrawObject(BS_LIGHTING) = chkDrawLighting.value
-End Sub
-Private Sub chkDrawShading_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     Call activeBoard.reRenderAllLayers(False)
+    Call activeBoard.drawAll
+End Sub
+Private Sub chkDrawShading_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     activeBoard.toolbarDrawObject(BS_SHADING) = chkDrawShading.value
+    Call activeBoard.reRenderAllLayers(False)
+    Call activeBoard.drawAll
 End Sub
 Private Sub cmbLights_Click(): On Error Resume Next
     If cmbLights.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbLights.ListIndex, BS_LIGHTING)
@@ -400,6 +428,9 @@ Private Sub cmdLightDelete_Click(): On Error Resume Next
     Call activeBoard.lightingDeleteCurrent
     Call activeBoard.reRenderAllLayers(False)
     Call activeBoard.drawAll
+End Sub
+Private Sub cmdShadeZero_Click(): On Error Resume Next
+    hsbShade.value = 0
 End Sub
 Private Sub hsbShade_Change(): On Error Resume Next
     txtShade(0).Text = CStr(hsbShade.value)
@@ -443,7 +474,7 @@ End Function
 
 Public Property Get lightName(ByVal eType As eBoardLight) As String: On Error Resume Next
     Select Case eType
-        Case BL_SPOTLIGHT: lightName = "Spotlight"
+        Case BL_ELLIPSE: lightName = "Elliptic spotlight"
         Case BL_GRADIENT: lightName = "Gradient"
         Case BL_GRADIENT_CLIPPED: lightName = "Clipped gradient"
     End Select
@@ -451,8 +482,8 @@ End Property
 
 Private Sub UserControl_Initialize(): On Error Resume Next
     cmbLightType.clear
-    cmbLightType.AddItem lightName(BL_SPOTLIGHT), BL_SPOTLIGHT
+    cmbLightType.AddItem lightName(BL_ELLIPSE), BL_ELLIPSE
     cmbLightType.AddItem lightName(BL_GRADIENT), BL_GRADIENT
     cmbLightType.AddItem lightName(BL_GRADIENT_CLIPPED), BL_GRADIENT_CLIPPED
-    cmbLightType.ListIndex = BL_SPOTLIGHT
+    cmbLightType.ListIndex = BL_ELLIPSE
 End Sub
