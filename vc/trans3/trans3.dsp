@@ -680,10 +680,6 @@ SOURCE=.\common\background.cpp
 # End Source File
 # Begin Source File
 
-SOURCE="..\tkCommon\movement\board conversion.cpp"
-# End Source File
-# Begin Source File
-
 SOURCE=.\common\board.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -752,6 +748,10 @@ SOURCE=.\common\CFile.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\tkCommon\board\conversion.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\enemy.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -793,6 +793,10 @@ SOURCE=.\common\item.cpp
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\board\lighting.cpp
 # End Source File
 # Begin Source File
 
@@ -979,10 +983,6 @@ SOURCE=.\common\background.h
 # End Source File
 # Begin Source File
 
-SOURCE="..\tkCommon\movement\board conversion.h"
-# End Source File
-# Begin Source File
-
 SOURCE=.\common\board.h
 # End Source File
 # Begin Source File
@@ -1003,11 +1003,19 @@ SOURCE=.\common\CInventory.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\tkCommon\board\conversion.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\enemy.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\common\item.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\tkCommon\board\lighting.h
 # End Source File
 # Begin Source File
 
