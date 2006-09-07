@@ -11,7 +11,7 @@
 /*
  * Inclusions.
  */
-#include "../../tkCommon/movement/coords.h"
+#include "../../tkCommon/board/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkGfx/CTile.h"
 #include "../../tkCommon/strings.h"
@@ -32,7 +32,7 @@
 #include "../movement/CItem/CItem.h"
 #include "../movement/CPathFind/CPathFind.h"
 #include "../../tkCommon/images/FreeImage.h"
-#include "../../tkCommon/movement/board conversion.h"
+#include "../../tkCommon/board/conversion.h"
 #include "../fight/fight.h"
 #include "../misc/misc.h"
 #include "../plugins/plugins.h"

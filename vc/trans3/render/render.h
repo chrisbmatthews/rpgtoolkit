@@ -11,7 +11,7 @@
  * Inclusions.
  */
 #include "../../tkCommon/strings.h"
-#include "../../tkCommon/movement/coords.h"
+#include "../../tkCommon/board/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 
 // Uncomment to show debug vectors.
