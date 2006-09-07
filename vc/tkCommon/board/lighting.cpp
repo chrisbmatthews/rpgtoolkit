@@ -21,29 +21,35 @@ VOID calculateLighting(RGB_MATRIX &shades, CONST BRD_LIGHT &bl, CONST COORD_TYPE
 {
 	switch (bl.eType)
 	{
-		case (BL_SPOTLIGHT):
+		case (BL_ELLIPSE):
 		{
 			// bl.nodes(1) defines centre.
-			// |bl.nodes(1) - bl.nodes(0)| defines semi-major axis.
-			// |bl.nodes(1) - bl.nodes(2)| defines semi-minor axis. 
+			// |bl.nodes(1) - bl.nodes(0)|, |bl.nodes(1) - bl.nodes(2)| 
+			// defines semi-major and semi-minor axes (whichever is longer/shorter respectively).
 			// bl.colors(1) defines color at centre,
 			// bl.colors(0) defines color at edge.
 
-			if (bl.nodes.size() != 3 || bl.colors.size() != 2) return;
+			if (bl.nodes.size() != 3 || bl.colors.size() < 2) return;
 
 			// Semi-major and semi-minor axes.
-			CONST DOUBLE a = sqrt(
-				(bl.nodes[1].x - bl.nodes[0].x) * (bl.nodes[1].x - bl.nodes[0].x) +
-				(bl.nodes[1].y - bl.nodes[0].y) * (bl.nodes[1].y - bl.nodes[0].y)
-			);
-			CONST DOUBLE b = sqrt(
-				(bl.nodes[1].x - bl.nodes[2].x) * (bl.nodes[1].x - bl.nodes[2].x) +
-				(bl.nodes[1].y - bl.nodes[2].y) * (bl.nodes[1].y - bl.nodes[2].y)
-			);
-			if (!a || !b) return;
+			CONST DOUBLE axes[] = {
+				sqrt(
+					(bl.nodes[1].x - bl.nodes[0].x) * (bl.nodes[1].x - bl.nodes[0].x) +
+					(bl.nodes[1].y - bl.nodes[0].y) * (bl.nodes[1].y - bl.nodes[0].y)
+				),
+				0,	// Padding.
+				sqrt(
+					(bl.nodes[1].x - bl.nodes[2].x) * (bl.nodes[1].x - bl.nodes[2].x) +
+					(bl.nodes[1].y - bl.nodes[2].y) * (bl.nodes[1].y - bl.nodes[2].y)
+				)
+			};
+			if (!axes[0] || !axes[2]) return;
 
-			// sin and cos of incline angle of ellipse x-axis.
-			CONST DOUBLE sine = (bl.nodes[1].y - bl.nodes[0].y) / a, cosine = (bl.nodes[1].x - bl.nodes[0].x) / a;
+			// Indices of longer axis = major axis, shorter axis = minor.
+			CONST LONG mj = (axes[0] > axes[2] ? 0 : 2), mn = (mj == 0 ? 2 : 0);
+
+			// sin and cos of incline angle of ellipse semi-major axis.
+			CONST DOUBLE sine = (bl.nodes[1].y - bl.nodes[mj].y) / axes[mj], cosine = (bl.nodes[1].x - bl.nodes[mj].x) / axes[mj];
 
 			for (INT i = 1; i != shades.size(); ++i)
 			{
@@ -71,14 +77,14 @@ VOID calculateLighting(RGB_MATRIX &shades, CONST BRD_LIGHT &bl, CONST COORD_TYPE
 					if (xp == 0.0)
 					{
 						// Vertical - take ratio to semi-minor axis.
-						fraction = yp / b;
+						fraction = yp / axes[mn];
 					}
 					else
 					{
 						CONST DOUBLE m = yp / xp;
 
 						// Intercept point (rearrange equations).
-						CONST DOUBLE xi = a * b / sqrt(b * b + (m * m) * (a * a));
+						CONST DOUBLE xi = axes[mj] * axes[mn] / sqrt(axes[mn] * axes[mn] + (m * m) * (axes[mj] * axes[mj]));
 						CONST DOUBLE yi = m * xi;
 
 						fraction = sqrt((xp * xp + yp * yp) / (xi * xi + yi * yi));
@@ -104,7 +110,7 @@ VOID calculateLighting(RGB_MATRIX &shades, CONST BRD_LIGHT &bl, CONST COORD_TYPE
 			// bl.colors(0) defines color at bl.nodes(0),
 			// bl.colors(1) defines color at bl.nodes(1).
 
-			if (bl.nodes.size() != 2 || bl.colors.size() != 2) return;
+			if (bl.nodes.size() != 2 || bl.colors.size() < 2) return;
 
 			// Node separation.
 			CONST DOUBLE length = sqrt(
@@ -181,4 +187,19 @@ VARIANT invokeObject(CONST LPUNKNOWN pUnk, BSTR method, DISPPARAMS &dispparams, 
 		pDisp->Release();
 	}
 	return result;
+}
+
+//--------------------------------------------------------------------------
+// Size a LAYER_SHADE
+//--------------------------------------------------------------------------
+tagLayerShade::size(CONST INT width, CONST INT height)
+{
+	shades.clear();
+	for (LONG i = 0; i <= width; ++i)
+	{
+		RGB_VECTOR row;
+		CONST RGB_SHADE ts = {0, 0, 0};
+		for (LONG j = 0; j <= height; ++j) row.push_back(ts);
+		shades.push_back(row);
+	}
 }

@@ -25,13 +25,25 @@ typedef struct tagRgbShade
 // Lighting types (see toolkit3, modBoard.eBoardLight)
 typedef enum tagBoardLightType
 {
-    BL_SPOTLIGHT,
+    BL_ELLIPSE,
     BL_GRADIENT,
 	BL_GRADIENT_CLIPPED
 } LIGHT_TYPE;
 
 typedef std::vector<RGB_SHADE> tagRgbVector, RGB_VECTOR;
-typedef std::vector<RGB_VECTOR> tagRgbMatrix, RGB_MATRIX;
+typedef std::vector<RGB_VECTOR> tagRgbMatrix, RGB_MATRIX, *LPRGB_MATRIX;
+
+// C++ version of tagVBLayerShade.
+typedef struct tagLayerShade
+{
+	RGB_MATRIX shades;
+	INT layer;
+
+	tagLayerShade(VOID): layer(1) {};
+	tagLayerShade(CONST INT width, CONST INT height): layer(1) { size(width, height); }
+	size(CONST INT width, CONST INT height);
+
+} LAYER_SHADE, *LPLAYER_SHADE;
 
 // C++ version of VB CBoardLight.
 typedef struct tagBoardLight
@@ -39,6 +51,7 @@ typedef struct tagBoardLight
 	std::vector<POINT> nodes;
 	RGB_VECTOR colors;
 	LIGHT_TYPE eType;
+	INT layer;
 } BRD_LIGHT, *LPBRD_LIGHT;
 
 //--------------------------------------------------------------------------
