@@ -1129,25 +1129,7 @@ SOURCE=.\movement\CItem\CItem.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\tkCommon\movement\coords.cpp
-
-!IF  "$(CFG)" == "trans3 - Win32 Debug"
-
-# ADD CPP /FR
-# SUBTRACT CPP /YX
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
-
-!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
-
-!ENDIF 
-
+SOURCE=..\tkCommon\board\coords.cpp
 # End Source File
 # Begin Source File
 
@@ -1252,7 +1234,7 @@ SOURCE=.\movement\CItem\CItem.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\tkCommon\movement\coords.h
+SOURCE=..\tkCommon\board\coords.h
 # End Source File
 # Begin Source File
 

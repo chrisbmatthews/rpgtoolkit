@@ -42,7 +42,7 @@ typedef double DOUBLE;
 #include <string>
 #include <vector>
 #include "../../tkCommon/tkCanvas/CCanvasPool.h"
-#include "../movement/coords.h"
+#include "../board/coords.h"
 
 //-------------------------------------------------------------------
 // A tileset header
