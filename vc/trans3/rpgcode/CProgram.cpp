@@ -1121,25 +1121,34 @@ unsigned int CProgram::updateLocations(POS i)
 	unsigned int depth = 0;
 	for (; i != m_units.end(); ++i)
 	{
-		if ((i->udt & UDT_FUNC) && (i->func == skipMethod))
+		if (i->udt & UDT_FUNC)
 		{
-			LPNAMED_METHOD p = NAMED_METHOD::locate(i->lit, (unsigned int)i->num, false, *this);
-			if (p)
+			if (i->func == skipMethod)
 			{
-				p->i = i - m_units.begin() + 1;
-			}
-			const STRING::size_type pos = i->lit.find(_T("::"));
-			if (pos != STRING::npos)
-			{
-				LPCLASS pCls = &m_classes[i->lit.substr(0, pos)];
-				if (pCls)
+				LPNAMED_METHOD p = NAMED_METHOD::locate(i->lit, (unsigned int)i->num, false, *this);
+				if (p)
 				{
-					LPNAMED_METHOD p = pCls->locate(i->lit.substr(pos + 2), (unsigned int)i->num, CV_PRIVATE);
-					if (p)
+					p->i = i - m_units.begin() + 1;
+				}
+				const STRING::size_type pos = i->lit.find(_T("::"));
+				if (pos != STRING::npos)
+				{
+					LPCLASS pCls = &m_classes[i->lit.substr(0, pos)];
+					if (pCls)
 					{
-						p->i = i - m_units.begin() + 1;
+						LPNAMED_METHOD p = pCls->locate(i->lit.substr(pos + 2), (unsigned int)i->num, CV_PRIVATE);
+						if (p)
+						{
+							p->i = i - m_units.begin() + 1;
+						}
 					}
 				}
+			}
+			else if (i->func == methodCall)
+			{
+				POS unit = i - 1;
+				if (unit->udt & UDT_OBJ) continue;
+				unit->num = -1;
 			}
 		}
 		else if (i->udt & UDT_OPEN)
