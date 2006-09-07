@@ -95,13 +95,6 @@ typedef struct tagVBLayerShade
 typedef std::vector<VB_TILESHADE> tagRgbVector, RGB_VECTOR;
 typedef std::vector<RGB_VECTOR> tagRgbMatrix, RGB_MATRIX;
 
-// C++ version of tagVBLayerShade.
-typedef struct tagLayerShade
-{
-	RGB_MATRIX shades;
-	INT layer;
-} LAYER_SHADE, *LPLAYER_SHADE;
-
 // Point of a VB CVector.
 typedef struct tagVBVectorPoint
 {
@@ -122,9 +115,7 @@ typedef struct tagVBBoard
 
 	LPSAFEARRAY tileIndex;				// Lookup table for tiles
 	LPSAFEARRAY board;					// Board tiles - codes indicating where the tiles are on the board
-	LPSAFEARRAY ambientRed;				// Ambient tile red
-	LPSAFEARRAY ambientGreen;			// Ambient tile green
-	LPSAFEARRAY ambientBlue;			// Ambient tile blue
+
 	LPSAFEARRAY tileType;				// Tiletypes (3.0.6- boards only)
 
 	LPSAFEARRAY tileShading;			// Tile shading (3.0.7+)
@@ -170,6 +161,14 @@ typedef struct tagVBBoard
 	BOOL isIsometric() const
 	{
 		return (coordType & (ISO_STACKED | ISO_ROTATED));
+	}
+	INT effectiveWidth() const
+	{
+		return (coordType & ISO_ROTATED ? sizeX + sizeY : sizeX);
+	}
+	INT effectiveHeight() const
+	{
+		return (coordType & ISO_ROTATED ? sizeX + sizeY : sizeY);
 	}
 
 } VB_BOARD, *LPVB_BOARD;
@@ -233,11 +232,15 @@ typedef struct tagVBConvertedVector
 class CBoard
 {
 public:
-	CBoard(CONST STRING path) 
+
+	CBoard(CONST STRING path):
+		m_pBoard(NULL),
+		m_projectPath(path),
+		m_layerShade()
 	{ 
 		m_layers.reserve(8);
-		m_projectPath = path; 
 	}
+
 	~CBoard();
 
 	VOID draw(

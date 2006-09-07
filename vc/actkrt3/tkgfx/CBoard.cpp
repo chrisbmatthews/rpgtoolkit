@@ -615,17 +615,10 @@ VOID CBoard::renderLayer(
 	p->cnv->ClearScreen(TRANSP_COLOR);
 	CONST HDC hdc = p->cnv->OpenDC();
 
-	INT effWidth = m_pBoard->sizeX, effHeight = m_pBoard->sizeY;
-	if (m_pBoard->coordType & ISO_ROTATED)
-	{
-		// Data matrix is square.
-		effWidth += m_pBoard->sizeY;
-		effHeight += m_pBoard->sizeX;
-	}
 
-	for (INT x = 1; x <= effWidth; ++x)
+	for (INT x = 1; x <= m_pBoard->effectiveWidth(); ++x)
 	{
-		for (INT y = 1; y <= effHeight; ++y)
+		for (INT y = 1; y <= m_pBoard->effectiveHeight(); ++y)
 		{
 			CONST STRING strTile = tile(x, y, i);
 			if (!strTile.empty())
@@ -860,16 +853,7 @@ VOID CBoard::applyLighting(RGB_MATRIX &shades)
 VOID CBoard::recalculateShading(CONST LPVB_BRDEDITOR pEditor)
 {	
 	// Clear current shade array.
-	m_layerShade.shades.clear();
-
-	LONG i, j;
-	for (i = 0; i <= m_pBoard->sizeX; ++i)
-	{
-		RGB_VECTOR row;
-		CONST VB_TILESHADE ts = {0, 0, 0};
-		for (j = 0; j <= m_pBoard->sizeY; ++j) row.push_back(ts);
-		m_layerShade.shades.push_back(row);
-	}
+	m_layerShade.size(m_pBoard->effectiveWidth(), m_pBoard->effectiveHeight());
 
 	// Shading visibility in the editor.
 	LONG ub = 0, vs = BS_SHADING, vl = BS_LIGHTING;
@@ -894,9 +878,9 @@ VOID CBoard::recalculateShading(CONST LPVB_BRDEDITOR pEditor)
 			SafeArrayPtrOfIndex(m_pBoard->tileShading, &ub, (void **)&plShade);
 			if (plShade)
 			{
-				for (i = 0; i <= m_pBoard->sizeX; ++i)
+				for (LONG i = 0; i <= m_pBoard->effectiveWidth(); ++i)
 				{
-					for (j = 0; j <= m_pBoard->sizeY; ++j)
+					for (LONG j = 0; j <= m_pBoard->effectiveHeight(); ++j)
 					{
 						VB_TILESHADE ts = {0, 0, 0};
 						LONG indices[] = {i, j};
@@ -925,8 +909,8 @@ VOID CBoard::getBoardLight(CONST LPUNKNOWN pLight, BRD_LIGHT &bl)
 	// Invoke() sets the object pointer type to IDispatch *.
 	if (pNodes.pdispVal)
 	{
-		// LPSAFEARRAY *CVector.points() as (VT_I4, .lVal)
-		CONST VARIANT pPts = invokeObject(LPUNKNOWN(pNodes.pdispVal), L"points", dpNoArgs, DISPATCH_PROPERTYGET);
+		// LPSAFEARRAY *CVector.ptrpoints() as (VT_I4, .lVal)
+		CONST VARIANT pPts = invokeObject(LPUNKNOWN(pNodes.pdispVal), L"ptrPoints", dpNoArgs, DISPATCH_PROPERTYGET);
 		
 		CONST LPSAFEARRAY *ppsf = (LPSAFEARRAY *)pPts.lVal;
 		LONG ub = 0;
@@ -944,7 +928,7 @@ VOID CBoard::getBoardLight(CONST LPUNKNOWN pLight, BRD_LIGHT &bl)
 	// Colors.
 
 	// LPSAFEARRAY *CBoardLight.colors() as (VT_I4, .lVal)
-	CONST VARIANT pColors = invokeObject(pLight, L"colors", dpNoArgs, DISPATCH_PROPERTYGET);
+	CONST VARIANT pColors = invokeObject(pLight, L"ptrColors", dpNoArgs, DISPATCH_PROPERTYGET);
 	
 	CONST LPSAFEARRAY *ppsf = (LPSAFEARRAY *)pColors.lVal;
 	LONG ub = 0;
@@ -976,16 +960,8 @@ VOID CBoard::convertLight(CONST LPVB_BOARD pBoard, CONST LPUNKNOWN pLight)
 	getBoardLight(pLight, bl);
 
 	// Apply the light to a local matrix.
-	RGB_MATRIX matrix;
-	LONG i, j;
-	for (i = 0; i <= m_pBoard->sizeX; ++i)
-	{
-		RGB_VECTOR row;
-		CONST VB_TILESHADE ts = {0, 0, 0};
-		for (j = 0; j <= m_pBoard->sizeY; ++j) row.push_back(ts);
-		matrix.push_back(row);
-	}
-	calculateLighting(matrix, bl, COORD_TYPE(m_pBoard->coordType), m_pBoard->sizeX);
+	LAYER_SHADE matrix(m_pBoard->effectiveWidth(), m_pBoard->effectiveHeight());
+	calculateLighting(matrix.shades, bl, COORD_TYPE(m_pBoard->coordType), m_pBoard->sizeX);
 
 	// Add to board data array tile by tile.
 	LPVB_LAYERSHADE plShade = NULL;
@@ -998,17 +974,17 @@ VOID CBoard::convertLight(CONST LPVB_BOARD pBoard, CONST LPUNKNOWN pLight)
 		SafeArrayPtrOfIndex(m_pBoard->tileShading, &ub, (void **)&plShade);
 		if (plShade)
 		{
-			for (i = 0; i <= m_pBoard->sizeX; ++i)
+			for (LONG i = 0; i <= m_pBoard->effectiveWidth(); ++i)
 			{
-				for (j = 0; j <= m_pBoard->sizeY; ++j)
+				for (LONG j = 0; j <= m_pBoard->effectiveHeight(); ++j)
 				{
 					VB_TILESHADE ts = {0, 0, 0};
 					LONG indices[] = {i, j};
 					SafeArrayGetElement(plShade->values, indices, LPVOID(&ts));
 
-					ts.r += matrix[i][j].r;
-					ts.g += matrix[i][j].g;
-					ts.b += matrix[i][j].b;
+					ts.r += matrix.shades[i][j].r;
+					ts.g += matrix.shades[i][j].g;
+					ts.b += matrix.shades[i][j].b;
 
 					if (SafeArrayPutElement(plShade->values, indices, LPVOID(&ts)) != S_OK) break;
 				}
