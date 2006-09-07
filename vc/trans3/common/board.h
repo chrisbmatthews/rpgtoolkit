@@ -13,8 +13,9 @@ typedef struct tagBoard BOARD, *LPBOARD;
 class CItem;
 class CThread;
 
-#include "../../tkCommon/movement/board conversion.h"
-#include "../../tkCommon/movement/coords.h"
+#include "../../tkCommon/board/conversion.h"
+#include "../../tkCommon/board/coords.h"
+#include "../../tkCommon/board/lighting.h"
 #include "../../tkCommon/strings.h"
 #include "../movement/CVector/CVector.h"
 #include "../movement/movement.h"
@@ -171,9 +172,12 @@ typedef struct tagBoard
 
 	std::vector<STRING> tileIndex;					// Lookup table for tiles.
 	VECTOR_SHORT3D board;							// Board tiles indices.
-	VECTOR_SHORT3D ambientRed;						// Ambient tile red.
-	VECTOR_SHORT3D ambientGreen;					// Ambient tile green.
-	VECTOR_SHORT3D ambientBlue;						// Ambient tile blue.
+	
+	std::vector<LPLAYER_SHADE> tileShading;			// Tile shading array (old ambientRed, -Green, -Blue arrays)							
+
+	// There is currently no need to store the lights permanently
+	// since they cannot be altered once applied.
+	// std::vector<LPBRD_LIGHT> lights;				// Dynamic lighting objects (spotlight, gradient).
 
 	std::vector<CItem *> items;						// Items.
 	std::vector<LPBRD_IMAGE> images;				// Layered images.
@@ -223,6 +227,7 @@ typedef struct tagBoard
 	void freeImages();
 	void freeThreads();
 	void freePaths();
+	void freeShading();
 	bool hasProgram(LPBRD_PROGRAM p) const;
 	int pxWidth() const;
 	int pxHeight() const;
@@ -251,7 +256,7 @@ typedef struct tagBoard
 	void renderAnimatedTiles(SCROLL_CACHE &scrollCache);
 
 	tagBoard(): coordType(TILE_NORMAL), bkgImage(NULL) { }
-	~tagBoard() { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); freePaths(); }
+	~tagBoard() { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); freePaths(); freeShading(); }
 
 private:
 	tagBoard &operator=(tagBoard &rhs);

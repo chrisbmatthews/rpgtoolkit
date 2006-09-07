@@ -17,7 +17,7 @@
 #include "CPathFind.h"
 #include "../CSprite/CSprite.h"
 #include "../../common/board.h"
-#include "../../../tkCommon/movement/coords.h"
+#include "../../../tkCommon/board/coords.h"
 #include "../../common/mainfile.h"
 
 /*
@@ -222,8 +222,7 @@ void CPathFind::initialize(const int layer, const RECT &r, const PF_HEURISTIC ty
 	// Add collidable nodes from the board.
 	for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
 	{
-		// tbd: stairs? unidirectionals?
-		if (i->layer != m_layer || i->type != TT_SOLID) continue;
+		if (i->layer != m_layer || i->type & ~TT_SOLID) continue;
 
 		// The board vectors have to be "grown" to make sure the sprites
 		// can move around them without colliding.

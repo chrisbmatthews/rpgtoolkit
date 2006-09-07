@@ -136,9 +136,6 @@ vVersion:
 						count = -index;
 						short r, b, g;
 						file >> index;
-						file >> r;
-						file >> g;
-						file >> b;
 
 						// Determine if the layer contains tiles.
 						// [0] indicates if the whole board contains tiles.
@@ -147,9 +144,6 @@ vVersion:
 						for (short i = 1; i <= count; ++i)
 						{
 							board[z][y][x] = index;
-							ambientRed[z][y][x] = r;
-							ambientGreen[z][y][x] = g;
-							ambientBlue[z][y][x] = b;
 
 							std::vector<int>::const_iterator j = tanLutIndices.begin();
 							for (; j != tanLutIndices.end(); ++j)
@@ -182,9 +176,6 @@ vVersion:
 						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
 
 						board[z][y][x] = index;
-						file >> ambientRed[z][y][x];
-						file >> ambientGreen[z][y][x];
-						file >> ambientBlue[z][y][x];
 					
 						std::vector<int>::const_iterator i = tanLutIndices.begin();
 						for (; i != tanLutIndices.end(); ++i)
@@ -200,9 +191,100 @@ vVersion:
 		} // for (z)
 lutEndA:
 
+        /// Tile shading (independent layer(s) stored in similar way to tiles)
+		freeShading();
+		short ub;
+		file >> ub;
+		for (z = 0; z <= ub; ++z)
+		{
+			LPLAYER_SHADE pLs = new LAYER_SHADE(effectiveWidth, effectiveHeight);
+			LPRGB_MATRIX pMat = &pLs->shades;
+			file >> pLs->layer;
+
+			for (y = 1; y <= effectiveHeight; ++y)
+			{
+				for (x = 1; x <= effectiveWidth; ++x)
+				{
+					short count = 0;
+					RGB_SHADE rgb = {0, 0, 0};
+					file >> count;
+					file >> rgb.r;
+					file >> rgb.g;
+					file >> rgb.b;
+
+					if (count > 1)
+					{
+						for (short i = 1; i <= count; ++i)
+						{
+							(*pMat)[x][y] = rgb;
+
+							if (++x > effectiveWidth)
+							{
+								x = 1;
+								if (++y > effectiveHeight)
+								{
+									goto layerEnd;
+								}
+							}
+						} // for(i)
+						--x;
+					}
+					else
+					{
+						(*pMat)[x][y] = rgb;
+					}
+				} // for (x)
+			} // for (y)
+layerEnd:
+			tileShading.push_back(pLs);
+		} // for (z)
+
+		// Lights.
+		short pts;
+		file >> ub;
+		if (ub >= 0)
+		{
+			// Negative number indicates no objects.
+			for (i = 0; i <= ub; ++i)
+			{
+				BRD_LIGHT light;
+				short var;
+				
+				file >> light.layer;
+				int type;
+				file >> type; light.eType = LIGHT_TYPE(type);
+				
+				// Nodes.
+				file >> pts;
+				for (int j = 0; j <= pts; ++j)
+				{
+					file >> x;
+					file >> y;
+					const POINT pt = {x, y};
+					light.nodes.push_back(pt);
+				}
+
+				// Colors.
+				file >> pts;
+				for (j = 0; j <= pts; ++j)
+				{
+					RGB_SHADE rgb = {0, 0, 0};
+					file >> rgb.r;
+					file >> rgb.g;
+					file >> rgb.b;
+					light.colors.push_back(rgb);
+				}
+
+				// Render light to tileShading array (single layer implementation).
+				calculateLighting(tileShading[0]->shades, light, coordType, sizeX);
+
+				// There is currently no need to store the lights permanently
+				// since they cannot be altered once applied.
+			}
+		}
+
 		// Vectors.
 		freeVectors();
-		short ub, pts;
 		file >> ub;
 		if (ub >= 0)
 		{
@@ -443,6 +525,11 @@ pvVersion:
 		file >> sizeL;
 		setSize(sizeX, sizeY, sizeL, true);
 
+        // Create only a local versions of the old .ambientRed, -Green, -Blue arrays,
+        // since they are not required outside of this function.
+        VECTOR_SHORT3D red, green, blue;
+		red = green = blue = board;
+
 		// Start position moved to main file; hold
 		// onto until after isometric byte is read.
 		int pStartX, pStartY, pStartL;
@@ -505,9 +592,12 @@ pvVersion:
 						for (int i = 1; i <= count; ++i)
 						{
 							board[z][y][x] = index;
-							ambientRed[z][y][x] = r;
-							ambientGreen[z][y][x] = g;
-							ambientBlue[z][y][x] = b;
+
+							// Load colors into local array.
+							red[z][y][x] = r;
+							green[z][y][x] = g;
+							blue[z][y][x] = b;
+
 							tiletype[z][y][x] = type;
 
 							std::vector<int>::const_iterator j = tanLutIndices.begin();
@@ -541,9 +631,9 @@ pvVersion:
 						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
 
 						board[z][y][x] = index;
-						file >> ambientRed[z][y][x];
-						file >> ambientGreen[z][y][x];
-						file >> ambientBlue[z][y][x];
+						file >> red[z][y][x];
+						file >> green[z][y][x];
+						file >> blue[z][y][x];
 						file >> tiletype[z][y][x];
 					
 						std::vector<int>::const_iterator i = tanLutIndices.begin();
@@ -739,6 +829,28 @@ lutEndB:
 		{
 			// Required only for the active board.
 
+			// Upgrade tile lighting before setting under vectors.
+			freeShading();
+			tileShading.push_back(new LAYER_SHADE(sizeX, sizeY));			
+			for (z = 1; z <= sizeL; ++z)
+			{
+				for (y = 1; y <= sizeY; ++y)
+				{
+					for (x = 1; x <= sizeX; ++x)
+					{                    
+						 // Store the highest shading values in the new single layer shade.
+						const RGB_SHADE rgb = { red[z][y][x], green[z][y][x], blue[z][y][x] };
+						if (rgb.r || rgb.g || rgb.b)
+						{
+							tileShading[0]->shades[x][y] = rgb;
+                        
+							// Promote the shading layer to cast onto the highest layer occupied.
+							tileShading[0]->layer = z;
+						}
+					}
+				}
+			}
+
 			// Convert to pixel co-ordinates.
 			coords::tileToPixel(pStartX, pStartY, coordType, true, sizeX);
 			extern MAIN_FILE g_mainFile;
@@ -766,7 +878,7 @@ lutEndB:
 				bkgImage = NULL;
 			}
 
-			// Images first, for use with vectors.
+			// Create image canvases before vector canvases.
 			for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
 			{
 				(*i)->createCanvas(*this);
@@ -1102,6 +1214,7 @@ void tagBoard::render(
 	for (unsigned int i = lLower; i <= lUpper; ++i)
 	{
 		if (!bLayerOccupied[i]) continue;
+		const bool castShade = (tileShading[0]->layer >= i);
 
 		// For the x axis
 		for (unsigned int j = x; j <= x + nWidth; ++j)
@@ -1118,13 +1231,17 @@ void tagBoard::render(
 					const STRING tile = tileIndex[board[i][k][j]];
 					if (!tile.empty())
 					{
+						// Single layer lighting implementation.
+						RGB_SHADE shade = {0, 0, 0};
+						if (castShade) shade = tileShading[0]->shades[j][k];
+
 						// Tile exists at this location.
 						CTile::drawByBoardCoord(
 							g_projectPath + TILE_PATH + tile,
 							j, k, 
-							ambientRed[i][k][j] + aR,
-							ambientGreen[i][k][j] + aG,
-							ambientBlue[i][k][j] + aB,
+							shade.r + aR,
+							shade.g + aG,
+							shade.b + aB,
 							cnv, 
 							TM_NONE,
 							destX - topX, destY - topY,
@@ -1357,6 +1474,18 @@ void tagBoard::freePaths()
 }
 
 /*
+ * Free tile shading layers.
+ */
+void tagBoard::freeShading()
+{
+	for (std::vector<LPLAYER_SHADE>::iterator i = tileShading.begin(); i != tileShading.end(); ++i)
+	{
+		delete *i;
+	}
+	tileShading.clear();
+}
+
+/*
  * Add an animated tile to the board.
  *
  * fileName (in) - tile to add
@@ -1416,7 +1545,6 @@ void tagBoard::setSize(const int width, const int height, const int depth, const
 			board.push_back(face);
 			bLayerOccupied.push_back(false);
 		}
-		ambientRed = ambientGreen = ambientBlue = board;
 	}
 	if (createTiletypeArray)
 	{
@@ -1625,12 +1753,17 @@ void tagBoard::renderStack(
 			if (!tile.empty())
 			{
 				// Tile exists at this location.
+						
+				// Single layer lighting implementation.
+				RGB_SHADE shade = {0, 0, 0};
+				if (tileShading[0]->layer >= i) shade = tileShading[0]->shades[x][y];
+				
 				CTile::drawByBoardCoord(
 					g_projectPath + TILE_PATH + tile,
 					x, y, 
-					ambientRed[i][y][x] + aR,
-					ambientGreen[i][y][x] + aG,
-					ambientBlue[i][y][x] + aB,
+					shade.r + aR,
+					shade.g + aG,
+					shade.b + aB,
 					cnv, 
 					TM_NONE,
 					destX - bounds.left, 

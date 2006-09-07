@@ -40,7 +40,7 @@
 #include "../fight/fight.h"
 #include "../audio/CAudioSegment.h"
 #include "../../tkCommon/images/FreeImage.h"
-#include "../../tkCommon/movement/coords.h"
+#include "../../tkCommon/board/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
 #include "../../tkCommon/strings.h"
@@ -1569,7 +1569,8 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_AMBIENTRED:
 			try
 			{
-				*pRet = g_pBoard->ambientRed[arrayPos3][arrayPos2][arrayPos1];
+				// Superseded by single layer shading, arrayPos3 neglected.
+				*pRet = g_pBoard->tileShading[0]->shades[arrayPos1][arrayPos2].r;
 			}
 			catch (...)
 			{
@@ -1579,7 +1580,8 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_AMBIENTGREEN:
 			try
 			{
-				*pRet = g_pBoard->ambientGreen[arrayPos3][arrayPos2][arrayPos1];
+				// Superseded by single layer shading, arrayPos3 neglected.
+				*pRet = g_pBoard->tileShading[0]->shades[arrayPos1][arrayPos2].g;
 			}
 			catch (...)
 			{
@@ -1589,7 +1591,8 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_AMBIENTBLUE:
 			try
 			{
-				*pRet = g_pBoard->ambientBlue[arrayPos3][arrayPos2][arrayPos1];
+				// Superseded by single layer shading, arrayPos3 neglected.
+				*pRet = g_pBoard->tileShading[0]->shades[arrayPos1][arrayPos2].b;
 			}
 			catch (...)
 			{
@@ -1806,21 +1809,24 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			// TBD: ambient level recalculations?
 			try
 			{
-				g_pBoard->ambientRed[arrayPos3][arrayPos2][arrayPos1] = short(nValue);
+				// Superseded by single layer shading, arrayPos3 neglected.
+				g_pBoard->tileShading[0]->shades[arrayPos1][arrayPos2].r = short(nValue);
 			}
 			catch (...)	{ } 
 			break;
 		case BRD_AMBIENTGREEN:
 			try
 			{
-				g_pBoard->ambientGreen[arrayPos3][arrayPos2][arrayPos1] = short(nValue);
+				// Superseded by single layer shading, arrayPos3 neglected.
+				g_pBoard->tileShading[0]->shades[arrayPos1][arrayPos2].g = short(nValue);
 			}
 			catch (...)	{ } 
 			break;
 		case BRD_AMBIENTBLUE:
 			try
 			{
-				g_pBoard->ambientBlue[arrayPos3][arrayPos2][arrayPos1] = short(nValue);
+				// Superseded by single layer shading, arrayPos3 neglected.
+				g_pBoard->tileShading[0]->shades[arrayPos1][arrayPos2].b = short(nValue);
 			}
 			catch (...)	{ } 
 			break;
