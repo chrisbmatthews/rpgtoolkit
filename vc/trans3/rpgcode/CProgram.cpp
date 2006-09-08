@@ -491,7 +491,7 @@ void CProgram::methodCall(CALL_DATA &call)
 
 		if (type == fra.lit)
 		{
-			if (!j)
+			if ((call.params != 2) && !j)
 			{
 				// The call is of the form p->func(, ...q) where p is not
 				// a valid object but q is so it passed the test above.
