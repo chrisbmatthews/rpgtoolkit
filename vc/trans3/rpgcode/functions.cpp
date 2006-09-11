@@ -6857,28 +6857,25 @@ void spritepath(CALL_DATA &params, CSprite *p)
 	}
 	else if (flags & tkMV_WAYPOINT_PATH)
 	{
-		const int id = int(params[2].getNum()), cycles = int(params[3].getNum());
+		const LPBRD_VECTOR brd = g_pBoard->getVector(&params[2]);
+		const int cycles = int(params[3].getNum());
 
-		if (id < 0)
+		if (!brd)
 		{
 			p->setBoardPath(NULL, 0, tkMV_PATH_BACKGROUND);
 		}
 		else
 		{
-			const LPBRD_VECTOR brd = g_pBoard->getVector(id);
-			if (brd)
+			// Pathfind to start of vector.
+			PF_PATH path = p->pathFind((*brd->pV)[0].x, (*brd->pV)[0].y, PF_PREVIOUS, 0);
+			if (!path.empty())
 			{
-				// Pathfind to start of vector.
-				PF_PATH path = p->pathFind((*brd->pV)[0].x, (*brd->pV)[0].y, PF_PREVIOUS, 0);
-				if (!path.empty())
-				{
-					// The last point is the same as the first of the waypoint vector.
-					path.pop_back();
-					p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
-				}
-				p->setBoardPath(brd->pV, cycles, flags);
-				p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
+				// The last point is the same as the first of the waypoint vector.
+				path.pop_back();
+				p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
 			}
+			p->setBoardPath(brd->pV, cycles, flags);
+			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 		}
 	}
 	else
@@ -6897,7 +6894,7 @@ void spritepath(CALL_DATA &params, CSprite *p)
 /*
  * void ItemPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
  * void ItemPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
- * void ItemPath(variant handle, int flags | tkMV_WAYPOINT_PATH, int boardpath, int cycles)
+ * void ItemPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
  *
  * Causes the sprite to walk a path between a given set of co-ordinates,
  * depending on the flags parameter.
@@ -6920,7 +6917,7 @@ void itempath(CALL_DATA &params)
 /*
  * void PlayerPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
  * void PlayerPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
- * void PlayerPath(variant handle, int flags | tkMV_WAYPOINT_PATH, int boardpath, int cycles)
+ * void PlayerPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
  *
  * Causes the sprite to walk a path between a given set of co-ordinates,
  * depending on the flags parameter.
@@ -6945,7 +6942,7 @@ void playerpath(CALL_DATA &params)
  * 
  * Returns the number of vectors on the board.
  *
- * void BoardGetVector(int vectorIndex, int &tileType, int &pointCount, int &layer, bool &isClosed, int &attributes)
+ * void BoardGetVector(variant vector, int &tileType, int &pointCount, int &layer, bool &isClosed, int &attributes)
  *
  * Returns the properties of a given vector.
  */
@@ -6965,7 +6962,7 @@ void boardgetvector(CALL_DATA &params)
 		throw CError(_T("BoardGetVector() requires six parameters."));
 	}
 	
-	const LPBRD_VECTOR brd = g_pBoard->getVector((unsigned int)params[0].getNum());
+	const LPBRD_VECTOR brd = g_pBoard->getVector(&params[0]);
 	if (brd)
 	{
 		LPSTACK_FRAME pSf = NULL;
@@ -6995,9 +6992,11 @@ void boardgetvector(CALL_DATA &params)
 }
 
 /* 
- * void BoardSetVector(int vectorIndex, int tileType, int pointCount, int layer, bool isClosed, int attributes)
+ * void BoardSetVector(variant vector, int tileType, int pointCount, int layer, bool isClosed, int attributes)
  *
- * Sets the properties of a given vector; creates a new vector if one-past-the-end index is given.
+ * Sets the properties of a given vector.
+ * Creates a new vector if an existing one is not found - if a numeric variable
+ * is supplied, it will be set to the new index (one-past-end).
  */
 void boardsetvector(CALL_DATA &params)
 {
@@ -7009,15 +7008,23 @@ void boardsetvector(CALL_DATA &params)
 		throw CError(_T("BoardSetVector() requires six parameters."));
 	}
 
-	// If one-past-end index is given, create a new vector.
-	const unsigned int id = (unsigned int)params[0].getNum();
-	if (id == g_pBoard->vectors.size())
+	LPBRD_VECTOR brd = g_pBoard->getVector(&params[0]);
+	if (!brd)
 	{
+		// Create a new vector.
 		g_pBoard->vectors.push_back(BRD_VECTOR());
 		g_pBoard->vectors.back().pV = new CVector(0.0, 0.0);
+		if (params[0].getType() & UDT_LIT)
+			g_pBoard->vectors.back().handle = params[0].getLit();
+		else
+		{
+			// Try to set the first parameter to the index.
+			(*params.prg->getVar(params[0].lit)).udt = UDT_NUM;
+			(*params.prg->getVar(params[0].lit)).num = g_pBoard->vectors.size() - 1;
+		}
+		brd = g_pBoard->getVector(&params[0]);
 	}
 
-	LPBRD_VECTOR brd = g_pBoard->getVector(id);
 	if (brd)
 	{
 		brd->pV->resize((unsigned int)params[2].getNum());
@@ -7049,7 +7056,7 @@ void boardsetvector(CALL_DATA &params)
 }
 
 /* 
- * void BoardGetVectorPoint(int vectorIndex, int pointIndex, int &x, int &y)
+ * void BoardGetVectorPoint(variant vector, int pointIndex, int &x, int &y)
  *
  * Get a single point on a board vector. x, y are always pixel values.
  */
@@ -7062,7 +7069,7 @@ void boardgetvectorpoint(CALL_DATA &params)
 		throw CError(_T("BoardGetVectorPoint() requires four parameters."));
 	}
 	
-	const LPBRD_VECTOR brd = g_pBoard->getVector((unsigned int)params[0].getNum());
+	const LPBRD_VECTOR brd = g_pBoard->getVector(&params[0]);
 	if (brd)
 	{
 		const DB_POINT pt = (*brd->pV)[(unsigned int)params[1].getNum()];
@@ -7079,7 +7086,7 @@ void boardgetvectorpoint(CALL_DATA &params)
 }
 
 /* 
- * void BoardSetVectorPoint(int vectorIndex, int pointIndex, int x, int y, bool apply)
+ * void BoardSetVectorPoint(variant vector, int pointIndex, int x, int y, bool apply)
  *
  * Set/move a single point on a board vector. x, y are always pixel values.
  * Set apply = true for last change, to improve speed.
@@ -7094,7 +7101,7 @@ void boardsetvectorpoint(CALL_DATA &params)
 		throw CError(_T("BoardSetVectorPoint() requires five parameters."));
 	}
 	
-	LPBRD_VECTOR brd = g_pBoard->getVector((unsigned int)params[0].getNum());
+	LPBRD_VECTOR brd = g_pBoard->getVector(&params[0]);
 	if (brd)
 	{
 		brd->pV->setPoint((unsigned int)params[1].getNum(), params[2].getNum(), params[3].getNum());
