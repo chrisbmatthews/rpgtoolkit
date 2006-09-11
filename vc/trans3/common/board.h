@@ -12,6 +12,7 @@ struct tagBoard;
 typedef struct tagBoard BOARD, *LPBOARD;
 class CItem;
 class CThread;
+typedef struct tagStackFrame STACK_FRAME, *LPSTACK_FRAME;
 
 #include "../../tkCommon/board/conversion.h"
 #include "../../tkCommon/board/coords.h"
@@ -78,6 +79,7 @@ typedef struct tagBoardVector
 	int attributes;						// Various attributes for each tile type.
 										// TT_STAIRS: layer to move to.
 										// TT_UNDER:  see TA_ above.
+	STRING handle;
 
 	tagBoardVector():
 		attributes(0),
@@ -235,7 +237,7 @@ typedef struct tagBoard
 	bool isIsometric() const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	void createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const;
 	const BRD_VECTOR *getVectorFromTile(const int x, const int y, const int z) const;
-	LPBRD_VECTOR getVector(const unsigned int index);
+	LPBRD_VECTOR getVector(const LPSTACK_FRAME pParam);
 	LPBRD_PROGRAM getProgram(const unsigned int index);
 
 	void render(

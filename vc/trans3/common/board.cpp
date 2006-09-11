@@ -308,6 +308,7 @@ layerEnd:
 				file >> var; vect.pV->close(var != 0);
 				file >> var; vect.layer = int(var);
 				file >> var; vect.type = TILE_TYPE(var);
+				file >> vect.handle;
 				
 				vectors.push_back(vect);
 			}
@@ -343,6 +344,9 @@ layerEnd:
 					prg->vBase.push_back(double(x), double(y));
 				}
 				file >> var; prg->vBase.close(var != 0);
+
+				STRING strReserved;
+				file >> strReserved;		// For program handle (c.f. vector handle).
 				
 				programs.push_back(!prg->fileName.empty() ? prg : NULL);
 			}
@@ -1586,14 +1590,25 @@ const BRD_VECTOR* tagBoard::getVectorFromTile(const int x, const int y, const in
 	return NULL;
 }
 
-/*
- * Get a vector by index.
- */
-LPBRD_VECTOR tagBoard::getVector(const int unsigned index)
+LPBRD_VECTOR tagBoard::getVector(const LPSTACK_FRAME pParam)
 {
-	if (index < vectors.size())
+	if (pParam->getType() & UDT_LIT)
 	{
-		return &vectors.at(index);
+		// Handle.
+		const STRING handle = pParam->getLit();
+		std::vector<BRD_VECTOR>::iterator i = vectors.begin();
+		for (; i != vectors.end(); ++i)
+		{
+			if (_ftcsicmp(handle.c_str(), i->handle.c_str()) == 0) return i;
+		}
+	}
+	else
+	{
+		const int i = int(pParam->getNum());
+		if (i < vectors.size())
+		{
+			return &vectors.at(i);
+		}
 	}
 	return NULL;
 }
