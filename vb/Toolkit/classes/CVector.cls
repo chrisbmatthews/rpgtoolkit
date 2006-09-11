@@ -31,6 +31,7 @@ Private m_layer As Long
 Private m_attributes As Long
 Private m_bClosed As Boolean
 Private m_pts() As TKVectorPoint
+Private m_handle As String
 
 '=========================================================================
 ' Constructor
@@ -62,6 +63,12 @@ Public Property Get bClosed() As Boolean: On Error Resume Next
 End Property
 Public Property Let bClosed(ByVal bC As Boolean): On Error Resume Next
     m_bClosed = bC
+End Property
+Public Property Get handle() As String: On Error Resume Next
+    handle = m_handle
+End Property
+Public Property Let handle(ByVal str As String): On Error Resume Next
+    m_handle = str
 End Property
 
 '=========================================================================
@@ -288,15 +295,19 @@ Public Sub getPoint(ByVal p As Long, ByRef x As Long, ByRef y As Long) ':on erro
     End If
 End Sub
 
+Public Sub moveBy(ByVal dx As Long, ByVal dy As Long): On Error Resume Next
+    Call moveSelectionBy(dx, dy, True)
+End Sub
+
 '=========================================================================
 ' Move points a selection
 '=========================================================================
-Public Sub moveSelectionBy(ByVal dx As Long, ByVal dy As Long) ':on error resume next
+Public Sub moveSelectionBy(ByVal dx As Long, ByVal dy As Long, Optional ByVal allPoints As Boolean) ':on error resume next
     Dim i As Long
     If m_tiletype = TT_NULL Then Exit Sub
     
     For i = 0 To UBound(m_pts)
-        If m_pts(i).bSel Then
+        If m_pts(i).bSel Or allPoints Then
             ' Don't do a CBoardSelection.containsPoint() test because this may pick up new points on the move.
             m_pts(i).x = m_pts(i).x + dx
             m_pts(i).y = m_pts(i).y + dy
@@ -322,19 +333,20 @@ End Sub
 '=========================================================================
 ' Get the nearest point to a given point
 '=========================================================================
-Public Sub nearestPoint(ByVal x As Long, ByVal y As Long, ByRef px As Long, ByRef py As Long, ByRef distance As Long) ': on error resume next
+Public Function nearestPoint(ByVal x As Long, ByVal y As Long, ByRef px As Long, ByRef py As Long, ByRef distance As Long) As Long ': on error resume next
     Dim i As Long, j As Long, best As Long, d As Long
-    If m_tiletype = TT_NULL Then Exit Sub
-    distance = -1
+    If m_tiletype = TT_NULL Then Exit Function
+    
     For i = 0 To UBound(m_pts)
         d = Sqr((x - m_pts(i).x) ^ 2 + (y - m_pts(i).y) ^ 2)
-        If d < distance Or distance = -1 Then
+        If d < distance Or i = 0 Then
             j = i: distance = d
         End If
     Next i
     px = m_pts(j).x
     py = m_pts(j).y
-End Sub
+    nearestPoint = j
+End Function
 
 '=========================================================================
 ' Assign bools to points in a selection
@@ -423,6 +435,7 @@ Public Sub copy(ByRef rhs As CVector) ':on error resume next
     rhs.layer = m_layer
     rhs.attributes = m_attributes
     rhs.bClosed = m_bClosed
+    rhs.handle = m_handle
     For i = 0 To UBound(m_pts)
         Call rhs.setPoint(i, m_pts(i).x, m_pts(i).y, False)
     Next i
@@ -466,3 +479,90 @@ Public Sub defaultSpriteVector(ByVal bCollisionVector As Boolean, ByVal bIsometr
     m_bClosed = True
     
 End Sub
+
+Private Function nearestLine(ByVal x As Long, ByVal y As Long, ByRef distance As Long) As Long
+    'Nearest point Q on line IJ to point P is perpendicular to IJ passing through P.
+    'Q = I + u(J - I) where u is the fractional distance from I to J.
+    'Given that (J - I).(P - Q) = 0, a solution for u can be found and hence Q.
+    'u = (P - I).(J - I) / (J - I)^2
+    'If u < 0, Q = I; if u > 1, Q = J
+    'Return point index ByVal and distance ByRef.
+
+    Dim i As Long, j As Long, u As Double, Q As POINTAPI
+    Dim dist As Long, dBest As Long, iBest As Long
+    
+    For i = 0 To UBound(m_pts)
+        j = i + 1
+        If i = UBound(m_pts) Then
+            j = 0
+            If Not m_bClosed Then Exit For
+        End If
+        
+        u = ((x - m_pts(i).x) * (m_pts(j).x - m_pts(i).x) + (y - m_pts(i).y) * (m_pts(j).y - m_pts(i).y)) / _
+            ((m_pts(j).x - m_pts(i).x) ^ 2 + (m_pts(j).y - m_pts(i).y) ^ 2)
+        
+        If u < 0 Then
+            dist = Sqr((m_pts(i).x - x) ^ 2 + (m_pts(i).y - y) ^ 2)
+        ElseIf u > 1 Then
+            dist = Sqr((m_pts(j).x - x) ^ 2 + (m_pts(j).y - y) ^ 2)
+        Else
+            Q.x = m_pts(i).x + u * (m_pts(j).x - m_pts(i).x)
+            Q.y = m_pts(i).y + u * (m_pts(j).y - m_pts(i).y)
+            dist = Sqr((Q.x - x) ^ 2 + (Q.y - y) ^ 2)
+        End If
+        
+        If dist < dBest Or i = 0 Then
+            dBest = dist
+            iBest = i
+        End If
+    Next i
+    
+    distance = dBest
+    nearestLine = iBest
+
+End Function
+
+Private Sub insertPoint(ByVal Index As Long, ByVal x As Long, ByVal y As Long)
+    Dim i As Long
+    If Index <= UBound(m_pts) Then
+        ReDim Preserve m_pts(UBound(m_pts) + 1)
+        For i = UBound(m_pts) - 1 To Index Step -1
+            m_pts(i + 1) = m_pts(i)
+        Next i
+        m_pts(Index).x = x
+        m_pts(Index).y = y
+    Else
+        Call addPoint(x, y)
+    End If
+End Sub
+
+Public Function interpretAction(ByVal x As Long, ByVal y As Long, ByVal setting As eBrdSetting) As Boolean
+    'Either resume drawing, delete a point or insert a point, depending on distance of
+    'click to point or line.
+    'Return False for delete or insert (to prevent adding a point), True to resume.
+    Const delTolerance = 16
+    Const insTolerance = 16
+    interpretAction = False
+    
+    'First, check distance to nearest point.
+    Dim Index As Long, distance As Long, pt As POINTAPI
+    Index = nearestPoint(x, y, pt.x, pt.y, distance)
+    If distance < delTolerance Then
+        'Close enough to assume user wishes to delete point.
+        Call deletePoints(Index)
+        If tiletype = TT_NULL Then Call activeBoard.vectorDeleteCurrent(setting)
+        Exit Function
+    End If
+    
+    'Next check for insertion.
+    Index = nearestLine(x, y, distance)
+    If distance < insTolerance Then
+        'Close enough to line to insert.
+        Call insertPoint(Index + 1, x, y)
+        Exit Function
+    End If
+    
+    'Else, resume drawing.
+    m_bClosed = False
+    interpretAction = True
+End Function

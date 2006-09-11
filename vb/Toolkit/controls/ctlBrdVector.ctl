@@ -1,13 +1,22 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.UserControl ctlBrdVector 
-   ClientHeight    =   5415
+   ClientHeight    =   5835
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3510
    DefaultCancel   =   -1  'True
-   ScaleHeight     =   5415
+   ScaleHeight     =   5835
    ScaleWidth      =   3510
+   Begin VB.ComboBox cmbVector 
+      Height          =   315
+      Left            =   120
+      TabIndex        =   20
+      Text            =   "cmbVector"
+      ToolTipText     =   "Vector list - click to type new handle"
+      Top             =   600
+      Width           =   3255
+   End
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw vectors"
       Height          =   375
@@ -31,7 +40,7 @@ Begin VB.UserControl ctlBrdVector
       Height          =   4695
       Left            =   0
       TabIndex        =   1
-      Top             =   600
+      Top             =   960
       Width           =   3375
       Begin VB.HScrollBar hsbSlot 
          Height          =   255
@@ -252,10 +261,9 @@ Private Sub apply(): On Error Resume Next
             .layer = Abs(val(txtLayer.Text))
             Call vector.lvApply(lvPoints)
         End With
+        Call activeBoard.drawAll
+        Call populate(cmbVector.ListIndex, vector)
     End If
-    
-    Call activeBoard.drawAll
-    Call populate(activeBoard.toolbarGetIndex(BS_VECTOR), vector)
 End Sub
 Private Sub disableAll(): On Error Resume Next
     Dim i As Control
@@ -263,6 +271,7 @@ Private Sub disableAll(): On Error Resume Next
         i.Enabled = False
         i.Text = vbNullString
     Next i
+    cmbVector.Enabled = True
     Call activeBoard.toolbarSetCurrent(BTAB_VECTOR, -1)
     Call lvPoints.ListItems.clear
 End Sub
@@ -289,6 +298,9 @@ Public Sub populate(ByVal Index As Long, ByRef vector As CVector)  ':on error re
     
     Call activeBoard.toolbarSetCurrent(BTAB_VECTOR, Index)
     Call enableAll
+    
+    If cmbVector.ListIndex <> Index Then cmbVector.ListIndex = Index
+    cmbVector.list(Index) = CStr(Index) & ": " & IIf(LenB(vector.handle), vector.handle, "<vector handle>")
     
     'Option buttons have been assigned TT_ values as indices.
     If vector.tiletype <> TT_NULL Then optType(vector.tiletype).value = True
@@ -323,6 +335,13 @@ Public Sub populate(ByVal Index As Long, ByRef vector As CVector)  ':on error re
     
 End Sub
 
+Public Property Get ActiveControl() As Control: On Error Resume Next
+    Set ActiveControl = UserControl.ActiveControl
+End Property
+Public Property Get getCombo() As ComboBox: On Error Resume Next
+    Set getCombo = cmbVector
+End Property
+
 Private Sub chkDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     activeBoard.toolbarDrawObject(BS_VECTOR) = chkDraw.value
 End Sub
@@ -332,15 +351,30 @@ End Sub
 Private Sub chkClosed_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call apply
 End Sub
+Private Sub cmbVector_Click(): On Error Resume Next
+    If cmbVector.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbVector.ListIndex, BS_VECTOR)
+End Sub
 Private Sub cmdDefault_Click(): On Error Resume Next
     'Default button on form: hitting the Enter key calls this function.
-    Call apply
+    
+    'Process the Enter Key for the handle ComboBox here, since vbKeyReturn is not captured
+    'by _KeyDown() because there is a Default button on the control.
+    If ActiveControl Is cmbVector Then
+        Call activeBoard.vectorSetHandle(cmbVector.Text)
+    Else
+        Call apply
+        Call activeBoard.drawAll
+    End If
+End Sub
+Private Sub cmdDelete_Click(): On Error Resume Next
+    Call activeBoard.setUndo
+    Call activeBoard.vectorDeleteCurrent(BS_VECTOR)
     Call activeBoard.drawAll
 End Sub
 Private Sub hsbSlot_Change(): On Error Resume Next
     Dim i As Long
     If hsbSlot.value <> 1 Then
-        i = activeBoard.toolbarGetIndex(BS_VECTOR)
+        i = cmbVector.ListIndex
         Call activeBoard.vectorSwapSlots(i, i + hsbSlot.value - 1)
     End If
     hsbSlot.value = 1
@@ -371,9 +405,4 @@ Private Sub lvPoints_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
 End Sub
 Private Sub lvPoints_Validate(Cancel As Boolean): On Error Resume Next
     Call apply
-End Sub
-Private Sub cmdDelete_Click(): On Error Resume Next
-    Call activeBoard.setUndo
-    Call activeBoard.vectorDeleteCurrent(BS_VECTOR)
-    Call activeBoard.drawAll
 End Sub

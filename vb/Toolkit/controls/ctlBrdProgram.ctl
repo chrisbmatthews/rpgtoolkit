@@ -278,6 +278,7 @@ Public Sub populate(ByVal Index As Long, ByRef prg As CBoardProgram) ': On Error
     tkMainForm.bTools_Tabs.Height = tkMainForm.pTools.Height - tkMainForm.bTools_Tabs.Top
     UserControl.Height = tkMainForm.bTools_Tabs.Height - tkMainForm.bTools_ctlPrg.Top - 128
     fraProperties.Height = UserControl.Height - fraProperties.Top - 32
+    UserControl.width = fraProperties.width
     lvPoints.Height = fraProperties.Height - lvPoints.Top - 64
     
     If prg Is Nothing Then
@@ -289,7 +290,7 @@ Public Sub populate(ByVal Index As Long, ByRef prg As CBoardProgram) ': On Error
     Call enableAll
     
     If cmbPrg.ListIndex <> Index Then cmbPrg.ListIndex = Index
-    cmbPrg.list(Index) = str(Index) & ": " & IIf(LenB(prg.filename), prg.filename, "<program>")
+    cmbPrg.list(Index) = CStr(Index) & ": " & IIf(LenB(prg.filename), prg.filename, "<program>")
     txtFilename.Text = prg.filename
     txtLayer.Text = str(prg.layer)
     chkRunOnce.value = prg.activate
