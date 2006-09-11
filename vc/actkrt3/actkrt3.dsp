@@ -409,7 +409,7 @@ SOURCE=..\tkCommon\board\conversion.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\tkCommon\movement\coords.cpp
+SOURCE=..\tkCommon\board\coords.cpp
 # End Source File
 # Begin Source File
 
@@ -429,7 +429,7 @@ SOURCE=..\tkCommon\board\conversion.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\tkCommon\movement\coords.h
+SOURCE=..\tkCommon\board\coords.h
 # End Source File
 # Begin Source File
 

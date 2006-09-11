@@ -53,6 +53,7 @@ EXPORTS
 	IMGGetBitmapInfo	@44
 	IMGBlt				@45
 	IMGStretchBlt		@46
+	IMGExport			@47
 
 	;CBoard
 	BRDNewCBoard		@51

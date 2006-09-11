@@ -162,3 +162,65 @@ INT APIENTRY IMGStretchBlt(FIBITMAP *nFreeImagePtr, INT x, INT y, INT sizex, INT
 
 	return 1;
 }
+
+//----------------------------------------------------------------
+// Write a BITMAP to file
+//----------------------------------------------------------------
+INT APIENTRY IMGExport(CONST HBITMAP hbmp, CONST CHAR* filename)
+{
+	if(!hbmp) return 0;
+
+	BITMAP bmp;
+	GetObject(hbmp, sizeof(BITMAP), LPVOID(&bmp));
+
+	FIBITMAP *dib = FreeImage_Allocate(bmp.bmWidth, bmp.bmHeight, bmp.bmBitsPixel);
+	
+	// The GetDIBits function clears the biClrUsed and biClrImportant 
+	// BITMAPINFO members so we save these (for palettized images only). 
+	INT nColors = FreeImage_GetColorsUsed(dib);
+
+	HDC hdc = GetDC(NULL);
+	GetDIBits(
+		hdc, 
+		hbmp, 
+		0, 
+		FreeImage_GetHeight(dib), 
+		FreeImage_GetBits(dib), 
+		FreeImage_GetInfo(dib), 
+		DIB_RGB_COLORS
+	);
+	ReleaseDC(NULL, hdc);
+
+	// Restore BITMAPINFO members.
+	FreeImage_GetInfoHeader(dib)->biClrUsed = nColors;
+	FreeImage_GetInfoHeader(dib)->biClrImportant = nColors;
+
+	// Get image format (default to bmp).
+	FREE_IMAGE_FORMAT fif = FIF_BMP;
+	INT flags = BMP_DEFAULT;
+
+	std::string ext = util::getExt(filename);
+	if (stricmp(ext.c_str(), "jpg") == 0)
+	{
+		fif = FIF_JPEG;
+		flags = JPEG_QUALITYGOOD;
+	}
+	else if (stricmp(ext.c_str(), "png") == 0)
+	{
+		fif = FIF_PNG;
+		flags = PNG_DEFAULT;
+	}
+	
+	// Attempt to convert to 24-bit.
+	FIBITMAP *dib24bit = FreeImage_ConvertTo24Bits(dib);
+	if (dib24bit)
+	{
+		FreeImage_Save(fif, dib24bit, filename, flags);
+		FreeImage_Unload(dib24bit);
+	}
+	FreeImage_Unload(dib);
+
+	return (dib24bit != 0);
+}
+
+
