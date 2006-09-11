@@ -11,7 +11,6 @@ Private Declare Function BRDTileToPixel Lib "actkrt3.dll" (ByRef x As Long, ByRe
 Private Declare Function BRDVectorize Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByRef vectors() As TKConvertedVector) As Long
 Private Declare Function BRDTileToVector Lib "actkrt3.dll" (ByVal pVector As Long, ByVal x As Long, ByVal y As Long, ByVal coordType As Integer) As Long
 
-
 '=========================================================================
 ' A globally unique identifier
 '=========================================================================
@@ -436,9 +435,11 @@ Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKB
                 Set board.vectors(i) = New CVector
             End If
             'Assign current vector.
+            Call activeBoard.toolbarPopulateVectors            'Add the combo entry.
             board.vectors(i).layer = layer
             Call activeBoard.toolbarChange(i, BS_VECTOR)
             Set vectorCreate = board.vectors(i)
+            
         Case BS_PROGRAM
             '.prgs is always dimensioned.
             For i = 0 To UBound(board.prgs)
@@ -458,6 +459,7 @@ Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKB
             board.prgs(i).layer = layer
             Call activeBoard.toolbarChange(i, BS_PROGRAM)
             Set vectorCreate = board.prgs(i).vBase
+            
     End Select
     
 End Function
