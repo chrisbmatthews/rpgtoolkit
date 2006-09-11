@@ -6,6 +6,7 @@ Begin VB.Form frmBoardEdit
    ClientLeft      =   60
    ClientTop       =   750
    ClientWidth     =   11340
+   Icon            =   "frmBoardEdit.frx":0000
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    ScaleHeight     =   6465
@@ -24,7 +25,7 @@ Begin VB.Form frmBoardEdit
       TabHeight       =   520
       ShowFocusRect   =   0   'False
       TabCaption(0)   =   "Board"
-      TabPicture(0)   =   "frmBoardEdit.frx":0000
+      TabPicture(0)   =   "frmBoardEdit.frx":0CCA
       Tab(0).ControlEnabled=   -1  'True
       Tab(0).Control(0)=   "picBoard"
       Tab(0).Control(0).Enabled=   0   'False
@@ -34,7 +35,7 @@ Begin VB.Form frmBoardEdit
       Tab(0).Control(2).Enabled=   0   'False
       Tab(0).ControlCount=   3
       TabCaption(1)   =   "Properties"
-      TabPicture(1)   =   "frmBoardEdit.frx":001C
+      TabPicture(1)   =   "frmBoardEdit.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "picProperties"
       Tab(1).ControlCount=   1
@@ -925,7 +926,7 @@ Begin VB.Form frmBoardEdit
          Index           =   1
       End
       Begin VB.Menu mnuBoard 
-         Caption         =   "Convert co-ordinates"
+         Caption         =   "Convert Co-ordinates"
          Index           =   2
          Begin VB.Menu mnuCoords 
             Caption         =   "to isometric rotated"
@@ -936,6 +937,18 @@ Begin VB.Form frmBoardEdit
             Caption         =   "to pixel"
             Index           =   1
             Shortcut        =   ^P
+         End
+      End
+      Begin VB.Menu mnuBoard 
+         Caption         =   "Export Image"
+         Index           =   3
+         Begin VB.Menu mnuExport 
+            Caption         =   "Current Screen"
+            Index           =   0
+         End
+         Begin VB.Menu mnuExport 
+            Caption         =   "Entire Board"
+            Index           =   1
          End
       End
    End
@@ -1074,6 +1087,8 @@ Private Declare Function BRDConvertLight Lib "actkrt3.dll" (ByVal pCBoard As Lon
 Private Declare Function CNVGetWidth Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Function CNVGetHeight Lib "actkrt3.dll" (ByVal handle As Long) As Long
 Private Declare Function CNVResize Lib "actkrt3.dll" (ByVal handle As Long, ByVal hdcCompatible As Long, ByVal width As Long, ByVal Height As Long) As Long
+
+Private Declare Function IMGExport Lib "actkrt3.dll" (ByVal hBitmap As Long, ByVal filename As String) As Long
 
 Private m_ed As TKBoardEditorData
 Private m_sel As CBoardSelection
@@ -1549,6 +1564,9 @@ Private Sub mnuCut_Click(): On Error Resume Next
     Call clipCopy(g_boardClipboard, m_sel, True)
     Call clipCut(g_boardClipboard, True)
 End Sub
+Private Sub mnuExport_Click(Index As Integer): On Error Resume Next
+    Call exportImage(Index)
+End Sub
 Private Sub mnuPaste_Click(): On Error Resume Next
     If TypeOf getActiveControl Is TextBox Then
         getActiveControl.SelText = Clipboard.GetText
@@ -1707,6 +1725,12 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
             Select Case keyCode
                 Case vbKeyDelete, vbKeyBack
                     Call imageDeleteCurrent(tkMainForm.bTools_ctlImage.getCombo.ListIndex)
+            End Select
+            
+        Case BS_LIGHTING
+            Select Case keyCode
+                Case vbKeyDelete, vbKeyBack
+                    Call lightingDeleteCurrent
             End Select
     End Select 'Setting
 End Sub
@@ -2243,6 +2267,58 @@ Private Sub drawStack(ByVal x As Long, ByVal y As Long, ByVal z As Long) ':on er
     )
     picBoard.Refresh
             
+End Sub
+
+Private Sub exportImage(ByVal Index As Long) ':on error resume next
+    Dim hdc As Long, bmp As Long, obj As Long, width As Long, Height As Long
+    Dim dlg As FileDialogInfo
+
+    dlg.strDefaultFolder = projectPath & bmpPath
+    dlg.strTitle = "Export Image"
+    dlg.strDefaultExt = "png"
+    dlg.strFileTypes = "JPEG - JFIF Compliant (*.jpg)|*.jpg|Portable Network Graphics (*.png)|*.png|Windows Bitmap (*.bmp)|*.bmp|All files (*.*)|*.*"
+
+    ChDir (currentDir)
+    If Not SaveFileDialog(dlg, Me.hwnd, True) Then Exit Sub
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Sub
+        
+    If Index = 0 Then
+        'Visible area.
+        width = picBoard.ScaleWidth
+        Height = picBoard.ScaleHeight
+    Else
+        'Whole board.
+        width = absWidth(m_ed.board(m_ed.undoIndex).sizex, m_ed.board(m_ed.undoIndex).coordType)
+        Height = absHeight(m_ed.board(m_ed.undoIndex).sizey, m_ed.board(m_ed.undoIndex).coordType)
+    End If
+            
+    'Create compatible dc.
+    hdc = CreateCompatibleDC(picBoard.hdc)
+    
+    'Create a BITMAP.
+    bmp = CreateCompatibleBitmap(picBoard.hdc, width, Height)
+        
+    If bmp Then
+        'Select the bitmap into the dc.
+        obj = SelectObject(hdc, bmp)
+        
+        If Index = 0 Then
+            'Blt the PictureBox contents.
+            Call BitBlt(hdc, 0, 0, width, Height, picBoard.hdc, 0, 0, SRCCOPY)
+        Else
+            'Draw board to hdc.
+            Call BRDDraw(VarPtr(m_ed), VarPtr(m_ed.board(m_ed.undoIndex)), hdc, 0, 0, 0, 0, width, Height, 1#)
+        End If
+        
+        'Select out the bitmap, return the previous contents.
+        Call SelectObject(hdc, obj)
+        
+        Call IMGExport(bmp, dlg.strSelectedFile)
+        Call DeleteObject(bmp)
+    End If
+    
+    Call DeleteObject(hdc)
+    
 End Sub
 
 '========================================================================
@@ -2787,14 +2863,28 @@ Private Sub vectorSettingMouseDown(Button As Integer, Shift As Integer, x As Sin
     Select Case m_ed.optTool
         Case BT_DRAW
             If Button = vbLeftButton Then
+                
                 If m_sel.status <> SS_DRAWING Then
-                    'Start a new vector.
-                    Call setUndo
-                    Set curVector = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
-                    Call drawBoard
+                    If (Not curVector Is Nothing) And (Shift And vbAltMask) Then
+                        'Determine action depending on nearest point or line.
+                        Dim Continue As Boolean
+                        
+                        'Reacquire the current vector.
+                        Call setUndo
+                        Set curVector = currentVector
+                        
+                        Continue = curVector.interpretAction(pxCoord.x, pxCoord.y, m_ed.optSetting)
+                        Call drawBoard
+                        If Not Continue Then Exit Sub
+                    Else
+                        'Start a new vector.
+                        Call setUndo
+                        Set curVector = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
+                        Call drawBoard
+                    End If
                 End If
                         
-                'New point.
+                'Add a new point.
                 
                 'Snap if in pixels and a shift state exists or if in tiles and no shift state exists.
                 If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = ((Shift And vbCtrlMask) <> 0) Then pxCoord = snapToGrid(pxCoord, , False)
@@ -3028,6 +3118,25 @@ Private Sub vectorSetCurrent(ByRef sel As CBoardSelection) ': on error resume ne
     Call toolbarChange(j, m_ed.optSetting)
     
 End Sub
+Public Sub vectorSetHandle(ByVal handle As String) ':on error resume next
+    Dim i As Long, j As Long
+    i = m_ed.currentObject(BTAB_VECTOR)
+    
+    If i >= 0 Then
+        For j = 0 To UBound(m_ed.board(m_ed.undoIndex).vectors)
+            If j <> i Then
+                If m_ed.board(m_ed.undoIndex).vectors(j).handle = handle Then
+                    MsgBox "Handle in use"
+                    Exit For
+                End If
+            End If
+        Next j
+        
+        'Did not find a match.
+        If j > UBound(m_ed.board(m_ed.undoIndex).vectors) Then m_ed.board(m_ed.undoIndex).vectors(i).handle = handle
+    End If
+    Call toolbarPopulateVectors
+End Sub
 Private Sub vectorSubdivideSelection(ByRef sel As CBoardSelection) ':on error resume next
     If m_ed.optTool = BT_SELECT And m_sel.status = SS_FINISHED And (Not currentVector Is Nothing) Then
         Call setUndo
@@ -3179,7 +3288,7 @@ End Sub
 '========================================================================
 ' LIGHTING FUNCTIONS (ctlBrdSprite)
 '========================================================================
-Private Sub spriteCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Long) ':on error resume next
+Private Function spriteCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Long) As CBoardSprite ':on error resume next
     Dim i As Long, bFound As Boolean
     For i = 0 To UBound(board.sprites)
         If board.sprites(i) Is Nothing Then
@@ -3205,7 +3314,8 @@ Private Sub spriteCreate(ByRef board As TKBoard, ByVal x As Long, ByVal y As Lon
     Call spriteUpdateImageData(board.sprites(i), vbNullString, False)
     
     Call m_ctls(BTAB_SPRITE).populate(i, board.sprites(i))
-End Sub
+    Set spriteCreate = board.sprites(i)
+End Function
 Public Sub spriteDeleteCurrent(ByVal Index As Long) ':on error resume next
     Dim i As Long
     If Index >= 0 Then
@@ -3526,12 +3636,17 @@ Public Sub toolbarChange(ByVal Index As Long, ByVal setting As eBrdSetting) ':on
     Call drawAll
 End Sub
 Public Sub toolbarPopulateVectors() ':on error resume next
-    Dim i As Long, j As Long, k As Long
+    Dim combo As ComboBox, i As Long, j As Long, k As Long
+    Set combo = m_ctls(BTAB_VECTOR).getCombo
+    combo.clear
     k = m_ed.currentObject(BTAB_VECTOR)
                 
     With m_ed.board(m_ed.undoIndex)
         For i = 0 To UBound(.vectors)
-            If Not .vectors(i) Is Nothing Then j = j + 1
+            If Not .vectors(i) Is Nothing Then
+                combo.AddItem CStr(j) & ": " & IIf(LenB(.vectors(i).handle), .vectors(i).handle, "<vector handle>")
+                j = j + 1
+            End If
         Next i
     End With
     If j > 0 Then
@@ -3554,7 +3669,7 @@ Public Sub toolbarPopulatePrgs() ':on error resume next
     With m_ed.board(m_ed.undoIndex)
         For i = 0 To UBound(.prgs)
             If Not .prgs(i) Is Nothing Then
-                    combo.AddItem str(j) & ": " & IIf(LenB(.prgs(i).filename), .prgs(i).filename, "<program>")
+                    combo.AddItem CStr(j) & ": " & IIf(LenB(.prgs(i).filename), .prgs(i).filename, "<program>")
                     j = j + 1
             End If
         Next i
@@ -3780,7 +3895,7 @@ Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelectio
             If Not (obj Is Nothing) Then
                 Call mnuSelectAll_Click
                 Set clip.obj = obj
-                Call clip.obj.setSelection(sel)
+                'Call clip.obj.setSelection(sel) 'Unneeded if calling moveBy() over moveSelectionBy() [see clipPaste()]
             End If
         Case BS_SPRITE
             Dim spr As CBoardSprite
@@ -3837,7 +3952,7 @@ Private Sub clipCut(ByRef clip As TKBoardClipboard, ByVal bRedraw As Boolean) ':
     End Select
 End Sub
 Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelection) ':on error resume next
-    Dim dr As POINTAPI, pt As POINTAPI, i As Long
+    Dim dr As POINTAPI, pt As POINTAPI, i As Long, obj As Object
     
     'Displacement of the copied area.
     dr.x = sel.x1 - clip.origin.x
@@ -3873,22 +3988,23 @@ Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelecti
                 Call reRenderAllLayers(False)
             End If
             
+        'Remember that clip.obj points to an object in a previous Undo state.
         Case BS_VECTOR, BS_PROGRAM
-            Call vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
-            Call clip.obj.moveSelectionBy(dr.x, dr.y)
-            Call clip.obj.copy(toolbarGetCurrent(m_ed.optSetting))
+            Set obj = vectorCreate(m_ed.optSetting, m_ed.board(m_ed.undoIndex), m_ed.currentLayer)
+            Call clip.obj.copy(obj)
+            Call obj.moveBy(dr.x, dr.y)
             Call toolbarRefresh
         Case BS_SPRITE
-            clip.obj.x = clip.obj.x + dr.x
-            clip.obj.y = clip.obj.y + dr.y
-            Call spriteCreate(m_ed.board(m_ed.undoIndex), clip.obj.x, clip.obj.y)
-            Call clip.obj.copy(toolbarGetCurrent(m_ed.optSetting))
+            Set obj = spriteCreate(m_ed.board(m_ed.undoIndex), 0, 0)
+            Call clip.obj.copy(obj)
+            Call obj.moveBy(dr.x, dr.y)
             Call toolbarRefresh
         Case BS_IMAGE
-            clip.img.bounds.Left = clip.img.bounds.Left + dr.x
-            clip.img.bounds.Top = clip.img.bounds.Top + dr.y
             Call imageCreate(m_ed.board(m_ed.undoIndex), 0, 0)
-            m_ed.board(m_ed.undoIndex).Images(toolbarGetIndex(m_ed.optSetting)) = clip.img
+            i = toolbarGetIndex(m_ed.optSetting)
+            m_ed.board(m_ed.undoIndex).Images(i) = clip.img
+            m_ed.board(m_ed.undoIndex).Images(i).bounds.Left = clip.img.bounds.Left + dr.x
+            m_ed.board(m_ed.undoIndex).Images(i).bounds.Top = clip.img.bounds.Top + dr.y
             Call toolbarRefresh
         End Select
     Call drawBoard
