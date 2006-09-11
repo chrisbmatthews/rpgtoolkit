@@ -57,3 +57,9 @@ Public Sub copy(ByRef rhs As CBoardSprite) ':on error resume next
     rhs.prgMultitask = prgMultitask
     
 End Sub
+
+Public Sub moveBy(ByVal dx As Long, ByVal dy As Long): On Error Resume Next
+    x = x + dx
+    y = y + dy
+    Call activeBoard.spriteUpdateImageData(Me, filename, True)
+End Sub

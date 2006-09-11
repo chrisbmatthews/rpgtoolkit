@@ -78,3 +78,6 @@ End Sub
 Public Sub moveSelectionBy(ByVal dx As Long, ByVal dy As Long): On Error Resume Next
     Call vBase.moveSelectionBy(dx, dy)
 End Sub
+Public Sub moveBy(ByVal dx As Long, ByVal dy As Long): On Error Resume Next
+    Call vBase.moveSelectionBy(dx, dy, True)
+End Sub
