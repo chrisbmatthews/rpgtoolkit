@@ -420,6 +420,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
                     Call BinWriteInt(num, CInt(.vectors(i).bClosed))
                     Call BinWriteInt(num, .vectors(i).layer)
                     Call BinWriteInt(num, CInt(.vectors(i).tiletype))
+                    Call BinWriteString(num, .vectors(i).handle)
                     
                 Next i
             End If
@@ -450,6 +451,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
                     Next j
                     
                     Call BinWriteInt(num, CInt(.prgs(i).vBase.bClosed))
+                    Call BinWriteString(num, .prgs(i).vBase.handle) 'For possible future use.
                     
                 Next i
             End If
@@ -766,6 +768,7 @@ exitForB:
                     .vectors(i).bClosed = CBool(BinReadInt(num))
                     .vectors(i).layer = BinReadInt(num)
                     .vectors(i).tiletype = BinReadInt(num)
+                    .vectors(i).handle = BinReadString(num)
                     
                 Next i
             End If
@@ -797,6 +800,7 @@ exitForB:
                     Next j
                     
                     .prgs(i).vBase.bClosed = CBool(BinReadInt(num))
+                    .prgs(i).vBase.handle = BinReadString(num)
                     
                 Next i
             End If
