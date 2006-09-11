@@ -489,7 +489,8 @@ Private Sub DrawFrame(ByVal framenum As Long): On Error Resume Next
     With animationList(activeAnimationIndex).theData
     
         'Update the boxes and such
-        tkMainForm.lblAnimFrameCount.Caption = CStr(.animCurrentFrame + 1) & " / " & CStr(maxFrame + 1) & ": " & .animFrame(.animCurrentFrame)
+        tkMainForm.lblAnimFrameCount.Caption = "Frame " & CStr(.animCurrentFrame + 1) & " of " & CStr(maxFrame + 1)
+        tkMainForm.anmTxtFile.Text = .animFrame(.animCurrentFrame)
         tkMainForm.anmTxtSound.Text = .animSound(.animCurrentFrame)
         tkMainForm.transpcolor.backColor = .animTransp(.animCurrentFrame)
         tkMainForm.lblAnimRGB.Caption = "RGB (" & red(.animTransp(.animCurrentFrame)) & _
@@ -690,61 +691,7 @@ Private Sub arena_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
         Else
         
             'Frame click assigns a new image.
-            'Both image files (from the \Bitmap folder) and tiles can be selected here,
-            'so a check for valid subfolders is more tricky than browseFileDialog().
-            
-            Dim dlg As FileDialogInfo
-            
-            dlg.strDefaultFolder = projectPath & bmpPath
-            dlg.strTitle = "Select Image"
-            dlg.strDefaultExt = "bmp"
-            dlg.strFileTypes = strFileDialogFilterWithTiles
-            
-            ChDir (currentDir)
-            If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
-            If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
-                
-            'Needs to be updated
-            animationList(activeAnimationIndex).animNeedUpdate = True
-                
-            'Extension of filename
-            Dim ex As String, file As String, defaultPath As String
-            ex = UCase$(GetExt(dlg.strSelectedFile))
-            
-            defaultPath = projectPath & IIf(ex = "TST", tilePath, bmpPath)
-            
-            'Preserve the path if a sub-folder is chosen.
-            If Not getValidPath(dlg.strSelectedFile, defaultPath, file, True) Then Exit Sub
-            
-            'Copy folders outside the default directory into the default directory.
-            If Not fileExists(defaultPath & file) Then
-                FileCopy dlg.strSelectedFile, defaultPath & file
-            End If
-                
-            If ex = "TST" Then
-                'Set a few badly-named globals for the tileset browser.
-                tstnum = 0
-                tstFile = file
-                configfile.lastTileset = tstFile
-                
-                tilesetForm.Show vbModal
-                If LenB(setFilename) = 0 Then Exit Sub
-                
-                .animFrame(.animCurrentFrame) = setFilename
-                    
-            Else
-                'All other images should reside in the \Bitmap folder or subfolders therein.
-                .animFrame(.animCurrentFrame) = file
-            End If
-            
-            'If the next frame is empty, set the transparent color.
-            If LenB(.animFrame(.animCurrentFrame + 1)) = 0 Then
-                .animTransp(.animCurrentFrame + 1) = .animTransp(.animCurrentFrame)
-            End If
-            
-            'Redraw the frame
-            Call resizeToImage(animationList(activeAnimationIndex).theData)
-            Call fillInfo
+            Call BrowseFile
             
         End If
         
@@ -915,6 +862,73 @@ Private Sub resizeToImage(ByRef anm As TKAnimation): On Error Resume Next
     
 End Sub
 
+Public Sub BrowseFile(): On Error Resume Next
+    'Both image files (from the \Bitmap folder) and tiles can be selected here,
+    'so a check for valid subfolders is more tricky than browseFileDialog().
+    
+    Dim dlg As FileDialogInfo
+    
+    dlg.strDefaultFolder = projectPath & bmpPath
+    dlg.strTitle = "Select Image"
+    dlg.strDefaultExt = "bmp"
+    dlg.strFileTypes = strFileDialogFilterWithTiles
+    
+    ChDir (currentDir)
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
+    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
+        
+    'Needs to be updated
+    animationList(activeAnimationIndex).animNeedUpdate = True
+        
+    'Extension of filename
+    Dim ex As String, file As String, defaultPath As String
+    ex = UCase$(GetExt(dlg.strSelectedFile))
+    
+    defaultPath = projectPath & IIf(ex = "TST", tilePath, bmpPath)
+    
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, defaultPath, file, True) Then Exit Sub
+    
+    'Copy folders outside the default directory into the default directory.
+    If Not fileExists(defaultPath & file) Then
+        FileCopy dlg.strSelectedFile, defaultPath & file
+    End If
+    
+    With animationList(activeAnimationIndex).theData
+        If ex = "TST" Then
+            'Set a few badly-named globals for the tileset browser.
+            tstnum = 0
+            tstFile = file
+            configfile.lastTileset = tstFile
+            
+            tilesetForm.Show vbModal
+            If LenB(setFilename) = 0 Then Exit Sub
+            
+            .animFrame(.animCurrentFrame) = setFilename
+                
+        Else
+            'All other images should reside in the \Bitmap folder or subfolders therein.
+            .animFrame(.animCurrentFrame) = file
+        End If
+        
+        'If the next frame is empty, set the transparent color.
+        If LenB(.animFrame(.animCurrentFrame + 1)) = 0 Then
+            .animTransp(.animCurrentFrame + 1) = .animTransp(.animCurrentFrame)
+        End If
+    End With
+    
+    'Redraw the frame
+    Call resizeToImage(animationList(activeAnimationIndex).theData)
+    Call fillInfo
+End Sub
+
+Public Sub changeFile(ByVal file As String): On Error Resume Next
+
+    animationList(activeAnimationIndex).theData.animFrame(animationList(activeAnimationIndex).theData.animCurrentFrame) = file
+    Call DrawFrame(animationList(activeAnimationIndex).theData.animCurrentFrame)
+    animationList(activeAnimationIndex).animNeedUpdate = True
+    
+End Sub
 
 '========================================================================
 ' A lot of menu commands...

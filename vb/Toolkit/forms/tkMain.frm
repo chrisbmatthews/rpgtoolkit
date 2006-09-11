@@ -6,7 +6,7 @@ Begin VB.MDIForm tkMainForm
    Caption         =   "RPG Toolkit Development System, 3.0 (Untitled)"
    ClientHeight    =   8190
    ClientLeft      =   165
-   ClientTop       =   90
+   ClientTop       =   855
    ClientWidth     =   11880
    Icon            =   "tkMain.frx":0000
    LinkTopic       =   "MDIForm1"
@@ -18,13 +18,13 @@ Begin VB.MDIForm tkMainForm
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5700
+      Height          =   5910
       Left            =   8775
-      ScaleHeight     =   380
+      ScaleHeight     =   394
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   182
       TabIndex        =   56
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   2730
       Begin VB.Timer wallpaperTimer 
@@ -74,7 +74,7 @@ Begin VB.MDIForm tkMainForm
       Begin MSComctlLib.TreeView tvProjectList 
          Height          =   5055
          Left            =   0
-         TabIndex        =   158
+         TabIndex        =   155
          TabStop         =   0   'False
          Top             =   240
          Width           =   2655
@@ -198,13 +198,13 @@ Begin VB.MDIForm tkMainForm
    End
    Begin MSComctlLib.Toolbar mainToolbar 
       Align           =   1  'Align Top
-      Height          =   570
+      Height          =   360
       Left            =   0
       TabIndex        =   1
       Top             =   0
       Width           =   11880
       _ExtentX        =   20955
-      _ExtentY        =   1005
+      _ExtentY        =   635
       ButtonWidth     =   609
       ButtonHeight    =   582
       Appearance      =   1
@@ -392,12 +392,12 @@ Begin VB.MDIForm tkMainForm
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5700
+      Height          =   5910
       Left            =   105
-      ScaleHeight     =   5700
+      ScaleHeight     =   5910
       ScaleWidth      =   3870
       TabIndex        =   47
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   3870
       Begin VB.CommandButton bTools_Close 
@@ -471,7 +471,7 @@ Begin VB.MDIForm tkMainForm
          Begin Toolkit.ctlBrdLighting bTools_ctlLighting 
             Height          =   5535
             Left            =   -74760
-            TabIndex        =   159
+            TabIndex        =   156
             Top             =   360
             Width           =   3495
             _ExtentX        =   6165
@@ -576,12 +576,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox newBarContainerContainer 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5700
+      Height          =   5910
       Left            =   -1710
-      ScaleHeight     =   5700
+      ScaleHeight     =   5910
       ScaleWidth      =   1815
       TabIndex        =   44
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   1815
       Begin VB.CommandButton Command2 
@@ -647,12 +647,12 @@ Begin VB.MDIForm tkMainForm
       BorderStyle     =   0  'None
       FillColor       =   &H8000000F&
       ForeColor       =   &H8000000F&
-      Height          =   5700
+      Height          =   5910
       Left            =   0
-      ScaleHeight     =   5700
+      ScaleHeight     =   5910
       ScaleWidth      =   975
       TabIndex        =   9
-      Top             =   570
+      Top             =   360
       Width           =   975
       Begin VB.CommandButton Command3 
          BeginProperty Font 
@@ -698,7 +698,7 @@ Begin VB.MDIForm tkMainForm
                Index           =   8
                Left            =   120
                Style           =   1  'Graphical
-               TabIndex        =   160
+               TabIndex        =   157
                TabStop         =   0   'False
                ToolTipText     =   "Dynamic lighting  (?)"
                Top             =   2280
@@ -1454,22 +1454,22 @@ Begin VB.MDIForm tkMainForm
          Left            =   960
          TabIndex        =   54
          Top             =   120
-         Width           =   10335
+         Width           =   10935
          Begin VB.PictureBox anmPicHolder 
             BorderStyle     =   0  'None
             Height          =   1575
             Index           =   1
-            Left            =   120
+            Left            =   0
             ScaleHeight     =   1575
-            ScaleWidth      =   10095
+            ScaleWidth      =   10815
             TabIndex        =   134
             Top             =   0
-            Width           =   10095
+            Width           =   10815
             Begin VB.Frame anmFra 
                Caption         =   "Frame Transparent Color"
                Height          =   1455
                Index           =   2
-               Left            =   4680
+               Left            =   4560
                TabIndex        =   147
                Top             =   0
                Width           =   2175
@@ -1521,7 +1521,7 @@ Begin VB.MDIForm tkMainForm
                Caption         =   "Frame Delay"
                Height          =   1455
                Index           =   1
-               Left            =   2400
+               Left            =   2280
                TabIndex        =   141
                Top             =   0
                Width           =   2175
@@ -1579,72 +1579,99 @@ Begin VB.MDIForm tkMainForm
                Caption         =   "Miscellaneous"
                Height          =   1455
                Index           =   3
-               Left            =   6960
+               Left            =   6840
                TabIndex        =   140
                Top             =   0
-               Width           =   3015
-               Begin VB.TextBox anmTxtSound 
-                  Height          =   285
-                  Left            =   120
-                  TabIndex        =   152
-                  Top             =   1080
-                  Width           =   2175
-               End
+               Width           =   3855
                Begin VB.PictureBox anmPicHolder 
                   BorderStyle     =   0  'None
-                  Height          =   735
+                  Height          =   1160
                   Index           =   2
-                  Left            =   1200
-                  ScaleHeight     =   735
-                  ScaleWidth      =   1695
-                  TabIndex        =   155
-                  Top             =   600
-                  Width           =   1695
+                  Left            =   120
+                  ScaleHeight     =   1155
+                  ScaleWidth      =   3615
+                  TabIndex        =   152
+                  Top             =   240
+                  Width           =   3615
+                  Begin VB.TextBox anmTxtFile 
+                     Height          =   285
+                     Left            =   960
+                     TabIndex        =   162
+                     Top             =   480
+                     Width           =   2055
+                  End
+                  Begin VB.CommandButton anmCmdFile 
+                     Caption         =   "..."
+                     Height          =   255
+                     Left            =   3120
+                     TabIndex        =   161
+                     Top             =   480
+                     Width           =   495
+                  End
+                  Begin VB.TextBox anmTxtSound 
+                     Height          =   285
+                     Left            =   960
+                     TabIndex        =   159
+                     Top             =   840
+                     Width           =   2055
+                  End
                   Begin VB.CommandButton anmCmdWizard 
-                     Caption         =   "Wizard..."
+                     Caption         =   "Run Wizard..."
                      Height          =   375
-                     Left            =   360
-                     TabIndex        =   157
+                     Left            =   2040
+                     TabIndex        =   154
                      Top             =   0
-                     Width           =   1335
+                     Width           =   1575
                   End
                   Begin VB.CommandButton anmCmdSound 
                      Caption         =   "..."
                      Height          =   255
-                     Left            =   1200
-                     TabIndex        =   156
-                     Top             =   480
+                     Left            =   3120
+                     TabIndex        =   153
+                     Top             =   840
                      Width           =   495
                   End
-               End
-               Begin VB.Label anmLbl 
-                  AutoSize        =   -1  'True
-                  Caption         =   "Frame sound effect"
-                  Height          =   390
-                  Index           =   3
-                  Left            =   120
-                  TabIndex        =   154
-                  Tag             =   "1525"
-                  Top             =   600
-                  Width           =   1005
-                  WordWrap        =   -1  'True
-               End
-               Begin VB.Label lblAnimFrameCount 
-                  AutoSize        =   -1  'True
-                  Caption         =   "1 / 1: image_filename.bmp"
-                  Height          =   195
-                  Left            =   120
-                  TabIndex        =   153
-                  Tag             =   "1527"
-                  Top             =   240
-                  Width           =   1875
+                  Begin VB.Label anmLbl 
+                     AutoSize        =   -1  'True
+                     Caption         =   "Frame file"
+                     Height          =   255
+                     Index           =   4
+                     Left            =   0
+                     TabIndex        =   163
+                     Tag             =   "1525"
+                     Top             =   480
+                     Width           =   885
+                     WordWrap        =   -1  'True
+                  End
+                  Begin VB.Label anmLbl 
+                     AutoSize        =   -1  'True
+                     Caption         =   "Sound effect"
+                     Height          =   315
+                     Index           =   3
+                     Left            =   0
+                     TabIndex        =   160
+                     Tag             =   "1525"
+                     Top             =   840
+                     Width           =   1005
+                     WordWrap        =   -1  'True
+                  End
+                  Begin VB.Label lblAnimFrameCount 
+                     AutoSize        =   -1  'True
+                     Caption         =   "Frame 1 of 1"
+                     Height          =   255
+                     Left            =   0
+                     TabIndex        =   158
+                     Tag             =   "1527"
+                     Top             =   120
+                     Width           =   885
+                  End
                End
             End
             Begin VB.Frame anmFra 
                Caption         =   "Size"
                Height          =   1455
                Index           =   0
-               Left            =   120
+               Left            =   0
                TabIndex        =   135
                Tag             =   "1042"
                Top             =   0
@@ -2141,12 +2168,12 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox popTray 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5700
+      Height          =   5910
       Left            =   11505
-      ScaleHeight     =   5700
+      ScaleHeight     =   5910
       ScaleWidth      =   375
       TabIndex        =   3
-      Top             =   570
+      Top             =   360
       Width           =   381
       Begin VB.CheckBox popButton 
          Height          =   375
@@ -2197,13 +2224,13 @@ Begin VB.MDIForm tkMainForm
    Begin VB.PictureBox tilesetBar 
       Align           =   4  'Align Right
       BorderStyle     =   0  'None
-      Height          =   5700
+      Height          =   5910
       Left            =   3975
-      ScaleHeight     =   380
+      ScaleHeight     =   394
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   320
       TabIndex        =   2
-      Top             =   570
+      Top             =   360
       Visible         =   0   'False
       Width           =   4800
       Begin VB.CommandButton cmdTilesetClose 
@@ -2269,13 +2296,13 @@ Begin VB.MDIForm tkMainForm
             Style           =   6
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "02/09/2006"
+            TextSave        =   "10/09/2006"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "16:53"
+            TextSave        =   "13:28"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             AutoSize        =   1
@@ -3829,7 +3856,10 @@ Private Sub tvProjectList_MouseDown(Button As Integer, Shift As Integer, x As Si
         End If
         
         'Load TANs into board editor.
-        mnuPopTreeItems(0).visible = (visible And LCase$(GetExt(tvProjectList.SelectedItem.Text)) = "tan" And activeForm.formType = FT_BOARD)
+        Dim isBoard As Boolean
+        If Not activeForm Is Nothing Then isBoard = (activeForm.formType = FT_BOARD)
+        mnuPopTreeItems(0).visible = (visible And isBoard And (LCase$(GetExt(tvProjectList.SelectedItem.Text)) = "tan"))
+        
         mnuPopTreeItems(1).visible = visible        'Open
         mnuPopTreeItems(2).visible = visible        'Rename
         mnuPopTreeItems(3).visible = visible        'Delete
@@ -4137,6 +4167,12 @@ Private Sub hsbAnimPause_Change(): On Error Resume Next
 End Sub
 Private Sub anmTxtPause_Change(): On Error Resume Next
     Call activeAnimation.setPause
+End Sub
+Private Sub anmCmdFile_Click(): On Error Resume Next
+    Call activeAnimation.BrowseFile
+End Sub
+Private Sub anmTxtFile_Change(): On Error Resume Next
+    Call activeAnimation.changeFile(anmTxtFile.Text)
 End Sub
 'Set the sound
 Private Sub anmCmdSound_Click(): On Error Resume Next
