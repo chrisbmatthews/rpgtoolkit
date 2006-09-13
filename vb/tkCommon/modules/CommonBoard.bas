@@ -528,7 +528,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
             Call BinWriteInt(num, .battleSkill)
             Call BinWriteInt(num, .bAllowBattles)
             Call BinWriteInt(num, .bDisableSaving)
-            Call BinWriteInt(num, .ambientEffect)
+            Call BinWriteInt(num, .ambientEffect.r)
+            Call BinWriteInt(num, .ambientEffect.g)
+            Call BinWriteInt(num, .ambientEffect.b)
         
         Close num
     
@@ -883,7 +885,9 @@ exitForB:
             .battleSkill = BinReadInt(num)
             .bAllowBattles = CBool(BinReadInt(num))
             .bDisableSaving = CBool(BinReadInt(num))
-            .ambientEffect = BinReadInt(num)
+            .ambientEffect.r = BinReadInt(num)
+            .ambientEffect.g = BinReadInt(num)
+            .ambientEffect.b = BinReadInt(num)
             
         Close num
         Exit Function
@@ -989,7 +993,7 @@ pvVersion:
             Next z
 exitForC:
             
-            Dim strUnused As String, lUnused As Long, iUnused As Integer
+            Dim strUnused As String, lUnused As Long, iUnused As Integer, effect As Integer
 
             .bkgImage.filename = BinReadString(num) 'Background image
             .bkgImage.drawType = BI_PARALLAX    'Default for pre-vector boards
@@ -998,7 +1002,19 @@ exitForC:
             strUnused = BinReadString(num)      'Border background image (depreciated)
             .bkgColor = BinReadLong(num)        'Background colour
             lUnused = BinReadLong(num)          'Border colour (depreciated)
-            .ambientEffect = BinReadInt(num)    'Ambient effect 0: none, 1: fog, 2: darkness, 3: watery
+            
+            effect = BinReadInt(num)            'Preset ambient effect index (courtesy of Tk2)
+            Select Case effect
+                Case 1  'Mist
+                    ts.r = 75: ts.g = 75: ts.b = 75
+                Case 2  'Darkness
+                    ts.r = -75: ts.g = -75: ts.b = -75
+                Case 3  'Water
+                    ts.r = 0: ts.g = 0: ts.b = 75
+                Case Else
+                    ts.r = 0: ts.g = 0: ts.b = 0
+            End Select
+            .ambientEffect = ts
             
             ReDim .directionalLinks(3)
             For i = 0 To 3

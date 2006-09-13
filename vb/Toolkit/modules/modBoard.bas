@@ -167,9 +167,10 @@ Public Type TKBoard
     battleBackground As String            'Battle background
     bAllowBattles As Boolean              'Allow random battles on board?
     bDisableSaving As Boolean             'Is saving disabled on board?
-    ambientEffect As Integer              'Ambient effect applied to the board 0: none, 1: fog, 2: darkness, 3: watery
     battleSkill As Integer                'Random enemy skill level
-
+    
+    ambientEffect As TKTileShade          'Ambient effect applied to the board (essentially depreciated).
+    
     'Volatile data (trans3 only)
     'animatedTile() As TKBoardAnimTile     'animated tiles associated with this board
     'strFileName As String                 'filename of the board
