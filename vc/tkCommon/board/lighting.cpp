@@ -198,7 +198,7 @@ tagLayerShade::size(CONST INT width, CONST INT height)
 	for (LONG i = 0; i <= width; ++i)
 	{
 		RGB_VECTOR row;
-		CONST RGB_SHADE ts = {0, 0, 0};
+		CONST RGB_SHORT ts = {0, 0, 0};
 		for (LONG j = 0; j <= height; ++j) row.push_back(ts);
 		shades.push_back(row);
 	}

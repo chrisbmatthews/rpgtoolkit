@@ -17,10 +17,10 @@
 #include <vector>
 
 // An short rgb colorshade.
-typedef struct tagRgbShade
+typedef struct tagRgbShadeShort
 {
     SHORT r, g, b;
-} RGB_SHADE, *LPRGB_SHADE;
+} RGB_SHORT, *LPRGB_SHORT;
 
 // Lighting types (see toolkit3, modBoard.eBoardLight)
 typedef enum tagBoardLightType
@@ -30,7 +30,7 @@ typedef enum tagBoardLightType
 	BL_GRADIENT_CLIPPED
 } LIGHT_TYPE;
 
-typedef std::vector<RGB_SHADE> tagRgbVector, RGB_VECTOR;
+typedef std::vector<RGB_SHORT> tagRgbVector, RGB_VECTOR;
 typedef std::vector<RGB_VECTOR> tagRgbMatrix, RGB_MATRIX, *LPRGB_MATRIX;
 
 // C++ version of tagVBLayerShade.

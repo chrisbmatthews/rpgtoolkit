@@ -56,7 +56,7 @@ void coords::pixelToTile(int &x, int &y, const COORD_TYPE coord, const bool bRem
 		y -= (coord == TILE_NORMAL ? BASE_POINT_Y : BASE_POINT_ISO_Y);
 	}
 	
-	// coord is the output type. tbd: PX_ABSOLUTE absolute should have no effect.
+	// coord is the output type.
 	switch (coord)
 	{
 		case TILE_NORMAL:
