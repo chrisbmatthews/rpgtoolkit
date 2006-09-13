@@ -45,6 +45,7 @@ double g_translucentOpacity = 0.4;			// Opacity to draw translucent sprites at.
 
 RECT g_screen = {0, 0, 0, 0};				// = {g_topX, g_topY, g_resX + g_topX, g_resY + g_topY}
 SCROLL_CACHE g_scrollCache;					// The scroll cache.
+RGBSHADE g_ambientLevel = {0, 0, 0};		// Ambient level.
 
 /*
  * Render the RPGCode screen.
@@ -65,123 +66,6 @@ void renderRpgCodeScreen()
 		}
 	}
 	g_pDirectDraw->Refresh();
-}
-
-/*
- * Draw a tile onto a canvas (CommonTkGfx drawTileCnv)
- */
-bool drawTileCnv(CCanvas *cnv, 
-				 const STRING file, 
-				 const double x,
-				 const double y, 
-				 const int r, 
-				 const int g,
-				 const int b, 
-				 const bool bMask, 
-				 const bool bNonTransparentMask, 
-				 const bool bIsometric, 
-				 const bool isoEvenOdd)
-{
-	extern STRING g_projectPath;
-
-    TILEANIM anm;
-   
-    if (removePath(file).empty()) return false;
-    
-	int tileSizeX = 1;		// Width of tbm(or other) in tiles, for ISO_ROTATED.
-	int iso = (bIsometric ? 1 : 0);
-
-//    if (pakFileRunning)
-	if (false)
-	{
-        // Do check for pakfile system
-		STRING of = file, Temp = removePath(file);
-		STRING ex = parser::uppercase(getExtension(Temp));
-        if (ex.substr(0, 3) == _T("TST"))
-		{
-            // numof = getTileNum(temp$)
-//            Temp = util::tilesetFilename(Temp);
-        }
-//			file = PakLocate(TILE_PATH + Temp);
-		STRING ff = _T("");
-        if (ex == _T("TAN"))
-		{
-            ff = removePath(Temp);
-            anm.open(g_projectPath + TILE_PATH + ff);
-//                file = TileAnmGet(anm, 0);
-		}
-    
-//        _chdir (PakTempPath);
-        ff = removePath(of);
-		if (!bMask)
-		{
-			CTile::drawByBoardCoord(
-				g_projectPath + TILE_PATH + ff,
-				x, y,
-				r, g, b,
-				cnv,
-				TM_NONE,
-				0, 0,
-				COORD_TYPE(iso),
-				tileSizeX		// Width of tbm(or other) in tiles, for ISO_ROTATED.
-			);
-		}
-		else
-		{
-			CTile::drawByBoardCoord(
-				g_projectPath + TILE_PATH + ff,
-				x, y,
-				r, g, b,
-				cnv, 
-				bNonTransparentMask ? TM_COPY : TM_AND,
-				0, 0,
-				COORD_TYPE(iso),
-				tileSizeX		// Width of tbm(or other) in tiles, for ISO_ROTATED.
-			);
-		}
-//		_chdir (currentDir$);
-
-	}
-	else
-	{
-		STRING ex = getExtension(file);
-		STRING ff = removePath(file);
-        if (parser::uppercase(ex) == _T("TAN"))
-		{
-            if (!anm.open(g_projectPath + TILE_PATH + ff)) return false;
-//            file$ = projectPath & tilePath & TileAnmGet(anm, 0)
-        }
-//        _chdir(g_projectPath);
-        ff = removePath(file);
-		if (!bMask)
-		{
-			CTile::drawByBoardCoord(
-				g_projectPath + TILE_PATH + ff,
-				x, y,
-				r, g, b,
-				cnv,
-				TM_NONE,
-				0, 0,
-				COORD_TYPE(iso),
-				tileSizeX		// Width of tbm(or other) in tiles, for ISO_ROTATED.
-			);
-		}
-		else
-		{
-			CTile::drawByBoardCoord(
-				g_projectPath + TILE_PATH + ff,
-				x, y,
-				r, g, b,
-				cnv, 
-				bNonTransparentMask ? TM_COPY : TM_AND,
-				0, 0,
-				COORD_TYPE(iso),
-				tileSizeX		// Width of tbm(or other) in tiles, for ISO_ROTATED.
-			);
-		}
-//        _chdir(WORKING_DIRECTOY);
-    }
-	return true;
 }
 
 /*
@@ -454,16 +338,34 @@ void tagScrollCache::render(const bool bForceRedraw)
 /*
  * Set the ambient level.
  */
-void setAmbientLevel(const int r, const int g, const int b)
+void setAmbientLevel(void)
 {
+	extern LPBOARD g_pBoard;
+	const RGB_SHORT bae = g_pBoard->ambientEffect;
+	const RGBSHADE al = 
+	{
+		int(CProgram::getGlobal(_T("ambientred"))->getNum()) + bae.r,
+		int(CProgram::getGlobal(_T("ambientgreen"))->getNum()) + bae.g,
+		int(CProgram::getGlobal(_T("ambientblue"))->getNum()) + bae.b
+	};
+	
 	if (g_pDirectDraw->IsGammaEnabled())
 	{
-		g_pDirectDraw->OffsetGammaRamp(r, g, b);
+		g_pDirectDraw->OffsetGammaRamp(al.r, al.g, al.b);
 		return;
 	}
 
-	// tbd - If we're not in full screen mode, we can't use the
+	// If we're not in full screen mode, we can't use the
 	// gamma controller, so we need to do something else here.
+	// A translucent blt each frame is out of the question, so tiles
+	// are redrawn with the ambient rgb additively applied. This requires
+	// a g_scrollCache.render(true) call to force a redraw.
+	// In order to apply the level to sprites, the animation cache is cleared,
+	// forcing sprites to redraw their frames as and when each is required.
+	// No mechanism currently exists to apply the levels to non-tile images
+	// in windowed mode.
+	g_ambientLevel = al;
+	CSharedAnimation::freeAllCanvases();
 }
 
 /*

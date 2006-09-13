@@ -201,8 +201,7 @@ typedef struct tagBoard
 	short battleSkill;								// Random enemy skill level.
 	bool bAllowBattles;								// Random fighting allowed?
 	bool bDisableSaving;							// Is saving disabled on board?
-	short ambientEffect;							// Ambient effect applied to the board.
-													// 0: none, 1: fog, 2: darkness, 3: watery.
+	RGB_SHORT ambientEffect;						// Ambient effect applied to the board.
 
 	std::vector<CVector *> paths;					// Board-defined paths that can be
 													// assigned to sprites.

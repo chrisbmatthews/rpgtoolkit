@@ -948,16 +948,34 @@ void prompt(CALL_DATA &params)
 /*
  * void put(int x, int y, string tile)
  * 
- * Puts a tile at the specified location on the board.
+ * Puts a tile at the specified location on the board. The tile persists
+ * only until the program ends. Use LayerPut() to place a tile for the
+ * duration the user is on the board. 
+ * x and y are specified in tile coordinates.
  */
 void put(CALL_DATA &params)
 {
+	extern LPBOARD g_pBoard;
+	extern STRING g_projectPath;
+	extern RGBSHADE g_ambientLevel;
+
 	if (params.params != 3)
 	{
 		throw CError(_T("Put() requires three parameters."));
 	}
-	// TBD: getAmbientLevel();
-	drawTileCnv(g_cnvRpgCode, params[2].getLit(), params[0].getNum(), params[1].getNum(), 0, 0, 0, false, true, false, false);
+
+	CTile::drawByBoardCoord(
+		g_projectPath + TILE_PATH + params[2].getLit(),
+		int(params[0].getNum()), 
+		int(params[1].getNum()),
+		g_ambientLevel.r, g_ambientLevel.g, g_ambientLevel.b, 
+		g_cnvRpgCode,
+		TM_NONE,
+		0, 0,
+		g_pBoard->coordType,
+		1		// Width of tbm (or other) in tiles for ISO_ROTATED.
+	);
+
 	renderRpgCodeScreen();
 }
 
@@ -5195,6 +5213,9 @@ void stance(CALL_DATA &params)
  */
 void forceRedraw(CALL_DATA &params)
 {
+	extern SCROLL_CACHE g_scrollCache;
+	setAmbientLevel();
+	g_scrollCache.render(true);
 	renderNow(g_cnvRpgCode, true);
 	renderRpgCodeScreen();
 }
@@ -7276,6 +7297,32 @@ void boardsetprogrampoint(CALL_DATA &params)
 	}
 }
 
+/* 
+ * void SetAmbientLevel(int red, int green, int blue)
+ *
+ * Set the global ambient level. Valid values range from -255 to + 255.
+ */
+void setambientlevel(CALL_DATA &params)
+{
+	if (params.params != 3)
+	{
+		throw CError(_T("SetAmbientLevel() requires three parameters."));
+	}
+
+	// Set the old RPGCode variables.
+	LPSTACK_FRAME pVar = CProgram::getGlobal(_T("ambientred"));
+	pVar->num = params[0].getNum();
+	pVar->udt = UDT_NUM;
+	pVar = CProgram::getGlobal(_T("ambientgreen"));
+	pVar->num = params[1].getNum();
+	pVar->udt = UDT_NUM;
+	pVar = CProgram::getGlobal(_T("ambientblue"));
+	pVar->num = params[2].getNum();
+	pVar->udt = UDT_NUM;
+
+	forceRedraw(params);
+}
+
 // Get a numerical stack frame.
 inline STACK_FRAME makeNumStackFrame(const double num)
 {
@@ -7557,6 +7604,7 @@ void initRpgCode()
 	CProgram::addFunction(_T("canvasgetscreen"), canvasGetScreen);
 	CProgram::addFunction(_T("itempath"), itempath);
 	CProgram::addFunction(_T("playerpath"), playerpath);
+	CProgram::addFunction(_T("setambientlevel"), setambientlevel);
 
 	// Vector functions.
 	CProgram::addFunction(_T("boardgetvector"), boardgetvector);

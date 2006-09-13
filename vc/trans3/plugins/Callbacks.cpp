@@ -1806,7 +1806,6 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			// Obselete: do not change the board size.
 			break;
 		case BRD_AMBIENTRED:
-			// TBD: ambient level recalculations?
 			try
 			{
 				// Superseded by single layer shading, arrayPos3 neglected.

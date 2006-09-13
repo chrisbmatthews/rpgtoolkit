@@ -38,7 +38,7 @@ public:
 	void freeCanvases(void)
 	{
 		std::vector<CCanvas *>::iterator i = m_canvases.begin();
-		for (; i != m_canvases.end(); ++i) delete *i;
+		for (; i != m_canvases.end(); ++i) { delete *i; *i = NULL; }
 	}
 	CCanvas *getFrame(unsigned int frame);
 	void playFrameSound(unsigned int frame) const
@@ -130,7 +130,7 @@ public:
 	}
 
 	// Free all shared animations.
-	static void CSharedAnimation::freeAll(void)
+	static void freeAll(void)
 	{
 		// Theoretically these should be empty by the time it's called.
 		std::set<CSharedAnimation *>::iterator j = m_anms.begin();
@@ -145,6 +145,13 @@ public:
 		CSharedAnimation *p = (CSharedAnimation *)num;
 		std::set<CSharedAnimation *>::iterator i = m_anms.find(p);
 		return (i != m_anms.end() ? p : NULL);
+	}
+
+	// Clear all shared animation canvases.
+	static void freeAllCanvases(void)
+	{
+		SHARED_ANIMATIONS::iterator i = m_shared.begin();
+		for (; i != m_shared.end(); ++i) i->second->freeCanvases(); 
 	}
 
 protected:

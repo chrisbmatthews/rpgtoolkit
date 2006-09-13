@@ -57,27 +57,17 @@ void renderRpgCodeScreen();
 
 /*
  * Render the scene now.
- *
- * cnv (in) - canvas to render to (NULL is screen)
- * bForce (in) - force the render?
- * return (out) - did a render occur?
  */
 bool renderNow(CCanvas *cnv = NULL, const bool bForce = false);
 
-/*** These functions are looking for homes ***/
+/*
+ * Set the ambient level.
+ */
+void setAmbientLevel(void);
 
-bool drawTileCnv(CCanvas *cnv, 
-				 const STRING file, 
-				 const double x,
-				 const double y, 
-				 const int r, 
-				 const int g,
-				 const int b, 
-				 const bool bMask, 
-				 const bool bNonTransparentMask = true, 
-				 const bool bIsometric = false, 
-				 const bool isoEvenOdd = false);
-
+/*
+ * Load a cursor from a file.
+ */
 void changeCursor(const STRING strCursor);
 
 #endif

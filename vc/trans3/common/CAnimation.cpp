@@ -134,16 +134,9 @@ bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
 
     if (frameFile.empty()) return false;
 
-    // Get the ambient level here. Must be done before opening the DC,
-    // otherwise trans3 *will* crash on Win9x.
-//TBD:	Call getAmbientLevel(addOnR, addOnB, addOnG)
-
 	const STRING ext = parser::uppercase(getExtension(frameFile));
     if (ext == _T("TBM") || ext.substr(0, 3) == _T("TST") || ext == _T("GPH"))
 	{
-        // You *must* load a tile bitmap before opening an hdc
-        // because it'll lock up on windows 98 if you don't.
-
 		TILE_BITMAP tbm;
 
 		if (ext == _T("TBM"))

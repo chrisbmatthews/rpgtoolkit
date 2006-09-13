@@ -21,6 +21,16 @@
 #include "../../tkCommon/tkgfx/CTile.h"
 
 /*
+ * "Ambient effect" definitions.
+ */
+const RGB_SHORT BRD_AMBIENT[] = {
+	{  0,   0,   0},
+	{ 75,  75,  75},		// "Mist".
+	{-75, -75, -75},		// "Dark".
+	{  0,   0,  75}			// "Water".
+};
+
+/*
  * Open a board. Note for old versions, all co-ordinates must be transformed into
  * pixel co-ordinates. (Isometrics to be done).
  *
@@ -206,7 +216,7 @@ lutEndA:
 				for (x = 1; x <= effectiveWidth; ++x)
 				{
 					short count = 0;
-					RGB_SHADE rgb = {0, 0, 0};
+					RGB_SHORT rgb = {0, 0, 0};
 					file >> count;
 					file >> rgb.r;
 					file >> rgb.g;
@@ -268,7 +278,7 @@ layerEnd:
 				file >> pts;
 				for (j = 0; j <= pts; ++j)
 				{
-					RGB_SHADE rgb = {0, 0, 0};
+					RGB_SHORT rgb = {0, 0, 0};
 					file >> rgb.r;
 					file >> rgb.g;
 					file >> rgb.b;
@@ -485,11 +495,15 @@ layerEnd:
 		file >> battleSkill;
 		file >> var; bAllowBattles = bool(var);
 		file >> var; bDisableSaving = bool(var);
-		file >> ambientEffect;
+		file >> ambientEffect.r; 
+		file >> ambientEffect.g; 
+		file >> ambientEffect.b; 
 
 		if (this == g_pBoard) 
 		{
 			// Required only for the active board.
+
+			setAmbientLevel();
 
 			// Setup the background image as an attached image.
 			if (!bkgImage->file.empty())
@@ -660,7 +674,8 @@ lutEndB:
 		file >> sUnused;				// Border image.
 		file >> bkgColor;
 		file >> iUnused;				// Border colour.
-		file >> ambientEffect;
+		file >> var;
+		ambientEffect = BRD_AMBIENT[(var <= 3 ? var : 0)];
 
 		links.clear();
 		for (i = 0; i != 4; ++i)
@@ -833,6 +848,8 @@ lutEndB:
 		{
 			// Required only for the active board.
 
+			setAmbientLevel();
+
 			// Upgrade tile lighting before setting under vectors.
 			freeShading();
 			tileShading.push_back(new LAYER_SHADE(sizeX, sizeY));			
@@ -843,7 +860,7 @@ lutEndB:
 					for (x = 1; x <= sizeX; ++x)
 					{                    
 						 // Store the highest shading values in the new single layer shade.
-						const RGB_SHADE rgb = { red[z][y][x], green[z][y][x], blue[z][y][x] };
+						const RGB_SHORT rgb = { red[z][y][x], green[z][y][x], blue[z][y][x] };
 						if (rgb.r || rgb.g || rgb.b)
 						{
 							tileShading[0]->shades[x][y] = rgb;
@@ -1187,6 +1204,8 @@ void tagBoard::render(
 	const int aB)
 {
 	extern STRING g_projectPath;
+	extern RGBSHADE g_ambientLevel;
+	const RGBSHADE al = g_ambientLevel;
 
 	const RECT bounds = { topX, topY, topX + width, topY + height };
 
@@ -1236,16 +1255,16 @@ void tagBoard::render(
 					if (!tile.empty())
 					{
 						// Single layer lighting implementation.
-						RGB_SHADE shade = {0, 0, 0};
+						RGB_SHORT shade = {0, 0, 0};
 						if (castShade) shade = tileShading[0]->shades[j][k];
 
 						// Tile exists at this location.
 						CTile::drawByBoardCoord(
 							g_projectPath + TILE_PATH + tile,
 							j, k, 
-							shade.r + aR,
-							shade.g + aG,
-							shade.b + aB,
+							shade.r + al.r,
+							shade.g + al.g,
+							shade.b + al.b,
 							cnv, 
 							TM_NONE,
 							destX - topX, destY - topY,
@@ -1770,7 +1789,7 @@ void tagBoard::renderStack(
 				// Tile exists at this location.
 						
 				// Single layer lighting implementation.
-				RGB_SHADE shade = {0, 0, 0};
+				RGB_SHORT shade = {0, 0, 0};
 				if (tileShading[0]->layer >= i) shade = tileShading[0]->shades[x][y];
 				
 				CTile::drawByBoardCoord(

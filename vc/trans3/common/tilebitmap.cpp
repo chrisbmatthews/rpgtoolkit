@@ -12,6 +12,7 @@
 #include "CFile.h"
 #include "paths.h"
 #include "mbox.h"
+#include "../../tkCommon/tkGfx/CTile.h"
 
 /*
  * Open a tile bitmap.
@@ -130,41 +131,46 @@ bool tagTileBitmap::draw(CCanvas *cnv,
 						 const int x, 
 						 const int y)
 {
+	extern STRING g_projectPath;
+	extern RGBSHADE g_ambientLevel;
+
     const int xx = x / 32 + 1, yy = y / 32 + 1;
 
-    for (int i = 0; i != width; i++)
+    for (int i = 0; i != width; ++i)
 	{
-        for (int j = 0; j != height; j++)
+        for (int j = 0; j != height; ++j)
 		{
             if (!tiles[i][j].empty())
 			{
                 if (cnv)
 				{
-/*                
-                   'Ambient levels determined in renderAnimationFrame *before*
-                    'opening DC.
-
-					'Declare variables defined in transRender if running
-					'in toolkit3.exe project
-					Dim addOnR As Double, addOnG As Double, addOnB As Double
-*/
-					if (!drawTileCnv(cnv, 
-						TILE_PATH + tiles[i][j], 
-						i + xx, j + yy,						
-						red[i][j], // + addOnR, 
-						green[i][j], // + addOnG, 
-						blue[i][j], // + addOnB, 
-						false, true, false, false)) return false;
+					CTile::drawByBoardCoord(
+						g_projectPath + TILE_PATH + tiles[i][j],
+						i + xx, 
+						j + yy,						
+						red[i][j] + g_ambientLevel.r, 
+						green[i][j] + g_ambientLevel.g,
+						blue[i][j] + g_ambientLevel.b,
+						cnv,
+						TM_NONE,
+						0, 0,
+						TILE_NORMAL, 0		// No isometric tbm implementation.
+					);
                 }                
                 if (cnvMask)
-				{                
-					if (!drawTileCnv(cnvMask, 
-						TILE_PATH + tiles[i][j],
-						i + xx, j + yy,
-						red[i][j],
+				{
+					CTile::drawByBoardCoord(
+						g_projectPath + TILE_PATH + tiles[i][j],
+						i + xx, 
+						j + yy,						
+						red[i][j], 
 						green[i][j],
 						blue[i][j],
-						true, true)) return false;                        
+						cnvMask,
+						TM_COPY,
+						0, 0,
+						TILE_NORMAL, 0		// No isometric tbm implementation.
+					);                      
 	             }
             }
 			else
@@ -174,7 +180,7 @@ bool tagTileBitmap::draw(CCanvas *cnv,
 //                    Call canvasFillBox(cnv, x + i * 32, y + j * 32, x + 32 + i * 32, y + 32 + j * 32, TRANSP_COLOR_ALT)
 //                    Call canvasFillBox(cnvMask, x + i * 32, y + j * 32, x + 32 + i * 32, y + 32 + j * 32, TRANSP_COLOR)
                 }
-            } // if (!theTileBmp.tiles[i][j].empty())
+            } // if (!tiles[i][j].empty())
 		}	// for (j)
 	} // for (i)
 
