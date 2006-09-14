@@ -67,6 +67,7 @@ double g_fpms = 0.0;					// Frames per millisecond (renderCount / renderTime).
  */
 double m_renderCount = 0.0;				// Count of GS_MOVEMENT state loops.
 double m_renderTime = 0.0;				// Millisecond cumulative GS_MOVEMENT state loop time.
+bool m_testingProgram = false;			// Has trans3 been passed a program to test?
 
 /*
  * Defines.
@@ -190,7 +191,7 @@ void setUpGame()
 			case 0: // 640 * 480
 				getSetting(_T("gAvgTime_640_Win"), avgTime);
 				break;
-			case 1: // 1024 * 768
+			case 2: // 1024 * 768
 				getSetting(_T("gAvgTime_1024_Win"), avgTime);
 				break;
 			default: // Custom -- use 800 * 600
@@ -205,7 +206,7 @@ void setUpGame()
 			case 0: // 640 * 480
 				getSetting(_T("gAvgTime_640_Full"), avgTime);
 				break;
-			case 1: // 1024 * 768
+			case 2: // 1024 * 768
 				getSetting(_T("gAvgTime_1024_Full"), avgTime);
 				break;
 			default: // Custom -- use 800 * 600
@@ -272,6 +273,49 @@ void setUpGame()
 			CProgram(g_projectPath + PRG_PATH + g_pBoard->enterPrg).run();
 		}
 	}
+}
+
+/*
+ * Save registry keys on shutdown.
+ */
+void saveSettings(void)
+{
+	// Average time taken per frame, in seconds.
+	const double avgTime = m_renderTime / (m_renderCount * MILLISECONDS);
+
+    if (!m_testingProgram && avgTime > 0)
+	{
+		if (!g_mainFile.extendToFullScreen)
+		{
+			switch (g_mainFile.mainResolution)
+			{
+				case 0: // 640 * 480
+					saveSetting(_T("gAvgTime_640_Win"), avgTime);
+					break;
+				case 2: // 1024 * 768
+					saveSetting(_T("gAvgTime_1024_Win"), avgTime);
+					break;
+				default: // Custom -- use 800 * 600
+					saveSetting(_T("gAvgTime_800_Win"), avgTime);
+					break;
+			}
+		}
+		else
+		{
+			switch (g_mainFile.mainResolution)
+			{
+				case 0: // 640 * 480
+					saveSetting(_T("gAvgTime_640_Full"), avgTime);
+					break;
+				case 2: // 1024 * 768
+					saveSetting(_T("gAvgTime_1024_Full"), avgTime);
+					break;
+				default: // Custom -- use 800 * 600
+					saveSetting(_T("gAvgTime_800_Full"), avgTime);
+					break;
+			}
+		} // if (fullscreen)
+	} // if (save fps)
 }
 
 /*
@@ -361,12 +405,14 @@ void closeSystems()
 
 	FreeImage_DeInitialise();
 
-	// Items... currently freed by the board destructor.
+	// Items - currently freed by the board destructor.
 	g_boards.free(g_pBoard);
 	g_pBoard = NULL;
 
 	CThreadAnimation::destroyAll();
 	CSharedAnimation::freeAll();
+
+	saveSettings();
 
 	uninitialisePakFile();
 }
@@ -398,6 +444,7 @@ STRING getMainFileName(const STRING cmdLine)
 		const STRING main = GAM_PATH + parts[1];
 		if (CFile::fileExists(main))
 		{
+			m_testingProgram = true;
 			g_mainFile.open(main);
 			g_mainFile.startupPrg = _T("");
 			g_mainFile.initBoard = _T("");
@@ -572,8 +619,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
 	path = dev;
 
 	set_terminate(termFunc);
@@ -608,3 +655,4 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 
 	return EXIT_SUCCESS;
 }
+
