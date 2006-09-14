@@ -2,7 +2,7 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Wed Aug 16 23:41:54 2006
+/* at Wed Sep 13 22:18:18 2006
  */
 /* Compiler settings for C:\cvs\vc\trans3\trans3.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
@@ -786,6 +786,12 @@ EXTERN_C const IID IID_ICallbacks;
         virtual HRESULT STDMETHODCALLTYPE CBFileExists( 
             /* [string] */ BSTR strFile,
             /* [retval][out] */ short __RPC_FAR *pRet) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE CBCanvasLock( 
+            int cnv) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE CBCanvasUnlock( 
+            int cnv) = 0;
         
     };
     
@@ -1683,6 +1689,14 @@ EXTERN_C const IID IID_ICallbacks;
             /* [string] */ BSTR strFile,
             /* [retval][out] */ short __RPC_FAR *pRet);
         
+        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBCanvasLock )( 
+            ICallbacks __RPC_FAR * This,
+            int cnv);
+        
+        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CBCanvasUnlock )( 
+            ICallbacks __RPC_FAR * This,
+            int cnv);
+        
         END_INTERFACE
     } ICallbacksVtbl;
 
@@ -2132,6 +2146,12 @@ EXTERN_C const IID IID_ICallbacks;
 
 #define ICallbacks_CBFileExists(This,strFile,pRet)	\
     (This)->lpVtbl -> CBFileExists(This,strFile,pRet)
+
+#define ICallbacks_CBCanvasLock(This,cnv)	\
+    (This)->lpVtbl -> CBCanvasLock(This,cnv)
+
+#define ICallbacks_CBCanvasUnlock(This,cnv)	\
+    (This)->lpVtbl -> CBCanvasUnlock(This,cnv)
 
 #endif /* COBJMACROS */
 
@@ -4086,6 +4106,30 @@ HRESULT STDMETHODCALLTYPE ICallbacks_CBFileExists_Proxy(
 
 
 void __RPC_STUB ICallbacks_CBFileExists_Stub(
+    IRpcStubBuffer *This,
+    IRpcChannelBuffer *_pRpcChannelBuffer,
+    PRPC_MESSAGE _pRpcMessage,
+    DWORD *_pdwStubPhase);
+
+
+HRESULT STDMETHODCALLTYPE ICallbacks_CBCanvasLock_Proxy( 
+    ICallbacks __RPC_FAR * This,
+    int cnv);
+
+
+void __RPC_STUB ICallbacks_CBCanvasLock_Stub(
+    IRpcStubBuffer *This,
+    IRpcChannelBuffer *_pRpcChannelBuffer,
+    PRPC_MESSAGE _pRpcMessage,
+    DWORD *_pdwStubPhase);
+
+
+HRESULT STDMETHODCALLTYPE ICallbacks_CBCanvasUnlock_Proxy( 
+    ICallbacks __RPC_FAR * This,
+    int cnv);
+
+
+void __RPC_STUB ICallbacks_CBCanvasUnlock_Stub(
     IRpcStubBuffer *This,
     IRpcChannelBuffer *_pRpcChannelBuffer,
     PRPC_MESSAGE _pRpcMessage,

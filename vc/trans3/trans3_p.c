@@ -2,7 +2,7 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Wed Aug 16 23:41:54 2006
+/* at Wed Sep 13 22:18:18 2006
  */
 /* Compiler settings for C:\cvs\vc\trans3\trans3.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
@@ -28,7 +28,7 @@
 #include "trans3.h"
 
 #define TYPE_FORMAT_STRING_SIZE   67                                
-#define PROC_FORMAT_STRING_SIZE   5641                              
+#define PROC_FORMAT_STRING_SIZE   5697                              
 
 typedef struct _MIDL_TYPE_FORMAT_STRING
     {
@@ -4423,6 +4423,74 @@ CLIENT_CALL_RETURN _RetVal;
     
 }
 
+HRESULT STDMETHODCALLTYPE ICallbacks_CBCanvasLock_Proxy( 
+    ICallbacks __RPC_FAR * This,
+    int cnv)
+{
+CLIENT_CALL_RETURN _RetVal;
+
+
+#if defined( _ALPHA_ )
+    va_list vlist;
+#endif
+    
+#if defined( _ALPHA_ )
+    va_start(vlist,cnv);
+    _RetVal = NdrClientCall2(
+                  ( PMIDL_STUB_DESC  )&Object_StubDesc,
+                  (PFORMAT_STRING) &__MIDL_ProcFormatString.Format[5640],
+                  vlist.a0);
+#elif defined( _PPC_ ) || defined( _MIPS_ )
+
+    _RetVal = NdrClientCall2(
+                  ( PMIDL_STUB_DESC  )&Object_StubDesc,
+                  (PFORMAT_STRING) &__MIDL_ProcFormatString.Format[5640],
+                  ( unsigned char __RPC_FAR * )&This,
+                  ( unsigned char __RPC_FAR * )&cnv);
+#else
+    _RetVal = NdrClientCall2(
+                  ( PMIDL_STUB_DESC  )&Object_StubDesc,
+                  (PFORMAT_STRING) &__MIDL_ProcFormatString.Format[5640],
+                  ( unsigned char __RPC_FAR * )&This);
+#endif
+    return ( HRESULT  )_RetVal.Simple;
+    
+}
+
+HRESULT STDMETHODCALLTYPE ICallbacks_CBCanvasUnlock_Proxy( 
+    ICallbacks __RPC_FAR * This,
+    int cnv)
+{
+CLIENT_CALL_RETURN _RetVal;
+
+
+#if defined( _ALPHA_ )
+    va_list vlist;
+#endif
+    
+#if defined( _ALPHA_ )
+    va_start(vlist,cnv);
+    _RetVal = NdrClientCall2(
+                  ( PMIDL_STUB_DESC  )&Object_StubDesc,
+                  (PFORMAT_STRING) &__MIDL_ProcFormatString.Format[5668],
+                  vlist.a0);
+#elif defined( _PPC_ ) || defined( _MIPS_ )
+
+    _RetVal = NdrClientCall2(
+                  ( PMIDL_STUB_DESC  )&Object_StubDesc,
+                  (PFORMAT_STRING) &__MIDL_ProcFormatString.Format[5668],
+                  ( unsigned char __RPC_FAR * )&This,
+                  ( unsigned char __RPC_FAR * )&cnv);
+#else
+    _RetVal = NdrClientCall2(
+                  ( PMIDL_STUB_DESC  )&Object_StubDesc,
+                  (PFORMAT_STRING) &__MIDL_ProcFormatString.Format[5668],
+                  ( unsigned char __RPC_FAR * )&This);
+#endif
+    return ( HRESULT  )_RetVal.Simple;
+    
+}
+
 extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[1];
 
 static const MIDL_STUB_DESC Object_StubDesc = 
@@ -4592,7 +4660,9 @@ static const unsigned short ICallbacks_FormatStringOffsetTable[] =
     5516,
     5538,
     5572,
-    5606
+    5606,
+    5640,
+    5668
     };
 
 static const MIDL_SERVER_INFO ICallbacks_ServerInfo = 
@@ -4617,7 +4687,7 @@ static const MIDL_STUBLESS_PROXY_INFO ICallbacks_ProxyInfo =
     0
     };
 
-CINTERFACE_PROXY_VTABLE(145) _ICallbacksProxyVtbl = 
+CINTERFACE_PROXY_VTABLE(147) _ICallbacksProxyVtbl = 
 {
     &ICallbacks_ProxyInfo,
     &IID_ICallbacks,
@@ -4765,7 +4835,9 @@ CINTERFACE_PROXY_VTABLE(145) _ICallbacksProxyVtbl =
     ICallbacks_CBReleaseScreenDC_Proxy ,
     ICallbacks_CBCanvasOpenHdc_Proxy ,
     ICallbacks_CBCanvasCloseHdc_Proxy ,
-    ICallbacks_CBFileExists_Proxy
+    ICallbacks_CBFileExists_Proxy ,
+    ICallbacks_CBCanvasLock_Proxy ,
+    ICallbacks_CBCanvasUnlock_Proxy
 };
 
 
@@ -4912,6 +4984,8 @@ static const PRPC_STUB_FUNCTION ICallbacks_table[] =
     NdrStubCall2,
     NdrStubCall2,
     NdrStubCall2,
+    NdrStubCall2,
+    NdrStubCall2,
     NdrStubCall2
 };
 
@@ -4919,7 +4993,7 @@ CInterfaceStubVtbl _ICallbacksStubVtbl =
 {
     &IID_ICallbacks,
     &ICallbacks_ServerInfo,
-    145,
+    147,
     &ICallbacks_table[-3],
     CStdStubBuffer_DELEGATING_METHODS
 };
@@ -13459,6 +13533,82 @@ static const MIDL_PROC_FORMAT_STRING __MIDL_ProcFormatString =
 			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
 #endif
 /* 5638 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure CBCanvasLock */
+
+/* 5640 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 5642 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 5646 */	NdrFcShort( 0x91 ),	/* 145 */
+#ifndef _ALPHA_
+/* 5648 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+#else
+			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+#endif
+/* 5650 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 5652 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 5654 */	0x4,		/* Oi2 Flags:  has return, */
+			0x2,		/* 2 */
+
+	/* Parameter cnv */
+
+/* 5656 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+#ifndef _ALPHA_
+/* 5658 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+#else
+			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+#endif
+/* 5660 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Return value */
+
+/* 5662 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+#ifndef _ALPHA_
+/* 5664 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+#else
+			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+#endif
+/* 5666 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure CBCanvasUnlock */
+
+/* 5668 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 5670 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 5674 */	NdrFcShort( 0x92 ),	/* 146 */
+#ifndef _ALPHA_
+/* 5676 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+#else
+			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+#endif
+/* 5678 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 5680 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 5682 */	0x4,		/* Oi2 Flags:  has return, */
+			0x2,		/* 2 */
+
+	/* Parameter cnv */
+
+/* 5684 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+#ifndef _ALPHA_
+/* 5686 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+#else
+			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+#endif
+/* 5688 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Return value */
+
+/* 5690 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+#ifndef _ALPHA_
+/* 5692 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+#else
+			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+#endif
+/* 5694 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 			0x0

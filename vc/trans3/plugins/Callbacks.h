@@ -165,6 +165,8 @@ public:
 	STDMETHOD(CBCanvasOpenHdc) (int cnv, int *pRet);
 	STDMETHOD(CBCanvasCloseHdc) (int cnv, int hdc);
 	STDMETHOD(CBFileExists) (BSTR strFile, short *pRet);
+	STDMETHOD(CBCanvasLock) (int cnv);
+	STDMETHOD(CBCanvasUnlock) (int cnv);
 };
 
 #endif //_CALLBACKS_H_

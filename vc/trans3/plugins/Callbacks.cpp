@@ -3293,3 +3293,23 @@ STDMETHODIMP CCallbacks::CBFileExists(BSTR strFile, VARIANT_BOOL *pRet)
 	*pRet = (CFile::fileExists(g_projectPath + getString(strFile)) ? VARIANT_TRUE : VARIANT_FALSE);
 	return S_OK;
 }
+
+STDMETHODIMP CCallbacks::CBCanvasLock(int cnv)
+{
+	CCanvas *p = g_canvases.cast(cnv);
+	if (p)
+	{
+		p->Lock();
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CCallbacks::CBCanvasUnlock(int cnv)
+{
+	CCanvas *p = g_canvases.cast(cnv);
+	if (p)
+	{
+		p->Unlock();
+	}
+	return S_OK;
+}

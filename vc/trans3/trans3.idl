@@ -154,6 +154,8 @@ import "ocidl.idl";
 		HRESULT CBCanvasOpenHdc(int cnv, [out, retval] int *pRet);
 		HRESULT CBCanvasCloseHdc(int cnv, int hdc);
 		HRESULT CBFileExists([string] BSTR strFile, [out, retval] short *pRet);
+		HRESULT CBCanvasLock(int cnv);
+		HRESULT CBCanvasUnlock(int cnv);
 	};
 
 [
