@@ -1692,7 +1692,7 @@ void CSprite::customStance(const STRING stance, const CProgram *prg, const bool 
 	m_pos.idle.frameTime = GetTickCount();
 
 	m_pos.loopFrame = LOOP_STANCE;
-	m_pos.frame = 0;
+	m_pos.frame = 0;				// Ensure that custom animations start at the first frame.
 
 	if (prg->isThread())
 	{
@@ -1745,11 +1745,9 @@ void CSprite::setAnm(MV_ENUM dir)
  */
 void CSprite::checkIdling(void) 
 {
-	if (m_pos.loopFrame < LOOP_MOVE && m_pos.path.empty())
+	if (m_pos.loopFrame < LOOP_MOVE)
 	{
-		// We're idle, and we're not about to start moving.
-
-		if ((m_pos.loopFrame == LOOP_WAIT) && (GetTickCount() - m_pos.idle.time >= m_attr.idleTime))
+		if ((m_pos.loopFrame == LOOP_WAIT) && m_pos.path.empty() && (GetTickCount() - m_pos.idle.time >= m_attr.idleTime))
 		{
 			// Push into idle graphics if not already.
 
@@ -1780,9 +1778,6 @@ void CSprite::checkIdling(void)
 		{
 			if (GetTickCount() - m_pos.idle.frameTime >= m_pos.idle.frameDelay)
 			{
-				// Increment the animation frame when the delay is up.
-				++m_pos.frame;
-
 				// Start the timer for this frame.
 				m_pos.idle.frameTime = GetTickCount();
 
@@ -1790,10 +1785,11 @@ void CSprite::checkIdling(void)
 				// to run for, rather than time in stance instances!
 				if (m_pos.loopFrame == LOOP_STANCE && --m_pos.idle.time == 0)
 				{
-					// Animation has finished.
-					m_pos.loopFrame = LOOP_WAIT;
+					// Animation has finished. Continue to render the
+					// last frame of the stance until it is interrupted
+					// by movement or another stance command.
+					m_pos.loopFrame = LOOP_STANCE_END;
 					m_pos.idle.time = GetTickCount();
-					setAnm(m_facing.dir());
 
 					// Free any thread that is waiting for the custom
 					// animation to finish.
@@ -1802,6 +1798,12 @@ void CSprite::checkIdling(void)
 						m_thread->wakeUp();
 						m_thread = NULL;
 					}
+				}
+				else 
+				{
+					// Increment the animation frame when the delay is up.
+					// Do not increment on the last frame.
+					++m_pos.frame;
 				}
 			}
 		} // if (running custom or idle animation)
@@ -1831,10 +1833,8 @@ bool CSprite::render(const CCanvas *cnv, const int layer, RECT &rect)
 		checkIdling();
 
 		// Get a pointer to the current animation.
-		const int frame =  (m_pos.loopFrame == LOOP_STANCE || 
-							m_pos.loopFrame == LOOP_IDLE) ?
-							m_pos.frame :
-							int(m_pos.frame / (m_pos.loopSpeed * 2));
+		const int frame = (m_pos.loopFrame <= LOOP_IDLE) ?	m_pos.frame : int(m_pos.frame / (m_pos.loopSpeed * 2));
+		
 		// Get the canvas for the current frame.
 		if (m_pos.pAnm)
 		{
