@@ -76,6 +76,7 @@ unsigned int g_lines = 0;
 [tT][rR][uU][eE]					{ yylval = 1; return NUMBER; }
 [fF][aA][lL][sS][eE]				{ yylval = 0; return NUMBER; }
 [iI][nN][cC][lL][uU][dD][eE]		{ return INCLUDE; }
+[iI][nN][lL][iI][nN][eE]			{ return INLINE; }
 
 	/* Redirects */
 [rR][eE][dD][iI][rR][eE][cC][tT]									{ return REDIRECT; }

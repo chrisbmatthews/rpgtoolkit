@@ -157,8 +157,9 @@ namespace operators
 typedef struct tagNamedMethod
 {
 	STRING name;
-	int params;	// For overloaded methods.
+	int params;		// For overloaded methods.
 	unsigned int i;
+	bool bInline;	// Expand this method inline?
 
 	static std::vector<tagNamedMethod> m_methods;
 	static tagNamedMethod *locate(const STRING name, const int params, const bool bMethod);

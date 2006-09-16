@@ -28,7 +28,7 @@
 %token	LARRAY RARRAY LCURL RCURL LIT FOR COMMA
 %token	QUESTION COLON METHOD RETURN HIGHEST
 %token	CLASS STRUCT PUBLIC PRIVATE VAR DOT INCLUDE
-%token	REDIRECT KILL_REDIRECT KILL_ALL_REDIRECTS
+%token	REDIRECT KILL_REDIRECT KILL_ALL_REDIRECTS INLINE
 
 %right	XOR_ASSIGN
 %right	OR_ASSIGN
@@ -461,8 +461,14 @@ method_name:
 |	method_name operator
 ;
 
+method_declarator:
+	METHOD
+|	INLINE METHOD
+		{ g_bInline = true; }
+;
+
 method:
-	METHOD method_name LPARAN
+	method_declarator method_name LPARAN
 		{ g_methods.push_back(std::map<STD_NATURAL_STRING, int>()); }
 	method_params
 		{
@@ -503,6 +509,7 @@ method:
 					method.name = name;
 					method.params = g_methods.back().size();
 					method.i = CProgram::m_pyyUnits->end() - CProgram::m_pyyUnits->begin();
+					method.bInline = g_bInline;
 					NAMED_METHOD::m_methods.push_back(method);
 					if (g_pClass)
 					{
@@ -514,6 +521,8 @@ method:
 			_MACHINE_UNIT(CProgram::skipMethod, 0);
 			CProgram::m_pyyUnits->back().lit = name;
 			CProgram::m_pyyUnits->back().num = g_methods.back().size();
+
+			g_bInline = false;
 		}
 	RPARAN
 ;
@@ -691,6 +700,7 @@ LPMACHINE_UNITS g_yyOldUnits = NULL;
 std::deque<std::map<STD_NATURAL_STRING, int> > g_methods;
 std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass = NULL;
 CLASS_VISIBILITY g_vis = CV_PRIVATE;
+bool g_bInline = false;
 
 // Include a file, but don't allow the same file to be included twice.
 inline void addInclusion(const STD_NATURAL_STRING file)

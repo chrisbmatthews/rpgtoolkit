@@ -1135,13 +1135,14 @@ void CProgram::parseFile(FILE *pFile)
 		}
 	}
 
-	// Optimise the program.
-	COptimiser opt(*this);
-	opt.inlineExpand();
-	// opt.propagateConstants();
+	// Inline requested methods.
+	if (COptimiser(*this).inlineExpand())
+	{
+		// Some methods were inlined, so we need to update locations.
+		updateLocations(m_units.begin());
+	}
 
-	// Relocate and re-resolve (heh...)
-	updateLocations(m_units.begin());
+	// Resolve function calls.
 	resolveFunctions();
 }
 

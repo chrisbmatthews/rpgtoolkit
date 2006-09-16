@@ -41,7 +41,7 @@ void COptimiser::getCallSite(int required, POS &i, POS begin, std::deque<CALL_PA
  * but a better constant propagator should be written at some
  * latter date!
  */
-void COptimiser::inlineExpand()
+bool COptimiser::inlineExpand()
 {
 	std::map<LPNAMED_METHOD, MACHINE_UNITS> methods;
 
@@ -50,6 +50,8 @@ void COptimiser::inlineExpand()
 		std::vector<tagNamedMethod>::iterator i = m_prg.m_methods.begin();
 		for (; i != m_prg.m_methods.end(); ++i)
 		{
+			if (!i->bInline) continue;
+
 			MACHINE_UNITS &method = methods[i];
 			POS j = m_prg.m_units.begin() + i->i;
 			int depth = 0;
@@ -64,9 +66,11 @@ void COptimiser::inlineExpand()
 			method.pop_front();
 			method.pop_back();
 
-			//m_prg.m_units.erase(m_prg.m_units.begin() + i->i + 1, j - 1 /*+ 1*/);
+			// m_prg.m_units.erase(m_prg.m_units.begin() + i->i - 1, j + 1);
 		}
 	}
+
+	if (!methods.size()) return false;
 
 	// Locate method calls.
 	TCHAR chr = 0;
@@ -201,6 +205,8 @@ void COptimiser::inlineExpand()
 			i->show();
 		}
 	}**/
+
+	return true;
 }
 
 #if 0

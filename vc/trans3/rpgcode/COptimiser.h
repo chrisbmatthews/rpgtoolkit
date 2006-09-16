@@ -16,7 +16,7 @@ class COptimiser
 public:
 	COptimiser(CProgram &prg): m_prg(prg) { }
 
-	void inlineExpand();
+	bool inlineExpand();
 	void propagateConstants();
 
 private:
