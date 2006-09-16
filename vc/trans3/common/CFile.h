@@ -46,7 +46,7 @@ public:
 	// Misc.
 	//
 	VOID seek(CONST INT pos) { m_ptr.Offset = pos; }
-	BOOL isEof(VOID) CONST { return m_bEof; }
+	BOOL isEof(VOID) CONST { return m_ptr.Offset >= size(); }
 	BOOL isOpen(VOID) CONST { return (m_hFile != HFILE_ERROR); }
 	DWORD size(VOID) CONST { return GetFileSize(HANDLE(m_hFile), NULL); }
 	static BOOL fileExists(CONST STRING file) { return CFile(file).isOpen(); }
@@ -55,7 +55,6 @@ public:
 private:
 	HFILE m_hFile;
 	OVERLAPPED m_ptr;
-	BOOL m_bEof;
 
 };
 

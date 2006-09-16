@@ -20,7 +20,6 @@ CFile::CFile(CONST STRING fileName, CONST UINT mode)
 	OFSTRUCT ofs;
 	m_hFile = OpenFile(resolve(fileName.c_str()).c_str(), &ofs, mode);
 	memset(&m_ptr, 0, sizeof(m_ptr));
-	m_bEof = FALSE;
 }
 
 void CFile::open(const STRING fileName, CONST UINT mode)
@@ -32,7 +31,6 @@ void CFile::open(const STRING fileName, CONST UINT mode)
 	OFSTRUCT ofs;
 	m_hFile = OpenFile(resolve(fileName.c_str()).c_str(), &ofs, mode);
 	memset(&m_ptr, 0, sizeof(m_ptr));
-	m_bEof = FALSE;
 }
 
 /*
@@ -99,42 +97,42 @@ CFile &CFile::operator<<(CONST STRING data)
 CFile &CFile::operator>>(BYTE &data)
 {
 	DWORD read = 0;
-	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(CHAR &data)
 {
 	DWORD read = 0;
-	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(SHORT &data)
 {
 	DWORD read = 0;
-	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(INT &data)
 {
 	DWORD read = 0;
-	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(UINT &data)
 {
 	DWORD read = 0;
-	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(double &data)
 {
 	DWORD read = 0;
-	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
@@ -145,7 +143,7 @@ CFile &CFile::operator>>(STRING &data)
 	{
 		CHAR chr;
 		DWORD read;
-		if (m_bEof = !ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr))
+		if (!ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr))
 		{
 			toRet = "";
 			break;
@@ -180,7 +178,7 @@ STRING CFile::line()
 	{
 		char chr;
 		DWORD read;
-		if (m_bEof = !ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr))
+		if (!ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr))
 		{
 			break;
 		}
