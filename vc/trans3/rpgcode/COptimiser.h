@@ -17,6 +17,7 @@ public:
 	COptimiser(CProgram &prg): m_prg(prg) { }
 
 	void inlineExpand();
+	void propagateConstants();
 
 private:
 	COptimiser(COptimiser &);

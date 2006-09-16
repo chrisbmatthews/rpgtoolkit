@@ -6,13 +6,13 @@
 --------------------Configuration: trans3 - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP67BD.tmp" with contents
+Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSPC806.tmp" with contents
 [
-/nologo /MTd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\cvs\vc\trans3\common\CFile.cpp"
+/nologo /MTd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /Fp"Debug/trans3.pch" /YX"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\cvs\vc\trans3\rpgcode\COptimiser.cpp"
 ]
-Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSP67BD.tmp" 
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP67BE.tmp" with contents
+Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSPC806.tmp" 
+Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSPC807.tmp" with contents
 [
 ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/trans3.pdb" /debug /machine:I386 /nodefaultlib:"LIBC" /nodefaultlib:"LIBCMT" /out:"Debug/trans3.exe" /pdbtype:sept /libpath:".\audio\\" 
 .\Debug\StdAfx.obj
@@ -68,17 +68,17 @@ ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib 
 ..\tkCommon\images\FreeImage.lib
 ..\tkzip\zlib.lib
 ]
-Creating command line "link.exe @C:\Users\Colin\AppData\Local\Temp\RSP67BE.tmp"
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP67BF.bat" with contents
+Creating command line "link.exe @C:\Users\Colin\AppData\Local\Temp\RSPC807.tmp"
+Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSPC808.bat" with contents
 [
 @echo off
 ".\Debug\trans3.exe" /RegServer
 echo regsvr32 exec. time > ".\Debug\regsvr32.trg"
 echo Server registration done!
 ]
-Creating command line "C:\Users\Colin\AppData\Local\Temp\RSP67BF.bat"
+Creating command line "C:\Users\Colin\AppData\Local\Temp\RSPC808.bat"
 Compiling...
-CFile.cpp
+COptimiser.cpp
 Linking...
 <h3>Output Window</h3>
 Performing registration

@@ -1138,6 +1138,7 @@ void CProgram::parseFile(FILE *pFile)
 	// Optimise the program.
 	COptimiser opt(*this);
 	opt.inlineExpand();
+	// opt.propagateConstants();
 
 	// Relocate and re-resolve (heh...)
 	updateLocations(m_units.begin());
