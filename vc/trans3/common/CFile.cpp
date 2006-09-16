@@ -99,42 +99,42 @@ CFile &CFile::operator<<(CONST STRING data)
 CFile &CFile::operator>>(BYTE &data)
 {
 	DWORD read = 0;
-	m_bEof = ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(CHAR &data)
 {
 	DWORD read = 0;
-	m_bEof = ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(SHORT &data)
 {
 	DWORD read = 0;
-	m_bEof = ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(INT &data)
 {
 	DWORD read = 0;
-	m_bEof = ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(UINT &data)
 {
 	DWORD read = 0;
-	m_bEof = ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(double &data)
 {
 	DWORD read = 0;
-	m_bEof = ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	m_bEof = !ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
@@ -145,7 +145,7 @@ CFile &CFile::operator>>(STRING &data)
 	{
 		CHAR chr;
 		DWORD read;
-		if (!(m_bEof = ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr)))
+		if (m_bEof = !ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr))
 		{
 			toRet = "";
 			break;
@@ -180,9 +180,9 @@ STRING CFile::line()
 	{
 		char chr;
 		DWORD read;
-		if (!(m_bEof = ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr)))
+		if (m_bEof = !ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr))
 		{
-			return "";
+			break;
 		}
 		m_ptr.Offset++;
 		if (chr == '\n')

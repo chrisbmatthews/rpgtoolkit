@@ -420,6 +420,10 @@ SOURCE=.\rpgcode\CCursorMap.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\rpgcode\COptimiser.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\rpgcode\CProgram.cpp
 # End Source File
 # Begin Source File
@@ -611,6 +615,10 @@ InputPath=.\rpgcode\yacc.txt
 # Begin Source File
 
 SOURCE=.\rpgcode\CCursorMap.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\rpgcode\COptimiser.h
 # End Source File
 # Begin Source File
 
