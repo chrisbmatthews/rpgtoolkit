@@ -253,6 +253,7 @@ class CThread;			// A thread.
 class IPlugin;			// A plugin.
 class CFile;			// A file stream.
 class CProgramChild;	// A child program;
+class COptimiser;		// An optimisation engine.
 struct tagBoardProgram;	// A board program;
 
 // Some types of enumerations.
@@ -379,6 +380,7 @@ private:
 	friend void addInclusion(const STRING file);
 	friend tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg);
 	friend CProgramChild;
+	friend COptimiser;
 
 	void parseFile(FILE *pFile);
 	unsigned int matchBrace(POS i);

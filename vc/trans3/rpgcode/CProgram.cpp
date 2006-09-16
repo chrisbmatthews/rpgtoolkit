@@ -9,6 +9,7 @@
  */
 
 #include "CProgram.h"
+#include "COptimiser.h"
 #include "CVariant.h"
 #include "../plugins/plugins.h"
 #include "../plugins/constants.h"
@@ -369,15 +370,38 @@ STRING CProgram::getFunctionName(const MACHINE_FUNC func)
 	return ((i != m_functions.end()) ? i->first : _T(""));
 }
 
-// Show the contents of the instruction unit.
-inline void tagMachineUnit::show() const
+inline STRING getUnitDataType(UNIT_DATA_TYPE udt)
 {
-	std::cerr	<< "Lit: " << getAsciiString(lit)
+	STRING ret;
+
+	if (udt & UDT_UNSET) ret += "UDT_UNSET, ";
+	if (udt & UDT_NUM) ret += "UDT_NUM, ";
+	if (udt & UDT_LIT) ret += "UDT_LIT, ";
+	if (udt & UDT_ID) ret += "UDT_ID, ";
+	if (udt & UDT_FUNC) ret += "UDT_FUNC, ";
+	if (udt & UDT_OPEN) ret += "UDT_OPEN, ";
+	if (udt & UDT_CLOSE) ret += "UDT_CLOSE, ";
+	if (udt & UDT_LINE) ret += "UDT_LINE, ";
+	if (udt & UDT_OBJ) ret += "UDT_OBJ, ";
+	if (udt & UDT_LABEL) ret += "UDT_LABEL, ";
+	if (udt & UDT_PLUGIN) ret += "UDT_PLUGIN, ";
+
+	return (!ret.empty()) ? ret.substr(0, ret.length() - 2) : STRING();
+}
+
+// Show the contents of the instruction unit.
+/*inline */void tagMachineUnit::show() const
+{
+	STRINGSTREAM ss;
+
+	ss			<< "Lit: " << getAsciiString(lit)
 				<< "\nNum: " << num
-				<< "\nType: " << udt
+				<< "\nType: " << getUnitDataType(udt)
 				<< "\nFunc: " << getAsciiString(CProgram::getFunctionName(func))
-				<< "\nParams: " << params
-				<< "\n\n";
+				<< "\nParams: " << params;
+				//<< "\n\n";
+
+	CProgram::debugger(ss.str());
 }
 
 // Add a function to the global namespace.
@@ -1111,7 +1135,15 @@ void CProgram::parseFile(FILE *pFile)
 		}
 	}
 
+	// Optimise the program.
+	COptimiser opt(*this);
+	opt.inlineExpand();
+
 	// Resolve function calls.
+	resolveFunctions();
+
+	// Relocate and re-resolve (heh...)
+	updateLocations(m_units.begin());
 	resolveFunctions();
 }
 
@@ -2128,7 +2160,7 @@ void operators::member(CALL_DATA &call)
 		TCHAR str[255];
 		_itot(obj, str, 10);
 		call.ret().udt = UDT_ID;
-		call.ret().lit = STRING(str) + _T("::") + mem;
+		call.ret().lit = _T(":") + STRING(str) + _T("::") + mem;
 	}
 	else
 	{
