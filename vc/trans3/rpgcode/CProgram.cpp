@@ -1139,9 +1139,6 @@ void CProgram::parseFile(FILE *pFile)
 	COptimiser opt(*this);
 	opt.inlineExpand();
 
-	// Resolve function calls.
-	resolveFunctions();
-
 	// Relocate and re-resolve (heh...)
 	updateLocations(m_units.begin());
 	resolveFunctions();
