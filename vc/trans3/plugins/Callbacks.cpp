@@ -410,7 +410,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSl
 			*pRet = pData->charLevelUpType;
 			break;
 		case PLAYER_DIR_FACING:
-			// TBD: warn users of direction index changes.
+			// Direction values have changed to MV_ENUM as of 3.1.0.
 			*pRet = int(pPlayer->getFacing()->dir());
 			break;
 		case PLAYER_NEXTLEVEL:
@@ -580,7 +580,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerNum(int infoCode, int arrayPos, int newVal, 
 			pData->charLevelUpType = newVal;
 			break;
 		case PLAYER_DIR_FACING:
-			// TBD: warn users of direction index changes.
+			// Direction values have changed to MV_ENUM as of 3.1.0.
 			pPlayer->getFacing()->assign(MV_ENUM(newVal));
 			break;
 	}
@@ -1751,6 +1751,7 @@ STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int array
 		case BRD_ITM_ACTIVE_VAR:
 			if (pItem) str = pItem->getBoardSprite()->initialVar;
 			break;
+		// TBD: pItem->getBoardSprite()->loadingVar;
 		case BRD_ITM_DONE_VAR:
 			if (pItem) str = pItem->getBoardSprite()->finalVar;
 			break;
@@ -1996,6 +1997,7 @@ STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int array
 		case BRD_ITM_ACTIVE_VAR:
 			if (pItem) pItem->getBoardSprite()->initialVar = getString(newVal);
 			break;
+		// TBD: if (pItem) pItem->getBoardSprite()->loadingVar = getString(newVal);
 		case BRD_ITM_DONE_VAR:
 			if (pItem) pItem->getBoardSprite()->finalVar = getString(newVal);
 			break;
