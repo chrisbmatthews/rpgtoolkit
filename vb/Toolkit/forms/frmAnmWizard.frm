@@ -356,7 +356,7 @@ Private Sub cmdSelectFile_Click(): On Error Resume Next
     If LenB(files(0)) = 0 Then Exit Sub
     
     'Sort array manually to allow custom order in list.
-    Call sortArray(files)
+    Call sortArray(files, 1, UBound(files))
     
     For i = 1 To UBound(files)
         'Preserve the path if a sub-folder is chosen.
@@ -593,10 +593,10 @@ End Sub
 '========================================================================
 ' Sort a string array alphabetically
 '========================================================================
-Private Sub sortArray(ByRef arr() As String)
+Private Sub sortArray(ByRef arr() As String, ByVal startIdx As Long, ByVal endIdx As Long)
     Dim i As Long, j As Long, swap As String
-    For i = LBound(arr) To UBound(arr)
-        For j = LBound(arr) To UBound(arr)
+    For i = startIdx To endIdx
+        For j = startIdx To endIdx
             If StrComp(LCase$(arr(i)), LCase$(arr(j)), vbTextCompare) = -1 Then
                 swap = arr(i)
                 arr(i) = arr(j)
