@@ -1702,7 +1702,7 @@ CTile **CTile::findCacheMatch(CONST STRING filename, CONST INT eMask, CONST RGBS
 				// Check isometrics match.
 				if (bIsometric == (*i)->isIsometric())
 				{
-					return i;
+					return &*i;
 				}
 			}
 		}

@@ -208,9 +208,9 @@ public:
 	CPtrData(T data = T()) { m_pData = new T(data); }
 	CPtrData(T *pData) { m_pData = new T(*pData); }
 	CPtrData(const CPtrData &rhs) { m_pData = new T(*rhs.m_pData); }
-	operator=(CPtrData &rhs) { *m_pData = *rhs.m_pData; }
-	operator=(T &rhs) { *m_pData = rhs; }
-	operator=(T *rhs) { delete m_pData; m_pData = rhs; }
+	CPtrData &operator=(CPtrData &rhs) { *m_pData = *rhs.m_pData; return *this; }
+	CPtrData &operator=(T &rhs) { *m_pData = rhs; return *this; }
+	CPtrData &operator=(T *rhs) { delete m_pData; m_pData = rhs; return *this; }
 	operator T*() { return m_pData; }
 	T *operator->() { return m_pData; }
 	const T *operator->() const { return m_pData; }

@@ -50,10 +50,10 @@ m_steps(0)
  */
 NODE *CPathFind::bestOpenNode(void)
 {
-	NODE *best = m_openNodes.begin();
+	NODE *best = &*m_openNodes.begin();
 	for (NV_ITR i = m_openNodes.begin(); i != m_openNodes.end(); ++i)
 	{
-		if (i->fValue() < best->fValue()) best = i;
+		if (i->fValue() < best->fValue()) best = &*i;
 	}
 	return best;
 }
@@ -356,7 +356,7 @@ PF_PATH CPathFind::pathFind(
 			child.dist = distance(child, m_goal);
 
 			// m_closedNodes and parent are both constant in this while().
-			child.parent = parent - m_closedNodes.begin();
+			child.parent = parent - &*m_closedNodes.begin();
 			if (m_heuristic != PF_VECTOR) 
 			{
 				// m_u.i will have incremented - the previous value is needed.

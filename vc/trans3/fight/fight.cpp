@@ -528,9 +528,9 @@ void fightTick()
 				std::vector<std::map<STRING, STATUS_EFFECT>::iterator> finished;
 				for (; k != j->statuses.end(); ++k)
 				{
-					if (statusEffectTick(&*k, j) == 0)
+					if (statusEffectTick(&*k, &*j) == 0)
 					{
-						removeStatusEffect(&k->second, j);
+						removeStatusEffect(&k->second, &*j);
 						finished.push_back(k);
 					}
 				}

@@ -120,12 +120,9 @@ bool CAudioSegment::isPlaying()
 {
 	if (m_audiere)
 	{
-		if (m_outputStream) return m_outputStream->isPlaying();
+		return (m_outputStream ? m_outputStream->isPlaying() : false);
 	}
-	else
-	{
-		if (m_pPerformance) return (m_pPerformance->IsPlaying(m_pSegment, NULL) == S_OK);
-	}
+	return (m_pPerformance ? (m_pPerformance->IsPlaying(m_pSegment, NULL) == S_OK) : false);
 }
 
 /*

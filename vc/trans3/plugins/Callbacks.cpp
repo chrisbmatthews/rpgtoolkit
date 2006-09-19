@@ -415,9 +415,8 @@ STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSl
 			break;
 		case PLAYER_NEXTLEVEL:
 		{
-			unsigned double levelStart = 0.0, perc = 0.0;
-			levelStart = pData->levelStarts[pData->stats.level - pInitStats->level];
-			perc = (pData->stats.experience - levelStart) / (pData->nextLevel - levelStart) * 100.0;
+			double levelStart = pData->levelStarts[pData->stats.level - pInitStats->level];
+			double perc = (pData->stats.experience - levelStart) / (pData->nextLevel - levelStart) * 100.0;
 			*pRet = int(perc);
 		} break;
 		default:

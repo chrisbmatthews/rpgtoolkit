@@ -52,7 +52,7 @@ bool COptimiser::inlineExpand()
 		{
 			if (!i->bInline) continue;
 
-			MACHINE_UNITS &method = methods[i];
+			MACHINE_UNITS &method = methods[&*i];
 			POS j = m_prg.m_units.begin() + i->i;
 			int depth = 0;
 			do

@@ -341,7 +341,7 @@ void CPlayer::calculateLevels(const bool init)
 	pLevels->reserve(numLevels);
 	pLevels->push_back(double(m_playerMem.stats.experience));
 
-	unsigned double exp = double(m_playerMem.levelType);
+	double exp = double(m_playerMem.levelType);
 	for (unsigned int i = 1; i < numLevels; ++i)
 	{
 		pLevels->push_back((*pLevels)[i - 1] + exp);

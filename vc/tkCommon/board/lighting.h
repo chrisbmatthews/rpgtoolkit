@@ -41,7 +41,7 @@ typedef struct tagLayerShade
 
 	tagLayerShade(VOID): layer(1) {};
 	tagLayerShade(CONST INT width, CONST INT height): layer(1) { size(width, height); }
-	size(CONST INT width, CONST INT height);
+	void size(CONST INT width, CONST INT height);
 
 } LAYER_SHADE, *LPLAYER_SHADE;
 

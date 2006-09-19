@@ -692,7 +692,7 @@ bool CPfVector::contains(CPfVector &rhs) const
 		// Check if *both* of the points of the rhs vector are in this vector.
 		if (*i == start || *i == end)
 		{
-			if (!first) first = i;
+			if (!&*first) first = i;
 			else
 			{
 				last = i;
@@ -727,8 +727,8 @@ bool CPfVector::contains(CPfVector &rhs) const
 		if (intersect(i, rhs, p))
 		{
 			// Check if the intersect point is on the vector.
-			DB_POINT a = first ? *first : *i, b = {-1, -1};
-			b = last ? *last : (first ? b : *(i + 1));
+			DB_POINT a = &*first ? *first : *i, b = {-1, -1};
+			b = &*last ? *last : (&*first ? b : *(i + 1));
 
 			if ((dAbs(p.x - a.x) > CV_PRECISION || dAbs(p.y - a.y) > CV_PRECISION) &&
 				(dAbs(p.x - b.x) > CV_PRECISION || dAbs(p.y - b.y) > CV_PRECISION))
@@ -737,7 +737,7 @@ bool CPfVector::contains(CPfVector &rhs) const
 	} // for (i)
 
 	// There are 2 or 0 nodes on the vector and the line does not intersect the vector.
-	if (!first || last)	return false;
+	if (!&*first || &*last)	return false;
 
 	// There is one node on the vector - is the other inside the vector?
 	return (*first == end ? containsPoint(start) : containsPoint(end));
@@ -1023,8 +1023,8 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 		{
 			const double c = i->y - m * i->x;
-			if (!min || c < dmin) { dmin = c; min = i; }
-			if (!max || c > dmax) { dmax = c; max = i; }
+			if (!&*min || c < dmin) { dmin = c; min = i; }
+			if (!&*max || c > dmax) { dmax = c; max = i; }
 		}
 	}
 	else
@@ -1032,8 +1032,8 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 		// Take any x-value.
 		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 		{
-			if (!min || i->x < min->x) min = i;
-			if (!max || i->x > max->x) max = i;
+			if (!&*min || i->x < min->x) min = i;
+			if (!&*max || i->x > max->x) max = i;
 		}
 	}
 

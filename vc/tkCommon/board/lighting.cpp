@@ -192,7 +192,7 @@ VARIANT invokeObject(CONST LPUNKNOWN pUnk, BSTR method, DISPPARAMS &dispparams, 
 //--------------------------------------------------------------------------
 // Size a LAYER_SHADE
 //--------------------------------------------------------------------------
-tagLayerShade::size(CONST INT width, CONST INT height)
+void tagLayerShade::size(CONST INT width, CONST INT height)
 {
 	shades.clear();
 	for (LONG i = 0; i <= width; ++i)

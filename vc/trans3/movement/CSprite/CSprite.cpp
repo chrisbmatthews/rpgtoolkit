@@ -27,6 +27,9 @@ bool CSprite::m_bDoneMove = false;
 int CSprite::m_loopOffset = 0;
 bool CSprite::m_bPxMovement = false;	// Using pixel or tile movement.
 
+#pragma warning(push)
+#pragma warning(disable : 4355)
+
 /*
  * Constructor
  */
@@ -42,6 +45,8 @@ m_tileType(TT_NORMAL)				// Tiletype at location, NOT sprite's type.
 {
 	m_v.x = m_v.y = 0;
 }
+
+#pragma warning(pop)
 
 /*
  * Movement functions.
@@ -958,7 +963,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
 			// that is due to be drawn after this sprite, then we want
 			// to insert this before *i. pos is the iterator position
 			// we are going to insert this in front of.
-			if (!pos) pos = i;
+			if (!&*pos) pos = i;
 
 			// Also, we haven't collided with it.
 			continue;
@@ -974,7 +979,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
 
 		const ZO_ENUM zo = tarBase.contains(sprBase);
 
-		if (!zo && !pos)
+		if (!zo && !&*pos)
 		{
 			// No rect intersect - compare on bounding box bottom-left
 			// corner position.
@@ -982,7 +987,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
 				(tBounds.bottom * g_pBoard->pxWidth() + tBounds.left))
 				pos = i;
 		}
-		else if (!(zo & ZO_ABOVE) && !pos)
+		else if (!(zo & ZO_ABOVE) && !&*pos)
 		{
 			// If below sprite, we want to insert before i, but only
 			// if we don't have an insertion point already.
@@ -997,13 +1002,13 @@ TILE_TYPE CSprite::spriteCollisions(void)
 			result = TT_SOLID;
 
 			// If we already have an insertion point, no need to continue.
-			if (pos) break;
+			if (&*pos) break;
 		}
 
 		// Compare origins? Merge origins and targets? (how?)
 	}
 
-	if (!pos)
+	if (!&*pos)
 		g_sprites.v.push_back(this);
 	else
 		g_sprites.v.insert(pos, this);

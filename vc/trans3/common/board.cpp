@@ -884,7 +884,7 @@ lutEndB:
 			std::vector<OBJ_POSITION>::iterator pos = prgPos.begin();
 			for (; p != programs.end(); ++p, ++pos)
 			{
-				createProgramBase(*p, pos);
+				createProgramBase(*p, &*pos);
 			}
 
 			// Setup the background image as an attached image.
@@ -1618,7 +1618,7 @@ LPBRD_VECTOR tagBoard::getVector(const LPSTACK_FRAME pParam)
 		std::vector<BRD_VECTOR>::iterator i = vectors.begin();
 		for (; i != vectors.end(); ++i)
 		{
-			if (_ftcsicmp(handle.c_str(), i->handle.c_str()) == 0) return i;
+			if (_ftcsicmp(handle.c_str(), i->handle.c_str()) == 0) return &*i;
 		}
 	}
 	else

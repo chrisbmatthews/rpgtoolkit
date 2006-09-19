@@ -153,7 +153,10 @@ private:
 	NODE m_start;
 	NODE m_goal;
 
-	union										// Get child loop trackers. 
+	/* Colin:	This can't be a union because DB_ITR has a copy constructor.
+	 *			It also can't be nameless because nameless classes can't have
+	 *			compiler-generated constructors. */
+	struct tagU									// Get child loop trackers. 
 	{
 		DB_ITR v;								// Vector - m_points.
 		int i;									// Tile - MV_ENUM.
