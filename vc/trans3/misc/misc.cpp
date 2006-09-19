@@ -78,8 +78,7 @@ void saveSetting(const STRING strKey, const double dblValue)
 	RegCreateKey(HKEY_CURRENT_USER, KEY_TRANS3, &hKey);
 	STRINGSTREAM ss;
 	ss << dblValue;
-	const TCHAR *str = ss.str().c_str();
-	RegSetValueEx(hKey, strKey.c_str(), 0, REG_SZ, (LPBYTE)str, strlen(str) + 1);
+	RegSetValueEx(hKey, strKey.c_str(), 0, REG_SZ, LPBYTE(ss.str().c_str()), strlen(ss.str().c_str()) + 1);
 	RegCloseKey(hKey);
 }
 
