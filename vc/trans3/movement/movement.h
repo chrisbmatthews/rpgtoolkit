@@ -54,16 +54,6 @@ enum GAME_STATE
 #define MVQ_SE _T("7")
 #define MVQ_SW _T("8")
 
-/* In the process of being depreciated.. SpriteAttr::getStanceAnm? */
-#define WALK_N _T("walk_n")
-#define WALK_S _T("walk_s")
-#define WALK_E _T("walk_e")
-#define WALK_W _T("walk_w")
-#define WALK_NE _T("walk_ne")
-#define WALK_NW _T("walk_nw")
-#define WALK_SE _T("walk_se")
-#define WALK_SW _T("walk_sw")
-
 /*
  * Idle information for sprites.
  */
