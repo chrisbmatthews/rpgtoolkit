@@ -679,7 +679,7 @@ Begin VB.Form frmBoardEdit
                End
             End
             Begin VB.Label lblProperties 
-               Caption         =   "Board background color"
+               Caption         =   "Background color"
                Height          =   255
                Index           =   6
                Left            =   840
@@ -1043,24 +1043,6 @@ Attribute VB_Exposed = False
 'Read LICENSE.txt for licensing info
 '========================================================================
 'Note to self: wip = temporary additions to old code.
-'Files to consider (remember to remove from cvs after use)
-'   ambienteffectsform
-'   boardinformation
-'   boardlighting
-'   boardgradientdefine
-'   brdbackground
-'   BoardDayNightForm (?)
-'   frmThreading
-'   itemmenu
-'   itemset
-'   programmenu
-'   programset
-'   spotlighting
-'   tileinfo
-'   warpset
-'   CScrollBoard
-'   cBoardToolbar & co.
-'   ambientRGB references
 
 Option Explicit
 
@@ -1682,14 +1664,31 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
                 tilesetForm.Show vbModal
             Case vbKeyN: .brdChkHideLayers.value = Not .brdChkHideLayers.value
             Case vbKeyM: .brdChkShowLayers.value = Not .brdChkShowLayers.value
-        End Select
+            
+            Case vbKeyDelete, vbKeyBack:
+                Select Case m_ed.optSetting
+                    Case BS_VECTOR, BS_PROGRAM
+                        If (m_sel.status <> SS_DRAWING) Then Call vectorDeleteSelection(m_sel)
+                    Case BS_TILE, BS_SHADING
+                        'Create a local clipboard and cut to it.
+                        Dim clip As TKBoardClipboard
+                        Call setUndo
+                        Call clipCopy(clip, m_sel, True)
+                        Call clipCut(clip, True)
+                    Case BS_SPRITE
+                        Call spriteDeleteCurrent(toolbarGetIndex(BS_SPRITE))
+                    Case BS_IMAGE
+                        Call imageDeleteCurrent(toolbarGetIndex(BS_IMAGE))
+                    Case BS_LIGHTING
+                        Call lightingDeleteCurrent
+                End Select 'Setting (Delete, Backspace)
+                
+        End Select 'Key
     End With
 
     Select Case m_ed.optSetting
         Case BS_VECTOR, BS_PROGRAM
             Select Case keyCode
-                Case vbKeyDelete, vbKeyBack
-                    If (m_sel.status <> SS_DRAWING) Then Call vectorDeleteSelection(m_sel)
                 Case vbKeyZ
                     Call vectorSubdivideSelection(m_sel)
                 Case vbKeyX
@@ -1711,27 +1710,10 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
 
         Case BS_TILE, BS_SHADING
             Select Case keyCode
-                Case vbKeyDelete, vbKeyBack
-                    'Create a local clipboard and cut to it.
-                    Dim clip As TKBoardClipboard
-                    Call setUndo
-                    Call clipCopy(clip, m_sel, True)
-                    Call clipCut(clip, True)
                 Case vbKeyEscape
                     Call m_sel.clear(Me)
             End Select 'Key
-            
-        Case BS_IMAGE
-            Select Case keyCode
-                Case vbKeyDelete, vbKeyBack
-                    Call imageDeleteCurrent(tkMainForm.bTools_ctlImage.getCombo.ListIndex)
-            End Select
-            
-        Case BS_LIGHTING
-            Select Case keyCode
-                Case vbKeyDelete, vbKeyBack
-                    Call lightingDeleteCurrent
-            End Select
+
     End Select 'Setting
 End Sub
 Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
@@ -2313,7 +2295,7 @@ Private Sub exportImage(ByVal Index As Long) ':on error resume next
         'Select out the bitmap, return the previous contents.
         Call SelectObject(hdc, obj)
         
-        Call IMGExport(bmp, dlg.strSelectedFile)
+        If Not IMGExport(bmp, dlg.strSelectedFile) Then MsgBox "Unable to generate image, try another format", vbExclamation
         Call DeleteObject(bmp)
     End If
     
@@ -3126,7 +3108,7 @@ Public Sub vectorSetHandle(ByVal handle As String) ':on error resume next
         For j = 0 To UBound(m_ed.board(m_ed.undoIndex).vectors)
             If j <> i Then
                 If m_ed.board(m_ed.undoIndex).vectors(j).handle = handle Then
-                    MsgBox "Handle in use"
+                    MsgBox "Handle in use", vbInformation
                     Exit For
                 End If
             End If
