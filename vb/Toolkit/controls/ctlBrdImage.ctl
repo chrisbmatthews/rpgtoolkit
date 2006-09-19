@@ -52,6 +52,7 @@ Begin VB.UserControl ctlBrdImage
          ScaleHeight     =   255
          ScaleWidth      =   1095
          TabIndex        =   14
+         ToolTipText     =   "Current transparent color on the image"
          Top             =   2160
          Width           =   1095
       End
@@ -144,6 +145,7 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Left            =   0
             TabIndex        =   4
+            ToolTipText     =   "Browse for image file"
             Top             =   0
             Width           =   495
          End
@@ -154,6 +156,7 @@ Begin VB.UserControl ctlBrdImage
          Index           =   1
          Left            =   240
          TabIndex        =   13
+         ToolTipText     =   "The RGB values of the transparent color"
          Top             =   2160
          Width           =   1575
       End
@@ -163,6 +166,7 @@ Begin VB.UserControl ctlBrdImage
          Index           =   0
          Left            =   240
          TabIndex        =   12
+         ToolTipText     =   "Click 'Select' and the click the color on the image (on the board) that you wish to be transparent"
          Top             =   1800
          Width           =   1575
       End

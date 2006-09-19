@@ -10,12 +10,12 @@ Begin VB.UserControl ctlBrdVector
    ScaleWidth      =   3510
    Begin VB.ComboBox cmbVector 
       Height          =   315
-      Left            =   120
+      Left            =   0
       TabIndex        =   20
       Text            =   "cmbVector"
       ToolTipText     =   "Vector list - click to type new handle"
       Top             =   600
-      Width           =   3255
+      Width           =   3375
    End
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw vectors"
@@ -55,6 +55,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   1095
          Left            =   720
          TabIndex        =   14
+         ToolTipText     =   "Vector's points. Click a number and press the Delete key to enter a new pixel coordinate"
          Top             =   3360
          Width           =   1935
          _ExtentX        =   3413
@@ -135,11 +136,12 @@ Begin VB.UserControl ctlBrdVector
          End
       End
       Begin VB.CheckBox chkUnder 
-         Caption         =   "Include background"
+         Caption         =   "Include background image"
          Height          =   255
          Index           =   0
          Left            =   600
          TabIndex        =   7
+         ToolTipText     =   $"ctlBrdVector.ctx":0000
          Top             =   1320
          Width           =   2295
       End
@@ -149,6 +151,7 @@ Begin VB.UserControl ctlBrdVector
          Index           =   1
          Left            =   600
          TabIndex        =   6
+         ToolTipText     =   $"ctlBrdVector.ctx":008B
          Top             =   1560
          Width           =   2295
       End
@@ -158,6 +161,7 @@ Begin VB.UserControl ctlBrdVector
          Index           =   2
          Left            =   600
          TabIndex        =   5
+         ToolTipText     =   "Sprites appear behind the enclosed imagery if any part of their image intersects the vector"
          Top             =   1800
          Width           =   2295
       End
@@ -174,6 +178,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Left            =   600
          TabIndex        =   3
+         ToolTipText     =   "Vector forms a closed polygon (requires three or more points)"
          Top             =   1080
          Width           =   1815
       End
@@ -199,6 +204,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Left            =   1200
          TabIndex        =   13
+         ToolTipText     =   "Layer the player is transported to if it intersects a stairs-type vector"
          Top             =   2565
          Width           =   975
       End
@@ -207,6 +213,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Left            =   1200
          TabIndex        =   12
+         ToolTipText     =   "Layer the vector is located on"
          Top             =   2265
          Width           =   975
       End
