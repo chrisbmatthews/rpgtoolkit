@@ -29,6 +29,8 @@ Public initialVar As String                  'Activation variable.
 Public finalVar As String                    'Activation variable at end of activation prg.
 Public initialValue As String                'Initial value of activation variable.
 Public finalValue As String                  'Value of variable after activation prg runs.
+Public loadingVar As String                  'Variable checked before showing item on board.
+Public loadingValue As String                'Value loadingVar must be to show item.
 Public activationType As Long                'Activation type: SPR_STEP
                                              '                 SPR_KEYPRESS
 Public prgActivate As String                 'Program to run when sprite is activated.
@@ -52,6 +54,8 @@ Public Sub copy(ByRef rhs As CBoardSprite) ':on error resume next
     rhs.finalVar = finalVar
     rhs.initialValue = initialValue
     rhs.initialVar = initialVar
+    rhs.loadingValue = loadingValue
+    rhs.loadingVar = loadingVar
     rhs.layer = layer
     rhs.prgActivate = prgActivate
     rhs.prgMultitask = prgMultitask

@@ -33,7 +33,6 @@ Form=forms\cutcorner.frm
 Form=forms\tilesets.frm
 Form=forms\tilesetedit.frm
 Form=forms\testprefs.frm
-Form=forms\Ambiente.frm
 Form=forms\tilesetadd.frm
 Form=forms\tips.frm
 Form=forms\newGame.frm

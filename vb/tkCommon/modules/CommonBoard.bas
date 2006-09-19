@@ -470,12 +470,16 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
                     Call BinWriteString(num, .sprites(i).initialValue)
                     Call BinWriteString(num, .sprites(i).finalVar)
                     Call BinWriteString(num, .sprites(i).finalValue)
+                    Call BinWriteString(num, .sprites(i).loadingVar)
+                    Call BinWriteString(num, .sprites(i).loadingValue)
                     Call BinWriteInt(num, .sprites(i).activate)
                     Call BinWriteInt(num, .sprites(i).activationType)
                     Call BinWriteInt(num, .sprites(i).x)
                     Call BinWriteInt(num, .sprites(i).y)
                     Call BinWriteInt(num, .sprites(i).layer)
     
+                    'Reserved for associated board waypoint vector.
+                    Call BinWriteInt(num, -1)
                 Next i
             End If
             
@@ -492,6 +496,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
                     Call BinWriteInt(num, .Images(i).layer)
                     Call BinWriteInt(num, .Images(i).drawType)
                     Call BinWriteLong(num, .Images(i).transpcolor)
+                    
+                    'Reserved for image translucency, or other.
+                    Call BinWriteInt(num, 100)
     
                 Next i
             End If
@@ -717,7 +724,7 @@ exitForB:
             Next z
             
             'Lights
-            Dim ub As Integer, pts As Integer
+            Dim ub As Integer, pts As Integer, iReserved As Integer
             ub = BinReadInt(num)
             If ub >= 0 Then
                 'Negative number indicates no objects.
@@ -822,22 +829,24 @@ exitForB:
                     .sprites(i).initialValue = BinReadString(num)
                     .sprites(i).finalVar = BinReadString(num)
                     .sprites(i).finalValue = BinReadString(num)
+                    .sprites(i).loadingVar = BinReadString(num)
+                    .sprites(i).loadingValue = BinReadString(num)
                     .sprites(i).activate = BinReadInt(num)
                     .sprites(i).activationType = BinReadInt(num)
                     .sprites(i).x = BinReadInt(num)
                     .sprites(i).y = BinReadInt(num)
                     .sprites(i).layer = BinReadInt(num)
+                    
+                    iReserved = BinReadInt(num)             'Associated board waypoint vector.
                 
                 Next i
                 
                 'Update only after loading all sprites.
                 For i = 0 To ub
-                    'tbd: decide on storing default paths.
                     Call activeBoard.spriteUpdateImageData(.sprites(i), .sprites(i).filename, True)
                 Next i
             End If
-            
-            
+                        
             'Images
             ub = BinReadInt(num)
             If ub >= 0 Then
@@ -850,6 +859,8 @@ exitForB:
                     .Images(i).layer = BinReadInt(num)
                     .Images(i).drawType = BinReadInt(num)
                     .Images(i).transpcolor = BinReadLong(num)
+                    
+                    iReserved = BinReadInt(num)             'Image translucency, or other.
                 
                 Next i
             End If
@@ -1094,6 +1105,10 @@ exitForC:
                 spr.activationType = BinReadInt(num)    'activation type- 0-step on, 1- conditional (activation key)
                 spr.prgActivate = BinReadString(num)    'program to run when item is touched.
                 spr.prgMultitask = BinReadString(num)   'multitask program for item
+                
+                spr.loadingVar = spr.initialVar
+                spr.loadingValue = spr.initialValue
+                
                 If LenB(spr.filename) Then
                     ReDim Preserve .sprites(ubSprs)
                     ReDim Preserve .spriteImages(ubSprs)
