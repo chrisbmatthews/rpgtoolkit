@@ -244,19 +244,7 @@ bool CVector::contains(CVector &rhs, DB_POINT &ref) const
 	{
 		if (intersect(i, rhs, unused))
 		{
-			ref.x = (i + 1)->x - i->x;
-			ref.y = (i + 1)->y - i->y;
-
-/*			if (m_type & TT_UNIDIRECTIONAL)
-			{
-				// Continue one point for the case of corners.
-				if (intersect(++i, rhs))
-				{
-					ref.x = (i + 1)->x - i->x;
-					ref.y = (i + 1)->y - i->y;
-				}
-			}
-*/
+			ref = *(i + 1) - *i;
 			return true;
 		}
 	}
