@@ -373,7 +373,7 @@ layerEnd:
 			for (i = 0; i <= ub; ++i)
 			{
 				BRD_SPRITE spr;
-				short x, y, z;
+				short x, y, z, sReserved;
 				file >> spr.fileName;
 				file >> spr.prgActivate;
 				file >> spr.prgMultitask;
@@ -381,11 +381,15 @@ layerEnd:
 				file >> spr.initialValue;
 				file >> spr.finalVar;
 				file >> spr.finalValue;
+				file >> spr.loadingVar;
+				file >> spr.loadingValue;
 				file >> spr.activate;
 				file >> spr.activationType;
 				file >> x;
 				file >> y;
 				file >> z;
+
+				file >> sReserved;			// Associated board waypoint vector.
 
 				if (!spr.fileName.empty() && (this == g_pBoard))
 				{
@@ -425,6 +429,9 @@ layerEnd:
 				file >> var; img->layer = int(var);
 				file >> var; img->type = BI_ENUM(var);
 				file >> i; img->transpColor = i;
+				
+				// Reserved for translucency, or other.
+				file >> var;
     
 				images.push_back(img);
 				// Create canvases later.
@@ -786,6 +793,10 @@ lutEndB:
 			file >> spr.activationType;
 			file >> spr.prgActivate;
 			file >> spr.prgMultitask;
+
+			// Upgrade: set the loading variable.
+			spr.loadingVar = spr.initialVar;
+			spr.loadingValue = spr.initialValue;
 
 			if (!spr.fileName.empty() && (this == g_pBoard))
 			{
