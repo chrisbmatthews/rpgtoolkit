@@ -69,9 +69,9 @@ short CItem::open(const STRING file, const bool thread) throw(CInvalidItem)
 	// Check activation conditions.
 	m_bActive = true;
 
-	if (m_brdData.activate == SPR_CONDITIONAL)
+	if (!m_brdData.loadingVar.empty())
 	{
-		if (CProgram::getGlobal(m_brdData.initialVar)->getLit() != m_brdData.initialValue)
+		if (CProgram::getGlobal(m_brdData.loadingVar)->getLit() != m_brdData.loadingValue)
 		{
 			m_bActive = false;
 		}
