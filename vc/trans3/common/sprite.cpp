@@ -75,6 +75,16 @@ void tagSpriteAttr::loadAnimations(const bool bRenderFrames)
 		}
 	}
 
+	// Duplicate the idle animations as custom animations.
+	mapCustomGfx[IDLE_E].file = mapGfx[GFX_IDLE][MV_E].file;
+	mapCustomGfx[IDLE_SE].file = mapGfx[GFX_IDLE][MV_SE].file;
+	mapCustomGfx[IDLE_S].file = mapGfx[GFX_IDLE][MV_S].file;
+	mapCustomGfx[IDLE_SW].file = mapGfx[GFX_IDLE][MV_SW].file;
+	mapCustomGfx[IDLE_W].file = mapGfx[GFX_IDLE][MV_W].file;
+	mapCustomGfx[IDLE_NW].file = mapGfx[GFX_IDLE][MV_NW].file;
+	mapCustomGfx[IDLE_N].file = mapGfx[GFX_IDLE][MV_N].file;
+	mapCustomGfx[IDLE_NE].file = mapGfx[GFX_IDLE][MV_NE].file;
+
 	for (GFX_CUSTOM_MAP::iterator j = mapCustomGfx.begin(); j != mapCustomGfx.end(); ++j)
 	{
 		j->second.pAnm = CSharedAnimation::insert(j->second.file);

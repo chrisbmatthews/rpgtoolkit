@@ -93,6 +93,15 @@ const STRING GFX_SPC		= _T("SPECIAL MOVE");
 const STRING GFX_DIE		= _T("DIE");
 const STRING GFX_REST		= _T("REST");
 
+const STRING IDLE_E			= _T("idle e");
+const STRING IDLE_SE		= _T("idle se");
+const STRING IDLE_S			= _T("idle s");
+const STRING IDLE_SW		= _T("idle sw");
+const STRING IDLE_W			= _T("idle w");
+const STRING IDLE_NW		= _T("idle nw");
+const STRING IDLE_N			= _T("idle n");
+const STRING IDLE_NE		= _T("idle ne");
+
 /*
  * Common attributes of players and items:
  * animation sets, speed variables.
@@ -213,6 +222,8 @@ typedef struct tagBoardSprite
 	STRING finalVar;					// Activation variable at end of sprite prg.
 	STRING initialValue;				// Initial value of activation variable.
 	STRING finalValue;					// Value of variable after sprite prg runs.
+	STRING loadingVar;					// Variable checked before showing item on board.
+	STRING loadingValue;				// Value loadingVar must be to show item.
 	short activationType;				// Activation type: (flags)
 										// SPR_STEP - walk in vector.
 										// SPR_KEYPRESS - hit general activation key inside vector.
