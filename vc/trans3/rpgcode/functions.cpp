@@ -663,12 +663,10 @@ void gone(CALL_DATA &params)
 }
 
 /*
- * void viewbrd(string filename [, int x, int y [, canvas cnv])
+ * void viewbrd(string filename [, int x, int y [, canvas cnv]])
  * 
  * Draw a board to the screen or to a canvas,
  * starting at co-ordinates topX, topY.
- *
- * tbd: update reference for canvas
  */
 void viewbrd(CALL_DATA &params)
 {
@@ -1843,7 +1841,9 @@ void pathfind(CALL_DATA &params)
  * Causes the player to take one step in the direction of x, y
  * following a route determined by pathFind.
  *
- * TBD: update for flags.
+ * Possible flags
+ *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
+ *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
  */
 void playerstep(CALL_DATA &params)
 {
@@ -1880,7 +1880,9 @@ void playerstep(CALL_DATA &params)
  * Causes the item to take one step in the direction of x, y
  * following a route determined by pathFind.
  *
- * TBD: update for flags.
+ * Possible flags
+ *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
+ *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
  */
 void itemstep(CALL_DATA &params)
 {
@@ -1924,7 +1926,9 @@ void itemstep(CALL_DATA &params)
  * - NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST
  * - 1, 2, 3, 4, 5, 6, 7, 8
  *
- * TBD: update for flags.
+ * Possible flags
+ *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
+ *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
  */
 void push(CALL_DATA &params)
 {
@@ -1956,7 +1960,9 @@ void push(CALL_DATA &params)
  * "target" or "source" direction or the number of an item. The
  * syntax of the directional string is the same as for [[push()]].
  *
- * TBD: update for flags.
+ * Possible flags
+ *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
+ *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
  */
 void pushItem(CALL_DATA &params)
 {
@@ -2093,13 +2099,14 @@ void putplayer(CALL_DATA &params)
 	extern LPBOARD g_pBoard;
 	extern RECT g_screen;
 	extern ZO_VECTOR g_sprites;
+	extern CPlayer *g_pSelectedPlayer;
 
 	if (params.params != 4)
 	{
 		throw CError(_T("PutPlayer() requires four parameters."));
 	}
 
-	CSprite *p = getPlayerPointer(params[0]);
+	CPlayer *p = getPlayerPointer(params[0]);
 	if (!p) throw CError(_T("PutPlayer(): player not found"));
 
 	p->setActive(true);
@@ -2111,8 +2118,7 @@ void putplayer(CALL_DATA &params)
 	// Insert the pointer into the z-ordered vector.
 	g_sprites.zOrder();
     
-	/** TBD: do not "auto align" ?
-	p->alignBoard(g_screen, true); **/
+	if (p == g_pSelectedPlayer) p->alignBoard(g_screen, true);
 	renderNow(g_cnvRpgCode, true);
 	renderRpgCodeScreen();
 }
@@ -2602,7 +2608,6 @@ void itemlocation(CALL_DATA &params)
  * void playerlocation(variant handle, int &x, int &y, int &layer)
  * 
  * Get the location of a player.
- * TBD: update rpgcode reference/sort resevered variables.
  */
 void playerlocation(CALL_DATA &params)
 {
@@ -2894,7 +2899,6 @@ void mainFile(CALL_DATA &params)
 }
 
 /*
- * tbd: update reference.
  * str dirSav([str &ret])
  * str dirSav(str title, bool allowNewFile, int textColor, int backColor, str image)
  * 
@@ -3442,7 +3446,6 @@ void checkbutton(CALL_DATA &params)
  */
 void clearbuttons(CALL_DATA &params)
 {
-	// TBD: update rpgcode reference.
 	if (params.params)
 	{
 		for (unsigned int i = 0; i != params.params; ++i)
@@ -5133,7 +5136,9 @@ void endanimation(CALL_DATA &params)
  * itemstance(handle item, string stance [, int flags])
  * 
  * Animate an item's custom stance.
- * TBD: update for flags.
+ *
+ * Possible flags
+ *		tkMV_PAUSE_THREAD:	Hold thread execution until animation ends.
  */
 void itemstance(CALL_DATA &params)
 {
@@ -5154,7 +5159,9 @@ void itemstance(CALL_DATA &params)
  * playerstance(handle player, string stance [, int flags])
  * 
  * Animate a player's custom stance.
- * TBD: update for flags.
+ *
+ * Possible flags
+ *		tkMV_PAUSE_THREAD:	Hold thread execution until animation ends.
  */
 void playerstance(CALL_DATA &params)
 {
@@ -5202,7 +5209,6 @@ void posture(CALL_DATA &params)
  */
 void stance(CALL_DATA &params)
 {
-	// TBD: update rpgcode reference.
 	throw CWarning(_T("Stance() is obselete - use playerStance() instead."));
 }
 
@@ -6919,9 +6925,24 @@ void spritepath(CALL_DATA &params, CSprite *p)
  *
  * Causes the sprite to walk a path between a given set of co-ordinates,
  * depending on the flags parameter.
+ *
  * 1) Sprite walks the explicit path given by x1, y1 to xn, yn.
+ *		Required flag: none.
+ *
  * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
- * 3) Sprite walks a board-set waypoint path (Set boardPath < 0 to clear path tkMV_PATH_BACKGROUND).
+ *		Required flag: tkMV_PATH_FIND.
+ *
+ * 3) Sprite walks a board-set waypoint path 
+ *		Required flag: tkMV_WAYPOINT_PATH.
+ *		Possible flags for this option (in addition those for all options):
+ *		tkMV_PATH_BACKGROUND:	
+ *			Walk a waypoint path in the background. The sprite will resume the
+ *			the path if other movement commands are given to it, after completion.
+ *			Pass a negative number in boardpath to clear this flag.
+ *
+ * Possible flags for all options:
+ *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
+ *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
  */
 void itempath(CALL_DATA &params)
 {
@@ -6942,9 +6963,24 @@ void itempath(CALL_DATA &params)
  *
  * Causes the sprite to walk a path between a given set of co-ordinates,
  * depending on the flags parameter.
+ *
  * 1) Sprite walks the explicit path given by x1, y1 to xn, yn.
+ *		Required flag: none.
+ *
  * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
- * 3) Sprite walks a board-set waypoint path (Set boardPath < 0 to clear path tkMV_PATH_BACKGROUND).
+ *		Required flag: tkMV_PATH_FIND.
+ *
+ * 3) Sprite walks a board-set waypoint path 
+ *		Required flag: tkMV_WAYPOINT_PATH.
+ *		Possible flags for this option (in addition those for all options):
+ *		tkMV_PATH_BACKGROUND:	
+ *			Walk a waypoint path in the background. The sprite will resume the
+ *			the path if other movement commands are given to it, after completion.
+ *			Pass a negative number in boardpath to clear this flag.
+ *
+ * Possible flags for all options:
+ *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
+ *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
  */
 void playerpath(CALL_DATA &params)
 {
@@ -6959,7 +6995,7 @@ void playerpath(CALL_DATA &params)
 }
 
 /* 
- * int BoardGetVector([tbd: int tileType])
+ * int BoardGetVector()
  * 
  * Returns the number of vectors on the board.
  *
