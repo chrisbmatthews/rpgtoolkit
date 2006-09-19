@@ -1,12 +1,12 @@
 VERSION 5.00
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.UserControl ctlBrdProgram 
-   ClientHeight    =   5640
+   ClientHeight    =   6405
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3645
    DefaultCancel   =   -1  'True
-   ScaleHeight     =   5640
+   ScaleHeight     =   6405
    ScaleWidth      =   3645
    Begin VB.CheckBox chkDraw 
       Caption         =   "Draw programs"
@@ -37,11 +37,93 @@ Begin VB.UserControl ctlBrdProgram
    End
    Begin VB.Frame fraProperties 
       Caption         =   "Properties"
-      Height          =   4455
+      Height          =   5295
       Left            =   0
       TabIndex        =   1
       Top             =   960
       Width           =   3375
+      Begin VB.PictureBox Picture1 
+         BorderStyle     =   0  'None
+         Height          =   1215
+         Left            =   240
+         ScaleHeight     =   1215
+         ScaleWidth      =   3015
+         TabIndex        =   20
+         Top             =   2760
+         Width           =   3015
+         Begin VB.TextBox txtVar 
+            Height          =   285
+            Index           =   0
+            Left            =   0
+            TabIndex        =   24
+            ToolTipText     =   "Enter the name of an RPGCode variable"
+            Top             =   240
+            Width           =   1815
+         End
+         Begin VB.TextBox txtValue 
+            Height          =   285
+            Index           =   0
+            Left            =   2160
+            TabIndex        =   23
+            ToolTipText     =   "Enter the value the variable must be to run the program. Note: Leave blank if the variable is uninitialised"
+            Top             =   240
+            Width           =   855
+         End
+         Begin VB.TextBox txtVar 
+            Height          =   285
+            Index           =   1
+            Left            =   0
+            TabIndex        =   22
+            ToolTipText     =   "Enter the name of a variable to set when the program ends (may be the same as above)"
+            Top             =   840
+            Width           =   1815
+         End
+         Begin VB.TextBox txtValue 
+            Height          =   285
+            Index           =   1
+            Left            =   2160
+            TabIndex        =   21
+            ToolTipText     =   "Enter the value to set the variable to"
+            Top             =   840
+            Width           =   855
+         End
+         Begin VB.Label lbl 
+            Caption         =   "="
+            Height          =   255
+            Index           =   5
+            Left            =   1920
+            TabIndex        =   25
+            Top             =   840
+            Width           =   135
+         End
+         Begin VB.Label lblVar 
+            Caption         =   "Run program if variable"
+            Height          =   255
+            Index           =   0
+            Left            =   0
+            TabIndex        =   28
+            Top             =   0
+            Width           =   3015
+         End
+         Begin VB.Label lbl 
+            Caption         =   "="
+            Height          =   255
+            Index           =   3
+            Left            =   1920
+            TabIndex        =   27
+            Top             =   240
+            Width           =   135
+         End
+         Begin VB.Label lblVar 
+            Caption         =   "After program finishes, set variable"
+            Height          =   255
+            Index           =   1
+            Left            =   0
+            TabIndex        =   26
+            Top             =   600
+            Width           =   3015
+         End
+      End
       Begin VB.PictureBox picBrowse 
          Appearance      =   0  'Flat
          BorderStyle     =   0  'None
@@ -58,6 +140,7 @@ Begin VB.UserControl ctlBrdProgram
             Height          =   255
             Left            =   0
             TabIndex        =   15
+            ToolTipText     =   "Browse for program"
             Top             =   0
             Width           =   495
          End
@@ -65,23 +148,23 @@ Begin VB.UserControl ctlBrdProgram
       Begin VB.Frame fraActivationType 
          BorderStyle     =   0  'None
          Caption         =   "Activation mechanism            "
-         Height          =   1695
-         Left            =   240
+         Height          =   1575
+         Left            =   120
          TabIndex        =   7
-         Top             =   1320
+         Top             =   1200
          Width           =   2775
          Begin VB.CheckBox chkRunOnce 
             Caption         =   "Run once"
             Height          =   255
-            Left            =   240
+            Left            =   120
             TabIndex        =   19
             ToolTipText     =   "Allow this program to be run only once during the game"
-            Top             =   1320
+            Top             =   1200
             Width           =   2415
          End
          Begin VB.TextBox txtRepeatTrigger 
             Height          =   285
-            Left            =   1560
+            Left            =   1440
             TabIndex        =   12
             Text            =   "32"
             Top             =   720
@@ -90,16 +173,18 @@ Begin VB.UserControl ctlBrdProgram
          Begin VB.CheckBox chkActivationStopsMove 
             Caption         =   "Activation stops movement"
             Height          =   255
-            Left            =   240
+            Left            =   120
             TabIndex        =   13
+            ToolTipText     =   "Pending movements (e.g., the destination set in mouse movement) are cleared when the program runs"
             Top             =   960
             Width           =   2415
          End
          Begin VB.CheckBox chkRepeatTrigger 
             Caption         =   "Trigger every                 pixels"
             Height          =   255
-            Left            =   240
+            Left            =   120
             TabIndex        =   11
+            ToolTipText     =   "Cause the program to run repeatedly when a user walks around in a program's vector"
             Top             =   720
             Width           =   2415
          End
@@ -108,7 +193,7 @@ Begin VB.UserControl ctlBrdProgram
             BorderStyle     =   0  'None
             ForeColor       =   &H80000008&
             Height          =   495
-            Left            =   240
+            Left            =   120
             ScaleHeight     =   495
             ScaleWidth      =   2415
             TabIndex        =   8
@@ -120,6 +205,7 @@ Begin VB.UserControl ctlBrdProgram
                Index           =   1
                Left            =   0
                TabIndex        =   10
+               ToolTipText     =   "Users must press the Main File Activation Key whilst standing on the program to run the program"
                Top             =   240
                Width           =   2055
             End
@@ -129,6 +215,7 @@ Begin VB.UserControl ctlBrdProgram
                Index           =   0
                Left            =   0
                TabIndex        =   9
+               ToolTipText     =   "Users must stand on or in a program's vector to run the program"
                Top             =   0
                Width           =   2055
             End
@@ -136,10 +223,11 @@ Begin VB.UserControl ctlBrdProgram
       End
       Begin VB.TextBox txtLayer 
          Height          =   285
-         Left            =   480
+         Left            =   240
          TabIndex        =   5
          Text            =   "1"
-         Top             =   960
+         ToolTipText     =   "The layer the program is located on. Users must be on this layer to run the program"
+         Top             =   840
          Width           =   615
       End
       Begin VB.TextBox txtFilename 
@@ -153,7 +241,8 @@ Begin VB.UserControl ctlBrdProgram
          Height          =   1095
          Left            =   720
          TabIndex        =   16
-         Top             =   3120
+         ToolTipText     =   "Program vector's points. Click a number and press the Delete key to enter a new pixel coordinate"
+         Top             =   4080
          Width           =   1935
          _ExtentX        =   3413
          _ExtentY        =   1931
@@ -186,9 +275,9 @@ Begin VB.UserControl ctlBrdProgram
       Begin VB.Label lblLayer 
          Caption         =   "Layer"
          Height          =   255
-         Left            =   1200
+         Left            =   960
          TabIndex        =   6
-         Top             =   1020
+         Top             =   900
          Width           =   615
       End
       Begin VB.Label lblFilename 
@@ -221,6 +310,9 @@ Attribute VB_Exposed = False
 '========================================================================
 
 Option Explicit
+
+Private Const GUID_VAR As String = "_guid"
+
 Private Sub apply() ': On Error Resume Next
     Dim prg As CBoardProgram
     'Set undo before getting current program because undo creates new objects.
@@ -230,21 +322,22 @@ Private Sub apply() ': On Error Resume Next
         With prg
             .filename = txtFilename.Text
             .layer = Abs(val(txtLayer.Text))
-            .activate = IIf(chkRunOnce.value, PRG_CONDITIONAL, PRG_ACTIVE)
             
             'Assign a Guid as a unique variable name.
-            If .activate = PRG_CONDITIONAL Then
-                'Preserve conditional variables from old boards (lenb <> 0)
-                If LenB(.initialVar) = 0 Then
-                    .initialVar = modBoard.createGuid()
-                    .initialValue = vbNullString            'Uninitialised variables set to "".
-                    .finalVar = .initialVar
-                    .finalValue = "a"
-                End If
+            If chkRunOnce.value Then
+                .initialVar = modBoard.createGuid()
+                .initialValue = vbNullString            'Uninitialised variables set to "".
+                .finalVar = .initialVar
+                .finalValue = GUID_VAR                  'Allow the board editor to recognise
+                                                        'when Run Once is selected, rather
+                                                        'than adding a PRG_RUNONCE.
             Else
-                'Unsetting Run Once - clear old conditional activation.
-                .initialVar = vbNullString
+                .initialVar = txtVar(0).Text
+                .initialValue = txtValue(0).Text
+                .finalVar = txtVar(1).Text
+                .finalValue = txtValue(1).Text
             End If
+            .activate = IIf(LenB(.initialVar), PRG_CONDITIONAL, PRG_ACTIVE)
             
             .activationType = Abs(optActivationType(PRG_KEYPRESS).value)
             If chkRepeatTrigger.value Then .activationType = .activationType Or PRG_REPEAT
@@ -293,7 +386,16 @@ Public Sub populate(ByVal Index As Long, ByRef prg As CBoardProgram) ': On Error
     cmbPrg.list(Index) = CStr(Index) & ": " & IIf(LenB(prg.filename), prg.filename, "<program>")
     txtFilename.Text = prg.filename
     txtLayer.Text = str(prg.layer)
-    chkRunOnce.value = prg.activate
+    
+    chkRunOnce.value = IIf(prg.finalValue = GUID_VAR, 1, 0)
+    For i = 0 To 1
+        txtVar(i).Text = IIf(chkRunOnce.value, vbNullString, IIf(i = 0, prg.initialVar, prg.finalVar))
+        txtVar(i).Enabled = (chkRunOnce.value = 0)
+        txtValue(i).Text = IIf(chkRunOnce.value, vbNullString, IIf(i = 0, prg.initialValue, prg.finalValue))
+        txtValue(i).Enabled = (chkRunOnce.value = 0)
+        lblVar(i).Enabled = (chkRunOnce.value = 0)
+    Next i
+    
     optActivationType(prg.activationType And PRG_KEYPRESS).value = True
     If optActivationType(PRG_STEP).value Then
         chkRepeatTrigger.value = IIf(prg.activationType And PRG_REPEAT, 1, 0)
@@ -381,5 +483,17 @@ Private Sub txtRepeatTrigger_LostFocus(): On Error Resume Next
     Call apply
 End Sub
 Private Sub txtRepeatTrigger_Validate(Cancel As Boolean): On Error Resume Next
+    Call apply
+End Sub
+Private Sub txtValue_LostFocus(Index As Integer): On Error Resume Next
+    Call apply
+End Sub
+Private Sub txtValue_Validate(Index As Integer, Cancel As Boolean): On Error Resume Next
+    Call apply
+End Sub
+Private Sub txtVar_LostFocus(Index As Integer): On Error Resume Next
+    Call apply
+End Sub
+Private Sub txtVar_Validate(Index As Integer, Cancel As Boolean): On Error Resume Next
     Call apply
 End Sub
