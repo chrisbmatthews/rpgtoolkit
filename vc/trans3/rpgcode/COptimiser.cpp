@@ -81,7 +81,7 @@ bool COptimiser::inlineExpand()
 		POS unit = i - 1;
 		if (unit->udt & UDT_OBJ) continue;
 		LPNAMED_METHOD p = NAMED_METHOD::locate(unit->lit, i->params - 1, false, m_prg);
-		if (!p) continue;
+		if (!(p && p->bInline)) continue;
 
 		LPMACHINE_UNITS pUnits = &methods.find(p)->second;
 
