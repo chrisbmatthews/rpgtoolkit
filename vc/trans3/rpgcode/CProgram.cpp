@@ -1035,9 +1035,9 @@ void CProgram::parseFile(FILE *pFile)
 				{
 					if (j->udt & UDT_LINE) break;
 				}
-				if (j != m_units.begin())
+				if (j == m_units.begin())
 				{
-					++j; --dec;
+					++dec;
 				}
 				MACHINE_UNIT mu;
 				mu.udt = UDT_ID;
@@ -1887,13 +1887,27 @@ void operators::land(CALL_DATA &call)
 void operators::ieq(CALL_DATA &call)
 {
 	call.ret().udt = UDT_NUM;
-	call.ret().num = call[0].getLit() != call[1].getLit();
+	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
+	{
+		call.ret().num = (call[0].getNum() != call[1].getNum());
+	}
+	else
+	{
+		call.ret().num = (call[0].getLit() != call[1].getLit());
+	}
 }
 
 void operators::eq(CALL_DATA &call)
 {
 	call.ret().udt = UDT_NUM;
-	call.ret().num = call[0].getLit() == call[1].getLit();
+	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
+	{
+		call.ret().num = (call[0].getNum() == call[1].getNum());
+	}
+	else
+	{
+		call.ret().num = (call[0].getLit() == call[1].getLit());
+	}
 }
 
 void operators::gte(CALL_DATA &call)
