@@ -716,3 +716,19 @@ Public Function createGuid() As String: On Error Resume Next
         )
     End If
 End Function
+
+'========================================================================
+' Determine if an ISO_ROTATED coordinate is invisible
+'========================================================================
+Public Function isoOffEdge(ByVal x As Long, ByVal y As Long, ByRef board As TKBoard) As Boolean: On Error Resume Next
+    If board.coordType And ISO_ROTATED Then
+        'Top.
+        If x + y <= board.sizex Then isoOffEdge = True
+        'Left.
+        If y - x > board.sizex Then isoOffEdge = True
+        'Right.
+        If x - y >= board.sizex Then isoOffEdge = True
+        'Bottom.
+        If x + y > board.sizex + board.sizey + board.sizey + 1 Then isoOffEdge = True
+    End If
+End Function
