@@ -9,6 +9,7 @@ Begin VB.Form frmBoardEdit
    Icon            =   "frmBoardEdit.frx":0000
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
+   MinButton       =   0   'False
    ScaleHeight     =   6465
    ScaleWidth      =   11340
    Begin TabDlg.SSTab sstBoard 
@@ -2105,7 +2106,7 @@ Private Sub zoom(ByVal direction As Integer, ByRef pxCoord As POINTAPI) ': On Er
 
     If direction > 0 Then
         m_ed.pCEd.zoom = m_ed.pCEd.zoom + IIf(m_ed.pCEd.zoom >= 1, 0.5, 0.25)
-        If m_ed.pCEd.zoom > 2 Then m_ed.pCEd.zoom = 2: Exit Sub
+        If m_ed.pCEd.zoom > 4 Then m_ed.pCEd.zoom = 4: Exit Sub
     Else
         m_ed.pCEd.zoom = m_ed.pCEd.zoom - IIf(m_ed.pCEd.zoom > 1, 0.5, 0.25)
         If m_ed.pCEd.zoom < 0.25 Then m_ed.pCEd.zoom = 0.25: Exit Sub
@@ -2761,6 +2762,8 @@ End Sub
 '========================================================================
 Private Sub tileFloodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As Long, ByVal tileFilename As String) ': On Error Resume Next
 
+    Const ISO_EDGE As Integer = 32767
+
     With m_ed.board(m_ed.undoIndex)
     
         Dim curIdx As Long, newIdx As Long
@@ -2779,10 +2782,15 @@ Private Sub tileFloodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As 
         cnv = createCanvas(width + 1, Height + 1)
         
         Dim x As Long, y As Long
-        For x = 1 To width
-            For y = 1 To Height
-                'Set a pixel per tile, an empty tile is represented as 0 (black).
-                Call canvasSetPixel(cnv, x, y, .board(x, y, layer))
+        For x = 0 To width
+            For y = 0 To Height
+                If modBoard.isoOffEdge(x, y, m_ed.board(m_ed.undoIndex)) Or x = 0 Or y = 0 Then
+                    'Block off invisible edges.
+                    Call canvasSetPixel(cnv, x, y, ISO_EDGE)
+                Else
+                    'Set a pixel per tile, an empty tile is represented as 0 (black).
+                    Call canvasSetPixel(cnv, x, y, .board(x, y, layer))
+                End If
             Next y
         Next x
         
@@ -2802,6 +2810,9 @@ Private Sub tileFloodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByVal layer As 
         For x = 1 To width
             For y = 1 To Height
                 .board(x, y, layer) = canvasGetPixel(cnv, x, y)
+                
+                'Remove isometric rotated block.
+                If .board(x, y, layer) = ISO_EDGE Then .board(x, y, layer) = 0
             Next y
         Next x
         
@@ -3454,6 +3465,7 @@ End Sub
 Private Sub shadingFloodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByRef ls As TKLayerShade, ByRef ts As TKTileShade) ': On Error Resume Next
 
     Const TS_OFFSET = 255           'Shades range from -255 to +255, but canvases cannot hold negatives.
+    Const ISO_EDGE = 32767
                 
     If ls.values(xLoc, yLoc).r = ts.r And ls.values(xLoc, yLoc).g = ts.g And ls.values(xLoc, yLoc).b = ts.b Then
         Exit Sub
@@ -3471,12 +3483,18 @@ Private Sub shadingFloodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByRef ls As 
         cnv(i) = createCanvas(width + 1, Height + 1)
     Next i
     
-    For x = 1 To width
-        For y = 1 To Height
-            'Set a pixel per tile per channel.
-            Call canvasSetPixel(cnv(0), x, y, ls.values(x, y).r + TS_OFFSET)
-            Call canvasSetPixel(cnv(1), x, y, ls.values(x, y).g + TS_OFFSET)
-            Call canvasSetPixel(cnv(2), x, y, ls.values(x, y).b + TS_OFFSET)
+    For x = 0 To width
+        For y = 0 To Height
+            If modBoard.isoOffEdge(x, y, m_ed.board(m_ed.undoIndex)) Or x = 0 Or y = 0 Then
+                Call canvasSetPixel(cnv(0), x, y, ISO_EDGE)
+                Call canvasSetPixel(cnv(1), x, y, ISO_EDGE)
+                Call canvasSetPixel(cnv(2), x, y, ISO_EDGE)
+            Else
+                'Set a pixel per tile per channel.
+                Call canvasSetPixel(cnv(0), x, y, ls.values(x, y).r + TS_OFFSET)
+                Call canvasSetPixel(cnv(1), x, y, ls.values(x, y).g + TS_OFFSET)
+                Call canvasSetPixel(cnv(2), x, y, ls.values(x, y).b + TS_OFFSET)
+            End If
         Next y
     Next x
     
@@ -3499,6 +3517,11 @@ Private Sub shadingFloodGdi(ByVal xLoc As Long, ByVal yLoc As Long, ByRef ls As 
             ls.values(x, y).r = canvasGetPixel(cnv(0), x, y) - TS_OFFSET
             ls.values(x, y).g = canvasGetPixel(cnv(1), x, y) - TS_OFFSET
             ls.values(x, y).b = canvasGetPixel(cnv(2), x, y) - TS_OFFSET
+            If ls.values(x, y).r = ISO_EDGE Then
+                ls.values(x, y).r = 0
+                ls.values(x, y).g = 0
+                ls.values(x, y).b = 0
+            End If
         Next y
     Next x
     
