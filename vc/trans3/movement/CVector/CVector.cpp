@@ -416,53 +416,29 @@ bool CVector::createMask(CCanvas *cnv, const int x, const int y, CONST LONG colo
 	// Could end up drawing lines off the canvas.
 	if (x > m_bounds.left || y > m_bounds.top) return false;
 
+	// Create a region (RGN) of POINTs that defines the vector.
+	POINT *ppts = new POINT [size() - 1], *p = ppts;
+	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i, ++p)
+	{
+		CONST POINT pt = {LONG(i->x - x), LONG(i->y - y)};
+		*p = pt;
+	}
+	HRGN rgn = CreatePolygonRgn(ppts, size() - 1, WINDING);
+
 	// Set up to draw using GDI.
 	CONST HDC hdc = cnv->OpenDC();
-	HPEN pen = CreatePen(0, 1, color);
-	HGDIOBJ m = SelectObject(hdc, pen);
-
-	// Draw the bounding box.
-	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
-	{
-		if (i != m_p.end() - 1)
-		{
-			MoveToEx(hdc, i->x - x, i->y - y, NULL);
-			LineTo(hdc, (i + 1)->x - x, (i + 1)->y - y);
-		}
-	}
-	SelectObject(hdc, m);
-	DeleteObject(pen);
-
-	// Flood the created area.
     HBRUSH brush = CreateSolidBrush(color);
-    m = SelectObject(hdc, brush);
+    HGDIOBJ m = SelectObject(hdc, brush);
 
-	// Find a point that is contained in the vector.
-	// Work down a vertical line along the centre of the vector
-	// and check if the point is both contained in the vector and
-	// is not on the outline (if GetPixel returns the same colour as
-	// we're flooding with, the flood won't work).
+	// Execute the flood fill inside the region.
+	CONST BOOL success = FillRgn(hdc, rgn, brush);
 
-	// This won't work for vectors whose lines cross to form multiple
-	// enclosures, but the user can achieve the desired effect by
-	// converting to the vector to two or more vectors.
-
-	DB_POINT p = {int((m_bounds.left + m_bounds.right) / 2), m_bounds.top};
-	for (; p.y != m_bounds.bottom; ++p.y)
-	{
-		if (containsPoint(p) && (GetPixel(hdc, int(p.x - x), int(p.y - y)) != color))
-		{
-			ExtFloodFill(hdc, p.x - x, p.y - y, color, FLOODFILLBORDER);
-			break;
-		}
-	}
-
+	// Clean up.
 	SelectObject(hdc, m);
 	DeleteObject(brush);
-
 	cnv->CloseDC(hdc);
 
-	return true;
+	return success;
 }
 
 /*
