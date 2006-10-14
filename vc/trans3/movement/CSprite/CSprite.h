@@ -187,11 +187,11 @@ private:
 
 	// Calculate the loopSpeed - the number of renders that equate to
 	// the sprite's movement speed (and any offsets).
-	inline int calcLoops() const
+	int calcLoops() const
 	{
 		// Frames per millisecond.
 		extern double g_fpms;
-		const int result = round(m_attr.speed * g_fpms) + (m_loopOffset * round(g_fpms * 100.0));
+		const int result = round(m_attr.speed * g_fpms) - (m_loopOffset * round(g_fpms * 100.0));
 		return (result < 1 ? 1 : result);
 	};
 };
