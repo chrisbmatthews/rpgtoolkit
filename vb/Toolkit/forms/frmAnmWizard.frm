@@ -364,7 +364,7 @@ Private Sub cmdSelectFile_Click(): On Error Resume Next
         
         'Copy folders outside the default directory into the default directory.
         If Not fileExists(dlg.strDefaultFolder & files(i)) Then
-            FileCopy dlg.strSelectedFile, dlg.strDefaultFolder & files(i)
+            FileCopy files(0) & files(i), dlg.strDefaultFolder & files(i)
         End If
         
         Call lstFiles.AddItem(files(i), lstFiles.ListIndex + i)
