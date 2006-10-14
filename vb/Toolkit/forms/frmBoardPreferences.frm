@@ -6,6 +6,7 @@ Begin VB.Form frmBoardPreferences
    ClientLeft      =   45
    ClientTop       =   435
    ClientWidth     =   6120
+   Icon            =   "frmBoardPreferences.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

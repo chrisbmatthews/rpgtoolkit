@@ -6,6 +6,7 @@ Begin VB.Form frmNewBoard
    ClientLeft      =   45
    ClientTop       =   435
    ClientWidth     =   6195
+   Icon            =   "frmNewBoard.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MDIChild        =   -1  'True
