@@ -383,7 +383,7 @@ Begin VB.Form frmCharacterGraphics
                Width           =   1028
             End
             Begin VB.CommandButton cmdCustomNew 
-               Caption         =   "New"
+               Caption         =   "New..."
                Height          =   375
                Left            =   0
                TabIndex        =   4
@@ -477,13 +477,13 @@ Private m_editing As Boolean
 Private m_base As POINTAPI
 Private m_drag As POINTAPI
 
-Private Const BATTLE_OFFSET = 9                 'ListView is Base-1
+Private Const BATTLE_OFFSET = 9                 'ListView is Base 1
 Private Const CUSTOM_OFFSET = 14
 
 '========================================================================
 ' Vector check buttons
 '========================================================================
-Private Sub chkEdit_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub chkEdit_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
     If chkEdit(Index).value Then chkEdit(Abs(Index - 1)).value = 0
 End Sub
 
@@ -514,9 +514,9 @@ Private Sub cmdAnimate_Click(): On Error Resume Next
             animationHost.repeats = 3
             Call animationHost.Show(vbModal)
         Else
-            Dim x As Long, y As Long
-            x = (picPreview.width - anm.animSizeX) / 2
-            y = (picPreview.Height - anm.animSizeY) / 2
+            Dim X As Long, Y As Long
+            X = (picPreview.width - anm.animSizeX) / 2
+            Y = (picPreview.Height - anm.animSizeY) / 2
             
             cmdAnimate.Enabled = False
             
@@ -524,15 +524,15 @@ Private Sub cmdAnimate_Click(): On Error Resume Next
             For i = 0 To 2
                 For j = 0 To animGetMaxFrame(anm)
                     picPreview.Cls
-                    Call AnimDrawFrame(anm, j, x, y, picPreview.hdc)
+                    Call AnimDrawFrame(anm, j, X, Y, picPreview.hdc)
                     Call animDelay(anm.animPause)
                      
-                    picPreview.Line (m_base.x - 16, m_base.y)-(m_base.x + 16, m_base.y), m_baseColor
-                    picPreview.Line (m_base.x, m_base.y - 16)-(m_base.x, m_base.y + 16), m_baseColor
+                    picPreview.Line (m_base.X - 16, m_base.Y)-(m_base.X + 16, m_base.Y), m_baseColor
+                    picPreview.Line (m_base.X, m_base.Y - 16)-(m_base.X, m_base.Y + 16), m_baseColor
                     
                     'Hijack some board editor code.
-                    ed.topX = -m_base.x
-                    ed.topY = -m_base.y
+                    ed.topX = -m_base.X
+                    ed.topY = -m_base.Y
                     Call m_vector.draw(picPreview, ed, m_vectorColor, False)
                     
                     picPreview.Refresh
@@ -563,7 +563,7 @@ Private Sub cmdBrowse_Click(Index As Integer): On Error Resume Next
         returnPath _
     ) Then
         'Setting the textbox calls the Change() event.
-        txtFilename(Index).Text = returnPath
+        txtFilename(Index).text = returnPath
     End If
 End Sub
 
@@ -734,7 +734,7 @@ End Function
 '========================================================================
 Private Sub setAnimation(): On Error Resume Next
     
-    Dim anmFile As String, x As Long, y As Long
+    Dim anmFile As String, X As Long, Y As Long
     anmFile = getAnim()
     
     Call picPreview.Cls
@@ -745,34 +745,34 @@ Private Sub setAnimation(): On Error Resume Next
         Call openAnimation(projectPath & miscPath & anmFile, anm)
         
         If anm.animSizeX > picPreview.width Or anm.animSizeY > picPreview.Height Then
-            x = (picPreview.width - anm.animSizeX) / 2
-            y = picPreview.Height - anm.animSizeY - 48
+            X = (picPreview.width - anm.animSizeX) / 2
+            Y = picPreview.Height - anm.animSizeY - 48
         Else
-            x = (picPreview.width - anm.animSizeX) / 2
-            y = (picPreview.Height - anm.animSizeY) / 2
+            X = (picPreview.width - anm.animSizeX) / 2
+            Y = (picPreview.Height - anm.animSizeY) / 2
         End If
         
         'Draw it
-        Call AnimDrawFrame(anm, 0, x, y, picPreview.hdc, False)
+        Call AnimDrawFrame(anm, 0, X, Y, picPreview.hdc, False)
         Call picPreview.Refresh
     Else
         Exit Sub
     End If
     
     'Draw a cross to signify the base point.
-    m_base.x = x + anm.animSizeX / 2
-    m_base.y = y + anm.animSizeY
+    m_base.X = X + anm.animSizeX / 2
+    m_base.Y = Y + anm.animSizeY
     
     'Isometric sprites are offset down by 8 pixels in trans3.
-    If optCoord(1).value Then m_base.y = m_base.y - 8
+    If optCoord(1).value Then m_base.Y = m_base.Y - 8
     
-    picPreview.Line (m_base.x - 16, m_base.y)-(m_base.x + 16, m_base.y), m_baseColor
-    picPreview.Line (m_base.x, m_base.y - 16)-(m_base.x, m_base.y + 16), m_baseColor
+    picPreview.Line (m_base.X - 16, m_base.Y)-(m_base.X + 16, m_base.Y), m_baseColor
+    picPreview.Line (m_base.X, m_base.Y - 16)-(m_base.X, m_base.Y + 16), m_baseColor
     
     'Hijack some board editor code.
     Dim ed As New CBoardEditor
-    ed.topX = -m_base.x
-    ed.topY = -m_base.y
+    ed.topX = -m_base.X
+    ed.topY = -m_base.Y
     Call m_vector.draw(picPreview, ed, m_vectorColor, False)
         
 End Sub
@@ -810,7 +810,7 @@ End Sub
 '========================================================================
 ' Vector editing - draw or edit
 '========================================================================
-Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
     If chkEdit(0).value Then
         'Drawing
         If Button = vbLeftButton Then
@@ -822,8 +822,8 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
                 m_vector.bClosed = False
             End If
             
-            Call m_vector.setPoint(m_vector.getPoints, x - m_base.x, y - m_base.y, False)
-            Call m_vector.addPoint(x - m_base.x + 1, y - m_base.y + 1)
+            Call m_vector.setPoint(m_vector.getPoints, X - m_base.X, Y - m_base.Y, False)
+            Call m_vector.addPoint(X - m_base.X + 1, Y - m_base.Y + 1)
         Else
             Call enableAll
             chkEdit(0).value = 0
@@ -842,12 +842,12 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
         Call m_vector.setSelection(sel)
             
         'Mouse-down = drag nearest point.
-        Call m_vector.nearestPoint(x - m_base.x, y - m_base.y, pt.x, pt.y, distance)
+        Call m_vector.nearestPoint(X - m_base.X, Y - m_base.Y, pt.X, pt.Y, distance)
         If distance >= 0 Then
             'A point was found.
-            m_drag.x = x
-            m_drag.y = y
-            Call sel.assign(pt.x, pt.y, pt.x, pt.y)
+            m_drag.X = X
+            m_drag.Y = Y
+            Call sel.assign(pt.X, pt.Y, pt.X, pt.Y)
             Call m_vector.setSelection(sel)
         End If
     End If
@@ -856,24 +856,37 @@ End Sub
 '========================================================================
 ' Vector editing - draw or edit
 '========================================================================
-Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
     If chkEdit(0).value And m_editing Then
         'Edit the last point.
-        Call m_vector.setPoint(m_vector.getPoints, x - m_base.x, y - m_base.y, False)
+        Call m_vector.setPoint(m_vector.getPoints, X - m_base.X, Y - m_base.Y, False)
         Call setAnimation
         
     ElseIf Button And chkEdit(1).value Then
         'Edit - drag nearest point around.
         Dim dx As Long, dy As Long
-        dx = x - m_drag.x
-        dy = y - m_drag.y
-        m_drag.x = x
-        m_drag.y = y
+        dx = X - m_drag.X
+        dy = Y - m_drag.Y
+        m_drag.X = X
+        m_drag.Y = Y
         Call m_vector.moveSelectionBy(dx, dy)
         Call m_vector.lvPopulate(lvVector)
         Call setAnimation
         
     End If
+End Sub
+
+Private Sub txtCustomHandle_Change(): On Error Resume Next
+    
+    'Exit sub if no animation is selected
+    If lvAnimations.SelectedItem.Index < CUSTOM_OFFSET Then Exit Sub
+    
+    Dim i As Long
+    i = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, lvAnimations.SelectedItem.Index - CUSTOM_OFFSET)
+    
+    playerList(activePlayerIndex).theData.customGfxNames(i) = txtCustomHandle.text
+    lvAnimations.SelectedItem.text = txtCustomHandle.text
+
 End Sub
 
 '========================================================================
@@ -885,7 +898,7 @@ Private Sub txtFilename_Change(Index As Integer): On Error Resume Next
     i = lvAnimations.SelectedItem.Index
     
     With playerList(activePlayerIndex).theData
-        lvAnimations.SelectedItem.SubItems(Index + 1) = txtFilename(Index).Text
+        lvAnimations.SelectedItem.SubItems(Index + 1) = txtFilename(Index).text
         
         If Index = 0 Then
             If i < CUSTOM_OFFSET Then
@@ -894,7 +907,7 @@ Private Sub txtFilename_Change(Index As Integer): On Error Resume Next
                 i = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, i - CUSTOM_OFFSET)
 
                 .customGfx(i) = lvAnimations.SelectedItem.SubItems(1)
-                .customGfxNames(i) = lvAnimations.SelectedItem.Text
+                .customGfxNames(i) = lvAnimations.SelectedItem.text
             End If
         Else
             If i < BATTLE_OFFSET Then
@@ -915,8 +928,8 @@ Private Sub lvUpdate(): On Error Resume Next
     With playerList(activePlayerIndex).theData
     
         'Delay and idle time
-        txtFrameTime.Text = CStr(.speed)
-        txtIdleTime.Text = CStr(.idleTime)
+        txtFrameTime.text = CStr(.speed)
+        txtIdleTime.text = CStr(.idleTime)
 
         lvAnimations.ListItems.clear
         
@@ -986,10 +999,9 @@ Private Sub lvApply(): On Error Resume Next
     txtCustomHandle.Enabled = (i >= CUSTOM_OFFSET)
     lbl(5).Enabled = (i >= CUSTOM_OFFSET)
             
-    txtFilename(0).Text = lvAnimations.SelectedItem.SubItems(1)
-    txtFilename(1).Text = lvAnimations.SelectedItem.SubItems(2)
-    txtCustomHandle.Text = vbNullString
-    If (i >= CUSTOM_OFFSET) Then txtCustomHandle.Text = lvAnimations.SelectedItem.Text
+    txtFilename(0).text = lvAnimations.SelectedItem.SubItems(1)
+    txtFilename(1).text = lvAnimations.SelectedItem.SubItems(2)
+    txtCustomHandle.text = IIf(i >= CUSTOM_OFFSET, lvAnimations.SelectedItem.text, vbNullString)
     
     Call setAnimation
 End Sub
@@ -998,7 +1010,7 @@ End Sub
 ' Right click on lv views idle animations (second column)
 ' Left click default animations
 '========================================================================
-Private Sub lvAnimations_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+Private Sub lvAnimations_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
     m_viewIdles = (Button = vbRightButton)
     Call lvApply
 End Sub
@@ -1010,11 +1022,11 @@ Private Sub lvVector_LostFocus(): On Error Resume Next
     Call m_vector.lvApply(lvVector, True)
     Call setAnimation
 End Sub
-Private Sub lvVector_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
-    Call modBoard.vectorLvColumn(lvVector, x)
+Private Sub lvVector_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+    Call modBoard.vectorLvColumn(lvVector, X)
 End Sub
-Private Sub lvVector_KeyDown(KeyCode As Integer, Shift As Integer): On Error Resume Next
-    If modBoard.vectorLvKeyDown(lvVector, KeyCode) Then
+Private Sub lvVector_KeyDown(keyCode As Integer, Shift As Integer): On Error Resume Next
+    If modBoard.vectorLvKeyDown(lvVector, keyCode) Then
         Call m_vector.lvApply(lvVector, True)
         Call setAnimation
     End If
@@ -1028,14 +1040,14 @@ End Sub
 ' Change idle time
 '========================================================================
 Private Sub txtIdleTime_Change(): On Error Resume Next
-    playerList(activePlayerIndex).theData.idleTime = CDbl(txtIdleTime.Text)
+    playerList(activePlayerIndex).theData.idleTime = CDbl(txtIdleTime.text)
 End Sub
 
 '========================================================================
 ' Change speed
 '========================================================================
 Private Sub txtFrameTime_Change(): On Error Resume Next
-    playerList(activePlayerIndex).theData.speed = CDbl(txtFrameTime.Text)
+    playerList(activePlayerIndex).theData.speed = CDbl(txtFrameTime.text)
 End Sub
 
 '========================================================================
@@ -1043,7 +1055,7 @@ End Sub
 '========================================================================
 Private Sub txtFrameTime_KeyPress(ByRef KeyAscii As Integer): On Error GoTo letter
     Dim ret As Double
-    ret = CDbl(txtFrameTime.Text & chr(KeyAscii))
+    ret = CDbl(txtFrameTime.text & chr(KeyAscii))
     Exit Sub
 letter:
     If (KeyAscii <> 8) Then
@@ -1057,7 +1069,7 @@ End Sub
 '========================================================================
 Private Sub txtIdleTime_KeyPress(ByRef KeyAscii As Integer): On Error GoTo letter
     Dim ret As Double
-    ret = CDbl(txtIdleTime.Text & chr(KeyAscii))
+    ret = CDbl(txtIdleTime.text & chr(KeyAscii))
     Exit Sub
 letter:
     If (KeyAscii <> 8) Then
