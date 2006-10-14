@@ -83,7 +83,7 @@ typedef struct tagVBBoardImage
 //--------------------------------------------------------------------------
 
 // An rgb colorshade.
-typedef tagRgbShade VB_TILESHADE, *LPVB_TILESHADE;
+typedef tagRgbShadeShort VB_TILESHADE, *LPVB_TILESHADE;
 
 // A layer of tile shading.
 typedef struct tagVBLayerShade
