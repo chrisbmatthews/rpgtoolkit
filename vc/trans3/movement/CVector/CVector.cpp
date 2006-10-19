@@ -435,8 +435,11 @@ bool CVector::createMask(CCanvas *cnv, const int x, const int y, CONST LONG colo
 
 	// Clean up.
 	SelectObject(hdc, m);
-	DeleteObject(brush);
 	cnv->CloseDC(hdc);
+
+	DeleteObject(brush);
+	DeleteObject(rgn);
+	delete [] ppts;
 
 	return success;
 }
