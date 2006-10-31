@@ -502,16 +502,19 @@ GAME_STATE gameLogic()
 			g_fpms = (m_renderCount / m_renderTime);
 			const unsigned long fps = g_fpms * MILLISECONDS;
 
-			extern HWND g_hHostWnd;
-			STRINGSTREAM ss;
-			ss <<	g_mainFile.gameTitle.c_str()
-				<< _T(" — ") << g_pBoard->vectors.size()
-				<< _T(" vectors, ") << (g_fpms * MILLISECONDS)
-				<< _T(" FPS");
+			if (g_mainFile.bFpsInTitleBar)
+			{
+				extern HWND g_hHostWnd;
+				STRINGSTREAM ss;
+				ss <<	g_mainFile.gameTitle.c_str()
+					<< _T(" — ") << g_pBoard->vectors.size()
+					<< _T(" vectors, ") << (g_fpms * MILLISECONDS)
+					<< _T(" FPS");
 #if _DEBUG
-			ss << _T(", ") << g_allocated << _T(" bytes");
+				ss << _T(", ") << g_allocated << _T(" bytes");
 #endif
-			SetWindowText(g_hHostWnd, ss.str().c_str());
+				SetWindowText(g_hHostWnd, ss.str().c_str());
+			}
 
 			// Multitask.
 			unsigned int units = HALF_FPS_CAP / fps;
@@ -619,8 +622,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
 	path = dev;
 
 	set_terminate(termFunc);
