@@ -71,7 +71,7 @@ void tagSpriteAttr::loadAnimations(const bool bRenderFrames)
 			// If this animation is being used by another sprite,
 			// they will share the same object.
 			j->second.pAnm = CSharedAnimation::insert(j->second.file);
-			if (bRenderFrames) j->second.pAnm->m_pAnm->render();
+			if (j->second.pAnm && bRenderFrames) j->second.pAnm->m_pAnm->render();
 		}
 	}
 
@@ -88,7 +88,7 @@ void tagSpriteAttr::loadAnimations(const bool bRenderFrames)
 	for (GFX_CUSTOM_MAP::iterator j = mapCustomGfx.begin(); j != mapCustomGfx.end(); ++j)
 	{
 		j->second.pAnm = CSharedAnimation::insert(j->second.file);
-		if (bRenderFrames) j->second.pAnm->m_pAnm->render();
+		if (j->second.pAnm && bRenderFrames) j->second.pAnm->m_pAnm->render();
 	}
 }
 

@@ -38,17 +38,20 @@ typedef enum tagMovementCodes
 	MV_NE
 } MV_ENUM;
 
+#define MV_MIN MV_E
+#define MV_MAX MV_NE
+
 // Prefix increment - rotate the movement "right".
 inline MV_ENUM &operator++ (MV_ENUM &lhs)
 {
-	if (lhs == MV_NE) { lhs = MV_E; }
+	if (lhs == MV_MAX) { lhs = MV_MIN; }
 	else if (lhs != MV_IDLE) { lhs = MV_ENUM(lhs + 1); }
 	return lhs;
 }
 
 inline MV_ENUM &operator-- (MV_ENUM &lhs)
 {
-	if (lhs == MV_E) { lhs = MV_NE; }
+	if (lhs == MV_MIN) { lhs = MV_MAX; }
 	else if (lhs != MV_IDLE) { lhs = MV_ENUM(lhs - 1); }
 	return lhs;
 }

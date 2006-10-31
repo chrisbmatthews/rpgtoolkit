@@ -81,46 +81,9 @@ public:
 	int m_frame;				// Callback counters, init -1 = hack.
 	int m_tick;
 
-	CSharedAnimation(const STRING file): m_frame(-1), m_tick(0), m_pAnm(NULL) 
-	{
-		SHARED_ANIMATIONS::iterator i = m_shared.find(file);
-		if (i != m_shared.end())
-		{
-			// Add a user to the current animation.
-			i->second->addUser();
-			m_pAnm = i->second;
-		}
-		else
-		{
-			// Create a new entry.
-			m_pAnm = new CAnimation(file);
-			m_shared[file] = m_pAnm;
-		}
-	}
-
-	~CSharedAnimation()	
-	{ 
-		// Remove a user from the CAnimation.
-		if(m_pAnm->removeUser() == 0)
-		{
-			SHARED_ANIMATIONS::iterator j = m_shared.find(m_pAnm->filename());
-			delete m_pAnm;
-			m_shared.erase(j);
-		}
-		// Remove the pointer from the users list.
-		m_anms.erase(this); 
-	}
 		
 	// Share an animation if it exists or create a new instance.
-	static CSharedAnimation *insert(const STRING file)
-	{
-		if (file.empty()) return NULL;
-
-		// Add the CShared to the individual users list.
-		CSharedAnimation *p = new CSharedAnimation(file);
-		m_anms.insert(p);
-		return p;
-	}
+	static CSharedAnimation *insert(const STRING file);
 
 	// Free a single user of an animation.
 	static void free(CSharedAnimation *p)
@@ -130,14 +93,7 @@ public:
 	}
 
 	// Free all shared animations.
-	static void freeAll(void)
-	{
-		// Theoretically these should be empty by the time it's called.
-		std::set<CSharedAnimation *>::iterator j = m_anms.begin();
-		for (; j != m_anms.end(); ++j) delete *j; 
-		SHARED_ANIMATIONS::iterator i = m_shared.begin();
-		for (; i != m_shared.end(); ++i) delete i->second; 
-	}
+	static void freeAll(void);
 
 	// Cast a pointer.
 	static CSharedAnimation *cast(const int num)
@@ -155,6 +111,8 @@ public:
 	}
 
 protected:
+	CSharedAnimation(const STRING file);
+	~CSharedAnimation();
 	CSharedAnimation(CSharedAnimation &rhs);
 	CSharedAnimation &operator= (CSharedAnimation &rhs);
 

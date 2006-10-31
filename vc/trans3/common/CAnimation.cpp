@@ -209,6 +209,88 @@ bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
 }
 
 /*
+ * Internal constructor.
+ */
+CSharedAnimation::CSharedAnimation(const STRING file): 
+	m_frame(-1), 
+	m_tick(0), 
+	m_pAnm(NULL) 
+{
+	SHARED_ANIMATIONS::iterator i = m_shared.find(file);
+	if (i != m_shared.end())
+	{
+		// Add a user to the current animation.
+		i->second->addUser();
+		m_pAnm = i->second;
+	}
+	else
+	{
+		// Create a new entry.
+		CAnimation *p = new CAnimation(file);
+		if (p->filename().empty()) 
+		{
+			// Filename not assigned during ANIMATION loading: failed to load animation.
+			delete p;
+			return;
+		}
+		m_shared[file] = m_pAnm = p;
+	}
+}
+
+/*
+ * Internal destructor.
+ */
+CSharedAnimation::~CSharedAnimation()	
+{ 
+	// Remove a user from the CAnimation.
+	if (m_pAnm)
+	{
+		// m_pAnm = NULL if animation not inserted into m_anms.
+		if (m_pAnm->removeUser() == 0)
+		{
+			SHARED_ANIMATIONS::iterator j = m_shared.find(m_pAnm->filename());
+			delete m_pAnm;
+			m_shared.erase(j);
+		}
+		// Remove the pointer from the users list.
+		m_anms.erase(this); 
+	}
+}
+	
+/* 
+ * Share an animation if it exists or create a new instance.
+ */
+CSharedAnimation *CSharedAnimation::insert(const STRING file)
+{
+	if (file.empty()) return NULL;
+
+	// Add the CShared to the individual users list.
+	CSharedAnimation *p = new CSharedAnimation(file);
+	if (!p->m_pAnm)
+	{
+		// Failed to create animation.
+		delete p;
+		return NULL;
+	}
+	m_anms.insert(p);
+	return p;
+}
+
+/*
+ * Free all shared animations.
+ */
+void CSharedAnimation::freeAll(void)
+{
+	// Theoretically these should be empty by the time it's called.
+
+	std::set<CSharedAnimation *>::iterator j = m_anms.begin();
+	for (; j != m_anms.end(); ++j) delete *j; 
+
+	SHARED_ANIMATIONS::iterator i = m_shared.begin();
+	for (; i != m_shared.end(); ++i) delete i->second; 
+}
+
+/*
  * Internal constructor
  */
 CThreadAnimation::CThreadAnimation(const STRING file, const int x, const int y, const bool bPersist): 
