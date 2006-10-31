@@ -27,6 +27,36 @@ Private Enum ePfHeuristic              'Pathfinding heuristic (see CPathFind.h)
     PF_VECTOR
 End Enum
 
+Private Enum eCVDrawVectors             'Flags for vector drawing (see CVector.h)
+    CV_DRAW_BRD_VECTORS = 1             'Board vectors.
+    CV_DRAW_SPR_VECTORS = 2             'Sprite vectors.
+    CV_DRAW_PATH = 4                    'Sprite paths.
+    CV_DRAW_DEST_CIRCLE = 8             'Sprite destination circles.
+    CV_DRAW_SP_PATH = 16                'Selected player path.
+    CV_DRAW_SP_DEST_CIRCLE = 32         'Selected player circle.
+End Enum
+
+Private Enum eMFMovementControls        'Flags for player movement controls (see mainfile.h)
+    MF_USE_KEYS = 1                     'e.g. arrow keys or numberpad.
+    MF_USE_MOUSE = 2
+    MF_ALLOW_DIAGONALS = 4              'Allow diagonal movement using two keys.
+End Enum
+
+Private Enum eMovementCodes             'See sprite.h
+    MV_IDLE
+    MV_E
+    MV_SE
+    MV_S
+    MV_SW
+    MV_W
+    MV_NW
+    MV_N
+    MV_NE
+End Enum
+
+Private Const MV_MIN = MV_E              'Minimum directional value of MV_ENUM (see sprite.h).
+Private Const MV_MAX = MV_NE             'Maximum directional value.
+
 '=========================================================================
 ' Public variables
 '=========================================================================
@@ -88,6 +118,10 @@ Public Type TKMain
     pStartY As Integer
     pStartL As Integer
     pfHeuristic As Integer            'Default pathfinding heuristic.
+    drawVectors As Long               'Draw vectors? See eCVDrawVectors.
+    pathColor As Long                 'Path and destination colour for selected player.
+    movementControls As Long          'See MF_MOVEMENT_CONTROLS.
+    movementKeys() As Integer         'Secondary movement keys - scan codes, ordered MV_MIN to MV_MAX.
     
 End Type
 
@@ -97,8 +131,6 @@ End Type
 Public Const COLOR16 As Byte = 0      '16-bit color
 Public Const COLOR24 As Byte = 1      '24-bit color
 Public Const COLOR32 As Byte = 2      '32-bit color
-
-
 
 Private Const MF_MINOR = 9         '3.0.7
 
@@ -435,6 +467,14 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
                 mainMem.pStartY = BinReadInt(num)
                 mainMem.pStartL = BinReadInt(num)
                 mainMem.pfHeuristic = BinReadInt(num)
+                mainMem.drawVectors = BinReadLong(num)
+                mainMem.pathColor = BinReadLong(num)
+                mainMem.movementControls = BinReadLong(num)
+                
+                ReDim mainMem.movementKeys(MV_MAX)
+                For t = MV_MIN To MV_MAX
+                    mainMem.movementKeys(t) = BinReadInt(num)
+                Next t
             End If
 
         Close num
@@ -672,7 +712,12 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
         Call BinWriteInt(num, theMain.pStartY)
         Call BinWriteInt(num, theMain.pStartL)
         Call BinWriteInt(num, theMain.pfHeuristic)
-
+        Call BinWriteLong(num, theMain.drawVectors)
+        Call BinWriteLong(num, theMain.pathColor)
+        Call BinWriteLong(num, theMain.movementControls)
+        For t = MV_MIN To MV_MAX
+            Call BinWriteInt(num, theMain.movementKeys(t))
+        Next t
     Close num
 
 End Sub
@@ -737,6 +782,22 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .pStartL = 0
         .pStartX = 0
         .pStartY = 0
+        
+        '3.0.7
         .pfHeuristic = PF_AXIAL
+        .drawVectors = 0
+        .pathColor = RGB(255, 255, 255)
+        .movementControls = MF_USE_KEYS Or MF_ALLOW_DIAGONALS
+        
+        ReDim .movementKeys(MV_MAX)
+        .movementKeys(MV_E) = vbKeyRight
+        .movementKeys(MV_SE) = 0
+        .movementKeys(MV_S) = vbKeyDown
+        .movementKeys(MV_SW) = 0
+        .movementKeys(MV_W) = vbKeyLeft
+        .movementKeys(MV_NW) = 0
+        .movementKeys(MV_N) = vbKeyUp
+        .movementKeys(MV_NE) = 0
+        
     End With
 End Sub
