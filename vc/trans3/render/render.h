@@ -30,8 +30,12 @@ typedef struct tagScrollCache
 	{ r.top = r.bottom = r.left = r.right = 0; };
 
 	void render(const bool bForceRedraw);
-	void createCanvas(const int w, const int h)
+	void createCanvas(int w, int h)
 	{
+		// Ensure canvas has tile-integral width/height.
+		w = (w / 32) * 32;
+		h = (h / 32) * 32;
+
 		cnv.CreateBlank(NULL, w, h, TRUE);
 		cnv.ClearScreen(0);
 		maxWidth = r.right = w;
@@ -58,7 +62,7 @@ void renderRpgCodeScreen();
 /*
  * Render the scene now.
  */
-bool renderNow(CCanvas *cnv = NULL, const bool bForce = false);
+void renderNow(CCanvas *cnv = NULL, const bool bForce = false);
 
 /*
  * Set the ambient level.

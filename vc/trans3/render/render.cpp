@@ -268,6 +268,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 {
 	extern LPBOARD g_pBoard;
 	extern CPlayer *g_pSelectedPlayer;
+	extern MAIN_FILE g_mainFile;
 
 	// Reduce cache size if the board is smaller than the maximum.
 	if (bForceRedraw)
@@ -281,6 +282,11 @@ void tagScrollCache::render(const bool bForceRedraw)
 		r.left = r.top = 0;
 		r.right = w;
 		r.bottom = h;
+
+		// Use ForceRedraw to update the vector canvases (e.g. to ensure
+		// ambient level changes are applied to under vectors or that
+		// tiles placed on the board are added to under vectors.
+		g_pBoard->createVectorCanvases();
 	}
 
 	if ((g_screen.left >= 0 && g_screen.left < r.left) || 
@@ -311,28 +317,34 @@ void tagScrollCache::render(const bool bForceRedraw)
 			r.left, 
 			r.top, 
 			width, 
-			height, 
-			0, 0, 0
+			height
 		); 
 
 #ifdef DEBUG_VECTORS
-		// Draw program and tile vectors.
-		cnv.Lock();
-		for (std::vector<LPBRD_PROGRAM>::iterator b = g_pBoard->programs.begin(); b != g_pBoard->programs.end(); ++b)
+		if (g_mainFile.drawVectors & CV_DRAW_BRD_VECTORS)
 		{
-			(*b)->vBase.draw(RGB(255, 255, 0), true, r.left, r.top, &cnv);
-		}
-		for (std::vector<BRD_VECTOR>::iterator c = g_pBoard->vectors.begin(); c != g_pBoard->vectors.end(); ++c)
-		{
-			int color = c->type == TT_SOLID ? RGB(255, 255, 255) : RGB(0, 255, 0);
-			c->pV->draw(color, true, r.left, r.top, &cnv);
-		}
-		// Draw pathfinding obstructions (grown vectors).
-		g_pSelectedPlayer->drawPfObjects(r.left, r.top, &cnv);
+			// Draw program and tile vectors.
+			cnv.Lock();
 
-		cnv.Unlock();
+			for (std::vector<LPBRD_PROGRAM>::iterator b = g_pBoard->programs.begin(); b != g_pBoard->programs.end(); ++b)
+			{
+				if (*b) (*b)->vBase.draw(RGB(255, 255, 0), true, r.left, r.top, &cnv);
+			}
+
+			for (std::vector<BRD_VECTOR>::iterator c = g_pBoard->vectors.begin(); c != g_pBoard->vectors.end(); ++c)
+			{
+				const int color = c->type == TT_SOLID ? RGB(255, 255, 255) : RGB(0, 255, 0);
+				c->pV->draw(color, true, r.left, r.top, &cnv);
+			}
+
+			// Draw pathfinding obstructions (grown vectors) for the selected player only.
+			// (Debug).
+			// g_pSelectedPlayer->drawPfObjects(r.left, r.top, &cnv);
+
+			cnv.Unlock();
+		}
 #endif
-	}
+	} // if (redrawing)
 }
 
 /*
@@ -375,7 +387,7 @@ void setAmbientLevel(void)
  * bForce (in) - force the render?
  * return (out) - did a render occur?
  */
-bool renderNow(CCanvas *cnv, const bool bForce)
+void renderNow(CCanvas *cnv, const bool bForce)
 {
 	extern ZO_VECTOR g_sprites;
 	extern LPBOARD g_pBoard;
@@ -422,30 +434,26 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 	 */
 	for (int layer = 1; layer <= g_pBoard->sizeL; ++layer)
 	{
-		// Draw tiles on higher layers over the sprites.
+		// Draw tiles/images on higher layers over the sprites.
 		if (g_pBoard->bLayerOccupied[layer])
 		{
 			// rects are the sprite frames located on the board,
 			// which are only added when the sprite is encountered in the loop.
-			for (std::vector<RECT>::iterator i = rects.begin(); i != rects.end(); ++i)
+			for (std::vector<RECT>::const_iterator i = rects.begin(); i != rects.end(); ++i)
 			{
-				// Inflate to align to the grid (iso or 2D).
-				const RECT rAlign = {i->left - i->left % 32,
-									i->top - i->top % 32,
-									i->right - i->right % 32 + 32,
-									i->bottom - i->bottom % 32 + 32};
+				// rects are aligned to grid.
+				const RECT rAligned = *i;
 
 				// If this rect is occupied, draw all the tiles on this layer
 				// it totally or partially contains, covering the sprite.
 				g_pBoard->render(
 					cnv,
-					rAlign.left - g_screen.left,
-					rAlign.top - g_screen.top,
+					rAligned.left - g_screen.left,
+					rAligned.top - g_screen.top,
 					layer, layer,
-					rAlign.left, rAlign.top, 
-					rAlign.right - rAlign.left, 
-					rAlign.bottom - rAlign.top,
-					0, 0, 0
+					rAligned.left, rAligned.top, 
+					rAligned.right - rAligned.left, 
+					rAligned.bottom - rAligned.top
 				);
 			}
 		} // if (g_pBoard->bLayerOccupied[layer])
@@ -459,17 +467,28 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 			if ((*j)->render(cnv, layer, rect))
 			{
 				// Sprite is on this layer and has been drawn.
-				// Store this area for tiles on higher layers.
-				rects.push_back(rect);
+				// Store the portion of the sprite that was rendered
+				// in 'rects' and draw the intersecting board contents
+				// on higher layers.
+
+				// Inflate to align to the grid (iso or 2D). Create
+				// new RECT since 'rect' is used below.
+				const RECT rAligned = {
+					rect.left - rect.left % 32,
+					rect.top - rect.top % 32,
+					rect.right - rect.right % 32 + 32,
+					rect.bottom - rect.bottom % 32 + 32
+				};
+				rects.push_back(rAligned);
 			}
 			else continue;
 
 			// Get the sprite's vector base to test for collisions with the under vector.
-			CVector v = (*j)->getVectorBase(true);
+			const CVector v = (*j)->getVectorBase(true);
 			RECT sr = v.getBounds();
 
 			// Draw any "under" vectors this sprite is standing on.
-			for (std::vector<BRD_VECTOR>::iterator k = g_pBoard->vectors.begin(); k != g_pBoard->vectors.end(); ++k)
+			for (std::vector<BRD_VECTOR>::const_iterator k = g_pBoard->vectors.begin(); k != g_pBoard->vectors.end(); ++k)
 			{
 				// Check if this is an "under" vector, is on the same layer and has a canvas.
 				if (!k->pCnv || k->layer != layer || !(k->type & TT_UNDER)) 
@@ -479,7 +498,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 				const RECT rBounds = k->pV->getBounds();
 
 				RECT r = {0, 0, 0, 0};
-				DB_POINT p = {0, 0};
+				DB_POINT ptUnused = {0, 0};
 
 				// Place the intersection of the sprite's *frame* and the under vector's
 				// bounds in 'r' - this is the area to draw.
@@ -488,7 +507,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 					// If the under tile is "simple rect" intersection draw straight
 					// off, else check for vector collision.
 					if(((k->attributes & TA_RECT_INTERSECT) && IntersectRect(&sr, &sr, &rBounds))
-						|| k->pV->contains(v, p))
+						|| k->pV->contains(v, ptUnused))
 					{
 						k->pCnv->BltTransparentPart(
 							cnv, 
@@ -511,24 +530,7 @@ bool renderNow(CCanvas *cnv, const bool bForce)
 	// Render multitasking animations.
 	CThreadAnimation::renderAll(cnv);
 
-
-#ifdef DEBUG_VECTORS
-	cnv->Lock();
-
-	// Draw sprite bases for debugging.
-	for (std::vector<CSprite *>::iterator a = g_sprites.v.begin(); a != g_sprites.v.end(); ++a)
-	{
-		(*a)->drawVector(cnv);
-	}
-
-	// Draw the path the selected player is on.
-	g_pSelectedPlayer->drawPath(cnv);
-
-	cnv->Unlock();
-#endif
-
 	if (bScreen) g_pDirectDraw->Refresh();
-	return true;
 }
 
 /*
