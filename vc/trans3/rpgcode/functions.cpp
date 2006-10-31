@@ -713,8 +713,8 @@ void viewbrd(CALL_DATA &params)
 		1, pBoard->sizeL,
 		x, y, 
 		pCnv->GetWidth(), 
-		pCnv->GetHeight(), 
-		0, 0, 0); 
+		pCnv->GetHeight()
+	); 
 	g_boards.free(pBoard);
 
 	if (params.params != 4) renderRpgCodeScreen();
@@ -915,7 +915,7 @@ void prg(CALL_DATA &params)
 	std::vector<LPBRD_PROGRAM>::iterator i = g_pBoard->programs.begin();
 	for (; i != g_pBoard->programs.end(); ++i)
 	{
-		if (_tcsicmp((*i)->fileName.c_str(), params[0].getLit().c_str()) == 0)
+		if ((*i) && (_tcsicmp((*i)->fileName.c_str(), params[0].getLit().c_str()) == 0))
 		{
 			(*i)->vBase.move(x, y);
 			(*i)->layer = z;
@@ -6919,9 +6919,9 @@ void spritepath(CALL_DATA &params, CSprite *p)
 }
 
 /*
- * void ItemPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
- * void ItemPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
- * void ItemPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
+ * void itemPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
+ * void itemPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
+ * void itemPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
  *
  * Causes the sprite to walk a path between a given set of co-ordinates,
  * depending on the flags parameter.
@@ -6957,9 +6957,9 @@ void itempath(CALL_DATA &params)
 }
 
 /*
- * void PlayerPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
- * void PlayerPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
- * void PlayerPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
+ * void playerPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
+ * void playerPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
+ * void playerPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
  *
  * Causes the sprite to walk a path between a given set of co-ordinates,
  * depending on the flags parameter.
@@ -6995,11 +6995,11 @@ void playerpath(CALL_DATA &params)
 }
 
 /* 
- * int BoardGetVector()
+ * int boardGetVector()
  * 
  * Returns the number of vectors on the board.
  *
- * void BoardGetVector(variant vector, int &tileType, int &pointCount, int &layer, bool &isClosed, int &attributes)
+ * void boardGetVector(variant vector, int &tileType, int &pointCount, int &layer, bool &isClosed, int &attributes)
  *
  * Returns the properties of a given vector.
  */
@@ -7049,7 +7049,7 @@ void boardgetvector(CALL_DATA &params)
 }
 
 /* 
- * void BoardSetVector(variant vector, int tileType, int pointCount, int layer, bool isClosed, int attributes)
+ * void boardSetVector(variant vector, int tileType, int pointCount, int layer, bool isClosed, int attributes)
  *
  * Sets the properties of a given vector.
  * Creates a new vector if an existing one is not found - if a numeric variable
@@ -7105,15 +7105,17 @@ void boardsetvector(CALL_DATA &params)
 		// Reset pathfinding as the collision landscape has changed.
 		g_sprites.freePaths();
 
+		/* Unneeded: useful for debugging only.
 #ifdef DEBUG_VECTORS
 		extern SCROLL_CACHE g_scrollCache;
 		g_scrollCache.render(true);
-#endif
+#endif 
+		*/
 	}
 }
 
 /* 
- * void BoardGetVectorPoint(variant vector, int pointIndex, int &x, int &y)
+ * void boardGetVectorPoint(variant vector, int pointIndex, int &x, int &y)
  *
  * Get a single point on a board vector. x, y are always pixel values.
  */
@@ -7143,7 +7145,7 @@ void boardgetvectorpoint(CALL_DATA &params)
 }
 
 /* 
- * void BoardSetVectorPoint(variant vector, int pointIndex, int x, int y, bool apply)
+ * void boardSetVectorPoint(variant vector, int pointIndex, int x, int y, bool apply)
  *
  * Set/move a single point on a board vector. x, y are always pixel values.
  * Set apply = true for last change, to improve speed.
@@ -7170,20 +7172,22 @@ void boardsetvectorpoint(CALL_DATA &params)
 			// Reset pathfinding as the collision landscape has changed.
 			g_sprites.freePaths();
 
+			/* Unneeded: useful for debugging only.
 #ifdef DEBUG_VECTORS
 			extern SCROLL_CACHE g_scrollCache;
 			g_scrollCache.render(true);
-#endif
+#endif		
+			*/
 		}
 	}
 }
 
 /* 
- * int BoardGetProgram()
+ * int boardGetProgram()
  * 
  * Returns the number of programs on the board.
  *
- * void BoardGetProgram(int programIndex, string &program, int &pointCount, int &layer, bool &isClosed, int &attributes, int &distanceRepeat)
+ * void boardGetProgram(int programIndex, string &program, int &pointCount, int &layer, bool &isClosed, int &attributes, int &distanceRepeat)
  *
  * Returns the properties of a given program.
  */
@@ -7238,7 +7242,7 @@ void boardgetprogram(CALL_DATA &params)
 }
 
 /* 
- * void BoardSetProgram(int programIndex, string program, int pointCount, int layer, bool isClosed, int attributes, int distanceRepeat)
+ * void boardSetProgram(int programIndex, string program, int pointCount, int layer, bool isClosed, int attributes, int distanceRepeat)
  *
  * Sets the properties of a given program; creates a new program if one-past-the-end index is given.
  * distanceRepeat in pixels always.
@@ -7270,15 +7274,17 @@ void boardsetprogram(CALL_DATA &params)
 		prg->activationType = int(params[5].getNum());
 		prg->distanceRepeat = int(params[6].getNum());
 
+		/* Unneeded: useful for debugging only.
 #ifdef DEBUG_VECTORS
 		extern SCROLL_CACHE g_scrollCache;
 		g_scrollCache.render(true);
-#endif
+#endif	
+		*/
 	}
 }
 
 /* 
- * void BoardGetProgramPoint(int programIndex, int pointIndex, int &x, int &y)
+ * void boardGetProgramPoint(int programIndex, int pointIndex, int &x, int &y)
  *
  * Get a single point on a board program. x, y are always pixel values.
  */
@@ -7308,7 +7314,7 @@ void boardgetprogrampoint(CALL_DATA &params)
 }
 
 /* 
- * void BoardSetProgramPoint(int programIndex, int pointIndex, int x, int y)
+ * void boardSetProgramPoint(int programIndex, int pointIndex, int x, int y)
  *
  * Set/move a single point on a board program. x, y are always pixel values.
  */
@@ -7326,15 +7332,17 @@ void boardsetprogrampoint(CALL_DATA &params)
 	{
 		prg->vBase.setPoint((unsigned int)params[1].getNum(), params[2].getNum(), params[3].getNum());
 
+		/* Unneeded: useful for debugging only.
 #ifdef DEBUG_VECTORS
 		extern SCROLL_CACHE g_scrollCache;
 		g_scrollCache.render(true);
 #endif
+		*/
 	}
 }
 
 /* 
- * void SetAmbientLevel(int red, int green, int blue)
+ * void setAmbientLevel(int red, int green, int blue)
  *
  * Set the global ambient level. Valid values range from -255 to + 255.
  */
@@ -7357,6 +7365,76 @@ void setambientlevel(CALL_DATA &params)
 	pVar->udt = UDT_NUM;
 
 	forceRedraw(params);
+}
+
+/* 
+ * void playerDirection(variant handle, int dir)
+ *
+ * Sets the player direction.
+ *
+ * int playerDirection(variant handle)
+ *
+ * Returns the player direction.
+ *
+ * Directions are assigned the following constants:
+ * East			tkDIR_E			West		tkDIR_W
+ * Southeast	tkDIR_SE		Northwest	tkDIR_NW
+ * South		tkDIR_S			North		tkDIR_N
+ * Southwest	tkDIR_SW		Northeast	tkDIR_NE
+ */
+void playerdirection(CALL_DATA &params)
+{
+	if (params.params < 1 || params.params > 2)
+	{
+		throw CError(_T("PlayerDirection() requires one or two parameters."));
+	}
+	
+	CPlayer *p = getPlayerPointer(params[0]);
+	if (!p) throw CError(_T("PlayerDirection(): player not found."));
+	CSprite::CFacing *face = p->getFacing();
+
+	if (params.params == 2)
+	{
+		const int dir = int(params[1].getNum());
+		face->assign(dir < MV_MIN ? MV_MIN : (dir > MV_MAX ? MV_MAX : MV_ENUM(dir)));
+		renderNow(g_cnvRpgCode, true);
+		renderRpgCodeScreen();
+	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(face->dir());
+}
+
+/* 
+ * void itemDirection(variant handle, int dir)
+ *
+ * Sets the item direction.
+ *
+ * int itemDirection(variant handle)
+ *
+ * Returns the item direction.
+ *
+ * See playerDirection() for direction indices.
+ */
+void itemdirection(CALL_DATA &params)
+{
+	if (params.params < 1 || params.params > 2)
+	{
+		throw CError(_T("ItemDirection() requires one or two parameters."));
+	}
+	
+	CItem *p = getItemPointer(params[0]);
+	if (!p) throw CError(_T("ItemDirection(): player not found."));
+	CSprite::CFacing *face = p->getFacing();
+
+	if (params.params == 2)
+	{
+		const int dir = int(params[1].getNum());
+		face->assign(dir < MV_MIN ? MV_MIN : (dir > MV_MAX ? MV_MAX : MV_ENUM(dir)));
+		renderNow(g_cnvRpgCode, true);
+		renderRpgCodeScreen();
+	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(face->dir());
 }
 
 // Get a numerical stack frame.
@@ -7641,6 +7719,8 @@ void initRpgCode()
 	CProgram::addFunction(_T("itempath"), itempath);
 	CProgram::addFunction(_T("playerpath"), playerpath);
 	CProgram::addFunction(_T("setambientlevel"), setambientlevel);
+	CProgram::addFunction(_T("playerdirection"), playerdirection);
+	CProgram::addFunction(_T("itemdirection"), itemdirection);
 
 	// Vector functions.
 	CProgram::addFunction(_T("boardgetvector"), boardgetvector);
@@ -7673,4 +7753,14 @@ void initRpgCode()
 	CProgram::addConstant(_T("tkPRG_KEYPRESS"), makeNumStackFrame(tkPRG_KEYPRESS));
 	CProgram::addConstant(_T("tkPRG_REPEAT"), makeNumStackFrame(tkPRG_REPEAT));
 	CProgram::addConstant(_T("tkPRG_STOPS_MOVEMENT"), makeNumStackFrame(tkPRG_STOPS_MOVEMENT));
+
+	// Direction constants.
+	CProgram::addConstant(_T("tkDIR_E"),  makeNumStackFrame(MV_E));
+	CProgram::addConstant(_T("tkDIR_SE"), makeNumStackFrame(MV_SE));
+	CProgram::addConstant(_T("tkDIR_S"),  makeNumStackFrame(MV_S));
+	CProgram::addConstant(_T("tkDIR_SW"), makeNumStackFrame(MV_SW));
+	CProgram::addConstant(_T("tkDIR_W"),  makeNumStackFrame(MV_W));
+	CProgram::addConstant(_T("tkDIR_NW"), makeNumStackFrame(MV_NW));
+	CProgram::addConstant(_T("tkDIR_N"),  makeNumStackFrame(MV_N));
+	CProgram::addConstant(_T("tkDIR_NE"), makeNumStackFrame(MV_NE));
 }
