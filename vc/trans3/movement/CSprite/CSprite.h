@@ -76,12 +76,16 @@ public:
 		const int cycles, 
 		const int flags);
 
-	void drawPath(CCanvas *const cnv);		// Draw the path this sprite is on.
-	void drawVector(CCanvas *const cnv);	// Debug: draw the sprite's base vector.
-	void drawPfObjects(int x, int y, CCanvas *cnv) { m_pathFind.drawObstructions(x, y , cnv); }
+	void drawPath(							// Draw the path this sprite is on.
+		CCanvas *const cnv, 
+		const LONG color);		
+	void drawVector(CCanvas *const cnv);	// Draw the sprite's base vector.
+
+	// Draw the sprite's collision boundaries (debug).
+//	void drawPfObjects(int x, int y, CCanvas *cnv) { m_pathFind.drawObstructions(x, y , cnv); }
 	
 	bool render( 							// Render frame to canvas.
-		const CCanvas *cnv,
+		CCanvas *const cnv,
 		const int layer,
 		RECT &rect);
 	void setAnm(MV_ENUM dir);				// Set the facing animation.

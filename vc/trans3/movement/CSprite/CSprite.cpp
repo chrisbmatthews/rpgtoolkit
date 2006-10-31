@@ -75,7 +75,8 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 
 			// Increment the animation frame if movement did not 
 			// finish the previous loop (pixel movement only).
-			if (m_bPxMovement && m_pos.loopFrame != LOOP_DONE) m_pos.frame += m_pos.loopSpeed * 2 - 1;
+			// Bitshift in place of multiply by two (<< 1 equivalent to * 2)
+			if (m_bPxMovement && m_pos.loopFrame != LOOP_DONE) m_pos.frame += (m_pos.loopSpeed << 1) - 1;
 
 			// Insert target co-ordinates.
 			setPathTarget();
@@ -250,10 +251,10 @@ bool CSprite::push(const bool bScroll)
 
 	if (bScroll)
 	{
-
-		if ((m_v.y < 0 && m_pos.y < (g_screen.top + g_screen.bottom) * 0.5 && g_screen.top > 0) ||
+		// Bitshift in place of divide by two (>> 1 equivalent to / 2)
+		if ((m_v.y < 0 && m_pos.y < (g_screen.top + g_screen.bottom >> 1) && g_screen.top > 0) ||
 			// North. Scroll if in upper half of screen.
-			(m_v.y > 0 && m_pos.y > (g_screen.top + g_screen.bottom) * 0.5 && g_screen.bottom < g_pBoard->pxHeight()))
+			(m_v.y > 0 && m_pos.y > (g_screen.top + g_screen.bottom >> 1) && g_screen.bottom < g_pBoard->pxHeight()))
 			// South. Scroll if in lower half of screen.
 		{
 			const int height = g_screen.bottom - g_screen.top;
@@ -266,9 +267,9 @@ bool CSprite::push(const bool bScroll)
 			g_screen.bottom = g_screen.top + height;
 		}
 
-		if ((m_v.x < 0 && m_pos.x < (g_screen.left + g_screen.right) * 0.5 && g_screen.left > 0) ||
+		if ((m_v.x < 0 && m_pos.x < (g_screen.left + g_screen.right >> 1) && g_screen.left > 0) ||
 			// West. Scroll if in left half of screen.
-			(m_v.x > 0 && m_pos.x > (g_screen.left + g_screen.right) * 0.5 && g_screen.right < g_pBoard->pxWidth()))
+			(m_v.x > 0 && m_pos.x > (g_screen.left + g_screen.right >> 1) && g_screen.right < g_pBoard->pxWidth()))
 			// East. Scroll if in right half of screen.
 		{
 			const int width = g_screen.right - g_screen.left;
@@ -1129,12 +1130,6 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 	// Prevent the player from moving on the next board.
 	m_pos.loopFrame = LOOP_DONE;
 
-	// This is refusing to work, Delano.
-	//----------------------------------
-/**	g_boards.free(g_pBoard);
-	g_pBoard = pBoard;
-	g_pBoard->createVectorCanvases(); **/
-
 	g_boards.free(pBoard);
 	g_pBoard->open(g_projectPath + BRD_PATH + fileName);
 	send();
@@ -1194,6 +1189,8 @@ bool CSprite::programTest(void)
 	extern MAIN_FILE g_mainFile;
 	extern LPBOARD g_pBoard;
 	extern STRING g_projectPath;
+
+	CONST HKL hkl = GetKeyboardLayout(0);
 
 	// Create the sprite's vector base at the *target* location (for the
 	// case of pressing against an item, etc.)
@@ -1259,7 +1256,6 @@ bool CSprite::programTest(void)
 			{
 				// General activation key. GetAsyncKeyState is
 				// negative if key is currently down.
-				HKL hkl = GetKeyboardLayout(0);
 				const short state = GetAsyncKeyState(MapVirtualKeyEx(g_mainFile.key, 1, hkl));
 				if (state >= 0) continue;
 			}
@@ -1342,6 +1338,8 @@ bool CSprite::programTest(void)
 
 	for (; k != g_pBoard->programs.end(); ++k)
 	{
+		if (!*k) continue;
+
 		// Local copy of the program to avoid derefencing.
 		const BRD_PROGRAM bp = **k;
 		double *const distance = &(*k)->distance;
@@ -1392,7 +1390,6 @@ bool CSprite::programTest(void)
 			if (bp.activationType & PRG_KEYPRESS)
 			{
 				// General activation key - if not pressed, continue.
-				HKL hkl = GetKeyboardLayout(0);
 				const short state = GetAsyncKeyState(MapVirtualKeyEx(g_mainFile.key, 1, hkl));
 				if (state >= 0) continue;
 			}
@@ -1483,7 +1480,7 @@ void CSprite::deactivatePrograms(void)
 
 	for (; i != g_pBoard->programs.end(); ++i)
 	{
-		if (((*i)->layer == m_pos.l) && (*i)->vBase.contains(sprBase, p))
+		if ((*i) && ((*i)->layer == m_pos.l) && (*i)->vBase.contains(sprBase, p))
 		{
 			// Standing in a program activation area.
 			if ((*i)->activationType & PRG_REPEAT)
@@ -1504,32 +1501,56 @@ void CSprite::deactivatePrograms(void)
 	} // for (programs)
 }
 
-// Debug function - draw vector onto screen.
-// Might be worth keeping in some form.
+/*
+ * Draw the sprite's vector path.
+ */
 void CSprite::drawVector(CCanvas *const cnv)
 {
 	extern RECT g_screen;
 	extern CPlayer *g_pSelectedPlayer;
+	extern LPBOARD g_pBoard;
+	extern MAIN_FILE g_mainFile;
 
-	// Draw the target base one colour.
-	DB_POINT p = getTarget();
-	CVector sprBase = m_attr.vBase + p;
-	sprBase.draw(RGB(0,255,255), false, g_screen.left, g_screen.top, cnv);
-
-	// Draw the current position base another.
-	p.x = m_pos.x; p.y = m_pos.y;
-	sprBase = m_attr.vBase + p;
-	sprBase.draw(RGB(255,255,255), false, g_screen.left, g_screen.top, cnv);
-
-	// Draw the activation area.
-	sprBase = m_attr.vActivate + p;
-	sprBase.draw(RGB(255,255,255), false, g_screen.left, g_screen.top, cnv);
-
-	// Draw the path this sprite is on. This is always done for the selected
-	// player, so don't draw it for him here.
-	if (this != g_pSelectedPlayer)
+/**	
+	// Draw the target base one colour. (Debug).
+	CVector sprBase = m_attr.vBase + getTarget();
+	sprBase.draw(RGB(0, 255, 255), false, g_screen.left, g_screen.top, cnv);
+**/
+	if (g_mainFile.drawVectors & CV_DRAW_SPR_VECTORS)
 	{
-		drawPath(cnv);
+		// Draw the activation area.
+		const DB_POINT p = {m_pos.x, m_pos.y};
+		CVector sprBase = m_attr.vActivate + p;
+		sprBase.draw(RGB(255, 255, 0), false, g_screen.left, g_screen.top, cnv);
+
+		// Draw the current position base.
+		sprBase = m_attr.vBase + p;
+		sprBase.draw(RGB(255, 255, 255), false, g_screen.left, g_screen.top, cnv);
+	}
+
+	// Only drawing path and destination for selected player.
+	if (this != g_pSelectedPlayer) return;
+
+	if (g_mainFile.drawVectors & CV_DRAW_SP_PATH)
+	{
+		// Draw the path this sprite is on. 
+		drawPath(cnv, g_mainFile.pathColor);
+	}
+
+	if (g_mainFile.drawVectors & CV_DRAW_SP_DEST_CIRCLE)
+	{
+		// Draw the destination circle.
+		const int dx = 12, dy = 6/*g_pBoard->isIsometric() ? 6: 12*/;	
+		DB_POINT pt = {0.0, 0.0};
+		getDestination(pt);
+
+		cnv->DrawEllipse(
+			pt.x - dx - g_screen.left, 
+			pt.y - dy - g_screen.top, 
+			pt.x + dx - g_screen.left, 
+			pt.y + dy - g_screen.top, 
+			g_mainFile.pathColor
+		);
 	}
 }
 
@@ -1538,44 +1559,37 @@ void CSprite::drawVector(CCanvas *const cnv)
  * to move -- the player needs to be able to see where
  * the character is going.
  */
-void CSprite::drawPath(CCanvas *const cnv)
+void CSprite::drawPath(CCanvas *const cnv, const LONG color)
 {
 	extern RECT g_screen;
-	extern LPBOARD g_pBoard;
-	CONST LONG color = RGB(255, 0, 0);
 
-	// Colin: I'm getting a crash on this line after trying to load
-	//		  after already loading once. (The same file was loaded
-	//		  both times.)
 	if (!m_pos.bIsPath ||
 		(round(m_pos.x) == m_pos.target.x &&
 		round(m_pos.y) == m_pos.target.y && 
 		m_pos.path.empty())) return;
 
-	int x = m_pos.target.x - g_screen.left, 
-		y = m_pos.target.y - g_screen.top,
-		dx = 12,
-		dy = g_pBoard->isIsometric() ? 6: 12;
+	const int x = m_pos.target.x - g_screen.left, y = m_pos.target.y - g_screen.top;
 
-	cnv->DrawLine(round(m_pos.x) - g_screen.left, round(m_pos.y) - g_screen.top, 
-		m_pos.target.x - g_screen.left, m_pos.target.y - g_screen.top, color);
+	// Draw to the first point of the queue.
+	cnv->DrawLine(round(m_pos.x) - g_screen.left, round(m_pos.y) - g_screen.top, x, y, color);
 
+	// Draw the queue.
 	if (!m_pos.path.empty())
 	{
 		MV_PATH_ITR i = m_pos.path.begin();
-		cnv->DrawLine(m_pos.target.x - g_screen.left, m_pos.target.y - g_screen.top, 
-			i->x - g_screen.left, i->y - g_screen.top, color);
+		cnv->DrawLine(x, y,	i->x - g_screen.left, i->y - g_screen.top, color);
 
 		for (; i != m_pos.path.end() - 1; ++i)
 		{
-			cnv->DrawLine(i->x - g_screen.left, i->y - g_screen.top, 
-				(i + 1)->x - g_screen.left, (i + 1)->y - g_screen.top, color);
+			cnv->DrawLine(
+				i->x - g_screen.left, 
+				i->y - g_screen.top, 
+				(i + 1)->x - g_screen.left, 
+				(i + 1)->y - g_screen.top, 
+				color
+			);
 		}
-		x = i->x - g_screen.left;
-		y = i->y - g_screen.top;
 	}
-
-	cnv->DrawEllipse(x - dx, y - dy, x + dx, y + dy, color);
 }
 
 /*
@@ -1623,7 +1637,8 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 		// Board smaller than screen.
 		if (bAllowNegatives)
 		{
-			rect.left = (g_pBoard->pxWidth() - width) * 0.5;
+			// Bitshift in place of divide by two (>> 1 equivalent to / 2)
+			rect.left = (g_pBoard->pxWidth() - width) >> 1;
 		}
 		else
 		{
@@ -1633,7 +1648,7 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 	else
 	{
 		// Centre around the player.
-		rect.left = m_pos.x - width * 0.5;
+		rect.left = m_pos.x - (width >> 1);
 		if (rect.left < 0)
 		{
 			// Align to left of board.
@@ -1650,7 +1665,8 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 	{
 		if (bAllowNegatives)
 		{
-			rect.top = (g_pBoard->pxHeight() - height) * 0.5;
+			// Bitshift in place of divide by two (>> 1 equivalent to / 2)
+			rect.top = (g_pBoard->pxHeight() - height) >> 1;
 		}
 		else
 		{
@@ -1659,7 +1675,7 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 	}
 	else
 	{
-		rect.top = m_pos.y - height * 0.5;
+		rect.top = m_pos.y - (height >> 1);
 		if (rect.top < 0)
 		{
 			rect.top = 0;
@@ -1818,7 +1834,7 @@ void CSprite::checkIdling(void)
 /*
  * Calculate sprite location and place on destination canvas.
  */
-bool CSprite::render(const CCanvas *cnv, const int layer, RECT &rect)
+bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 {
 	extern LPBOARD g_pBoard;
 	extern RECT g_screen;
@@ -1838,7 +1854,8 @@ bool CSprite::render(const CCanvas *cnv, const int layer, RECT &rect)
 		checkIdling();
 
 		// Get a pointer to the current animation.
-		const int frame = (m_pos.loopFrame <= LOOP_IDLE) ?	m_pos.frame : int(m_pos.frame / (m_pos.loopSpeed * 2));
+		// Bitshift in place of multiply by two (<< 1 equivalent to * 2)
+		const int frame = (m_pos.loopFrame <= LOOP_IDLE) ?	m_pos.frame : int(m_pos.frame / (m_pos.loopSpeed << 1));
 		
 		// Get the canvas for the current frame.
 		if (m_pos.pAnm)
@@ -1865,9 +1882,10 @@ bool CSprite::render(const CCanvas *cnv, const int layer, RECT &rect)
 	/** centreY = round(m_pos.y) + m_attr.vBase.getBounds().bottom; **/
   
 	// Sprite location on screen and board.
+	// Bitshift in place of divide by two (>> 1 equivalent to / 2)
 	RECT screen = {0, 0, 0, 0},
-		 board = { centreX - int(m_pCanvas->GetWidth() * 0.5), centreY - m_pCanvas->GetHeight(),
-				   centreX + int(m_pCanvas->GetWidth() * 0.5), centreY };
+		 board = { centreX - (m_pCanvas->GetWidth() >> 1), centreY - m_pCanvas->GetHeight(),
+				   centreX + (m_pCanvas->GetWidth() >> 1), centreY };
 
 	// Off the screen!
 	if (!IntersectRect(&screen, &board, &g_screen)) return false;
@@ -1879,28 +1897,38 @@ bool CSprite::render(const CCanvas *cnv, const int layer, RECT &rect)
 	// Blt the player to the target.
 	if (m_pos.l == layer)
 	{
-		m_pCanvas->BltTransparentPart(cnv,
-								screen.left - g_screen.left,	// destination coord
-								screen.top - g_screen.top,
-								screen.left - board.left,		// source coord
-								screen.top - board.top,
-								screen.right - screen.left,		// width / height
-								screen.bottom - screen.top,
-								TRANSP_COLOR);
+
+#ifdef DEBUG_VECTORS
+		// Draw the vectors and path associated with the sprite.
+		drawVector(cnv);
+#endif
+
+		m_pCanvas->BltTransparentPart(
+			cnv,
+			screen.left - g_screen.left,	// destination coord
+			screen.top - g_screen.top,
+			screen.left - board.left,		// source coord
+			screen.top - board.top,
+			screen.right - screen.left,		// width / height
+			screen.bottom - screen.top,
+			TRANSP_COLOR
+		);
 		return true;
 	}
 
 	// Blt the translucent player, unless they're on the top layer.
-	m_pCanvas->BltTranslucentPart(cnv,
-							screen.left - g_screen.left,	// destination coord
-							screen.top - g_screen.top,
-							screen.left - board.left,		// source coord
-							screen.top - board.top,
-							screen.right - screen.left,		// width / height
-							screen.bottom - screen.top,
-							g_translucentOpacity,
-							-1,
-							TRANSP_COLOR);
+	m_pCanvas->BltTranslucentPart(
+		cnv,
+		screen.left - g_screen.left,	// destination coord
+		screen.top - g_screen.top,
+		screen.left - board.left,		// source coord
+		screen.top - board.top,
+		screen.right - screen.left,		// width / height
+		screen.bottom - screen.top,
+		g_translucentOpacity,
+		-1,
+		TRANSP_COLOR
+	);
 
 	// Return false on translucentBlt to prevent excessive queuing in renderNow().
 	return false;
