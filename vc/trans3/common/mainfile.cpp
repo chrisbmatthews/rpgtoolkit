@@ -12,6 +12,32 @@
 #include "CFile.h"
 #include "mbox.h"
 #include "../movement/CPathFind/CPathFind.h"
+#define DIRECTINPUT_VERSION DIRECTINPUT_HEADER_VERSION
+#include <dinput.h>
+
+/*
+ * Constructor.
+ */
+tagMainFile::tagMainFile(): 
+	startX(0), 
+	startY(0), 
+	startL(0), 
+	drawVectors(NULL), 
+	movementControls(MF_USE_KEYS | MF_ALLOW_DIAGONALS) 
+{
+	// Default to cursor keys for movement keys.
+	movementKeys.clear();
+	movementKeys.push_back(DIK_RIGHT);	// MV_E
+	movementKeys.push_back(0);			// MV_SE
+	movementKeys.push_back(DIK_DOWN);	// MV_S
+	movementKeys.push_back(0);			// MV_SW
+	movementKeys.push_back(DIK_LEFT);	// MV_W
+	movementKeys.push_back(0);			// MV_NW
+	movementKeys.push_back(DIK_UP);		// MV_N
+	movementKeys.push_back(0);			// MV_NE
+
+	pathColor = RGB(255, 255, 255);
+}
 
 /*
  * Open a main file.
@@ -260,6 +286,20 @@ bool tagMainFile::open(const STRING fileName)
 		file >> startY;
 		file >> startL;
 		file >> pfHeuristic;
+		file >> drawVectors;
+		file >> pathColor;
+		file >> movementControls;
+
+		movementKeys.clear();
+		short scanCode = 0;
+
+		// (This loop would be infinite if using a MV_ENUM.)
+		for (int i = MV_MIN; i <= MV_MAX; ++i)
+		{
+			// DIK_ = scan code.
+			file >> scanCode;
+			movementKeys.push_back(scanCode);
+		}
 	}
 
 	return true;
