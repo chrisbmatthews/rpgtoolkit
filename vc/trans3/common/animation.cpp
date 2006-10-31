@@ -24,8 +24,12 @@
  */
 bool tagAnimation::open(const STRING fileName)
 {
-
 	CFile file(fileName);
+	if (!file.isOpen())
+	{
+		messageBox(_T("Animation file not found. ") + fileName);
+		return false;
+	}
 
 	STRING fileHeader;
 	file >> fileHeader;
