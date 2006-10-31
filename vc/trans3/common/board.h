@@ -102,6 +102,19 @@ typedef enum tagDirectionalLinks
 	LK_W
 } LK_ENUM;
 
+// Flags for tagBoard::bLayerOccupied.
+typedef enum tagLayerOccupied
+{
+	LO_NONE,
+	LO_TILES,
+	LO_IMAGES
+} LO_ENUM;
+
+inline LO_ENUM operator|= (const LO_ENUM lhs, const LO_ENUM rhs)
+{
+	return LO_ENUM(lhs | rhs);
+}
+
 #include "tileanim.h"
 
 /*
@@ -167,9 +180,9 @@ typedef struct tagBoard
 	typedef std::vector<char> VECTOR_CHAR;
 	typedef std::vector<VECTOR_CHAR> VECTOR_CHAR2D;
 
-	short sizeX;									// x-tile dimension.
-	short sizeY;									// y-tile dimension.
-	short sizeL;									// Layers.	
+	int sizeX;										// x-tile dimension.
+	int sizeY;										// y-tile dimension.
+	int sizeL;										// Layers.	
 	COORD_TYPE coordType;							// Co-ordinate system type.
 
 	std::vector<STRING> tileIndex;					// Lookup table for tiles.
@@ -189,8 +202,7 @@ typedef struct tagBoard
 
 	std::vector<STRING> constants;					// Constants.
 	std::vector<STRING> layerTitles;				// Board title (layer).
-	std::vector<STRING> links;						// Board edge links.
-													// 0: N, 1: S, 2: E, 3: W.
+	std::vector<STRING> links;						// Board edge links. LK_ENUM
 
 	LPBRD_IMAGE bkgImage;							// Background image.
 	int bkgColor;									// Background color.
@@ -211,8 +223,8 @@ typedef struct tagBoard
 
 	/* Volatile data */
 
-	std::vector<bool> bLayerOccupied;				// Do layers contain tiles?
-
+	std::vector<int> bLayerOccupied;				// Do layers contain tiles or images? (see LO_ENUM)
+	
 	std::vector<BOARD_TILEANIM> animatedTiles;		// Animated tiles associated with this board.
 
 	STRING filename;								// Filename of the board.
@@ -240,7 +252,7 @@ typedef struct tagBoard
 	LPBRD_PROGRAM getProgram(const unsigned int index);
 
 	void render(
-		CCanvas *cnv,
+		CCanvas *const cnv,
 		int destX, 			// canvas destination.
 		const int destY,
 		const int lLower, 	// layer bounds. 
@@ -248,12 +260,9 @@ typedef struct tagBoard
 		int topX,			// pixel location on board to start from. 
 		int topY,
 		int width, 			// pixel dimensions to draw. 
-		int height,
-		const int aR, 
-		const int aG, 
-		const int aB
+		int height
 	);
-	void renderBackground(CCanvas *cnv, RECT bounds);
+	void renderBackground(CCanvas *const cnv, const RECT bounds);
 	void renderAnimatedTiles(SCROLL_CACHE &scrollCache);
 
 	tagBoard(): coordType(TILE_NORMAL), bkgImage(NULL) { }
@@ -268,24 +277,21 @@ private:
 	int tileWidth() const { return (isIsometric() ? 64 : 32); }
 	int tileHeight() const { return (isIsometric() ? 16 : 32); }
 	void renderImages(
-		CCanvas *cnv, 
+		CCanvas *const cnv, 
 		const int destX,
 		const int destY,
 		const RECT bounds, 
 		const int layer
 	);
 	void renderStack(
-		CCanvas *cnv,
+		CCanvas *const cnv,
 		const int destX,	// canvas destination.
 		const int destY,
 		const int lLower, 	// layer bounds. 
 		const int lUpper,
 		const int x,		// tile location on board to draw. 
 		const int y,
-		const RECT bounds,
-		const int aR, 
-		const int aG, 
-		const int aB
+		const RECT bounds
 	);
 
 } BOARD, *LPBOARD;

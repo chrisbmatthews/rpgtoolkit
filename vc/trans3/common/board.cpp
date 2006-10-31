@@ -93,9 +93,9 @@ vVersion:
 		// 3.0.7 vector implementation.
 
 		short var;
-		file >> sizeX;
-		file >> sizeY;
-		file >> sizeL;
+		file >> var; sizeX = int(var);
+		file >> var; sizeY = int(var);
+		file >> var; sizeL = int(var);
 		file >> var; coordType = COORD_TYPE(var);
 
 		// Effective matrix dimensions.
@@ -149,7 +149,7 @@ vVersion:
 
 						// Determine if the layer contains tiles.
 						// [0] indicates if the whole board contains tiles.
-						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
+						if (index) bLayerOccupied[z] = bLayerOccupied[0] = LO_TILES;
 
 						for (short i = 1; i <= count; ++i)
 						{
@@ -175,7 +175,7 @@ vVersion:
 										goto lutEndA;
 									}
 									// Onto the next layer.
-									if (index) bLayerOccupied[z] = true;
+									if (index) bLayerOccupied[z] = LO_TILES;
 								}
 							}
 						} // for(i)
@@ -183,7 +183,7 @@ vVersion:
 					}
 					else // (index > 0)
 					{
-						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
+						if (index) bLayerOccupied[z] = bLayerOccupied[0] = LO_TILES;
 
 						board[z][y][x] = index;
 					
@@ -417,23 +417,28 @@ layerEnd:
 		if (ub >= 0)
 		{
 			images.reserve(ub);
+			bLayerOccupied[0] |= LO_IMAGES; // Images on any layer.
+			int q = bLayerOccupied[0];
 
 			for (i = 0; i <= ub; ++i)
 			{
 				LPBRD_IMAGE img = new BRD_IMAGE();
 
 				short var;
+				int color;
 				file >> img->file;
 				file >> x; img->r.left = x;
 				file >> y; img->r.top = y;
 				file >> var; img->layer = int(var);
 				file >> var; img->type = BI_ENUM(var);
-				file >> i; img->transpColor = i;
+				file >> color; img->transpColor = color;
 				
 				// Reserved for translucency, or other.
 				file >> var;
     
 				images.push_back(img);
+				bLayerOccupied[img->layer] |= LO_IMAGES;
+
 				// Create canvases later.
 			} // for (i)
 		}
@@ -545,9 +550,9 @@ pvVersion:
 		file >> var;			// Registered version?
 		file >> sUnused;		// Registration code.
 
-		file >> sizeX;
-		file >> sizeY;
-		file >> sizeL;
+		file >> var; sizeX = int(var);
+		file >> var; sizeY = int(var);
+		file >> var; sizeL = int(var);
 		setSize(sizeX, sizeY, sizeL, true);
 
         // Create only a local versions of the old .ambientRed, -Green, -Blue arrays,
@@ -612,7 +617,7 @@ pvVersion:
 
 						// Determine if the layer contains tiles.
 						// [0] indicates if the whole board contains tiles.
-						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
+						if (index) bLayerOccupied[z] = bLayerOccupied[0] = LO_TILES;
 
 						for (int i = 1; i <= count; ++i)
 						{
@@ -645,7 +650,7 @@ pvVersion:
 										goto lutEndB;
 									}
 									// Onto the next layer.
-									if (index) bLayerOccupied[z] = true;
+									if (index) bLayerOccupied[z] = LO_TILES;
 								}
 							}
 						} // for(i)
@@ -653,7 +658,7 @@ pvVersion:
 					}
 					else // (index > 0)
 					{
-						if (index) bLayerOccupied[z] = bLayerOccupied[0] = true;
+						if (index) bLayerOccupied[z] = bLayerOccupied[0] = LO_TILES;
 
 						board[z][y][x] = index;
 						file >> red[z][y][x];
@@ -1049,9 +1054,9 @@ void tagBoardVector::createCanvas(BOARD &board)
 						r.bottom - r.bottom % 32 + 32};
 
 	// Create an intermediate canvas that is aligned to the grid.
-	CCanvas *cnv = new CCanvas();
-	cnv->CreateBlank(NULL, rAlign.right - rAlign.left, rAlign.bottom - rAlign.top, TRUE);
-	cnv->ClearScreen(TRANSP_COLOR);
+	CCanvas cnv;
+	cnv.CreateBlank(NULL, rAlign.right - rAlign.left, rAlign.bottom - rAlign.top, TRUE);
+	cnv.ClearScreen(TRANSP_COLOR);
 
 	// Create a mask from the vector on the vector's canvas.
 	if (pV->createMask(pCnv, r.left, r.top, SOLID_COLOR))
@@ -1067,36 +1072,42 @@ void tagBoardVector::createCanvas(BOARD &board)
 		{
 			// Does not apply to parallaxed images.
 			if (board.bkgImage && board.bkgImage->type != BI_PARALLAX)
-				board.renderBackground(cnv, rAlign);
+				board.renderBackground(&cnv, rAlign);
 		}
 
 		// Draw the board layer within the bounds to the intermediate canvas.
-		board.render (cnv, 
-			0, 0, lLower, layer,  
+		board.render(
+			&cnv, 
+			0, 0, 
+			lLower, layer,  
 			rAlign.left, rAlign.top, 
 			rAlign.right - rAlign.left, 
-			rAlign.bottom - rAlign.top,
-			0, 0, 0);
+			rAlign.bottom - rAlign.top
+		);
 		
 		// Blt the mask onto the canvas. In this case we want
 		// the *solid* colour on the mask to be transparent.
-		pCnv->BltTransparentPart(cnv, 
+		pCnv->BltTransparentPart(
+			&cnv, 
 			r.left % 32, r.top % 32, 
 			0, 0, 
 			r.right - r.left, 
 			r.bottom - r.top, 
-			SOLID_COLOR);
+			SOLID_COLOR
+		);
 
 		// Blt the vector area back to the vector's canvas.
 		// (Note: it may seem easier to put the mask on the intermediate
 		// canvas, but this results in a larger vector canvas that
 		// is harder to manipulate.)
-		cnv->BltPart(pCnv, 
+		cnv.BltPart(
+			pCnv, 
 			0, 0, 
 			r.left % 32, r.top % 32, 
 			r.right - r.left, 
 			r.bottom - r.top, 
-			SRCCOPY);
+			SRCCOPY
+		);
 	}
 	else
 	{
@@ -1104,8 +1115,6 @@ void tagBoardVector::createCanvas(BOARD &board)
 		delete pCnv;
 		pCnv = NULL;
 	}
-
-	delete cnv;
 }
 
 /*
@@ -1115,6 +1124,7 @@ void tagBoardImage::createCanvas(BOARD &board)
 {
 	extern STRING g_projectPath;
 	extern RECT g_screen;
+	extern MAIN_FILE g_mainFile;
 
 	const int resX = g_screen.right - g_screen.left, resY = g_screen.bottom - g_screen.top;
 
@@ -1138,15 +1148,8 @@ void tagBoardImage::createCanvas(BOARD &board)
 
 		// Draw the image to the canvas.
 		const HDC hdc = pCnv->OpenDC();
-/*
-			SetDIBitsToDevice(hdc,
-			0, 0, 
-			width, height, 
-			0, 0, 0,
-			height, FreeImage_GetBits(bmp),
-			FreeImage_GetInfo(bmp), DIB_RGB_COLORS); 
-*/
-		StretchDIBits(hdc,
+		StretchDIBits(
+			hdc,
 			0, 0,
 			width, height,
 			0, 0,
@@ -1155,7 +1158,8 @@ void tagBoardImage::createCanvas(BOARD &board)
 			FreeImage_GetBits(bmp),
 			FreeImage_GetInfo(bmp), 
 			DIB_RGB_COLORS,
-			SRCCOPY);
+			SRCCOPY
+		);
 
 		// Clean up.
 		pCnv->CloseDC(hdc);
@@ -1178,17 +1182,17 @@ void tagBoardImage::createCanvas(BOARD &board)
 		}
 
 #ifdef DEBUG_VECTORS
-		if (this == board.bkgImage && type != BI_PARALLAX)
+		if (this == board.bkgImage && type != BI_PARALLAX && (g_mainFile.drawVectors & CV_DRAW_BRD_VECTORS))
 		{
 			// Draw program and tile vectors onto the background image.
 			pCnv->Lock();
 			for (std::vector<LPBRD_PROGRAM>::iterator b = board.programs.begin(); b != board.programs.end(); ++b)
 			{
-				(*b)->vBase.draw(RGB(255, 255, 0), true, 0, 0, pCnv);
+				if(*b) (*b)->vBase.draw(RGB(255, 255, 0), true, 0, 0, pCnv);
 			}
 			for (std::vector<BRD_VECTOR>::iterator c = board.vectors.begin(); c != board.vectors.end(); ++c)
 			{
-				int r = (c->type == TT_UNDER ? RGB(0,255,0) : RGB(255, 255, 255));
+				const int r = (c->type == TT_UNDER ? RGB(0,255,0) : RGB(255, 255, 255));
 				c->pV->draw(r, true, 0, 0, pCnv);
 			}
 			pCnv->Unlock();
@@ -1201,7 +1205,7 @@ void tagBoardImage::createCanvas(BOARD &board)
  * Render the board to a canvas.
  */
 void tagBoard::render(
-	CCanvas *cnv,
+	CCanvas *const cnv,
 	int destX, 			// canvas destination.
 	const int destY,
 	const int lLower, 	// layer bounds. 
@@ -1209,10 +1213,7 @@ void tagBoard::render(
 	int topX,			// pixel location on board to start from. 
 	int topY,
 	int width, 			// pixel dimensions to draw. 
-	int height,
-	const int aR, 
-	const int aG, 
-	const int aB)
+	int height)
 {
 	extern STRING g_projectPath;
 	extern RGBSHADE g_ambientLevel;
@@ -1247,49 +1248,51 @@ void tagBoard::render(
 	// For each layer
 	for (unsigned int i = lLower; i <= lUpper; ++i)
 	{
-		if (!bLayerOccupied[i]) continue;
-		const bool castShade = (tileShading[0]->layer >= i);
-
-		// For the x axis
-		for (unsigned int j = x; j <= x + nWidth; ++j)
+		if (bLayerOccupied[i] & LO_TILES)
 		{
-			if (j > effectiveWidth) continue;
+			const bool castShade = (tileShading[0]->layer >= i);
 
-			// For the y axis
-			for (unsigned int k = y; k <= y + nHeight; ++k)
+			// For the x axis
+			for (unsigned int j = x; j <= x + nWidth; ++j)
 			{
-				if (k > effectiveHeight) continue;
+				if (j > effectiveWidth) continue;
 
-				if (board[i][k][j])
+				// For the y axis
+				for (unsigned int k = y; k <= y + nHeight; ++k)
 				{
-					const STRING tile = tileIndex[board[i][k][j]];
-					if (!tile.empty())
-					{
-						// Single layer lighting implementation.
-						RGB_SHORT shade = {0, 0, 0};
-						if (castShade) shade = tileShading[0]->shades[j][k];
+					if (k > effectiveHeight) continue;
 
-						// Tile exists at this location.
-						CTile::drawByBoardCoord(
-							g_projectPath + TILE_PATH + tile,
-							j, k, 
-							shade.r + al.r,
-							shade.g + al.g,
-							shade.b + al.b,
-							cnv, 
-							TM_NONE,
-							destX - topX, destY - topY,
-							coordType,
-							sizeX
-						);
-					} // if (!strTile.empty())
-				} // if (board[i][k][j])
-			} // for k
-		} // for j
+					if (board[i][k][j])
+					{
+						const STRING tile = tileIndex[board[i][k][j]];
+						if (!tile.empty())
+						{
+							// Single layer lighting implementation.
+							RGB_SHORT shade = {0, 0, 0};
+							if (castShade) shade = tileShading[0]->shades[j][k];
+
+							// Tile exists at this location.
+							CTile::drawByBoardCoord(
+								g_projectPath + TILE_PATH + tile,
+								j, k, 
+								shade.r + al.r,
+								shade.g + al.g,
+								shade.b + al.b,
+								cnv, 
+								TM_NONE,
+								destX - topX, destY - topY,
+								coordType,
+								sizeX
+							);
+						} // if (!strTile.empty())
+					} // if (board[i][k][j])
+				} // for k
+			} // for j
+		} // if (layer occupied with tiles)
 
 		// Draw attached images over tiles on their respective layers.
 		// Background image handled separately.
-		renderImages(cnv, destX, destY, bounds, i);
+		if (bLayerOccupied[i] & LO_IMAGES) renderImages(cnv, destX, destY, bounds, i);
 
 	} // for i
 }
@@ -1298,7 +1301,7 @@ void tagBoard::render(
  * Render images on a layer that intersect the RECT bounds (or all images if layer = 0).
  */
 void tagBoard::renderImages(
-	CCanvas *cnv, 
+	CCanvas *const cnv, 
 	const int destX,
 	const int destY,
 	const RECT bounds, 
@@ -1332,7 +1335,7 @@ void tagBoard::renderImages(
 /*
  * Render the board background (independently of the board).
  */
-void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
+void tagBoard::renderBackground(CCanvas *const cnv, const RECT bounds)
 {
 	extern RECT g_screen;
 
@@ -1352,7 +1355,8 @@ void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 		if (img.scroll.x < 0 || width < resX)
 		{
 			// Centre the image if board and/or image smaller than screen.
-			destX = (resX - width) * 0.5;
+			// Bitshift in place of divide by two (>> 1 equivalent to / 2)
+			destX = (resX - width) >> 1;
 		}
 		else
 		{
@@ -1361,7 +1365,7 @@ void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 
 		if (img.scroll.y < 0 || height < resY)
 		{
-			destY = (resY - height) * 0.5;
+			destY = (resY - height) >> 1;
 		}
 		else
 		{
@@ -1397,18 +1401,22 @@ void tagBoard::renderBackground(CCanvas *cnv, RECT bounds)
 
 }
 
+/*
+ * Board dimensions in pixels.
+ * Use bitshifts in place of multiplication. x << y = x * 2^y.
+ */
 int tagBoard::pxWidth() const
 {
-	if (coordType & ISO_STACKED) return sizeX * 64 - 32;
-	if (coordType & ISO_ROTATED) return sizeX * 64 - 32;
-	return sizeX * 32;			// TILE_NORMAL.
+	if (coordType & ISO_STACKED) return (sizeX << 6) - 32;
+	if (coordType & ISO_ROTATED) return (sizeX << 6) - 32;
+	return sizeX << 5;			// TILE_NORMAL.
 }
 
 int tagBoard::pxHeight() const
 { 
-	if (coordType & ISO_STACKED) return sizeY * 16 - 16;
-	if (coordType & ISO_ROTATED) return sizeY * 32;
-	return sizeY * 32;			// TILE_NORMAL.
+	if (coordType & ISO_STACKED) return (sizeY << 4) - 16;
+	if (coordType & ISO_ROTATED) return sizeY << 5;
+	return sizeY << 5;			// TILE_NORMAL.
 }
 
 /*
@@ -1577,7 +1585,7 @@ void tagBoard::setSize(const int width, const int height, const int depth, const
 		for (i = 0; i <= depth; ++i) 
 		{
 			board.push_back(face);
-			bLayerOccupied.push_back(false);
+			bLayerOccupied.push_back(LO_NONE);
 		}
 	}
 	if (createTiletypeArray)
@@ -1677,8 +1685,8 @@ bool tagBoard::insertTile(const STRING tile, const int x, const int y, const int
 	try
 	{
 		board[z][y][x] = lutIndex(tile);
-		bLayerOccupied[z] = true;
-		bLayerOccupied[0] = true;			// Any layer occupied.
+		bLayerOccupied[z] |= LO_TILES;
+		bLayerOccupied[0] |= LO_TILES;		// Any layer occupied.
 	}
 	catch (...) 
 	{
@@ -1744,8 +1752,7 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
 				bounds.top - scrollCache.r.top,
 				1, sizeL,
 				i->x, i->y,
-				bounds,
-				0, 0, 0
+				bounds
 			);
 		} // if (advanced frame)
 	} // for (i)
@@ -1755,21 +1762,19 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
  * Render tiles on all layers at a single co-ordinate.
  */
 void tagBoard::renderStack(
-	CCanvas *cnv,
+	CCanvas *const cnv,
 	const int destX,	// canvas destination.
 	const int destY,
 	const int lLower, 	// layer bounds. 
 	const int lUpper,
 	const int x,		// tile location on board to draw. 
 	const int y,
-	const RECT bounds,
-	const int aR, 
-	const int aG, 
-	const int aB)
+	const RECT bounds)
 {
-
 	extern STRING g_projectPath;
 	extern RECT g_screen;
+	extern RGBSHADE g_ambientLevel;
+	const RGBSHADE al = g_ambientLevel;
 
 	// Skip tan if off screen.
 	RECT dest = {0, 0, 0, 0};
@@ -1790,9 +1795,7 @@ void tagBoard::renderStack(
 
 	for (unsigned int i = lLower; i <= lUpper; ++i)
 	{
-		if (!bLayerOccupied[i]) continue;
-
-		if (board[i][y][x])
+		if ((bLayerOccupied[i] & LO_TILES) && board[i][y][x])
 		{
 			const STRING tile = tileIndex[board[i][y][x]];
 			if (!tile.empty())
@@ -1806,9 +1809,9 @@ void tagBoard::renderStack(
 				CTile::drawByBoardCoord(
 					g_projectPath + TILE_PATH + tile,
 					x, y, 
-					shade.r + aR,
-					shade.g + aG,
-					shade.b + aB,
+					shade.r + al.r,
+					shade.g + al.g,
+					shade.b + al.b,
 					cnv, 
 					TM_NONE,
 					destX - bounds.left, 
@@ -1818,6 +1821,7 @@ void tagBoard::renderStack(
 				);
 			}
 		}
-		renderImages(cnv, destX, destY, bounds, i);
+
+		if (bLayerOccupied[i] & LO_IMAGES) renderImages(cnv, destX, destY, bounds, i);
 	}
 }
