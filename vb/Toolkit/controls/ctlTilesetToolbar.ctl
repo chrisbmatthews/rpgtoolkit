@@ -98,25 +98,16 @@ End Property
 'Open tileset button at the top of the flyout tileset viewer.
 '============================================================================
 Private Sub cmdOpen_Click(): On Error Resume Next
+    Dim file As String, fileTypes As String
+    fileTypes = "Supported Types|*.tst;*.iso|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
     
-    'Set up the dialog window for opening the tileset.
-    Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath & tilePath
-    dlg.strTitle = "Select Tileset"
-    dlg.strDefaultExt = "tst"
-    dlg.strFileTypes = "Supported Types|*.tst;*.iso|RPG Toolkit TileSet (*.tst)|*.tst|RPG Toolkit Isometric TileSet (*.iso)|*.iso|All files(*.*)|*.*"
-    
-    If Not OpenFileDialog(dlg, tkMainForm.hwnd) Then Exit Sub
-    
-    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
-    
-    'Globals
-    m_filename = dlg.strSelectedFileNoPath
-    configfile.lastTileset = dlg.strSelectedFileNoPath
-    tstFile = dlg.strSelectedFileNoPath
-    tstnum = 1
-    
-    Call resize(m_filename, m_extraTile)
+    If browseFileDialog(tkMainForm.hwnd, projectPath & tilePath, "Select tileset", "tst", fileTypes, m_filename) Then
+        'Globals
+        configfile.lastTileset = m_filename
+        tstFile = m_filename
+        tstnum = 1
+        Call resize(m_filename, m_extraTile)
+    End If
 End Sub
 
 '============================================================================
