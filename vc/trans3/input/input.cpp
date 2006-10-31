@@ -190,12 +190,11 @@ void scanKeys()
 	extern CPlayer *g_pSelectedPlayer;
 	extern MAIN_FILE g_mainFile;
 	extern STRING g_projectPath;
+	extern LPBOARD g_pBoard;
 
 	BYTE keys[256];
 	if (FAILED(g_lpdiKeyboard->GetDeviceState(256, keys))) return;
 	#define SCAN_KEY_DOWN(x) (keys[x] & 0x80)
-
-	MV_ENUM queue = MV_IDLE;
 
 	// General activation key.
 	if (SCAN_KEY_DOWN(g_mainFile.key))
@@ -227,76 +226,91 @@ void scanKeys()
 		}
 	}
 
-	if (SCAN_KEY_DOWN(DIK_RIGHT) && SCAN_KEY_DOWN(DIK_UP))
-	{
-		queue = MV_NE;			// Northeast.
-	}
-	else if (SCAN_KEY_DOWN(DIK_LEFT) && SCAN_KEY_DOWN(DIK_UP))
-	{
-		queue = MV_NW;			// Northwest.
-	}
-	else if (SCAN_KEY_DOWN(DIK_RIGHT) && SCAN_KEY_DOWN(DIK_DOWN))
-	{
-		queue = MV_SE;			// Southeast.
-	}
-	else if (SCAN_KEY_DOWN(DIK_LEFT) && SCAN_KEY_DOWN(DIK_DOWN))
-	{
-		queue = MV_SW;			// Southwest.
-	}
-	else if (SCAN_KEY_DOWN(DIK_UP))
-	{
-		queue = MV_N;			// North.
-	}
-	else if (SCAN_KEY_DOWN(DIK_DOWN))
-	{
-		queue = MV_S;			// South.
-	}
-	else if (SCAN_KEY_DOWN(DIK_RIGHT))
-	{
-		queue = MV_E;			// East.
-	}
-	else if (SCAN_KEY_DOWN(DIK_LEFT))
-	{
-		queue = MV_W;			// West.
-	}
+	MV_ENUM queue = MV_IDLE;
 
-	if (queue != MV_IDLE)
+	if (g_mainFile.movementControls & MF_USE_KEYS)
 	{
-		// Queue up the movement, and clear any currently queued movements.
-		g_pSelectedPlayer->setQueuedMovement(queue, true);
-		g_gameState = GS_MOVEMENT;
-		return;
-	}
-
-	// Process mouse-driven movement.
-	// Use DI to get the status of the mousebuttons at this point.
-	extern RECT g_screen;
-	extern HWND g_hHostWnd;
-
-	DIMOUSESTATE dims;
-	memset(&dims, 0, sizeof(dims));
-	if (FAILED(g_lpdiMouse->GetDeviceState(sizeof(dims), &dims))) return;
-
-	if (dims.rgbButtons[0] & 0x80)
-	{
-		// Left button.
-		// Use the API to get the location to avoid having to deal with
-		// DI's relative co-ordinates.
-		POINT p = {0, 0};
-		if (GetCursorPos(&p))
+		const bool diag = g_mainFile.movementControls & MF_ALLOW_DIAGONALS;
+		
+		// movementKeys are ordered as MV_E to MV_NE.
+		// mv will cycle from MV_MIN to MV_MAX continually (i.e. multiple sets allowed).
+		MV_ENUM mv = MV_E;
+		for (i = g_mainFile.movementKeys.begin(); i != g_mainFile.movementKeys.end(); ++i, ++mv)
 		{
-			ScreenToClient(g_hHostWnd, &p);
-			if (p.x > 0 && p.y > 0)
+			if (SCAN_KEY_DOWN(*i))
 			{
-				// No flags - walk up to any sprite that blocks the goal.
-				PF_PATH pf = g_pSelectedPlayer->pathFind(p.x + g_screen.left, p.y + g_screen.top, PF_PREVIOUS, 0);
-				if (pf.size())
+				if (!diag)
 				{
-					g_pSelectedPlayer->setQueuedPath(pf, true);
+					// If disallowing combinations, exit straight away.
+					queue = mv;
+					break;
+				}
+				else
+				{
+					// Process two keys held down.
+					if(queue == MV_IDLE) 
+					{
+						// First key down.
+						queue = mv;
+						continue;
+					}
+					else if (queue == mv - 2) 
+					{
+						// Second key down at 90 degrees anticlockwise (MV_E to MV_NW).
+						queue = ++queue;
+					}
+					else if (queue == mv - 6) 
+					{
+						// Second key down at 90 degrees clockwise (MV_N or MV_NE).
+						queue = ++mv;
+					}
+					break;
+				}
+			} // if (key down)
+		} // for (keys)
+
+		if (queue != MV_IDLE)
+		{
+			// Queue up the movement, and clear any currently queued movements.
+			g_pSelectedPlayer->setQueuedMovement(queue, true);
+			g_gameState = GS_MOVEMENT;
+			return;
+		}
+
+	} // if (using keys)
+
+	if (g_mainFile.movementControls & MF_USE_MOUSE)
+	{
+		// Process mouse-driven movement.
+		// Use DI to get the status of the mousebuttons at this point.
+		extern RECT g_screen;
+		extern HWND g_hHostWnd;
+
+		DIMOUSESTATE dims;
+		memset(&dims, 0, sizeof(dims));
+		if (FAILED(g_lpdiMouse->GetDeviceState(sizeof(dims), &dims))) return;
+
+		if (dims.rgbButtons[0] & 0x80)
+		{
+			// Left button.
+			// Use the API to get the location to avoid having to deal with
+			// DI's relative co-ordinates.
+			POINT p = {0, 0};
+			if (GetCursorPos(&p))
+			{
+				ScreenToClient(g_hHostWnd, &p);
+				if (p.x > 0 && p.y > 0)
+				{
+					// No flags - walk up to any sprite that blocks the goal.
+					PF_PATH pf = g_pSelectedPlayer->pathFind(p.x + g_screen.left, p.y + g_screen.top, PF_PREVIOUS, 0);
+					if (pf.size())
+					{
+						g_pSelectedPlayer->setQueuedPath(pf, true);
+					}
 				}
 			}
 		}
-	}
+	} // if (using mouse)
 }
 
 /*
