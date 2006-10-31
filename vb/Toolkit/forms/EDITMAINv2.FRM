@@ -26,23 +26,6 @@ Begin VB.Form editmainfile
    ScaleHeight     =   6030
    ScaleWidth      =   7515
    Tag             =   "7"
-   Begin VB.TextBox gametitlebox 
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   285
-      Left            =   4080
-      TabIndex        =   13
-      Top             =   5400
-      Visible         =   0   'False
-      Width           =   3135
-   End
    Begin TabDlg.SSTab tabMain 
       Height          =   5640
       Left            =   120
@@ -72,7 +55,9 @@ Begin VB.Form editmainfile
       Tab(0).Control(0).Enabled=   0   'False
       Tab(0).Control(1)=   "prjframe"
       Tab(0).Control(1).Enabled=   0   'False
-      Tab(0).ControlCount=   2
+      Tab(0).Control(2)=   "fraMovementControls"
+      Tab(0).Control(2).Enabled=   0   'False
+      Tab(0).ControlCount=   3
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
@@ -94,12 +79,9 @@ Begin VB.Form editmainfile
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
       Tab(4).ControlEnabled=   0   'False
-      Tab(4).Control(0)=   "Picture11"
-      Tab(4).Control(1)=   "Picture10"
-      Tab(4).Control(2)=   "Picture9"
-      Tab(4).Control(3)=   "Picture8"
-      Tab(4).Control(4)=   "screenframe"
-      Tab(4).ControlCount=   5
+      Tab(4).Control(0)=   "Frame6"
+      Tab(4).Control(1)=   "screenframe"
+      Tab(4).ControlCount=   2
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
@@ -113,13 +95,382 @@ Begin VB.Form editmainfile
       Tab(6).Control(0)=   "Picture13"
       Tab(6).Control(1)=   "Frame1"
       Tab(6).ControlCount=   2
+      Begin VB.Frame fraMovementControls 
+         Caption         =   "Movement Controls"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   1575
+         Left            =   240
+         TabIndex        =   118
+         Top             =   3840
+         Width           =   6495
+         Begin VB.PictureBox pic 
+            BorderStyle     =   0  'None
+            Height          =   1215
+            Left            =   120
+            ScaleHeight     =   1215
+            ScaleWidth      =   6255
+            TabIndex        =   119
+            Top             =   240
+            Width           =   6255
+            Begin VB.CheckBox chkMovement 
+               Caption         =   "Use keyboard"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   1
+               Left            =   120
+               TabIndex        =   131
+               Top             =   120
+               Width           =   2175
+            End
+            Begin VB.TextBox txtMovementKeys 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Index           =   8
+               Left            =   5520
+               TabIndex        =   130
+               Top             =   120
+               Width           =   615
+            End
+            Begin VB.TextBox txtMovementKeys 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Index           =   7
+               Left            =   4800
+               TabIndex        =   129
+               Top             =   120
+               Width           =   615
+            End
+            Begin VB.TextBox txtMovementKeys 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Index           =   6
+               Left            =   4080
+               TabIndex        =   128
+               Top             =   120
+               Width           =   615
+            End
+            Begin VB.TextBox txtMovementKeys 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Index           =   5
+               Left            =   4080
+               TabIndex        =   127
+               Top             =   480
+               Width           =   615
+            End
+            Begin VB.TextBox txtMovementKeys 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Index           =   4
+               Left            =   4080
+               TabIndex        =   126
+               Top             =   840
+               Width           =   615
+            End
+            Begin VB.TextBox txtMovementKeys 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Index           =   3
+               Left            =   4800
+               TabIndex        =   125
+               Top             =   840
+               Width           =   615
+            End
+            Begin VB.TextBox txtMovementKeys 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Index           =   2
+               Left            =   5520
+               TabIndex        =   124
+               Top             =   840
+               Width           =   615
+            End
+            Begin VB.TextBox txtMovementKeys 
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   285
+               Index           =   1
+               Left            =   5520
+               TabIndex        =   123
+               Top             =   480
+               Width           =   615
+            End
+            Begin VB.CheckBox chkMovement 
+               Caption         =   "Allow diagonal movement (affects keys only)"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   4
+               Left            =   120
+               TabIndex        =   121
+               Top             =   840
+               Width           =   3615
+            End
+            Begin VB.CheckBox chkMovement 
+               Caption         =   "Use mouse"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   2
+               Left            =   120
+               TabIndex        =   120
+               Top             =   480
+               Width           =   2175
+            End
+            Begin VB.Label lbl 
+               Caption         =   "Key assignments:"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Index           =   0
+               Left            =   2760
+               TabIndex        =   122
+               Top             =   120
+               Width           =   1335
+            End
+         End
+      End
+      Begin VB.Frame Frame6 
+         Caption         =   "Miscellaneous"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   1215
+         Left            =   -74520
+         TabIndex        =   90
+         Top             =   3840
+         Width           =   6135
+         Begin VB.PictureBox picPathColor 
+            Height          =   375
+            Left            =   5520
+            ScaleHeight     =   315
+            ScaleWidth      =   315
+            TabIndex        =   132
+            ToolTipText     =   "Path and destination color (click to change)"
+            Top             =   600
+            Width           =   375
+         End
+         Begin VB.CheckBox chkDrawVectors 
+            Caption         =   "Draw active player destination"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   195
+            Index           =   32
+            Left            =   2400
+            TabIndex        =   117
+            Top             =   840
+            Width           =   2415
+         End
+         Begin VB.CheckBox chkDrawVectors 
+            Caption         =   "Draw active player path"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   195
+            Index           =   16
+            Left            =   2400
+            TabIndex        =   116
+            Top             =   600
+            Width           =   2415
+         End
+         Begin VB.CheckBox chkDrawVectors 
+            Caption         =   "Draw sprite vectors"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   195
+            Index           =   2
+            Left            =   360
+            TabIndex        =   115
+            Top             =   840
+            Width           =   2415
+         End
+         Begin VB.CheckBox chkDrawVectors 
+            Caption         =   "Draw board vectors"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   195
+            Index           =   1
+            Left            =   360
+            TabIndex        =   114
+            Top             =   600
+            Width           =   2415
+         End
+         Begin VB.CheckBox chkShowFps 
+            Caption         =   "Show frames per second (FPS) in the title bar in windowed mode"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Left            =   360
+            TabIndex        =   91
+            Top             =   240
+            Width           =   5055
+         End
+         Begin VB.Label lbl 
+            Caption         =   "Color:"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   255
+            Index           =   1
+            Left            =   5040
+            TabIndex        =   133
+            Top             =   720
+            Width           =   495
+         End
+      End
       Begin VB.PictureBox Picture13 
          BorderStyle     =   0  'None
          Height          =   3375
          Left            =   -74520
          ScaleHeight     =   3375
          ScaleWidth      =   6255
-         TabIndex        =   95
+         TabIndex        =   73
          Top             =   960
          Width           =   6255
          Begin VB.CommandButton cmdSelectBattleSystem 
@@ -135,7 +486,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5040
-            TabIndex        =   102
+            TabIndex        =   80
             Tag             =   "1021"
             Top             =   2880
             Width           =   1095
@@ -152,7 +503,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2160
-            TabIndex        =   101
+            TabIndex        =   79
             Text            =   "None"
             Top             =   2880
             Width           =   2655
@@ -169,7 +520,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   285
             Left            =   2160
-            TabIndex        =   100
+            TabIndex        =   78
             Text            =   "None"
             Top             =   2400
             Width           =   2655
@@ -187,7 +538,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5040
-            TabIndex        =   99
+            TabIndex        =   77
             Tag             =   "1021"
             Top             =   2400
             Width           =   1095
@@ -206,7 +557,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5040
-            TabIndex        =   98
+            TabIndex        =   76
             Top             =   1200
             Width           =   1095
          End
@@ -224,7 +575,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   345
             Left            =   5040
-            TabIndex        =   97
+            TabIndex        =   75
             Top             =   1680
             Width           =   1095
          End
@@ -240,7 +591,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   2010
             Left            =   0
-            TabIndex        =   96
+            TabIndex        =   74
             Top             =   0
             Width           =   4815
          End
@@ -257,7 +608,7 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   0
-            TabIndex        =   104
+            TabIndex        =   82
             Top             =   2880
             Width           =   2055
          End
@@ -274,340 +625,9 @@ Begin VB.Form editmainfile
             EndProperty
             Height          =   375
             Left            =   0
-            TabIndex        =   103
+            TabIndex        =   81
             Top             =   2400
             Width           =   2055
-         End
-      End
-      Begin VB.PictureBox Picture11 
-         BorderStyle     =   0  'None
-         Height          =   1095
-         Left            =   -70440
-         ScaleHeight     =   1095
-         ScaleWidth      =   1455
-         TabIndex        =   90
-         Top             =   1320
-         Width           =   1455
-         Begin VB.OptionButton tentwentyfour 
-            Caption         =   "1024x768"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   195
-            Left            =   0
-            TabIndex        =   94
-            Tag             =   "1138"
-            Top             =   480
-            Width           =   1335
-         End
-         Begin VB.OptionButton eighthundred 
-            Caption         =   "800x600"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   195
-            Left            =   0
-            TabIndex        =   93
-            Tag             =   "1139"
-            Top             =   240
-            Width           =   1335
-         End
-         Begin VB.OptionButton sixfourty 
-            Caption         =   "640x480"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   195
-            Left            =   0
-            TabIndex        =   92
-            Tag             =   "1140"
-            Top             =   0
-            Width           =   1335
-         End
-         Begin VB.OptionButton optResCustom 
-            Caption         =   "Custom"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   0
-            TabIndex        =   91
-            Top             =   720
-            Width           =   1215
-         End
-      End
-      Begin VB.PictureBox Picture10 
-         BorderStyle     =   0  'None
-         Height          =   1095
-         Left            =   -72480
-         ScaleHeight     =   1095
-         ScaleWidth      =   1575
-         TabIndex        =   87
-         Top             =   1320
-         Width           =   1575
-         Begin VB.OptionButton chkScreenStyle 
-            Caption         =   "Windowed"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   0
-            Left            =   0
-            TabIndex        =   89
-            Top             =   0
-            Width           =   1335
-         End
-         Begin VB.OptionButton chkScreenStyle 
-            Caption         =   "Full Screen"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   1
-            Left            =   0
-            TabIndex        =   88
-            Top             =   240
-            Width           =   1335
-         End
-      End
-      Begin VB.PictureBox Picture9 
-         BorderStyle     =   0  'None
-         Height          =   855
-         Left            =   -74400
-         ScaleHeight     =   855
-         ScaleWidth      =   855
-         TabIndex        =   83
-         Top             =   1320
-         Width           =   855
-         Begin VB.OptionButton color32bit 
-            Caption         =   "32-bit"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   0
-            TabIndex        =   86
-            Top             =   480
-            Width           =   855
-         End
-         Begin VB.OptionButton color24bit 
-            Caption         =   "24-bit"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   0
-            TabIndex        =   85
-            Top             =   240
-            Width           =   855
-         End
-         Begin VB.OptionButton color16bit 
-            Caption         =   "16-bit"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Left            =   0
-            TabIndex        =   84
-            Top             =   0
-            Width           =   855
-         End
-      End
-      Begin VB.PictureBox Picture8 
-         BorderStyle     =   0  'None
-         Height          =   3135
-         Left            =   -74520
-         ScaleHeight     =   3135
-         ScaleWidth      =   6375
-         TabIndex        =   73
-         Top             =   960
-         Width           =   6375
-         Begin VB.Frame Frame4 
-            Caption         =   "Color Depth"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   1575
-            Left            =   0
-            TabIndex        =   82
-            Top             =   0
-            Width           =   1815
-         End
-         Begin VB.Frame optres 
-            Caption         =   "Resolution"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   1575
-            Left            =   3960
-            TabIndex        =   81
-            Top             =   0
-            Width           =   1695
-         End
-         Begin VB.Frame Frame2 
-            Caption         =   "Screen Style"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   1575
-            Left            =   1920
-            TabIndex        =   80
-            Top             =   0
-            Width           =   1815
-         End
-         Begin VB.Frame Frame5 
-            Caption         =   "Custom Resolution"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   1335
-            Left            =   0
-            TabIndex        =   74
-            Top             =   1680
-            Width           =   5655
-            Begin VB.TextBox txtResX 
-               BeginProperty Font 
-                  Name            =   "MS Sans Serif"
-                  Size            =   8.25
-                  Charset         =   0
-                  Weight          =   400
-                  Underline       =   0   'False
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               Height          =   285
-               Left            =   360
-               TabIndex        =   76
-               Top             =   720
-               Width           =   1215
-            End
-            Begin VB.TextBox txtResY 
-               BeginProperty Font 
-                  Name            =   "MS Sans Serif"
-                  Size            =   8.25
-                  Charset         =   0
-                  Weight          =   400
-                  Underline       =   0   'False
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               Height          =   285
-               Left            =   2040
-               TabIndex        =   75
-               Top             =   720
-               Width           =   1215
-            End
-            Begin VB.Label Label26 
-               Caption         =   "Please note that not all video cards support all possible resolutions."
-               BeginProperty Font 
-                  Name            =   "MS Sans Serif"
-                  Size            =   8.25
-                  Charset         =   0
-                  Weight          =   400
-                  Underline       =   0   'False
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               Height          =   255
-               Left            =   120
-               TabIndex        =   79
-               Top             =   360
-               Width           =   4815
-            End
-            Begin VB.Label Label27 
-               Caption         =   "x:"
-               Height          =   255
-               Left            =   120
-               TabIndex        =   78
-               Top             =   720
-               Width           =   255
-            End
-            Begin VB.Label Label28 
-               Caption         =   "y:"
-               Height          =   255
-               Left            =   1800
-               TabIndex        =   77
-               Top             =   720
-               Width           =   255
-            End
          End
       End
       Begin VB.PictureBox Picture7 
@@ -717,7 +737,7 @@ Begin VB.Form editmainfile
          End
       End
       Begin VB.Frame fraSettings 
-         Caption         =   "Misc Settings:"
+         Caption         =   "Misc Settings"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -756,7 +776,7 @@ Begin VB.Form editmainfile
                Left            =   4320
                List            =   "EDITMAINv2.frx":10A5
                Style           =   2  'Dropdown List
-               TabIndex        =   111
+               TabIndex        =   88
                Top             =   1920
                Width           =   1815
             End
@@ -855,7 +875,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   255
                Left            =   1920
-               TabIndex        =   112
+               TabIndex        =   89
                Top             =   1950
                Width           =   2175
             End
@@ -913,7 +933,7 @@ Begin VB.Form editmainfile
          End
       End
       Begin VB.Frame fightframe 
-         Caption         =   "Fighting:"
+         Caption         =   "Fighting"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9.75
@@ -949,7 +969,7 @@ Begin VB.Form editmainfile
          Width           =   6615
       End
       Begin VB.Frame startframe 
-         Caption         =   "Startup Conditions:"
+         Caption         =   "Startup Conditions"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -1460,7 +1480,7 @@ Begin VB.Form editmainfile
             Left            =   120
             ScaleHeight     =   1215
             ScaleWidth      =   6015
-            TabIndex        =   105
+            TabIndex        =   83
             Top             =   240
             Width           =   6015
             Begin VB.OptionButton daynightreal 
@@ -1476,7 +1496,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   375
                Left            =   0
-               TabIndex        =   108
+               TabIndex        =   86
                Tag             =   "1164"
                Top             =   0
                Value           =   -1  'True
@@ -1495,7 +1515,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   255
                Left            =   0
-               TabIndex        =   107
+               TabIndex        =   85
                Tag             =   "1163"
                Top             =   360
                Width           =   4575
@@ -1512,7 +1532,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   285
                Left            =   480
-               TabIndex        =   106
+               TabIndex        =   84
                Text            =   "10"
                Top             =   720
                Width           =   735
@@ -1530,7 +1550,7 @@ Begin VB.Form editmainfile
                EndProperty
                Height          =   255
                Left            =   1440
-               TabIndex        =   109
+               TabIndex        =   87
                Tag             =   "1165"
                Top             =   720
                Width           =   1095
@@ -1566,28 +1586,342 @@ Begin VB.Form editmainfile
             Italic          =   -1  'True
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   4095
-         Left            =   -74760
+         Height          =   3255
+         Left            =   -74520
          TabIndex        =   4
          Tag             =   "1136"
-         Top             =   600
-         Width           =   6735
-         Begin VB.CheckBox chkShowFps 
-            Caption         =   "Show frames per second (FPS) in the title bar in windowed mode"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
+         Top             =   480
+         Width           =   6135
+         Begin VB.PictureBox Picture8 
+            BorderStyle     =   0  'None
+            Height          =   2775
             Left            =   240
-            TabIndex        =   110
-            Top             =   3600
-            Width           =   5055
+            ScaleHeight     =   2775
+            ScaleWidth      =   5775
+            TabIndex        =   92
+            Top             =   240
+            Width           =   5775
+            Begin VB.Frame Frame5 
+               Caption         =   "Custom Resolution"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   1215
+               Left            =   0
+               TabIndex        =   108
+               Top             =   1560
+               Width           =   5655
+               Begin VB.TextBox txtResY 
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   285
+                  Left            =   2040
+                  TabIndex        =   110
+                  Top             =   720
+                  Width           =   1215
+               End
+               Begin VB.TextBox txtResX 
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   285
+                  Left            =   360
+                  TabIndex        =   109
+                  Top             =   720
+                  Width           =   1215
+               End
+               Begin VB.Label Label28 
+                  Caption         =   "y:"
+                  Height          =   255
+                  Left            =   1800
+                  TabIndex        =   113
+                  Top             =   720
+                  Width           =   255
+               End
+               Begin VB.Label Label27 
+                  Caption         =   "x:"
+                  Height          =   255
+                  Left            =   120
+                  TabIndex        =   112
+                  Top             =   720
+                  Width           =   255
+               End
+               Begin VB.Label Label26 
+                  Caption         =   "Please note that not all video cards support all possible resolutions."
+                  BeginProperty Font 
+                     Name            =   "MS Sans Serif"
+                     Size            =   8.25
+                     Charset         =   0
+                     Weight          =   400
+                     Underline       =   0   'False
+                     Italic          =   0   'False
+                     Strikethrough   =   0   'False
+                  EndProperty
+                  Height          =   255
+                  Left            =   120
+                  TabIndex        =   111
+                  Top             =   360
+                  Width           =   4815
+               End
+            End
+            Begin VB.Frame Frame2 
+               Caption         =   "Screen Style"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   1455
+               Left            =   1920
+               TabIndex        =   104
+               Top             =   0
+               Width           =   1815
+               Begin VB.PictureBox Picture10 
+                  BorderStyle     =   0  'None
+                  Height          =   735
+                  Left            =   240
+                  ScaleHeight     =   735
+                  ScaleWidth      =   1455
+                  TabIndex        =   105
+                  Top             =   360
+                  Width           =   1455
+                  Begin VB.OptionButton chkScreenStyle 
+                     Caption         =   "Windowed"
+                     BeginProperty Font 
+                        Name            =   "MS Sans Serif"
+                        Size            =   8.25
+                        Charset         =   0
+                        Weight          =   400
+                        Underline       =   0   'False
+                        Italic          =   0   'False
+                        Strikethrough   =   0   'False
+                     EndProperty
+                     Height          =   255
+                     Index           =   0
+                     Left            =   0
+                     TabIndex        =   107
+                     Top             =   0
+                     Width           =   1335
+                  End
+                  Begin VB.OptionButton chkScreenStyle 
+                     Caption         =   "Full Screen"
+                     BeginProperty Font 
+                        Name            =   "MS Sans Serif"
+                        Size            =   8.25
+                        Charset         =   0
+                        Weight          =   400
+                        Underline       =   0   'False
+                        Italic          =   0   'False
+                        Strikethrough   =   0   'False
+                     EndProperty
+                     Height          =   255
+                     Index           =   1
+                     Left            =   0
+                     TabIndex        =   106
+                     Top             =   240
+                     Width           =   1335
+                  End
+               End
+            End
+            Begin VB.Frame optres 
+               Caption         =   "Resolution"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   1455
+               Left            =   3840
+               TabIndex        =   98
+               Top             =   0
+               Width           =   1815
+               Begin VB.PictureBox Picture11 
+                  BorderStyle     =   0  'None
+                  Height          =   975
+                  Left            =   240
+                  ScaleHeight     =   975
+                  ScaleWidth      =   1455
+                  TabIndex        =   99
+                  Top             =   360
+                  Width           =   1455
+                  Begin VB.OptionButton tentwentyfour 
+                     Caption         =   "1024x768"
+                     BeginProperty Font 
+                        Name            =   "MS Sans Serif"
+                        Size            =   8.25
+                        Charset         =   0
+                        Weight          =   400
+                        Underline       =   0   'False
+                        Italic          =   0   'False
+                        Strikethrough   =   0   'False
+                     EndProperty
+                     Height          =   195
+                     Left            =   0
+                     TabIndex        =   103
+                     Tag             =   "1138"
+                     Top             =   480
+                     Width           =   1335
+                  End
+                  Begin VB.OptionButton eighthundred 
+                     Caption         =   "800x600"
+                     BeginProperty Font 
+                        Name            =   "MS Sans Serif"
+                        Size            =   8.25
+                        Charset         =   0
+                        Weight          =   400
+                        Underline       =   0   'False
+                        Italic          =   0   'False
+                        Strikethrough   =   0   'False
+                     EndProperty
+                     Height          =   195
+                     Left            =   0
+                     TabIndex        =   102
+                     Tag             =   "1139"
+                     Top             =   240
+                     Width           =   1335
+                  End
+                  Begin VB.OptionButton sixfourty 
+                     Caption         =   "640x480"
+                     BeginProperty Font 
+                        Name            =   "MS Sans Serif"
+                        Size            =   8.25
+                        Charset         =   0
+                        Weight          =   400
+                        Underline       =   0   'False
+                        Italic          =   0   'False
+                        Strikethrough   =   0   'False
+                     EndProperty
+                     Height          =   195
+                     Left            =   0
+                     TabIndex        =   101
+                     Tag             =   "1140"
+                     Top             =   0
+                     Width           =   1335
+                  End
+                  Begin VB.OptionButton optResCustom 
+                     Caption         =   "Custom"
+                     BeginProperty Font 
+                        Name            =   "MS Sans Serif"
+                        Size            =   8.25
+                        Charset         =   0
+                        Weight          =   400
+                        Underline       =   0   'False
+                        Italic          =   0   'False
+                        Strikethrough   =   0   'False
+                     EndProperty
+                     Height          =   255
+                     Left            =   0
+                     TabIndex        =   100
+                     Top             =   720
+                     Width           =   1215
+                  End
+               End
+            End
+            Begin VB.Frame Frame4 
+               Caption         =   "Color Depth"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   1455
+               Left            =   0
+               TabIndex        =   93
+               Top             =   0
+               Width           =   1815
+               Begin VB.PictureBox Picture9 
+                  BorderStyle     =   0  'None
+                  Height          =   855
+                  Left            =   240
+                  ScaleHeight     =   855
+                  ScaleWidth      =   1335
+                  TabIndex        =   94
+                  Top             =   360
+                  Width           =   1335
+                  Begin VB.OptionButton color32bit 
+                     Caption         =   "32-bit"
+                     BeginProperty Font 
+                        Name            =   "MS Sans Serif"
+                        Size            =   8.25
+                        Charset         =   0
+                        Weight          =   400
+                        Underline       =   0   'False
+                        Italic          =   0   'False
+                        Strikethrough   =   0   'False
+                     EndProperty
+                     Height          =   255
+                     Left            =   0
+                     TabIndex        =   97
+                     Top             =   480
+                     Width           =   855
+                  End
+                  Begin VB.OptionButton color24bit 
+                     Caption         =   "24-bit"
+                     BeginProperty Font 
+                        Name            =   "MS Sans Serif"
+                        Size            =   8.25
+                        Charset         =   0
+                        Weight          =   400
+                        Underline       =   0   'False
+                        Italic          =   0   'False
+                        Strikethrough   =   0   'False
+                     EndProperty
+                     Height          =   255
+                     Left            =   0
+                     TabIndex        =   96
+                     Top             =   240
+                     Width           =   855
+                  End
+                  Begin VB.OptionButton color16bit 
+                     Caption         =   "16-bit"
+                     BeginProperty Font 
+                        Name            =   "MS Sans Serif"
+                        Size            =   8.25
+                        Charset         =   0
+                        Weight          =   400
+                        Underline       =   0   'False
+                        Italic          =   0   'False
+                        Strikethrough   =   0   'False
+                     EndProperty
+                     Height          =   255
+                     Left            =   0
+                     TabIndex        =   95
+                     Top             =   0
+                     Width           =   855
+                  End
+               End
+            End
          End
       End
       Begin VB.Frame prjframe 
@@ -1601,7 +1935,7 @@ Begin VB.Form editmainfile
             Italic          =   -1  'True
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   1695
+         Height          =   1455
          Left            =   240
          TabIndex        =   3
          Tag             =   "1182"
@@ -1609,13 +1943,31 @@ Begin VB.Form editmainfile
          Width           =   6495
          Begin VB.PictureBox Picture2 
             BorderStyle     =   0  'None
-            Height          =   1335
+            Height          =   1095
             Left            =   120
-            ScaleHeight     =   1335
-            ScaleWidth      =   6015
+            ScaleHeight     =   1095
+            ScaleWidth      =   5775
             TabIndex        =   25
             Top             =   290
-            Width           =   6015
+            Width           =   5775
+            Begin VB.CheckBox regprotect 
+               Caption         =   "Protect Files from Tampering"
+               BeginProperty Font 
+                  Name            =   "MS Sans Serif"
+                  Size            =   8.25
+                  Charset         =   0
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Height          =   255
+               Left            =   3360
+               TabIndex        =   27
+               Tag             =   "1183"
+               Top             =   720
+               Width           =   2295
+            End
             Begin VB.CheckBox enableJoystick 
                Caption         =   "Enable Joystick"
                BeginProperty Font 
@@ -1631,24 +1983,6 @@ Begin VB.Form editmainfile
                Left            =   1800
                TabIndex        =   28
                Top             =   720
-               Width           =   3735
-            End
-            Begin VB.CheckBox regprotect 
-               Caption         =   "Protect Files from Tampering"
-               BeginProperty Font 
-                  Name            =   "MS Sans Serif"
-                  Size            =   8.25
-                  Charset         =   0
-                  Weight          =   400
-                  Underline       =   0   'False
-                  Italic          =   0   'False
-                  Strikethrough   =   0   'False
-               EndProperty
-               Height          =   255
-               Left            =   1800
-               TabIndex        =   27
-               Tag             =   "1183"
-               Top             =   1080
                Width           =   3735
             End
             Begin VB.TextBox gametitlebox2 
@@ -1722,7 +2056,7 @@ Begin VB.Form editmainfile
          End
       End
       Begin VB.Frame envframe 
-         Caption         =   "Cursor Sounds:"
+         Caption         =   "Cursor Sounds"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -1732,10 +2066,10 @@ Begin VB.Form editmainfile
             Italic          =   -1  'True
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   1815
+         Height          =   1575
          Left            =   240
          TabIndex        =   2
-         Top             =   2520
+         Top             =   2160
          Width           =   6495
          Begin VB.PictureBox Picture1 
             Appearance      =   0  'Flat
@@ -1746,7 +2080,7 @@ Begin VB.Form editmainfile
             ScaleHeight     =   1095
             ScaleWidth      =   6255
             TabIndex        =   15
-            Top             =   480
+            Top             =   360
             Width           =   6255
             Begin VB.CommandButton cmdCursorCancelSound 
                Caption         =   "Browse..."
@@ -1925,6 +2259,23 @@ Begin VB.Form editmainfile
          Visible         =   0   'False
          Width           =   3495
       End
+   End
+   Begin VB.TextBox gametitlebox 
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   285
+      Left            =   4080
+      TabIndex        =   13
+      Top             =   5400
+      Visible         =   0   'False
+      Width           =   3135
    End
    Begin VB.Label Label16 
       Caption         =   "Title Of The Game:"
@@ -2118,6 +2469,15 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Declare Function MapVirtualKeyEx Lib "user32" Alias "MapVirtualKeyExA" (ByVal uCode As Long, ByVal uMapType As Long, ByVal dwhkl As Long) As Long
+Private Declare Function GetKeyboardLayout Lib "user32" (ByVal dwLayout As Long) As Long
+Private Declare Function GetKeyNameText Lib "user32" Alias "GetKeyNameTextA" (ByVal lParam As Long, ByVal lbBuffer As String, ByVal nSize As Long) As Long
+Private Const MAPVK_VK_TO_VSC = 0                'MapVirtualKeyEx virtual key to scan code.
+Private Const MAPVK_VSC_TO_VK = 1                'MapVirtualKeyEx scan code to virtual key.
+Private Const MAPVK_VK_TO_CHAR = 2               'MapVirtualKeyEx virtual key to ascii.
+Private Const DIK_HOME = &HC7                    'Extended keys start scan code.
+Private Const DIK_DELETE = &HD3                  'Extended keys end scan code.
+
 '=========================================================================
 ' Read-only property returning type of form
 '=========================================================================
@@ -2175,6 +2535,36 @@ Private Sub closemnu_Click()
     On Error Resume Next
     Call Unload(mainfight)
     Call Unload(editmainfile)
+End Sub
+
+'=========================================================================
+' Selection of a draw vectors option
+'=========================================================================
+Private Sub chkDrawVectors_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Dim chk As CheckBox
+    For Each chk In chkDrawVectors
+        If chk.value Then
+            'Indices match eCVDrawVectors flags.
+            mainMem.drawVectors = mainMem.drawVectors Or chk.Index
+        Else
+            mainMem.drawVectors = mainMem.drawVectors And (Not chk.Index)
+        End If
+    Next chk
+End Sub
+
+'=========================================================================
+' Selection of a movement control option
+'=========================================================================
+Private Sub chkMovement_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Dim chk As CheckBox
+    For Each chk In chkMovement
+        If chk.value Then
+            'Indices match eMFMovementControls flags.
+            mainMem.movementControls = mainMem.movementControls Or chk.Index
+        Else
+            mainMem.movementControls = mainMem.movementControls And (Not chk.Index)
+        End If
+    Next chk
 End Sub
 
 '=========================================================================
@@ -2691,6 +3081,25 @@ Private Sub infofill()
     chkShowFps.value = mainMem.bFpsInTitleBar
     
     cmbPfHeuristic.ListIndex = mainMem.pfHeuristic - 1
+    
+    Dim chk As CheckBox
+    For Each chk In chkDrawVectors
+        'Indices match eCVDrawVectors flags.
+        chk.value = IIf(mainMem.drawVectors And chk.Index, 1, 0)
+    Next chk
+
+    picPathColor.backColor = mainMem.pathColor
+
+    For Each chk In chkMovement
+        'Indices match eMFMovementControls flags.
+        chk.value = IIf(mainMem.movementControls And chk.Index, 1, 0)
+    Next chk
+
+    Dim txt As TextBox
+    For Each txt In txtMovementKeys
+        'Indices match eMovementCodes.
+        txt.Text = getKeyName(mainMem.movementKeys(txt.Index))
+    Next txt
 
 End Sub
 
@@ -2907,6 +3316,18 @@ Private Sub optTileBased_Click()
     mainMem.pixelMovement = TILE_MOVEMENT
     chkUsePixelPush.Enabled = False
     chkUsePixelPush.value = 0
+End Sub
+
+'=========================================================================
+' Select path color
+'=========================================================================
+Private Sub picPathColor_Click(): On Error Resume Next
+    Dim i As Long
+    i = ColorDialog()
+    If i >= 0 Then
+        picPathColor.backColor = i
+        mainMem.pathColor = i
+    End If
 End Sub
 
 '=========================================================================
@@ -3162,6 +3583,52 @@ Private Sub mnuNewFightBackground_Click()
     On Error Resume Next
     Call tkMainForm.mnuNewFightBackground_Click
 End Sub
+
+'=========================================================================
+' Custom movement keys. KeyCode is a virtual key (VK_ = vbKey)
+'=========================================================================
+Private Sub txtMovementKeys_KeyPress(Index As Integer, KeyAscii As Integer)
+    KeyAscii = 0
+End Sub
+Private Sub txtMovementKeys_KeyUp(Index As Integer, keyCode As Integer, Shift As Integer)
+    Select Case keyCode
+        Case vbKeyDelete, vbKeyBack
+            mainMem.movementKeys(Index) = 0
+            txtMovementKeys(Index).Text = vbNullString
+        Case Else
+            'Keys stored as scan codes (keyCode is a virtual code).
+            mainMem.movementKeys(Index) = scanCode(keyCode)
+            txtMovementKeys(Index).Text = getKeyName(mainMem.movementKeys(Index))
+    End Select
+End Sub
+
+'=========================================================================
+' Map from virutal code to scan code
+'=========================================================================
+Private Function scanCode(ByVal virtualKey As Integer) As Long: On Error Resume Next
+    
+    scanCode = MapVirtualKeyEx(virtualKey, MAPVK_VK_TO_VSC, GetKeyboardLayout(0))
+    
+    'MapVirtualKeyEx() misreports the extended keys (e.g. cursor, PgDn).
+    'Scan code (DIK) extended keys have a fixed offset.
+    If virtualKey >= vbKeyPageUp And virtualKey <= vbKeyDelete Then scanCode = scanCode + 128
+
+End Function
+
+'=========================================================================
+' Extract the system string identifying each key
+'=========================================================================
+Private Function getKeyName(ByVal scanCode As Integer) As String: On Error Resume Next
+    Dim buf As String * 256
+    
+    'Set the 24th (after shifting) to denote the extended keys (cursor, home etc.) - incompatible with numberpad.
+    If scanCode >= DIK_HOME And scanCode <= DIK_DELETE Then scanCode = (scanCode - 128) Or 256
+    
+    'Bitshift vsc to the 16th bit.
+    Call GetKeyNameText(scanCode * &H10000, buf, 255)
+    
+    getKeyName = Left$(buf, InStr(buf, chr$(0)) - 1)
+End Function
 
 '=========================================================================
 ' Custom resolution stuff
