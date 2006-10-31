@@ -213,7 +213,7 @@ bool CVector::operator== (const CVector &rhs) const
  * Return a point that represents the intersecting subvector
  * as a position vector for use in sliding tests, etc.
  */
-bool CVector::contains(CVector &rhs, DB_POINT &ref) const
+bool CVector::contains(const CVector &rhs, DB_POINT &ref) const
 {
 	/*
 	 * The rhs CVector intersects the polygon if any of the rhs's
@@ -233,10 +233,6 @@ bool CVector::contains(CVector &rhs, DB_POINT &ref) const
 		return false;
 
 	// Check for boundary collisions first.
-	// CVECTOR_TYPE tt = intersect(rhs, ref);
-//	if (intersect(rhs, ref) != TT_NORMAL) return m_type;
-
-	/* BOARD VECTOR */
 
 	DB_POINT unused = {0.0, 0.0};
 	// Loop over the subvectors in this vector (to size() - 1).
@@ -253,7 +249,6 @@ bool CVector::contains(CVector &rhs, DB_POINT &ref) const
 	// Check we have a closed object.
 	if (m_closed)
 	{
-		/* SPRITE VECTOR */
 		// Loop over the points of the rhs vector.
 		for (i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
 		{
@@ -270,7 +265,7 @@ bool CVector::contains(CVector &rhs, DB_POINT &ref) const
  * whether the source is above or below the target (based on the
  * number of times the target's boundaries are crossed.
  */
-ZO_ENUM CVector::contains(CVector &rhs/*, DB_POINT &ref*/) const
+ZO_ENUM CVector::contains(const CVector &rhs/*, DB_POINT &ref*/) const
 {
 	/*
 	 * The rhs CVector intersects the polygon if any of the rhs's
@@ -302,7 +297,7 @@ ZO_ENUM CVector::contains(CVector &rhs/*, DB_POINT &ref*/) const
 	if (m_closed)
 	{
 		// Loop over the points of the rhs vector.
-		for (DB_ITR i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
+		for (DB_CITR i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
 		{
 			// Determine if this point is contained in the polygon.
 			// Returns the number of times the target vector's borders
@@ -408,7 +403,7 @@ int CVector::windingNumber(const DB_POINT p) const
  * Create a mask by drawing a closed area and flooding.
  * (Currently using the GDI).
  */
-bool CVector::createMask(CCanvas *cnv, const int x, const int y, CONST LONG color) const
+bool CVector::createMask(CCanvas *const cnv, const int x, const int y, CONST LONG color) const
 {
 	// Can't create a mask from an open vector (or a null canvas).
 	if (!m_closed || !cnv) return false;
@@ -542,7 +537,7 @@ double CVector::intercept(const DB_CITR &i) const
  * Return a point that represents the intersecting subvector
  * as a position vector for use in sliding tests, etc.
  */
-bool CVector::intersect(CVector &rhs, DB_POINT &ref) const
+bool CVector::intersect(const CVector &rhs, DB_POINT &ref) const
 {
 	// Check the rhs vector.
 	if (&rhs == this) return false;
@@ -575,7 +570,7 @@ bool CVector::intersect(CVector &rhs, DB_POINT &ref) const
  * Determine if a CVector intersects this CVector.
  * Return the point of intersection (passed in).
  */
-bool CVector::intersect(DB_CITR &i, CVector &rhs, DB_POINT &ref) const
+bool CVector::intersect(DB_CITR &i, const CVector &rhs, DB_POINT &ref) const
 {
 	const double m1 = gradient(i), c1 = i->y - (m1 * i->x);
 
@@ -628,7 +623,7 @@ bool CVector::intersect(DB_CITR &i, CVector &rhs, DB_POINT &ref) const
 /*
  * Path-find ::contains() equivalent.
  */
-bool CPfVector::contains(CPfVector &rhs) const
+bool CPfVector::contains(const CPfVector &rhs) const
 {
 	/*
 	 * pathfinding: the nodes of the path are corners of the

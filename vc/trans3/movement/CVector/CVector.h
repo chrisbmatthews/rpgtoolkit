@@ -39,6 +39,18 @@ typedef enum tagZOrder
 
 } ZO_ENUM;
 
+// Drawing flags.
+typedef enum tagDrawVectors
+{
+	CV_DRAW_BRD_VECTORS = 1,		// Board vectors.
+	CV_DRAW_SPR_VECTORS = 2,		// Sprite vectors.
+	CV_DRAW_PATH = 4,				// Sprite paths.
+	CV_DRAW_DEST_CIRCLE = 8,		// Sprite destination circles.
+	CV_DRAW_SP_PATH = 16,			// Selected player path.
+	CV_DRAW_SP_DEST_CIRCLE = 32		// Selected player circle.
+
+} CV_DRAW_VECTORS;
+
 // Double-precision point.
 typedef struct tagDbPoint
 {
@@ -111,10 +123,10 @@ public:
 	bool closed(void) const { return m_closed; }
 
 	// Determine if a vector intersects or contains another vector.
-	virtual bool contains(CVector &rhs, DB_POINT &ref) const;
+	virtual bool contains(const CVector &rhs, DB_POINT &ref) const;
 
 	// Determine intersect and z-ordering.
-	virtual ZO_ENUM contains(CVector &rhs/*, DB_POINT &ref*/) const;
+	virtual ZO_ENUM contains(const CVector &rhs/*, DB_POINT &ref*/) const;
 
 	// Determine if a polygon contains a point.
 	bool containsPoint(const DB_POINT p) const
@@ -124,13 +136,13 @@ public:
 	int windingNumber(const DB_POINT p) const;
 
 	// Create a mask from a closed vector.
-	bool createMask(CCanvas *cnv, const int x, const int y, CONST LONG color) const;
+	bool createMask(CCanvas *const cnv, const int x, const int y, CONST LONG color) const;
 
 	// Get the bounding box.
 	RECT getBounds(void) const { return m_bounds; };
 
 	// Determine if a vector intersects another vector.
-	bool intersect(CVector &rhs, DB_POINT &ref) const;
+	bool intersect(const CVector &rhs, DB_POINT &ref) const;
 
 	// Move a vector (x,y = new location of first point).
 	void move(const int x, const int y)
@@ -166,7 +178,7 @@ protected:
 	double intercept(const DB_CITR &i) const;
 
 	// Internal function NOT public: intersect.
-	bool intersect(DB_CITR &i, CVector &rhs, DB_POINT &ref) const;
+	bool intersect(DB_CITR &i, const CVector &rhs, DB_POINT &ref) const;
 
 	// Determine if a sub-vector is vertical.
 	bool isVertical(const DB_CITR &i) const { return (i->x == (i + 1)->x); };
@@ -195,7 +207,7 @@ public:
 	CPfVector(const DB_POINT p): CVector(p) {};
 
 	// Path-find ::contains() equivalent.
-	bool contains(CPfVector &rhs) const;
+	bool contains(const CPfVector &rhs) const;
 
 	// Expand the vector radially outwards by a number of pixels.
 	void grow(const int offset);
