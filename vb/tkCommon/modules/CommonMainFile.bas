@@ -42,6 +42,11 @@ Private Enum eMFMovementControls        'Flags for player movement controls (see
     MF_ALLOW_DIAGONALS = 4              'Allow diagonal movement using two keys.
 End Enum
 
+Private Const DIK_UP = &HC8             'Arrow key scan codes.
+Private Const DIK_LEFT = &HCB
+Private Const DIK_RIGHT = &HCD
+Private Const DIK_DOWN = &HD0
+
 Private Enum eMovementCodes             'See sprite.h
     MV_IDLE
     MV_E
@@ -790,13 +795,13 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .movementControls = MF_USE_KEYS Or MF_ALLOW_DIAGONALS
         
         ReDim .movementKeys(MV_MAX)
-        .movementKeys(MV_E) = vbKeyRight
+        .movementKeys(MV_E) = DIK_RIGHT
         .movementKeys(MV_SE) = 0
-        .movementKeys(MV_S) = vbKeyDown
+        .movementKeys(MV_S) = DIK_DOWN
         .movementKeys(MV_SW) = 0
-        .movementKeys(MV_W) = vbKeyLeft
+        .movementKeys(MV_W) = DIK_LEFT
         .movementKeys(MV_NW) = 0
-        .movementKeys(MV_N) = vbKeyUp
+        .movementKeys(MV_N) = DIK_UP
         .movementKeys(MV_NE) = 0
         
     End With
