@@ -44,6 +44,13 @@ Private Function isString(ByVal str As String) As Boolean
     If Not (IsNumeric(str)) Then
         ' Characters that would not be in an unquoted string.
 
+        Dim clean As String
+        clean = LCase$(Trim$(str))
+        If ((clean = "true") Or (clean = "false")) Then
+            ' Don't quote true or false.
+            Exit Function
+        End If
+
         isString = True
         Dim i As Long
         For i = 0 To UBound(m_chars)
@@ -69,7 +76,7 @@ Private Function updateFunction(ByVal funcName As String, ByRef str As String, B
 
     ' Just skip "for"! Hopefully nobody used = for comparison in a "for"...
     If (funcName = "for") Then
-        updateFunction = str
+        updateFunction = replace(str, ",", ";")
         Exit Function
     End If
 
