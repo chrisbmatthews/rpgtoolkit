@@ -1,5 +1,5 @@
 /*
- * All contents copyright 2005, Colin James Fitzpatrick.
+ * All contents copyright 2005, 2006, Colin J. Fitzpatrick & Jonathan D. Hughes
  * All rights reserved. You may not remove this notice.
  * Read license.txt for licensing details.
  */
@@ -105,6 +105,43 @@ void termFunc()
 				_T("on how to reproduce the bug, and we will attempt to solve ")
 				_T("this problem.")	);
 	exit(EXIT_FAILURE);
+}
+
+/*
+ * Register the fonts in the game's font directory.
+ */
+void registerFonts(const STRING path, bool bRegister)
+{
+	WIN32_FIND_DATA fd;
+	// Fonts need a .ttf extension!
+	HANDLE hSearch = FindFirstFile((path + _T("*.ttf")).c_str(), &fd);
+	do
+	{
+		const STRING strFile = fd.cFileName;
+
+		if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			// Register this subdirectory as well.
+			if ((strFile != _T(".")) && (strFile != _T("..")))
+			{
+				registerFonts(path + strFile + _T("\\"), bRegister);
+			}
+		}
+		else
+		{
+			// Register or unresgister each font.
+			(bRegister ? AddFontResource : RemoveFontResource)
+				((path + fd.cFileName).c_str());
+		}
+	} while (FindNextFile(hSearch, &fd));
+}
+void registerFonts(bool bRegister)
+{
+	extern STRING g_projectPath;
+	registerFonts(g_projectPath + FONT_PATH, bRegister);
+
+	// Broadcast to the system that the fonts were updated.
+	SendMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
 }
 
 /*
@@ -325,6 +362,7 @@ void openSystems()
 {
 	extern void initRpgCode();
 	extern GAME_TIME g_gameTime;
+	registerFonts(true);
 	initPluginSystem();
 	FreeImage_Initialise();
 	srand(GetTickCount());
@@ -415,6 +453,9 @@ void closeSystems()
 	saveSettings();
 
 	uninitialisePakFile();
+
+	// Unregister fonts.
+	registerFonts(false);
 }
 
 /*
@@ -502,6 +543,16 @@ GAME_STATE gameLogic()
 			g_fpms = (m_renderCount / m_renderTime);
 			const unsigned long fps = g_fpms * MILLISECONDS;
 
+			// I explicited said not to do this.
+			// It is doubtless a massive waste of execution time to check for
+			// the fps display in every iteration of the inner loop!
+			// I tried to discuss this, but you seemed to miss the point.
+			// Let me give a practical suggest: the exe we include with
+			// the release never shows the fps; but it is possible to
+			// build an exe (via a #define) that always displays the fps.
+			// This might be inconvenient to users, but it certainly makes
+			// more sense and I think this waste is significant.
+			//    - Colin
 			if (g_mainFile.bFpsInTitleBar)
 			{
 				extern HWND g_hHostWnd;
@@ -622,8 +673,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
 	path = dev;
 
 	set_terminate(termFunc);
