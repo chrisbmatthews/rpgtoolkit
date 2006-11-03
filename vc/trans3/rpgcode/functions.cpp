@@ -1,5 +1,5 @@
 /*
- * All contents copyright 2005, Colin James Fitzpatrick.
+ * All contents copyright 2005, 2006, Colin J. Fitzpatrick & Jonathan D. Hughes
  * All rights reserved. You may not remove this notice.
  * Read license.txt for licensing details.
  */
