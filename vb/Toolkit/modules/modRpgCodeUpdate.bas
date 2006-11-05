@@ -65,8 +65,8 @@ End Function
 '=========================================================================
 ' Exchange part of a string for another string.
 '=========================================================================
-Private Function exchange(ByRef str As String, ByVal begin As Long, ByVal length As Long, ByRef replace As String) As String
-    exchange = Left$(str, begin - 1) & replace & Mid$(str, begin + length)
+Private Function exchange(ByRef str As String, ByVal begin As Long, ByVal Length As Long, ByRef replace As String) As String
+    exchange = Left$(str, begin - 1) & replace & Mid$(str, begin + Length)
 End Function
 
 '=========================================================================
@@ -83,12 +83,12 @@ Private Function updateFunction(ByVal funcName As String, ByRef str As String, B
     Dim opn As Long
     opn = InStr(1, str, "(")
 
-    Dim begin As Long, length As Long
+    Dim begin As Long, Length As Long
     begin = opn + 1
-    length = Len(str) - opn - IIf(InStr(1, str, ")") <> 0, 1, 0)
+    Length = Len(str) - opn - IIf(InStr(1, str, ")") <> 0, 1, 0)
 
     Dim inside As String
-    inside = Mid$(str, begin, length)
+    inside = Mid$(str, begin, Length)
     inside = updateLine(inside, strict, True)
 
     opn = opn + 1
@@ -97,7 +97,7 @@ Private Function updateFunction(ByVal funcName As String, ByRef str As String, B
     params = Split(inside, ",")
 
     updateFunction = str
-    updateFunction = exchange(updateFunction, begin, length, inside)
+    updateFunction = exchange(updateFunction, begin, Length, inside)
 
     Dim i As Long
     For i = 0 To UBound(params)
@@ -118,7 +118,7 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
 
     updateLine = str
 
-    Dim updatedFunction As Boolean, begin As Long, length As Long
+    Dim updatedFunction As Boolean, begin As Long, Length As Long
 
     Dim i As Long
     For i = 1 To Len(updateLine)
@@ -150,11 +150,11 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
                         ' Found the matching closing brace.
                         Dim func As String
                         begin = i + 1
-                        length = j - i - 1
-                        func = Mid$(updateLine, begin, length)
+                        Length = j - i - 1
+                        func = Mid$(updateLine, begin, Length)
 
                         ' Quote the function's parameters.
-                        updateLine = exchange(updateLine, begin, length, updateFunction(funcName, func, strict))
+                        updateLine = exchange(updateLine, begin, Length, updateFunction(funcName, func, strict))
 
                         Exit For
                     End If
@@ -173,12 +173,12 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
                 prevChar = vbNullString
             End If
             If ((char = "=") And (nextChar <> "=")) Then
-                If ((prevChar <> "<") And (prevChar <> ">")) Then
+                If ((prevChar <> "<") And (prevChar <> ">") And (prevChar <> "~")) Then
                     begin = i + 1
-                    length = Len(updateLine) - i
+                    Length = Len(updateLine) - i
 
                     ' Quote the right hand side of an assignment.
-                    updateLine = exchange(updateLine, begin, length, updateFunction(vbNullString, Mid$(updateLine, i + 1), strict))
+                    updateLine = exchange(updateLine, begin, Length, updateFunction(vbNullString, Mid$(updateLine, i + 1), strict))
 
                     ' Change = to == if within a function and not in #strict mode.
                     If (fromFunction And (Not (strict))) Then
@@ -190,19 +190,19 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
                 ' == operator
 
                 begin = i + 2
-                length = Len(updateLine) - i - 1
+                Length = Len(updateLine) - i - 1
 
                 ' Quote the right hand side of a comparison.
-                updateLine = exchange(updateLine, begin, length, updateFunction(vbNullString, Mid$(updateLine, i + 2), strict))
+                updateLine = exchange(updateLine, begin, Length, updateFunction(vbNullString, Mid$(updateLine, i + 2), strict))
 
                 ' Prevent == from also being read as a =.
                 i = i + 1
             ElseIf ((char = "+") And (nextChar = "=")) Then
                 begin = i + 2
-                length = Len(updateLine) - i - 1
+                Length = Len(updateLine) - i - 1
 
                 ' Quote the right hand side of an addition assignment.
-                updateLine = exchange(updateLine, begin, length, updateFunction(vbNullString, Mid$(updateLine, i + 2), strict))
+                updateLine = exchange(updateLine, begin, Length, updateFunction(vbNullString, Mid$(updateLine, i + 2), strict))
 
                 ' Prevent += from also being processed as =.
                 i = i + 1
