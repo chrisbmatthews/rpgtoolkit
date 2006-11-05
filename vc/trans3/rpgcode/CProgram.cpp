@@ -1690,7 +1690,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 		if ((open != prg->m_units.end()) && ((open - 1)->udt & UDT_FUNC))
 		{
 			const MACHINE_FUNC &func = (open - 1)->func;
-			if ((func == CProgram::whileLoop) || (func == CProgram::forLoop))
+			if ((func == CProgram::whileLoop) || (func == CProgram::forLoop) || (func == CProgram::untilLoop))
 			{
 				prg->m_i = prg->m_units.begin() + pLines[1] - 1;
 			}

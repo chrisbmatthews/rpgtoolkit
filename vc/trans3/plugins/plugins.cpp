@@ -109,7 +109,7 @@ private:
 static std::vector<int> g_oldCallbacks;
 static std::set<IPluginInput *> g_inputPlugins;
 
-// Locatation of MEMBERIDs in a CComPlugin::m_members array.
+// Location of MEMBERIDs in a CComPlugin::m_members array.
 // The order is arbitrary.
 #define MEMBER_SETCALLBACKS			0
 #define MEMBER_INITIALIZE			1
@@ -154,12 +154,14 @@ IPlugin *loadPlugin(const STRING path)
 	}
 
 	// Unrequired to register.
-	if (FAILED(((HRESULT (__stdcall *)())pReg)()))
+	((HRESULT (__stdcall *)())pReg)();
+
+	/**if (FAILED(((HRESULT (__stdcall *)())pReg)()))
 	{
 		messageBox(_T("An error occurred while registering ") + file + _T(".\n\nIf this problem persists, please make sure you are running the game in an account with administrator privileges."));
 		FreeLibrary(mod);
 		return NULL;
-	}
+	}**/
 
 	FreeLibrary(mod);
 
