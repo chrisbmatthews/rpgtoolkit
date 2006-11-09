@@ -1209,7 +1209,7 @@ Private Sub Form_Activate() ':on error resume next
     mnuBoard(1).Enabled = (mainMem.initBoard = m_ed.boardName)
     'Co-ordinate conversions.
     mnuCoords(0).Enabled = (m_ed.board(m_ed.undoIndex).coordType And ISO_STACKED)
-    mnuCoords(1).Enabled = (m_ed.board(m_ed.undoIndex).coordType Xor PX_ABSOLUTE)
+    mnuCoords(1).Enabled = Not (m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE)
     
     Call resetLayerCombos
     
@@ -1389,6 +1389,9 @@ Public Sub openFile(ByVal file As String) ': On Error Resume Next
 End Sub
 Public Sub saveFile() ':on error resume next
 
+    'Ensure board dimension changes are updated if the properties tab has not been switched.
+    Call sstBoard_Click(BTAB_PROPERTIES)
+
     ' if no filename exists, we've just created this board, so show dialog.
     If LenB(m_ed.boardName) = 0 Then
         Call saveFileAs
@@ -1411,6 +1414,9 @@ Public Sub saveFile() ':on error resume next
 End Sub
 Private Sub saveFileAs() ':on error resume next
 
+    'Ensure board dimension changes are updated if the properties tab has not been switched.
+    Call sstBoard_Click(BTAB_PROPERTIES)
+    
     Dim dlg As FileDialogInfo
 
     dlg.strDefaultFolder = projectPath & brdPath
@@ -1926,7 +1932,6 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
             
         Case BS_SHADING
             If Button Then Call shadingSettingMouseDown(Button, Shift, x, y)
-
     End Select
 End Sub
 Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single) ':on error resume next
@@ -2296,7 +2301,7 @@ Private Sub exportImage(ByVal Index As Long) ':on error resume next
         'Select out the bitmap, return the previous contents.
         Call SelectObject(hdc, obj)
         
-        If Not IMGExport(bmp, dlg.strSelectedFile) Then MsgBox "Unable to generate image, try another format", vbExclamation
+        If IMGExport(bmp, dlg.strSelectedFile) = 0 Then MsgBox "Unable to generate image, try another format", vbExclamation
         Call DeleteObject(bmp)
     End If
     
@@ -2373,7 +2378,7 @@ Public Sub mdiCmbCurrentLayer(ByVal layer As Long) ':on error resume next
     If m_ed.bHideAllLayers Then m_ed.bLayerVisible(m_ed.currentLayer) = False
     m_ed.currentLayer = layer
     m_ed.bLayerVisible(layer) = True
-    tkMainForm.brdCmbVisibleLayers.list(layer) = layer & " *"
+    tkMainForm.brdCmbVisibleLayers.list(layer) = CStr(layer) & " *"
     Call drawAll
 End Sub
 Public Sub mdiCmbVisibleLayers() ':on error resume next
@@ -2382,15 +2387,14 @@ Public Sub mdiCmbVisibleLayers() ':on error resume next
     With tkMainForm.brdCmbVisibleLayers
         If (.ListIndex >= 0) Then
             Text = .list(.ListIndex)
-            layer = Left$(Text, 1)
-            i = IIf(.ListIndex > 0, CInt(val(layer)), 0)
+            i = .ListIndex
             If (Right$(Text, 1) = "*" And i <> m_ed.currentLayer) Then
                 'Do not disable current layer.
-                .list(.ListIndex) = layer
+                .list(.ListIndex) = CStr(i)
                 'Do not alter the layer list if an override check button is down.
                 If (m_ed.bShowAllLayers = m_ed.bHideAllLayers) Then m_ed.bLayerVisible(i) = False
             Else
-                .list(.ListIndex) = layer & " *"
+                .list(.ListIndex) = CStr(i) & " *"
                 'Do not alter the layer list if an override check button is down.
                 If (m_ed.bShowAllLayers = m_ed.bHideAllLayers) Then m_ed.bLayerVisible(i) = True
             End If
@@ -2407,11 +2411,9 @@ End Sub
 '=========================================================================
 Private Sub setVisibleLayersByCombo() ':on error resume next
     Dim i As Integer, layer As Integer, Text As String
-    For i = 1 To tkMainForm.brdCmbVisibleLayers.ListCount
+    For i = 1 To tkMainForm.brdCmbVisibleLayers.ListCount - 1
         'Zeroth list entry is the background.
-        Text = tkMainForm.brdCmbVisibleLayers.list(i)
-        layer = CInt(val(Left$(Text, 1)))
-        m_ed.bLayerVisible(layer) = (Right$(Text, 1) = "*")
+        m_ed.bLayerVisible(i) = (Right$(tkMainForm.brdCmbVisibleLayers.list(i), 1) = "*")
     Next i
 End Sub
 
@@ -2423,8 +2425,8 @@ Private Sub resetLayerCombos() ':on error resume next
     Call tkMainForm.brdCmbVisibleLayers.AddItem("B *", 0)
     Dim i As Integer, Text As String
     For i = 1 To m_ed.board(m_ed.undoIndex).sizeL
-        Call tkMainForm.brdCmbVisibleLayers.AddItem(IIf(m_ed.bLayerVisible(i), i & " *", i))
-        Call tkMainForm.brdCmbCurrentLayer.AddItem(i)
+        Call tkMainForm.brdCmbVisibleLayers.AddItem(IIf(m_ed.bLayerVisible(i), CStr(i) & " *", CStr(i)))
+        Call tkMainForm.brdCmbCurrentLayer.AddItem(CStr(i))
     Next i
     'Combo box is zero-indexed.
     tkMainForm.brdCmbCurrentLayer.ListIndex = m_ed.currentLayer - 1
@@ -2610,13 +2612,16 @@ End Sub
 '========================================================================
 Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
 
-    Dim tileCoord As POINTAPI, pxCoord As POINTAPI
+    Dim tileCoord As POINTAPI, pxCoord As POINTAPI, tool As eBrdTool
     pxCoord = screenToBoardPixel(x, y, m_ed.pCEd)
     tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
 
     If tileCoord.x > m_ed.effectiveBoardX Or tileCoord.y > m_ed.effectiveBoardY Then Exit Sub
 
-    Select Case m_ed.optTool
+    'Allow right-click in draw mode to erase tile.
+    tool = IIf(m_ed.optTool = BT_DRAW And Button = vbRightButton, BT_ERASE, m_ed.optTool)
+    
+    Select Case tool
         Case BT_DRAW
             If LenB(m_ed.selectedTile) = 0 Then Exit Sub
             
@@ -3411,13 +3416,16 @@ End Function
 '========================================================================
 Private Sub shadingSettingMouseDown(Button As Integer, Shift As Integer, x As Single, y As Single) ': On Error Resume Next
 
-    Dim tileCoord As POINTAPI, pxCoord As POINTAPI
+    Dim tileCoord As POINTAPI, pxCoord As POINTAPI, tool As eBrdTool
     pxCoord = screenToBoardPixel(x, y, m_ed.pCEd)
     tileCoord = modBoard.boardPixelToTile(pxCoord.x, pxCoord.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
     
     If tileCoord.x > m_ed.effectiveBoardX Or tileCoord.y > m_ed.effectiveBoardY Then Exit Sub
     
-    Select Case m_ed.optTool
+    'Allow right-click in draw mode to erase tile.
+    tool = IIf(m_ed.optTool = BT_DRAW And Button = vbRightButton, BT_ERASE, m_ed.optTool)
+    
+    Select Case tool
         Case BT_DRAW
             'Single lighting layer implementation.
             m_ed.board(m_ed.undoIndex).tileShading(0).values(tileCoord.x, tileCoord.y) = m_ed.currentShade
@@ -3868,6 +3876,11 @@ Private Sub clipCopy(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelectio
                 t1 = modBoard.boardPixelToTile(O.x, O.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
                 t2 = modBoard.boardPixelToTile(O.x + d.x, O.y + d.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
                 
+                t1.x = IIf(t1.x < 1, 1, t1.x)
+                t1.y = IIf(t1.y < 1, 1, t1.y)
+                t2.x = IIf(t2.x > m_ed.effectiveBoardX + 1, m_ed.effectiveBoardX + 1, t2.x)
+                t2.y = IIf(t2.y > m_ed.effectiveBoardY + 1, m_ed.effectiveBoardY + 1, t2.y)
+                
                 For i = t1.x To t2.x - 1
                     For j = t1.y To t2.y - 1
                         If m_ed.optSetting = BS_TILE Then
@@ -3971,17 +3984,19 @@ Private Sub clipPaste(ByRef clip As TKBoardClipboard, ByRef sel As CBoardSelecti
                 'Get new tile from new position in pixels.
                 pt = modBoard.boardPixelToTile(pt.x + dr.x, pt.y + dr.y, m_ed.board(m_ed.undoIndex).coordType, False, m_ed.board(m_ed.undoIndex).sizex)
                 
-                If m_ed.optSetting = BS_TILE Then
-                    Call boardSetTile( _
-                        pt.x, pt.y, _
-                        m_ed.currentLayer, _
-                        clip.tiles(i).file, _
-                        m_ed.board(m_ed.undoIndex) _
-                    )
-                    m_ed.bLayerOccupied(m_ed.currentLayer) = True
-                Else
-                    'Lighting.
-                    m_ed.board(m_ed.undoIndex).tileShading(0).values(pt.x, pt.y) = clip.tiles(i).shade
+                If pt.x > 0 And pt.x <= m_ed.effectiveBoardX And pt.y > 0 And pt.y <= m_ed.effectiveBoardY Then
+                    If m_ed.optSetting = BS_TILE Then
+                        Call boardSetTile( _
+                            pt.x, pt.y, _
+                            m_ed.currentLayer, _
+                            clip.tiles(i).file, _
+                            m_ed.board(m_ed.undoIndex) _
+                        )
+                        m_ed.bLayerOccupied(m_ed.currentLayer) = True
+                    Else
+                        'Lighting.
+                        m_ed.board(m_ed.undoIndex).tileShading(0).values(pt.x, pt.y) = clip.tiles(i).shade
+                    End If
                 End If
 
             Next i
