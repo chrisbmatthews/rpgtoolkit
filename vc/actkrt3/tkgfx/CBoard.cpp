@@ -654,10 +654,11 @@ VOID CBoard::renderStack(
 	CONST LONG y, 
 	CONST HDC hdcCompat)
 {
+	m_pBoard = pBoard;
 	recalculateShading(pEditor);
-	for (LONG z = 1; z <= pBoard->sizeL; ++z)
+	for (LONG z = 1; z <= m_pBoard->sizeL; ++z)
 	{
-		renderTile(pBoard, x, y, z, hdcCompat);
+		renderTile(m_pBoard, x, y, z, hdcCompat);
 	}
 }
 
