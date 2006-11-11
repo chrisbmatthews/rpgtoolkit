@@ -233,6 +233,18 @@ LPSTACK_FRAME CProgram::getVar(const STRING name)
 	{
 		return m_heap[name.substr(1)];
 	}
+	if (name[0] == _T(' '))
+	{
+		// Temporary:	This will _not_ work after a thread has been
+		//				saved and restored.
+		const unsigned int i = (unsigned int)name[1];
+		std::map<unsigned int, LPSTACK_FRAME> &r = m_calls.back().refs;
+		std::map<unsigned int, LPSTACK_FRAME>::iterator j = r.find(i);
+		if (j != r.end())
+		{
+			return j->second;
+		}
+	}
 	if (m_calls.size())
 	{
 		unsigned int obj = m_calls.back().obj;
@@ -533,12 +545,22 @@ void CProgram::methodCall(CALL_DATA &call)
 		lvar.num = fr.obj = obj;
 	}
 
+	// Look at the num member as though it were two longs.
+	long *pLong = (long *)&fra.num;
+
 	// Add each parameter's value to the new local heap.
 	for (unsigned int i = 0; i < (call.params - 1); ++i)
 	{
 		if (i == j) continue;
 		TCHAR pos = call.params - i - (i < j) - (fr.obj != 0);
-		local[STRING(_T(" ")) + pos] = call[i].getValue();
+		if (pLong[1] & (1 << (pos - 1)))
+		{
+			fr.refs[pos] = fra.prg->getVar(call[i].lit);
+		}
+		else
+		{
+			local[STRING(_T(" ")) + pos] = call[i].getValue();
+		}
 	}
 
 	if (!fr.obj && call.prg->m_calls.size())
@@ -552,7 +574,7 @@ void CProgram::methodCall(CALL_DATA &call)
 				LPNAMED_METHOD p = i->second.locate(fra.lit, call.params - 1, CV_PRIVATE);
 				if (p)
 				{
-					fra.num = p->i;
+					pLong[0] = p->i;
 					STACK_FRAME &lvar = local[_T("this")];
 					lvar.udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
 					lvar.num = fr.obj = obj;
@@ -562,7 +584,7 @@ void CProgram::methodCall(CALL_DATA &call)
 	}
 
 	// Make sure this method has actually been resolved.
-	const int firstLine = (int)fra.num;
+	const int firstLine = pLong[0];
 	if (firstLine == -1)
 	{
 		throw CError(_T("Could not find method ") + fra.lit + _T("."));
@@ -1208,7 +1230,9 @@ void CProgram::resolveFunctions()
 			if (p)
 			{
 				unit->udt = UDT_NUM;
-				unit->num = p->i;
+				long *pLong = (long *)&unit->num;
+				pLong[0] = p->i;
+				pLong[1] = p->byref;
 			}
 			else if (resolvePluginCall(&*unit))
 			{

@@ -443,6 +443,12 @@ finale:
 
 method_param:
 	IDENTIFIER tdc
+		{ }
+|	AND IDENTIFIER tdc
+		{
+			g_byref |= (1 << g_methods.back().size());
+			$$ = $2;
+		}
 ;
 
 method_params:
@@ -469,7 +475,10 @@ method_declarator:
 
 method:
 	method_declarator method_name LPARAN
-		{ g_methods.push_back(std::map<STD_NATURAL_STRING, int>()); }
+		{
+			g_methods.push_back(std::map<STD_NATURAL_STRING, int>());
+			g_byref = 0;
+		}
 	method_params
 		{
 			const STD_NATURAL_STRING name = (g_pClass ? (g_pClass->first + _T("::")) : _T("")) + $2.getLit();
@@ -510,6 +519,7 @@ method:
 					method.params = g_methods.back().size();
 					method.i = CProgram::m_pyyUnits->end() - CProgram::m_pyyUnits->begin();
 					method.bInline = g_bInline;
+					method.byref = g_byref;
 					NAMED_METHOD::m_methods.push_back(method);
 					if (g_pClass)
 					{
@@ -698,6 +708,7 @@ begin:
 #include "../../tkCommon/strings.h"
 LPMACHINE_UNITS g_yyOldUnits = NULL;
 std::deque<std::map<STD_NATURAL_STRING, int> > g_methods;
+unsigned int g_byref;
 std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass = NULL;
 CLASS_VISIBILITY g_vis = CV_PRIVATE;
 bool g_bInline = false;

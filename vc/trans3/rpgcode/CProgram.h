@@ -83,11 +83,12 @@ typedef struct tagCallData
 // A call.
 typedef struct tagCallFrame
 {
-	unsigned int i;		// Unit to which to return.
-	unsigned int j;		// Closing brace of the method.
-	STACK_FRAME *p;		// Return value.
-	bool bReturn;		// Whether we should return a value.
-	unsigned int obj;	// This pointer.
+	unsigned int i;									// Unit to which to return.
+	unsigned int j;									// Closing brace of the method.
+	STACK_FRAME *p;									// Return value.
+	bool bReturn;									// Whether we should return a value.
+	unsigned int obj;								// This pointer.
+	std::map<unsigned int, LPSTACK_FRAME> refs;		// Parameters that have been passed ByRef.
 } CALL_FRAME;
 
 // A callable function.
@@ -160,6 +161,8 @@ typedef struct tagNamedMethod
 	int params;		// For overloaded methods.
 	unsigned int i;
 	bool bInline;	// Expand this method inline?
+	unsigned int byref;		// Bit array: pass each parameter byref or byval?
+							// Note that this sets a maximum number of parameters (32)!
 
 	static std::vector<tagNamedMethod> m_methods;
 	static tagNamedMethod *locate(const STRING name, const int params, const bool bMethod);
