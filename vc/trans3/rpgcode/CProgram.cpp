@@ -123,9 +123,9 @@ bool CThread::execute(const unsigned int units)
 	{
 		m_i->execute(this);
 		++m_i;
-		return true;
+		//return true;
 	}
-	return false;
+	return true;
 }
 
 // Assignment operator.
