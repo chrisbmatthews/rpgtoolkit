@@ -341,6 +341,8 @@ Public Sub disableAll(): On Error Resume Next
     Next i
     Call activeBoard.toolbarSetCurrent(BTAB_LIGHTING, -1)
     cmbLights.Enabled = True
+    chkDrawLighting.value = Abs(activeBoard.toolbarDrawObject(BS_LIGHTING))
+    chkDrawShading.value = Abs(activeBoard.toolbarDrawObject(BS_SHADING))
 End Sub
 Public Sub enableAll(): On Error Resume Next
     Dim i As Control
