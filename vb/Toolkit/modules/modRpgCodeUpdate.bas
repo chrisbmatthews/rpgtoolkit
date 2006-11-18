@@ -80,33 +80,24 @@ Private Function updateFunction(ByVal funcName As String, ByRef str As String, B
         Exit Function
     End If
 
-    Dim opn As Long
-    opn = InStr(1, str, "(")
-
-    Dim begin As Long, Length As Long
-    begin = opn + 1
-    Length = Len(str) - opn - IIf(InStr(1, str, ")") <> 0, 1, 0)
-
-    Dim inside As String
-    inside = Mid$(str, begin, Length)
-    inside = updateLine(inside, strict, True)
-
-    opn = opn + 1
-
+    'Recurse into nested functions.
     Dim params() As String
-    params = Split(inside, ",")
+    updateFunction = updateLine(str, strict, True)
+    params = Split(updateFunction, ",")
 
-    updateFunction = str
-    updateFunction = exchange(updateFunction, begin, Length, inside)
-
-    Dim i As Long
+    'Quote unquoted parameters.
+    Dim i As Long, start As Long
+    start = 1
     For i = 0 To UBound(params)
         Dim part As String
         part = Trim$(params(i))
+        
         If (isString(part)) Then
-            updateFunction = exchange(updateFunction, opn, Len(params(i)), """" & part & """")
+            updateFunction = exchange(updateFunction, start, Len(params(i)), """" & part & """")
+            start = start + Len(part) + 3
+        Else
+            start = start + Len(params(i)) + 1
         End If
-        opn = opn + Len(params(i)) + 1
     Next i
 
 End Function
@@ -118,96 +109,104 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
 
     updateLine = str
 
-    Dim updatedFunction As Boolean, begin As Long, Length As Long
+    Dim updatedFunction As Boolean, begin As Long, Length As Long, bQuotes As Boolean
 
     Dim i As Long
     For i = 1 To Len(updateLine)
         Dim char As String
         char = Mid$(updateLine, i, 1)
 
-        If (char = "(") Then
-            updatedFunction = True
-            Dim j As Long, depth As Long, funcName As String
-            ' Find the function's name!
-            funcName = vbNullString
-            For j = i - 1 To 1 Step -1
-                If (Not (isString(Mid$(updateLine, j, 1)))) Then
-                    funcName = Mid$(updateLine, j + 1, i - j - 1)
+        If (char = """") Then
+            bQuotes = Not bQuotes
+        ElseIf (Not bQuotes) Then
+            If (char = "(") Then
+                updatedFunction = True
+                Dim j As Long, depth As Long, funcName As String
+                
+                ' Find the function's name!
+                funcName = vbNullString
+                For j = i - 1 To 1 Step -1
+                    If (Not (isString(Mid$(updateLine, j, 1)))) Then
+                        'Search up to first non-string character.
+                        funcName = Mid$(updateLine, j + 1, i - j - 1)
+                    End If
+                Next j
+                If (LenB(funcName) = 0) Then
+                    'Non-string character not encountered - take all preceding characters.
+                    funcName = Left$(updateLine, i - 1)
                 End If
-            Next j
-            If (LenB(funcName) = 0) Then
-                funcName = Left$(updateLine, i - 1)
-            End If
-            funcName = LCase$(Trim$(funcName))
-            For j = i To Len(updateLine)
-                Dim insideChar As String
-                insideChar = Mid$(updateLine, j, 1)
-                If (insideChar = "(") Then
-                    depth = depth + 1
-                ElseIf (insideChar = ")") Then
-                    depth = depth - 1
-                    If (depth = 0) Then
-                        ' Found the matching closing brace.
-                        Dim func As String
+                funcName = LCase$(Trim$(replace(funcName, vbTab, vbNullString)))
+                
+                For j = i To Len(updateLine)
+                    Dim insideChar As String
+                    insideChar = Mid$(updateLine, j, 1)
+                    If (insideChar = "(") Then
+                        depth = depth + 1
+                    ElseIf (insideChar = ")") Then
+                        depth = depth - 1
+                        If (depth = 0) Then
+                            ' Found the matching closing brace. Extract the contents of the brackets.
+                            Dim func As String
+                            begin = i + 1
+                            Length = j - i - 1
+                            func = Mid$(updateLine, begin, Length)
+    
+                            ' Quote the function's parameters.
+                            updateLine = exchange(updateLine, begin, Length, updateFunction(funcName, func, strict))
+    
+                            Exit For
+                        End If
+                    End If
+                Next j
+            ElseIf Not (updatedFunction) Then
+                Dim nextChar As String, prevChar As String
+                If (i <> Len(updateLine)) Then
+                    nextChar = Mid$(updateLine, i + 1, 1)
+                Else
+                    nextChar = vbNullString
+                End If
+                If (i <> 1) Then
+                    prevChar = Mid$(updateLine, i - 1, 1)
+                Else
+                    prevChar = vbNullString
+                End If
+                If ((char = "=") And (nextChar <> "=")) Then
+                    If ((prevChar <> "<") And (prevChar <> ">") And (prevChar <> "~")) Then
                         begin = i + 1
-                        Length = j - i - 1
-                        func = Mid$(updateLine, begin, Length)
-
-                        ' Quote the function's parameters.
-                        updateLine = exchange(updateLine, begin, Length, updateFunction(funcName, func, strict))
-
-                        Exit For
+                        Length = Len(updateLine) - i
+    
+                        ' Quote the right hand side of an assignment.
+                        updateLine = exchange(updateLine, begin, Length, updateFunction(vbNullString, Mid$(updateLine, i + 1), strict))
+    
+                        ' Change = to == if within a function and not in #strict mode.
+                        If (fromFunction And (Not (strict))) Then
+                            updateLine = exchange(updateLine, i, 1, "==")
+                            i = i + 1
+                        End If
                     End If
+                ElseIf (char = "=") Then
+                    ' == operator
+    
+                    begin = i + 2
+                    Length = Len(updateLine) - i - 1
+    
+                    ' Quote the right hand side of a comparison.
+                    updateLine = exchange(updateLine, begin, Length, updateFunction(vbNullString, Mid$(updateLine, i + 2), strict))
+    
+                    ' Prevent == from also being read as a =.
+                    i = i + 1
+                ElseIf ((char = "+") And (nextChar = "=")) Then
+                    begin = i + 2
+                    Length = Len(updateLine) - i - 1
+    
+                    ' Quote the right hand side of an addition assignment.
+                    updateLine = exchange(updateLine, begin, Length, updateFunction(vbNullString, Mid$(updateLine, i + 2), strict))
+    
+                    ' Prevent += from also being processed as =.
+                    i = i + 1
                 End If
-            Next j
-        ElseIf Not (updatedFunction) Then
-            Dim nextChar As String, prevChar As String
-            If (i <> Len(updateLine)) Then
-                nextChar = Mid$(updateLine, i + 1, 1)
-            Else
-                nextChar = vbNullString
-            End If
-            If (i <> 1) Then
-                prevChar = Mid$(updateLine, i - 1, 1)
-            Else
-                prevChar = vbNullString
-            End If
-            If ((char = "=") And (nextChar <> "=")) Then
-                If ((prevChar <> "<") And (prevChar <> ">") And (prevChar <> "~")) Then
-                    begin = i + 1
-                    Length = Len(updateLine) - i
-
-                    ' Quote the right hand side of an assignment.
-                    updateLine = exchange(updateLine, begin, Length, updateFunction(vbNullString, Mid$(updateLine, i + 1), strict))
-
-                    ' Change = to == if within a function and not in #strict mode.
-                    If (fromFunction And (Not (strict))) Then
-                        updateLine = exchange(updateLine, i, 1, "==")
-                        i = i + 1
-                    End If
-                End If
-            ElseIf (char = "=") Then
-                ' == operator
-
-                begin = i + 2
-                Length = Len(updateLine) - i - 1
-
-                ' Quote the right hand side of a comparison.
-                updateLine = exchange(updateLine, begin, Length, updateFunction(vbNullString, Mid$(updateLine, i + 2), strict))
-
-                ' Prevent == from also being read as a =.
-                i = i + 1
-            ElseIf ((char = "+") And (nextChar = "=")) Then
-                begin = i + 2
-                Length = Len(updateLine) - i - 1
-
-                ' Quote the right hand side of an addition assignment.
-                updateLine = exchange(updateLine, begin, Length, updateFunction(vbNullString, Mid$(updateLine, i + 2), strict))
-
-                ' Prevent += from also being processed as =.
-                i = i + 1
-            End If
-        End If
+            End If ' char = "("
+        End If 'Not bQuotes
     Next i
 
 End Function
