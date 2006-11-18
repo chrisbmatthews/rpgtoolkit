@@ -1973,7 +1973,7 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 			LPDWORD CONST pSurfSrc = reinterpret_cast<LPDWORD>(srcSurface.lpSurface);
 
 			// For the y axis
-			for (INT yy = 0; yy < height; yy++)
+			for (INT yy = 0; yy < height; ++yy)
 			{
 
 				// Calculate index into destination and source, respectively
@@ -1981,7 +1981,7 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 				INT idx = (yy + ySrc) * nSrcPixelsPerRow + xSrc;
 
 				// For the x axis
-				for (INT xx = 0; xx < width; xx++)
+				for (INT xx = 0; xx < width; ++xx)
 				{
 
 					// Obtain a pixel in RGB format
@@ -2002,18 +2002,18 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 						CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
 
 						// Calculate translucent rgb value
-						CONST INT r = GetRValue(srcRGB) * (percent + 1.0);
-						CONST INT g = GetGValue(srcRGB) * (percent + 1.0);
-						CONST INT b = GetBValue(srcRGB) * (percent + 1.0);
+						CONST INT r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
+						CONST INT g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
+						CONST INT b = GetBValue(srcRGB) * percent + GetBValue(destRGB);
 
-						// Lay down translucently
-						pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
+						CONST LONG res = RGB(r & 256 ? 255 : r, g & 256 ? 255 : g, b & 256 ? 255 : b);
+						pSurfDest[idxd] = ConvertColorRef(res, &ddpfDest);
 
 					}
 
 					// Increment position on surfaces
-					idx++;
-					idxd++;
+					++idx;
+					++idxd;
 
 				} // x axis
 			} // y axis
@@ -2042,11 +2042,11 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 			SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTemp);
 
 			// For the y axis
-			for (INT yy = 0; yy < height; yy++)
+			for (INT yy = 0; yy < height; ++yy)
 			{
 
 				// For the x axis
-				for (INT xx = 0; xx < width; xx++)
+				for (INT xx = 0; xx < width; ++xx)
 				{
 
 					// Get pixel on source surface
@@ -2067,12 +2067,13 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 						CONST LONG destRGB = GetRGBPixel(&destSurface, &ddpfDest, xx + x, yy + y);
 
 						// Calculate new rgb color
-						CONST INT r = GetRValue(srcRGB) * (percent + 1.0);
-						CONST INT g = GetGValue(srcRGB) * (percent + 1.0);
-						CONST INT b = GetBValue(srcRGB) * (percent + 1.0);
+						CONST INT r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
+						CONST INT g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
+						CONST INT b = GetBValue(srcRGB) * percent + GetBValue(destRGB);
 
 						// Set the pixel
-						SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, RGB(r, g, b));
+						CONST LONG res = RGB(r & 256 ? 255 : r, g & 256 ? 255 : g, b & 256 ? 255 : b);
+						SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, res);
 
 					}
 
@@ -2093,7 +2094,7 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 			LPWORD CONST pSurfSrc = reinterpret_cast<LPWORD>(srcSurface.lpSurface);
 
 			// For the y axis
-			for (INT yy = 0; yy < height; yy++)
+			for (INT yy = 0; yy < height; ++yy)
 			{
 
 				// Calculate index into destination and source, respectively
@@ -2101,7 +2102,7 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 				INT idx = (yy + ySrc) * nSrcPixelsPerRow + xSrc;
 
 				// For the x axis
-				for (INT xx = 0; xx < width; xx++)
+				for (INT xx = 0; xx < width; ++xx)
 				{
 
 					// Obtain a pixel in RGB format
@@ -2122,18 +2123,18 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 						CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
 
 						// Calculate translucent rgb value
-						CONST INT r = GetRValue(srcRGB) * (percent + 1.0);
-						CONST INT g = GetGValue(srcRGB) * (percent + 1.0);
-						CONST INT b = GetBValue(srcRGB) * (percent + 1.0);
+						CONST INT r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
+						CONST INT g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
+						CONST INT b = GetBValue(srcRGB) * percent + GetBValue(destRGB);
 
-						// Lay down translucently
-						pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
+						CONST LONG res = RGB(r & 256 ? 255 : r, g & 256 ? 255 : g, b & 256 ? 255 : b);
+						pSurfDest[idxd] = ConvertColorRef(res, &ddpfDest);
 
 					}
 
 					// Increment position on surfaces
-					idx++;
-					idxd++;
+					++idx;
+					++idxd;
 
 				} // x axis
 			} // y axis

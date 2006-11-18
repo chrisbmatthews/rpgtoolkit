@@ -5031,14 +5031,17 @@ void setimageadditive(CALL_DATA &params)
 			pTarget = g_cnvRpgCode;
 		}
 	}
+
+	const int w = int(params[3].getNum()), h = int(params[4].getNum());
+
 	CCanvas cnv;
-	cnv.CreateBlank(NULL, int(params[3].getNum()), int(params[4].getNum()), TRUE);
+	cnv.CreateBlank(NULL, w, h, TRUE);
 
 	CONST STRING strFile = g_projectPath + BMP_PATH + params[0].getLit();
 
-	drawImage(strFile, &cnv, 0, 0, int(params[3].getNum()), int(params[4].getNum()));
+	drawImage(strFile, &cnv, 0, 0, w, h);
 
-	cnv.BltAdditivePart(pTarget->GetDXSurface(), int(params[1].getNum()), int(params[2].getNum()), 0, 0, int(params[3].getNum()), int(params[4].getNum()), params[5].getNum(), -1, -1);
+	cnv.BltAdditivePart(pTarget->GetDXSurface(), int(params[1].getNum()), int(params[2].getNum()), 0, 0, w, h, params[5].getNum() / 100.0, -1, -1);
 
 	if (pTarget == g_cnvRpgCode) renderRpgCodeScreen();
 }
