@@ -1973,7 +1973,7 @@ void pushItem(CALL_DATA &params)
 		throw CError(_T("PushItem() requires two or three parameters."));
 	}
 
-	CSprite *p = getItemPointer(params[0]);
+	CItem *p = getItemPointer(params[0]);
 	if (!p) throw CError(_T("PushItem(): item not found"));
 
 	// Backwards compatibility.
@@ -2011,7 +2011,7 @@ void wander(CALL_DATA &params)
 		throw CError(_T("Wander() requires one or two parameters."));
 	}
 
-	CSprite *p = getItemPointer(params[0]);
+	CItem *p = getItemPointer(params[0]);
 	if (!p) throw CError(_T("Wander(): item not found"));
 	
 	// Break early if the item is already moving.
@@ -2417,7 +2417,7 @@ void putitem(CALL_DATA &params)
 		throw CError(_T("PutItem() requires four parameters."));
 	}
 
-	CSprite *p = getItemPointer(params[0]);
+	CItem *p = getItemPointer(params[0]);
 	if (!p) throw CError(_T("PutItem(): item not found"));
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
@@ -2450,7 +2450,7 @@ void eraseitem(CALL_DATA &params)
 		throw CError(_T("EraseItem() requires one parameter."));
 	}
 
-	CSprite *p = getItemPointer(params[0]);
+	CItem *p = getItemPointer(params[0]);
 	if (!p) throw CError(_T("EraseItem(): item not found"));
 
 	// Remove the item from the z-ordered vector.
@@ -2462,7 +2462,7 @@ void eraseitem(CALL_DATA &params)
 }
 
 /*
- * void destroyitem(int slot)
+ * void destroyitem(variant handle)
  * 
  * Remove an item from memory.
  */
@@ -2476,14 +2476,19 @@ void destroyitem(CALL_DATA &params)
 		throw CError(_T("DestroyItem() requires one parameter."));
 	}
 
-	unsigned int i = (unsigned int)params[0].getNum();
-
-	// Only accept slot numbers, not source or target handles.
-	if (i < g_pBoard->items.size())
+	CItem *p = getItemPointer(params[0]);
+	if (!p) throw CError(_T("DestroyItem(): item not found"));
+	
+	std::vector<CItem *>::iterator i = g_pBoard->items.begin();
+	for (; i != g_pBoard->items.end(); ++i)
 	{
-		g_sprites.remove(g_pBoard->items[i]);
-		delete g_pBoard->items[i];
-		g_pBoard->items[i] = NULL;
+		if (*i == p)
+		{
+			g_sprites.remove(*i);
+			delete *i;
+			*i = NULL;
+			return;
+		}
 	}
 }
 
@@ -2531,7 +2536,7 @@ void itemspeed(CALL_DATA &params)
 	{
 		throw CError(_T("ItemSpeed() requires two parameters."));
 	}
-	CSprite *p = getItemPointer(params[0]);
+	CItem *p = getItemPointer(params[0]);
 	if (!p) throw CError(_T("ItemSpeed(): item not found"));
 
 	p->setSpeed(params[1].getNum());
@@ -2569,7 +2574,7 @@ void characterSpeed(CALL_DATA &params)
 }
 
 /*
- * void itemlocation(int slot, int &x, int &y, int &layer)
+ * void itemlocation(variant handle, int &x, int &y, int &layer)
  * 
  * Get the location of an item. Take board slot numbers only;
  * use SourceLocation() and TargetLocation() otherwise.
@@ -2590,7 +2595,7 @@ void itemlocation(CALL_DATA &params)
 	y->udt = UDT_NUM;
 	l->udt = UDT_NUM;
 
-	const CSprite *p = getItemPointer(params[0]);
+	const CItem *p = getItemPointer(params[0]);
 	if (!p) throw CError(_T("ItemLocation(): item not found"));
 
 	const SPRITE_POSITION s = p->getPosition();
