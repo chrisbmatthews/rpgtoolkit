@@ -202,6 +202,17 @@ bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
 		);
 		FreeImage_Unload(bmp);
 		cnvImg.CloseDC(hdc);
+
+		// Apply ambient level.
+		extern AMBIENT_LEVEL g_ambientLevel;
+		if (g_ambientLevel.color)
+		{
+			CCanvas cnvAl;
+			cnvAl.CreateBlank(NULL, m_data.animSizeX, m_data.animSizeY, TRUE);
+			cnvAl.ClearScreen(g_ambientLevel.color);
+			cnvAl.BltAdditivePart(cnvImg.GetDXSurface(), 0, 0, 0, 0, m_data.animSizeX, m_data.animSizeY, g_ambientLevel.sgn, -1, m_data.animTransp[frame]);
+		}
+
 		cnvImg.BltTransparent(cnv, 0, 0, m_data.animTransp[frame]);
 
     } // if (ext == TBM)

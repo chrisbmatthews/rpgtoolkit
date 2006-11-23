@@ -13,6 +13,7 @@
 #include "../../tkCommon/strings.h"
 #include "../../tkCommon/board/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
+#include "../../tkCommon/tkGfx/CTile.h"
 
 // Uncomment to show debug vectors.
 #define DEBUG_VECTORS
@@ -43,6 +44,15 @@ typedef struct tagScrollCache
 	}
 
 } SCROLL_CACHE;
+
+typedef struct tagAmbientLevel
+{
+	RGBSHADE rgb;
+	LONG color;
+	DOUBLE sgn;
+	tagAmbientLevel(): color(0), sgn(0.0) { rgb.r = rgb.g = rgb.b = 0; }
+
+} AMBIENT_LEVEL;
 
 /*
  * Initialize the graphics engine.

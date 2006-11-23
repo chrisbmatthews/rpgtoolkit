@@ -233,6 +233,7 @@ typedef struct tagBoard
 
 	bool open(const STRING fileName, const bool startThreads = true);
 	void vectorize(const unsigned int layer);
+	void createImageCanvases();
 	void createVectorCanvases();
 	void freeVectors(const int layer = 0);
 	void freePrograms();

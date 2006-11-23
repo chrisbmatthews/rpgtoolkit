@@ -109,6 +109,7 @@ vVersion:
 		short lutSize;
 		file >> lutSize;
 		tileIndex.clear();
+		animatedTiles.clear();
 
 		// Temporarily to hold animated tile indices.
 		std::vector<int> tanLutIndices;
@@ -496,10 +497,18 @@ layerEnd:
 			links.push_back(str);
 		}
 
-		bkgImage = new BRD_IMAGE();
-		file >> bkgImage->file;
-		file >> i; bkgImage->type = BI_ENUM(i);
+		delete bkgImage;
+		bkgImage = NULL;
 
+		file >> str;
+		file >> i; 
+		if (!str.empty())
+		{
+			bkgImage = new BRD_IMAGE();
+			bkgImage->file = str;
+			bkgImage->type = BI_ENUM(i);
+		}
+		
 		file >> bkgColor;
 		file >> bkgMusic;
 		file >> enterPrg;
@@ -515,24 +524,9 @@ layerEnd:
 		{
 			// Required only for the active board.
 
+			// setAmbientLevel calls g_pBoard->renderImageCanvases().
 			setAmbientLevel();
 
-			// Setup the background image as an attached image.
-			if (!bkgImage->file.empty())
-			{
-				bkgImage->createCanvas(*this);
-			}
-			else
-			{
-				delete bkgImage;
-				bkgImage = 0;
-			}
-
-			// Images first, for use with vectors.
-			for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
-			{
-				(*i)->createCanvas(*this);
-			}
 			createVectorCanvases();
 
 		} // if (this == g_pBoard) 
@@ -572,6 +566,7 @@ pvVersion:
 		short lutSize;
 		file >> lutSize;
 		tileIndex.clear();
+		animatedTiles.clear();
 
 		// Temporarily to hold animated tile indices.
 		std::vector<int> tanLutIndices;
@@ -680,8 +675,18 @@ pvVersion:
 		} // for (z)
 lutEndB:
 
-		bkgImage = new BRD_IMAGE();
-		file >> bkgImage->file;
+		delete bkgImage;
+		bkgImage = NULL;
+
+		STRING str;
+		file >> str;
+		if (!str.empty())
+		{
+			bkgImage = new BRD_IMAGE();
+			bkgImage->file;
+			bkgImage->type = BI_PARALLAX;
+		}
+
 		file >> sUnused;				// Foreground image.
 		file >> sUnused;				// Border image.
 		file >> bkgColor;
@@ -864,6 +869,7 @@ lutEndB:
 		{
 			// Required only for the active board.
 
+			// setAmbientLevel calls g_pBoard->renderImageCanvases().
 			setAmbientLevel();
 
 			// Upgrade tile lighting before setting under vectors.
@@ -903,23 +909,6 @@ lutEndB:
 				createProgramBase(*p, &*pos);
 			}
 
-			// Setup the background image as an attached image.
-			if (!bkgImage->file.empty())
-			{
-				bkgImage->type = BI_PARALLAX;
-				bkgImage->createCanvas(*this);
-			}
-			else
-			{
-				delete bkgImage;
-				bkgImage = NULL;
-			}
-
-			// Create image canvases before vector canvases.
-			for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
-			{
-				(*i)->createCanvas(*this);
-			}
 			createVectorCanvases();
 
 			// Set the positions of and create vectors for old items.
@@ -1025,6 +1014,19 @@ void tagBoard::createVectorCanvases()
 	for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
 	{
 		i->createCanvas(*this);
+	}
+}
+
+/*
+ * Create image canvases for background and layer images.
+ */
+void tagBoard::createImageCanvases()
+{
+	if (bkgImage) bkgImage->createCanvas(*this);
+
+	for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
+	{
+		(*i)->createCanvas(*this);
 	}
 }
 
@@ -1165,6 +1167,16 @@ void tagBoardImage::createCanvas(BOARD &board)
 		pCnv->CloseDC(hdc);
 		FreeImage_Unload(bmp);
 
+		// Apply ambient level.
+		extern AMBIENT_LEVEL g_ambientLevel;
+		if (g_ambientLevel.color)
+		{
+			CCanvas cnv;
+			cnv.CreateBlank(NULL, width, height, TRUE);
+			cnv.ClearScreen(g_ambientLevel.color);
+			cnv.BltAdditivePart(pCnv->GetDXSurface(), 0, 0, 0, 0, width, height, g_ambientLevel.sgn, -1, transpColor);
+		}
+
 		r.right = r.left + width;
 		r.bottom = r.top + height;
 
@@ -1216,8 +1228,8 @@ void tagBoard::render(
 	int height)
 {
 	extern STRING g_projectPath;
-	extern RGBSHADE g_ambientLevel;
-	const RGBSHADE al = g_ambientLevel;
+	extern AMBIENT_LEVEL g_ambientLevel;
+	const RGBSHADE al = g_ambientLevel.rgb;
 
 	const RECT bounds = { topX, topY, topX + width, topY + height };
 
@@ -1484,6 +1496,7 @@ void tagBoard::freeItems()
 void tagBoard::freeImages()
 {
 	delete bkgImage;
+	bkgImage = NULL;
 	for (std::vector<LPBRD_IMAGE>::iterator i = images.begin(); i != images.end(); ++i)
 	{
 		delete *i;
@@ -1736,7 +1749,7 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
 
 			// Pixel bounds of tile stack.
 			int x = i->x, y = i->y;
-			coords::tileToPixel(x, y, coordType, false, sizeX);
+			coords::tileToPixel(x, y, COORD_TYPE(coordType & ~PX_ABSOLUTE), false, sizeX);
 			if (isIsometric())
 			{
 				// Render location.
@@ -1773,8 +1786,8 @@ void tagBoard::renderStack(
 {
 	extern STRING g_projectPath;
 	extern RECT g_screen;
-	extern RGBSHADE g_ambientLevel;
-	const RGBSHADE al = g_ambientLevel;
+	extern AMBIENT_LEVEL g_ambientLevel;
+	const RGBSHADE al = g_ambientLevel.rgb;
 
 	// Skip tan if off screen.
 	RECT dest = {0, 0, 0, 0};

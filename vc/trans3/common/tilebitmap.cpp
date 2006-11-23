@@ -132,7 +132,8 @@ bool tagTileBitmap::draw(CCanvas *cnv,
 						 const int y)
 {
 	extern STRING g_projectPath;
-	extern RGBSHADE g_ambientLevel;
+	extern AMBIENT_LEVEL g_ambientLevel;
+	const RGBSHADE al = g_ambientLevel.rgb;
 
     const int xx = x / 32 + 1, yy = y / 32 + 1;
 
@@ -148,9 +149,9 @@ bool tagTileBitmap::draw(CCanvas *cnv,
 						g_projectPath + TILE_PATH + tiles[i][j],
 						i + xx, 
 						j + yy,						
-						red[i][j] + g_ambientLevel.r, 
-						green[i][j] + g_ambientLevel.g,
-						blue[i][j] + g_ambientLevel.b,
+						red[i][j] + al.r, 
+						green[i][j] + al.g,
+						blue[i][j] + al.b,
 						cnv,
 						TM_NONE,
 						0, 0,

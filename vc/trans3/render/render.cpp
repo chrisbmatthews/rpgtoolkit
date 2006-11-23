@@ -9,7 +9,6 @@
  */
 #include "render.h"
 #include "../rpgcode/parser/parser.h"
-#include "../../tkCommon/tkGfx/CTile.h"
 #include "../movement/CSprite/CSprite.h"
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
@@ -45,7 +44,7 @@ double g_translucentOpacity = 0.4;			// Opacity to draw translucent sprites at.
 
 RECT g_screen = {0, 0, 0, 0};				// = {g_topX, g_topY, g_resX + g_topX, g_resY + g_topY}
 SCROLL_CACHE g_scrollCache;					// The scroll cache.
-RGBSHADE g_ambientLevel = {0, 0, 0};		// Ambient level.
+AMBIENT_LEVEL g_ambientLevel;
 
 /*
  * Render the RPGCode screen.
@@ -376,8 +375,12 @@ void setAmbientLevel(void)
 	// forcing sprites to redraw their frames as and when each is required.
 	// No mechanism currently exists to apply the levels to non-tile images
 	// in windowed mode.
-	g_ambientLevel = al;
+	g_ambientLevel.rgb = al;
+	g_ambientLevel.color = RGB(abs(al.r), abs(al.g), abs(al.b));
+	g_ambientLevel.sgn = DOUBLE(sgn(double(al.r)));
+
 	CSharedAnimation::freeAllCanvases();
+	g_pBoard->createImageCanvases();
 }
 
 /*
