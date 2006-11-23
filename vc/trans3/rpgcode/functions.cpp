@@ -275,6 +275,41 @@ CItem *getItemPointer(STACK_FRAME &param)
 	return NULL;
 }
 
+
+// Splice arrays, e.g. "<array[i]>".
+STRING spliceArrays(CProgram *prg, STRING str)
+{
+	STRING::iterator i = str.begin(), first = NULL, last = NULL;
+	int depth = 0;
+
+	for (; i < str.end(); ++i)
+	{
+		if (*i == _T('['))
+		{
+			if (!depth) first = i + 1;
+			++depth;
+		}
+		else if (*i == _T(']'))
+		{
+			--depth;
+			if (!depth)
+			{
+				// Deal with nested arrays.
+				last = i;
+				const STRING var = STRING(first, last);
+
+				// This does not work for non-variable entries (e.g. array[4]).
+				const STRING val = prg->getVar(spliceArrays(prg, var))->getLit();
+				str.replace(first, last, val);
+
+				// first will be invalid if replace() caused reallocation.
+				i = first + val.length() + 1;
+			}
+		}
+	}
+	return str;
+}
+
 // Splice variables.
 STRING spliceVariables(CProgram *prg, STRING str)
 {
@@ -292,7 +327,7 @@ STRING spliceVariables(CProgram *prg, STRING str)
 		STRING var = str.substr(pos + 1, r - pos - 1);
 		replace(var, _T("!"), _T(""));
 		replace(var, _T("$"), _T(""));
-		const STRING val = prg->getVar(var)->getLit();
+		const STRING val = prg->getVar(spliceArrays(prg, var))->getLit();
 		str.erase(pos, r - pos + 1);
 		str.insert(pos, val);
 
@@ -300,6 +335,7 @@ STRING spliceVariables(CProgram *prg, STRING str)
 	}
 	return str;
 }
+
 
 /*
  * void mwin(string str)
@@ -955,7 +991,7 @@ void put(CALL_DATA &params)
 {
 	extern LPBOARD g_pBoard;
 	extern STRING g_projectPath;
-	extern RGBSHADE g_ambientLevel;
+	extern AMBIENT_LEVEL g_ambientLevel;
 
 	if (params.params != 3)
 	{
@@ -966,7 +1002,7 @@ void put(CALL_DATA &params)
 		g_projectPath + TILE_PATH + params[2].getLit(),
 		int(params[0].getNum()), 
 		int(params[1].getNum()),
-		g_ambientLevel.r, g_ambientLevel.g, g_ambientLevel.b, 
+		g_ambientLevel.rgb.r, g_ambientLevel.rgb.g, g_ambientLevel.rgb.b, 
 		g_cnvRpgCode,
 		TM_NONE,
 		0, 0,
