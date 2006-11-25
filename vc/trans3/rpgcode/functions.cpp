@@ -276,7 +276,10 @@ CItem *getItemPointer(STACK_FRAME &param)
 }
 
 
-// Splice arrays, e.g. "<array[i]>".
+/*
+ * Splice arrays, e.g. "<array[i]>".
+ * This does not work for non-variable/numeric entries (e.g. array["str"]).
+ */
 STRING spliceArrays(CProgram *prg, STRING str)
 {
 	STRING::iterator i = str.begin(), first = NULL, last = NULL;
@@ -291,19 +294,21 @@ STRING spliceArrays(CProgram *prg, STRING str)
 		}
 		else if (*i == _T(']'))
 		{
-			--depth;
-			if (!depth)
+			if (!--depth)
 			{
 				// Deal with nested arrays.
 				last = i;
 				const STRING var = STRING(first, last);
+				
+				// Skip numeric indices.
+				if (var.find_first_not_of(_T("0123456789")) != STRING::npos)
+				{
+					const STRING val = prg->getVar(spliceArrays(prg, var))->getLit();
+					str.replace(first, last, val);
 
-				// This does not work for non-variable entries (e.g. array[4]).
-				const STRING val = prg->getVar(spliceArrays(prg, var))->getLit();
-				str.replace(first, last, val);
-
-				// first will be invalid if replace() caused reallocation.
-				i = first + val.length() + 1;
+					// first will be invalid if replace() caused reallocation.
+					i = first + val.length();
+				}
 			}
 		}
 	}
@@ -314,6 +319,7 @@ STRING spliceArrays(CProgram *prg, STRING str)
 STRING spliceVariables(CProgram *prg, STRING str)
 {
 	STRING::size_type pos = STRING::npos;
+	
 	while (true)
 	{
 		pos = str.find_first_of(_T('<'), pos + 1);
@@ -327,6 +333,12 @@ STRING spliceVariables(CProgram *prg, STRING str)
 		STRING var = str.substr(pos + 1, r - pos - 1);
 		replace(var, _T("!"), _T(""));
 		replace(var, _T("$"), _T(""));
+
+		// Convert to lower case.
+		char *const lower = _tcslwr(_tcsdup(var.c_str()));
+		var = lower;
+		free(lower);
+
 		const STRING val = prg->getVar(spliceArrays(prg, var))->getLit();
 		str.erase(pos, r - pos + 1);
 		str.insert(pos, val);
@@ -335,7 +347,6 @@ STRING spliceVariables(CProgram *prg, STRING str)
 	}
 	return str;
 }
-
 
 /*
  * void mwin(string str)
