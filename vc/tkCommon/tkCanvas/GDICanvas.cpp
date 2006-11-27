@@ -1915,6 +1915,8 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 	CONST LONG crTransparentColor
 		) CONST
 {
+	// Bound LONG to [0 255]
+	#define BOUND(x) (x & 0x80000000 ? 0 : (x & 0x100 ? 0xFF : x))
 
 	// If we have a valid surface ptr and we're using DirectX
 	if (!(lpddsSurface && usingDX()))
@@ -1987,6 +1989,9 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 					// Obtain a pixel in RGB format
 					CONST LONG srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
 
+					// Obtain destination RGB
+					CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
+
 					// Check for unaffected color
 					if (srcRGB == crUnaffectedColor)
 					{
@@ -1995,18 +2000,16 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 					}
 
 					// Check for opaque color
-					else if (srcRGB != crTransparentColor)
+					else if (destRGB != crTransparentColor)
 					{
 
-						// Obtain destination RGB
-						CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
-
 						// Calculate translucent rgb value
-						CONST INT r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
-						CONST INT g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
-						CONST INT b = GetBValue(srcRGB) * percent + GetBValue(destRGB);
+						CONST LONG r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
+						CONST LONG g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
+						CONST LONG b = GetBValue(srcRGB) * percent + GetBValue(destRGB);
 
-						CONST LONG res = RGB(r & 256 ? 255 : r, g & 256 ? 255 : g, b & 256 ? 255 : b);
+						// Bound in the region [0 255]. No advantage using ULONG.
+						CONST LONG res = RGB(BOUND(r), BOUND(g), BOUND(b));
 						pSurfDest[idxd] = ConvertColorRef(res, &ddpfDest);
 
 					}
@@ -2052,6 +2055,9 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 					// Get pixel on source surface
 					CONST LONG srcRGB = GetRGBPixel(&srcSurface, &ddpfDest, xSrc + xx, ySrc + yy);
 
+					// Obtain destination pixel
+					CONST LONG destRGB = GetRGBPixel(&destSurface, &ddpfDest, xx + x, yy + y);
+
 					// Check for unaffected color
 					if (srcRGB == rgbUnaffectedColor)
 					{
@@ -2060,19 +2066,16 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 					}
 
 					// If color is not transparent
-					else if (srcRGB != rgbTransparentColor)
+					else if (destRGB != rgbTransparentColor)
 					{
 
-						// Obtain destination pixel
-						CONST LONG destRGB = GetRGBPixel(&destSurface, &ddpfDest, xx + x, yy + y);
-
 						// Calculate new rgb color
-						CONST INT r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
-						CONST INT g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
-						CONST INT b = GetBValue(srcRGB) * percent + GetBValue(destRGB);
+						CONST LONG r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
+						CONST LONG g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
+						CONST LONG b = GetBValue(srcRGB) * percent + GetBValue(destRGB);
 
 						// Set the pixel
-						CONST LONG res = RGB(r & 256 ? 255 : r, g & 256 ? 255 : g, b & 256 ? 255 : b);
+						CONST LONG res = RGB(BOUND(r), BOUND(g), BOUND(b));
 						SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, res);
 
 					}
@@ -2108,6 +2111,9 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 					// Obtain a pixel in RGB format
 					CONST LONG srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
 
+						// Obtain destination RGB
+						CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
+
 					// Check for unaffected color
 					if (srcRGB == crUnaffectedColor)
 					{
@@ -2116,18 +2122,15 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 					}
 
 					// Check for opaque color
-					else if (srcRGB != crTransparentColor)
+					else if (destRGB != crTransparentColor)
 					{
 
-						// Obtain destination RGB
-						CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
-
 						// Calculate translucent rgb value
-						CONST INT r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
-						CONST INT g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
-						CONST INT b = GetBValue(srcRGB) * percent + GetBValue(destRGB);
+						CONST LONG r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
+						CONST LONG g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
+						CONST LONG b = GetBValue(srcRGB) * percent + GetBValue(destRGB);
 
-						CONST LONG res = RGB(r & 256 ? 255 : r, g & 256 ? 255 : g, b & 256 ? 255 : b);
+						CONST LONG res = RGB(BOUND(r), BOUND(g), BOUND(b));
 						pSurfDest[idxd] = ConvertColorRef(res, &ddpfDest);
 
 					}
