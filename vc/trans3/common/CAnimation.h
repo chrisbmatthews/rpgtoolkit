@@ -16,7 +16,6 @@
  */
 #include "animation.h"
 #include "paths.h"
-#include <mmsystem.h>
 #include <vector>
 #include <set>
 #include <map>
@@ -32,41 +31,40 @@ public:
 	CAnimation(const STRING file);
 	~CAnimation() { freeCanvases(); }
 
-	void addUser(void) { ++m_users; }
 	void animate(const int x, const int y);
 	LPANIMATION data(void) { return &m_data; }
-	void freeCanvases(void)
-	{
-		std::vector<CCanvas *>::iterator i = m_canvases.begin();
-		for (; i != m_canvases.end(); ++i) { delete *i; *i = NULL; }
-	}
 	CCanvas *getFrame(unsigned int frame);
-	void playFrameSound(unsigned int frame) const
-	{
-		frame %= (m_data.animFrames + 1);
-		extern STRING g_projectPath;
-		sndPlaySound(
-			(g_projectPath + MEDIA_PATH + m_data.animSound[frame]).c_str(), 
-			SND_ASYNC | SND_NODEFAULT);
-	}
-	int removeUser(void) { return --m_users; }
+	void playFrameSound(unsigned int frame) const;
 	void render(void);
-	bool renderFrame(CCanvas *cnv, unsigned int frame);
 	void resize(const int width, const int height) 
 	{ 
-		if (width) m_data.animSizeX = abs(width);
-		if (height) m_data.animSizeY = abs(height);
+		if (width) m_data.pxWidth = abs(width);
+		if (height) m_data.pxHeight = abs(height);
 	}
-	STRING filename(void) const { return m_data.animFile; }
+	STRING filename(void) const { return m_data.filename; }
+
+	friend class CSharedAnimation;
 
 private:
 	CAnimation(CAnimation &rhs);
 	CAnimation &operator= (CAnimation &rhs);
 
+	void addUser(void) { ++m_users; }
+	int removeUser(void) { return --m_users; }
+	void freeCanvases(void)
+	{
+		std::vector<CCanvas *>::iterator i = m_canvases.begin();
+		for (; i != m_canvases.end(); ++i) { delete *i; *i = NULL; }
+	}
+	bool renderAnmFrame(CCanvas *cnv, unsigned int frame);
+	bool renderFileFrame(CCanvas *cnv, unsigned int frame);
+	bool (CAnimation::*renderFrame) (CCanvas *cnv, unsigned int frame);
+
 	ANIMATION m_data;
 	int m_users;
 
 	std::vector<CCanvas *> m_canvases;
+
 };
 
 /*

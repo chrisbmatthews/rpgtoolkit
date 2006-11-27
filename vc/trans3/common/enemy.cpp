@@ -133,13 +133,13 @@ bool tagEnemy::open(const STRING strFile)
 		tbm.save(g_projectPath + BMP_PATH + tbmFile);
 
 		ANIMATION anm;
-		anm.animSizeX = width * 32;
-		anm.animSizeY = height * 32;
-		anm.animPause = 0.167;
-		anm.animFrame.push_back(tbmFile);
-		anm.animTransp.push_back(RGB(255, 255, 255));
-		anm.animSound.push_back(_T(""));
-		anm.animFrames = 1;
+		anm.pxWidth = width * 32;
+		anm.pxHeight = height * 32;
+		anm.delay = 0.167;
+		anm.frameFiles.push_back(tbmFile);
+		anm.transpColors.push_back(RGB(255, 255, 255));
+		anm.sounds.push_back(_T(""));
+		anm.frameCount = 1;
 		const STRING anmFile = replace(removePath(strFile), _T('.'), _T('_')) + _T("_rest.anm");
 		anm.save(g_projectPath + MISC_PATH + anmFile);
 

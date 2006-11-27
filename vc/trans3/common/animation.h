@@ -22,18 +22,19 @@
  */
 typedef struct tagAnimation
 {
-	STRING animFile;					// Filename (no path).
-	int animSizeX;						// Width.
-	int animSizeY;						// Height.
-	int animFrames;						// Total number of frames.
-	std::vector<STRING> animFrame;		// Filenames of each image in animation.
-	std::vector<int> animTransp;		// Transparent color for frame.
-	std::vector<STRING> animSound;		// Sounds for each frame.
-	double animPause;					// Pause length (sec) between each frame.
+	STRING filename;					// Filename (no path).
+	int pxWidth;						// Width.
+	int pxHeight;						// Height.
+	int frameCount;						// Total number of frames.
+	std::vector<STRING> frameFiles;		// Filenames of each image in animation.
+	std::vector<int> transpColors;		// Transparent color for frame.
+	std::vector<STRING> sounds;			// Sounds for each frame.
+	double delay;						// Pause length (sec) between each frame.
 
 	bool open(const STRING fileName);
 	void save(const STRING fileName) const;
-	tagAnimation(): animFrames(0), animSizeX(1), animSizeY(1), animPause(0) {}
+	void loadFromGif(const STRING file);
+	tagAnimation(): frameCount(0), pxWidth(1), pxHeight(1), delay(0) {}
 
 } ANIMATION, *LPANIMATION;
 

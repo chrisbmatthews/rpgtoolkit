@@ -1706,10 +1706,10 @@ void CSprite::customStance(const STRING stance, const CProgram *prg, const bool 
 	if (i == m_attr.mapCustomGfx.end()) return;
 
 	m_pos.pAnm = i->second.pAnm->m_pAnm;
-	m_pos.idle.frameDelay = m_pos.pAnm->data()->animPause * MILLISECONDS;
+	m_pos.idle.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
 	
 	// Set idle.time to hold the *number of frames this will run for*.
-	m_pos.idle.time = m_pos.pAnm->data()->animFrames + 1;
+	m_pos.idle.time = m_pos.pAnm->data()->frameCount;
 	m_pos.idle.frameTime = GetTickCount();
 
 	m_pos.loopFrame = LOOP_STANCE;
@@ -1789,7 +1789,7 @@ void CSprite::checkIdling(void)
 				m_pos.idle.frameTime = GetTickCount();
 
 				// Frame delay for the idle animation.
-				m_pos.idle.frameDelay = m_pos.pAnm->data()->animPause * MILLISECONDS;
+				m_pos.idle.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
 			}
 		} // if (time player has been idle > idle time)
 

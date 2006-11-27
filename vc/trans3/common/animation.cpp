@@ -12,6 +12,7 @@
 #include "paths.h"
 #include "CFile.h"
 #include "../rpgcode/parser/parser.h"
+#include "../movement/movement.h"
 #include "../../tkCommon/images/FreeImage.h"
 #include "mbox.h"
 #include <mmsystem.h>
@@ -40,13 +41,13 @@ bool tagAnimation::open(const STRING fileName)
 		file >> minorVer;
 		if (minorVer == 3)
 		{
-			file >> animSizeX;
-			file >> animSizeY;
-			file >> animFrames;
-			animFrame.clear();
-			animTransp.clear();
-			animSound.clear();
-			for (unsigned int i = 0; i <= animFrames; i++)
+			file >> pxWidth;
+			file >> pxHeight;
+			file >> frameCount;
+			frameFiles.clear();
+			transpColors.clear();
+			sounds.clear();
+			for (unsigned int i = 0; i <= frameCount; ++i)
 			{
 				STRING strA, strB;
 				int num;
@@ -56,14 +57,12 @@ bool tagAnimation::open(const STRING fileName)
 				if (!strA.empty())
 				{
 					// Add frame if frame contains image.
-					animFrame.push_back(strA);
-					animTransp.push_back(num);
-					animSound.push_back(strB);
+					frameFiles.push_back(strA);
+					transpColors.push_back(num);
+					sounds.push_back(strB);
 				}
 			}
-			// Effective "UBound".
-			animFrames = animFrame.size() - 1;
-			file >> animPause;
+			file >> delay;
 		}
 		else
 		{
@@ -81,22 +80,23 @@ bool tagAnimation::open(const STRING fileName)
 		}
 		file.line();
 		file.line();
-		animSizeX = _ttoi(file.line().c_str());
-		animSizeY = _ttoi(file.line().c_str());
-		animFrames = _ttoi(file.line().c_str());
-		animFrame.clear();
-		animTransp.clear();
-		animSound.clear();
-		for (unsigned int i = 0; i <= animFrames; i++)
+		pxWidth = _ttoi(file.line().c_str());
+		pxHeight = _ttoi(file.line().c_str());
+		frameCount = _ttoi(file.line().c_str());
+		frameFiles.clear();
+		transpColors.clear();
+		sounds.clear();
+		for (unsigned int i = 0; i <= frameCount; ++i)
 		{
-			animFrame.push_back(file.line());
-			animTransp.push_back(_ttoi(file.line().c_str()));
-			animSound.push_back(file.line());
+			frameFiles.push_back(file.line());
+			transpColors.push_back(_ttoi(file.line().c_str()));
+			sounds.push_back(file.line());
 		}
-		animPause = atof(getAsciiString(file.line()).c_str());
+		delay = atof(getAsciiString(file.line()).c_str());
 	}
 
-	animFile = removePath(fileName);
+	frameCount = frameFiles.size();
+	filename = removePath(fileName);
 	return true;
 }
 
@@ -113,21 +113,86 @@ void tagAnimation::save(const STRING fileName) const
 	file << _T("RPGTLKIT ANIM");
 	file << short(2);
 	file << short(3);
-	file << animSizeX;
-	file << animSizeY;
+	file << pxWidth;
+	file << pxHeight;
 
-	const int frames = animFrame.size() - 1;
+	const int frames = frameFiles.size() - 1;
 	file << frames;
 	for (unsigned int i = 0; i <= frames; i++)
 	{
-		file << animFrame[i];
-		file << animTransp[i];
-		file << animSound[i];
+		file << frameFiles[i];
+		file << transpColors[i];
+		file << sounds[i];
 	}
 
-	file << animPause;
+	file << delay;
 
 }
+
+/*
+ * Load an animated gif into an ANIMATION.
+ */
+void tagAnimation::loadFromGif(const STRING file)
+{
+	extern STRING g_projectPath;
+
+	// Do not open in GIF_PLAYBACK mode - FIMD_ANIMATION will not be available.
+	FIMULTIBITMAP *mbmp = FreeImage_OpenMultiBitmap(
+		// FreeImage_GetFileType(getAsciiString(file).c_str(), 16),
+		FIF_GIF,
+		getAsciiString(file).c_str(), 
+		FALSE, TRUE, TRUE, GIF_DEFAULT
+	);
+	if (!mbmp) return;
+
+	frameCount = FreeImage_GetPageCount(mbmp);
+	if (frameCount)
+	{
+		FITAG *tag = NULL;
+		FIBITMAP *bmp = FreeImage_LockPage(mbmp, 0);
+
+		pxWidth = FreeImage_GetWidth(bmp); 
+		pxHeight = FreeImage_GetHeight(bmp);
+
+		// Extract the FrameTime tag. See FIMD_ANIMATION specification.
+		if (FreeImage_GetMetadata(FIMD_ANIMATION, bmp, getAsciiString(STRING("FrameTime")).c_str(), &tag))
+		{
+			// Frame time stored in milliseconds in tag (centiseconds in gif).
+			// ANIMATION has provision for only one frame time - use first frame's delay.
+			CONST LPLONG pFrameTime = LPLONG(FreeImage_GetTagValue(tag));
+			delay = double(*pFrameTime) / MILLISECONDS;
+		}
+
+		// Get the transparent color.
+		LONG color = TRANSP_COLOR;
+		if (FreeImage_IsTransparent(bmp) && FreeImage_HasBackgroundColor(bmp))
+		{
+			RGBQUAD bkg = {0, 0, 0, 0};
+			FreeImage_GetBackgroundColor(bmp, &bkg); 
+			color = RGB(bkg.rgbRed, bkg.rgbGreen, bkg.rgbBlue);
+		}
+		transpColors.clear();
+		transpColors.resize(frameCount, color);
+
+		/* Palettized transparency.
+		CONST LPRGBQUAD palette = FreeImage_GetPalette(bmp);
+		if (palette)
+		{ 
+			CONST BYTE *table = FreeImage_GetTransparencyTable(bmp); 
+			CONST RGBQUAD quad = palette[table[0]];
+			CONST LONG color = RGB(quad.rgbRed, quad.rgbGreen, quad.rgbBlue);
+			transpColors.resize(m_data.frameCount, color);
+		}*/
+		
+		FreeImage_UnlockPage(mbmp, bmp, FALSE);
+
+		// Pad vectors.
+		frameFiles.resize(frameCount);
+		sounds.resize(frameCount);
+	}
+	FreeImage_CloseMultiBitmap(mbmp, 0);
+}
+
 
 /*
  * Draw a picture.

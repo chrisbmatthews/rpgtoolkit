@@ -308,9 +308,9 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 		extern STRING g_projectPath;
 
 		ANIMATION anm;
-		anm.animSizeX = 32;
-		anm.animSizeY = 64;
-		anm.animPause = 0.167;
+		anm.pxWidth = 32;
+		anm.pxHeight = 64;
+		anm.delay = 0.167;
 
 		int xx = 0;
 		STRING walkFix = _T("S");
@@ -334,9 +334,9 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 			}
 			tbm.save(tbmName);
 
-			anm.animFrame.push_back(removePath(tbmName));
-			anm.animTransp.push_back(RGB(255, 255, 255));
-			anm.animSound.push_back(_T(""));
+			anm.frameFiles.push_back(removePath(tbmName));
+			anm.transpColors.push_back(RGB(255, 255, 255));
+			anm.sounds.push_back(_T(""));
 
 			if (x == 3)
 			{
@@ -367,9 +367,9 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 			}
 			if (xx++ == -1)
 			{
-				anm.animFrame.clear();
-				anm.animTransp.clear();
-				anm.animSound.clear();
+				anm.frameFiles.clear();
+				anm.transpColors.clear();
+				anm.sounds.clear();
 			}
 		} // for (x)
 
@@ -380,9 +380,9 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 
 		/* Idle frame. */
 
-		anm.animFrame.clear();
-		anm.animTransp.clear();
-		anm.animSound.clear();
+		anm.frameFiles.clear();
+		anm.transpColors.clear();
+		anm.sounds.clear();
 
 		const STRING anmName = g_projectPath + MISC_PATH + replace(removePath(fileName), _T('.'), _T('_')) + _T("_rest") + _T(".anm");
 		const STRING tbmName = g_projectPath + BMP_PATH + replace(removePath(fileName), _T('.'), _T('_')) + _T("_rest") + _T(".tbm");
@@ -395,9 +395,9 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 		}
 		tbm.save(tbmName);
 
-		anm.animFrame.push_back(removePath(tbmName));
-		anm.animTransp.push_back(RGB(255, 255, 255));
-		anm.animSound.push_back(_T(""));
+		anm.frameFiles.push_back(removePath(tbmName));
+		anm.transpColors.push_back(RGB(255, 255, 255));
+		anm.sounds.push_back(_T(""));
 		anm.save(anmName);
 
 		gfx.clear();

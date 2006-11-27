@@ -13,6 +13,7 @@
 #include "../movement/movement.h"
 #include "../rpgcode/parser/parser.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
+#include <mmsystem.h>
 
 /*
  * Defines
@@ -22,20 +23,32 @@ std::set<CSharedAnimation *> CSharedAnimation::m_anms;
 SHARED_ANIMATIONS CSharedAnimation::m_shared;
 
 /*
- * Constructor.
+ * Internal constructor.
  */
 CAnimation::CAnimation(const STRING file):
 m_users(1) 
 {
 	extern STRING g_projectPath;
 
-	freeCanvases();
-	if (!file.empty()) m_data.open(g_projectPath + MISC_PATH + file);
-
-	for (unsigned int i = 0; i <= m_data.animFrames; ++i)
+	if (!file.empty())
 	{
-		m_canvases.push_back(NULL);
+		const STRING ext = getExtension(file);
+	    
+		if (_ftcsicmp(ext.c_str(), _T("anm")) == 0)
+		{
+			m_data.open(g_projectPath + MISC_PATH + file);
+			renderFrame = renderAnmFrame;
+		}
+		else if (_ftcsicmp(ext.c_str(), _T("gif")) == 0)
+		{
+			m_data.loadFromGif(resolve(g_projectPath + MISC_PATH + file));
+			renderFrame = renderFileFrame;
+			m_data.filename = file;
+		}
 	}
+
+	freeCanvases();
+	m_canvases.resize(m_data.frameCount, NULL);
 }
 
 /* 
@@ -47,11 +60,11 @@ void CAnimation::render(void)
 	{
 		delete *i;
 		*i = new CCanvas();
-		(*i)->CreateBlank(NULL, m_data.animSizeX, m_data.animSizeY, TRUE);
+		(*i)->CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
 		
 		// Render regardless of success. If rendering
 		// fails cnv will just be transparent.
-		renderFrame(*i, i - start);
+		(this->*renderFrame)(*i, i - start);
 	}
 }
 
@@ -73,8 +86,8 @@ void CAnimation::animate(const int x, const int y)
 		if (!*i)
 		{
 			*i = new CCanvas();
-			(*i)->CreateBlank(NULL, m_data.animSizeX, m_data.animSizeY, TRUE);
-			if (!renderFrame(*i, i - start)) continue;
+			(*i)->CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
+			if (!(this->*renderFrame)(*i, i - start)) continue;
 		}
 
 		// Place on g_cnvRpgCode.
@@ -87,14 +100,16 @@ void CAnimation::animate(const int x, const int y)
 		// Play the frame's sound.
 		playFrameSound(i - start);
 
-		Sleep(DWORD(m_data.animPause * MILLISECONDS));
+		Sleep(DWORD(m_data.delay * MILLISECONDS));
 
 		// Replace g_cnvRpgCode with the original.
-		cnvScr.BltPart(g_cnvRpgCode, 
+		cnvScr.BltPart(
+			g_cnvRpgCode, 
 			x, y, 
 			x, y, 
-			m_data.animSizeX, m_data.animSizeY,
-			SRCCOPY);
+			m_data.pxWidth, m_data.pxHeight,
+			SRCCOPY
+		);
 	}
 }
 
@@ -104,16 +119,16 @@ void CAnimation::animate(const int x, const int y)
 CCanvas *CAnimation::getFrame(unsigned int frame)
 {
 	// Wrap around.
-	frame %= (m_data.animFrames + 1);
+	frame %= m_data.frameCount;
 
 	if (!m_canvases[frame])
 	{
 		m_canvases[frame] = new CCanvas();
-		m_canvases[frame]->CreateBlank(NULL, m_data.animSizeX, m_data.animSizeY, TRUE);
+		m_canvases[frame]->CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
 
 		// Render and use regardless of success. If rendering
 		// fails cnv will just be transparent.
-		renderFrame(m_canvases[frame], frame);
+		(this->*renderFrame)(m_canvases[frame], frame);
 	}
 	return m_canvases[frame];
 }
@@ -121,16 +136,16 @@ CCanvas *CAnimation::getFrame(unsigned int frame)
 /*
  * Render a particular frame to a canvas.
  */
-bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
+bool CAnimation::renderAnmFrame(CCanvas *cnv, unsigned int frame)
 {
 	extern STRING g_projectPath;
 
     cnv->ClearScreen(TRANSP_COLOR);
 
 	// Wrap around.
-    frame %= (m_data.animFrames + 1);
+    frame %= m_data.frameCount;
 
-	const STRING frameFile = m_data.animFrame[frame];
+	const STRING frameFile = m_data.frameFiles[frame];
 
     if (frameFile.empty()) return false;
 
@@ -161,7 +176,7 @@ bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
 			// Stretch the canvas and mask to an intermediate canvas.
 			CCanvas cnvInt;
 			cnvInt.CreateBlank(NULL, w, h, TRUE);
-			cnvInt.ClearScreen(m_data.animTransp[frame]);
+			cnvInt.ClearScreen(m_data.transpColors[frame]);
 
 			cnvTbm.BltStretchMask(
 				&cnvMaskTbm,
@@ -169,10 +184,10 @@ bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
 				0, 0, 
 				0, 0,
 				w, h, 
-				m_data.animSizeX, m_data.animSizeY
+				m_data.pxWidth, m_data.pxHeight
 			);
 			// Blt to the target canvas.
-			cnvInt.BltTransparent(cnv, 0, 0, m_data.animTransp[frame]);
+			cnvInt.BltTransparent(cnv, 0, 0, m_data.transpColors[frame]);
 		}
 	}
 	else
@@ -185,13 +200,13 @@ bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
 		);
 
         CCanvas cnvImg;
-		cnvImg.CreateBlank(NULL, m_data.animSizeX, m_data.animSizeY, TRUE);
+		cnvImg.CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
 		
 		CONST HDC hdc = cnvImg.OpenDC();
 		StretchDIBits(
 			hdc, 
 			0, 0, 
-			m_data.animSizeX, m_data.animSizeY, 
+			m_data.pxWidth, m_data.pxHeight, 
 			0, 0, 
 			FreeImage_GetWidth(bmp), 
 			FreeImage_GetHeight(bmp), 
@@ -208,15 +223,28 @@ bool CAnimation::renderFrame(CCanvas *cnv, unsigned int frame)
 		if (g_ambientLevel.color)
 		{
 			CCanvas cnvAl;
-			cnvAl.CreateBlank(NULL, m_data.animSizeX, m_data.animSizeY, TRUE);
+			cnvAl.CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
 			cnvAl.ClearScreen(g_ambientLevel.color);
-			cnvAl.BltAdditivePart(cnvImg.GetDXSurface(), 0, 0, 0, 0, m_data.animSizeX, m_data.animSizeY, g_ambientLevel.sgn, -1, m_data.animTransp[frame]);
+			cnvAl.BltAdditivePart(cnvImg.GetDXSurface(), 0, 0, 0, 0, m_data.pxWidth, m_data.pxHeight, g_ambientLevel.sgn, -1, m_data.transpColors[frame]);
 		}
 
-		cnvImg.BltTransparent(cnv, 0, 0, m_data.animTransp[frame]);
+		cnvImg.BltTransparent(cnv, 0, 0, m_data.transpColors[frame]);
 
     } // if (ext == TBM)
 	return true;
+}
+
+/*
+ * Play the sound associated with a frame.
+ */
+void CAnimation::playFrameSound(unsigned int frame) const
+{
+	frame %= m_data.frameCount;
+	extern STRING g_projectPath;
+	sndPlaySound(
+		(g_projectPath + MEDIA_PATH + m_data.sounds[frame]).c_str(), 
+		SND_ASYNC | SND_NODEFAULT
+	);
 }
 
 /*
@@ -380,12 +408,12 @@ bool CThreadAnimation::renderFrame(CCanvas *cnv)
 {
 	// Increment frame.
 	const LPANIMATION p = m_pAnm->data();
-	if (GetTickCount() - m_timer > p->animPause)
+	if (GetTickCount() - m_timer > p->delay)
 	{
 		m_timer = 0;
 		++m_frame;
 
-		if (!m_persist && m_frame > p->animFrames)
+		if (!m_persist && m_frame >= p->frameCount)
 		{
 			// End the animation.
 			return false;
@@ -396,3 +424,174 @@ bool CThreadAnimation::renderFrame(CCanvas *cnv)
 	m_pAnm->getFrame(m_frame)->BltTransparent(cnv, m_x, m_y, TRANSP_COLOR);
 	return true;
 }
+
+/*
+ * Two implementations: render a single frame or render all frames at once.
+ * (1) Render all frames of an animation when a particular frame is requested.
+ *	   requires only one opening of file.
+ * (0) Render each frame as it is requested.
+ *	   requires multiple openings of file - may be slow.
+ */
+#if(1)
+
+/*
+ * Render all frames of a file (not gif specific).
+ */
+bool CAnimation::renderFileFrame(CCanvas *, unsigned int)
+{
+	extern STRING g_projectPath;
+
+    if (m_data.filename.empty()) return false;
+
+	const STRING file = resolve(g_projectPath + MISC_PATH + m_data.filename);
+
+	FIMULTIBITMAP *mbmp = FreeImage_OpenMultiBitmap(
+		FreeImage_GetFileType(getAsciiString(file).c_str(), 16), 
+		getAsciiString(file).c_str(), 
+		FALSE, TRUE, TRUE
+	);
+	if (!mbmp) return false;
+
+	// Create ambient level canvas.
+	extern AMBIENT_LEVEL g_ambientLevel;
+	CCanvas cnvAl;
+	if (g_ambientLevel.color)
+	{
+		cnvAl.CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
+		cnvAl.ClearScreen(g_ambientLevel.color);
+	}
+
+	// Intermediate canvas.
+	CCanvas cnv;
+	cnv.CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
+
+	freeCanvases();
+	m_canvases.clear();
+	for (int i = 0; i != m_data.frameCount; ++i)
+	{
+		CONST HDC hdc = cnv.OpenDC();
+		FIBITMAP *bmp = FreeImage_LockPage(mbmp, i);
+
+		SetDIBitsToDevice(
+			hdc,
+			0, 0,   
+			m_data.pxWidth, m_data.pxHeight, 
+			0, 0,
+			0, FreeImage_GetHeight(bmp), 
+			FreeImage_GetBits(bmp),   
+			FreeImage_GetInfo(bmp), 
+			DIB_RGB_COLORS
+		); 
+
+		/* No need to stretch gif.
+		StretchDIBits(
+			hdc, 
+			0, 0, 
+			0, 0, 
+			FreeImage_GetWidth(bmp), 
+			FreeImage_GetHeight(bmp),
+			FreeImage_GetBits(bmp), 
+			FreeImage_GetInfo(bmp), 
+			DIB_RGB_COLORS, SRCCOPY
+		);*/
+
+		FreeImage_UnlockPage(mbmp, bmp, FALSE);
+		cnv.CloseDC(hdc);
+
+		// Apply ambient level.
+		if (g_ambientLevel.color)
+		{
+			cnvAl.BltAdditivePart(cnv.GetDXSurface(), 0, 0, 0, 0, m_data.pxWidth, m_data.pxHeight, g_ambientLevel.sgn, -1, m_data.transpColors[i]);
+		}
+
+		// Blt to the member canvas.
+		CCanvas *pCnv = new CCanvas();
+		pCnv->CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
+		pCnv->ClearScreen(TRANSP_COLOR);
+		cnv.BltTransparent(pCnv, 0, 0, m_data.transpColors[i]);
+
+		m_canvases.push_back(pCnv);
+	}
+	FreeImage_CloseMultiBitmap(mbmp, 0);
+	return true;
+}
+
+#else
+
+/*
+ * Render a particular frame to a canvas (not gif specific).
+ */
+bool CAnimation::renderFileFrame(CCanvas *cnv, unsigned int frame)
+{
+	extern STRING g_projectPath;
+
+    cnv->ClearScreen(TRANSP_COLOR);
+
+	// Wrap around.
+    frame %= m_data.frameCount;
+
+    if (m_data.filename.empty()) return false;
+
+	const STRING file = resolve(g_projectPath + MISC_PATH + m_data.filename);
+
+	FIMULTIBITMAP *mbmp = FreeImage_OpenMultiBitmap(
+		FreeImage_GetFileType(getAsciiString(file).c_str(), 16), 
+		getAsciiString(file).c_str(), 
+		FALSE, TRUE, TRUE
+	);
+	if (!mbmp) return false;
+
+    CCanvas cnvImg;
+	cnvImg.CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
+
+	const int pageCount = FreeImage_GetPageCount(mbmp);
+	if (frame < pageCount)
+	{
+		CONST HDC hdc = cnvImg.OpenDC();
+		FIBITMAP *bmp = FreeImage_LockPage(mbmp, frame);
+
+		SetDIBitsToDevice(
+			hdc,
+			0, 0,   
+			m_data.pxWidth, m_data.pxHeight, 
+			0, 0,
+			0, FreeImage_GetHeight(bmp), 
+			FreeImage_GetBits(bmp),   
+			FreeImage_GetInfo(bmp), 
+			DIB_RGB_COLORS
+		); 
+
+		/* No need to stretch gif.
+		StretchDIBits(
+			hdc, 
+			0, 0, 
+			m_data.pxWidth, m_data.pxHeight, 
+			0, 0, 
+			FreeImage_GetWidth(bmp), 
+			FreeImage_GetHeight(bmp),
+			FreeImage_GetBits(bmp), 
+			FreeImage_GetInfo(bmp), 
+			DIB_RGB_COLORS, SRCCOPY
+		);*/
+
+		FreeImage_UnlockPage(mbmp, bmp, FALSE);
+		cnvImg.CloseDC(hdc);
+	}
+	FreeImage_CloseMultiBitmap(mbmp, 0);
+
+	// Apply ambient level.
+	extern AMBIENT_LEVEL g_ambientLevel;
+	if (g_ambientLevel.color)
+	{
+		CCanvas cnvAl;
+		cnvAl.CreateBlank(NULL, m_data.pxWidth, m_data.pxHeight, TRUE);
+		cnvAl.ClearScreen(g_ambientLevel.color);
+		cnvAl.BltAdditivePart(cnvImg.GetDXSurface(), 0, 0, 0, 0, m_data.pxWidth, m_data.pxHeight, g_ambientLevel.sgn, -1, m_data.transpColors[frame]);
+	}
+
+	cnvImg.BltTransparent(cnv, 0, 0, m_data.transpColors[frame]);
+
+	return true;
+}
+
+#endif

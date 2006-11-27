@@ -2893,10 +2893,10 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int
 		if (pCnv)
 		{
 			// This is a bit dubious!
-			if ((!(anm->m_tick++ % int(80 * p->animPause))) || (*i == -1))
+			if ((!(anm->m_tick++ % int(80 * p->delay))) || (*i == -1))
 			{
 				++(*i);
-				if (*i > p->animFrames) *i = 0;
+				if (*i >= p->frameCount) *i = 0;
 				anm->m_pAnm->playFrameSound(*i);
 			}
 			if (forceTransp)
@@ -2916,7 +2916,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int f
 	{
 		LPANIMATION p = anm->m_pAnm->data();
 		CCanvas *pCnv = g_canvases.cast(canvasID);
-		if (frame > p->animFrames) frame = 0;
+		if (frame >= p->frameCount) frame = 0;
 
 		// Play sound on transitions.
 		if (frame != anm->m_frame) 
@@ -2945,31 +2945,32 @@ STDMETHODIMP CCallbacks::CBAnimationCurrentFrame(int idx, int *pRet)
 
 STDMETHODIMP CCallbacks::CBAnimationMaxFrames(int idx, int *pRet)
 {
+	// Pre-3.0.7, frameCount stored the UBound, rather than the count, hence (frameCount - 1).
 	CSharedAnimation *p = CSharedAnimation::cast(idx);
-	*pRet = (p ? p->m_pAnm->data()->animFrames : -1);
+	*pRet = (p ? p->m_pAnm->data()->frameCount - 1 : -1);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAnimationSizeX(int idx, int *pRet)
 {
 	CSharedAnimation *p = CSharedAnimation::cast(idx);
-	*pRet = (p ? p->m_pAnm->data()->animSizeX : 0);
+	*pRet = (p ? p->m_pAnm->data()->pxWidth : 0);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAnimationSizeY(int idx, int *pRet)
 {
 	CSharedAnimation *p = CSharedAnimation::cast(idx);
-	*pRet = (p ? p->m_pAnm->data()->animSizeY : 0);
+	*pRet = (p ? p->m_pAnm->data()->pxHeight : 0);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAnimationFrameImage(int idx, int frame, BSTR *pRet)
 {
 	CSharedAnimation *p = CSharedAnimation::cast(idx);
-	if (p && (p->m_pAnm->data()->animFrames >= frame))
+	if (p && (frame < p->m_pAnm->data()->frameCount))
 	{
-		BSTR bstr = getString(p->m_pAnm->data()->animFrame[frame]);
+		BSTR bstr = getString(p->m_pAnm->data()->frameFiles[frame]);
 		SysReAllocString(pRet, bstr);
 		SysFreeString(bstr);
 	}
