@@ -161,7 +161,7 @@ typedef struct tagBoardTileAnim
 	int x, y, z;
 	std::vector<int> lutIndices;	// Indices of frames in board Lut.
 
-} BOARD_TILEANIM;
+} BOARD_TILEANIM, *LPBOARD_TILEANIM;
 
 // Struct to temporarily hold locations for old items, programs.
 typedef struct tagObjPosition
@@ -272,7 +272,7 @@ typedef struct tagBoard
 private:
 	tagBoard &operator=(tagBoard &rhs);
 	tagBoard(tagBoard &rhs);
-	void addAnimTile(const STRING fileName, const int x, const int y, const int z);
+	LPBOARD_TILEANIM addAnimTile(const STRING fileName, const int x, const int y, const int z);
 	int lutIndex(const STRING tile);
 	void setSize(const int width, const int height, const int depth, const bool createTiletypeArray);
 	int tileWidth() const { return (isIsometric() ? 64 : 32); }

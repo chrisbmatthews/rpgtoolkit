@@ -161,7 +161,10 @@ vVersion:
 							{
 								if (board[z][y][x] == *j)
 								{
-									addAnimTile(tileIndex[board[z][y][x]], x, y, z);
+									LPBOARD_TILEANIM tan = addAnimTile(tileIndex[board[z][y][x]], x, y, z);
+
+									// Change the LUT index to point to a TST.
+									board[z][y][x] = tan->lutIndices[0];
 								}
 							}
 
@@ -193,7 +196,10 @@ vVersion:
 						{
 							if (board[z][y][x] == *i)
 							{
-								addAnimTile(tileIndex[board[z][y][x]], x, y, z);
+								LPBOARD_TILEANIM tan = addAnimTile(tileIndex[board[z][y][x]], x, y, z);
+
+								// Change the LUT index to point to a TST.
+								board[z][y][x] = tan->lutIndices[0];
 							}
 						}
 					}
@@ -630,7 +636,10 @@ pvVersion:
 							{
 								if (board[z][y][x] == *j)
 								{
-									addAnimTile(tileIndex[board[z][y][x]], x, y, z);
+									LPBOARD_TILEANIM tan = addAnimTile(tileIndex[board[z][y][x]], x, y, z);
+
+									// Change the LUT index to point to a TST.
+									board[z][y][x] = tan->lutIndices[0];
 								}
 							}
 
@@ -666,7 +675,10 @@ pvVersion:
 						{
 							if (board[z][y][x] == *i)
 							{
-								addAnimTile(tileIndex[board[z][y][x]], x, y, z);
+								LPBOARD_TILEANIM tan = addAnimTile(tileIndex[board[z][y][x]], x, y, z);
+
+								// Change the LUT index to point to a TST.
+								board[z][y][x] = tan->lutIndices[0];
 							}
 						}
 					}
@@ -1548,7 +1560,7 @@ void tagBoard::freeShading()
  * y (in) - y position on board
  * z (in) - z position on board
  */
-void tagBoard::addAnimTile(const STRING fileName, const int x, const int y, const int z)
+LPBOARD_TILEANIM tagBoard::addAnimTile(const STRING fileName, const int x, const int y, const int z)
 {
 	static STRING lastAnimFile;
 	static TILEANIM lastAnim;
@@ -1576,6 +1588,7 @@ void tagBoard::addAnimTile(const STRING fileName, const int x, const int y, cons
 	}
 
 	animatedTiles.push_back(anim);
+	return &animatedTiles.back();
 }
 
 /*
@@ -1739,24 +1752,26 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
 	for (; i != animatedTiles.end(); ++i)
 	{
 		TILEANIM *tan = &i->tile;
+		const int x = i->x, y = i->y, z = i->z;
+
 		if (GetTickCount() - tan->frameTime > tan->frameDelay)
 		{
 			(++tan->currentFrame) %= tan->frames.size();
 			tan->frameTime = GetTickCount();
 
 			// Change the LUT index to point to a TST.
-			board[i->z][i->y][i->x] = i->lutIndices[tan->currentFrame];
+			board[z][y][x] = i->lutIndices[tan->currentFrame];
 
 			// Pixel bounds of tile stack.
-			int x = i->x, y = i->y;
-			coords::tileToPixel(x, y, COORD_TYPE(coordType & ~PX_ABSOLUTE), false, sizeX);
+			int px = x, py = y;
+			coords::tileToPixel(px, py, COORD_TYPE(coordType & ~PX_ABSOLUTE), false, sizeX);
 			if (isIsometric())
 			{
 				// Render location.
-				x -= 32;
-				y -= 16;
+				px -= 32;
+				py -= 16;
 			}
-			RECT bounds = {x, y, x + tileWidth(), y + tileHeight()};
+			const RECT bounds = {px, py, px + tileWidth(), py + tileHeight()};
 			
 			// Draw the whole tile stack onto the scrollcache.
 			renderStack(
@@ -1764,7 +1779,7 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
 				bounds.left - scrollCache.r.left,
 				bounds.top - scrollCache.r.top,
 				1, sizeL,
-				i->x, i->y,
+				x, y,
 				bounds
 			);
 		} // if (advanced frame)
