@@ -1050,66 +1050,7 @@ void CProgram::parseFile(FILE *pFile)
 		{
 			POS unit = i - 1;
 			if (unit->udt & UDT_OBJ) continue;
-			if (unit->lit == _T("switch"))
-			{
-				POS j = unit; unsigned int dec = 1;
-				for (; j != m_units.begin(); --j, ++dec)
-				{
-					if (j->udt & UDT_LINE) break;
-				}
-				if (j == m_units.begin())
-				{
-					++dec;
-				}
-				MACHINE_UNIT mu;
-				mu.udt = UDT_ID;
-				TCHAR str[255]; _itot(nestled + 1, str, 10);
-				mu.lit = STRING(_T(" switch[")) + str + _T("]");
-				i = m_units.insert(j, mu) + 1 + dec;
-				i = m_units.erase(unit);
-				i->func = operators::assign;
-				++i;
-			}
-			else if (unit->lit == _T("case"))
-			{
-				if (((unit - 1)->udt & UDT_ID) && ((unit - 1)->lit == _T("else")))
-				{
-					unit->udt = UNIT_DATA_TYPE(UDT_FUNC | UDT_LINE);
-					unit->func = skipElse;
-					unit->params = 0;
-					i = m_units.erase(i) - 1;
-					i = m_units.erase(i - 1);
-				}
-				else
-				{
-					POS j = unit;
-					for (; j != m_units.begin(); --j)
-					{
-						if (j->udt & UDT_LINE) break;
-					}
-					if (j != m_units.begin()) --j;
-					MACHINE_FUNC func = ((j->udt & UDT_FUNC) && (j->func == operators::assign)) ? conditional : elseIf;
-					unit->udt = UDT_ID;
-					TCHAR str[255]; _itot(nestled, str, 10);
-					unit->lit = STRING(_T(" switch[")) + str + _T("]");
-					i->udt = UDT_FUNC;
-					i->func = operators::eq;
-					i->params = 2;
-					MACHINE_UNIT mu;
-					mu.udt = UNIT_DATA_TYPE(UDT_FUNC | UDT_LINE);
-					mu.func = func;
-					mu.params = 1;
-					i = m_units.insert(i + 1, mu) - 1;
-				}
-			}
-			else if (unit->lit == _T("default"))
-			{
-				unit->udt = UNIT_DATA_TYPE(UDT_FUNC | UDT_LINE);
-				unit->func = skipElse;
-				unit->params = 0;
-				i = m_units.erase(i) - 1;
-			}
-			else if (m_classes.count(unit->lit))
+			if (m_classes.count(unit->lit))
 			{
 				LPCLASS pCls = &m_classes[unit->lit];
 				LPNAMED_METHOD pCtor = pCls->locate(unit->lit, i->params - 1, (pCls == pClass) ? CV_PRIVATE : CV_PUBLIC);
@@ -1647,6 +1588,7 @@ STACK_FRAME CProgram::run()
 
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
+		//m_i->show();
 		m_i->execute(this);
 		processEvent();
 	}

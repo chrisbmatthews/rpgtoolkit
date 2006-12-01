@@ -51,8 +51,8 @@ unsigned int g_lines = 0;
 "||"			{ return LOR; }
 [oO][rR]		{ return LOR; }
 "="		{ return ASSIGN; }
-"("		{ return LPARAN; }
-")"		{ return RPARAN; }
+"("		{ return LPAREN; }
+")"		{ return RPAREN; }
 "["		{ return LARRAY; }
 "]"		{ return RARRAY; }
 "{"		{ return LCURL; }
@@ -77,6 +77,9 @@ unsigned int g_lines = 0;
 [fF][aA][lL][sS][eE]				{ yylval = 0; return NUMBER; }
 [iI][nN][cC][lL][uU][dD][eE]		{ return INCLUDE; }
 [iI][nN][lL][iI][nN][eE]			{ return INLINE; }
+[sS][wW][iI][tT][cC][hH]			{ return SWITCH; }
+[cC][aA][sS][eE]					{ return CASE; }
+[dD][eE][fF][aA][uU][lL][tT]		{ return DEFAULT; }
 
 	/* Redirects */
 [rR][eE][dD][iI][rR][eE][cC][tT]									{ return REDIRECT; }

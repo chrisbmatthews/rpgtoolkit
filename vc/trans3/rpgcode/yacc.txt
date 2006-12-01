@@ -24,9 +24,9 @@
 %token	OR_ASSIGN POW_ASSIGN XOR_ASSIGN EQ IEQ MEM
 %token	MUL ADD SUB NOT BNOT DIV MOD LS RS LTE GTE
 %token	LT GT AND POW XOR OR LAND LOR ASSIGN INC DEC
-%token	SEMICOLON IDENTIFIER NUMBER STRING LPARAN RPARAN
-%token	LARRAY RARRAY LCURL RCURL LIT FOR COMMA
-%token	QUESTION COLON METHOD RETURN HIGHEST
+%token	SEMICOLON IDENTIFIER NUMBER STRING LPAREN RPAREN
+%token	LARRAY RARRAY LCURL RCURL LIT FOR COMMA DEFAULT
+%token	QUESTION COLON METHOD RETURN HIGHEST SWITCH CASE
 %token	CLASS STRUCT PUBLIC PRIVATE VAR DOT INCLUDE
 %token	REDIRECT KILL_REDIRECT KILL_ALL_REDIRECTS INLINE
 
@@ -69,7 +69,7 @@
 %left	PREF_INC
 %left	POST_DEC
 %left	POST_INC
-%left	LPARAN RPARAN
+%left	LPAREN RPAREN
 %left	LARRAY RARRAY
 %left	HIGHEST
 
@@ -124,7 +124,7 @@ identifier:
 	var_identifier
 |	identifier LARRAY value RARRAY tdc
 		{ _MACHINE_UNIT(operators::array, 2); }
-|	LPARAN identifier RPARAN
+|	LPAREN identifier RPAREN
 |	value MEM function
 		{
 			/** MACHINE_UNIT &mu = *(CProgram::m_pyyUnits->end() - CProgram::m_pyyUnits->back().params - 2);
@@ -148,7 +148,7 @@ value:
 ;
 
 _value:
-	LPARAN _value RPARAN
+	LPAREN _value RPAREN
 |	operators
 |	NUMBER
 		{
@@ -218,7 +218,7 @@ function_identifier:
 function:
 	function_identifier
 		{ CProgram::m_params.push_back(0); }
-	LPARAN params RPARAN
+	LPAREN params RPAREN
 		{
 			MACHINE_FUNC pFunc = NULL;
 			if (CProgram::m_functions.count($1.getLit()))
@@ -405,6 +405,16 @@ line_terminator:
 							}
 							g_pClass = NULL;
 						}
+						else if ((i - 1)->func == switchFunc)
+						{
+							--g_switch;
+							g_switchFirst.pop_back();
+							/**************************************************************/
+							// Note that this leaves pointless calls to some nonexistent
+							// function switch() calls kicking around.
+							// Tbd: Do something about this.
+							/**************************************************************/
+						}
 					}
 					i->num = CProgram::m_pyyUnits->size();
 					for (; i != CProgram::m_pyyUnits->begin(); --i)
@@ -474,7 +484,7 @@ method_declarator:
 ;
 
 method:
-	method_declarator method_name LPARAN
+	method_declarator method_name LPAREN
 		{
 			g_methods.push_back(std::map<STD_NATURAL_STRING, int>());
 			g_byref = 0;
@@ -534,7 +544,7 @@ method:
 
 			g_bInline = false;
 		}
-	RPARAN
+	RPAREN
 ;
 
 for_loop_value:
@@ -555,7 +565,7 @@ for_loop_value_centre:
 ;
 
 for_loop:
-	FOR LPARAN for_loop_value
+	FOR LPAREN for_loop_value
 		{ _END_LINE; }
 	SEMICOLON for_loop_value_centre SEMICOLON
 		{
@@ -569,7 +579,7 @@ for_loop:
 			CProgram::m_pyyUnits = g_yyOldUnits;
 			_MACHINE_UNIT(CProgram::forLoop, 1);
 		}
-	RPARAN
+	RPAREN
 ;
 
 return_val:
@@ -632,16 +642,16 @@ class_members:
 inclusion:
 	INCLUDE STRING
 		{ addInclusion($2.getLit().substr(1, $2.getLit().length() - 2)); }
-|	INCLUDE LPARAN STRING RPARAN
+|	INCLUDE LPAREN STRING RPAREN
 		{ addInclusion($3.getLit().substr(1, $3.getLit().length() - 2)); }
-|	INCLUDE LPARAN value RPARAN
+|	INCLUDE LPAREN value RPAREN
 		{ _MACHINE_UNIT(CProgram::runtimeInclusion, 1); }
 ;
 
 redirection:
-	REDIRECT LPARAN function_identifier_bare COMMA function_identifier_bare RPARAN
+	REDIRECT LPAREN function_identifier_bare COMMA function_identifier_bare RPAREN
 		{ CProgram::addRedirect($3.getLit(), $5.getLit()); }
-|	REDIRECT LPARAN STRING COMMA STRING RPARAN
+|	REDIRECT LPAREN STRING COMMA STRING RPAREN
 		{
 			CProgram::addRedirect(
 				lcase($3.getLit().substr(1, $3.getLit().length() - 2)),
@@ -651,17 +661,80 @@ redirection:
 ;
 
 kill_redirection:
-	KILL_REDIRECT LPARAN function_identifier_bare RPARAN
+	KILL_REDIRECT LPAREN function_identifier_bare RPAREN
 		{ CProgram::removeRedirect($3.getLit()); }
-|	KILL_REDIRECT LPARAN STRING RPARAN
+|	KILL_REDIRECT LPAREN STRING RPAREN
 		{ CProgram::removeRedirect(lcase($3.getLit().substr(1, $3.getLit().length() - 2))); }
 ;
 
 clear_redirections:
 	KILL_ALL_REDIRECTS
 		{ CProgram::clearRedirects(); }
-|	KILL_ALL_REDIRECTS LPARAN RPARAN
+|	KILL_ALL_REDIRECTS LPAREN RPAREN
 		{ CProgram::clearRedirects(); }
+;
+
+switch_construct:
+	SWITCH LPAREN
+		{
+			MACHINE_UNIT mu;
+			++g_switch;
+			getSwitchIdentifier(mu);
+			CProgram::m_pyyUnits->push_back(mu);
+			g_switchFirst.push_back(false);
+		}
+	value
+		{
+			_MACHINE_UNIT(operators::assign, 2);
+
+			// For reference purposes later.
+			_MACHINE_UNIT(switchFunc, 0);
+		}
+	RPAREN
+;
+
+_switch_case:
+	CASE value
+|	CASE value COLON
+;
+
+switch_default:
+	DEFAULT
+|	DEFAULT COLON
+;
+
+switch_case:
+	_switch_case
+		{
+			MACHINE_UNIT &prevMu = CProgram::m_pyyUnits->back();
+			if ((prevMu.udt & UDT_ID) && (lcase(prevMu.lit) == _T("else")))
+			{
+				prevMu.udt = UDT_FUNC;
+				prevMu.func = CProgram::skipElse;
+				prevMu.params = 0;
+			}
+			else
+			{
+				MACHINE_UNIT mu;
+				getSwitchIdentifier(mu);
+				CProgram::m_pyyUnits->push_back(mu);
+				_MACHINE_UNIT(operators::eq, 2);
+
+				if (g_switchFirst.back())
+				{
+					_MACHINE_UNIT(CProgram::elseIf, 1);
+				}
+				else
+				{
+					*(g_switchFirst.end() - 1) = true;
+					_MACHINE_UNIT(CProgram::conditional, 1);
+				}
+			}
+		}
+|	switch_default
+		{
+			_MACHINE_UNIT(CProgram::skipElse, 0);
+		}
 ;
 
 statement:
@@ -688,6 +761,8 @@ statement:
 |	kill_redirection
 |	clear_redirections
 |	for_loop
+|	switch_construct
+|	switch_case
 |	value
 ;
 
@@ -712,6 +787,28 @@ unsigned int g_byref;
 std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass = NULL;
 CLASS_VISIBILITY g_vis = CV_PRIVATE;
 bool g_bInline = false;
+std::deque<bool> g_switchFirst;
+unsigned int g_switch = 0;
+
+void switchFunc(CALL_DATA &)
+{
+	// Only for addressing purposes.
+}
+
+// Create a unit for the current switch block variable.
+/*****************************************************/
+// Note: This variable is not really too unique.
+// Problems could hypothetically arise if a 'case'
+// structure calls a function that was included and
+// itself contains a switch block.
+/*****************************************************/
+void getSwitchIdentifier(MACHINE_UNIT &mu)
+{
+	mu.udt = UDT_ID;
+	STRINGSTREAM ss;
+	ss << "-switch" << g_switch;
+	mu.lit = ss.str();
+}
 
 // Include a file, but don't allow the same file to be included twice.
 inline void addInclusion(const STD_NATURAL_STRING file)
