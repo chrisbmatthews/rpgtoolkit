@@ -34,12 +34,14 @@ std::set<CSharedAnimation *> CSharedAnimation::m_anms;
 SHARED_ANIMATIONS CSharedAnimation::m_shared;
 
 /*
- * Internal constructor.
+ * Constructor.
  */
 CAnimation::CAnimation(const STRING file):
 m_users(1) 
 {
 	extern STRING g_projectPath;
+
+	renderFrame = renderAnmFrame;
 
 	if (!file.empty())
 	{
@@ -48,7 +50,6 @@ m_users(1)
 		if (_ftcsicmp(ext.c_str(), _T("anm")) == 0)
 		{
 			m_data.open(g_projectPath + MISC_PATH + file);
-			renderFrame = renderAnmFrame;
 		}
 		else if (_ftcsicmp(ext.c_str(), _T("gif")) == 0)
 		{
@@ -68,6 +69,7 @@ m_users(1)
 void CAnimation::render(void)
 {
 	std::vector<CCanvas *>::iterator i = m_canvases.begin(), start = i;
+	for (; i != m_canvases.end(); ++i)
 	{
 		delete *i;
 		*i = new CCanvas();
@@ -85,7 +87,6 @@ void CAnimation::render(void)
 void CAnimation::animate(const int x, const int y)
 {
 	extern CCanvas *g_cnvRpgCode;
-	extern STRING g_projectPath;
 	extern void processEvent();
 
 	// Copy the screen.
