@@ -1,66 +1,66 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmCharacterGraphics 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Character Sprite List"
-   ClientHeight    =   5355
+   ClientHeight    =   6420
    ClientLeft      =   480
    ClientTop       =   1275
-   ClientWidth     =   8775
+   ClientWidth     =   10260
    Icon            =   "frmCharacterGraphics.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   5355
-   ScaleWidth      =   8775
+   ScaleHeight     =   6420
+   ScaleWidth      =   10260
    StartUpPosition =   2  'CenterScreen
    Tag             =   "1236"
    Begin VB.CommandButton cmdDefault 
       Caption         =   "OK"
       Height          =   375
-      Left            =   7440
-      TabIndex        =   23
-      Top             =   4920
-      Width           =   1215
+      Left            =   8160
+      TabIndex        =   24
+      Top             =   5760
+      Width           =   1455
    End
    Begin VB.PictureBox picHolder 
       BorderStyle     =   0  'None
-      Height          =   5175
+      Height          =   6135
       Index           =   0
       Left            =   120
-      ScaleHeight     =   5175
-      ScaleWidth      =   8655
+      ScaleHeight     =   6135
+      ScaleWidth      =   9975
       TabIndex        =   0
       Top             =   120
-      Width           =   8655
+      Width           =   9975
       Begin VB.CommandButton cmdWizard 
          Caption         =   "Wizard..."
          Height          =   375
-         Left            =   6120
-         TabIndex        =   39
-         Top             =   4800
-         Width           =   1215
+         Left            =   8040
+         TabIndex        =   23
+         Top             =   5160
+         Width           =   1455
       End
       Begin VB.Frame fra 
          Caption         =   "Miscellaneous"
          Height          =   2055
          Index           =   1
-         Left            =   6120
-         TabIndex        =   18
-         Top             =   2640
+         Left            =   7560
+         TabIndex        =   32
+         Top             =   2880
          Width           =   2415
          Begin VB.TextBox txtIdleTime 
             Height          =   285
-            Left            =   1680
-            TabIndex        =   20
-            Top             =   360
+            Left            =   1560
+            TabIndex        =   21
+            Top             =   480
             Width           =   615
          End
          Begin VB.TextBox txtFrameTime 
             Height          =   285
-            Left            =   1680
-            TabIndex        =   19
-            Top             =   1080
+            Left            =   1560
+            TabIndex        =   22
+            Top             =   1320
             Width           =   615
          End
          Begin VB.Label lbl 
@@ -69,8 +69,8 @@ Begin VB.Form frmCharacterGraphics
             Height          =   615
             Index           =   0
             Left            =   120
-            TabIndex        =   22
-            Top             =   360
+            TabIndex        =   34
+            Top             =   480
             Width           =   1335
          End
          Begin VB.Label lbl 
@@ -79,27 +79,27 @@ Begin VB.Form frmCharacterGraphics
             Height          =   495
             Index           =   1
             Left            =   120
-            TabIndex        =   21
-            Top             =   1080
-            Width           =   1455
+            TabIndex        =   33
+            Top             =   1320
+            Width           =   1335
          End
       End
       Begin VB.Frame fra 
          Caption         =   "Vector base"
-         Height          =   2535
+         Height          =   3255
          Index           =   2
-         Left            =   3120
-         TabIndex        =   12
-         Top             =   2640
-         Width           =   2895
+         Left            =   4320
+         TabIndex        =   30
+         Top             =   2880
+         Width           =   3015
          Begin VB.PictureBox picHolder 
             BorderStyle     =   0  'None
-            Height          =   495
+            Height          =   615
             Index           =   5
             Left            =   240
-            ScaleHeight     =   495
+            ScaleHeight     =   615
             ScaleWidth      =   1215
-            TabIndex        =   36
+            TabIndex        =   39
             Top             =   240
             Width           =   1215
             Begin VB.OptionButton optCoord 
@@ -107,7 +107,7 @@ Begin VB.Form frmCharacterGraphics
                Height          =   255
                Index           =   0
                Left            =   0
-               TabIndex        =   38
+               TabIndex        =   11
                ToolTipText     =   "Display standard 2D base point (bottom-centre of sprite)"
                Top             =   0
                Value           =   -1  'True
@@ -118,31 +118,31 @@ Begin VB.Form frmCharacterGraphics
                Height          =   255
                Index           =   1
                Left            =   0
-               TabIndex        =   37
+               TabIndex        =   12
                ToolTipText     =   "Display isometric base point (bottom-centre + 8 pixels)"
-               Top             =   240
+               Top             =   360
                Width           =   1095
             End
          End
          Begin VB.PictureBox picColor 
             AutoRedraw      =   -1  'True
             Height          =   375
-            Left            =   120
+            Left            =   240
             ScaleHeight     =   315
             ScaleWidth      =   315
-            TabIndex        =   35
+            TabIndex        =   17
             ToolTipText     =   "Vector display color (for this window)"
-            Top             =   2040
+            Top             =   1800
             Width           =   375
          End
          Begin VB.PictureBox picHolder 
             BorderStyle     =   0  'None
-            Height          =   495
+            Height          =   615
             Index           =   2
             Left            =   1560
-            ScaleHeight     =   495
+            ScaleHeight     =   615
             ScaleWidth      =   1215
-            TabIndex        =   25
+            TabIndex        =   35
             Top             =   240
             Width           =   1215
             Begin VB.OptionButton optType 
@@ -150,9 +150,9 @@ Begin VB.Form frmCharacterGraphics
                Height          =   255
                Index           =   1
                Left            =   0
-               TabIndex        =   27
+               TabIndex        =   14
                ToolTipText     =   "View sprite activation vector"
-               Top             =   240
+               Top             =   360
                Width           =   1095
             End
             Begin VB.OptionButton optType 
@@ -160,7 +160,7 @@ Begin VB.Form frmCharacterGraphics
                Height          =   255
                Index           =   0
                Left            =   0
-               TabIndex        =   26
+               TabIndex        =   13
                ToolTipText     =   "View collision vector"
                Top             =   0
                Value           =   -1  'True
@@ -168,70 +168,67 @@ Begin VB.Form frmCharacterGraphics
             End
          End
          Begin VB.CheckBox chkEdit 
-            Caption         =   "Dw"
             Height          =   375
             Index           =   0
-            Left            =   120
+            Left            =   240
+            Picture         =   "frmCharacterGraphics.frx":0CCA
             Style           =   1  'Graphical
-            TabIndex        =   17
+            TabIndex        =   15
             ToolTipText     =   "Draw vector points"
-            Top             =   840
+            Top             =   1080
             Width           =   375
          End
          Begin VB.CheckBox chkEdit 
-            Caption         =   "Ed"
             Height          =   375
             Index           =   1
-            Left            =   120
+            Left            =   240
+            Picture         =   "frmCharacterGraphics.frx":1594
             Style           =   1  'Graphical
             TabIndex        =   16
             ToolTipText     =   "Edit vector points"
-            Top             =   1200
+            Top             =   1440
             Width           =   375
          End
          Begin VB.PictureBox picHolder 
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
             BorderStyle     =   0  'None
-            ForeColor       =   &H80000008&
-            Height          =   375
+            Height          =   735
             Index           =   3
             Left            =   600
-            ScaleHeight     =   375
-            ScaleWidth      =   2175
-            TabIndex        =   13
-            Top             =   2040
-            Width           =   2175
+            ScaleHeight     =   735
+            ScaleWidth      =   1815
+            TabIndex        =   31
+            Top             =   2400
+            Width           =   1815
             Begin VB.CommandButton cmdVectorDefault 
-               Caption         =   "Collision"
+               Caption         =   "Default Collision"
                Height          =   375
                Index           =   0
-               Left            =   0
-               TabIndex        =   15
+               Left            =   240
+               TabIndex        =   19
                ToolTipText     =   "Default collision vector / activation vector for automatic activation (""step-on"")"
                Top             =   0
-               Width           =   1095
+               Width           =   1455
             End
             Begin VB.CommandButton cmdVectorDefault 
-               Caption         =   "Interaction"
+               Caption         =   "Default Interaction"
                Height          =   375
                Index           =   1
-               Left            =   1080
-               TabIndex        =   14
+               Left            =   240
+               TabIndex        =   20
                ToolTipText     =   "Default interaction vector for key-press activation"
-               Top             =   0
-               Width           =   1095
+               Top             =   360
+               Width           =   1455
             End
          End
          Begin MSComctlLib.ListView lvVector 
-            Height          =   1095
+            Height          =   1335
             Left            =   840
-            TabIndex        =   24
+            TabIndex        =   18
             ToolTipText     =   "Current vector points"
-            Top             =   840
+            Top             =   960
             Width           =   1935
             _ExtentX        =   3413
-            _ExtentY        =   1931
+            _ExtentY        =   2355
             View            =   3
             LabelEdit       =   1
             LabelWrap       =   -1  'True
@@ -261,33 +258,33 @@ Begin VB.Form frmCharacterGraphics
       End
       Begin VB.Frame fra 
          Caption         =   "Preview"
-         Height          =   2535
+         Height          =   3255
          Index           =   3
          Left            =   0
-         TabIndex        =   9
-         Top             =   2640
-         Width           =   3015
+         TabIndex        =   28
+         Top             =   2880
+         Width           =   4095
          Begin VB.PictureBox picPreviewHolder 
             AutoRedraw      =   -1  'True
-            Height          =   2175
+            Height          =   2895
             Left            =   600
-            ScaleHeight     =   141
+            ScaleHeight     =   189
             ScaleMode       =   3  'Pixel
-            ScaleWidth      =   149
-            TabIndex        =   33
+            ScaleWidth      =   189
+            TabIndex        =   38
             Top             =   240
-            Width           =   2295
+            Width           =   2895
             Begin VB.PictureBox picPreview 
                AutoRedraw      =   -1  'True
                BorderStyle     =   0  'None
-               Height          =   2175
-               Left            =   0
-               ScaleHeight     =   145
+               Height          =   2775
+               Left            =   120
+               ScaleHeight     =   185
                ScaleMode       =   3  'Pixel
-               ScaleWidth      =   153
-               TabIndex        =   34
+               ScaleWidth      =   177
+               TabIndex        =   10
                Top             =   0
-               Width           =   2295
+               Width           =   2655
             End
          End
          Begin VB.PictureBox picHolder 
@@ -297,14 +294,14 @@ Begin VB.Form frmCharacterGraphics
             Left            =   120
             ScaleHeight     =   615
             ScaleWidth      =   375
-            TabIndex        =   10
+            TabIndex        =   29
             Top             =   240
             Width           =   375
             Begin VB.CommandButton cmdAnimate 
                Caption         =   ">"
                Height          =   375
                Left            =   0
-               TabIndex        =   11
+               TabIndex        =   9
                ToolTipText     =   "Preview animation"
                Top             =   0
                Width           =   375
@@ -313,91 +310,91 @@ Begin VB.Form frmCharacterGraphics
       End
       Begin VB.Frame fra 
          Caption         =   "Animation"
-         Height          =   2535
+         Height          =   2775
          Index           =   0
-         Left            =   5640
-         TabIndex        =   2
+         Left            =   6240
+         TabIndex        =   25
          Top             =   0
-         Width           =   2895
+         Width           =   3735
          Begin VB.PictureBox picHolder 
             BorderStyle     =   0  'None
-            Height          =   2220
+            Height          =   2460
             Index           =   1
             Left            =   120
-            ScaleHeight     =   2220
-            ScaleWidth      =   2655
-            TabIndex        =   3
+            ScaleHeight     =   2460
+            ScaleWidth      =   3495
+            TabIndex        =   26
             Top             =   240
-            Width           =   2655
+            Width           =   3495
             Begin VB.TextBox txtCustomHandle 
                Height          =   285
                Left            =   0
-               TabIndex        =   30
-               Top             =   1440
-               Width           =   2055
-            End
-            Begin VB.CommandButton cmdBrowse 
-               Caption         =   "..."
-               Height          =   255
-               Index           =   1
-               Left            =   2160
-               TabIndex        =   29
-               ToolTipText     =   "Browse for animation file"
-               Top             =   840
-               Width           =   495
-            End
-            Begin VB.TextBox txtFilename 
-               Height          =   285
-               Index           =   1
-               Left            =   0
-               TabIndex        =   28
-               Top             =   840
-               Width           =   2055
-            End
-            Begin VB.CommandButton cmdBrowse 
-               Caption         =   "..."
-               Height          =   255
-               Index           =   0
-               Left            =   2160
-               TabIndex        =   7
-               ToolTipText     =   "Browse for animation file"
-               Top             =   240
-               Width           =   495
-            End
-            Begin VB.TextBox txtFilename 
-               Height          =   285
-               Index           =   0
-               Left            =   0
                TabIndex        =   6
-               Top             =   240
-               Width           =   2055
+               Top             =   1560
+               Width           =   2775
             End
-            Begin VB.CommandButton cmdCustomDelete 
-               Caption         =   "Delete"
-               Enabled         =   0   'False
-               Height          =   375
-               Left            =   1027
+            Begin VB.CommandButton cmdBrowse 
+               Caption         =   "..."
+               Height          =   255
+               Index           =   1
+               Left            =   2880
                TabIndex        =   5
-               ToolTipText     =   "Delete selected custom animation"
-               Top             =   1800
-               Width           =   1028
+               ToolTipText     =   "Browse for animation file"
+               Top             =   840
+               Width           =   495
             End
-            Begin VB.CommandButton cmdCustomNew 
-               Caption         =   "New..."
-               Height          =   375
+            Begin VB.TextBox txtFilename 
+               Height          =   285
+               Index           =   1
                Left            =   0
                TabIndex        =   4
+               Top             =   840
+               Width           =   2775
+            End
+            Begin VB.CommandButton cmdBrowse 
+               Caption         =   "..."
+               Height          =   255
+               Index           =   0
+               Left            =   2880
+               TabIndex        =   3
+               ToolTipText     =   "Browse for animation file"
+               Top             =   240
+               Width           =   495
+            End
+            Begin VB.TextBox txtFilename 
+               Height          =   285
+               Index           =   0
+               Left            =   0
+               TabIndex        =   2
+               Top             =   240
+               Width           =   2775
+            End
+            Begin VB.CommandButton cmdCustomDelete 
+               Caption         =   "Delete Custom"
+               Enabled         =   0   'False
+               Height          =   375
+               Left            =   1440
+               TabIndex        =   8
+               ToolTipText     =   "Delete selected custom animation"
+               Top             =   1920
+               Width           =   1395
+            End
+            Begin VB.CommandButton cmdCustomNew 
+               Caption         =   "New Custom..."
+               Height          =   375
+               Left            =   0
+               TabIndex        =   7
                ToolTipText     =   "Add custom animation"
-               Top             =   1800
-               Width           =   1027
+               Top             =   1920
+               Width           =   1395
             End
             Begin VB.Label lbl 
                Caption         =   "Custom animation handle"
                Height          =   255
                Index           =   5
                Left            =   0
-               TabIndex        =   32
-               Top             =   1200
+               TabIndex        =   37
+               Top             =   1320
                Width           =   1815
             End
             Begin VB.Label lbl 
@@ -405,7 +402,7 @@ Begin VB.Form frmCharacterGraphics
                Height          =   255
                Index           =   4
                Left            =   0
-               TabIndex        =   31
+               TabIndex        =   36
                Top             =   600
                Width           =   1815
             End
@@ -414,20 +411,20 @@ Begin VB.Form frmCharacterGraphics
                Height          =   255
                Index           =   3
                Left            =   0
-               TabIndex        =   8
+               TabIndex        =   27
                Top             =   0
                Width           =   1815
             End
          End
       End
       Begin MSComctlLib.ListView lvAnimations 
-         Height          =   2415
+         Height          =   2655
          Left            =   0
          TabIndex        =   1
          Top             =   120
-         Width           =   5535
-         _ExtentX        =   9763
-         _ExtentY        =   4260
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   4683
          View            =   3
          LabelEdit       =   1
          LabelWrap       =   -1  'True
@@ -441,17 +438,17 @@ Begin VB.Form frmCharacterGraphics
          NumItems        =   3
          BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
             Text            =   "Animation"
-            Object.Width           =   2717
+            Object.Width           =   2716
          EndProperty
          BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
             SubItemIndex    =   1
             Text            =   "Walking / default"
-            Object.Width           =   3254
+            Object.Width           =   3704
          EndProperty
          BeginProperty ColumnHeader(3) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
             SubItemIndex    =   2
             Text            =   "Idle (directional only)"
-            Object.Width           =   3254
+            Object.Width           =   3704
          EndProperty
       End
    End
@@ -472,18 +469,23 @@ Option Explicit
 Private m_viewIdles As Boolean
 Private m_vector As CVector
 Private m_vectorColor As Long
-Private m_baseColor As Long
 Private m_editing As Boolean
 Private m_base As POINTAPI
 Private m_drag As POINTAPI
+Private m_filetype As ANM_TYPE
 
 Private Const BATTLE_OFFSET = 9                 'ListView is Base 1
 Private Const CUSTOM_OFFSET = 14
 
+Private Enum ANM_TYPE
+    ANM_TK
+    ANM_GIF
+End Enum
+
 '========================================================================
 ' Vector check buttons
 '========================================================================
-Private Sub chkEdit_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub chkEdit_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     If chkEdit(Index).value Then chkEdit(Abs(Index - 1)).value = 0
 End Sub
 
@@ -495,6 +497,12 @@ Private Sub cmdAnimate_Click(): On Error Resume Next
     'Open the animation
     Dim anmFile As String
     anmFile = getAnim()
+    
+    'No support to animate gif.
+    If m_filetype = ANM_GIF Then
+        MsgBox "Preview not available for animated gifs", vbInformation
+        Exit Sub
+    End If
     
     If LenB(anmFile) And fileExists(projectPath & miscPath & anmFile) Then
     
@@ -514,9 +522,9 @@ Private Sub cmdAnimate_Click(): On Error Resume Next
             animationHost.repeats = 3
             Call animationHost.Show(vbModal)
         Else
-            Dim X As Long, Y As Long
-            X = (picPreview.width - anm.animSizeX) / 2
-            Y = (picPreview.Height - anm.animSizeY) / 2
+            Dim x As Long, y As Long
+            x = (picPreview.width - anm.animSizeX) / 2
+            y = (picPreview.Height - anm.animSizeY) / 2
             
             cmdAnimate.Enabled = False
             
@@ -524,15 +532,17 @@ Private Sub cmdAnimate_Click(): On Error Resume Next
             For i = 0 To 2
                 For j = 0 To animGetMaxFrame(anm)
                     picPreview.Cls
-                    Call AnimDrawFrame(anm, j, X, Y, picPreview.hdc)
+                    Call AnimDrawFrame(anm, j, x, y, picPreview.hdc)
                     Call animDelay(anm.animPause)
                      
-                    picPreview.Line (m_base.X - 16, m_base.Y)-(m_base.X + 16, m_base.Y), m_baseColor
-                    picPreview.Line (m_base.X, m_base.Y - 16)-(m_base.X, m_base.Y + 16), m_baseColor
+                    picPreview.DrawStyle = vbDot
+                    picPreview.Line (m_base.x - 16, m_base.y)-(m_base.x + 16, m_base.y), m_vectorColor
+                    picPreview.Line (m_base.x, m_base.y - 16)-(m_base.x, m_base.y + 16), m_vectorColor
+                    picPreview.DrawStyle = vbSolid
                     
                     'Hijack some board editor code.
-                    ed.topX = -m_base.X
-                    ed.topY = -m_base.Y
+                    ed.topX = -m_base.x
+                    ed.topY = -m_base.y
                     Call m_vector.draw(picPreview, ed, m_vectorColor, False)
                     
                     picPreview.Refresh
@@ -548,7 +558,7 @@ Private Sub cmdAnimate_Click(): On Error Resume Next
 End Sub
 
 '========================================================================
-' Browse buttons
+' Browse button.
 '========================================================================
 Private Sub cmdBrowse_Click(Index As Integer): On Error Resume Next
 
@@ -559,12 +569,13 @@ Private Sub cmdBrowse_Click(Index As Integer): On Error Resume Next
         projectPath & miscPath, _
         "Select Animation", _
         "anm", _
-        "RPG Toolkit Animation (*.anm)|*.anm|All files(*.*)|*.*", _
+        "Supported Formats|*.anm;*.gif|RPG Toolkit Animation (*.anm)|*.anm|Graphics Interchange Format (*.gif)|*.gif|All files(*.*)|*.*", _
         returnPath _
     ) Then
         'Setting the textbox calls the Change() event.
-        txtFilename(Index).text = returnPath
+        txtFilename(Index).Text = returnPath
     End If
+    
 End Sub
 
 '========================================================================
@@ -634,40 +645,41 @@ Private Sub cmdWizard_Click(): On Error Resume Next
     
     With playerList(activePlayerIndex).theData
         'Walking animations.
-        Dim commonPath As String
-        commonPath = InputBox( _
+        Dim template As String
+        template = InputBox( _
             "This wizard adds the default animations of the sprite on the basis they share common " & _
-            "text in their filenames. A partial filename is supplied by the user and completed with " & _
-            "directional strings (e.g., ""start_"" + ""s.anm"")." & vbCrLf & vbCrLf & _
-            "Please enter the partial filename (including any subfolders) common to all walking animations:", _
-            "Player Animation Wizard" _
+            "text in their filenames. A filename template containing an asterisk (*) is supplied by " & _
+            "the user and the wizard substitutes directional characters for the asterisk " & _
+            "(e.g., ""start_*.anm"" becomes ""start_s.anm"")." & vbCrLf & vbCrLf & _
+            "Please enter the filename template (including any subfolders) common to all walking animations:", _
+            "Sprite Animation Wizard" _
         )
-        If LenB(commonPath) = 0 Then Exit Sub
+        If LenB(template) = 0 Then Exit Sub
         
-        .gfx(PLYR_WALK_S) = commonPath & "s.anm"
-        .gfx(PLYR_WALK_N) = commonPath & "n.anm"
-        .gfx(PLYR_WALK_E) = commonPath & "e.anm"
-        .gfx(PLYR_WALK_W) = commonPath & "w.anm"
-        .gfx(PLYR_WALK_NW) = commonPath & "nw.anm"
-        .gfx(PLYR_WALK_NE) = commonPath & "ne.anm"
-        .gfx(PLYR_WALK_SW) = commonPath & "sw.anm"
-        .gfx(PLYR_WALK_SE) = commonPath & "se.anm"
+        .gfx(PLYR_WALK_S) = replace(template, "*", "s")
+        .gfx(PLYR_WALK_N) = replace(template, "*", "n")
+        .gfx(PLYR_WALK_E) = replace(template, "*", "e")
+        .gfx(PLYR_WALK_W) = replace(template, "*", "w")
+        .gfx(PLYR_WALK_NW) = replace(template, "*", "nw")
+        .gfx(PLYR_WALK_NE) = replace(template, "*", "ne")
+        .gfx(PLYR_WALK_SW) = replace(template, "*", "sw")
+        .gfx(PLYR_WALK_SE) = replace(template, "*", "se")
         
         'Idle animations.
-        commonPath = InputBox( _
-            "Please enter the partial filename (and any subfolders) common to all idle animations:", _
-            "Player Animation Wizard" _
+        template = InputBox( _
+            "Please enter the filename template (and any subfolders) common to all idle animations:", _
+            "Sprite Animation Wizard" _
         )
-        If LenB(commonPath) Then
+        If LenB(template) Then
         
-            .standingGfx(PLYR_WALK_S) = commonPath & "s.anm"
-            .standingGfx(PLYR_WALK_N) = commonPath & "n.anm"
-            .standingGfx(PLYR_WALK_E) = commonPath & "e.anm"
-            .standingGfx(PLYR_WALK_W) = commonPath & "w.anm"
-            .standingGfx(PLYR_WALK_NW) = commonPath & "nw.anm"
-            .standingGfx(PLYR_WALK_NE) = commonPath & "ne.anm"
-            .standingGfx(PLYR_WALK_SW) = commonPath & "sw.anm"
-            .standingGfx(PLYR_WALK_SE) = commonPath & "se.anm"
+            .standingGfx(PLYR_WALK_S) = replace(template, "*", "s")
+            .standingGfx(PLYR_WALK_N) = replace(template, "*", "n")
+            .standingGfx(PLYR_WALK_E) = replace(template, "*", "e")
+            .standingGfx(PLYR_WALK_W) = replace(template, "*", "w")
+            .standingGfx(PLYR_WALK_NW) = replace(template, "*", "nw")
+            .standingGfx(PLYR_WALK_NE) = replace(template, "*", "ne")
+            .standingGfx(PLYR_WALK_SW) = replace(template, "*", "sw")
+            .standingGfx(PLYR_WALK_SE) = replace(template, "*", "se")
         
         End If
     End With
@@ -704,7 +716,6 @@ End Sub
 Private Sub Form_Load(): On Error Resume Next
     
     m_vectorColor = RGB(255, 255, 255)
-    m_baseColor = RGB(255, 255, 0)
     m_editing = False
     
     picColor.backColor = m_vectorColor
@@ -726,6 +737,9 @@ Private Function getAnim() As String: On Error Resume Next
     Else
         getAnim = lvAnimations.SelectedItem.SubItems(1)
     End If
+    
+    m_filetype = ANM_TK
+    If LCase$(GetExt(getAnim)) = "gif" Then m_filetype = ANM_GIF
 
 End Function
 
@@ -734,7 +748,8 @@ End Function
 '========================================================================
 Private Sub setAnimation(): On Error Resume Next
     
-    Dim anmFile As String, X As Long, Y As Long
+    Dim anmFile As String, x As Long, y As Long, cnv As Long
+
     anmFile = getAnim()
     
     Call picPreview.Cls
@@ -742,37 +757,55 @@ Private Sub setAnimation(): On Error Resume Next
         
         'Open the animation
         Dim anm As TKAnimation
-        Call openAnimation(projectPath & miscPath & anmFile, anm)
+        
+        Select Case m_filetype
+            Case ANM_TK
+                Call openAnimation(projectPath & miscPath & anmFile, anm)
+            Case ANM_GIF
+                cnv = createCanvas(1, 1)
+                Call canvasLoadFullPicture(cnv, projectPath & miscPath & anmFile, -1, -1)
+                anm.animSizeX = getCanvasWidth(cnv)
+                anm.animSizeY = getCanvasHeight(cnv)
+        End Select
         
         If anm.animSizeX > picPreview.width Or anm.animSizeY > picPreview.Height Then
-            X = (picPreview.width - anm.animSizeX) / 2
-            Y = picPreview.Height - anm.animSizeY - 48
+            x = (picPreview.width - anm.animSizeX) / 2
+            y = picPreview.Height - anm.animSizeY - 48
         Else
-            X = (picPreview.width - anm.animSizeX) / 2
-            Y = (picPreview.Height - anm.animSizeY) / 2
+            x = (picPreview.width - anm.animSizeX) / 2
+            y = (picPreview.Height - anm.animSizeY) / 2
         End If
         
         'Draw it
-        Call AnimDrawFrame(anm, 0, X, Y, picPreview.hdc, False)
+        Select Case m_filetype
+            Case ANM_TK
+                Call AnimDrawFrame(anm, 0, x, y, picPreview.hdc, False)
+            Case ANM_GIF
+                Call canvasBlt(cnv, x, y, picPreview.hdc)
+                Call destroyCanvas(cnv)
+        End Select
+        
         Call picPreview.Refresh
     Else
         Exit Sub
     End If
     
     'Draw a cross to signify the base point.
-    m_base.X = X + anm.animSizeX / 2
-    m_base.Y = Y + anm.animSizeY
+    m_base.x = x + anm.animSizeX / 2
+    m_base.y = y + anm.animSizeY
     
     'Isometric sprites are offset down by 8 pixels in trans3.
-    If optCoord(1).value Then m_base.Y = m_base.Y - 8
+    If optCoord(1).value Then m_base.y = m_base.y - 8
     
-    picPreview.Line (m_base.X - 16, m_base.Y)-(m_base.X + 16, m_base.Y), m_baseColor
-    picPreview.Line (m_base.X, m_base.Y - 16)-(m_base.X, m_base.Y + 16), m_baseColor
+    picPreview.DrawStyle = vbDot
+    picPreview.Line (m_base.x - 16, m_base.y)-(m_base.x + 16, m_base.y), m_vectorColor
+    picPreview.Line (m_base.x, m_base.y - 16)-(m_base.x, m_base.y + 16), m_vectorColor
+    picPreview.DrawStyle = vbSolid
     
     'Hijack some board editor code.
     Dim ed As New CBoardEditor
-    ed.topX = -m_base.X
-    ed.topY = -m_base.Y
+    ed.topX = -m_base.x
+    ed.topY = -m_base.y
     Call m_vector.draw(picPreview, ed, m_vectorColor, False)
         
 End Sub
@@ -810,7 +843,7 @@ End Sub
 '========================================================================
 ' Vector editing - draw or edit
 '========================================================================
-Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     If chkEdit(0).value Then
         'Drawing
         If Button = vbLeftButton Then
@@ -822,8 +855,8 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, X As Singl
                 m_vector.bClosed = False
             End If
             
-            Call m_vector.setPoint(m_vector.getPoints, X - m_base.X, Y - m_base.Y, False)
-            Call m_vector.addPoint(X - m_base.X + 1, Y - m_base.Y + 1)
+            Call m_vector.setPoint(m_vector.getPoints, x - m_base.x, y - m_base.y, False)
+            Call m_vector.addPoint(x - m_base.x + 1, y - m_base.y + 1)
         Else
             Call enableAll
             chkEdit(0).value = 0
@@ -842,12 +875,12 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, X As Singl
         Call m_vector.setSelection(sel)
             
         'Mouse-down = drag nearest point.
-        Call m_vector.nearestPoint(X - m_base.X, Y - m_base.Y, pt.X, pt.Y, distance)
+        Call m_vector.nearestPoint(x - m_base.x, y - m_base.y, pt.x, pt.y, distance)
         If distance >= 0 Then
             'A point was found.
-            m_drag.X = X
-            m_drag.Y = Y
-            Call sel.assign(pt.X, pt.Y, pt.X, pt.Y)
+            m_drag.x = x
+            m_drag.y = y
+            Call sel.assign(pt.x, pt.y, pt.x, pt.y)
             Call m_vector.setSelection(sel)
         End If
     End If
@@ -856,19 +889,19 @@ End Sub
 '========================================================================
 ' Vector editing - draw or edit
 '========================================================================
-Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     If chkEdit(0).value And m_editing Then
         'Edit the last point.
-        Call m_vector.setPoint(m_vector.getPoints, X - m_base.X, Y - m_base.Y, False)
+        Call m_vector.setPoint(m_vector.getPoints, x - m_base.x, y - m_base.y, False)
         Call setAnimation
         
     ElseIf Button And chkEdit(1).value Then
         'Edit - drag nearest point around.
         Dim dx As Long, dy As Long
-        dx = X - m_drag.X
-        dy = Y - m_drag.Y
-        m_drag.X = X
-        m_drag.Y = Y
+        dx = x - m_drag.x
+        dy = y - m_drag.y
+        m_drag.x = x
+        m_drag.y = y
         Call m_vector.moveSelectionBy(dx, dy)
         Call m_vector.lvPopulate(lvVector)
         Call setAnimation
@@ -884,8 +917,8 @@ Private Sub txtCustomHandle_Change(): On Error Resume Next
     Dim i As Long
     i = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, lvAnimations.SelectedItem.Index - CUSTOM_OFFSET)
     
-    playerList(activePlayerIndex).theData.customGfxNames(i) = txtCustomHandle.text
-    lvAnimations.SelectedItem.text = txtCustomHandle.text
+    playerList(activePlayerIndex).theData.customGfxNames(i) = txtCustomHandle.Text
+    lvAnimations.SelectedItem.Text = txtCustomHandle.Text
 
 End Sub
 
@@ -898,7 +931,7 @@ Private Sub txtFilename_Change(Index As Integer): On Error Resume Next
     i = lvAnimations.SelectedItem.Index
     
     With playerList(activePlayerIndex).theData
-        lvAnimations.SelectedItem.SubItems(Index + 1) = txtFilename(Index).text
+        lvAnimations.SelectedItem.SubItems(Index + 1) = txtFilename(Index).Text
         
         If Index = 0 Then
             If i < CUSTOM_OFFSET Then
@@ -907,7 +940,7 @@ Private Sub txtFilename_Change(Index As Integer): On Error Resume Next
                 i = playerGetCustomHandleIdx(playerList(activePlayerIndex).theData, i - CUSTOM_OFFSET)
 
                 .customGfx(i) = lvAnimations.SelectedItem.SubItems(1)
-                .customGfxNames(i) = lvAnimations.SelectedItem.text
+                .customGfxNames(i) = lvAnimations.SelectedItem.Text
             End If
         Else
             If i < BATTLE_OFFSET Then
@@ -928,8 +961,8 @@ Private Sub lvUpdate(): On Error Resume Next
     With playerList(activePlayerIndex).theData
     
         'Delay and idle time
-        txtFrameTime.text = CStr(.speed)
-        txtIdleTime.text = CStr(.idleTime)
+        txtFrameTime.Text = CStr(.speed)
+        txtIdleTime.Text = CStr(.idleTime)
 
         lvAnimations.ListItems.clear
         
@@ -992,16 +1025,19 @@ Private Sub lvApply(): On Error Resume Next
     Dim i As Long
     i = lvAnimations.SelectedItem.Index
     
+    'Disable idle animations for battle / custom stances.
     txtFilename(1).Enabled = (i < BATTLE_OFFSET)
     cmdBrowse(1).Enabled = (i < BATTLE_OFFSET)
     lbl(4).Enabled = (i < BATTLE_OFFSET)
+    
+    'Enable custom stance deletion / renaming for custom stances (not battle stances).
     cmdCustomDelete.Enabled = (i >= CUSTOM_OFFSET)
     txtCustomHandle.Enabled = (i >= CUSTOM_OFFSET)
     lbl(5).Enabled = (i >= CUSTOM_OFFSET)
             
-    txtFilename(0).text = lvAnimations.SelectedItem.SubItems(1)
-    txtFilename(1).text = lvAnimations.SelectedItem.SubItems(2)
-    txtCustomHandle.text = IIf(i >= CUSTOM_OFFSET, lvAnimations.SelectedItem.text, vbNullString)
+    txtFilename(0).Text = lvAnimations.SelectedItem.SubItems(1)
+    txtFilename(1).Text = lvAnimations.SelectedItem.SubItems(2)
+    txtCustomHandle.Text = IIf(i >= CUSTOM_OFFSET, lvAnimations.SelectedItem.Text, vbNullString)
     
     Call setAnimation
 End Sub
@@ -1010,7 +1046,7 @@ End Sub
 ' Right click on lv views idle animations (second column)
 ' Left click default animations
 '========================================================================
-Private Sub lvAnimations_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
+Private Sub lvAnimations_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     m_viewIdles = (Button = vbRightButton)
     Call lvApply
 End Sub
@@ -1022,8 +1058,8 @@ Private Sub lvVector_LostFocus(): On Error Resume Next
     Call m_vector.lvApply(lvVector, True)
     Call setAnimation
 End Sub
-Private Sub lvVector_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single): On Error Resume Next
-    Call modBoard.vectorLvColumn(lvVector, X)
+Private Sub lvVector_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
+    Call modBoard.vectorLvColumn(lvVector, x)
 End Sub
 Private Sub lvVector_KeyDown(keyCode As Integer, Shift As Integer): On Error Resume Next
     If modBoard.vectorLvKeyDown(lvVector, keyCode) Then
@@ -1040,14 +1076,14 @@ End Sub
 ' Change idle time
 '========================================================================
 Private Sub txtIdleTime_Change(): On Error Resume Next
-    playerList(activePlayerIndex).theData.idleTime = CDbl(txtIdleTime.text)
+    playerList(activePlayerIndex).theData.idleTime = CDbl(txtIdleTime.Text)
 End Sub
 
 '========================================================================
 ' Change speed
 '========================================================================
 Private Sub txtFrameTime_Change(): On Error Resume Next
-    playerList(activePlayerIndex).theData.speed = CDbl(txtFrameTime.text)
+    playerList(activePlayerIndex).theData.speed = CDbl(txtFrameTime.Text)
 End Sub
 
 '========================================================================
@@ -1055,7 +1091,7 @@ End Sub
 '========================================================================
 Private Sub txtFrameTime_KeyPress(ByRef KeyAscii As Integer): On Error GoTo letter
     Dim ret As Double
-    ret = CDbl(txtFrameTime.text & chr(KeyAscii))
+    ret = CDbl(txtFrameTime.Text & chr(KeyAscii))
     Exit Sub
 letter:
     If (KeyAscii <> 8) Then
@@ -1069,7 +1105,7 @@ End Sub
 '========================================================================
 Private Sub txtIdleTime_KeyPress(ByRef KeyAscii As Integer): On Error GoTo letter
     Dim ret As Double
-    ret = CDbl(txtIdleTime.text & chr(KeyAscii))
+    ret = CDbl(txtIdleTime.Text & chr(KeyAscii))
     Exit Sub
 letter:
     If (KeyAscii <> 8) Then
