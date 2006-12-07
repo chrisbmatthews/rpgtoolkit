@@ -147,7 +147,7 @@ Public Type TKBoard
     tiletype() As Byte                    'tile types (backwards compatbility)
     
     tileShading() As TKLayerShade         'Tile shading array (old ambientRed, -Green, -Blue arrays)
-    lights() As CBoardLight               'Dynamic lighting objects (spotlight, gradient)
+    lights() As CBoardLight               'Lighting objects (spotlight, gradient)
         
     Images() As TKBoardImage
     spriteImages() As TKBoardImage        'Image data for board sprites
@@ -189,7 +189,7 @@ Public Enum eBrdSetting
     BS_SPRITE
     BS_IMAGE
     BS_SHADING                            'Tile shading
-    BS_LIGHTING                           'Dynamic lighting: spotlight, gradient etc.
+    BS_LIGHTING                           'Lighting: spotlight, gradient etc.
 End Enum
 Public Enum eBrdTool
     BT_DRAW
@@ -435,6 +435,7 @@ Public Function vectorCreate(ByRef optSetting As eBrdSetting, ByRef board As TKB
                 ReDim Preserve board.vectors(i)
                 Set board.vectors(i) = New CVector
             End If
+            
             'Assign current vector.
             Call activeBoard.toolbarPopulateVectors            'Add the combo entry.
             board.vectors(i).layer = layer
@@ -613,15 +614,22 @@ Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String,
         str = Item.standingGfx(i)
     End If
     
-    'Take the first frame of the animation.
-    Call CommonAnimation.openAnimation(projectPath & miscPath & str, anm)
-    For i = 0 To UBound(anm.animFrame)
-        If LenB(anm.animFrame(i)) Then
-            image = anm.animFrame(i)
-            transpcolor = anm.animTransp(i)
-            Exit Sub
-        End If
-    Next i
+    If LCase$(GetExt(str)) = "anm" Then
+        'Take the first frame of the animation.
+        Call CommonAnimation.openAnimation(projectPath & miscPath & str, anm)
+        For i = 0 To UBound(anm.animFrame)
+            If LenB(anm.animFrame(i)) Then
+                image = anm.animFrame(i)
+                transpcolor = anm.animTransp(i)
+                Exit Sub
+            End If
+        Next i
+    Else
+        'gif animation, etc.
+        image = str
+        'TBD: write a function to extract the transparent colour (see trans3/animation.cpp).
+        transpcolor = RGB(0, 0, 0)
+    End If
 End Sub
 
 '=========================================================================
