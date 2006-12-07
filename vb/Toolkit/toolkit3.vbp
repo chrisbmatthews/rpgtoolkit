@@ -85,7 +85,6 @@ Form=forms\editTileBitmap.frm
 Module=CommonTileBitmap; ..\tkCommon\modules\CommonTileBitmap.bas
 Form=forms\frmCharacterGraphics.frm
 Form=forms\animationHost.frm
-Form=forms\itemGraphics.frm
 Module=CommontkMD5; ..\tkCommon\modules\CommontkMD5.bas
 Module=CommonTKPlugin; ..\tkCommon\modules\CommonTKPlugin.bas
 Module=CommonFont; ..\tkCommon\modules\CommonFont.BAS
