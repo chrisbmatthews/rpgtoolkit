@@ -1102,11 +1102,20 @@ CCanvas *tagVBBoardImage::render(
 		return pCnv;
 	}
 
-	CONST STRING strFile = projectPath + BMP_PATH + filename;
+	STRING strFile = projectPath + BMP_PATH + filename;
 	FIBITMAP *bmp = FreeImage_Load(
 		FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), 
 		getAsciiString(strFile).c_str()
 	);
+	if (!bmp)
+	{
+		// Animated gifs: have a look in the MISC folder (simplest solution).
+		strFile = projectPath + MISC_PATH + filename;
+		bmp = FreeImage_Load(
+			FreeImage_GetFileType(getAsciiString(strFile).c_str(), 16), 
+			getAsciiString(strFile).c_str()
+		);
+	}
 	if (!bmp) return NULL;
 
 	CONST INT w = FreeImage_GetWidth(bmp), h = FreeImage_GetHeight(bmp);
