@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.UserControl ctlBrdProgram 
    ClientHeight    =   6405
    ClientLeft      =   0
@@ -12,7 +12,7 @@ Begin VB.UserControl ctlBrdProgram
       Caption         =   "Draw programs"
       Height          =   375
       Left            =   120
-      TabIndex        =   18
+      TabIndex        =   0
       Top             =   120
       Width           =   1455
    End
@@ -21,7 +21,7 @@ Begin VB.UserControl ctlBrdProgram
       Default         =   -1  'True
       Height          =   375
       Left            =   2160
-      TabIndex        =   17
+      TabIndex        =   23
       ToolTipText     =   "Confirmation button"
       Top             =   120
       Visible         =   0   'False
@@ -31,7 +31,7 @@ Begin VB.UserControl ctlBrdProgram
       Caption         =   "Delete"
       Height          =   375
       Left            =   2520
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   855
    End
@@ -39,7 +39,7 @@ Begin VB.UserControl ctlBrdProgram
       Caption         =   "Properties"
       Height          =   5295
       Left            =   0
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   960
       Width           =   3375
       Begin VB.PictureBox Picture1 
@@ -48,14 +48,14 @@ Begin VB.UserControl ctlBrdProgram
          Left            =   240
          ScaleHeight     =   1215
          ScaleWidth      =   3015
-         TabIndex        =   20
+         TabIndex        =   24
          Top             =   2760
          Width           =   3015
          Begin VB.TextBox txtVar 
             Height          =   285
             Index           =   0
             Left            =   0
-            TabIndex        =   24
+            TabIndex        =   13
             ToolTipText     =   "Enter the name of an RPGCode variable"
             Top             =   240
             Width           =   1815
@@ -64,7 +64,7 @@ Begin VB.UserControl ctlBrdProgram
             Height          =   285
             Index           =   0
             Left            =   2160
-            TabIndex        =   23
+            TabIndex        =   14
             ToolTipText     =   "Enter the value the variable must be to run the program. Note: Leave blank if the variable is uninitialised"
             Top             =   240
             Width           =   855
@@ -73,7 +73,7 @@ Begin VB.UserControl ctlBrdProgram
             Height          =   285
             Index           =   1
             Left            =   0
-            TabIndex        =   22
+            TabIndex        =   15
             ToolTipText     =   "Enter the name of a variable to set when the program ends (may be the same as above)"
             Top             =   840
             Width           =   1815
@@ -82,7 +82,7 @@ Begin VB.UserControl ctlBrdProgram
             Height          =   285
             Index           =   1
             Left            =   2160
-            TabIndex        =   21
+            TabIndex        =   16
             ToolTipText     =   "Enter the value to set the variable to"
             Top             =   840
             Width           =   855
@@ -132,14 +132,14 @@ Begin VB.UserControl ctlBrdProgram
          Left            =   2760
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   14
+         TabIndex        =   22
          Top             =   480
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
             Caption         =   "..."
             Height          =   255
             Left            =   0
-            TabIndex        =   15
+            TabIndex        =   5
             ToolTipText     =   "Browse for program"
             Top             =   0
             Width           =   495
@@ -150,14 +150,14 @@ Begin VB.UserControl ctlBrdProgram
          Caption         =   "Activation mechanism            "
          Height          =   1575
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   20
          Top             =   1200
          Width           =   2775
          Begin VB.CheckBox chkRunOnce 
             Caption         =   "Run once"
             Height          =   255
             Left            =   120
-            TabIndex        =   19
+            TabIndex        =   12
             ToolTipText     =   "Allow this program to be run only once during the game"
             Top             =   1200
             Width           =   2415
@@ -165,7 +165,7 @@ Begin VB.UserControl ctlBrdProgram
          Begin VB.TextBox txtRepeatTrigger 
             Height          =   285
             Left            =   1440
-            TabIndex        =   12
+            TabIndex        =   10
             Text            =   "32"
             Top             =   720
             Width           =   495
@@ -174,7 +174,7 @@ Begin VB.UserControl ctlBrdProgram
             Caption         =   "Activation stops movement"
             Height          =   255
             Left            =   120
-            TabIndex        =   13
+            TabIndex        =   11
             ToolTipText     =   "Pending movements (e.g., the destination set in mouse movement) are cleared when the program runs"
             Top             =   960
             Width           =   2415
@@ -183,7 +183,7 @@ Begin VB.UserControl ctlBrdProgram
             Caption         =   "Trigger every                 pixels"
             Height          =   255
             Left            =   120
-            TabIndex        =   11
+            TabIndex        =   9
             ToolTipText     =   "Cause the program to run repeatedly when a user walks around in a program's vector"
             Top             =   720
             Width           =   2415
@@ -196,7 +196,7 @@ Begin VB.UserControl ctlBrdProgram
             Left            =   120
             ScaleHeight     =   495
             ScaleWidth      =   2415
-            TabIndex        =   8
+            TabIndex        =   21
             Top             =   120
             Width           =   2415
             Begin VB.OptionButton optActivationType 
@@ -204,7 +204,7 @@ Begin VB.UserControl ctlBrdProgram
                Height          =   255
                Index           =   1
                Left            =   0
-               TabIndex        =   10
+               TabIndex        =   8
                ToolTipText     =   "Users must press the Main File Activation Key whilst standing on the program to run the program"
                Top             =   240
                Width           =   2055
@@ -214,7 +214,7 @@ Begin VB.UserControl ctlBrdProgram
                Height          =   255
                Index           =   0
                Left            =   0
-               TabIndex        =   9
+               TabIndex        =   7
                ToolTipText     =   "Users must stand on or in a program's vector to run the program"
                Top             =   0
                Width           =   2055
@@ -224,7 +224,7 @@ Begin VB.UserControl ctlBrdProgram
       Begin VB.TextBox txtLayer 
          Height          =   285
          Left            =   240
-         TabIndex        =   5
+         TabIndex        =   6
          Text            =   "1"
          ToolTipText     =   "The layer the program is located on. Users must be on this layer to run the program"
          Top             =   840
@@ -233,14 +233,14 @@ Begin VB.UserControl ctlBrdProgram
       Begin VB.TextBox txtFilename 
          Height          =   285
          Left            =   120
-         TabIndex        =   3
+         TabIndex        =   4
          Top             =   480
          Width           =   2535
       End
       Begin MSComctlLib.ListView lvPoints 
          Height          =   1095
          Left            =   720
-         TabIndex        =   16
+         TabIndex        =   17
          ToolTipText     =   "Program vector's points. Click a number and press the Delete key to enter a new pixel coordinate"
          Top             =   4080
          Width           =   1935
@@ -276,7 +276,7 @@ Begin VB.UserControl ctlBrdProgram
          Caption         =   "Layer"
          Height          =   255
          Left            =   960
-         TabIndex        =   6
+         TabIndex        =   19
          Top             =   900
          Width           =   615
       End
@@ -284,7 +284,7 @@ Begin VB.UserControl ctlBrdProgram
          Caption         =   "Program filename / inline RPGCode"
          Height          =   255
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   18
          Top             =   240
          Width           =   2655
       End
@@ -293,7 +293,7 @@ Begin VB.UserControl ctlBrdProgram
       Height          =   315
       Left            =   0
       Style           =   2  'Dropdown List
-      TabIndex        =   0
+      TabIndex        =   3
       Top             =   600
       Width           =   3375
    End

@@ -11,7 +11,7 @@ Begin VB.UserControl ctlBrdSprite
       Caption         =   "Draw sprites"
       Height          =   375
       Left            =   120
-      TabIndex        =   26
+      TabIndex        =   0
       Top             =   120
       Width           =   1575
    End
@@ -20,7 +20,7 @@ Begin VB.UserControl ctlBrdSprite
       Default         =   -1  'True
       Height          =   375
       Left            =   2160
-      TabIndex        =   25
+      TabIndex        =   32
       Top             =   120
       Visible         =   0   'False
       Width           =   375
@@ -36,7 +36,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   2
          Left            =   2400
-         TabIndex        =   37
+         TabIndex        =   21
          ToolTipText     =   "Enter the value to set the variable to"
          Top             =   5160
          Width           =   855
@@ -45,7 +45,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   2
          Left            =   240
-         TabIndex        =   35
+         TabIndex        =   20
          ToolTipText     =   "Enter the name of a variable to set when the program ends (may be the same as above)"
          Top             =   5160
          Width           =   1815
@@ -54,7 +54,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   1
          Left            =   2400
-         TabIndex        =   33
+         TabIndex        =   19
          ToolTipText     =   "Enter the value the variable must be to run the activation program. Note: Leave blank if the variable is uninitialised"
          Top             =   4560
          Width           =   855
@@ -63,7 +63,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   1
          Left            =   240
-         TabIndex        =   31
+         TabIndex        =   18
          ToolTipText     =   "Enter the name of an RPGCode variable"
          Top             =   4560
          Width           =   1815
@@ -72,7 +72,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   0
          Left            =   2400
-         TabIndex        =   29
+         TabIndex        =   17
          ToolTipText     =   "Enter the value the variable must be to show the sprite. Note: Leave blank if the variable is uninitialised"
          Top             =   3960
          Width           =   855
@@ -81,7 +81,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   0
          Left            =   240
-         TabIndex        =   27
+         TabIndex        =   16
          ToolTipText     =   "Enter the name of an RPGCode variable"
          Top             =   3960
          Width           =   1815
@@ -90,7 +90,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   255
          Left            =   1380
          Max             =   2
-         TabIndex        =   24
+         TabIndex        =   9
          Top             =   1440
          Value           =   1
          Width           =   495
@@ -98,7 +98,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.TextBox txtMultitask 
          Height          =   285
          Left            =   240
-         TabIndex        =   20
+         TabIndex        =   12
          ToolTipText     =   "Specify the program that controls the item during gameplay (run as a thread)"
          Top             =   2760
          Width           =   2055
@@ -112,7 +112,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   2400
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   18
+         TabIndex        =   28
          Top             =   2760
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
@@ -120,7 +120,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   2
             Left            =   0
-            TabIndex        =   19
+            TabIndex        =   13
             ToolTipText     =   "Browse for program"
             Top             =   0
             Width           =   495
@@ -135,7 +135,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   2400
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   16
+         TabIndex        =   27
          Top             =   2160
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
@@ -143,7 +143,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   17
+            TabIndex        =   11
             ToolTipText     =   "Browse for program"
             Top             =   0
             Width           =   495
@@ -152,7 +152,7 @@ Begin VB.UserControl ctlBrdSprite
       Begin VB.TextBox txtActivate 
          Height          =   285
          Left            =   240
-         TabIndex        =   15
+         TabIndex        =   10
          ToolTipText     =   "Specify the program to run when the user interacts with the item"
          Top             =   2160
          Width           =   2055
@@ -165,7 +165,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   240
          ScaleHeight     =   495
          ScaleWidth      =   2415
-         TabIndex        =   12
+         TabIndex        =   26
          Top             =   3120
          Width           =   2415
          Begin VB.OptionButton optActivationType 
@@ -183,7 +183,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   13
+            TabIndex        =   15
             ToolTipText     =   "Users must press the Main File Activation Key whilst standing on or in the sprite's activation base to run the activation program"
             Top             =   240
             Width           =   2055
@@ -193,7 +193,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   1
          Left            =   1380
-         TabIndex        =   9
+         TabIndex        =   7
          Top             =   1080
          Width           =   495
       End
@@ -209,14 +209,14 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   285
          Index           =   0
          Left            =   480
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   1080
          Width           =   495
       End
       Begin VB.TextBox txtFilename 
          Height          =   285
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   480
          Width           =   2535
       End
@@ -229,7 +229,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   2760
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   3
+         TabIndex        =   22
          Top             =   480
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
@@ -237,7 +237,7 @@ Begin VB.UserControl ctlBrdSprite
             Height          =   255
             Index           =   0
             Left            =   0
-            TabIndex        =   4
+            TabIndex        =   5
             ToolTipText     =   "Browse for sprite"
             Top             =   0
             Width           =   495
@@ -257,7 +257,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   375
          Index           =   4
          Left            =   240
-         TabIndex        =   36
+         TabIndex        =   37
          Top             =   4920
          Width           =   3015
       End
@@ -266,7 +266,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   255
          Index           =   3
          Left            =   2160
-         TabIndex        =   34
+         TabIndex        =   36
          Top             =   4560
          Width           =   135
       End
@@ -275,7 +275,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   375
          Index           =   2
          Left            =   240
-         TabIndex        =   32
+         TabIndex        =   35
          Top             =   4320
          Width           =   3015
       End
@@ -284,7 +284,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   255
          Index           =   1
          Left            =   2160
-         TabIndex        =   30
+         TabIndex        =   34
          Top             =   3960
          Width           =   135
       End
@@ -293,7 +293,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   375
          Index           =   0
          Left            =   240
-         TabIndex        =   28
+         TabIndex        =   33
          Top             =   3720
          Width           =   3015
       End
@@ -301,7 +301,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Slot index: 0"
          Height          =   255
          Left            =   240
-         TabIndex        =   23
+         TabIndex        =   31
          ToolTipText     =   "Identifying index for use with RPGCode functions. Use the scroll arrows to move the sprite up or down the list"
          Top             =   1500
          Width           =   1215
@@ -310,7 +310,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Override multitasking program"
          Height          =   375
          Left            =   240
-         TabIndex        =   22
+         TabIndex        =   30
          Top             =   2520
          Width           =   2655
       End
@@ -318,7 +318,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Override program to run on activation"
          Height          =   375
          Left            =   240
-         TabIndex        =   21
+         TabIndex        =   29
          Top             =   1920
          Width           =   2655
       End
@@ -327,7 +327,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   255
          Index           =   1
          Left            =   300
-         TabIndex        =   11
+         TabIndex        =   25
          Top             =   1125
          Width           =   2655
       End
@@ -336,7 +336,7 @@ Begin VB.UserControl ctlBrdSprite
          Height          =   255
          Index           =   0
          Left            =   240
-         TabIndex        =   10
+         TabIndex        =   24
          Top             =   840
          Width           =   975
       End
@@ -344,7 +344,7 @@ Begin VB.UserControl ctlBrdSprite
          Caption         =   "Sprite filename"
          Height          =   255
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   23
          Top             =   240
          Width           =   2655
       End
@@ -353,7 +353,7 @@ Begin VB.UserControl ctlBrdSprite
       Height          =   315
       Left            =   0
       Style           =   2  'Dropdown List
-      TabIndex        =   1
+      TabIndex        =   3
       Top             =   600
       Width           =   3375
    End
@@ -361,7 +361,7 @@ Begin VB.UserControl ctlBrdSprite
       Caption         =   "Delete"
       Height          =   375
       Left            =   2520
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   855
    End

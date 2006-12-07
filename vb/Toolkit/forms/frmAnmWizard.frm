@@ -19,7 +19,7 @@ Begin VB.Form frmAnmWizard
       Height          =   2295
       Index           =   2
       Left            =   5400
-      TabIndex        =   3
+      TabIndex        =   14
       Top             =   120
       Width           =   3975
       Begin VB.PictureBox pic 
@@ -29,7 +29,7 @@ Begin VB.Form frmAnmWizard
          Left            =   120
          ScaleHeight     =   1815
          ScaleWidth      =   3735
-         TabIndex        =   4
+         TabIndex        =   15
          Top             =   240
          Width           =   3735
          Begin VB.OptionButton opt 
@@ -37,7 +37,7 @@ Begin VB.Form frmAnmWizard
             Height          =   255
             Index           =   0
             Left            =   0
-            TabIndex        =   25
+            TabIndex        =   1
             Top             =   0
             Width           =   2655
          End
@@ -45,7 +45,7 @@ Begin VB.Form frmAnmWizard
             Caption         =   "Remove"
             Height          =   375
             Left            =   2400
-            TabIndex        =   8
+            TabIndex        =   4
             ToolTipText     =   "Remove the highlighted file"
             Top             =   720
             Width           =   1335
@@ -54,7 +54,7 @@ Begin VB.Form frmAnmWizard
             Caption         =   "Remove All"
             Height          =   375
             Left            =   2400
-            TabIndex        =   7
+            TabIndex        =   5
             ToolTipText     =   "Remove all files"
             Top             =   1080
             Width           =   1335
@@ -63,7 +63,7 @@ Begin VB.Form frmAnmWizard
             Caption         =   "Select Files..."
             Height          =   375
             Left            =   2400
-            TabIndex        =   6
+            TabIndex        =   3
             ToolTipText     =   "Select multiple image files"
             Top             =   360
             Width           =   1335
@@ -71,7 +71,7 @@ Begin VB.Form frmAnmWizard
          Begin VB.ListBox lstFiles 
             Height          =   1035
             Left            =   0
-            TabIndex        =   5
+            TabIndex        =   2
             Top             =   360
             Width           =   2295
          End
@@ -79,7 +79,7 @@ Begin VB.Form frmAnmWizard
             Caption         =   "Frames: 1"
             Height          =   255
             Left            =   0
-            TabIndex        =   20
+            TabIndex        =   24
             Top             =   1560
             Width           =   3375
          End
@@ -90,7 +90,7 @@ Begin VB.Form frmAnmWizard
       Height          =   2295
       Index           =   1
       Left            =   120
-      TabIndex        =   16
+      TabIndex        =   20
       Top             =   120
       Width           =   5175
       Begin VB.Label lbl 
@@ -107,7 +107,7 @@ Begin VB.Form frmAnmWizard
          Height          =   375
          Index           =   2
          Left            =   120
-         TabIndex        =   19
+         TabIndex        =   23
          Top             =   240
          Width           =   4935
       End
@@ -116,7 +116,7 @@ Begin VB.Form frmAnmWizard
          Height          =   855
          Index           =   5
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   22
          Top             =   1080
          Width           =   4935
       End
@@ -125,7 +125,7 @@ Begin VB.Form frmAnmWizard
          Height          =   255
          Index           =   6
          Left            =   120
-         TabIndex        =   17
+         TabIndex        =   21
          Top             =   1920
          Width           =   4815
       End
@@ -134,7 +134,7 @@ Begin VB.Form frmAnmWizard
       Height          =   2655
       Index           =   0
       Left            =   120
-      TabIndex        =   9
+      TabIndex        =   16
       Top             =   2400
       Width           =   9255
       Begin VB.PictureBox pic 
@@ -145,7 +145,7 @@ Begin VB.Form frmAnmWizard
          ScaleHeight     =   153
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   601
-         TabIndex        =   10
+         TabIndex        =   17
          Top             =   240
          Width           =   9015
          Begin VB.OptionButton opt 
@@ -153,7 +153,7 @@ Begin VB.Form frmAnmWizard
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   26
+            TabIndex        =   6
             Top             =   0
             Width           =   2655
          End
@@ -161,7 +161,7 @@ Begin VB.Form frmAnmWizard
             Height          =   255
             Left            =   1800
             Max             =   48
-            TabIndex        =   24
+            TabIndex        =   8
             TabStop         =   0   'False
             Top             =   600
             Width           =   495
@@ -170,7 +170,7 @@ Begin VB.Form frmAnmWizard
             Height          =   255
             Left            =   1800
             Max             =   48
-            TabIndex        =   22
+            TabIndex        =   7
             TabStop         =   0   'False
             Top             =   360
             Width           =   495
@@ -182,7 +182,7 @@ Begin VB.Form frmAnmWizard
             ScaleHeight     =   125
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   125
-            TabIndex        =   13
+            TabIndex        =   18
             ToolTipText     =   "Current animation frame"
             Top             =   360
             Width           =   1935
@@ -191,14 +191,14 @@ Begin VB.Form frmAnmWizard
             Caption         =   "..."
             Height          =   255
             Left            =   1800
-            TabIndex        =   12
+            TabIndex        =   10
             Top             =   1920
             Width           =   495
          End
          Begin VB.TextBox txtTbm 
             Height          =   285
             Left            =   0
-            TabIndex        =   11
+            TabIndex        =   9
             Text            =   "tbms\npc1.tbm"
             ToolTipText     =   "e.g. 'tbms\npc1.tbm' will produce 'npc1_000.tbm', 'npc1_001.tbm' etc. in the folder '\Bitmap\tbms'"
             Top             =   1560
@@ -207,7 +207,7 @@ Begin VB.Form frmAnmWizard
          Begin Toolkit.ctlTilesetToolbar ctlTst 
             Height          =   2295
             Left            =   4320
-            TabIndex        =   14
+            TabIndex        =   11
             Top             =   0
             Width           =   4695
             _ExtentX        =   8281
@@ -218,7 +218,7 @@ Begin VB.Form frmAnmWizard
             Height          =   495
             Index           =   0
             Left            =   0
-            TabIndex        =   15
+            TabIndex        =   19
             ToolTipText     =   "e.g. 'tbms\npc1.tbm' will produce 'npc1_000.tbm', 'npc1_001.tbm' etc. in the folder '\Bitmap\tbms'"
             Top             =   1080
             Width           =   2415
@@ -227,7 +227,7 @@ Begin VB.Form frmAnmWizard
             Caption         =   "Current frame: 1"
             Height          =   255
             Left            =   0
-            TabIndex        =   23
+            TabIndex        =   26
             ToolTipText     =   "Use the cursor keys to switch frames quickly"
             Top             =   600
             Width           =   1575
@@ -236,7 +236,7 @@ Begin VB.Form frmAnmWizard
             Caption         =   "Frames: 1"
             Height          =   255
             Left            =   0
-            TabIndex        =   21
+            TabIndex        =   25
             Top             =   360
             Width           =   975
          End
@@ -257,7 +257,7 @@ Begin VB.Form frmAnmWizard
          Caption         =   "Cancel"
          Height          =   375
          Left            =   1560
-         TabIndex        =   2
+         TabIndex        =   13
          Top             =   0
          Width           =   1335
       End
@@ -266,7 +266,7 @@ Begin VB.Form frmAnmWizard
          Default         =   -1  'True
          Height          =   375
          Left            =   240
-         TabIndex        =   1
+         TabIndex        =   12
          Top             =   0
          Width           =   1335
       End

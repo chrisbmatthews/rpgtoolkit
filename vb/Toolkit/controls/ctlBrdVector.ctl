@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.UserControl ctlBrdVector 
    ClientHeight    =   5835
    ClientLeft      =   0
@@ -11,7 +11,7 @@ Begin VB.UserControl ctlBrdVector
    Begin VB.ComboBox cmbVector 
       Height          =   315
       Left            =   0
-      TabIndex        =   20
+      TabIndex        =   3
       Text            =   "cmbVector"
       ToolTipText     =   "Vector list - click to type new handle"
       Top             =   600
@@ -21,7 +21,7 @@ Begin VB.UserControl ctlBrdVector
       Caption         =   "Draw vectors"
       Height          =   375
       Left            =   120
-      TabIndex        =   16
+      TabIndex        =   0
       Top             =   120
       Width           =   1455
    End
@@ -30,7 +30,7 @@ Begin VB.UserControl ctlBrdVector
       Default         =   -1  'True
       Height          =   375
       Left            =   2160
-      TabIndex        =   15
+      TabIndex        =   19
       Top             =   120
       Visible         =   0   'False
       Width           =   375
@@ -46,7 +46,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Left            =   1740
          Max             =   2
-         TabIndex        =   18
+         TabIndex        =   14
          Top             =   2880
          Value           =   1
          Width           =   495
@@ -54,7 +54,7 @@ Begin VB.UserControl ctlBrdVector
       Begin MSComctlLib.ListView lvPoints 
          Height          =   1095
          Left            =   720
-         TabIndex        =   14
+         TabIndex        =   15
          ToolTipText     =   "Vector's points. Click a number and press the Delete key to enter a new pixel coordinate"
          Top             =   3360
          Width           =   1935
@@ -94,7 +94,7 @@ Begin VB.UserControl ctlBrdVector
          Left            =   360
          ScaleHeight     =   735
          ScaleWidth      =   2775
-         TabIndex        =   8
+         TabIndex        =   16
          Top             =   240
          Width           =   2775
          Begin VB.OptionButton optType 
@@ -102,7 +102,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   16
             Left            =   1320
-            TabIndex        =   17
+            TabIndex        =   7
             Top             =   360
             Width           =   1335
          End
@@ -111,7 +111,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   1
             Left            =   0
-            TabIndex        =   11
+            TabIndex        =   4
             Top             =   0
             Value           =   -1  'True
             Width           =   855
@@ -121,7 +121,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   2
             Left            =   0
-            TabIndex        =   10
+            TabIndex        =   6
             Top             =   360
             Width           =   855
          End
@@ -130,7 +130,7 @@ Begin VB.UserControl ctlBrdVector
             Height          =   375
             Index           =   8
             Left            =   1320
-            TabIndex        =   9
+            TabIndex        =   5
             Top             =   0
             Width           =   855
          End
@@ -140,7 +140,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Index           =   0
          Left            =   600
-         TabIndex        =   7
+         TabIndex        =   9
          ToolTipText     =   $"ctlBrdVector.ctx":0000
          Top             =   1320
          Width           =   2295
@@ -150,7 +150,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Index           =   1
          Left            =   600
-         TabIndex        =   6
+         TabIndex        =   10
          ToolTipText     =   $"ctlBrdVector.ctx":008B
          Top             =   1560
          Width           =   2295
@@ -160,7 +160,7 @@ Begin VB.UserControl ctlBrdVector
          Height          =   255
          Index           =   2
          Left            =   600
-         TabIndex        =   5
+         TabIndex        =   11
          ToolTipText     =   "Sprites appear behind the enclosed imagery if any part of their image intersects the vector"
          Top             =   1800
          Width           =   2295
@@ -168,7 +168,7 @@ Begin VB.UserControl ctlBrdVector
       Begin VB.TextBox txtStairs 
          Height          =   285
          Left            =   600
-         TabIndex        =   4
+         TabIndex        =   13
          Text            =   "1"
          Top             =   2520
          Width           =   495
@@ -177,7 +177,7 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Closed vector"
          Height          =   255
          Left            =   600
-         TabIndex        =   3
+         TabIndex        =   8
          ToolTipText     =   "Vector forms a closed polygon (requires three or more points)"
          Top             =   1080
          Width           =   1815
@@ -185,7 +185,7 @@ Begin VB.UserControl ctlBrdVector
       Begin VB.TextBox txtLayer 
          Height          =   285
          Left            =   600
-         TabIndex        =   2
+         TabIndex        =   12
          Text            =   "1"
          Top             =   2205
          Width           =   495
@@ -194,7 +194,7 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Slot index: 0"
          Height          =   255
          Left            =   600
-         TabIndex        =   19
+         TabIndex        =   20
          ToolTipText     =   "Index for use with vector access RPGCode functions"
          Top             =   2940
          Width           =   1215
@@ -203,7 +203,7 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Stairs to layer"
          Height          =   255
          Left            =   1200
-         TabIndex        =   13
+         TabIndex        =   18
          ToolTipText     =   "Layer the player is transported to if it intersects a stairs-type vector"
          Top             =   2565
          Width           =   975
@@ -212,7 +212,7 @@ Begin VB.UserControl ctlBrdVector
          Caption         =   "Layer"
          Height          =   255
          Left            =   1200
-         TabIndex        =   12
+         TabIndex        =   17
          ToolTipText     =   "Layer the vector is located on"
          Top             =   2265
          Width           =   975
@@ -222,7 +222,7 @@ Begin VB.UserControl ctlBrdVector
       Caption         =   "Delete"
       Height          =   375
       Left            =   2520
-      TabIndex        =   0
+      TabIndex        =   2
       Top             =   120
       Width           =   855
    End

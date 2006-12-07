@@ -8,11 +8,11 @@ Begin VB.UserControl ctlBrdLighting
    ScaleHeight     =   6195
    ScaleWidth      =   3555
    Begin VB.Frame fraProperties 
-      Caption         =   "Dynamic lighting"
+      Caption         =   "Lighting"
       Height          =   2655
       Index           =   1
       Left            =   0
-      TabIndex        =   16
+      TabIndex        =   22
       Top             =   1440
       Width           =   3375
       Begin VB.PictureBox picLights 
@@ -22,14 +22,14 @@ Begin VB.UserControl ctlBrdLighting
          Left            =   240
          ScaleHeight     =   2295
          ScaleWidth      =   3015
-         TabIndex        =   17
+         TabIndex        =   23
          Top             =   240
          Width           =   3015
          Begin VB.ComboBox cmbLights 
             Height          =   315
             Left            =   240
             Style           =   2  'Dropdown List
-            TabIndex        =   25
+            TabIndex        =   4
             ToolTipText     =   "Light list"
             Top             =   0
             Width           =   2415
@@ -38,7 +38,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   315
             Left            =   480
             Style           =   2  'Dropdown List
-            TabIndex        =   24
+            TabIndex        =   5
             ToolTipText     =   "Lighting effect"
             Top             =   360
             Width           =   1935
@@ -49,7 +49,7 @@ Begin VB.UserControl ctlBrdLighting
             Left            =   120
             ScaleHeight     =   315
             ScaleWidth      =   315
-            TabIndex        =   23
+            TabIndex        =   25
             ToolTipText     =   "Color equivalent"
             Top             =   840
             Width           =   375
@@ -60,7 +60,7 @@ Begin VB.UserControl ctlBrdLighting
             Left            =   120
             ScaleHeight     =   315
             ScaleWidth      =   315
-            TabIndex        =   22
+            TabIndex        =   24
             ToolTipText     =   "Color equivalent"
             Top             =   1320
             Width           =   375
@@ -69,7 +69,7 @@ Begin VB.UserControl ctlBrdLighting
             Caption         =   "Delete"
             Height          =   375
             Left            =   1440
-            TabIndex        =   21
+            TabIndex        =   9
             ToolTipText     =   "Delete light"
             Top             =   1920
             Width           =   975
@@ -78,7 +78,7 @@ Begin VB.UserControl ctlBrdLighting
             Caption         =   "Convert"
             Height          =   375
             Left            =   480
-            TabIndex        =   20
+            TabIndex        =   8
             ToolTipText     =   "Render dynamic lighting to layer permanently and delete dynamic light"
             Top             =   1920
             Width           =   975
@@ -88,7 +88,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   375
             Index           =   0
             Left            =   480
-            TabIndex        =   19
+            TabIndex        =   6
             ToolTipText     =   "Use current shade"
             Top             =   840
             Width           =   375
@@ -98,7 +98,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   375
             Index           =   1
             Left            =   480
-            TabIndex        =   18
+            TabIndex        =   7
             ToolTipText     =   "Use current shade"
             Top             =   1320
             Width           =   375
@@ -148,17 +148,17 @@ Begin VB.UserControl ctlBrdLighting
       Default         =   -1  'True
       Height          =   375
       Left            =   3000
-      TabIndex        =   1
+      TabIndex        =   0
       ToolTipText     =   "Confirmation button"
       Top             =   120
       Visible         =   0   'False
       Width           =   375
    End
    Begin VB.CheckBox chkDrawLighting 
-      Caption         =   "Draw dynamic lighting"
+      Caption         =   "Draw lighting"
       Height          =   375
       Left            =   1680
-      TabIndex        =   6
+      TabIndex        =   2
       ToolTipText     =   "Show/hide lights on this board"
       Top             =   120
       Width           =   1815
@@ -167,7 +167,7 @@ Begin VB.UserControl ctlBrdLighting
       Caption         =   "Current shade"
       Height          =   1935
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   17
       Top             =   4200
       Width           =   3375
       Begin VB.PictureBox pic 
@@ -176,14 +176,14 @@ Begin VB.UserControl ctlBrdLighting
          Left            =   120
          ScaleHeight     =   1575
          ScaleWidth      =   3135
-         TabIndex        =   7
+         TabIndex        =   18
          Top             =   240
          Width           =   3135
          Begin VB.CommandButton cmdShadeZero 
             Caption         =   "Zero RGB"
             Height          =   375
             Left            =   240
-            TabIndex        =   15
+            TabIndex        =   14
             ToolTipText     =   "Set R = 0, G = 0, B = 0"
             Top             =   1080
             Width           =   975
@@ -193,7 +193,7 @@ Begin VB.UserControl ctlBrdLighting
             Left            =   240
             ScaleHeight     =   315
             ScaleWidth      =   315
-            TabIndex        =   12
+            TabIndex        =   19
             ToolTipText     =   "Current shade color equivalent"
             Top             =   120
             Width           =   375
@@ -203,7 +203,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   285
             Index           =   0
             Left            =   960
-            TabIndex        =   11
+            TabIndex        =   10
             Text            =   "0"
             Top             =   240
             Width           =   615
@@ -213,7 +213,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   285
             Index           =   1
             Left            =   1560
-            TabIndex        =   10
+            TabIndex        =   11
             Text            =   "0"
             Top             =   240
             Width           =   615
@@ -223,7 +223,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   285
             Index           =   2
             Left            =   2160
-            TabIndex        =   9
+            TabIndex        =   12
             Text            =   "0"
             Top             =   240
             Width           =   615
@@ -235,7 +235,7 @@ Begin VB.UserControl ctlBrdLighting
             Max             =   255
             Min             =   -255
             SmallChange     =   5
-            TabIndex        =   8
+            TabIndex        =   13
             Top             =   600
             Width           =   2535
          End
@@ -244,7 +244,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   615
             Index           =   2
             Left            =   1440
-            TabIndex        =   14
+            TabIndex        =   21
             Top             =   1080
             Width           =   1695
          End
@@ -253,7 +253,7 @@ Begin VB.UserControl ctlBrdLighting
             Height          =   255
             Index           =   1
             Left            =   1200
-            TabIndex        =   13
+            TabIndex        =   20
             Top             =   0
             Width           =   1335
          End
@@ -264,7 +264,7 @@ Begin VB.UserControl ctlBrdLighting
       Height          =   735
       Index           =   0
       Left            =   0
-      TabIndex        =   2
+      TabIndex        =   15
       Top             =   600
       Width           =   3375
       Begin VB.TextBox txtLayer 
@@ -279,7 +279,7 @@ Begin VB.UserControl ctlBrdLighting
          Caption         =   "Cast onto tiles on layer                 and below"
          Height          =   255
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   16
          ToolTipText     =   "The lighting and shading layer is situated above the given layer and casts onto the given layer and all layers below"
          Top             =   360
          Width           =   3135
@@ -289,7 +289,7 @@ Begin VB.UserControl ctlBrdLighting
       Caption         =   "Draw tile shading"
       Height          =   375
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   1
       ToolTipText     =   "Show/hide tile shading for this board"
       Top             =   120
       Width           =   1455

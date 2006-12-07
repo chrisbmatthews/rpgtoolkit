@@ -11,7 +11,7 @@ Begin VB.UserControl ctlBrdImage
       Caption         =   "Draw images"
       Height          =   375
       Left            =   120
-      TabIndex        =   21
+      TabIndex        =   0
       Top             =   120
       Width           =   1575
    End
@@ -20,7 +20,7 @@ Begin VB.UserControl ctlBrdImage
       Default         =   -1  'True
       Height          =   375
       Left            =   2160
-      TabIndex        =   20
+      TabIndex        =   21
       Top             =   120
       Visible         =   0   'False
       Width           =   375
@@ -29,7 +29,7 @@ Begin VB.UserControl ctlBrdImage
       Caption         =   "Properties"
       Height          =   3375
       Left            =   0
-      TabIndex        =   2
+      TabIndex        =   12
       Top             =   960
       Width           =   3375
       Begin VB.CheckBox chkTransp 
@@ -37,7 +37,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Left            =   1800
          Style           =   1  'Graphical
-         TabIndex        =   19
+         TabIndex        =   8
          TabStop         =   0   'False
          Top             =   1800
          Width           =   1095
@@ -51,7 +51,7 @@ Begin VB.UserControl ctlBrdImage
          Left            =   1800
          ScaleHeight     =   255
          ScaleWidth      =   1095
-         TabIndex        =   14
+         TabIndex        =   19
          ToolTipText     =   "Current transparent color on the image"
          Top             =   2160
          Width           =   1095
@@ -65,7 +65,7 @@ Begin VB.UserControl ctlBrdImage
          Left            =   360
          ScaleHeight     =   855
          ScaleWidth      =   2295
-         TabIndex        =   15
+         TabIndex        =   20
          Top             =   2640
          Visible         =   0   'False
          Width           =   2295
@@ -74,7 +74,7 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Index           =   2
             Left            =   0
-            TabIndex        =   18
+            TabIndex        =   11
             Top             =   480
             Width           =   2295
          End
@@ -83,7 +83,7 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Index           =   1
             Left            =   0
-            TabIndex        =   17
+            TabIndex        =   10
             Top             =   240
             Width           =   2295
          End
@@ -92,7 +92,7 @@ Begin VB.UserControl ctlBrdImage
             Height          =   255
             Index           =   0
             Left            =   0
-            TabIndex        =   16
+            TabIndex        =   9
             Top             =   0
             Value           =   -1  'True
             Width           =   2295
@@ -102,7 +102,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   285
          Index           =   1
          Left            =   1380
-         TabIndex        =   9
+         TabIndex        =   6
          Top             =   1320
          Width           =   495
       End
@@ -110,7 +110,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   285
          Index           =   2
          Left            =   2400
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   1320
          Width           =   495
       End
@@ -118,14 +118,14 @@ Begin VB.UserControl ctlBrdImage
          Height          =   285
          Index           =   0
          Left            =   480
-         TabIndex        =   7
+         TabIndex        =   5
          Top             =   1320
          Width           =   495
       End
       Begin VB.TextBox txtFilename 
          Height          =   285
          Left            =   120
-         TabIndex        =   5
+         TabIndex        =   3
          Top             =   480
          Width           =   2535
       End
@@ -137,7 +137,7 @@ Begin VB.UserControl ctlBrdImage
          Left            =   2760
          ScaleHeight     =   375
          ScaleWidth      =   495
-         TabIndex        =   3
+         TabIndex        =   13
          Top             =   480
          Width           =   495
          Begin VB.CommandButton cmdBrowse 
@@ -155,7 +155,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Index           =   1
          Left            =   240
-         TabIndex        =   13
+         TabIndex        =   18
          ToolTipText     =   "The RGB values of the transparent color"
          Top             =   2160
          Width           =   1575
@@ -165,7 +165,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Index           =   0
          Left            =   240
-         TabIndex        =   12
+         TabIndex        =   17
          ToolTipText     =   "Click 'Select' and the click the color on the image (on the board) that you wish to be transparent"
          Top             =   1800
          Width           =   1575
@@ -175,7 +175,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Index           =   1
          Left            =   300
-         TabIndex        =   11
+         TabIndex        =   16
          Top             =   1365
          Width           =   2655
       End
@@ -184,7 +184,7 @@ Begin VB.UserControl ctlBrdImage
          Height          =   255
          Index           =   0
          Left            =   240
-         TabIndex        =   10
+         TabIndex        =   15
          Top             =   960
          Width           =   1935
       End
@@ -192,7 +192,7 @@ Begin VB.UserControl ctlBrdImage
          Caption         =   "Image filename"
          Height          =   255
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   14
          Top             =   240
          Width           =   2655
       End
@@ -201,7 +201,7 @@ Begin VB.UserControl ctlBrdImage
       Height          =   315
       Left            =   0
       Style           =   2  'Dropdown List
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   600
       Width           =   3375
    End
@@ -209,7 +209,7 @@ Begin VB.UserControl ctlBrdImage
       Caption         =   "Delete"
       Height          =   375
       Left            =   2520
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   120
       Width           =   855
    End
