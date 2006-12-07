@@ -837,7 +837,9 @@ Private Sub Command4_Click()
 End Sub
 Private Sub Command5_Click()
     itemList(activeItemIndex).itemNeedUpdate = True
-    itemGraphics.Show vbModal
+    Dim frm As New frmItemGraphics
+    frm.Show vbModal
+    Unload frm
 End Sub
 Private Sub equipable_Click()
     itemList(activeItemIndex).itemNeedUpdate = True
