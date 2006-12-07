@@ -28,14 +28,14 @@ Begin VB.Form frmNewBoard
          Left            =   120
          ScaleHeight     =   3375
          ScaleWidth      =   5775
-         TabIndex        =   1
+         TabIndex        =   19
          Top             =   120
          Width           =   5775
          Begin VB.Frame fraDimensions 
             Caption         =   "Dimensions"
             Height          =   1935
             Left            =   0
-            TabIndex        =   18
+            TabIndex        =   24
             Top             =   480
             Width           =   1935
             Begin VB.HScrollBar hsbDims 
@@ -43,7 +43,7 @@ Begin VB.Form frmNewBoard
                Index           =   1
                Left            =   1320
                Max             =   2
-               TabIndex        =   28
+               TabIndex        =   5
                Top             =   720
                Value           =   1
                Width           =   495
@@ -53,7 +53,7 @@ Begin VB.Form frmNewBoard
                Index           =   2
                Left            =   1320
                Max             =   2
-               TabIndex        =   27
+               TabIndex        =   7
                Top             =   1080
                Value           =   1
                Width           =   495
@@ -63,7 +63,7 @@ Begin VB.Form frmNewBoard
                Index           =   0
                Left            =   1320
                Max             =   2
-               TabIndex        =   26
+               TabIndex        =   3
                Top             =   360
                Value           =   1
                Width           =   495
@@ -72,7 +72,7 @@ Begin VB.Form frmNewBoard
                Height          =   285
                Index           =   2
                Left            =   720
-               TabIndex        =   21
+               TabIndex        =   6
                Text            =   "4"
                Top             =   1080
                Width           =   495
@@ -81,7 +81,7 @@ Begin VB.Form frmNewBoard
                Height          =   285
                Index           =   1
                Left            =   720
-               TabIndex        =   20
+               TabIndex        =   4
                Text            =   "10"
                Top             =   720
                Width           =   495
@@ -90,7 +90,7 @@ Begin VB.Form frmNewBoard
                Height          =   285
                Index           =   0
                Left            =   720
-               TabIndex        =   19
+               TabIndex        =   2
                Text            =   "15"
                Top             =   360
                Width           =   495
@@ -100,7 +100,7 @@ Begin VB.Form frmNewBoard
                Height          =   255
                Index           =   2
                Left            =   120
-               TabIndex        =   25
+               TabIndex        =   28
                Top             =   1120
                Width           =   495
             End
@@ -109,7 +109,7 @@ Begin VB.Form frmNewBoard
                Caption         =   "(1024 x 1024 pixels)"
                Height          =   255
                Left            =   120
-               TabIndex        =   24
+               TabIndex        =   27
                Top             =   1560
                Width           =   1695
             End
@@ -118,7 +118,7 @@ Begin VB.Form frmNewBoard
                Height          =   255
                Index           =   1
                Left            =   120
-               TabIndex        =   23
+               TabIndex        =   26
                Top             =   760
                Width           =   495
             End
@@ -127,7 +127,7 @@ Begin VB.Form frmNewBoard
                Height          =   255
                Index           =   0
                Left            =   120
-               TabIndex        =   22
+               TabIndex        =   25
                Top             =   400
                Width           =   495
             End
@@ -136,7 +136,7 @@ Begin VB.Form frmNewBoard
             Caption         =   "Coordinate system"
             Height          =   1215
             Left            =   2040
-            TabIndex        =   12
+            TabIndex        =   22
             Top             =   480
             Width           =   3735
             Begin VB.PictureBox Picture3 
@@ -147,14 +147,14 @@ Begin VB.Form frmNewBoard
                Left            =   120
                ScaleHeight     =   855
                ScaleWidth      =   3495
-               TabIndex        =   13
+               TabIndex        =   23
                Top             =   240
                Width           =   3495
                Begin VB.CheckBox chkPxAbsolute 
                   Caption         =   "Use pixel coordinates"
                   Height          =   375
                   Left            =   1680
-                  TabIndex        =   17
+                  TabIndex        =   11
                   Top             =   480
                   Width           =   1815
                End
@@ -163,7 +163,7 @@ Begin VB.Form frmNewBoard
                   Height          =   375
                   Index           =   2
                   Left            =   1680
-                  TabIndex        =   16
+                  TabIndex        =   9
                   Top             =   0
                   Width           =   1815
                End
@@ -172,7 +172,7 @@ Begin VB.Form frmNewBoard
                   Height          =   375
                   Index           =   1
                   Left            =   0
-                  TabIndex        =   15
+                  TabIndex        =   10
                   Top             =   480
                   Width           =   1575
                End
@@ -181,7 +181,7 @@ Begin VB.Form frmNewBoard
                   Height          =   375
                   Index           =   0
                   Left            =   0
-                  TabIndex        =   14
+                  TabIndex        =   8
                   Top             =   0
                   Value           =   -1  'True
                   Width           =   1935
@@ -192,7 +192,7 @@ Begin VB.Form frmNewBoard
             Caption         =   "Background image"
             Height          =   615
             Left            =   2040
-            TabIndex        =   8
+            TabIndex        =   20
             Top             =   1800
             Width           =   3735
             Begin VB.PictureBox Picture2 
@@ -203,14 +203,14 @@ Begin VB.Form frmNewBoard
                Left            =   3060
                ScaleHeight     =   285
                ScaleWidth      =   615
-               TabIndex        =   10
+               TabIndex        =   21
                Top             =   240
                Width           =   615
                Begin VB.CommandButton cmdBrowseBkgImg 
                   Caption         =   "..."
                   Height          =   255
                   Left            =   60
-                  TabIndex        =   11
+                  TabIndex        =   13
                   Top             =   0
                   Width           =   495
                End
@@ -218,7 +218,7 @@ Begin VB.Form frmNewBoard
             Begin VB.TextBox txtBackgroundImage 
                Height          =   285
                Left            =   240
-               TabIndex        =   9
+               TabIndex        =   12
                Top             =   240
                Width           =   2775
             End
@@ -227,7 +227,7 @@ Begin VB.Form frmNewBoard
             Enabled         =   0   'False
             Height          =   285
             Left            =   2280
-            TabIndex        =   7
+            TabIndex        =   15
             Top             =   2520
             Width           =   2775
          End
@@ -236,7 +236,7 @@ Begin VB.Form frmNewBoard
             Enabled         =   0   'False
             Height          =   255
             Left            =   5160
-            TabIndex        =   6
+            TabIndex        =   16
             Top             =   2520
             Width           =   495
          End
@@ -245,7 +245,7 @@ Begin VB.Form frmNewBoard
             Caption         =   "OK"
             Height          =   375
             Left            =   4200
-            TabIndex        =   5
+            TabIndex        =   18
             Top             =   3000
             Width           =   1455
          End
@@ -253,7 +253,7 @@ Begin VB.Form frmNewBoard
             Caption         =   "Do not show this form on startup"
             Height          =   255
             Left            =   120
-            TabIndex        =   4
+            TabIndex        =   17
             Top             =   3000
             Width           =   2655
          End
@@ -262,7 +262,7 @@ Begin VB.Form frmNewBoard
             Height          =   255
             Index           =   1
             Left            =   120
-            TabIndex        =   3
+            TabIndex        =   14
             Top             =   2520
             Width           =   1815
          End
@@ -271,7 +271,7 @@ Begin VB.Form frmNewBoard
             Height          =   495
             Index           =   0
             Left            =   120
-            TabIndex        =   2
+            TabIndex        =   1
             Top             =   0
             Value           =   -1  'True
             Width           =   3135
