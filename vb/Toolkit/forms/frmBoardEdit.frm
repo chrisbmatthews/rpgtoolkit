@@ -2,16 +2,16 @@ VERSION 5.00
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form frmBoardEdit 
    Caption         =   "frmBoardEdit"
-   ClientHeight    =   6465
+   ClientHeight    =   6405
    ClientLeft      =   60
    ClientTop       =   750
-   ClientWidth     =   11340
+   ClientWidth     =   10545
    Icon            =   "frmBoardEdit.frx":0000
    LinkTopic       =   "Form1"
    MDIChild        =   -1  'True
    MinButton       =   0   'False
-   ScaleHeight     =   6465
-   ScaleWidth      =   11340
+   ScaleHeight     =   6405
+   ScaleWidth      =   10545
    Begin TabDlg.SSTab sstBoard 
       Height          =   6255
       Left            =   0
@@ -49,7 +49,7 @@ Begin VB.Form frmBoardEdit
          Left            =   -74880
          ScaleHeight     =   5775
          ScaleWidth      =   10095
-         TabIndex        =   4
+         TabIndex        =   40
          Top             =   360
          Width           =   10095
          Begin VB.Frame fraProperties 
@@ -57,13 +57,13 @@ Begin VB.Form frmBoardEdit
             Height          =   1575
             Index           =   2
             Left            =   0
-            TabIndex        =   71
+            TabIndex        =   77
             Top             =   4200
             Width           =   4935
             Begin VB.ListBox lbThreads 
                Height          =   1035
                Left            =   840
-               TabIndex        =   75
+               TabIndex        =   14
                Top             =   360
                Width           =   2055
             End
@@ -74,14 +74,14 @@ Begin VB.Form frmBoardEdit
                Left            =   3120
                ScaleHeight     =   975
                ScaleWidth      =   975
-               TabIndex        =   72
+               TabIndex        =   78
                Top             =   360
                Width           =   975
                Begin VB.CommandButton cmdThreadsAdd 
                   Caption         =   "Add"
                   Height          =   375
                   Left            =   0
-                  TabIndex        =   74
+                  TabIndex        =   15
                   Top             =   0
                   Width           =   975
                End
@@ -89,7 +89,7 @@ Begin VB.Form frmBoardEdit
                   Caption         =   "Remove"
                   Height          =   375
                   Left            =   0
-                  TabIndex        =   73
+                  TabIndex        =   16
                   Top             =   480
                   Width           =   975
                End
@@ -100,14 +100,14 @@ Begin VB.Form frmBoardEdit
             Height          =   1335
             Index           =   3
             Left            =   5160
-            TabIndex        =   59
+            TabIndex        =   71
             Top             =   0
             Width           =   4935
             Begin VB.HScrollBar hsbDims 
                Height          =   285
                Index           =   2
                Left            =   4320
-               TabIndex        =   65
+               TabIndex        =   22
                Top             =   300
                Value           =   1
                Width           =   495
@@ -116,7 +116,7 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Index           =   2
                Left            =   3600
-               TabIndex        =   64
+               TabIndex        =   21
                Text            =   "Text7"
                Top             =   300
                Width           =   615
@@ -125,7 +125,7 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Index           =   1
                Left            =   1500
-               TabIndex        =   63
+               TabIndex        =   20
                Top             =   720
                Value           =   1
                Width           =   495
@@ -134,7 +134,7 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Index           =   1
                Left            =   840
-               TabIndex        =   62
+               TabIndex        =   19
                Text            =   "Text7"
                Top             =   720
                Width           =   615
@@ -143,7 +143,7 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Index           =   0
                Left            =   1500
-               TabIndex        =   61
+               TabIndex        =   18
                Top             =   300
                Value           =   1
                Width           =   495
@@ -152,7 +152,7 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Index           =   0
                Left            =   840
-               TabIndex        =   60
+               TabIndex        =   17
                Text            =   "Text7"
                Top             =   300
                Width           =   615
@@ -162,7 +162,7 @@ Begin VB.Form frmBoardEdit
                Height          =   375
                Index           =   13
                Left            =   3000
-               TabIndex        =   76
+               TabIndex        =   79
                Top             =   780
                Width           =   1815
             End
@@ -171,7 +171,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   12
                Left            =   3000
-               TabIndex        =   70
+               TabIndex        =   76
                Top             =   360
                Width           =   495
             End
@@ -180,7 +180,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   11
                Left            =   2055
-               TabIndex        =   69
+               TabIndex        =   75
                Top             =   780
                Width           =   975
             End
@@ -189,7 +189,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   10
                Left            =   2055
-               TabIndex        =   68
+               TabIndex        =   74
                Top             =   360
                Width           =   975
             End
@@ -198,7 +198,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   8
                Left            =   120
-               TabIndex        =   67
+               TabIndex        =   73
                Top             =   360
                Width           =   735
             End
@@ -207,7 +207,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   9
                Left            =   120
-               TabIndex        =   66
+               TabIndex        =   72
                Top             =   780
                Width           =   735
             End
@@ -217,28 +217,28 @@ Begin VB.Form frmBoardEdit
             Height          =   1215
             Index           =   4
             Left            =   5160
-            TabIndex        =   50
+            TabIndex        =   66
             Top             =   1440
             Width           =   4935
             Begin VB.ComboBox cmbLayerTitles 
                Height          =   315
                Left            =   840
                Style           =   2  'Dropdown List
-               TabIndex        =   54
+               TabIndex        =   25
                Top             =   720
                Width           =   1335
             End
             Begin VB.TextBox txtLayerTitle 
                Height          =   285
                Left            =   3000
-               TabIndex        =   53
+               TabIndex        =   26
                Top             =   720
                Width           =   1815
             End
             Begin VB.TextBox txtConstant 
                Height          =   285
                Left            =   3000
-               TabIndex        =   52
+               TabIndex        =   24
                Top             =   240
                Width           =   1815
             End
@@ -246,7 +246,7 @@ Begin VB.Form frmBoardEdit
                Height          =   315
                Left            =   840
                Style           =   2  'Dropdown List
-               TabIndex        =   51
+               TabIndex        =   23
                Top             =   240
                Width           =   1335
             End
@@ -255,7 +255,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   16
                Left            =   120
-               TabIndex        =   58
+               TabIndex        =   70
                Top             =   780
                Width           =   735
             End
@@ -264,7 +264,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   17
                Left            =   2400
-               TabIndex        =   57
+               TabIndex        =   69
                Top             =   780
                Width           =   855
             End
@@ -273,7 +273,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   15
                Left            =   2400
-               TabIndex        =   56
+               TabIndex        =   68
                Top             =   300
                Width           =   855
             End
@@ -282,7 +282,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   14
                Left            =   120
-               TabIndex        =   55
+               TabIndex        =   67
                Top             =   300
                Width           =   735
             End
@@ -292,52 +292,99 @@ Begin VB.Form frmBoardEdit
             Height          =   1575
             Index           =   6
             Left            =   5160
-            TabIndex        =   44
+            TabIndex        =   63
             Top             =   4200
             Width           =   4935
+            Begin VB.TextBox txtAmbientLevel 
+               Height          =   285
+               Index           =   2
+               Left            =   4200
+               TabIndex        =   34
+               Text            =   "0"
+               Top             =   960
+               Width           =   615
+            End
+            Begin VB.TextBox txtAmbientLevel 
+               Height          =   285
+               Index           =   1
+               Left            =   4200
+               TabIndex        =   33
+               Text            =   "0"
+               Top             =   600
+               Width           =   615
+            End
+            Begin VB.TextBox txtAmbientLevel 
+               Height          =   285
+               Index           =   0
+               Left            =   4200
+               TabIndex        =   32
+               Text            =   "0"
+               Top             =   240
+               Width           =   615
+            End
             Begin VB.PictureBox picHolder 
                BorderStyle     =   0  'None
                Height          =   375
                Index           =   6
-               Left            =   3600
+               Left            =   2880
                ScaleHeight     =   375
                ScaleWidth      =   495
-               TabIndex        =   47
-               Top             =   960
+               TabIndex        =   64
+               Top             =   1080
                Width           =   495
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
                   Index           =   8
                   Left            =   0
-                  TabIndex        =   48
+                  TabIndex        =   36
                   Top             =   0
                   Width           =   495
                End
             End
             Begin VB.TextBox txtPrgEnterBoard 
                Height          =   285
-               Left            =   840
-               TabIndex        =   46
+               Left            =   240
+               TabIndex        =   35
                Text            =   "Text2"
-               Top             =   960
-               Width           =   2655
+               Top             =   1080
+               Width           =   2535
             End
             Begin VB.CheckBox chkDisableSaving 
                Caption         =   "Disable progressive saving"
-               Height          =   255
-               Left            =   600
-               TabIndex        =   45
+               Height          =   375
+               Left            =   240
+               TabIndex        =   31
+               ToolTipText     =   "Disable saving in the default menu"
                Top             =   360
-               Width           =   3255
+               Width           =   2175
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "R                          G                        B"
+               Height          =   975
+               Index           =   22
+               Left            =   3960
+               TabIndex        =   81
+               Top             =   240
+               Width           =   615
+            End
+            Begin VB.Label lblProperties 
+               Caption         =   "Ambient RGB (-255 to +255) "
+               Height          =   495
+               Index           =   21
+               Left            =   2880
+               TabIndex        =   80
+               ToolTipText     =   "A uniform shade that is applied to the board"
+               Top             =   360
+               Width           =   1215
             End
             Begin VB.Label lblProperties 
                Caption         =   "Program to run when entering board"
                Height          =   255
                Index           =   20
-               Left            =   840
-               TabIndex        =   49
-               Top             =   720
+               Left            =   240
+               TabIndex        =   65
+               Top             =   840
                Width           =   2775
             End
          End
@@ -346,7 +393,7 @@ Begin VB.Form frmBoardEdit
             Height          =   1335
             Index           =   5
             Left            =   5160
-            TabIndex        =   36
+            TabIndex        =   59
             Top             =   2760
             Width           =   4935
             Begin VB.PictureBox picHolder 
@@ -356,7 +403,7 @@ Begin VB.Form frmBoardEdit
                Left            =   4320
                ScaleHeight     =   375
                ScaleWidth      =   495
-               TabIndex        =   40
+               TabIndex        =   60
                Top             =   720
                Width           =   495
                Begin VB.CommandButton cmdBrowse 
@@ -364,7 +411,7 @@ Begin VB.Form frmBoardEdit
                   Height          =   255
                   Index           =   7
                   Left            =   0
-                  TabIndex        =   41
+                  TabIndex        =   30
                   Top             =   0
                   Width           =   495
                End
@@ -372,7 +419,7 @@ Begin VB.Form frmBoardEdit
             Begin VB.TextBox txtBattleBackground 
                Height          =   285
                Left            =   1560
-               TabIndex        =   39
+               TabIndex        =   29
                Text            =   "Text4"
                Top             =   720
                Width           =   2655
@@ -380,7 +427,7 @@ Begin VB.Form frmBoardEdit
             Begin VB.TextBox txtBoardSkill 
                Height          =   285
                Left            =   4320
-               TabIndex        =   38
+               TabIndex        =   28
                Text            =   "Text3"
                Top             =   240
                Width           =   495
@@ -389,7 +436,7 @@ Begin VB.Form frmBoardEdit
                Caption         =   "Enable fighting on this board"
                Height          =   375
                Left            =   240
-               TabIndex        =   37
+               TabIndex        =   27
                Top             =   240
                Width           =   2535
             End
@@ -398,7 +445,7 @@ Begin VB.Form frmBoardEdit
                Height          =   495
                Index           =   18
                Left            =   240
-               TabIndex        =   43
+               TabIndex        =   62
                Top             =   660
                Width           =   1095
             End
@@ -407,7 +454,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   19
                Left            =   3450
-               TabIndex        =   42
+               TabIndex        =   61
                Top             =   300
                Width           =   855
             End
@@ -417,7 +464,7 @@ Begin VB.Form frmBoardEdit
             Height          =   2055
             Index           =   0
             Left            =   0
-            TabIndex        =   18
+            TabIndex        =   49
             Top             =   0
             Width           =   4935
             Begin VB.PictureBox picHolder 
@@ -427,7 +474,7 @@ Begin VB.Form frmBoardEdit
                Left            =   3600
                ScaleHeight     =   330
                ScaleWidth      =   495
-               TabIndex        =   29
+               TabIndex        =   53
                Top             =   1680
                Width           =   495
                Begin VB.CommandButton cmdBrowse 
@@ -435,7 +482,7 @@ Begin VB.Form frmBoardEdit
                   Height          =   255
                   Index           =   3
                   Left            =   0
-                  TabIndex        =   30
+                  TabIndex        =   8
                   Top             =   0
                   Width           =   495
                End
@@ -444,7 +491,7 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Index           =   3
                Left            =   840
-               TabIndex        =   28
+               TabIndex        =   7
                Text            =   "Text2"
                Top             =   1680
                Width           =   2655
@@ -456,7 +503,7 @@ Begin VB.Form frmBoardEdit
                Left            =   3600
                ScaleHeight     =   375
                ScaleWidth      =   495
-               TabIndex        =   26
+               TabIndex        =   52
                Top             =   1320
                Width           =   495
                Begin VB.CommandButton cmdBrowse 
@@ -464,7 +511,7 @@ Begin VB.Form frmBoardEdit
                   Height          =   255
                   Index           =   2
                   Left            =   0
-                  TabIndex        =   27
+                  TabIndex        =   6
                   Top             =   0
                   Width           =   495
                End
@@ -473,7 +520,7 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Index           =   2
                Left            =   840
-               TabIndex        =   25
+               TabIndex        =   5
                Text            =   "Text2"
                Top             =   1320
                Width           =   2655
@@ -485,7 +532,7 @@ Begin VB.Form frmBoardEdit
                Left            =   3600
                ScaleHeight     =   375
                ScaleWidth      =   495
-               TabIndex        =   23
+               TabIndex        =   51
                Top             =   960
                Width           =   495
                Begin VB.CommandButton cmdBrowse 
@@ -493,7 +540,7 @@ Begin VB.Form frmBoardEdit
                   Height          =   255
                   Index           =   1
                   Left            =   0
-                  TabIndex        =   24
+                  TabIndex        =   4
                   Top             =   0
                   Width           =   495
                End
@@ -502,7 +549,7 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Index           =   1
                Left            =   840
-               TabIndex        =   22
+               TabIndex        =   3
                Text            =   "Text2"
                Top             =   960
                Width           =   2655
@@ -514,7 +561,7 @@ Begin VB.Form frmBoardEdit
                Left            =   3600
                ScaleHeight     =   375
                ScaleWidth      =   495
-               TabIndex        =   20
+               TabIndex        =   50
                Top             =   600
                Width           =   495
                Begin VB.CommandButton cmdBrowse 
@@ -522,7 +569,7 @@ Begin VB.Form frmBoardEdit
                   Height          =   255
                   Index           =   0
                   Left            =   0
-                  TabIndex        =   21
+                  TabIndex        =   2
                   Top             =   0
                   Width           =   495
                End
@@ -531,7 +578,7 @@ Begin VB.Form frmBoardEdit
                Height          =   285
                Index           =   0
                Left            =   840
-               TabIndex        =   19
+               TabIndex        =   1
                Text            =   "Text2"
                Top             =   600
                Width           =   2655
@@ -541,7 +588,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   0
                Left            =   120
-               TabIndex        =   35
+               TabIndex        =   58
                Top             =   240
                Width           =   3255
             End
@@ -550,7 +597,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   1
                Left            =   240
-               TabIndex        =   34
+               TabIndex        =   57
                Top             =   600
                Width           =   495
             End
@@ -559,7 +606,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   2
                Left            =   240
-               TabIndex        =   33
+               TabIndex        =   56
                Top             =   960
                Width           =   495
             End
@@ -568,7 +615,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   3
                Left            =   240
-               TabIndex        =   32
+               TabIndex        =   55
                Top             =   1320
                Width           =   495
             End
@@ -577,7 +624,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   4
                Left            =   240
-               TabIndex        =   31
+               TabIndex        =   54
                Top             =   1680
                Width           =   495
             End
@@ -587,7 +634,7 @@ Begin VB.Form frmBoardEdit
             Height          =   1935
             Index           =   1
             Left            =   0
-            TabIndex        =   5
+            TabIndex        =   41
             Top             =   2160
             Width           =   4935
             Begin VB.PictureBox picBackgroundColor 
@@ -599,7 +646,7 @@ Begin VB.Form frmBoardEdit
                Left            =   2880
                ScaleHeight     =   255
                ScaleWidth      =   615
-               TabIndex        =   14
+               TabIndex        =   45
                Top             =   960
                Width           =   615
             End
@@ -610,7 +657,7 @@ Begin VB.Form frmBoardEdit
                Left            =   3600
                ScaleHeight     =   375
                ScaleWidth      =   495
-               TabIndex        =   12
+               TabIndex        =   44
                Top             =   480
                Width           =   495
                Begin VB.CommandButton cmdBrowse 
@@ -618,7 +665,7 @@ Begin VB.Form frmBoardEdit
                   Height          =   255
                   Index           =   4
                   Left            =   0
-                  TabIndex        =   13
+                  TabIndex        =   10
                   Top             =   0
                   Width           =   495
                End
@@ -626,7 +673,7 @@ Begin VB.Form frmBoardEdit
             Begin VB.TextBox txtBackgroundImage 
                Height          =   285
                Left            =   840
-               TabIndex        =   11
+               TabIndex        =   9
                Text            =   "Text1"
                Top             =   480
                Width           =   2655
@@ -638,7 +685,7 @@ Begin VB.Form frmBoardEdit
                Left            =   3600
                ScaleHeight     =   375
                ScaleWidth      =   495
-               TabIndex        =   9
+               TabIndex        =   43
                Top             =   960
                Width           =   495
                Begin VB.CommandButton cmdBrowse 
@@ -646,7 +693,7 @@ Begin VB.Form frmBoardEdit
                   Height          =   255
                   Index           =   5
                   Left            =   0
-                  TabIndex        =   10
+                  TabIndex        =   11
                   Top             =   0
                   Width           =   495
                End
@@ -654,7 +701,7 @@ Begin VB.Form frmBoardEdit
             Begin VB.TextBox txtBackgroundMusic 
                Height          =   285
                Left            =   840
-               TabIndex        =   8
+               TabIndex        =   12
                Text            =   "Text2"
                Top             =   1440
                Width           =   2655
@@ -666,7 +713,7 @@ Begin VB.Form frmBoardEdit
                Left            =   3600
                ScaleHeight     =   375
                ScaleWidth      =   495
-               TabIndex        =   6
+               TabIndex        =   42
                Top             =   1440
                Width           =   495
                Begin VB.CommandButton cmdBrowse 
@@ -674,7 +721,7 @@ Begin VB.Form frmBoardEdit
                   Height          =   255
                   Index           =   6
                   Left            =   0
-                  TabIndex        =   7
+                  TabIndex        =   13
                   Top             =   0
                   Width           =   495
                End
@@ -684,7 +731,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   6
                Left            =   840
-               TabIndex        =   17
+               TabIndex        =   48
                Top             =   940
                Width           =   1815
             End
@@ -693,7 +740,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   5
                Left            =   840
-               TabIndex        =   16
+               TabIndex        =   47
                Top             =   240
                Width           =   2775
             End
@@ -702,7 +749,7 @@ Begin VB.Form frmBoardEdit
                Height          =   255
                Index           =   7
                Left            =   840
-               TabIndex        =   15
+               TabIndex        =   46
                Top             =   1200
                Width           =   2775
             End
@@ -712,7 +759,7 @@ Begin VB.Form frmBoardEdit
          Height          =   255
          Left            =   120
          SmallChange     =   32
-         TabIndex        =   3
+         TabIndex        =   39
          TabStop         =   0   'False
          Top             =   3000
          Visible         =   0   'False
@@ -722,7 +769,7 @@ Begin VB.Form frmBoardEdit
          Height          =   2655
          Left            =   4320
          SmallChange     =   32
-         TabIndex        =   2
+         TabIndex        =   38
          TabStop         =   0   'False
          Top             =   360
          Visible         =   0   'False
@@ -739,7 +786,7 @@ Begin VB.Form frmBoardEdit
          ScaleHeight     =   177
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   281
-         TabIndex        =   1
+         TabIndex        =   37
          Top             =   360
          Width           =   4215
          Begin VB.Line lineSelection 
@@ -1556,6 +1603,11 @@ End Sub
 Private Sub mnuExport_Click(Index As Integer): On Error Resume Next
     Call exportImage(Index)
 End Sub
+
+Private Sub mnuOpenFile_Click(Index As Integer): On Error Resume Next
+    Call tkMainForm.openmnu_Click
+End Sub
+
 Private Sub mnuPaste_Click(): On Error Resume Next
     If TypeOf getActiveControl Is TextBox Then
         getActiveControl.SelText = Clipboard.GetText
@@ -1652,25 +1704,34 @@ Private Sub picBoard_KeyDown(keyCode As Integer, Shift As Integer) ':on error re
         Select Case keyCode
             Case vbKeyQ: .brdOptSetting(BS_SCROLL).value = True
             Case vbKeyW: .brdOptSetting(BS_ZOOM).value = True
-            Case vbKeyE: .brdOptSetting(BS_TILE).value = True
-            Case vbKeyR: .brdOptSetting(BS_VECTOR).value = True
-            Case vbKeyT: .brdOptSetting(BS_PROGRAM).value = True
-            Case vbKeyY: .brdOptSetting(BS_SPRITE).value = True
-            Case vbKeyU: .brdOptSetting(BS_IMAGE).value = True
-            Case vbKeyI: .brdOptSetting(BS_SHADING).value = True
-            'tbd: Lighting
-            Case vbKeyA: If .brdOptTool(BT_DRAW).Enabled Then .brdOptTool(BT_DRAW).value = True
-            Case vbKeyS: If .brdOptTool(BT_SELECT).Enabled Then .brdOptTool(BT_SELECT).value = True
-            Case vbKeyD: If .brdOptTool(BT_FLOOD).Enabled Then .brdOptTool(BT_FLOOD).value = True
-            Case vbKeyF: If .brdOptTool(BT_ERASE).Enabled Then .brdOptTool(BT_ERASE).value = True
-            'tbd: Rect, dropper
-            Case vbKeyG: .brdChkGrid.value = Not .brdChkGrid.value
-            Case vbKeyH: .brdChkAutotile.value = Not .brdChkAutotile.value
+            Case vbKeyT: .brdOptSetting(BS_TILE).value = True
+            Case vbKeyV: .brdOptSetting(BS_VECTOR).value = True
+            Case vbKeyP: .brdOptSetting(BS_PROGRAM).value = True
+            Case vbKeyS: .brdOptSetting(BS_SPRITE).value = True
+            Case vbKeyI: .brdOptSetting(BS_IMAGE).value = True
+            Case vbKeyY: .brdOptSetting(BS_SHADING).value = True
+            Case vbKeyU: .brdOptSetting(BS_LIGHTING).value = True
+            Case vbKeyD: If .brdOptTool(BT_DRAW).Enabled Then .brdOptTool(BT_DRAW).value = True
+            Case vbKeyA: If .brdOptTool(BT_SELECT).Enabled Then .brdOptTool(BT_SELECT).value = True
+            Case vbKeyF: If .brdOptTool(BT_FLOOD).Enabled Then .brdOptTool(BT_FLOOD).value = True
+            Case vbKeyE: If .brdOptTool(BT_ERASE).Enabled Then .brdOptTool(BT_ERASE).value = True
+            Case vbKeyR: If .brdOptTool(BT_RECT).Enabled Then .brdOptTool(BT_RECT).value = True
+            Case vbKeyO: If .brdOptTool(BT_DROPPER).Enabled Then .brdOptTool(BT_DROPPER).value = True
+            Case vbKeyG:
+                .brdChkGrid.value = IIf(.brdChkGrid.value, 0, 1)
+                Call mdiChkGrid(.brdChkGrid.value)
+            Case vbKeyH:
+                .brdChkAutotile.value = IIf(.brdChkAutotile.value, 0, 1)
+                Call mdiChkAutotile(.brdChkAutotile.value)
             Case vbKeyL
                 tstFile = configfile.lastTileset
                 tilesetForm.Show vbModal
-            Case vbKeyN: .brdChkHideLayers.value = Not .brdChkHideLayers.value
-            Case vbKeyM: .brdChkShowLayers.value = Not .brdChkShowLayers.value
+            Case vbKeyJ
+                .brdChkHideLayers.value = IIf(.brdChkHideLayers.value, 0, 1)
+                Call mdiChkHideLayers(.brdChkHideLayers.value, True)
+            Case vbKeyK
+                .brdChkShowLayers.value = IIf(.brdChkShowLayers.value, 0, 1)
+                Call mdiChkShowLayers(.brdChkShowLayers.value, True)
             
             Case vbKeyDelete, vbKeyBack:
                 Select Case m_ed.optSetting
@@ -1879,7 +1940,7 @@ Private Sub picBoard_MouseMove(Button As Integer, Shift As Integer, x As Single,
     End If
       
     Select Case m_ed.optTool
-        Case BT_SELECT, BT_IMG_TRANSP
+        Case BT_SELECT, BT_IMG_TRANSP, BT_RECT
             If Button Or m_sel.status = SS_PASTING Then Call picBoard_MouseDown(Button, Shift, x, y)
             Exit Sub
     End Select
@@ -2326,8 +2387,8 @@ Public Sub mdiOptSetting(ByVal Index As Integer) ': On Error Resume Next
     m_ed.optSetting = Index
     If Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
 
-    'Revert to draw when changing tool, since a tool may be selected that becomes disabled.
-    tkMainForm.brdOptTool(BT_DRAW).value = True
+    'Revert to select when changing tool, since a tool may be selected that becomes disabled.
+    tkMainForm.brdOptTool(BT_SELECT).value = True
     Call toolsRefresh
     
     'Switch the object toolbar pane.
@@ -4122,6 +4183,11 @@ Private Sub assignProperties() ': on error resume next
         
         chkDisableSaving.value = Abs(.bDisableSaving)
         txtPrgEnterBoard.Text = .enterPrg
+        
+        txtAmbientLevel(0).Text = CStr(.ambientEffect.r)
+        txtAmbientLevel(1).Text = CStr(.ambientEffect.g)
+        txtAmbientLevel(2).Text = CStr(.ambientEffect.b)
+        
     End With
 End Sub
 Private Sub assignLayerTitles() ': on error resume next
@@ -4280,6 +4346,19 @@ Private Sub sstBoardToPicBoard(ByRef x As Single, ByRef y As Single): On Error R
     If y > picBoard.Height Then y = picBoard.Height
     x = picBoard.ScaleX(x, vbTwips, vbPixels)
     y = picBoard.ScaleY(y, vbTwips, vbPixels)
+End Sub
+Private Sub txtAmbientLevel_Change(Index As Integer): On Error Resume Next
+    
+    Dim value As Long
+    value = CLng(val(txtAmbientLevel(Index).Text))
+    value = IIf(value < -255, -255, IIf(value > 255, 255, value))
+    
+    Select Case Index
+        Case 0: m_ed.board(m_ed.undoIndex).ambientEffect.r = value
+        Case 1: m_ed.board(m_ed.undoIndex).ambientEffect.g = value
+        Case 2: m_ed.board(m_ed.undoIndex).ambientEffect.b = value
+    End Select
+            
 End Sub
 Private Sub txtBackgroundImage_Change(): On Error Resume Next
     m_ed.board(m_ed.undoIndex).bkgImage.filename = txtBackgroundImage.Text
