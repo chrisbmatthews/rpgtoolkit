@@ -1217,7 +1217,7 @@ Public Sub boardInitialise(ByRef board As TKBoard): On Error Resume Next
         ReDim .tileShading(0).values(1, 1)
         .tileShading(0).layer = 1
                 
-        ReDim .lights(0)                    'Dynamic lighting objects.
+        ReDim .lights(0)                    'Lighting objects.
         Set .lights(0) = Nothing
 
         'Pre 3.0.7

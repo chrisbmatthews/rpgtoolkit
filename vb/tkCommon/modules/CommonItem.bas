@@ -14,15 +14,15 @@ Option Explicit
 '=========================================================================
 ' Member constants
 '=========================================================================
-Private Const ITEM_WALK_S = 0
-Private Const ITEM_WALK_N = 1
-Private Const ITEM_WALK_E = 2
-Private Const ITEM_WALK_W = 3
-Private Const ITEM_WALK_NW = 4
-Private Const ITEM_WALK_NE = 5
-Private Const ITEM_WALK_SW = 6
-Private Const ITEM_WALK_SE = 7
-Private Const ITEM_REST = 8
+Public Const ITEM_WALK_S = 0
+Public Const ITEM_WALK_N = 1
+Public Const ITEM_WALK_E = 2
+Public Const ITEM_WALK_W = 3
+Public Const ITEM_WALK_NW = 4
+Public Const ITEM_WALK_NE = 5
+Public Const ITEM_WALK_SW = 6
+Public Const ITEM_WALK_SE = 7
+Public Const ITEM_REST = 8
 
 Private Const ITM_MINOR = 7         'Minor version, 3.0.7 (vectors)
 
@@ -482,6 +482,7 @@ Public Function openItem(ByVal file As String) As TKItem
                         Call vect.addPoint(x, y)
                     Next j
                     
+                    vect.bClosed = True
                     If i = 0 Then
                         Set theItem.vBase = vect
                     Else

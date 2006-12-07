@@ -627,6 +627,7 @@ Public Sub openChar(ByVal file As String, ByRef thePlayer As TKPlayer)
                         Call vect.addPoint(x, y)
                     Next j
                     
+                    vect.bClosed = True
                     If i = 0 Then
                         Set thePlayer.vBase = vect
                     Else
