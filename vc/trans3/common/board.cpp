@@ -536,20 +536,28 @@ layerEnd:
 		file >> battleSkill;
 		file >> var; bAllowBattles = bool(var);
 		file >> var; bDisableSaving = bool(var);
-		file >> ambientEffect.r; 
-		file >> ambientEffect.g; 
-		file >> ambientEffect.b; 
+
+		bool bUpdate = false;
+		file >> var; if (ambientEffect.r != var) bUpdate = true; ambientEffect.r = var;
+		file >> var; if (ambientEffect.g != var) bUpdate = true; ambientEffect.g = var; 
+		file >> var; if (ambientEffect.b != var) bUpdate = true; ambientEffect.b = var; 
 
 		if (this == g_pBoard) 
 		{
 			// Required only for the active board.
 
-			// setAmbientLevel calls g_pBoard->renderImageCanvases().
-			setAmbientLevel();
-
+			// setAmbientLevel calls g_pBoard->createImageCanvases().
+			if (bUpdate) 
+			{
+				setAmbientLevel();
+			}
+			else
+			{
+				createImageCanvases();
+			}
 			createVectorCanvases();
 
-		} // if (this == g_pBoard) 
+		}
 
 		return true;
 	}
