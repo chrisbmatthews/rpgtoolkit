@@ -601,8 +601,7 @@ void CProgram::methodCall(CALL_DATA &call)
 	}
 
 	// Make sure this method has actually been resolved.
-	const int firstLine = pLong[0];
-	if (firstLine == -1)
+	if (fra.num == -1)
 	{
 		throw CError(_T("Could not find method ") + fra.lit + _T("."));
 	}
@@ -650,7 +649,7 @@ void CProgram::methodCall(CALL_DATA &call)
 	call.prg->m_pStack = &call.prg->m_stack.back();
 
 	// Jump to the first line of this method.
-	call.prg->m_i = call.prg->m_units.begin() + firstLine;
+	call.prg->m_i = call.prg->m_units.begin() + pLong[0];
 
 	// Record the last line of this method.
 	fr.j = (unsigned int)call.prg->m_i->num;
