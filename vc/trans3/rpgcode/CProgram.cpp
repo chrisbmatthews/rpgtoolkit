@@ -483,6 +483,9 @@ void CProgram::methodCall(CALL_DATA &call)
 
 	int j = -1;
 
+	// Look at the num member as though it were two longs.
+	long *const pLong = (long *)&fra.num;
+
 	if (fra.udt & UDT_OBJ)
 	{
 		// Call to a class function.
@@ -549,15 +552,38 @@ void CProgram::methodCall(CALL_DATA &call)
 			bNoRet = true;
 		}
 
-		fra.num = p->i;
+		pLong[0] = p->i;
+		pLong[1] = p->byref;
 
 		STACK_FRAME &lvar = local[_T("this")];
 		lvar.udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
 		lvar.num = fr.obj = obj;
 	}
 
-	// Look at the num member as though it were two longs.
-	long *pLong = (long *)&fra.num;
+	// If we are inside a class function, some call func() might be
+	// an abbreviated reference to this->func().
+	//
+	// Tbd: This should be resolved at compile-time.
+	if (!fr.obj && call.prg->m_calls.size())
+	{
+		const unsigned int obj = call.prg->m_calls.back().obj;
+		if (obj)
+		{
+			std::map<STRING, tagClass>::iterator i = call.prg->m_classes.find(CProgram::m_objects[obj]);
+			if (i != call.prg->m_classes.end())
+			{
+				LPNAMED_METHOD p = i->second.locate(fra.lit, call.params - 1, CV_PRIVATE);
+				if (p)
+				{
+					pLong[0] = p->i;
+					pLong[1] = p->byref;
+					STACK_FRAME &lvar = local[_T("this")];
+					lvar.udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
+					lvar.num = fr.obj = obj;
+				}
+			}
+		}
+	}
 
 	// Add each parameter's value to the new local heap.
 	for (unsigned int i = 0; i < (call.params - 1); ++i)
@@ -571,26 +597,6 @@ void CProgram::methodCall(CALL_DATA &call)
 		else
 		{
 			local[STRING(_T(" ")) + pos] = call[i].getValue();
-		}
-	}
-
-	if (!fr.obj && call.prg->m_calls.size())
-	{
-		const unsigned int obj = call.prg->m_calls.back().obj;
-		if (obj)
-		{
-			std::map<STRING, tagClass>::iterator i = call.prg->m_classes.find(CProgram::m_objects[obj]);
-			if (i != call.prg->m_classes.end())
-			{
-				LPNAMED_METHOD p = i->second.locate(fra.lit, call.params - 1, CV_PRIVATE);
-				if (p)
-				{
-					pLong[0] = p->i;
-					STACK_FRAME &lvar = local[_T("this")];
-					lvar.udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
-					lvar.num = fr.obj = obj;
-				}
-			}
 		}
 	}
 
