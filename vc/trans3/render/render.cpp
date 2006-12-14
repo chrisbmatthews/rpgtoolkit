@@ -509,7 +509,7 @@ void renderNow(CCanvas *cnv, const bool bForce)
 			for (std::vector<BRD_VECTOR>::const_iterator k = g_pBoard->vectors.begin(); k != g_pBoard->vectors.end(); ++k)
 			{
 				// Check if this is an "under" vector, is on the same layer and has a canvas.
-				if (!k->pCnv || k->layer != layer || !(k->type & TT_UNDER)) 
+				if (!k->pCnv || k->layer != layer || k->type & ~TT_UNDER) 
 					continue;
 
 				// Under vector's bounds.
@@ -524,7 +524,8 @@ void renderNow(CCanvas *cnv, const bool bForce)
 				{
 					// If the under tile is "simple rect" intersection draw straight
 					// off, else check for vector collision.
-					if(((k->attributes & TA_RECT_INTERSECT) && IntersectRect(&sr, &sr, &rBounds))
+					// TBD: does it require a second IntersectRect()? What was the purpose of it?
+					if(((k->attributes & TA_RECT_INTERSECT) /*&& IntersectRect(&sr, &sr, &rBounds)*/)
 						|| k->pV->contains(v, ptUnused))
 					{
 						k->pCnv->BltTransparentPart(
