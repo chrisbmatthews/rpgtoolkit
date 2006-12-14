@@ -358,6 +358,7 @@ layerEnd:
 
 				short var;
 				file >> prg->fileName;
+				file >> prg->graphic;
 				file >> prg->initialVar;
 				file >> prg->initialValue;
 				file >> prg->finalVar;
@@ -388,7 +389,6 @@ layerEnd:
 		file >> ub;
 		if (ub >= 0)
 		{
-			// tbd: players?
 			items.reserve(ub);
 
 			for (i = 0; i <= ub; ++i)
