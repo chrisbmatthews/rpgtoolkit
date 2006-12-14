@@ -760,6 +760,10 @@ SOURCE=..\tkCommon\board\conversion.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\common\CShop.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\common\enemy.cpp
 
 !IF  "$(CFG)" == "trans3 - Win32 Debug"
@@ -1012,6 +1016,10 @@ SOURCE=.\common\CInventory.h
 # Begin Source File
 
 SOURCE=..\tkCommon\board\conversion.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\common\CShop.h
 # End Source File
 # Begin Source File
 
