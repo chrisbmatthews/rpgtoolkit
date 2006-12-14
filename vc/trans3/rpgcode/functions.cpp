@@ -36,6 +36,7 @@
 #include "../common/CAllocationHeap.h"
 #include "../common/CInventory.h"
 #include "../common/CFile.h"
+#include "../common/CShop.h"
 #include "../common/mbox.h"
 #include "../common/state.h"
 #include "../movement/CSprite/CSprite.h"
@@ -3312,13 +3313,36 @@ void fightEnemy(CALL_DATA &params)
 }
 
 /*
- * callshop(...)
+ * void callshop(string item1, string item2, string item3, ...)
  * 
- * Description.
+ * Displays a basic shop interface that allows the buying of the items
+ * given as parameters and the selling of items in the player's inventory.
  */
 void callshop(CALL_DATA &params)
 {
-// TBD
+	extern STRING g_projectPath;
+
+	if (params.params == 0)
+	{
+		throw CError(_T("CallShop() requires at least one parameter."));
+	}
+
+	CInventory shopInv;
+
+	for (unsigned int i = 0; i != params.params; ++i)
+	{
+		const STRING item = addExtension(params[i].getLit(), _T("itm"));
+		if (CFile::fileExists(g_projectPath + ITM_PATH + item))
+		{
+			shopInv.give(g_projectPath + ITM_PATH + item);
+		}
+		else
+		{
+			throw CWarning(_T("CallShop() item not found: " + item));
+		}
+	}
+
+	CShop shop(&shopInv, &g_inv, &g_gp);
 }
 
 /*
@@ -6634,13 +6658,13 @@ void multiRunEnd(CProgram *prg)
 }
 
 /*
- * shopcolors(...)
+ * shopcolors(int index, int r, int g, int b)
  * 
- * Description.
+ * Set the colors used in CallShop(). This function is obselete from 3.0.7.
  */
 void shopcolors(CALL_DATA &params)
 {
-// TBD
+	throw CWarning(_T("ShopColors() is obselete."));
 }
 
 /*
