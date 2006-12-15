@@ -22,14 +22,18 @@
 #include "../rpgcode/CCursorMap.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 
+#define PAD		12
+#define EDGE	24
+
 /*
  * Constructor.
  */
-CShop::CShop(CInventory *shopInv, CInventory *playerInv, ULONG *money):
+CShop::CShop(CInventory *shopInv, CInventory *playerInv, ULONG *money, STRING image):
 	m_shopInv(shopInv), 
 	m_playerInv(playerInv),
 	m_money(money),
-	m_fontSize(24)
+	m_fontSize(24),
+	m_image(image)
 { 
 	extern STRING g_fontFace;
 	m_fontFace = g_fontFace;
@@ -72,13 +76,32 @@ VOID CShop::run()
 {
 	extern int g_resX, g_resY;
 	extern CDirectDraw *g_pDirectDraw;
+	extern STRING g_projectPath;
 
 	// Get the current scene to restore later.
+	CCanvas restore;
+	restore.CreateBlank(NULL, g_resX, g_resY, TRUE);
+	g_pDirectDraw->CopyScreenToCanvas(&restore);
+
 	CCanvas backup;
 	backup.CreateBlank(NULL, g_resX, g_resY, TRUE);
-	g_pDirectDraw->CopyScreenToCanvas(&backup);
+	
+	if (m_image.empty()) 
+	{
+		// Draw a background colour block translucently.
+		restore.Blt(&backup, 0, 0, SRCCOPY);
 
-	// Set default shop colours.
+		CCanvas cnv;
+		cnv.CreateBlank(NULL, g_resX, g_resY, TRUE);
+		cnv.ClearScreen(m_colors.main);
+		cnv.BltTranslucent(&backup, 0, 0, 0.5, -1, -1);
+	}
+	else
+	{
+		drawImage(g_projectPath + BMP_PATH + m_image, &backup, 0, 0, -1, -1);
+		// Hide the bounding boxes.
+		m_colors.line = m_colors.main;
+	}
 
 	// Launch menu.
 	while (true)
@@ -100,7 +123,7 @@ VOID CShop::run()
 	}
 
     // Restore pre-shop scene.
-	g_pDirectDraw->DrawCanvas(&backup, 0, 0);
+	g_pDirectDraw->DrawCanvas(&restore, 0, 0);
 	g_pDirectDraw->Refresh();
 }
 
@@ -109,14 +132,11 @@ VOID CShop::run()
  */
 CCursorMap CShop::drawMainMenu(CONST CCanvas &backup, RECT &items)
 {
-	extern double g_messageWindowTranslucency;
 	extern CDirectDraw *g_pDirectDraw;
 	extern int g_resX, g_resY;
 
-	CONST INT pad = 12, edge = 24;
-
 	CCanvas cnv;
-	cnv.CreateBlank(NULL, g_resX - edge * 2, g_resY - edge * 2, TRUE);
+	cnv.CreateBlank(NULL, g_resX - EDGE * 2, g_resY - EDGE * 2, TRUE);
 	cnv.ClearScreen(m_colors.main);
 
 	// Create a nice font.
@@ -144,7 +164,7 @@ CCursorMap CShop::drawMainMenu(CONST CCanvas &backup, RECT &items)
 	CONST STRING title = _T("Shop");
 	GetTextExtentPoint32(hdc, title.c_str(), title.length(), &sz);
 
-	CONST INT lineHeight = sz.cy + pad;
+	CONST INT lineHeight = sz.cy + PAD;
 
 	// Draw the title.
 	RECT r = {0, 0, cnv.GetWidth(), lineHeight};
@@ -166,21 +186,21 @@ CCursorMap CShop::drawMainMenu(CONST CCanvas &backup, RECT &items)
 	STRING str = _T("Buy");
 	GetTextExtentPoint32(hdc, str.c_str(), str.length(), &sz);
 	
-	CONST INT columns[] = {0, sz.cx + pad * 4, cnv.GetWidth()};
+	CONST INT columns[] = {0, sz.cx + PAD * 4, cnv.GetWidth()};
 
-	RECT rr = {columns[0], lineHeight + pad, columns[1], 2 * lineHeight + pad};
+	RECT rr = {columns[0], lineHeight + PAD, columns[1], 2 * lineHeight + PAD};
 	DrawText(hdc, str.c_str(), str.length(), &rr, DT_CENTER | DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
-	map.add(rr.left + edge + pad * 2, int((rr.top + rr.bottom) / 2) + edge);
+	map.add(rr.left + EDGE + PAD * 2, int((rr.top + rr.bottom) / 2) + EDGE);
 
 	str = _T("Sell");
-	OffsetRect(&rr, 0, lineHeight + pad);
+	OffsetRect(&rr, 0, lineHeight + PAD);
 	DrawText(hdc, str.c_str(), str.length(), &rr, DT_CENTER | DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
-	map.add(rr.left + edge + pad * 2, int((rr.top + rr.bottom) / 2) + edge);
+	map.add(rr.left + EDGE + PAD * 2, int((rr.top + rr.bottom) / 2) + EDGE);
 
 	str = _T("Exit");
-	OffsetRect(&rr, 0, lineHeight + pad);
+	OffsetRect(&rr, 0, lineHeight + PAD);
 	DrawText(hdc, str.c_str(), str.length(), &rr, DT_CENTER | DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
-	map.add(rr.left + edge + pad * 2, int((rr.top + rr.bottom) / 2) + edge);
+	map.add(rr.left + EDGE + PAD * 2, int((rr.top + rr.bottom) / 2) + EDGE);
 
 	// Clean up font.
 	SelectObject(hdc, hOld);
@@ -188,21 +208,21 @@ CCursorMap CShop::drawMainMenu(CONST CCanvas &backup, RECT &items)
 	cnv.CloseDC(hdc);
 
 	// Draw bounding rectangles.
-	cnv.DrawRect(0, 0, cnv.GetWidth() - 1, cnv.GetHeight() - 1, m_colors.text);
-	cnv.DrawRect(0, 0, cnv.GetWidth() - 1, lineHeight - 1, m_colors.text);
-	cnv.DrawRect(0, cnv.GetHeight() - lineHeight - 1, cnv.GetWidth() - 1, cnv.GetHeight() - 1, m_colors.text);
+	cnv.DrawRect(0, 0, cnv.GetWidth() - 1, cnv.GetHeight() - 1, m_colors.line);
+	cnv.DrawRect(0, 0, cnv.GetWidth() - 1, lineHeight - 1, m_colors.line);
+	cnv.DrawRect(0, cnv.GetHeight() - lineHeight - 1, cnv.GetWidth() - 1, cnv.GetHeight() - 1, m_colors.line);
 
 	// Screen destination.
 	CONST INT x = (g_resX - cnv.GetWidth()) / 2, y = (g_resY - cnv.GetHeight()) / 2;
 
-	// Draw translucently with the text drawn solidly.
-	g_pDirectDraw->DrawCanvasPartial(&backup, x, y, x, y, cnv.GetWidth(), cnv.GetHeight(), SRCCOPY);
-	g_pDirectDraw->DrawCanvasTranslucent(&cnv, x, y, g_messageWindowTranslucency, m_colors.text, TRANSP_COLOR);
+	// Draw transparently onto the translucently set backup.
+	g_pDirectDraw->DrawCanvas(&backup, 0, 0, SRCCOPY);
+	g_pDirectDraw->DrawCanvasTransparent(&cnv, x, y, m_colors.main);
 
 	// Return the position for the item list.
-	CONST RECT bounds = {columns[1] + pad, lineHeight + pad, columns[2] - pad, cnv.GetHeight() - lineHeight - pad};
+	CONST RECT bounds = {columns[1] + PAD, lineHeight + PAD, columns[2] - PAD, cnv.GetHeight() - lineHeight - PAD};
 	items = bounds;
-	OffsetRect(&items, edge, edge);
+	OffsetRect(&items, EDGE, EDGE);
 
 	return map;
 }
@@ -212,12 +232,10 @@ CCursorMap CShop::drawMainMenu(CONST CCanvas &backup, RECT &items)
  */
 BOOL CShop::itemMenu(CONST CCanvas &backup, CONST SHOP_OPTION type, CONST RECT bounds)
 {
-	extern double g_messageWindowTranslucency;
 	extern CDirectDraw *g_pDirectDraw;
 
 	CInventory *inv = (type == SHOP_BUY ? m_shopInv : m_playerInv);
 
-	CONST INT pad = 12, edge = 24;
 	CONST INT width = bounds.right - bounds.left, height = bounds.bottom - bounds.top;
 
 	CCanvas cnv;
@@ -235,19 +253,19 @@ BOOL CShop::itemMenu(CONST CCanvas &backup, CONST SHOP_OPTION type, CONST RECT b
 	CONST INT lineHeight = sz.cy;
 
 	// Height of the item information box (nominally 4 lines).
-	CONST INT detailsHeight = lineHeight * 4 + pad;
+	CONST INT detailsHeight = lineHeight * 4 + PAD;
 
 	// Number of list entries that can be visible at one time.
 	CONST INT lines = (height - detailsHeight) / lineHeight - 1;
 
 	// Positions of the columns within the list.
-	CONST INT columns[] = {0, width - sz.cx - pad, width};
+	CONST INT columns[] = {0, width - sz.cx - PAD, width};
 
 	while (true)
 	{
 		cnv.ClearScreen(m_colors.main);
-		cnv.DrawRect(0, 0, cnv.GetWidth() - 1, cnv.GetHeight() - 1, m_colors.text);
-		cnv.DrawRect(0, cnv.GetHeight() - detailsHeight, cnv.GetWidth() - 1, cnv.GetHeight() - 1, m_colors.text);
+		cnv.DrawRect(0, 0, cnv.GetWidth() - 1, cnv.GetHeight() - 1, m_colors.line);
+		cnv.DrawRect(0, cnv.GetHeight() - detailsHeight, cnv.GetWidth() - 1, cnv.GetHeight() - 1, m_colors.line);
 
 		hdc = cnv.OpenDC();
 		SetBkMode(hdc, TRANSPARENT);
@@ -270,7 +288,7 @@ BOOL CShop::itemMenu(CONST CCanvas &backup, CONST SHOP_OPTION type, CONST RECT b
 				if (type == SHOP_SELL) ss << _T(" (") << inv->quantityAt(i) << _T(")");
 				
 				RECT r = {columns[0], lineHeight * j, columns[1], height};
-				OffsetRect(&r, pad / 2, pad / 2);
+				OffsetRect(&r, PAD / 2, PAD / 2);
 				DrawText(hdc, ss.str().c_str(), ss.str().length(), &r, DT_END_ELLIPSIS | DT_SINGLELINE);
 				
 				// Draw the cost.
@@ -278,7 +296,7 @@ BOOL CShop::itemMenu(CONST CCanvas &backup, CONST SHOP_OPTION type, CONST RECT b
 				ss << (type == SHOP_BUY ? item->buyPrice : item->sellPrice) << _T(" GP");
 				
 				RECT p = {columns[1], lineHeight * j, columns[2], height};
-				OffsetRect(&p, pad / 2, pad / 2);
+				OffsetRect(&p, PAD / 2, PAD / 2);
 				DrawText(hdc, ss.str().c_str(), ss.str().length(), &p, DT_END_ELLIPSIS | DT_SINGLELINE);
 			}
 
@@ -289,7 +307,7 @@ BOOL CShop::itemMenu(CONST CCanvas &backup, CONST SHOP_OPTION type, CONST RECT b
 			// Description.
 			STRING str = item->itmDescription;
 			RECT r = {0, height - detailsHeight, cnv.GetWidth(), height - detailsHeight + lineHeight};
-			OffsetRect(&r, pad / 2, pad / 2);
+			OffsetRect(&r, PAD / 2, PAD / 2);
 			DrawText(hdc, str.c_str(), str.length(), &r, DT_END_ELLIPSIS | DT_SINGLELINE);
 			
 			STRINGSTREAM ss;
@@ -350,7 +368,7 @@ BOOL CShop::itemMenu(CONST CCanvas &backup, CONST SHOP_OPTION type, CONST RECT b
 
 			// Draw the selected item inverted.
 			RECT rs = {0, lineHeight * (selectedLine - firstLine), width, height};
-			OffsetRect(&rs, pad / 2, pad / 2);
+			OffsetRect(&rs, PAD / 2, PAD / 2);
 
 			SetBkMode(hdc, OPAQUE);
 			SetTextColor(hdc, m_colors.main);
@@ -362,9 +380,9 @@ BOOL CShop::itemMenu(CONST CCanvas &backup, CONST SHOP_OPTION type, CONST RECT b
 
 		cnv.CloseDC(hdc);
 
-		// Draw translucently with the text drawn solidly.
+		// Draw transparently onto the translucently set backup.
 		g_pDirectDraw->DrawCanvasPartial(&backup, bounds.left, bounds.top, bounds.left, bounds.top, cnv.GetWidth(), cnv.GetHeight(), SRCCOPY);
-		g_pDirectDraw->DrawCanvasTranslucent(&cnv, bounds.left, bounds.top, g_messageWindowTranslucency, m_colors.text, TRANSP_COLOR);
+		g_pDirectDraw->DrawCanvasTransparent(&cnv, bounds.left, bounds.top, m_colors.main);
 		g_pDirectDraw->Refresh();
 
 		CONST STRING key = waitForKey(true);

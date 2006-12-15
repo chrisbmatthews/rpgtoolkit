@@ -29,16 +29,17 @@ class CInventory;
 class CShop 
 {
 public:
-	CShop(CInventory *shopInv, CInventory *playerInv, ULONG *money);
+	CShop(CInventory *shopInv, CInventory *playerInv, ULONG *money, STRING image);
 	~CShop();
 	VOID run();
 
 	typedef struct tagShopColors
 	{
-		LONG text, main;
+		LONG text, main, line;
 		tagShopColors() 
 		{ 
 			text = RGB(255, 255, 255); 
+			line = RGB(255, 255, 255);
 			main = 0; 
 		}
 	} SHOP_COLORS;
@@ -61,6 +62,7 @@ private:
 	INT m_fontSize;
 	STRING m_fontFace;
 	SHOP_COLORS m_colors;
+	STRING m_image;						// Background image.
 
 	typedef std::map<STRING, LPITEM> SHOP_ITEMS;
 	SHOP_ITEMS m_items;
