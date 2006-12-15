@@ -215,6 +215,19 @@ public:
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
 };
 
+// Reserved variable: int cnvRenderNow
+class CCnvRenderNow : public tagStackFrame
+{
+public:
+	double getNum() const
+	{
+		extern RENDER_OVERLAY g_renderNow;
+		return double(int(g_renderNow.cnv));
+	}
+	STRING getLit() const { return ::getLit(getNum()); }
+	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
+};
+
 /*
  * Set a virtual numerical variable.
  */
@@ -277,4 +290,7 @@ void initVirtualVars()
 
 	// Board skill level.
 	CProgram::getGlobal(_T("boardskill")) = new CBoardSkill();
+
+	// cnvRenderNow overlay canvas.
+	CProgram::getGlobal(_T("cnvrendernow")) = new CCnvRenderNow();
 }

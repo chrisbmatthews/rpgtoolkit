@@ -3342,7 +3342,7 @@ void callshop(CALL_DATA &params)
 		}
 	}
 
-	CShop shop(&shopInv, &g_inv, &g_gp);
+	CShop shop(&shopInv, &g_inv, &g_gp, STRING());
 }
 
 /*
@@ -6597,13 +6597,23 @@ void replace(CALL_DATA &params)
 }
 
 /*
- * rendernow(...)
+ * void rendernow(bool draw)
  * 
- * Description.
+ * Controls rendering of the cnvRenderNow reserved canvas. The canvas
+ * is drawn every frame above all board elements (e.g. tiles, sprites, animations).
+ * Access the canvas by passing 'cnvRenderNow' to the drawing functions.
+ * Do not call CreateCanvas() or KillCanvas() on cnvRenderNow.
  */
 void rendernow(CALL_DATA &params)
 {
-// TBD
+	extern RENDER_OVERLAY g_renderNow;
+
+	if (params.params != 1)
+	{
+		throw CError(_T("RenderNow() requires one parameter."));
+	}
+
+	g_renderNow.draw = params[0].getBool();	
 }
 
 /*

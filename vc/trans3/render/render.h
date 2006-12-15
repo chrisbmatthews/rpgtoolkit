@@ -65,6 +65,14 @@ typedef struct tagAmbientLevel
 
 } AMBIENT_LEVEL;
 
+typedef struct tagRenderOverlay
+{
+	CCanvas *cnv;
+	LONG transp;
+	bool draw;
+	tagRenderOverlay(): cnv(NULL), transp(0), draw(false) {};
+} RENDER_OVERLAY;
+
 /*
  * Initialize the graphics engine.
  */

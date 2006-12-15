@@ -28,6 +28,7 @@
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
 #include "../movement/CVector/CVector.h"
+#include "../common/CAllocationHeap.h"
 #include "../common/animation.h"
 #include "../common/mainfile.h"
 #include "../common/paths.h"
@@ -50,6 +51,7 @@ int g_resX = 0, g_resY = 0;					// Size of screen.
 CCanvas *g_cnvRpgCode = NULL;				// RPGCode canvas.
 CCanvas *g_cnvMessageWindow = NULL;			// RPGCode message window.
 CCanvas *g_cnvCursor = NULL;				// Cursor used on maps &c.
+RENDER_OVERLAY g_renderNow;					// The user's overlay canvas.
 std::vector<CCanvas *> g_cnvRpgScreens;		// SaveScreen() array.
 std::vector<CCanvas *> g_cnvRpgScans;		// Scan() array...
 
@@ -87,9 +89,15 @@ void renderRpgCodeScreen()
  */
 void createCanvases()
 {
+	extern CAllocationHeap<CCanvas> g_canvases;
+
 	g_cnvRpgCode = new CCanvas();
 	g_cnvRpgCode->CreateBlank(NULL, g_resX, g_resY, TRUE);
 	g_cnvRpgCode->ClearScreen(0);
+
+	g_renderNow.cnv = g_canvases.allocate();
+	g_renderNow.cnv->CreateBlank(NULL, g_resX, g_resY, TRUE);
+	g_renderNow.cnv->ClearScreen(g_renderNow.transp);
 
 	g_cnvMessageWindow = new CCanvas();
 	g_cnvMessageWindow->CreateBlank(NULL, 600, 100, TRUE);
@@ -120,6 +128,7 @@ void destroyCanvases()
 	delete g_cnvRpgCode;
 	delete g_cnvMessageWindow;
 	delete g_cnvCursor;
+	// Do not delete g_renderNow.cnv since it is allocated in g_canvases.
 
 	std::vector<CCanvas *>::iterator i = g_cnvRpgScreens.begin();
 	for (; i != g_cnvRpgScreens.end(); ++i)
@@ -524,9 +533,7 @@ void renderNow(CCanvas *cnv, const bool bForce)
 				{
 					// If the under tile is "simple rect" intersection draw straight
 					// off, else check for vector collision.
-					// TBD: does it require a second IntersectRect()? What was the purpose of it?
-					if(((k->attributes & TA_RECT_INTERSECT) /*&& IntersectRect(&sr, &sr, &rBounds)*/)
-						|| k->pV->contains(v, ptUnused))
+					if(k->attributes & TA_RECT_INTERSECT || k->pV->contains(v, ptUnused))
 					{
 						k->pCnv->BltTransparentPart(
 							cnv, 
@@ -548,6 +555,9 @@ void renderNow(CCanvas *cnv, const bool bForce)
 
 	// Render multitasking animations.
 	CThreadAnimation::renderAll(cnv);
+
+	// Render the 'renderNow' overlay.
+	if (g_renderNow.draw) g_renderNow.cnv->BltTransparent(cnv, 0, 0, g_renderNow.transp);
 
 	if (bScreen) g_pDirectDraw->Refresh();
 }
