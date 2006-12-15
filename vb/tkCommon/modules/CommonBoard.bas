@@ -433,6 +433,7 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
                 For i = 0 To UBound(.prgs)
     
                     Call BinWriteString(num, .prgs(i).filename)
+                    Call BinWriteString(num, .prgs(i).graphic)
                     Call BinWriteString(num, .prgs(i).initialVar)
                     Call BinWriteString(num, .prgs(i).initialValue)
                     Call BinWriteString(num, .prgs(i).finalVar)
@@ -790,6 +791,7 @@ exitForB:
                     Set .prgs(i) = New CBoardProgram
                     
                     .prgs(i).filename = BinReadString(num)
+                    .prgs(i).graphic = BinReadString(num)
                     .prgs(i).initialVar = BinReadString(num)
                     .prgs(i).initialValue = BinReadString(num)
                     .prgs(i).finalVar = BinReadString(num)
