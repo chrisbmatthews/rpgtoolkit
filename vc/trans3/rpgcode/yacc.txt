@@ -115,7 +115,7 @@ tdc:
  */
 
 var_identifier:
-	function_identifier tdc
+	IDENTIFIER tdc
 		{
 			MACHINE_UNIT mu;
 			if (g_methods.size() && g_methods.back().count($1.getLit()))
