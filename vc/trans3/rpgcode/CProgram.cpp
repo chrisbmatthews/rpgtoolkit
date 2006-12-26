@@ -486,6 +486,8 @@ void CProgram::methodCall(CALL_DATA &call)
 	// Look at the num member as though it were two longs.
 	long *const pLong = (long *)&fra.num;
 
+	bool bObjectCall = false;
+
 	if (fra.udt & UDT_OBJ)
 	{
 		// Call to a class function.
@@ -558,14 +560,16 @@ void CProgram::methodCall(CALL_DATA &call)
 		STACK_FRAME &lvar = local[_T("this")];
 		lvar.udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
 		lvar.num = fr.obj = obj;
-	}
 
-	// If we are inside a class function, some call func() might be
-	// an abbreviated reference to this->func().
-	//
-	// Tbd: This should be resolved at compile-time.
-	if (!fr.obj && call.prg->m_calls.size())
+		// The parameters are offset because of the object pointer.
+		bObjectCall = true;
+	}
+	else if (call.prg->m_calls.size())
 	{
+		// If we are inside a class function, some call func() might be
+		// an abbreviated reference to this->func().
+		//
+		// Tbd: This should be resolved at compile-time.
 		const unsigned int obj = call.prg->m_calls.back().obj;
 		if (obj)
 		{
@@ -589,7 +593,8 @@ void CProgram::methodCall(CALL_DATA &call)
 	for (unsigned int i = 0; i < (call.params - 1); ++i)
 	{
 		if (i == j) continue;
-		TCHAR pos = call.params - i - (i < j) - (fr.obj != 0);
+		TCHAR pos = call.params - i - (i < j) - bObjectCall;
+
 		if (pLong[1] & (1 << (pos - 1)))
 		{
 			fr.refs[pos] = fra.prg->getVar(call[i].lit);
