@@ -467,16 +467,26 @@ method_param:
 		{ }
 |	AND IDENTIFIER tdc
 		{
-			g_byref |= (1 << g_methods.back().size());
-			$$ = $2;
+			$$ = '&' + $2.getLit();
 		}
 ;
 
-method_params:
+method_rule:
 	method_param COMMA method_params
-		{ g_methods.back()[$1.getLit()] = g_methods.back().size(); }
 |	method_param
-		{ g_methods.back()[$1.getLit()] = g_methods.back().size(); }
+;
+
+method_params:
+	method_rule
+		{
+			STD_NATURAL_STRING param = $1.getLit();
+			if (param[0] == '&')
+			{
+				param = param.substr(1);
+				g_byref |= (1 << g_methods.back().size());
+			}
+			g_methods.back()[param] = g_methods.back().size();
+		}
 |	/* No parameters. */
 		{ }
 ;
