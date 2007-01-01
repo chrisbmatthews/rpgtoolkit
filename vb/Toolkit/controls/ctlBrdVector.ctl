@@ -307,7 +307,7 @@ Public Sub populate(ByVal Index As Long, ByRef vector As CVector)  ':on error re
     Call enableAll
     
     If cmbVector.ListIndex <> Index Then cmbVector.ListIndex = Index
-    cmbVector.list(Index) = CStr(Index) & ": " & IIf(LenB(vector.handle), vector.handle, "<vector handle>")
+    cmbVector.List(Index) = CStr(Index) & ": " & IIf(LenB(vector.handle), vector.handle, "<vector handle>")
     
     'Option buttons have been assigned TT_ values as indices.
     If vector.tiletype <> TT_NULL Then optType(vector.tiletype).value = True
@@ -361,6 +361,9 @@ End Sub
 Private Sub cmbVector_Click(): On Error Resume Next
     If cmbVector.ListIndex <> -1 Then Call activeBoard.toolbarChange(cmbVector.ListIndex, BS_VECTOR)
 End Sub
+Private Sub cmbVector_LostFocus(): On Error Resume Next
+        Call activeBoard.vectorSetHandle(cmbVector.Text)
+End Sub
 Private Sub cmdDefault_Click(): On Error Resume Next
     'Default button on form: hitting the Enter key calls this function.
     
@@ -407,8 +410,8 @@ End Sub
 Private Sub lvPoints_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single): On Error Resume Next
     Call modBoard.vectorLvColumn(lvPoints, x)
 End Sub
-Private Sub lvPoints_KeyDown(keyCode As Integer, Shift As Integer): On Error Resume Next
-    If modBoard.vectorLvKeyDown(lvPoints, keyCode) Then Call apply
+Private Sub lvPoints_KeyDown(KeyCode As Integer, Shift As Integer): On Error Resume Next
+    If modBoard.vectorLvKeyDown(lvPoints, KeyCode) Then Call apply
 End Sub
 Private Sub lvPoints_Validate(Cancel As Boolean): On Error Resume Next
     Call apply
