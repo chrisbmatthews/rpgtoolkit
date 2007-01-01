@@ -658,10 +658,17 @@ int mainEventLoop()
 
 			// Add the time for this loop and increment the counter.
 			// Add only if this is a "short" loop.
-			if (dwTimeNow < 200)
+			if (dwTimeNow < 256)
 			{
 				m_renderTime += dwTimeNow;
 				++m_renderCount;
+
+				// Make the fps more responsive.
+				if (m_renderTime > 4096)
+				{
+					m_renderCount = int(m_renderCount / 16);
+					m_renderTime = m_renderCount / g_fpms;
+				}
 			}
 		}
 
@@ -684,8 +691,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
 	path = dev;
 
 	set_terminate(termFunc);
