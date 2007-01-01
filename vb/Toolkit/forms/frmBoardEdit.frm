@@ -1256,7 +1256,7 @@ Private Sub Form_Activate() ':on error resume next
     mnuBoard(1).Enabled = (mainMem.initBoard = m_ed.boardName)
     'Co-ordinate conversions.
     mnuCoords(0).Enabled = (m_ed.board(m_ed.undoIndex).coordType And ISO_STACKED)
-    mnuCoords(1).Enabled = Not (m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE)
+    mnuCoords(1).Enabled = (m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) = False
     
     Call resetLayerCombos
     
@@ -1276,10 +1276,13 @@ Private Sub Form_Activate() ':on error resume next
 
 End Sub
 Public Sub Form_Deactivate() ':on error resume next
+
+    If Not (Me Is activeBoard) Then Exit Sub
+
     'Clear status panels.
     tkMainForm.StatusBar1.Panels(3).Text = vbNullString
     tkMainForm.StatusBar1.Panels(4).Text = vbNullString
-
+    
     'Reset visible layers list.
     Call setVisibleLayersByCombo
     
@@ -1418,7 +1421,7 @@ End Sub
 '========================================================================
 '========================================================================
 Public Sub openFile(ByVal file As String) ': On Error Resume Next
-
+    
     Call activeBoard.Show
     Call checkSave(vbYesNo)
     
@@ -1433,6 +1436,7 @@ Public Sub openFile(ByVal file As String) ': On Error Resume Next
     Me.Caption = m_ed.boardName
     
     Call Form_Resize
+
 End Sub
 Public Sub saveFile() ':on error resume next
 
@@ -2388,7 +2392,9 @@ Public Sub mdiOptSetting(ByVal Index As Integer) ': On Error Resume Next
     If Not (m_sel Is Nothing) Then Call m_sel.clear(Me)
 
     'Revert to select when changing tool, since a tool may be selected that becomes disabled.
-    tkMainForm.brdOptTool(BT_SELECT).value = True
+    Dim optTool As eBrdTool
+    optTool = IIf(Index <= BS_ZOOM, BT_DRAW, BT_SELECT)
+    tkMainForm.brdOptTool(optTool).value = True
     Call toolsRefresh
     
     'Switch the object toolbar pane.
@@ -2439,7 +2445,7 @@ Public Sub mdiCmbCurrentLayer(ByVal layer As Long) ':on error resume next
     If m_ed.bHideAllLayers Then m_ed.bLayerVisible(m_ed.currentLayer) = False
     m_ed.currentLayer = layer
     m_ed.bLayerVisible(layer) = True
-    tkMainForm.brdCmbVisibleLayers.list(layer) = CStr(layer) & " *"
+    tkMainForm.brdCmbVisibleLayers.List(layer) = CStr(layer) & " *"
     Call drawAll
 End Sub
 Public Sub mdiCmbVisibleLayers() ':on error resume next
@@ -2447,15 +2453,15 @@ Public Sub mdiCmbVisibleLayers() ':on error resume next
     Dim Text As String, i As Integer, layer As String
     With tkMainForm.brdCmbVisibleLayers
         If (.ListIndex >= 0) Then
-            Text = .list(.ListIndex)
+            Text = .List(.ListIndex)
             i = .ListIndex
             If (Right$(Text, 1) = "*" And i <> m_ed.currentLayer) Then
                 'Do not disable current layer.
-                .list(.ListIndex) = CStr(i)
+                .List(.ListIndex) = CStr(i)
                 'Do not alter the layer list if an override check button is down.
                 If (m_ed.bShowAllLayers = m_ed.bHideAllLayers) Then m_ed.bLayerVisible(i) = False
             Else
-                .list(.ListIndex) = CStr(i) & " *"
+                .List(.ListIndex) = CStr(i) & " *"
                 'Do not alter the layer list if an override check button is down.
                 If (m_ed.bShowAllLayers = m_ed.bHideAllLayers) Then m_ed.bLayerVisible(i) = True
             End If
@@ -2474,7 +2480,7 @@ Private Sub setVisibleLayersByCombo() ':on error resume next
     Dim i As Integer, layer As Integer, Text As String
     For i = 1 To tkMainForm.brdCmbVisibleLayers.ListCount - 1
         'Zeroth list entry is the background.
-        m_ed.bLayerVisible(i) = (Right$(tkMainForm.brdCmbVisibleLayers.list(i), 1) = "*")
+        m_ed.bLayerVisible(i) = (Right$(tkMainForm.brdCmbVisibleLayers.List(i), 1) = "*")
     Next i
 End Sub
 
@@ -3178,8 +3184,11 @@ Private Sub vectorSetCurrent(ByRef sel As CBoardSelection) ': on error resume ne
     
 End Sub
 Public Sub vectorSetHandle(ByVal handle As String) ':on error resume next
-    Dim i As Long, j As Long
+    Dim i As Long, j As Long, pos As Long
     i = m_ed.currentObject(BTAB_VECTOR)
+    
+    pos = InStrRev(handle, ":")
+    If pos > 0 Then handle = Trim$(Mid$(handle, pos + 1))
     
     If i >= 0 Then
         For j = 0 To UBound(m_ed.board(m_ed.undoIndex).vectors)
@@ -3336,7 +3345,7 @@ Private Sub imagePopulate(ByVal Index As Long, ByRef img As TKBoardImage) ':on e
     Call ctl.enableAll
     
     If cmb.ListIndex <> Index Then cmb.ListIndex = Index
-    cmb.list(Index) = str(Index) & ": " & IIf(LenB(img.filename), img.filename, "<image>")
+    cmb.List(Index) = str(Index) & ": " & IIf(LenB(img.filename), img.filename, "<image>")
     ctl.getTxtFilename.Text = img.filename
     ctl.getTxtLoc(0).Text = str(img.bounds.Left)
     ctl.getTxtLoc(1).Text = str(img.bounds.Top)
@@ -4213,7 +4222,7 @@ Private Sub cmbConstants_Click() ': on error resume next
         If .ListIndex = -1 Then Exit Sub
         If .ListIndex = .ListCount - 1 Then
             'Add a new constant.
-            .list(.ListIndex) = "constant[" & .ListIndex & "]"
+            .List(.ListIndex) = "constant[" & .ListIndex & "]"
             ReDim Preserve m_ed.board(m_ed.undoIndex).constants(.ListIndex)
             .AddItem vbNullString
         End If
@@ -4279,7 +4288,7 @@ Private Sub cmdThreadsRemove_Click() ': On Error Resume Next
         If lbThreads.ListCount <> 0 Then
             ReDim m_ed.board(m_ed.undoIndex).Threads(lbThreads.ListCount - 1)
             For i = 0 To UBound(m_ed.board(m_ed.undoIndex).Threads)
-                m_ed.board(m_ed.undoIndex).Threads(i) = lbThreads.list(i)
+                m_ed.board(m_ed.undoIndex).Threads(i) = lbThreads.List(i)
             Next i
         Else
             ReDim m_ed.board(m_ed.undoIndex).Threads(0)
