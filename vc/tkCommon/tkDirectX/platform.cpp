@@ -428,6 +428,9 @@ BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(
 		if (pCanvas->usingDX())
 		{
 			// Use DirectX
+			// Refresh the screen to update the backbuffer.
+			(this->*m_pRefresh)();
+
 			RECT rect = {0, 0, m_nWidth, m_nHeight};
 			return pCanvas->GetDXSurface()->BltFast(0, 0, m_lpddsSecond, &rect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT);
 		}
