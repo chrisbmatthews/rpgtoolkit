@@ -550,12 +550,10 @@ void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int
 	// Pixels travelled this move, optionally overriden for rpgcode commands.
 	if (!step) step = moveSize();
 
-	// The "movement vector".
 	// g_directions[isIsometric()][MV_CODE][x OR y].
-	m_v.x = g_directions[nIso][direction][0];
-	m_v.y = g_directions[nIso][direction][1];
+	const double x = g_directions[nIso][direction][0], y = g_directions[nIso][direction][1];
 
-	/** if (nIso == 1 && !m_bPxMovement && m_v.x && !m_v.y)
+	/** if (nIso == 1 && !m_bPxMovement && x && !y)
 	{
 		// Cause players to move twice as far for East/West in tile movement.
 		m_v.x *= 2;
@@ -564,7 +562,7 @@ void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int
 	DB_POINT dest;
 	getDestination(dest);
 
-	DB_POINT p = {dest.x + m_v.x * step, dest.y + m_v.y * step};	
+	DB_POINT p = {dest.x + x * step, dest.y + y * step};	
 	m_pos.path.push_back(p);
 }
 
@@ -1866,6 +1864,7 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 
 		// Get a pointer to the current animation.
 		// Bitshift in place of multiply by two (<< 1 equivalent to * 2)
+		// *Remove div 2 to double the movement frame rate*.
 		const int frame = (m_pos.loopFrame <= LOOP_IDLE) ?	m_pos.frame : int(m_pos.frame / (m_pos.loopSpeed << 1));
 		
 		// Get the canvas for the current frame.
