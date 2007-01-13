@@ -3,32 +3,216 @@ Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmItemGraphics 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Item Sprite List"
-   ClientHeight    =   6390
+   ClientHeight    =   6570
    ClientLeft      =   45
    ClientTop       =   435
-   ClientWidth     =   10275
+   ClientWidth     =   10260
    Icon            =   "frmItemGraphics.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   6420
+   ScaleHeight     =   6600.845
    ScaleMode       =   0  'User
-   ScaleWidth      =   10275
+   ScaleWidth      =   10260
    StartUpPosition =   2  'CenterScreen
+   Begin VB.Frame fra 
+      Caption         =   "Vector base"
+      Height          =   3375
+      Index           =   2
+      Left            =   4320
+      TabIndex        =   26
+      Top             =   3000
+      Width           =   3375
+      Begin VB.PictureBox picHolder 
+         BorderStyle     =   0  'None
+         HasDC           =   0   'False
+         Height          =   735
+         Index           =   5
+         Left            =   1920
+         ScaleHeight     =   735
+         ScaleWidth      =   1095
+         TabIndex        =   30
+         Top             =   2160
+         Width           =   1095
+         Begin VB.OptionButton optCoord 
+            Caption         =   "Isometric"
+            Height          =   375
+            Index           =   1
+            Left            =   0
+            TabIndex        =   32
+            ToolTipText     =   "Display isometric base point (bottom-centre + 8 pixels)"
+            Top             =   360
+            Width           =   975
+         End
+         Begin VB.OptionButton optCoord 
+            Caption         =   "Standard"
+            Height          =   375
+            Index           =   0
+            Left            =   0
+            TabIndex        =   31
+            ToolTipText     =   "Display standard 2D base point (bottom-centre of sprite)"
+            Top             =   0
+            Value           =   -1  'True
+            Width           =   1095
+         End
+      End
+      Begin VB.PictureBox picHolder 
+         BorderStyle     =   0  'None
+         HasDC           =   0   'False
+         Height          =   1095
+         Index           =   3
+         Left            =   360
+         ScaleHeight     =   1095
+         ScaleWidth      =   1575
+         TabIndex        =   36
+         Top             =   2160
+         Width           =   1575
+         Begin VB.CommandButton cmdVectorImport 
+            Caption         =   "Import..."
+            Height          =   375
+            Left            =   0
+            TabIndex        =   37
+            ToolTipText     =   "Default collision vector / activation vector for automatic activation (""step-on"")"
+            Top             =   720
+            Width           =   1455
+         End
+         Begin VB.CommandButton cmdVectorDefault 
+            Caption         =   "Default Collision"
+            Height          =   375
+            Index           =   0
+            Left            =   0
+            TabIndex        =   38
+            ToolTipText     =   "Default collision vector / activation vector for automatic activation (""step-on"")"
+            Top             =   0
+            Width           =   1455
+         End
+         Begin VB.CommandButton cmdVectorDefault 
+            Caption         =   "Default Interaction"
+            Height          =   375
+            Index           =   1
+            Left            =   0
+            TabIndex        =   39
+            ToolTipText     =   "Default interaction vector for key-press activation"
+            Top             =   360
+            Width           =   1455
+         End
+      End
+      Begin VB.CheckBox chkEdit 
+         Height          =   375
+         Index           =   1
+         Left            =   360
+         Picture         =   "frmItemGraphics.frx":0CCA
+         Style           =   1  'Graphical
+         TabIndex        =   35
+         ToolTipText     =   "Edit vector points"
+         Top             =   1200
+         Width           =   375
+      End
+      Begin VB.CheckBox chkEdit 
+         Height          =   375
+         Index           =   0
+         Left            =   360
+         Picture         =   "frmItemGraphics.frx":1594
+         Style           =   1  'Graphical
+         TabIndex        =   34
+         ToolTipText     =   "Draw vector points"
+         Top             =   840
+         Width           =   375
+      End
+      Begin VB.PictureBox picColor 
+         AutoRedraw      =   -1  'True
+         Height          =   375
+         Left            =   360
+         ScaleHeight     =   315
+         ScaleWidth      =   315
+         TabIndex        =   33
+         ToolTipText     =   "Vector display color (for this window)"
+         Top             =   1560
+         Width           =   375
+      End
+      Begin VB.PictureBox picHolder 
+         BorderStyle     =   0  'None
+         HasDC           =   0   'False
+         Height          =   255
+         Index           =   2
+         Left            =   360
+         ScaleHeight     =   255
+         ScaleWidth      =   2655
+         TabIndex        =   27
+         Top             =   360
+         Width           =   2655
+         Begin VB.OptionButton optType 
+            Caption         =   "Collision"
+            Height          =   255
+            Index           =   0
+            Left            =   120
+            TabIndex        =   29
+            ToolTipText     =   "View collision vector"
+            Top             =   0
+            Value           =   -1  'True
+            Width           =   1095
+         End
+         Begin VB.OptionButton optType 
+            Caption         =   "Activation"
+            Height          =   255
+            Index           =   1
+            Left            =   1440
+            TabIndex        =   28
+            ToolTipText     =   "View sprite activation vector"
+            Top             =   0
+            Width           =   1095
+         End
+      End
+      Begin MSComctlLib.ListView lvVector 
+         Height          =   1335
+         Left            =   1080
+         TabIndex        =   40
+         ToolTipText     =   "Current vector points"
+         Top             =   720
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   2355
+         View            =   3
+         LabelEdit       =   1
+         LabelWrap       =   -1  'True
+         HideSelection   =   -1  'True
+         HideColumnHeaders=   -1  'True
+         FullRowSelect   =   -1  'True
+         _Version        =   393217
+         ForeColor       =   -2147483640
+         BackColor       =   -2147483643
+         Appearance      =   1
+         NumItems        =   3
+         BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
+            Text            =   "index"
+            Object.Width           =   564
+         EndProperty
+         BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
+            SubItemIndex    =   1
+            Text            =   "x-coord"
+            Object.Width           =   1058
+         EndProperty
+         BeginProperty ColumnHeader(3) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
+            SubItemIndex    =   2
+            Text            =   "y-coord"
+            Object.Width           =   1058
+         EndProperty
+      End
+   End
    Begin VB.CommandButton cmdDefault 
       Caption         =   "OK"
       Height          =   375
-      Left            =   8160
+      Left            =   8280
       TabIndex        =   0
-      Top             =   5760
+      Top             =   5880
       Width           =   1455
    End
    Begin VB.PictureBox picHolder 
       BorderStyle     =   0  'None
-      Height          =   6135
+      Height          =   6375
       Index           =   0
       Left            =   120
-      ScaleHeight     =   6135
+      ScaleHeight     =   6375
       ScaleWidth      =   9975
       TabIndex        =   1
       Top             =   120
@@ -38,7 +222,7 @@ Begin VB.Form frmItemGraphics
          Height          =   2775
          Index           =   0
          Left            =   6240
-         TabIndex        =   27
+         TabIndex        =   13
          Top             =   0
          Width           =   3735
          Begin VB.PictureBox picHolder 
@@ -48,14 +232,14 @@ Begin VB.Form frmItemGraphics
             Left            =   120
             ScaleHeight     =   2340
             ScaleWidth      =   3495
-            TabIndex        =   28
+            TabIndex        =   14
             Top             =   240
             Width           =   3495
             Begin VB.CommandButton cmdCustomNew 
                Caption         =   "New Custom..."
                Height          =   375
                Left            =   0
-               TabIndex        =   35
+               TabIndex        =   21
                ToolTipText     =   "Add custom animation"
                Top             =   1920
                Width           =   1395
@@ -65,7 +249,7 @@ Begin VB.Form frmItemGraphics
                Enabled         =   0   'False
                Height          =   375
                Left            =   1440
-               TabIndex        =   34
+               TabIndex        =   20
                ToolTipText     =   "Delete selected custom animation"
                Top             =   1920
                Width           =   1395
@@ -74,7 +258,7 @@ Begin VB.Form frmItemGraphics
                Height          =   285
                Index           =   0
                Left            =   0
-               TabIndex        =   33
+               TabIndex        =   19
                Top             =   240
                Width           =   2775
             End
@@ -83,7 +267,7 @@ Begin VB.Form frmItemGraphics
                Height          =   255
                Index           =   0
                Left            =   2880
-               TabIndex        =   32
+               TabIndex        =   18
                ToolTipText     =   "Browse for animation file"
                Top             =   240
                Width           =   495
@@ -92,7 +276,7 @@ Begin VB.Form frmItemGraphics
                Height          =   285
                Index           =   1
                Left            =   0
-               TabIndex        =   31
+               TabIndex        =   17
                Top             =   840
                Width           =   2775
             End
@@ -101,7 +285,7 @@ Begin VB.Form frmItemGraphics
                Height          =   255
                Index           =   1
                Left            =   2880
-               TabIndex        =   30
+               TabIndex        =   16
                ToolTipText     =   "Browse for animation file"
                Top             =   840
                Width           =   495
@@ -109,8 +293,8 @@ Begin VB.Form frmItemGraphics
             Begin VB.TextBox txtCustomHandle 
                Height          =   285
                Left            =   0
-               TabIndex        =   29
-               Top             =   1440
+               TabIndex        =   15
+               Top             =   1560
                Width           =   2775
             End
             Begin VB.Label lbl 
@@ -118,7 +302,7 @@ Begin VB.Form frmItemGraphics
                Height          =   255
                Index           =   3
                Left            =   0
-               TabIndex        =   38
+               TabIndex        =   24
                Top             =   0
                Width           =   1815
             End
@@ -127,7 +311,7 @@ Begin VB.Form frmItemGraphics
                Height          =   255
                Index           =   4
                Left            =   0
-               TabIndex        =   37
+               TabIndex        =   23
                Top             =   600
                Width           =   1815
             End
@@ -136,18 +320,18 @@ Begin VB.Form frmItemGraphics
                Height          =   255
                Index           =   5
                Left            =   0
-               TabIndex        =   36
-               Top             =   1200
+               TabIndex        =   22
+               Top             =   1320
                Width           =   1815
             End
          End
       End
       Begin VB.Frame fra 
          Caption         =   "Preview"
-         Height          =   3255
+         Height          =   3375
          Index           =   3
          Left            =   0
-         TabIndex        =   22
+         TabIndex        =   8
          Top             =   2880
          Width           =   4095
          Begin VB.PictureBox picHolder 
@@ -157,14 +341,14 @@ Begin VB.Form frmItemGraphics
             Left            =   120
             ScaleHeight     =   615
             ScaleWidth      =   375
-            TabIndex        =   25
+            TabIndex        =   11
             Top             =   240
             Width           =   375
             Begin VB.CommandButton cmdAnimate 
                Caption         =   ">"
                Height          =   375
                Left            =   0
-               TabIndex        =   26
+               TabIndex        =   12
                ToolTipText     =   "Preview animation"
                Top             =   0
                Width           =   375
@@ -177,7 +361,7 @@ Begin VB.Form frmItemGraphics
             ScaleHeight     =   189
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   189
-            TabIndex        =   23
+            TabIndex        =   9
             Top             =   240
             Width           =   2895
             Begin VB.PictureBox picPreview 
@@ -188,202 +372,30 @@ Begin VB.Form frmItemGraphics
                ScaleHeight     =   185
                ScaleMode       =   3  'Pixel
                ScaleWidth      =   177
-               TabIndex        =   24
+               TabIndex        =   10
                Top             =   0
                Width           =   2655
             End
          End
       End
       Begin VB.Frame fra 
-         Caption         =   "Vector base"
-         Height          =   3255
-         Index           =   2
-         Left            =   4320
-         TabIndex        =   8
-         Top             =   2880
-         Width           =   3015
-         Begin VB.PictureBox picHolder 
-            BorderStyle     =   0  'None
-            Height          =   735
-            Index           =   3
-            Left            =   600
-            ScaleHeight     =   735
-            ScaleWidth      =   1815
-            TabIndex        =   18
-            Top             =   2400
-            Width           =   1815
-            Begin VB.CommandButton cmdVectorDefault 
-               Caption         =   "Default Interaction"
-               Height          =   375
-               Index           =   1
-               Left            =   240
-               TabIndex        =   20
-               ToolTipText     =   "Default interaction vector for key-press activation"
-               Top             =   360
-               Width           =   1455
-            End
-            Begin VB.CommandButton cmdVectorDefault 
-               Caption         =   "Default Collision"
-               Height          =   375
-               Index           =   0
-               Left            =   240
-               TabIndex        =   19
-               ToolTipText     =   "Default collision vector / activation vector for automatic activation (""step-on"")"
-               Top             =   0
-               Width           =   1455
-            End
-         End
-         Begin VB.CheckBox chkEdit 
-            Height          =   375
-            Index           =   1
-            Left            =   240
-            Picture         =   "frmItemGraphics.frx":0CCA
-            Style           =   1  'Graphical
-            TabIndex        =   17
-            ToolTipText     =   "Edit vector points"
-            Top             =   1440
-            Width           =   375
-         End
-         Begin VB.CheckBox chkEdit 
-            Height          =   375
-            Index           =   0
-            Left            =   240
-            Picture         =   "frmItemGraphics.frx":1594
-            Style           =   1  'Graphical
-            TabIndex        =   16
-            ToolTipText     =   "Draw vector points"
-            Top             =   1080
-            Width           =   375
-         End
-         Begin VB.PictureBox picHolder 
-            BorderStyle     =   0  'None
-            Height          =   615
-            Index           =   2
-            Left            =   1560
-            ScaleHeight     =   615
-            ScaleWidth      =   1215
-            TabIndex        =   13
-            Top             =   240
-            Width           =   1215
-            Begin VB.OptionButton optType 
-               Caption         =   "Collision"
-               Height          =   255
-               Index           =   0
-               Left            =   0
-               TabIndex        =   15
-               ToolTipText     =   "View collision vector"
-               Top             =   0
-               Value           =   -1  'True
-               Width           =   1095
-            End
-            Begin VB.OptionButton optType 
-               Caption         =   "Activation"
-               Height          =   255
-               Index           =   1
-               Left            =   0
-               TabIndex        =   14
-               ToolTipText     =   "View sprite activation vector"
-               Top             =   360
-               Width           =   1095
-            End
-         End
-         Begin VB.PictureBox picColor 
-            AutoRedraw      =   -1  'True
-            Height          =   375
-            Left            =   240
-            ScaleHeight     =   315
-            ScaleWidth      =   315
-            TabIndex        =   12
-            ToolTipText     =   "Vector display color (for this window)"
-            Top             =   1800
-            Width           =   375
-         End
-         Begin VB.PictureBox picHolder 
-            BorderStyle     =   0  'None
-            Height          =   615
-            Index           =   5
-            Left            =   240
-            ScaleHeight     =   615
-            ScaleWidth      =   1215
-            TabIndex        =   9
-            Top             =   240
-            Width           =   1215
-            Begin VB.OptionButton optCoord 
-               Caption         =   "Isometric"
-               Height          =   255
-               Index           =   1
-               Left            =   0
-               TabIndex        =   11
-               ToolTipText     =   "Display isometric base point (bottom-centre + 8 pixels)"
-               Top             =   360
-               Width           =   1095
-            End
-            Begin VB.OptionButton optCoord 
-               Caption         =   "Standard"
-               Height          =   255
-               Index           =   0
-               Left            =   0
-               TabIndex        =   10
-               ToolTipText     =   "Display standard 2D base point (bottom-centre of sprite)"
-               Top             =   0
-               Value           =   -1  'True
-               Width           =   1095
-            End
-         End
-         Begin MSComctlLib.ListView lvVector 
-            Height          =   1335
-            Left            =   840
-            TabIndex        =   21
-            ToolTipText     =   "Current vector points"
-            Top             =   960
-            Width           =   1935
-            _ExtentX        =   3413
-            _ExtentY        =   2355
-            View            =   3
-            LabelEdit       =   1
-            LabelWrap       =   -1  'True
-            HideSelection   =   -1  'True
-            HideColumnHeaders=   -1  'True
-            FullRowSelect   =   -1  'True
-            _Version        =   393217
-            ForeColor       =   -2147483640
-            BackColor       =   -2147483643
-            Appearance      =   1
-            NumItems        =   3
-            BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-               Text            =   "index"
-               Object.Width           =   564
-            EndProperty
-            BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-               SubItemIndex    =   1
-               Text            =   "x-coord"
-               Object.Width           =   1058
-            EndProperty
-            BeginProperty ColumnHeader(3) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
-               SubItemIndex    =   2
-               Text            =   "y-coord"
-               Object.Width           =   1058
-            EndProperty
-         End
-      End
-      Begin VB.Frame fra 
          Caption         =   "Miscellaneous"
          Height          =   2055
          Index           =   1
-         Left            =   7560
+         Left            =   7680
          TabIndex        =   3
          Top             =   2880
-         Width           =   2415
+         Width           =   2295
          Begin VB.TextBox txtFrameTime 
             Height          =   285
-            Left            =   1560
+            Left            =   1440
             TabIndex        =   5
             Top             =   1320
             Width           =   615
          End
          Begin VB.TextBox txtIdleTime 
             Height          =   285
-            Left            =   1560
+            Left            =   1440
             TabIndex        =   4
             Top             =   480
             Width           =   615
@@ -412,15 +424,15 @@ Begin VB.Form frmItemGraphics
       Begin VB.CommandButton cmdWizard 
          Caption         =   "Wizard..."
          Height          =   375
-         Left            =   8040
+         Left            =   8160
          TabIndex        =   2
-         Top             =   5160
+         Top             =   5280
          Width           =   1455
       End
       Begin MSComctlLib.ListView lvAnimations 
          Height          =   2655
          Left            =   0
-         TabIndex        =   39
+         TabIndex        =   25
          Top             =   120
          Width           =   6015
          _ExtentX        =   10610
@@ -638,6 +650,46 @@ Private Sub cmdVectorDefault_Click(Index As Integer): On Error Resume Next
     Call m_vector.defaultSpriteVector(Index = 0, Not optCoord(0).value)
     Call m_vector.lvPopulate(lvVector)
     Call setAnimation
+End Sub
+
+'========================================================================
+' Load the vectors of another sprite
+'========================================================================
+Private Sub cmdVectorImport_Click(): On Error Resume Next
+    
+    Dim dlg As FileDialogInfo, ext As String
+    With dlg
+        .strDefaultFolder = projectPath
+        .strTitle = "Import vectors from player or item"
+        .strDefaultExt = ".itm"
+        .strFileTypes = "Supported Formats|*.tem;*.itm|RPG Toolkit Character (*.tem)|*.tem|RPG Toolkit Item (*.itm)|*.itm|All files(*.*)|*.*"
+    End With
+    ChDir (currentDir)
+    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
+    
+    ext = LCase$(GetExt(dlg.strSelectedFileNoPath))
+    If ext = "itm" Then
+        
+        Dim itm As TKItem
+        itm = openItem(dlg.strSelectedFile)
+        Call itm.vBase.copy(itemList(activeItemIndex).theData.vBase)
+        Call itm.vActivate.copy(itemList(activeItemIndex).theData.vActivate)
+    
+    ElseIf ext = "tem" Then
+    
+        Dim tem As TKPlayer
+        Call openChar(dlg.strSelectedFile, tem)
+        Call tem.vBase.copy(itemList(activeItemIndex).theData.vBase)
+        Call tem.vActivate.copy(itemList(activeItemIndex).theData.vActivate)
+       
+    Else
+    
+        MsgBox "Please select a character or an item", vbExclamation
+    
+    End If
+    
+    Call setAnimation
+    
 End Sub
 
 '========================================================================
