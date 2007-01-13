@@ -84,8 +84,9 @@ PF_PATH CPathFind::constructPath(NODE node, const RECT &r)
 	{
 		// Shift points down the board by half
 		// the base height or to the tile edge.
-//		dx = (m_heuristic == PF_VECTOR ? (r.right - r.left) / 2 : 0);
-		dy = (m_heuristic == PF_VECTOR ? (r.bottom - r.top) / 2 : 0);
+		// Bitshift in place of divide by two (>> 1 equivalent to / 2)
+//		dx = (m_heuristic == PF_VECTOR ? (r.right - r.left) >> 1 : 0);
+		dy = (m_heuristic == PF_VECTOR ? (r.bottom - r.top) >> 1 : 0);
 	}
 
 	if (m_heuristic == PF_VECTOR)
@@ -289,18 +290,18 @@ bool CPathFind::isChild(
 		CPfVector v = base + child.pos;
 		
 		// Tile pathfinding operates directly on board/sprite vectors.
+		DB_POINT unused = {0, 0};
 		for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
 		{
 			if (i->layer != m_layer || i->type != TT_SOLID) continue;
-			if ((flags & PF_SWEEP) && i->pV->contains(sweep)) return false;
-			if (i->pV->contains(v)) return false;
+			if ((flags & PF_SWEEP) && i->pV->contains(sweep, unused)) return false;
+			if (i->pV->contains(v, unused)) return false;
 		}
 
 		// If the goal is occupied by a sprite and do not want to bypass
 		// it (i.e., we want to meet it) then return.
 		if ((child.pos == m_goal.pos) && (~flags & PF_AVOID_SPRITE)) return true;
 
-		DB_POINT unused = {0, 0};
 		for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
 		{
 			if ((*j)->getPosition().l != m_layer || *j == pSprite) continue;
