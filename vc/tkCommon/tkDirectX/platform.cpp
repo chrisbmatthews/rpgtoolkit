@@ -428,11 +428,17 @@ BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(
 		if (pCanvas->usingDX())
 		{
 			// Use DirectX
-			// Refresh the screen to update the backbuffer.
-			(this->*m_pRefresh)();
 
+			// Get the point of the window outside of the title bar and border
+			POINT pt = {0, 0};
+			ClientToScreen(m_hWndMain, &pt);
+
+			// Now offset the top/left of the window rect by the distance from the
+			// title bar / border
 			RECT rect = {0, 0, m_nWidth, m_nHeight};
-			return pCanvas->GetDXSurface()->BltFast(0, 0, m_lpddsSecond, &rect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT);
+			OffsetRect(&rect, pt.x, pt.y);
+
+			return pCanvas->GetDXSurface()->BltFast(0, 0, m_lpddsPrime, &rect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT);
 		}
 		else
 		{
