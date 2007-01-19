@@ -81,6 +81,7 @@ Begin VB.Form frmColoringOptions
             _ExtentX        =   4260
             _ExtentY        =   2778
             _Version        =   393217
+            Enabled         =   -1  'True
             ScrollBars      =   3
             Appearance      =   0
             TextRTF         =   $"frmSyntaxColor.frx":0060
@@ -509,9 +510,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2004, Colin James Fitzpatrick
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007  Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 'This form allows the user to customize syntax coloring
 
@@ -527,12 +541,12 @@ Private Sub cmdOK_Click()
  Dim a As Long
 
  'Save new settings to the registry...
- SaveSetting "RPGToolkit3", "Colors", "#", CStr(shpColorPreview(0).BackColor)
- SaveSetting "RPGToolkit3", "Colors", "*", CStr(shpColorPreview(1).BackColor)
- SaveSetting "RPGToolkit3", "Colors", "{}", CStr(shpColorPreview(2).BackColor)
- SaveSetting "RPGToolkit3", "Colors", ":", CStr(shpColorPreview(3).BackColor)
- SaveSetting "RPGToolkit3", "Colors", "()", CStr(shpColorPreview(4).BackColor)
- SaveSetting "RPGToolkit3", "Colors", "!$", CStr(shpColorPreview(5).BackColor)
+ SaveSetting "RPGToolkit3", "Colors", "#", CStr(shpColorPreview(0).backColor)
+ SaveSetting "RPGToolkit3", "Colors", "*", CStr(shpColorPreview(1).backColor)
+ SaveSetting "RPGToolkit3", "Colors", "{}", CStr(shpColorPreview(2).backColor)
+ SaveSetting "RPGToolkit3", "Colors", ":", CStr(shpColorPreview(3).backColor)
+ SaveSetting "RPGToolkit3", "Colors", "()", CStr(shpColorPreview(4).backColor)
+ SaveSetting "RPGToolkit3", "Colors", "!$", CStr(shpColorPreview(5).backColor)
  For a = 0 To 5
   SaveSetting "RPGToolkit3", "SyntaxBold", CStr(a), _
    CStr(booleanToLong(BIU(a).Bold))
@@ -548,7 +562,7 @@ Private Sub cmdOK_Click()
  'Save other settings
  ' SaveSetting "RPGToolkit3", "PRG Editor", "Cap", chkCapital.value
  SaveSetting "RPGToolkit3", "PRG Editor", "Tabs", booleanToLong(optTabs.value)
- SaveSetting "RPGToolkit3", "PRG Editor", "Common", codeform.Text
+ SaveSetting "RPGToolkit3", "PRG Editor", "Common", codeForm.Text
  
  'Unload this form...
  Unload Me
@@ -571,11 +585,11 @@ Private Sub recolorPrograms()
 
             ' Colour the program
             Dim oss As Long, osl As Long
-            oss = activeRPGCode.codeform.selStart()
-            osl = activeRPGCode.codeform.SelLength()
+            oss = activeRPGCode.codeForm.selStart()
+            osl = activeRPGCode.codeForm.SelLength()
             Call SplitLines
-            activeRPGCode.codeform.selStart() = oss
-            activeRPGCode.codeform.SelLength() = osl
+            activeRPGCode.codeForm.selStart() = oss
+            activeRPGCode.codeForm.SelLength() = osl
 
         End If
 
@@ -592,12 +606,12 @@ Private Sub cmdDefault_Click()
  Dim a As Long
 
  'Set to default colors...
- shpColorPreview(0).BackColor = 8388608
- shpColorPreview(1).BackColor = 32768
- shpColorPreview(2).BackColor = 15490
- shpColorPreview(3).BackColor = 12632064
- shpColorPreview(4).BackColor = 0
- shpColorPreview(5).BackColor = 10223809
+ shpColorPreview(0).backColor = 8388608
+ shpColorPreview(1).backColor = 32768
+ shpColorPreview(2).backColor = 15490
+ shpColorPreview(3).backColor = 12632064
+ shpColorPreview(4).backColor = 0
+ shpColorPreview(5).backColor = 10223809
  
  'Remove all styling...
  For a = 0 To 5
@@ -626,7 +640,7 @@ Private Sub Form_Load(): On Error Resume Next
     If GetSetting("RPGToolkit3", "PRG Editor", "Tabs", 1) = 1 Then
         optTabs.value = True
     End If
-    codeform.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", "")
+    codeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", "")
 End Sub
 
 Private Sub updateColors()
@@ -635,12 +649,12 @@ Private Sub updateColors()
  Dim a As Long
  
  'Update the color previews in the boxes
- shpColorPreview(0).BackColor = CDbl(GetSetting("RPGToolkit3", "Colors", "#", "8388608"))
- shpColorPreview(1).BackColor = CDbl(GetSetting("RPGToolkit3", "Colors", "*", "32768"))
- shpColorPreview(2).BackColor = CDbl(GetSetting("RPGToolkit3", "Colors", "{}", "15490"))
- shpColorPreview(3).BackColor = CDbl(GetSetting("RPGToolkit3", "Colors", ":", "12632064"))
- shpColorPreview(4).BackColor = CDbl(GetSetting("RPGToolkit3", "Colors", "()", "0"))
- shpColorPreview(5).BackColor = CDbl(GetSetting("RPGToolkit3", "Colors", "!$", "10223809"))
+ shpColorPreview(0).backColor = CDbl(GetSetting("RPGToolkit3", "Colors", "#", "8388608"))
+ shpColorPreview(1).backColor = CDbl(GetSetting("RPGToolkit3", "Colors", "*", "32768"))
+ shpColorPreview(2).backColor = CDbl(GetSetting("RPGToolkit3", "Colors", "{}", "15490"))
+ shpColorPreview(3).backColor = CDbl(GetSetting("RPGToolkit3", "Colors", ":", "12632064"))
+ shpColorPreview(4).backColor = CDbl(GetSetting("RPGToolkit3", "Colors", "()", "0"))
+ shpColorPreview(5).backColor = CDbl(GetSetting("RPGToolkit3", "Colors", "!$", "10223809"))
  
  'Put the bold/italic/underline buttons in the right state...
  For a = 0 To 5
@@ -658,9 +672,9 @@ Private Sub lblOK_Click()
  Call cmdOK_Click
 End Sub
 
-Private Sub shpColorPreview_Click(index As Integer)
+Private Sub shpColorPreview_Click(Index As Integer)
  Dim retColor As Long
  retColor = ColorDialog(True)
  If retColor = -1 Then Exit Sub
- shpColorPreview(index).BackColor = retColor
+ shpColorPreview(Index).backColor = retColor
 End Sub

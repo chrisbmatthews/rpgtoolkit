@@ -99,9 +99,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 
@@ -123,7 +136,7 @@ Sub infofill()
     Next t
 
     'now fill in event listbox...
-    List1.Clear
+    List1.clear
     For t = 0 To lastOne
         Dim a As Boolean
         evtDesc$ = DescribeEvent(evtList$(t), a)

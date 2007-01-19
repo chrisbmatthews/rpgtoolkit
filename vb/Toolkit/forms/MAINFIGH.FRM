@@ -367,9 +367,25 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 
@@ -441,7 +457,7 @@ Private Sub enemylist_DblClick()
     If filename$(1) = "" Then Exit Sub
     FileCopy filename$(1), projectPath$ + enePath$ + antiPath$
     mainMem.enemy$(a) = antiPath$
-    enemylist.Clear
+    enemylist.clear
     For t = 0 To 500
         aa$ = mainMem.enemy$(t)
         If aa$ = "" Then aa$ = LoadStringLoc(1010, "None")
@@ -457,7 +473,7 @@ Private Sub Form_Load()
     Me.Caption = "Main File (Fighting)"
     
     mainNeedUpdate = True
-    enemylist.Clear
+    enemylist.clear
     For t = 0 To 500
         a$ = mainMem.enemy$(t)
         If a$ = "" Then a$ = LoadStringLoc(1010, "None")
@@ -470,9 +486,9 @@ Private Sub Form_Load()
     fprg.Text = mainMem.fightPrg$
         
     If mainMem.fprgYN = 0 Then
-        Frame2.Visible = True
+        Frame2.visible = True
     Else
-        Frame2.Visible = False
+        Frame2.visible = False
     End If
 
     Exit Sub
@@ -529,7 +545,7 @@ End Sub
 Private Sub Option3_Click()
     On Error GoTo ErrorHandler
     mainMem.fprgYN = 0
-    Frame2.Visible = True
+    Frame2.visible = True
 
     Exit Sub
 'Begin error handling code:
@@ -541,7 +557,7 @@ End Sub
 Private Sub Option4_Click()
     On Error GoTo ErrorHandler
     mainMem.fprgYN = 1
-    Frame2.Visible = False
+    Frame2.visible = False
 
     Exit Sub
 'Begin error handling code:

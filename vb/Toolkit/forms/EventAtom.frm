@@ -349,9 +349,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 Private newArgs$(6) 'new args we have obtained.
@@ -367,21 +380,21 @@ Sub infofill()
     Dim didDesc As Boolean
     aDesc$ = DescribeEvent(evtToEdit, didDesc)
     If didDesc Then
-        Frame1.Visible = True
+        Frame1.visible = True
         commandName.Caption = evtName$
         commandDesc.Caption = evtDescription$
         
         For t = 0 To 5
-            argDesc(t).Visible = False
-            browsebutton(t).Visible = False
-            argVal(t).Visible = False
+            argDesc(t).visible = False
+            browsebutton(t).visible = False
+            argVal(t).visible = False
         Next t
         
         'fill in text boxes...
         bk$ = GetBrackets(evtToEdit)
         For t = 0 To evtNoArgs - 1
-            argDesc(t).Visible = True
-            argVal(t).Visible = True
+            argDesc(t).visible = True
+            argVal(t).visible = True
                       
             aa$ = GetElement(bk$, t + 1)
             If Mid$(aa$, 1, 1) = chr$(34) Then
@@ -405,16 +418,16 @@ Sub infofill()
                 Case "$o":
                     thedesc$ = thedesc$ + "  [Literal variable, optional ($)]"
                 Case Else:
-                    browsebutton(t).Visible = True
+                    browsebutton(t).visible = True
             End Select
             argDesc(t).Caption = thedesc$
         Next
     Else
-        Frame1.Visible = False
+        Frame1.visible = False
         For t = 0 To 5
-            argDesc(t).Visible = False
-            browsebutton(t).Visible = False
-            argVal(t).Visible = False
+            argDesc(t).visible = False
+            browsebutton(t).visible = False
+            argVal(t).visible = False
         Next t
         commandName.Caption = "#" + GetCommandName(evtToEdit)
         commandDesc.Caption = "No description."
@@ -549,16 +562,16 @@ Sub UpdateRPGCodeEquiv()
     bIgnore = False
 End Sub
 
-Private Sub argVal_Change(index As Integer)
-    newArgs$(index) = argVal(index).Text
+Private Sub argVal_Change(Index As Integer)
+    newArgs$(Index) = argVal(Index).Text
     Call UpdateRPGCodeEquiv
 End Sub
 
-Private Sub browsebutton_Click(index As Integer)
+Private Sub browsebutton_Click(Index As Integer)
     On Error Resume Next
     ChDir (currentDir$)
     Dim dlg As FileDialogInfo
-    dlg.strDefaultFolder = projectPath$ + evtArgType$(index)
+    dlg.strDefaultFolder = projectPath$ + evtArgType$(Index)
     
     dlg.strTitle = "Select File"
     dlg.strDefaultExt = ""
@@ -571,8 +584,8 @@ Private Sub browsebutton_Click(index As Integer)
         Exit Sub
     End If
     ChDir (currentDir$)
-    argVal(index).Text = antiPath$
-    newArgs(index) = antiPath$
+    argVal(Index).Text = antiPath$
+    newArgs(Index) = antiPath$
     bIgnore = False
     Call UpdateRPGCodeEquiv
 End Sub

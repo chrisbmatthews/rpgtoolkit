@@ -109,9 +109,26 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'    - Jonathan D. Hughes
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Option Explicit
 
@@ -197,7 +214,7 @@ Private Sub Command1_Click()
     Dim aa As Long
     Dim bb As Long
 
-    filename(1) = Text1.text
+    filename(1) = Text1.Text
     If filename(1) = "" Then Exit Sub
 
 
@@ -238,7 +255,7 @@ Private Sub Command2_Click()
     
     If filename$(1) = "" Then Exit Sub
     
-    Text1.text = filename$(1)
+    Text1.Text = filename$(1)
 End Sub
 
 Private Sub Command3_Click()
@@ -250,7 +267,7 @@ Private Sub Form_Load()
     Command2.MousePointer = 99
     Command2.MouseIcon = Images.MouseLink
     ' Call LocalizeForm(Me)
-    Text1.text = GetSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, "")
+    Text1.Text = GetSetting("RPGToolkit3", "MakeEXE", "Prev" & loadedMainFile, "")
 End Sub
 
 

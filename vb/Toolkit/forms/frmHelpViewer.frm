@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0"; "SHDOCVW.dll"
+Object = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0"; "shdocvw.dll"
 Begin VB.Form frmHelpViewer 
    ClientHeight    =   5130
    ClientLeft      =   3060
@@ -42,11 +42,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'=========================================================================
-' All contents copyright 2005, Colin James Fitzpatrick
-' All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
-' Read LICENSE.txt for licensing info
-'=========================================================================
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 '=========================================================================
 ' TK3 Online Help Viewer

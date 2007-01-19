@@ -96,23 +96,25 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
-
-'=======================================================
-'Notes by KSNiloc for 3.04
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
 '
-' ---What is done
-' + Option Explicit added
-' + Swapped +s for &s where appropriate
-' + Removed $s
-' + Declared everything early-bound
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
 '
-' ---What needs to be done
-' + Apply new visual style
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
 '
-'=======================================================
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Option Explicit
 
@@ -150,7 +152,7 @@ Private Sub Command1_Click()
     Dim antiPath As String
     antiPath = getMainFilename()
     Call openMainFile(filename(1))
-    mainfile = antiPath
+    mainFile = antiPath
     configfile.lastProject = antiPath
     Do While mainMem.gameTitle = ""
         mainMem.gameTitle = InputBox("Please choose a name for your game", "Your game must have a name!", "My Game")

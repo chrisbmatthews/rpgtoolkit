@@ -100,9 +100,25 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 'FIXIT: Use Option Explicit to avoid implicitly creating variables of type Variant         FixIT90210ae-R383-H1984
 
@@ -110,13 +126,13 @@ Public Sub skin()
 On Error Resume Next
     'skinifies this form.
     If mainMem.skinButton$ <> "" Then
-        Command1.Picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
-        Command2.Picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
-        Command3.Picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
+        Command1.picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
+        Command2.picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
+        Command3.picture = LoadPicture(projectPath$ + bmpPath$ + mainMem.skinButton$)
     Else
-        Command1.Picture = LoadPicture("")
-        Command2.Picture = LoadPicture("")
-        Command3.Picture = LoadPicture("")
+        Command1.picture = LoadPicture("")
+        Command2.picture = LoadPicture("")
+        Command3.picture = LoadPicture("")
     End If
     If mainMem.skinWindow$ <> "" Then
         'skinedit.Picture = LoadPicture(projectPath$ + bmppath$ + mainMem.skinWindow$)
@@ -124,7 +140,7 @@ On Error Resume Next
         Call drawImage(projectPath$ + bmpPath$ + mainMem.skinWindow$, 0, 0, vbFrmHDC(skinedit))
         Call vbFrmRefresh(skinedit)
     Else
-        skinedit.Picture = LoadPicture("")
+        skinedit.picture = LoadPicture("")
     End If
     Text1.Text = mainMem.skinButton$
     Text2.Text = mainMem.skinWindow$

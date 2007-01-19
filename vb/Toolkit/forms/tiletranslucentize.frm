@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form tiletranslucentize 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Translucentize"
@@ -67,13 +67,27 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
 '========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
+
 Option Explicit
 
-'KSNiloc: No EVIL variants, please
 Private x As Integer, y As Integer
 
 '========================================================================
@@ -242,7 +256,7 @@ Sub Preview(level As Integer)
         Next x
     End If
     'Redraw
-    tkMainForm.isoMirror.cls
+    tkMainForm.isoMirror.Cls
     Call activeTile.tileRedraw
 End Sub
 

@@ -42,9 +42,25 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Option Explicit
 
@@ -56,12 +72,12 @@ Public Sub playAnimation(ByVal file As String)
     On Error Resume Next
     Dim anm As TKAnimation
     Call openAnimation(file, anm)
-    arena.Width = anm.animSizeX * Screen.TwipsPerPixelX
+    arena.width = anm.animSizeX * Screen.TwipsPerPixelX
     arena.Height = anm.animSizeY * Screen.TwipsPerPixelY
     Command8.Top = arena.Top + arena.Height + 30
     Command8.Left = arena.Left
-    Me.Width = arena.Width + 700
-    If Me.Width < 2000 Then Me.Width = 2000
+    Me.width = arena.width + 700
+    If Me.width < 2000 Then Me.width = 2000
     Me.Height = arena.Height + Command8.Height + 830
     DoEvents
     Call AnimateAt(anm, 0, 0, anm.animSizeX, anm.animSizeY, arena)

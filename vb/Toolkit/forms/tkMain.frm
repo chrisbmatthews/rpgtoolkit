@@ -2299,13 +2299,13 @@ Begin VB.MDIForm tkMainForm
             Style           =   6
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "07/12/2006"
+            TextSave        =   "19/01/2007"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "18:09"
+            TextSave        =   "15:37"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             AutoSize        =   1
@@ -2539,15 +2539,28 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'============================================================================
-' All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
-' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-' Read LICENSE.txt for licensing info
-'============================================================================
-
-'============================================================================
-' Main MDI form
-'============================================================================
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'    - Jonathan D. Hughes
+'    - Sander Knape
+'    - Shao Xiang
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Option Explicit
 
@@ -4152,7 +4165,7 @@ End Sub
 '=========================================================================================
 Private Sub anmCmbSize_Click(): On Error Resume Next
     If anmCmbSize.ListIndex <> -1 Then
-        Call activeAnimation.setAnimSize(anmCmbSize.list(anmCmbSize.ListIndex))
+        Call activeAnimation.setAnimSize(anmCmbSize.List(anmCmbSize.ListIndex))
     End If
     anmCmbSize.ListIndex = -1
 End Sub

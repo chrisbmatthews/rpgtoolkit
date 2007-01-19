@@ -100,7 +100,6 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
-      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -386,15 +385,27 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'==========================================================================
-' All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
-' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-' Read LICENSE.txt for licensing info
-'==========================================================================
-
-'==========================================================================
-' RPGCode Editor
-'==========================================================================
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'    - Jonathan D. Hughes
+'    - Phil Carty
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Option Explicit
 
@@ -441,7 +452,7 @@ Public Sub openProgram(ByVal filename As String)
     On Error GoTo ErrorHandler
 
     ' Load the Program into text box.
-    Call CodeForm.LoadFile(filename, rtfText)
+    Call codeForm.LoadFile(filename, rtfText)
 
     ' Call Syntax Color Routines
     Call SplitLines
@@ -527,26 +538,26 @@ Private Sub mnuCut_Click(): On Error Resume Next
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
     'Call Clipboard.SetText(codeForm.SelText, vbCFText)
     'codeForm.SelText = vbNullString
-    Call SendMessage(CodeForm.hwnd, WM_CUT, 0, 0&)
+    Call SendMessage(codeForm.hwnd, WM_CUT, 0, 0&)
     Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
 End Sub
 
 Private Sub mnuCopy_Click(): On Error Resume Next
     'Call Clipboard.SetText(codeForm.SelText, vbCFText)
-    Call SendMessage(CodeForm.hwnd, WM_COPY, 0, 0&)
+    Call SendMessage(codeForm.hwnd, WM_COPY, 0, 0&)
     Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
 End Sub
 
 Private Sub mnuPaste_Click(): On Error Resume Next
     rpgcodeList(activeRPGCodeIndex).prgNeedUpdate = True
     Call Clipboard.SetText(Clipboard.GetText(vbCFText), vbCFText)
-    Call SendMessage(CodeForm.hwnd, WM_PASTE, 0, 0&)
+    Call SendMessage(codeForm.hwnd, WM_PASTE, 0, 0&)
     Call colorPastedCode                'This is crap!
 End Sub
 
 Private Sub mnuSelectAll_Click(): On Error Resume Next
-    CodeForm.selStart = 0
-    CodeForm.SelLength = Len(CodeForm.Text)
+    codeForm.selStart = 0
+    codeForm.SelLength = Len(codeForm.Text)
 End Sub
 
 '==========================================================================
@@ -579,7 +590,7 @@ Private Sub CodeForm_KeyPress(KeyAscii As Integer): On Error Resume Next
     Select Case KeyAscii
 
         Case 3  ' Ctrl+C
-            Call Clipboard.SetText(CodeForm.SelText, vbCFText)
+            Call Clipboard.SetText(codeForm.SelText, vbCFText)
 
     End Select
 
@@ -592,13 +603,13 @@ Private Sub colorPastedCode()
 
     Dim oldSS As Long
     Dim oldSL As Long
-    oldSS = CodeForm.selStart()
-    oldSL = CodeForm.SelLength()
-    Call SplitLines(oldLine, CodeForm.GetLineFromChar(oldSS))
-    CodeForm.selStart = oldSS
-    CodeForm.SelLength = oldSL
+    oldSS = codeForm.selStart()
+    oldSL = codeForm.SelLength()
+    Call SplitLines(oldLine, codeForm.GetLineFromChar(oldSS))
+    codeForm.selStart = oldSS
+    codeForm.SelLength = oldSL
     blackLine = True
-    Call CodeForm.SetFocus
+    Call codeForm.SetFocus
     blackLine = False
 
 End Sub
@@ -680,15 +691,15 @@ Private Sub codeform_MouseDown(Button As Integer, Shift As Integer, x As Single,
         
         'Determine which options to enable.
         If LenB(Clipboard.GetText(vbCFText)) Then mnuPopPrg_Paste.Enabled = True
-        If CodeForm.SelLength Then mnuPopPrg_Copy.Enabled = True: mnuPopPrg_Cut.Enabled = True
+        If codeForm.SelLength Then mnuPopPrg_Copy.Enabled = True: mnuPopPrg_Cut.Enabled = True
     
         PopupMenu mnuPopPrg
         
     Else
         'Highlight code.
-        mouseDownSelStart = CodeForm.selStart
-        mouseDownSelLength = CodeForm.SelLength
-        oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
+        mouseDownSelStart = codeForm.selStart
+        mouseDownSelLength = codeForm.SelLength
+        oldLine = codeForm.GetLineFromChar(codeForm.selStart)
     End If
     
 End Sub
@@ -714,12 +725,12 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
 
     If Not (mnuNotepadMode.Checked) Then
         Dim inf As TextLineInfo
-        inf = getTextLineInfo(CodeForm.Text, CodeForm.selStart)
-        tkMainForm.StatusBar1.Panels(3).Text = CStr(CodeForm.GetLineFromChar(CodeForm.selStart) + 1)
+        inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
+        tkMainForm.StatusBar1.Panels(3).Text = CStr(codeForm.GetLineFromChar(codeForm.selStart) + 1)
         tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
     End If
 
-    oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
+    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
 
     'Declare variables...
     Dim enterKey As String
@@ -736,8 +747,8 @@ Private Sub codeform_KeyDown(keyCode As Integer, Shift As Integer): On Error Res
         If (blackLine) Then
             Call reColorLine(blackLine)
             blackLine = False
-            If (CodeForm.selStart = Len(CodeForm.Text)) Then
-                CodeForm.SelItalic = 0
+            If (codeForm.selStart = Len(codeForm.Text)) Then
+                codeForm.SelItalic = 0
             End If
         End If
         Exit Sub
@@ -756,7 +767,7 @@ End Sub
 '==========================================================================
 Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
-    oldLine = CodeForm.GetLineFromChar(CodeForm.selStart)
+    oldLine = codeForm.GetLineFromChar(codeForm.selStart)
 
     ' Make sure we aren't wasting time coloring a line that's already colored
     If (blackLine) Then
@@ -766,12 +777,12 @@ Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y
         Dim nSL As Long
  
         ' Record where the mouse clicked down
-        nSS = CodeForm.selStart
-        nSL = CodeForm.SelLength
+        nSS = codeForm.selStart
+        nSL = codeForm.SelLength
  
         ' Move back to the line we just left
-        CodeForm.selStart = mouseDownSelStart
-        CodeForm.SelLength = mouseDownSelLength
+        codeForm.selStart = mouseDownSelStart
+        codeForm.SelLength = mouseDownSelLength
 
         ' Color the line we just left
         reColorLine
@@ -780,13 +791,13 @@ Private Sub codeform_MouseUp(Button As Integer, Shift As Integer, x As Single, y
         blackLine = False
  
         ' Move back to where the mouse clicked down
-        CodeForm.selStart = nSS
-        CodeForm.SelLength = nSL
+        codeForm.selStart = nSS
+        codeForm.SelLength = nSL
 
     End If
 
-    If (CodeForm.selStart = Len(CodeForm.Text)) Then
-        CodeForm.SelItalic = 0
+    If (codeForm.selStart = Len(codeForm.Text)) Then
+        codeForm.SelItalic = 0
     End If
 
 End Sub
@@ -799,7 +810,7 @@ Private Sub cboBookmarkType_Change()
     cboMethodBookmarks.visible = False
     cboCommentBookmarks.visible = False
     cboLabelBookmarks.visible = False
-    Select Case cboBookmarkType.list(cboBookmarkType.ListIndex)
+    Select Case cboBookmarkType.List(cboBookmarkType.ListIndex)
         Case "(Methods)": Set secondCombo = cboMethodBookmarks
         Case "(Comments)": Set secondCombo = cboCommentBookmarks
         Case "(Labels)": Set secondCombo = cboLabelBookmarks
@@ -816,7 +827,7 @@ Public Sub addBookmark(ByVal bookmarkName As String, ByRef cbo As ComboBox)
     Dim i As Long
 
     For i = 0 To cbo.ListCount - 1
-        If (Trim$(LCase$(bookmarkName)) = Trim$(LCase$(cbo.list(i)))) Then
+        If (Trim$(LCase$(bookmarkName)) = Trim$(LCase$(cbo.List(i)))) Then
             Call cbo.RemoveItem(i)
         End If
     Next i
@@ -833,7 +844,7 @@ Public Sub removeBookmark(ByVal bookmarkName As String, ByRef cbo As ComboBox)
     Dim i As Long
 
     For i = 0 To cbo.ListCount - 1
-        If (Trim$(LCase$(bookmarkName)) = Trim$(LCase$(cbo.list(i)))) Then
+        If (Trim$(LCase$(bookmarkName)) = Trim$(LCase$(cbo.List(i)))) Then
             Call cbo.RemoveItem(i)
             Exit Sub
         End If
@@ -845,7 +856,7 @@ End Sub
 ' Goto a boomark line
 '==========================================================================
 Private Sub gotoBookmark()
-    Call GotoLine(secondCombo.list(secondCombo.ListIndex))
+    Call GotoLine(secondCombo.List(secondCombo.ListIndex))
 End Sub
 
 '==========================================================================
@@ -854,12 +865,12 @@ End Sub
 Private Sub checkBookmarkChange()
     On Error Resume Next
     Static lastType As String, lastSecondCombo As String
-    If (lastType <> cboBookmarkType.list(cboBookmarkType.ListIndex)) Then
-        lastType = cboBookmarkType.list(cboBookmarkType.ListIndex)
+    If (lastType <> cboBookmarkType.List(cboBookmarkType.ListIndex)) Then
+        lastType = cboBookmarkType.List(cboBookmarkType.ListIndex)
         Call cboBookmarkType_Change
     End If
-    If (lastSecondCombo <> secondCombo.list(secondCombo.ListIndex)) Then
-        lastSecondCombo = secondCombo.list(secondCombo.ListIndex)
+    If (lastSecondCombo <> secondCombo.List(secondCombo.ListIndex)) Then
+        lastSecondCombo = secondCombo.List(secondCombo.ListIndex)
         Call gotoBookmark
     End If
 End Sub
@@ -893,7 +904,7 @@ End Sub
 ' File -> Close
 '==========================================================================
 Private Sub closemnu_Click()
-    rpgcodeList(activeRPGCodeIndex).prgText = CodeForm.Text
+    rpgcodeList(activeRPGCodeIndex).prgText = codeForm.Text
     Call Unload(Me)
 End Sub
 
@@ -903,8 +914,8 @@ End Sub
 Private Sub codeform_Click()
     On Error Resume Next
     Dim inf As TextLineInfo
-    inf = getTextLineInfo(CodeForm.Text, CodeForm.selStart)
-    tkMainForm.StatusBar1.Panels(3).Text = CStr(CodeForm.GetLineFromChar(CodeForm.selStart) + 1)
+    inf = getTextLineInfo(codeForm.Text, codeForm.selStart)
+    tkMainForm.StatusBar1.Panels(3).Text = CStr(codeForm.GetLineFromChar(codeForm.selStart) + 1)
     tkMainForm.StatusBar1.Panels(4).Text = str$(inf.insertPosition)
 End Sub
 
@@ -921,11 +932,11 @@ End Sub
 Public Sub prgEventEdit()
     On Error Resume Next
     Dim numLines As Long
-    numLines = countTextLines(CodeForm.Text)
+    numLines = countTextLines(codeForm.Text)
     ReDim evtList(numLines + 500) As String
     Dim i As Long
     For i = 0 To numLines - 1
-        evtList(i) = getTextLineNumber(CodeForm.Text, i)
+        evtList(i) = getTextLineNumber(codeForm.Text, i)
     Next i
     Call EventEdit.Show
 End Sub
@@ -968,10 +979,10 @@ Set activeRPGCode = Me
 dataIndex = VectRPGCodeNewSlot()
 activeRPGCodeIndex = dataIndex
     
-CodeForm.width = Me.width * 0.9 - 255
-CodeForm.Height = Me.Height * 0.9 - 335
-CodeForm.Left = (Me.width * 0.1) / 2
-CodeForm.Top = 335
+codeForm.width = Me.width * 0.9 - 255
+codeForm.Height = Me.Height * 0.9 - 335
+codeForm.Left = (Me.width * 0.1) / 2
+codeForm.Top = 335
 
 WindowState = 0
 
@@ -983,9 +994,9 @@ End If
 
 Call Form_Resize
 
-CodeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", vbNullString)
-If (LenB(CodeForm.Text)) Then CodeForm.Text = CodeForm.Text & vbCrLf
-CodeForm.selStart = Len(CodeForm.Text)
+codeForm.Text = GetSetting("RPGToolkit3", "PRG Editor", "Common", vbNullString)
+If (LenB(codeForm.Text)) Then codeForm.Text = codeForm.Text & vbCrLf
+codeForm.selStart = Len(codeForm.Text)
 
 Exit Sub
 
@@ -1003,7 +1014,7 @@ Private Sub Form_Resize()
 
     Dim cfTop As Long
     If (mnuBookmarkToolbar.Checked) Then cfTop = 335
-    CodeForm.move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
+    codeForm.move 0, cfTop, Me.ScaleWidth, Me.ScaleHeight - cfTop
     cboBookmarkType.width = (Me.width - 60) / 2
     If Not (secondCombo Is Nothing) Then
         secondCombo.Left = cboBookmarkType.width
@@ -1040,7 +1051,7 @@ Private Sub Form_Unload(Cancel As Integer): On Error Resume Next
     
     End If
 
-    rpgcodeList(activeRPGCodeIndex).prgText = CodeForm.Text
+    rpgcodeList(activeRPGCodeIndex).prgText = codeForm.Text
     Call hideAllTools
     If (mnuNotepadMode.Checked) Then Call mnuNotepadMode_Click
     If (Tag = "1") Then Call mnuexit_Click
@@ -1111,7 +1122,7 @@ Private Sub rprg_Click()
     End If
     
     ' Complete TestPRG String
-    TestPRG = TestPRG & CodeForm.Text
+    TestPRG = TestPRG & codeForm.Text
 
     Dim num As Long
     num = FreeFile()
@@ -1429,10 +1440,10 @@ Private Sub mnuopen_Click(): On Error Resume Next
     
     If Tag = "1" Then
     
-        Dim file As String, filetypes As String
-        filetypes = "RPG Toolkit Program (*.prg)|*.prg"
+        Dim file As String, fileTypes As String
+        fileTypes = "RPG Toolkit Program (*.prg)|*.prg"
         
-        If browseFileDialog(Me.hwnd, projectPath, "Open program", "prg", filetypes, file) Then
+        If browseFileDialog(Me.hwnd, projectPath, "Open program", "prg", fileTypes, file) Then
             Shell App.path & "\" & App.EXEName & ".exe " & filename(1), vbNormalFocus
         End If
         

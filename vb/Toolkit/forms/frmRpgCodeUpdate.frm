@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmRpgCodeUpdate 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "RPGCode Update Wizard"
@@ -237,11 +237,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'=========================================================================
-' All contents copyright 2006, Colin James Fitzpatrick
-' All rights reserved  YOU MAY NOT REMOVE THIS NOTICE
-' Read LICENSE.txt for licensing info
-'=========================================================================
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Option Explicit
 
@@ -358,11 +369,11 @@ Private Sub prepareFileTree(ByVal path As String, ByRef node As String)
         str = trimNulls(fd.cFileName)
         If (fd.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY) Then
             If ((str <> ".") And (str <> "..")) Then
-                Call files.Nodes.Add(node, tvwChild, node & "\" & str, str)
+                Call files.nodes.Add(node, tvwChild, node & "\" & str, str)
                 Call prepareFileTree(path & str & "\", node & "\" & str)
             End If
         Else
-            Call files.Nodes.Add(node, tvwChild, path & str, str)
+            Call files.nodes.Add(node, tvwChild, path & str, str)
         End If
     Loop While (FindNextFile(hSearch, fd))
     Call FindClose(hSearch)
@@ -394,10 +405,10 @@ Private Sub executeUpdate(): On Error Resume Next
     Call MkDir(projectPath & prgPath & "Backup\")
 
     ' Calculate maximum value of progress bar.
-    status.max = files.Nodes.count() - 1 ' -1 for root node
+    status.max = files.nodes.count() - 1 ' -1 for root node
 
     Dim i As node
-    For Each i In files.Nodes
+    For Each i In files.nodes
         DoEvents
         If (i.Checked) Then
             Dim file As String
@@ -436,13 +447,13 @@ Private Sub Form_Load()
     frmStep(0).visible = True
     m_step = 0
     Call changeTitle
-    Call files.Nodes.Add(, , ROOT_NODE, ROOT_NODE)
+    Call files.nodes.Add(, , ROOT_NODE, ROOT_NODE)
     Call prepareFileTree(projectPath & prgPath, ROOT_NODE)
 
     Dim j As node
-    For Each j In files.Nodes
+    For Each j In files.nodes
         Call j.EnsureVisible
         j.Checked = True
     Next j
-    Set files.SelectedItem = files.Nodes.Item(ROOT_NODE)
+    Set files.SelectedItem = files.nodes.Item(ROOT_NODE)
 End Sub

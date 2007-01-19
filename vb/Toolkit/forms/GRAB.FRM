@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form grab 
    Caption         =   "Grab Tile"
    ClientHeight    =   6960
@@ -391,14 +391,26 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'=======================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
-'=======================================================================
-
-'=======================================================================
-'Rewrite for 3.0.4 & revised 3.0.5, by Delano.
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'    - Jonathan D. Hughes
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Option Explicit
 
@@ -544,7 +556,7 @@ Private Sub BatchStandard(ByVal filename As String, ByVal level As Byte): On Err
                     'Set the transparent colour.
                     If tileMem(x, y) = openTileEditorDocs(activeTile.indice).transpcolor Then
                         tileMem(x, y) = -1
-                    ElseIf tileMem(x, y) <> grabForm.BackColor Then
+                    ElseIf tileMem(x, y) <> grabForm.backColor Then
                         'We have a pixel - this tile isn't empty.
                         foundPixel = True
                     End If
@@ -708,7 +720,7 @@ Private Sub BatchIsometric(ByVal filename As String): On Error Resume Next
                     'Set the transparent colour.
                     If tileMem(x, y) = openTileEditorDocs(activeTile.indice).transpcolor Then
                         tileMem(x, y) = -1
-                    ElseIf tileMem(x, y) <> grabForm.BackColor Then
+                    ElseIf tileMem(x, y) <> grabForm.backColor Then
                         'We have a pixel - this tile isn't empty.
                         foundPixel = True
                     End If
@@ -857,7 +869,7 @@ Private Sub picGridColor_Click(): On Error Resume Next
     'Do not assign if cancel pressed.
     If color <> -1 Then gridColor = color
     
-    picGridColor.BackColor = gridColor
+    picGridColor.backColor = gridColor
     Call grabRedraw
     
 End Sub
@@ -875,7 +887,7 @@ Private Sub picSelectColor_Click(): On Error Resume Next
     'Do not assign if cancel pressed.
     If color <> -1 Then selectionColor = color
     
-    picSelectColor.BackColor = selectionColor
+    picSelectColor.backColor = selectionColor
     Call grabRedraw
 End Sub
 
@@ -891,7 +903,7 @@ Private Sub picTrans_Click(): On Error Resume Next
     'Do not assign if cancel pressed.
     If color <> -1 Then openTileEditorDocs(activeTile.indice).transpcolor = color
     
-    picTrans.BackColor = openTileEditorDocs(activeTile.indice).transpcolor
+    picTrans.backColor = openTileEditorDocs(activeTile.indice).transpcolor
     Call grabRedraw
 End Sub
 
@@ -1115,7 +1127,7 @@ Private Sub Form_Load(): On Error Resume Next
 '=========================
     
     ' Call LocalizeForm(Me)
-    grab.tag = 1608         'Assign a name for the editor bar.
+    grab.Tag = 1608         'Assign a name for the editor bar.
     grab.Caption = "Grab Tile (No image)"
     chkWelcome.value = configfile.grabTips
     
@@ -1126,8 +1138,8 @@ Private Sub Form_Load(): On Error Resume Next
     
     gridColor = vbQBColor(1)
     selectionColor = vbQBColor(9)
-    picGridColor.BackColor = gridColor
-    picSelectColor.BackColor = selectionColor
+    picGridColor.backColor = gridColor
+    picSelectColor.backColor = selectionColor
     
     grab.Left = (Screen.width - grab.width) / 2
     grab.Top = (Screen.Height - grab.Height) / 2
@@ -1199,8 +1211,8 @@ Private Sub Form_Resize(): On Error Resume Next
     grabFrame.Top = grabForm.Height + grabForm.Top
     grabFrame.Left = (grab.width - grabFrame.width) / 2
     
-    scrVertical.Visible = False
-    scrHorizontal.Visible = False
+    scrVertical.visible = False
+    scrHorizontal.visible = False
     
     If openImage.loaded = 1 Then
         'If an image has been loaded and successfully unloaded (will equal 1).
@@ -1210,7 +1222,7 @@ Private Sub Form_Resize(): On Error Resume Next
         Else
             'Image is wider than grabform.
             'Enable the horziontal scroll.
-            scrHorizontal.Visible = True
+            scrHorizontal.visible = True
             'maxHeight = maxHeight - scrHorizontal.height
             
             'grabForm.width = (Int(grabForm.width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
@@ -1222,12 +1234,12 @@ Private Sub Form_Resize(): On Error Resume Next
         Else
             'Image is taller than grabform.
             'Enable the vertical scroll.
-            scrVertical.Visible = True
+            scrVertical.visible = True
             'maxWidth = maxWidth - scrVertical.width
             
             If openImage.twipWidth > maxWidth Then
                 'grabForm.width = (Int(grabForm.width / (Screen.TwipsPerPixelX * 32))) * 32 * Screen.TwipsPerPixelX
-                scrHorizontal.Visible = True
+                scrHorizontal.visible = True
                 'grabForm.height = grabForm.height - scrHorizontal.height
             End If
             
@@ -1295,9 +1307,9 @@ On Error Resume Next
         
         'Set the transparent colour in the preview window.
         If openTileEditorDocs(activeTile.indice).transpcolor <> -1 Then
-            picTrans.BackColor = openTileEditorDocs(activeTile.indice).transpcolor
+            picTrans.backColor = openTileEditorDocs(activeTile.indice).transpcolor
         Else
-            picTrans.BackColor = vbQBColor(15)      'White.
+            picTrans.backColor = vbQBColor(15)      'White.
         End If
         
         Exit Sub

@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form editmainfile 
    BorderStyle     =   1  'Fixed Single
@@ -61,39 +61,39 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "fraSettings"
-      Tab(1).Control(1)=   "startframe"
+      Tab(1).Control(0)=   "startframe"
+      Tab(1).Control(1)=   "fraSettings"
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "actionframe"
-      Tab(2).Control(1)=   "prgframe"
+      Tab(2).Control(0)=   "prgframe"
+      Tab(2).Control(1)=   "actionframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
       Tab(3).ControlEnabled=   0   'False
-      Tab(3).Control(0)=   "Picture7"
-      Tab(3).Control(1)=   "fightframe"
+      Tab(3).Control(0)=   "fightframe"
+      Tab(3).Control(1)=   "Picture7"
       Tab(3).ControlCount=   2
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
       Tab(4).ControlEnabled=   0   'False
-      Tab(4).Control(0)=   "Frame6"
-      Tab(4).Control(1)=   "screenframe"
+      Tab(4).Control(0)=   "screenframe"
+      Tab(4).Control(1)=   "Frame6"
       Tab(4).ControlCount=   2
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Frame3"
+      Tab(5).Control(0)=   "Label24"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Label24"
+      Tab(5).Control(2)=   "Frame3"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
       Tab(6).ControlEnabled=   0   'False
-      Tab(6).Control(0)=   "Picture13"
-      Tab(6).Control(1)=   "Frame1"
+      Tab(6).Control(0)=   "Frame1"
+      Tab(6).Control(1)=   "Picture13"
       Tab(6).ControlCount=   2
       Begin VB.Frame fraMovementControls 
          Caption         =   "Movement Controls"
@@ -2457,15 +2457,26 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'=========================================================================
-'All contents copyright 2003, 2004, 2005 Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
-'=========================================================================
-
-'=========================================================================
-' Main file editor
-'=========================================================================
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'    - Jonathan D. Hughes
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Option Explicit
 
