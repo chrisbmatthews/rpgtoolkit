@@ -1,12 +1,25 @@
 Attribute VB_Name = "CommonTileAnim"
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
-'Animated tile
 Option Explicit
-
-''''''''''''''''''''''tile anim data'''''''''''''''''''''''''
 
 Type TKTileAnm
     animTileFrames As Long 'total number of frames
@@ -146,10 +159,10 @@ Sub TileAnmDrawNextFrameCNV(ByRef theAnm As TKTileAnm, ByVal cnv As Long, ByVal 
     
     On Error Resume Next
     If DrawFrame Then
-        Call drawTileCNV(cnv, projectPath & tilePath & TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y, r, g, b, drawMask, False)
+        Call drawTileCnv(cnv, projectPath & tilePath & TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y, r, g, b, drawMask, False)
         
         If cnvIso <> -1 Then
-            Call drawTileCNV(cnvIso, projectPath & tilePath & TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y + 1, r, g, b, drawMask, False, True, True)
+            Call drawTileCnv(cnvIso, projectPath & tilePath & TileAnmGet(theAnm, theAnm.currentAnmFrame), x, y + 1, r, g, b, drawMask, False, True, True)
         End If
     End If
     
@@ -222,10 +235,10 @@ Function TileAnmShouldDrawFrame(ByRef theAnm As TKTileAnm) As Boolean
     Dim toRet As Boolean
     toRet = False
     
-    Dim interval As Long
-    interval = 200 / theAnm.animTilePause
+    Dim Interval As Long
+    Interval = 200 / theAnm.animTilePause
     
-    If theAnm.timerFrame Mod interval = 0 Then
+    If theAnm.timerFrame Mod Interval = 0 Then
         toRet = True
     End If
     

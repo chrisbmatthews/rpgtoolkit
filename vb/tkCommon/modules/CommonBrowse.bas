@@ -1,29 +1,40 @@
 Attribute VB_Name = "CommonBrowse"
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
-'common module for popping up the web browser
-'either tkbrowse.exe or the user's default browser
 Option Explicit
 
 Public BrowseUseExternal As Boolean 'use external web browser? (if false, use tkbrowse.exe)
 
 Sub BrowseFile(ByVal file As String)
     'browse to a file (relative location ok)
-    If currentdir$ = "" Then
+    If currentDir$ = "" Then
         Call BrowseLocation(App.path + "\" + file)
     Else
-        Call BrowseLocation(currentdir$ + "\" + file)
+        Call BrowseLocation(currentDir$ + "\" + file)
     End If
 End Sub
 
 
 Public Sub BrowseLocation(ByVal url As String)
     'open browser to specific location
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     
-    If Not (FileExists("tkbrowse.exe")) Then
+    If Not (fileExists("tkbrowse.exe")) Then
         BrowseUseExternal = True
     End If
     
@@ -36,8 +47,8 @@ Public Sub BrowseLocation(ByVal url As String)
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
-    a = Shell("tkbrowse " + Chr$(34) + url + Chr$(34))
+ErrorHandler:
+    a = Shell("tkbrowse " + chr$(34) + url + chr$(34))
     Resume Next
 End Sub
 

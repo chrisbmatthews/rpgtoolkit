@@ -22,11 +22,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'=========================================================================
-' All contents copyright 2004, Colin James Fitzpatrick
-' All rights reserved. YOU MAY NOT REMOVE THIS NOTICE.
-' Read LICENSE.txt for licensing info
-'=========================================================================
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 '=========================================================================
 ' Graphical Button
@@ -72,9 +83,9 @@ Public Event click()                ' Button was clicked
 Public Property Get width() As Long
     width = m_lngWidth
 End Property
-Public Property Let width(ByVal RHS As Long)
-    m_lngWidth = RHS
-    cmdFallback.width = RHS
+Public Property Let width(ByVal rhs As Long)
+    m_lngWidth = rhs
+    cmdFallback.width = rhs
 End Property
 
 '=========================================================================
@@ -83,9 +94,9 @@ End Property
 Public Property Get Height() As Long
     Height = m_lngHeight
 End Property
-Public Property Let Height(ByVal RHS As Long)
-    m_lngHeight = RHS
-    cmdFallback.Height = RHS
+Public Property Let Height(ByVal rhs As Long)
+    m_lngHeight = rhs
+    cmdFallback.Height = rhs
 End Property
 
 '=========================================================================
@@ -107,15 +118,15 @@ End Property
 Public Property Get picture() As IPictureDisp
     Set picture = m_picDisp
 End Property
-Public Property Let picture(ByRef RHS As IPictureDisp)
+Public Property Let picture(ByRef rhs As IPictureDisp)
 
     ' If it's a non-zero RHS
-    If Not (RHS Is Nothing) Then
+    If Not (rhs Is Nothing) Then
 
         Dim hOldObject As Long
 
         ' Select the picture into our DC
-        hOldObject = SelectObject(m_hPicDC, RHS.handle)
+        hOldObject = SelectObject(m_hPicDC, rhs.handle)
 
         ' If there was an old object
         If (hOldObject) Then
@@ -128,19 +139,19 @@ Public Property Let picture(ByRef RHS As IPictureDisp)
     End If
 
     ' Store the RHS
-    Set m_picDisp = RHS
+    Set m_picDisp = rhs
 
     ' Also copy over to fallback button
-    Set cmdFallback.picture = RHS
+    Set cmdFallback.picture = rhs
 
     ' Need to redraw
     Call draw(1)
 
 End Property
-Public Property Set picture(ByRef RHS As IPictureDisp)
+Public Property Set picture(ByRef rhs As IPictureDisp)
 
     ' Let the picture be the RHS
-    picture = RHS
+    picture = rhs
 
 End Property
 
@@ -174,10 +185,10 @@ Private Sub draw(ByVal lngState As Long)
 
     ' Draw the button
     xpStyles.hdc = UserControl.hdc
-    cmdFallback.Visible = Not (xpStyles.draw())
+    cmdFallback.visible = Not (xpStyles.draw())
 
     ' If we fell back
-    If (cmdFallback.Visible) Then
+    If (cmdFallback.visible) Then
 
         ' Allow the button to draw its own caption and picture
         Exit Sub

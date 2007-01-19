@@ -1,9 +1,24 @@
 Attribute VB_Name = "CommonLocalize"
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
-'localizer
 Option Explicit
 
 Private Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
@@ -188,8 +203,8 @@ Sub LocalizeForm(frm As VB.Form)
     End If
     
     Dim idx As Long
-    If IsNumeric(frm.tag) Then
-        idx = LangIndexOfTag(Int(frm.tag), m_LangTable)
+    If IsNumeric(frm.Tag) Then
+        idx = LangIndexOfTag(Int(frm.Tag), m_LangTable)
         If idx <> -1 Then
             frm.Caption = m_LangTable.theTable(idx).Caption
             If frm.Caption = " " Then frm.Caption = vbNullString
@@ -197,8 +212,8 @@ Sub LocalizeForm(frm As VB.Form)
     End If
     
     For Each ctl In frm.Controls
-        If IsNumeric(ctl.tag) Then
-            idx = LangIndexOfTag(Int(ctl.tag), m_LangTable)
+        If IsNumeric(ctl.Tag) Then
+            idx = LangIndexOfTag(Int(ctl.Tag), m_LangTable)
             If idx <> -1 Then
                 ctl.Caption = m_LangTable.theTable(idx).Caption
                 If ctl.Caption = " " Then ctl.Caption = vbNullString

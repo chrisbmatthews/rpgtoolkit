@@ -1,17 +1,23 @@
 Attribute VB_Name = "event"
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
-
-'=======================================================
-'Notes by KSNiloc for 3.04
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
 '
-' ---What needs to be done
-' + Re-write event generator
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
 '
-'=======================================================
-
-'event generator methods
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Global evtList$()   'listing of the event program
 Global evtToEditNum As Integer 'num in event list to edit (-1 = not in list)
@@ -32,7 +38,7 @@ Sub ListCategories(file$, elist As ListBox)
     'elist- list box to display in.
     On Error Resume Next
     
-    elist.Clear
+    elist.clear
     elist.AddItem ("All")
     If fileExists(file$) Then
         num = FreeFile
@@ -359,7 +365,7 @@ Sub DisplayEventCommands(file$, category$, elist As ListBox)
     'elist- list box to display in.
     On Error Resume Next
     
-    elist.Clear
+    elist.clear
     If fileExists(file$) Then
         num = FreeFile
         Open file$ For Input As #num
@@ -432,7 +438,7 @@ Sub OpenEventList(file$, eventlist As ListBox)
     
     On Error Resume Next
     
-    Call eventlist.Clear
+    Call eventlist.clear
     
     num = FreeFile
     If fileExists(file$) Then

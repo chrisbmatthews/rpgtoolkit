@@ -1,9 +1,21 @@
 Attribute VB_Name = "CommonTextBox"
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
-'text box routines
 Option Explicit
 
 Public Type TextLineInfo
@@ -12,16 +24,16 @@ Public Type TextLineInfo
     textLine As String  'the actual text on this line
 End Type
 
-Function countTextLines(ByVal text As String) As Integer
+Function countTextLines(ByVal Text As String) As Integer
     'count the lines of rpgcode we get from an rpgcode box
     On Error Resume Next
     Dim count As Integer
     Dim part As String
     Dim t As Long
     
-    For t = 1 To Len(text)
-        part = Mid$(text, t, 2)
-        If part = Chr$(13) + Chr$(10) Or part = "" Then
+    For t = 1 To Len(Text)
+        part = Mid$(Text, t, 2)
+        If part = chr$(13) + chr$(10) Or part = "" Then
             count = count + 1
         End If
     Next t
@@ -29,7 +41,7 @@ Function countTextLines(ByVal text As String) As Integer
 End Function
 
 
-Function getTextLineNumber(ByVal text As String, ByVal num As Integer) As String
+Function getTextLineNumber(ByVal Text As String, ByVal num As Integer) As String
     'given a stream of text from a text box, this function
     'returns the num-th line of text as a string.
     'num starts at zero
@@ -40,9 +52,9 @@ Function getTextLineNumber(ByVal text As String, ByVal num As Integer) As String
     Dim t As Long
     
     count = -1
-    For t = 1 To Len(text)
-        part = Mid$(text, t, 2)
-        If part = Chr$(13) + Chr$(10) Or part$ = "" Then
+    For t = 1 To Len(Text)
+        part = Mid$(Text, t, 2)
+        If part = chr$(13) + chr$(10) Or part$ = "" Then
             count = count + 1
             If count = num Then
                 'we have it!
@@ -52,7 +64,7 @@ Function getTextLineNumber(ByVal text As String, ByVal num As Integer) As String
                 theLine = ""
             End If
         Else
-            If Mid$(part, 1, 1) <> Chr$(10) Then
+            If Mid$(part, 1, 1) <> chr$(10) Then
                 theLine = theLine + Mid$(part, 1, 1)
             End If
         End If
@@ -60,7 +72,7 @@ Function getTextLineNumber(ByVal text As String, ByVal num As Integer) As String
 End Function
 
 
-Function getTextLineNumbers(ByVal text As String, ByRef returnArray() As String) As Long
+Function getTextLineNumbers(ByVal Text As String, ByRef returnArray() As String) As Long
     'given a stream of text from a text box, this function
     'obtains all lines form the text box, and returns them in an array
     'this function returns the size of the array
@@ -74,9 +86,9 @@ Function getTextLineNumbers(ByVal text As String, ByRef returnArray() As String)
     
     arrayPos = 0
     count = -1
-    For t = 1 To Len(text)
-        part = Mid$(text, t, 2)
-        If part = Chr$(13) + Chr$(10) Or part$ = "" Then
+    For t = 1 To Len(Text)
+        part = Mid$(Text, t, 2)
+        If part = chr$(13) + chr$(10) Or part$ = "" Then
             count = count + 1
             returnArray(arrayPos) = theLine
             arrayPos = arrayPos + 1
@@ -87,7 +99,7 @@ Function getTextLineNumbers(ByVal text As String, ByRef returnArray() As String)
             End If
             theLine = ""
         Else
-            If Mid$(part, 1, 1) <> Chr$(10) Then
+            If Mid$(part, 1, 1) <> chr$(10) Then
                 theLine = theLine + Mid$(part, 1, 1)
             End If
         End If
@@ -96,7 +108,7 @@ End Function
 
 
 
-Function getTextLineInfo(ByVal text As String, ByVal selStart As Long) As TextLineInfo
+Function getTextLineInfo(ByVal Text As String, ByVal selStart As Long) As TextLineInfo
     'given a stream of text from a text box, this function
     'returns the line info the selection is at.
     'the line number starts at zero
@@ -117,16 +129,16 @@ Function getTextLineInfo(ByVal text As String, ByVal selStart As Long) As TextLi
     textLine = ""
     
     count = 0
-    For t = 1 To Len(text)
+    For t = 1 To Len(Text)
         If selPos = selStart Then
             toRet.lineNumber = count
             toRet.insertPosition = linePos
             toRet.textLine = textLine
             Exit For
         End If
-        part = Mid$(text, t, 2)
+        part = Mid$(Text, t, 2)
                
-        If part = Chr$(13) + Chr$(10) Or part$ = "" Then
+        If part = chr$(13) + chr$(10) Or part$ = "" Then
             count = count + 1
             linePos = 0
             textLine = ""

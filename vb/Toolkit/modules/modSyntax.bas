@@ -1,5 +1,23 @@
 Attribute VB_Name = "modSyntax"
-' modSyntax
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Geoff Wilson & Contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 '
 ' This module handles all of the synatax coloring routines.
 '
@@ -50,20 +68,20 @@ Dim TimeToColor As Long
 Dim x As Long
 
 Dim currentObject As RichTextBox
-Set currentObject = activeRPGCode.codeForm
+Set currentObject = activeRPGCode.CodeForm
 
 Call GetLineColors
 
-currentObject.tag = "1"
+currentObject.Tag = "1"
 
 'Clear bookmarks...
 With activeRPGCode
-    .cboMethodBookmarks.Clear
-    .cboCommentBookmarks.Clear
-    .cboLabelBookmarks.Clear
+    .cboMethodBookmarks.clear
+    .cboCommentBookmarks.clear
+    .cboLabelBookmarks.clear
 End With
 
-currentObject.Visible = False
+currentObject.visible = False
 linesArray() = Split(currentObject.Text, vbNewLine)
 runningTotal = 0
 
@@ -95,7 +113,7 @@ Next x
 
 'StopTime = GetTickCount
 If min = -1 Then currentObject.selStart = 1
-currentObject.Visible = True
+currentObject.visible = True
 'TimeToColor = Round((StopTime - StartTime) / 1000, 2)
 'frmMain.StatusBar1.Panels(1).text = "Loaded " & (UBound(linesArray()) - 1) & " liines in " & TimeToColor & " seconds"
 End Function
@@ -108,7 +126,7 @@ Dim moveFromStart As Long
 ' Set the active code text box as CurrentObject
 
 Dim currentObject As RichTextBox
-Set currentObject = activeRPGCode.codeForm
+Set currentObject = activeRPGCode.CodeForm
 
 SpaceLessLine = replace(replace(lineText, " ", vbNullString), vbTab, vbNullString) _
 
@@ -245,7 +263,7 @@ Function ColorSection(SectionStart As Long, SectionLen As Long, SectionColor As 
 
  'Access the RTF box...
  Dim currentObject As RichTextBox
- Set currentObject = activeRPGCode.codeForm ' 3.06: Use the active RPGCode form
+ Set currentObject = activeRPGCode.CodeForm ' 3.06: Use the active RPGCode form
  
  'Select the text...
  currentObject.selStart = SectionStart
@@ -272,7 +290,7 @@ Public Sub GotoLine(ByVal lineText As String)
  Dim a As Long
  
  Dim currentObject As RichTextBox
- Set currentObject = activeRPGCode.codeForm
+ Set currentObject = activeRPGCode.CodeForm
 
  With currentObject
  
@@ -303,9 +321,9 @@ Public Sub reColorLine( _
 
     On Error Resume Next
 
-    With activeRPGCode.codeForm
+    With activeRPGCode.CodeForm
 
-        .Visible = False
+        .visible = False
 
         Dim oldSS As Long, oldSL As Long
         oldSS = .selStart
@@ -345,7 +363,7 @@ Public Sub reColorLine( _
         .selStart = oldSS
         .SelLength = oldSL
 
-        .Visible = True
+        .visible = True
         Call .SetFocus
 
     End With

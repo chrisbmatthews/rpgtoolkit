@@ -1,7 +1,24 @@
 Attribute VB_Name = "CommonFont"
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'    - Shao Xiang
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Option Explicit
 
@@ -103,7 +120,7 @@ End Sub
 
 Sub antialias()
     'antialiases font
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim x As Long, y As Long
     For x = 1 To currentX - 1
         For y = 1 To currentY - 1
@@ -130,7 +147,7 @@ Sub antialias()
 
     Exit Sub
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     
     Resume Next
 End Sub
@@ -391,7 +408,7 @@ Function SetDeviceFont(ByVal hdc As Long, ByRef theAttribs As fontAttribs, ByRef
 End Function
 
 Function toBinary(ByVal decimala As Long) As String
-    On Error GoTo errorhandler
+    On Error GoTo ErrorHandler
     Dim binNum As String, t As Long, Length As Long, newNum As String, part As String
     Dim remain As Long
     binNum$ = vbNullString
@@ -411,7 +428,7 @@ Function toBinary(ByVal decimala As Long) As String
     Exit Function
 
 'Begin error handling code:
-errorhandler:
+ErrorHandler:
     
     Resume Next
 End Function

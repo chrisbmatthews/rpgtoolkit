@@ -1,9 +1,23 @@
 Attribute VB_Name = "CommonImage"
-'=========================================================================
-' All contents copyright 2003, 2004, Christopher Matthews or Contributors
-' All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-' Read LICENSE.txt for licensing info
-'=========================================================================
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 '=========================================================================
 ' Interface with actkrt3.dll :: FreeImage (image loading)
@@ -17,11 +31,11 @@ Option Explicit
 Private Declare Function IMGInit Lib "actkrt3.dll" () As Long
 Private Declare Function IMGClose Lib "actkrt3.dll" () As Long
 Private Declare Function IMGDraw Lib "actkrt3.dll" (ByVal filename As String, ByVal x As Long, ByVal y As Long, ByVal hdc As Long) As Long
-Private Declare Function IMGDrawSized Lib "actkrt3.dll" (ByVal filename As String, ByVal x As Long, ByVal y As Long, ByVal sizeX As Long, ByVal sizeY As Long, ByVal hdc As Long) As Long
+Private Declare Function IMGDrawSized Lib "actkrt3.dll" (ByVal filename As String, ByVal x As Long, ByVal y As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long) As Long
 Private Declare Function IMGFree Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGGetDIB Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
 Private Declare Function IMGGetBitmapInfo Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
-Private Declare Function IMGStretchBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal x As Long, ByVal y As Long, ByVal sizeX As Long, ByVal sizeY As Long, ByVal hdc As Long) As Long
+Private Declare Function IMGStretchBlt Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long, ByVal x As Long, ByVal y As Long, ByVal sizex As Long, ByVal sizey As Long, ByVal hdc As Long) As Long
 
 '=========================================================================
 ' Dialog flags
@@ -36,8 +50,8 @@ Public Sub DrawSizedImage( _
                              ByVal filename As String, _
                              ByVal x As Long, _
                              ByVal y As Long, _
-                             ByVal sizeX As Long, _
-                             ByVal sizeY As Long, _
+                             ByVal sizex As Long, _
+                             ByVal sizey As Long, _
                              ByVal hdc As Long _
                                                  )
 
@@ -49,15 +63,15 @@ Public Sub DrawSizedImage( _
         Call OpenTileBitmap(filename, tbm)
         Dim cnv As Long
         Dim cnvMask As Long
-        cnv = createCanvas(tbm.sizeX * 32, tbm.sizeY * 32)
-        cnvMask = createCanvas(tbm.sizeX * 32, tbm.sizeY * 32)
+        cnv = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
+        cnvMask = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
         Call DrawTileBitmapCNV(cnv, cnvMask, 0, 0, tbm)
-        Call canvasMaskBltStretch(cnv, cnvMask, x, y, sizeX, sizeY, hdc)
+        Call canvasMaskBltStretch(cnv, cnvMask, x, y, sizex, sizey, hdc)
         Call destroyCanvas(cnv)
         Call destroyCanvas(cnvMask)
     Else
         'Real image
-        Call IMGDrawSized(filename, x, y, sizeX, sizeY, hdc)
+        Call IMGDrawSized(filename, x, y, sizex, sizey, hdc)
     End If
 
 End Sub
@@ -69,8 +83,8 @@ Public Sub drawSizedImageCNV( _
                              ByVal filename As String, _
                              ByVal x As Long, _
                              ByVal y As Long, _
-                             ByVal sizeX As Long, _
-                             ByVal sizeY As Long, _
+                             ByVal sizex As Long, _
+                             ByVal sizey As Long, _
                              ByVal cnv As Long _
                                                  )
 
@@ -83,18 +97,18 @@ Public Sub drawSizedImageCNV( _
         Call OpenTileBitmap(filename, tbm)
         Dim tempCnv As Long
         Dim cnvMask As Long
-        tempCnv = createCanvas(tbm.sizeX * 32, tbm.sizeY * 32)
-        cnvMask = createCanvas(tbm.sizeX * 32, tbm.sizeY * 32)
+        tempCnv = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
+        cnvMask = createCanvas(tbm.sizex * 32, tbm.sizey * 32)
         Call DrawTileBitmapCNV(tempCnv, cnvMask, 0, 0, tbm)
         hdc = canvasOpenHDC(cnv)
-        Call canvasMaskBltStretch(tempCnv, cnvMask, x, y, sizeX, sizeY, hdc)
+        Call canvasMaskBltStretch(tempCnv, cnvMask, x, y, sizex, sizey, hdc)
         Call canvasCloseHDC(cnv, hdc)
         Call destroyCanvas(tempCnv)
         Call destroyCanvas(cnvMask)
     Else
         ' Real image
         hdc = canvasOpenHDC(cnv)
-        Call IMGDrawSized(filename, x, y, sizeX, sizeY, hdc)
+        Call IMGDrawSized(filename, x, y, sizex, sizey, hdc)
         Call canvasCloseHDC(cnv, hdc)
     End If
 

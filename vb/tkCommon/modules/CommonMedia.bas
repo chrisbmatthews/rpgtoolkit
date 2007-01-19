@@ -1,9 +1,23 @@
 Attribute VB_Name = "CommonMedia"
-'=========================================================================
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
-'=========================================================================
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 '=========================================================================
 ' Common media functions
@@ -96,7 +110,7 @@ Public Sub PlayMCI(DriveDirFile As String, Optional ByVal strIdentifier As Strin
     On Error Resume Next
     Dim returnStr As String * 255, returnLen As Long
     Dim shortPath As String
-    shortPath = space$(Len(DriveDirFile))
+    shortPath = Space$(Len(DriveDirFile))
     returnLen = GetShortPathName(DriveDirFile, shortPath, Len(shortPath))
     If returnLen > Len(DriveDirFile) Then 'not a long filename
         shortPath = DriveDirFile
@@ -136,7 +150,7 @@ Public Sub StopMCI(Optional ByVal strIdentifier As String = "defDevice")
     If Left$(returnStr, 7) = "playing" Then
         Call mciSendString("stop " & strIdentifier, returnStr, 255, 0)
     End If
-    returnStr = space$(255)
+    returnStr = Space$(255)
     Call mciSendString("status " & strIdentifier & " mode", returnStr, 255, 0)
     If Left$(returnStr, 7) = "stopped" Then
         Call mciSendString("close " & strIdentifier, returnStr, 255, 0)

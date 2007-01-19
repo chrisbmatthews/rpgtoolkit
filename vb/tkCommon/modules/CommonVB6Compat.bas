@@ -1,38 +1,44 @@
 Attribute VB_Name = "CommonVB6Compat"
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
+'
+' Contributors:
+'    - Colin James Fitzpatrick
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
-'visual basic 6 compatibility functions
-'for working under the .NET framework
 Option Explicit
 
-'=======================================================
-'Cleaned up a bit, 3.0.4 by KSNiloc
-'
-' ---What needs to be done
-' + Re-write these procedures using GDI
-'
-'=======================================================
-
 'Constants for use with BitBlt()
-Global Const SRCCOPY = &HCC0020 ' (DWORD) dest = source
+Global Const SRCCOPY = &HCC0020         ' (DWORD) dest = source
 Global Const SRCPAINT = &HEE0086        ' (DWORD) dest = source OR dest
-Global Const SRCAND = &H8800C6  ' (DWORD) dest = source AND dest
+Global Const SRCAND = &H8800C6          ' (DWORD) dest = source AND dest
 Global Const SRCINVERT = &H660046       ' (DWORD) dest = source XOR dest
 Global Const SRCERASE = &H440328        ' (DWORD) dest = source AND (NOT dest )
 Global Const NOTSRCCOPY = &H330008      ' (DWORD) dest = (NOT source)
 Global Const NOTSRCERASE = &H1100A6     ' (DWORD) dest = (NOT src) AND (NOT dest)
 Global Const MERGECOPY = &HC000CA       ' (DWORD) dest = (source AND pattern)
 Global Const MERGEPAINT = &HBB0226      ' (DWORD) dest = (NOT source) OR dest
-Global Const PATCOPY = &HF00021 ' (DWORD) dest = pattern
+Global Const PATCOPY = &HF00021         ' (DWORD) dest = pattern
 Global Const PATPAINT = &HFB0A09        ' (DWORD) dest = DPSnoo
 Global Const PATINVERT = &H5A0049       ' (DWORD) dest = pattern XOR dest
 Global Const DSTINVERT = &H550009       ' (DWORD) dest = (NOT dest)
-Global Const BLACKNESS = &H42&  ' (DWORD) dest = BLACK
+Global Const BLACKNESS = &H42&          ' (DWORD) dest = BLACK
 Global Const WHITENESS = &HFF0062       ' (DWORD) dest = WHITE
 
-Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xsrc As Long, ByVal ysrc As Long, ByVal dwrop As Long) As Long
+Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Declare Function SetPixelV Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal crColor As Long) As Long
 Public Declare Function GetPixel Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
 Public Declare Function SetBkColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
@@ -46,8 +52,8 @@ Public Declare Function GetDesktopWindow Lib "user32" () As Long
 
 Declare Function StretchBlt& Lib "gdi32" _
     (ByVal hdc&, ByVal x&, ByVal y&, ByVal nWidth&, ByVal nHeight&, _
-     ByVal hSrcDC&, ByVal xsrc&, ByVal ysrc&, ByVal SrcWidth&, ByVal SrcHeight&, _
-     ByVal dwrop&)
+     ByVal hSrcDC&, ByVal xSrc&, ByVal ySrc&, ByVal SrcWidth&, ByVal SrcHeight&, _
+     ByVal dwRop&)
 
 Public Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Public Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long

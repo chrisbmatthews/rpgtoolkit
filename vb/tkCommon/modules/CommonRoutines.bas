@@ -1,30 +1,24 @@
 Attribute VB_Name = "commonRoutines"
-'All contents copyright 2003, 2004, Christopher Matthews or Contributors
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
-
-'=======================================================
-' Routines
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher Matthews & contributors
 '
-' Contains various misc procedures. Some are possibly
-' better off in different places.
-'=======================================================
-
-'=======================================================
-'Cleaned up a bit, 3.0.4 by KSNiloc
+' Contributors:
+'    - Colin James Fitzpatrick
+'    - Jonathan D. Hughes
+'========================================================================
 '
-' --What is done
-' + Option Explicit added
-' + Obsolete prodecures removed
-' + ByVal or ByRef added to parameters
-' + Purpose of procedures added
-' + Trans & Toolkit routines files merged
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
 '
-' --What needs to be done
-' + Check usage of all procedures to prevent boxing
-' + Some procedures need serious help; help them
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
 '
-'=======================================================
+'========================================================================
 
 Option Explicit
 
