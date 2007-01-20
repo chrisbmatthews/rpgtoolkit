@@ -1,7 +1,7 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Jonathan D. Hughes
+ * This file copyright (C) 2007  Jonathan D. Hughes
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or

@@ -1,7 +1,7 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Christopher Matthews & contributors
+ * This file copyright (C) 2007  Christopher Matthews & contributors
  *
  * Contributors:
  *    - Colin James Fitzpatrick
@@ -18,13 +18,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
-/////////////////////////////////
-// CUtil.h
-// Definition for filename and path functions
-// Developed for v2.19b (Dec 2001 - Jan 2002)
-// Copyright 2002 by Christopher B. Matthews
-/////////////////////////////////
 
 #ifndef _CUTIL_H_
 #define _CUTIL_H_

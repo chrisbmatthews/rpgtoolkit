@@ -1,7 +1,7 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Christopher Matthews
+ * This file copyright (C) 2007  Christopher Matthews
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
@@ -14,12 +14,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
-//////////////////////
-// CCanvasPool.h
-// Definition of canvas pool object
-// Christopher Matthews, Nov 2003
-
 
 #ifndef CCANVASPOOL_H
 #define CCANVASPOOL_H
