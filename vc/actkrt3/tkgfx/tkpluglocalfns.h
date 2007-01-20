@@ -1,20 +1,24 @@
-//All contents copyright 2003, Christopher Matthews
-//All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-//Read LICENSE.txt for licensing info
+/*
+ ********************************************************************
+ * The RPG Toolkit, Version 3
+ * This file copyright (C) 2007 Christopher Matthews & contributors
+ *
+ * Contributors:
+ *    - Colin James Fitzpatrick
+ *    - Jonathan D. Hughes
+ ********************************************************************
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
-////////////////////////////////////////////////////////////////
-//
-// If you want your plugin to work, DO NOT MODIFY THIS FILE!
-//
-////////////////////////////////////////////////////////////////
-//
-// RPG Toolkit Development System, Version 2
-// Plugin Libraries
-// Developed by Christopher B. Matthews (Copyright 2000)
-//
-// You may use these libraries freely.  You may even modify 
-// them, but doing so may cause your plugin to stop working.
-//
 ////////////////////////////////////////////////////////////////
 //
 // File:					tkpluglocalfns.h
@@ -26,37 +30,14 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//==============================================================
-// Alterations by Delano for 3.0.4 
-// For new isometric tile system
-//
-// drawIsoTile
-// opentile		- called by openWinTile only.
-// openFromTileSet
-// openWinTile	- is this actually called by anything?
-//				  possibly depreciated by the CTile class?
-// tilesetInfo
-// calcInsertionPoint
-//
-// New: createIsometricMask
-
-// Variables added:
 long isoMaskGfx[65][33];	 // Note the CTile arrays run from 0 to 31!
 bool bGfxCreateIsoMaskOnce = false;
-
-// New: constants:
 
 #define TSTTYPE   0
 #define ISOTYPE   2
 #define ISODETAIL 150		//Arbitrary, but same as toolkit3, commonTileset!
 
-//
-// Will the sdk need updating?!
-//==============================================================
-
-
 #include <stdlib.h>
-
 
 ///////////////////////////////////////////////////////
 //
