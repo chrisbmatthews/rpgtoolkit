@@ -103,7 +103,7 @@ typedef enum tkVT_CONSTANTS
 
 	tkVT_BKGIMAGE			= TA_BRD_BACKGROUND,		// Under tiletype attributes.
 	tkVT_ALL_LAYERS_BELOW	= TA_ALL_LAYERS_BELOW,
-	tkVT_RECT_INTERSECT		= TA_RECT_INTERSECT
+	tkVT_FRAME_INTERSECT	= TA_FRAME_INTERSECT
 };
 
 
@@ -1895,7 +1895,7 @@ void pathfind(CALL_DATA &params)
 }
 
 /*
- * void playerstep(string handle, int x, int y [, int flags])
+ * void playerstep(variant handle, int x, int y [, int flags])
  * 
  * Causes the player to take one step in the direction of x, y
  * following a route determined by pathFind.
@@ -1973,7 +1973,7 @@ void itemstep(CALL_DATA &params)
 }
 
 /*
- * void push(string direction[, string handle [, int flags]])
+ * void push(string direction [, variant handle [, int flags]])
  * 
  * Push the player with the specified handle, or the default player
  * if no handle is specified, along the given directions. The direction
@@ -5836,7 +5836,14 @@ void openFileAppend(CALL_DATA &params)
 		throw CError(_T("OpenFileOutput() requires two parameters."));
 	}
 	CFile &file = g_files[parser::uppercase(params[0].getLit())];
-	file.open(g_projectPath + params[1].getLit() + _T('\\') + params[0].getLit(), OF_WRITE);
+	CONST STRING filename = g_projectPath + params[1].getLit() + _T('\\') + params[0].getLit();
+	
+	// Create the file if it doesn't exist.
+	file.open(filename, OF_WRITE);
+	if (!file.isOpen())
+	{
+		file.open(filename, OF_CREATE | OF_WRITE);
+	}
 	file.seek(file.size());
 }
 
@@ -6969,7 +6976,7 @@ void spritepath(CALL_DATA &params, CSprite *p)
 
 	if (flags & tkMV_CLEAR_QUEUE) p->clearQueue();
 
-	if (flags & tkMV_PATH_FIND)
+	if (flags & tkMV_PATHFIND)
 	{
 		int x = int(params[2].getNum()), y = int(params[3].getNum());
 		coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->sizeX);
@@ -6982,14 +6989,14 @@ void spritepath(CALL_DATA &params, CSprite *p)
 			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 		}
 	}
-	else if (flags & tkMV_WAYPOINT_PATH)
+	else if (flags & (tkMV_WAYPOINT_PATH | tkMV_WAYPOINT_LINK))
 	{
 		const LPBRD_VECTOR brd = g_pBoard->getVector(&params[2]);
 		const int cycles = int(params[3].getNum());
 
 		if (!brd)
 		{
-			p->setBoardPath(NULL, 0, tkMV_PATH_BACKGROUND);
+			if (flags & tkMV_WAYPOINT_LINK) p->setBoardPath(NULL, 0, tkMV_WAYPOINT_LINK);
 		}
 		else
 		{
@@ -7020,25 +7027,30 @@ void spritepath(CALL_DATA &params, CSprite *p)
 
 /*
  * void itemPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
- * void itemPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
+ * void itemPath(variant handle, int flags | tkMV_PATHFIND, int x1, int y1)
  * void itemPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
+ * void itemPath(variant handle, int flags | tkMV_WAYPOINT_LINK, variant boardpath, int cycles)
  *
  * Causes the sprite to walk a path between a given set of co-ordinates,
- * depending on the flags parameter.
+ * depending on the flags parameter. 'handle' must be a board index value
+ * or 'target' or 'source', not the item's internal handle.
  *
  * 1) Sprite walks the explicit path given by x1, y1 to xn, yn.
  *		Required flag: none.
  *
  * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
- *		Required flag: tkMV_PATH_FIND.
+ *		Required flag: tkMV_PATHFIND.
  *
- * 3) Sprite walks a board-set waypoint path 
+ * 3) Sprite walks a board-set waypoint vector. 
  *		Required flag: tkMV_WAYPOINT_PATH.
- *		Possible flags for this option (in addition those for all options):
- *		tkMV_PATH_BACKGROUND:	
- *			Walk a waypoint path in the background. The sprite will resume the
- *			the path if other movement commands are given to it, after completion.
- *			Pass a negative number in boardpath to clear this flag.
+ *		The points of the vector are added to the sprite's queue.
+ *
+ * 4) A link is made between sprite and waypoint vector.
+ *		Required flag: tkMV_WAYPOINT_LINK.
+ *		Set cycles = 0 to walk infinitely.
+ *		Set boardpath = -1 to clear link to waypoint vector before cycles expires.
+ *      The sprite will resume the the path if other movement commands
+ *		are given to it, after completion.
  *
  * Possible flags for all options:
  *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
@@ -7058,8 +7070,9 @@ void itempath(CALL_DATA &params)
 
 /*
  * void playerPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
- * void playerPath(variant handle, int flags | tkMV_PATH_FIND, int x1, int y1)
+ * void playerPath(variant handle, int flags | tkMV_PATHFIND, int x1, int y1)
  * void playerPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
+ * void playerPath(variant handle, int flags | tkMV_WAYPOINT_LINK, variant boardpath, int cycles)
  *
  * Causes the sprite to walk a path between a given set of co-ordinates,
  * depending on the flags parameter.
@@ -7068,15 +7081,18 @@ void itempath(CALL_DATA &params)
  *		Required flag: none.
  *
  * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
- *		Required flag: tkMV_PATH_FIND.
+ *		Required flag: tkMV_PATHFIND.
  *
- * 3) Sprite walks a board-set waypoint path 
+ * 3) Sprite walks a board-set waypoint vector. 
  *		Required flag: tkMV_WAYPOINT_PATH.
- *		Possible flags for this option (in addition those for all options):
- *		tkMV_PATH_BACKGROUND:	
- *			Walk a waypoint path in the background. The sprite will resume the
- *			the path if other movement commands are given to it, after completion.
- *			Pass a negative number in boardpath to clear this flag.
+ *		The points of the vector are added to the sprite's queue.
+ *
+ * 4) A link is made between sprite and waypoint vector.
+ *		Required flag: tkMV_WAYPOINT_LINK.
+ *		Set cycles = 0 to walk infinitely.
+ *		Set boardpath = -1 to clear link to waypoint vector before cycles expires.
+ *      The sprite will resume the the path if other movement commands
+ *		are given to it, after completion.
  *
  * Possible flags for all options:
  *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
@@ -7099,7 +7115,7 @@ void playerpath(CALL_DATA &params)
  * 
  * Returns the number of vectors on the board.
  *
- * void boardGetVector(variant vector, int &tileType, int &pointCount, int &layer, bool &isClosed, int &attributes)
+ * void boardGetVector(variant vector, int &type, int &pointCount, int &layer, bool &isClosed, int &attributes)
  *
  * Returns the properties of a given vector.
  */
@@ -7149,11 +7165,14 @@ void boardgetvector(CALL_DATA &params)
 }
 
 /* 
- * void boardSetVector(variant vector, int tileType, int pointCount, int layer, bool isClosed, int attributes)
+ * void boardSetVector(variant vector, int type, int pointCount, int layer, bool isClosed, int attributes)
  *
  * Sets the properties of a given vector.
  * Creates a new vector if an existing one is not found - if a numeric variable
  * is supplied, it will be set to the new index (one-past-end).
+ *
+ * Possible types are:  tkVT_SOLID, tkVT_UNDER, tkVT_STAIRS, tkVT_WAYPOINT.
+ * Possible attributes: tkVT_BKGIMAGE, tkVT_ALL_LAYERS_BELOW, tkVT_FRAME_INTERSECT.
  */
 void boardsetvector(CALL_DATA &params)
 {
@@ -7345,7 +7364,10 @@ void boardgetprogram(CALL_DATA &params)
  * void boardSetProgram(int programIndex, string program, int pointCount, int layer, bool isClosed, int attributes, int distanceRepeat)
  *
  * Sets the properties of a given program; creates a new program if one-past-the-end index is given.
+ * Use val = boardGetProgram() to get the next index. 
  * distanceRepeat in pixels always.
+ *
+ * Possible flags: tkPRG_STEP, tkPRG_KEYPRESS, tkPRG_REPEAT, tkPRG_STOPS_MOVEMENT.
  */
 void boardsetprogram(CALL_DATA &params)
 {
@@ -7535,6 +7557,77 @@ void itemdirection(CALL_DATA &params)
 	}
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(face->dir());
+}
+
+void spritegetpath(const CSprite *spr, CALL_DATA &params)
+{
+	const SPRITE_POSITION pos = spr->getPosition();
+
+	if (params.params == 1)
+	{
+		params.ret().udt = UDT_NUM;
+		params.ret().num = double(pos.path.size());
+	}
+	else
+	{
+		const unsigned int i = (unsigned int)params[1].getNum();
+		if (i < pos.path.size())
+		{
+			const DB_POINT pt = pos.path[i];
+			LPSTACK_FRAME pSf = NULL;
+			pSf = params.prg->getVar(params[2].lit);
+			pSf->udt = UDT_NUM;
+			pSf->num = floor(pt.x + 0.5);
+
+			pSf = params.prg->getVar(params[3].lit);
+			pSf->udt = UDT_NUM;
+			pSf->num = floor(pt.y + 0.5);
+		}
+	}
+}
+
+/* 
+ * int playerGetPath(variant handle)
+ *
+ * Get the number of points in the sprite's path.
+ *
+ * void playerGetPath(variant handle, int index, int &x, int &y)
+ *
+ * Get the coordinates of a point in the sprite's path.
+ */
+void playergetpath(CALL_DATA &params)
+{
+	if (params.params != 1 && params.params != 4)
+	{
+		throw CError(_T("PlayerGetPath() requires one or four parameters."));
+	}
+	
+	CPlayer *p = getPlayerPointer(params[0]);
+	if (!p) throw CError(_T("PlayerGetPath(): player not found."));
+
+	spritegetpath(p, params);
+}
+
+/* 
+ * int itemGetPath(variant handle)
+ *
+ * Get the number of points in the sprite's path.
+ *
+ * void itemGetPath(variant handle, int index, int &x, int &y)
+ *
+ * Get the coordinates of a point in the sprite's path.
+ */
+void itemgetpath(CALL_DATA &params)
+{
+	if (params.params != 1 && params.params != 4)
+	{
+		throw CError(_T("ItemGetPath() requires one or four parameters."));
+	}
+	
+	CItem *p = getItemPointer(params[0]);
+	if (!p) throw CError(_T("ItemGetPath(): player not found."));
+
+	spritegetpath(p, params);
 }
 
 // Get a numerical stack frame.
@@ -7816,9 +7909,13 @@ void initRpgCode()
 	CProgram::addFunction(_T("playerlocation"), playerlocation);
 	CProgram::addFunction(_T("canvasdrawpart"), canvasDrawPart);
 	CProgram::addFunction(_T("canvasgetscreen"), canvasGetScreen);
+	CProgram::addFunction(_T("setambientlevel"), setambientlevel);
+
+	// Vector movement functions.
 	CProgram::addFunction(_T("itempath"), itempath);
 	CProgram::addFunction(_T("playerpath"), playerpath);
-	CProgram::addFunction(_T("setambientlevel"), setambientlevel);
+	CProgram::addFunction(_T("itemgetpath"), itemgetpath);
+	CProgram::addFunction(_T("playergetpath"), playergetpath);
 	CProgram::addFunction(_T("playerdirection"), playerdirection);
 	CProgram::addFunction(_T("itemdirection"), itemdirection);
 
@@ -7835,9 +7932,9 @@ void initRpgCode()
 	// Movement constants.
 	CProgram::addConstant(_T("tkMV_PAUSE_THREAD"), makeNumStackFrame(tkMV_PAUSE_THREAD));
 	CProgram::addConstant(_T("tkMV_CLEAR_QUEUE"), makeNumStackFrame(tkMV_CLEAR_QUEUE));
-	CProgram::addConstant(_T("tkMV_PATH_FIND"), makeNumStackFrame(tkMV_PATH_FIND));
+	CProgram::addConstant(_T("tkMV_PATHFIND"), makeNumStackFrame(tkMV_PATHFIND));
 	CProgram::addConstant(_T("tkMV_WAYPOINT_PATH"), makeNumStackFrame(tkMV_WAYPOINT_PATH));
-	CProgram::addConstant(_T("tkMV_PATH_BACKGROUND"), makeNumStackFrame(tkMV_PATH_BACKGROUND));
+	CProgram::addConstant(_T("tkMV_WAYPOINT_LINK"), makeNumStackFrame(tkMV_WAYPOINT_LINK));
 
 	// Vector type constants/attributes.
 	CProgram::addConstant(_T("tkVT_SOLID"), makeNumStackFrame(tkVT_SOLID));
@@ -7846,7 +7943,7 @@ void initRpgCode()
 	CProgram::addConstant(_T("tkVT_WAYPOINT"), makeNumStackFrame(tkVT_WAYPOINT));
 	CProgram::addConstant(_T("tkVT_BKGIMAGE"), makeNumStackFrame(tkVT_BKGIMAGE));
 	CProgram::addConstant(_T("tkVT_ALL_LAYERS_BELOW"), makeNumStackFrame(tkVT_ALL_LAYERS_BELOW));
-	CProgram::addConstant(_T("tkVT_RECT_INTERSECT"), makeNumStackFrame(tkVT_RECT_INTERSECT));
+	CProgram::addConstant(_T("tkVT_FRAME_INTERSECT"), makeNumStackFrame(tkVT_FRAME_INTERSECT));
 
 	// Program-related board constants.
 	CProgram::addConstant(_T("tkPRG_STEP"), makeNumStackFrame(tkPRG_STEP));
