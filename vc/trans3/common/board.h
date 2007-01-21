@@ -1,11 +1,7 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Christopher Matthews & contributors
- *
- * Contributors:
- *    - Colin James Fitzpatrick
- *    - Jonathan D. Hughes
+ * This file copyright (C) 2007 Jonathan D. Hughes & Colin James Fitzpatrick
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
@@ -79,7 +75,7 @@ typedef struct tagBoardProgram
 // Tile-type attributes.
 #define TA_BRD_BACKGROUND		1		// Under vector uses background image.
 #define TA_ALL_LAYERS_BELOW		2		// Under vector applies to all layers below.
-#define TA_RECT_INTERSECT		4		// Under vector activated by bounding rect intersection.
+#define TA_FRAME_INTERSECT		4		// Under vector activated by frame intersection.
 
 /*
  * A board vector collision object.

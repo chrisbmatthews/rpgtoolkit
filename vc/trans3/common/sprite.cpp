@@ -1,11 +1,7 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Christopher Matthews & contributors
- *
- * Contributors:
- *    - Colin James Fitzpatrick
- *    - Jonathan D. Hughes
+ * This file copyright (C) 2007 Jonathan D. Hughes & Colin James Fitzpatrick
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
