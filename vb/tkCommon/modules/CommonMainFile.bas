@@ -793,7 +793,7 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .cursorCancelSound = vbNullString
         .useJoystick = 1
         .mouseCursor = "TK DEFAULT"
-        .pixelMovement = 0
+        .pixelMovement = 1          'Default to pixel movement - tile movement is depreciated (3.1.0).
         .gameSpeed = 0
         .hotSpotX = 0
         .hotSpotY = 0
