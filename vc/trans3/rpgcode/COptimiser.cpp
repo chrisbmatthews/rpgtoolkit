@@ -159,6 +159,12 @@ bool COptimiser::inlineExpand()
 				{
 					*k = i->second;
 				}
+				else if (k->lit[0] == ' ')
+				{
+					// This is a parameter, but we can't leave it named this since we
+					// are not in a local scope.
+					k->lit[0] = '-';
+				}
 				continue;
 			}
 			if (!((k->udt & UDT_FUNC) && (k->func == CProgram::returnVal))) continue;
