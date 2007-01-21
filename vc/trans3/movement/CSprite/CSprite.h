@@ -37,9 +37,9 @@ typedef enum tkMV_CONSTANTS
 {
 	tkMV_PAUSE_THREAD		= 1,
 	tkMV_CLEAR_QUEUE		= 2,
-	tkMV_PATH_FIND			= 4,
+	tkMV_PATHFIND			= 4,
 	tkMV_WAYPOINT_PATH		= 8,				// Apply a waypoint path.
-	tkMV_PATH_BACKGROUND	= 16				// Walk a waypoint path repeatedly.
+	tkMV_WAYPOINT_LINK		= 16				// Link to a waypoint path.
 };
 
 class CProgram;

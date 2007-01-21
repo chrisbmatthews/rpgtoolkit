@@ -402,7 +402,7 @@ MV_ENUM CSprite::getDirection(void) const
  */
 DB_POINT CSprite::getTarget(void) const
 {
-	if (m_bPxMovement)
+	if (m_bPxMovement || m_pos.bIsPath)
 	{
 		// Pixels travelled this move.
 		const int step = moveSize();
@@ -584,7 +584,7 @@ void CSprite::runQueuedMovements(void)
 }
 
 /*
- * Get the destination. #TBD: integrate into setQueuedMovement().
+ * Get the destination.
  */
 void CSprite::getDestination(DB_POINT &p) const
 {
@@ -729,7 +729,7 @@ void CSprite::doMovement(const CProgram *prg, const bool bPauseThread)
  */
 void CSprite::setBoardPath(CVector *const pV, const int cycles, const int flags)
 {
-	if (flags & tkMV_PATH_BACKGROUND)
+	if (flags & tkMV_WAYPOINT_LINK)
 	{
 		m_brdData.boardPath.pVector = pV;
 		m_brdData.boardPath.cycles = cycles;
@@ -980,7 +980,6 @@ TILE_TYPE CSprite::spriteCollisions(void)
 		}
 
 		// Compare target bases.
-		// const DB_POINT pt = (*i)->getTarget();
 
 		// Compare this sprite's target to others' current positions.
 		const DB_POINT pt = {(*i)->m_pos.x, (*i)->m_pos.y};

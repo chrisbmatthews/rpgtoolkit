@@ -358,6 +358,8 @@ void tagScrollCache::render(const bool bForceRedraw)
 			{
 				const int color = c->type == TT_SOLID ? RGB(255, 255, 255) : RGB(0, 255, 0);
 				c->pV->draw(color, true, r.left, r.top, &cnv);
+				//RECT r = c->pV->getBounds();
+				//cnv.DrawRect(r.left, r.top, r.right, r.bottom, RGB(255, 255, 255));
 			}
 
 			// Draw pathfinding obstructions (grown vectors) for the selected player only.
@@ -531,9 +533,9 @@ void renderNow(CCanvas *cnv, const bool bForce)
 				// bounds in 'r' - this is the area to draw.
 				if (IntersectRect(&r, &rect, &rBounds))
 				{
-					// If the under tile is "simple rect" intersection draw straight
+					// If the effect occurs on frame intersection draw straight
 					// off, else check for vector collision.
-					if(k->attributes & TA_RECT_INTERSECT || k->pV->contains(v, ptUnused))
+					if(k->attributes & TA_FRAME_INTERSECT || k->pV->contains(v, ptUnused))
 					{
 						k->pCnv->BltTransparentPart(
 							cnv, 
