@@ -101,7 +101,7 @@ STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 {
-	const STRING var = getString(varname);
+	const STRING var = replace(replace(getString(varname), _T("!"), _T("")), _T("$"), _T(""));
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	*pRet = pVar->getNum();
 	return S_OK;
@@ -109,7 +109,7 @@ STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 
 STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 {
-	const STRING var = getString(varname);
+	const STRING var = replace(replace(getString(varname), _T("!"), _T("")), _T("$"), _T(""));
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	pVar->udt = UDT_LIT;
 	pVar->lit = getString(newValue);
