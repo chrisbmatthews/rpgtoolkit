@@ -61,39 +61,39 @@ Begin VB.Form editmainfile
       TabCaption(1)   =   "Startup Info"
       TabPicture(1)   =   "EDITMAINv2.frx":0CE6
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "startframe"
-      Tab(1).Control(1)=   "fraSettings"
+      Tab(1).Control(0)=   "fraSettings"
+      Tab(1).Control(1)=   "startframe"
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "RPGCode"
       TabPicture(2)   =   "EDITMAINv2.frx":0D02
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "prgframe"
-      Tab(2).Control(1)=   "actionframe"
+      Tab(2).Control(0)=   "actionframe"
+      Tab(2).Control(1)=   "prgframe"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Fighting"
       TabPicture(3)   =   "EDITMAINv2.frx":0D1E
       Tab(3).ControlEnabled=   0   'False
-      Tab(3).Control(0)=   "fightframe"
-      Tab(3).Control(1)=   "Picture7"
+      Tab(3).Control(0)=   "Picture7"
+      Tab(3).Control(1)=   "fightframe"
       Tab(3).ControlCount=   2
       TabCaption(4)   =   "Graphics"
       TabPicture(4)   =   "EDITMAINv2.frx":0D3A
       Tab(4).ControlEnabled=   0   'False
-      Tab(4).Control(0)=   "screenframe"
-      Tab(4).Control(1)=   "Frame6"
+      Tab(4).Control(0)=   "Frame6"
+      Tab(4).Control(1)=   "screenframe"
       Tab(4).ControlCount=   2
       TabCaption(5)   =   "Day/Night"
       TabPicture(5)   =   "EDITMAINv2.frx":0D56
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label24"
+      Tab(5).Control(0)=   "Frame3"
       Tab(5).Control(1)=   "daynightcheckbox"
-      Tab(5).Control(2)=   "Frame3"
+      Tab(5).Control(2)=   "Label24"
       Tab(5).ControlCount=   3
       TabCaption(6)   =   "Plugins"
       TabPicture(6)   =   "EDITMAINv2.frx":0D72
       Tab(6).ControlEnabled=   0   'False
-      Tab(6).Control(0)=   "Frame1"
-      Tab(6).Control(1)=   "Picture13"
+      Tab(6).Control(0)=   "Picture13"
+      Tab(6).Control(1)=   "Frame1"
       Tab(6).ControlCount=   2
       Begin VB.Frame fraMovementControls 
          Caption         =   "Movement Controls"
@@ -2749,14 +2749,13 @@ End Sub
 ' Remove plugin
 '=========================================================================
 Private Sub cmdRemovePlugin_Click(): On Error Resume Next
-
-    If plugList.ListIndex = -1 Then plugList.ListIndex = 0
-    Call MainRemovePlugin(mainMem, MainGetNthPlugin(mainMem, plugList.ListIndex))
+    
     Dim idx As Long
-    idx = plugList.ListIndex - 1
-    If idx = -1 Then idx = 0
+    idx = IIf(plugList.ListIndex = -1, 0, plugList.ListIndex)
+
+    Call MainRemovePlugin(mainMem, MainGetNthPlugin(mainMem, idx))
     Call pluginInfoFill
-    plugList.ListIndex = idx
+    plugList.ListIndex = IIf(idx = plugList.ListCount, idx - 1, idx)
     
 End Sub
 
