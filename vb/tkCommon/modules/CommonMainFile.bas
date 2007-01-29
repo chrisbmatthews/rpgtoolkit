@@ -211,38 +211,25 @@ End Function
 '=========================================================================
 ' Remove a plugin from a project
 '=========================================================================
-Public Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String)
-    On Error Resume Next
-    Dim t As Long, a As Long
-    For t = 0 To UBound(theMain.plugins)
-        If UCase$(theMain.plugins(t)) = UCase$(file) Then
-            If t = UBound(theMain.plugins) Then
-                'If isComPlugin(projectPath & plugPath & theMain.plugins(t)) Then
-                '    For a = 0 To UBound(vbPlugins)
-                '        If comPlugins(a).filename = projectPath & plugPath & theMain.plugins(t) Then
-                '            comPlugins(a).filename = vbNullString
-                '        End If
-                '    Next a
-                'End If
-                theMain.plugins(t) = vbNullString
-                Exit Sub
+Public Sub MainRemovePlugin(ByRef theMain As TKMain, ByVal file As String): On Error Resume Next
+    Dim i As Long, j As Long, ub As Long
+    file = UCase$(file)
+    ub = UBound(theMain.plugins)
+    
+    For i = 0 To ub
+        If UCase$(theMain.plugins(i)) = file Then
+            If i = ub Then
+                theMain.plugins(i) = vbNullString
             Else
-                Dim l As Long
-                For l = t To UBound(theMain.plugins)
-                    ' If isComPlugin(projectPath & plugPath & theMain.plugins(l)) Then
-                    '     For a = 0 To UBound(vbPlugins)
-                    '         If comPlugins(a).filename = projectPath & plugPath & theMain.plugins(l) Then
-                    '             comPlugins(a).filename = vbNullString
-                    '         End If
-                    '     Next a
-                    ' End If
-                    theMain.plugins(l - 1) = theMain.plugins(l)
-                Next l
-                theMain.plugins(UBound(theMain.plugins)) = vbNullString
-                Exit Sub
+                For j = i + 1 To ub
+                    theMain.plugins(j - 1) = theMain.plugins(j)
+                Next j
             End If
+                theMain.plugins(ub) = vbNullString
+            Exit Sub
         End If
-    Next t
+    Next i
+    
 End Sub
 
 '=========================================================================
