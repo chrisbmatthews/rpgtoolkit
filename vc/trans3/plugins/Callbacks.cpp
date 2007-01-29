@@ -91,7 +91,13 @@ STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 
 STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 {
-	const STRING var = getString(varname);
+	STRING var = getString(varname);
+	const unsigned int last = var.length() - 1;
+	if (var[last] == '$')
+	{
+		// Expensive, but no cost to 3.0.7 coders.
+		var = var.substr(0, last);
+	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	BSTR bstr = getString(pVar->getLit());
 	SysReAllocString(pRet, bstr);
@@ -101,7 +107,13 @@ STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 {
-	const STRING var = replace(replace(getString(varname), _T("!"), _T("")), _T("$"), _T(""));
+	STRING var = getString(varname);
+	const unsigned int last = var.length() - 1;
+	if (var[last] == '!')
+	{
+		// Expensive, but no cost to 3.0.7 coders.
+		var = var.substr(0, last);
+	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	*pRet = pVar->getNum();
 	return S_OK;
@@ -109,7 +121,13 @@ STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 
 STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 {
-	const STRING var = replace(replace(getString(varname), _T("!"), _T("")), _T("$"), _T(""));
+	STRING var = getString(varname);
+	const unsigned int last = var.length() - 1;
+	if (var[last] == '$')
+	{
+		// Expensive, but no cost to 3.0.7 coders.
+		var = var.substr(0, last);
+	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	pVar->udt = UDT_LIT;
 	pVar->lit = getString(newValue);
@@ -118,7 +136,13 @@ STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 
 STDMETHODIMP CCallbacks::CBSetNumerical(BSTR varname, double newValue)
 {
-	const STRING var = getString(varname);
+	STRING var = getString(varname);
+	const unsigned int last = var.length() - 1;
+	if (var[last] == '!')
+	{
+		// Expensive, but no cost to 3.0.7 coders.
+		var = var.substr(0, last);
+	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	pVar->udt = UDT_NUM;
 	pVar->num = newValue;
