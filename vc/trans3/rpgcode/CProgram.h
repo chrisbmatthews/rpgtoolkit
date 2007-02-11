@@ -388,6 +388,7 @@ private:
 	static void runtimeInclusion(CALL_DATA &);
 
 	friend void operators::member(CALL_DATA &call);
+	friend void operators::array(CALL_DATA &call);
 	friend void tagMachineUnit::execute(CProgram *prg) const;
 	friend int yylex();
 	friend int yyparse();
@@ -403,6 +404,7 @@ private:
 	void prime();
 	static bool resolvePluginCall(LPMACHINE_UNIT pUnit);
 	virtual std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_locals; }
+	std::pair<bool, STRING> getInstanceVar(const STRING var) const;
 
 	// Update curly brace pairs and method locations. Should be called
 	// after new code is injected into the program to prevent errors.

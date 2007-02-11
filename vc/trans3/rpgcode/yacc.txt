@@ -151,6 +151,7 @@ identifier:
 |	value MEM var_identifier
 		{ _MACHINE_UNIT(operators::member, 2); }
 |	function
+|	identifier LARRAY RARRAY tdc
 ;
 
 value:
@@ -182,7 +183,6 @@ _value:
 			mu.lit = _T(":") + $2.getLit();
 			CProgram::m_pyyUnits->push_back(mu);
 		}
-;
 ;
 
 params:
@@ -641,8 +641,21 @@ class:
 	inherits
 ;
 
-class_member:
+/**
+ * A class member can have any of the following syntaxes:
+ * - var identifier
+ * - var identifier[]
+ * - var identifier[n] where n is a constant
+ * In the third syntax, the upper bound of the array is not respected.
+ */
+_class_member:
 	IDENTIFIER tdc
+|	IDENTIFIER LARRAY RARRAY tdc
+|	IDENTIFIER LARRAY NUMBER RARRAY tdc
+;
+
+class_member:
+	_class_member
 		{
 			if (g_pClass)
 			{

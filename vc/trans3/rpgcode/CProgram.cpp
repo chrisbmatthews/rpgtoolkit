@@ -237,6 +237,31 @@ unsigned int CProgram::getLine(CONST_POS pos) const
 	return m_lines.size() - 1;
 }
 
+// Get the name of an instance variable in the help.
+inline std::pair<bool, STRING> CProgram::getInstanceVar(const STRING name) const
+{
+	if (!m_calls.size())
+	{
+		return std::pair<bool, STRING>(false, STRING());
+	}
+
+	const unsigned int obj = m_calls.back().obj;
+	if (!obj)
+	{
+		return std::pair<bool, STRING>(false, STRING());
+	}
+
+	std::map<STRING, tagClass>::const_iterator i = m_classes.find(m_objects[obj]);
+	if ((i != m_classes.end()) && i->second.memberExists(name, CV_PRIVATE))
+	{
+		TCHAR str[255];
+		_itot(obj, str, 10);
+		return std::pair<bool, STRING>(true, STRING(str) + _T("::") + name);
+	}
+
+	return std::pair<bool, STRING>(false, STRING());
+}
+
 // Get a variable.
 LPSTACK_FRAME CProgram::getVar(const STRING name)
 {
@@ -256,19 +281,11 @@ LPSTACK_FRAME CProgram::getVar(const STRING name)
 			return j->second;
 		}
 	}
-	if (m_calls.size())
+	// TBD: This should be done at compile-time!
+	const std::pair<bool, STRING> res = getInstanceVar(name);
+	if (res.first)
 	{
-		unsigned int obj = m_calls.back().obj;
-		if (obj)
-		{
-			std::map<STRING, tagClass>::const_iterator i = m_classes.find(m_objects[obj]);
-			if ((i != m_classes.end()) && i->second.memberExists(name, CV_PRIVATE))
-			{
-				TCHAR str[255];
-				_itot(obj, str, 10);
-				return m_heap[STRING(str) + _T("::") + name];
-			}
-		}
+		return m_heap[res.second];
 	}
 	return (this->*m_pResolveFunc)(name);
 }
@@ -1067,7 +1084,9 @@ void CProgram::parseFile(FILE *pFile)
 			}
 		}
 
-		if ((i->udt & UDT_FUNC) && (i->func == methodCall))
+		if (!(i->udt & UDT_FUNC)) continue;
+
+		if (i->func == methodCall)
 		{
 			POS unit = i - 1;
 			if (unit->udt & UDT_OBJ) continue;
@@ -1104,6 +1123,12 @@ void CProgram::parseFile(FILE *pFile)
 				}
 			}
 		}
+		else if ((i->func == operators::array) && (depth == 1))
+		{
+			POS unit = i - 2;
+			pClass->members.push_back(std::pair<STRING, CLASS_VISIBILITY>(unit->lit, vis));
+		}
+
 	}
 
 	// Update curly brace pairing and method locations.
@@ -2155,23 +2180,24 @@ void operators::member(CALL_DATA &call)
 
 	const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
 	const STRING mem = call[1].lit;
-	if (i->second.memberExists(mem, cv))
-	{
-		TCHAR str[255];
-		_itot(obj, str, 10);
-		call.ret().udt = UDT_ID;
-		call.ret().lit = _T(":") + STRING(str) + _T("::") + mem;
-	}
-	else
+	if (!i->second.memberExists(mem, cv))
 	{
 		throw CError(_T("Class ") + type + _T(" has no accessible ") + mem + _T(" member."));
 	}
+
+	TCHAR str[255];
+	_itot(obj, str, 10);
+	call.ret().udt = UDT_ID;
+	call.ret().lit = _T(":") + STRING(str) + _T("::") + mem;
 }
 
 void operators::array(CALL_DATA &call)
 {
 	call.ret().udt = UDT_ID;
-	call.ret().lit = call[0].lit + _T('[') + call[1].getLit() + _T(']');
+	// TBD: This should be done at compile-time.
+	const std::pair<bool, STRING> res = call.prg->getInstanceVar(call[0].lit);
+	const STRING prefix = (res.first ? res.second : call[0].lit);
+	call.ret().lit = prefix + _T('[') + call[1].getLit() + _T(']');
 }
 
 // If...else control structure.
