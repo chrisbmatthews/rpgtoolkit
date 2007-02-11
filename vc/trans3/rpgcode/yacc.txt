@@ -120,7 +120,7 @@ var_identifier:
 		{
 			MACHINE_UNIT mu;
 			const STD_NATURAL_STRING var = $1.getLit();
-			if (g_methods.size() && g_methods.back().count(var))
+			if (!g_bVarFlag && g_methods.size() && g_methods.back().count(var))
 			{
 				(mu.lit = _T(" ")) += TCHAR(g_methods.back()[var] + 1);
 			}
@@ -133,13 +133,23 @@ var_identifier:
 		}
 ;
 
+mem:
+	MEM { g_bVarFlag = true; }
+;
+
+empty_array:
+	LARRAY RARRAY
+|	LARRAY RARRAY empty_array
+;
+
 identifier:
 	var_identifier
 |	identifier LARRAY value RARRAY tdc
 		{ _MACHINE_UNIT(operators::array, 2); }
 |	LPAREN identifier RPAREN
-|	value MEM function
+|	value mem function
 		{
+			g_bVarFlag = false;
 			if (CProgram::m_pyyUnits->back().func == CProgram::methodCall)
 			{
 				MACHINE_UNIT &name = *(CProgram::m_pyyUnits->end() - 2);
@@ -147,12 +157,13 @@ identifier:
 			}
 			++CProgram::m_pyyUnits->back().params;
 		}
-|	value MEM var_identifier
+|	value mem var_identifier
 		{
+			g_bVarFlag = false;
 			_MACHINE_UNIT(operators::member, 2);
 		}
 |	function
-|	identifier LARRAY RARRAY tdc
+|	identifier empty_array tdc
 ;
 
 value:
@@ -649,6 +660,16 @@ class:
 	inherits
 ;
 
+array_part:
+	LARRAY RARRAY
+|	LARRAY NUMBER RARRAY
+;
+
+multidimensional_array:
+	array_part
+|	array_part multidimensional_array
+;
+
 /**
  * A class member can have any of the following syntaxes:
  * - var identifier
@@ -658,8 +679,7 @@ class:
  */
 _class_member:
 	IDENTIFIER tdc
-|	IDENTIFIER LARRAY RARRAY tdc
-|	IDENTIFIER LARRAY NUMBER RARRAY tdc
+|	IDENTIFIER multidimensional_array tdc
 ;
 
 class_member:
@@ -828,7 +848,7 @@ std::deque<std::map<STD_NATURAL_STRING, int> > g_methods;
 unsigned int g_byref;
 std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass = NULL;
 CLASS_VISIBILITY g_vis = CV_PRIVATE;
-bool g_bInline = false;
+bool g_bInline = false, g_bVarFlag = false;
 std::deque<bool> g_switchFirst;
 unsigned int g_switch = 0;
 
