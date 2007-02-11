@@ -732,15 +732,33 @@ void CProgram::pluginCall(CALL_DATA &call)
 	}
 }
 
+inline void CProgram::returnFromMethod(STACK_FRAME value)
+{
+	if (!m_calls.size()) return;
+	LPSTACK_FRAME pValue = m_calls.back().p;
+	if (pValue)
+	{
+		*pValue = value;
+	}
+	m_i = m_units.begin() + m_calls.back().j - 1;
+}
+
 void CProgram::returnVal(CALL_DATA &call)
 {
-	if (!call.prg->m_calls.size()) return;
-	if (call.prg->m_calls.back().p)
+	call.prg->returnFromMethod(call[0].getValue());
+}
+
+// Pretty much the same as returnValue(), except the return value
+// is the parameter, not the value of the parameter.
+void CProgram::returnReference(CALL_DATA &call)
+{
+	// TBD: Do this at compile-time!
+	const std::pair<bool, STRING> res = call.prg->getInstanceVar(call[0].lit);
+	if (res.first)
 	{
-		*call.prg->m_calls.back().p = call[0].getValue();
-		//std::cerr << _T("ret: ") << call.prg->m_stack[call.prg->m_stack.size() - 2].back().getLit() << std::endl;
+		call[0].lit = res.second;
 	}
-	call.prg->m_i = call.prg->m_units.begin() + call.prg->m_calls.back().j - 1;
+	call.prg->returnFromMethod(call[0]);
 }
 
 #define YYSTACKSIZE 50000
@@ -2374,6 +2392,4 @@ void CProgram::initialize()
 	addFunction(_T("until"), untilLoop);
 	addFunction(_T("for"), forLoop);
 	addFunction(_T(" rtinclude"), runtimeInclusion);
-	addFunction(_T("return"), returnVal);
-	addFunction(_T("returnmethod"), returnVal); // For backwards compatibility.
 }

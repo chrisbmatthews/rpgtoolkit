@@ -79,6 +79,7 @@ unsigned int g_lines = 0;
 [fF][oO][rR]						{ return FOR; }
 [mM][eE][tT][hH][oO][dD]			{ return METHOD; }
 [rR][eE][tT][uU][rR][nN]			{ return RETURN; }
+[rR][eE][tT][uU][rR][nN][mM][eE][tT][hH][oO][dD]	{ return RETURN; }
 [cC][lL][aA][sS][sS]				{ return CLASS; }
 [sS][tT][rR][uU][cC][tT]			{ return STRUCT; }
 [pP][uU][bB][lL][iI][cC]			{ return PUBLIC; }

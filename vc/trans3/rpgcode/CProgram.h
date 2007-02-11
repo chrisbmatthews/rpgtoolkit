@@ -384,6 +384,7 @@ private:
 	static void methodCall(CALL_DATA &);
 	static void pluginCall(CALL_DATA &);
 	static void returnVal(CALL_DATA &);
+	static void returnReference(CALL_DATA &);
 	static void classFactory(CALL_DATA &);
 	static void runtimeInclusion(CALL_DATA &);
 
@@ -405,6 +406,7 @@ private:
 	static bool resolvePluginCall(LPMACHINE_UNIT pUnit);
 	virtual std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_locals; }
 	std::pair<bool, STRING> getInstanceVar(const STRING var) const;
+	void returnFromMethod(STACK_FRAME value);
 
 	// Update curly brace pairs and method locations. Should be called
 	// after new code is injected into the program to prevent errors.

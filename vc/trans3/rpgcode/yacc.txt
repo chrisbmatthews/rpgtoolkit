@@ -80,6 +80,7 @@
 %left	PREF_INC
 %left	POST_DEC
 %left	POST_INC
+%left	MEMBER
 %left	LPAREN RPAREN
 %left	LARRAY RARRAY
 %left	HIGHEST
@@ -118,13 +119,14 @@ var_identifier:
 	IDENTIFIER tdc
 		{
 			MACHINE_UNIT mu;
-			if (g_methods.size() && g_methods.back().count($1.getLit()))
+			const STD_NATURAL_STRING var = $1.getLit();
+			if (g_methods.size() && g_methods.back().count(var))
 			{
-				(mu.lit = _T(" ")) += char(g_methods.back()[$1.getLit()] + 1);
+				(mu.lit = _T(" ")) += TCHAR(g_methods.back()[var] + 1);
 			}
 			else
 			{
-				mu.lit = $1.getLit();
+				mu.lit = var;
 			}
 			mu.udt = UDT_ID;
 			CProgram::m_pyyUnits->push_back(mu);
@@ -138,18 +140,17 @@ identifier:
 |	LPAREN identifier RPAREN
 |	value MEM function
 		{
-			/** MACHINE_UNIT &mu = *(CProgram::m_pyyUnits->end() - CProgram::m_pyyUnits->back().params - 2);
-			mu.udt = UNIT_DATA_TYPE(mu.udt | UDT_OBJ); **/
 			if (CProgram::m_pyyUnits->back().func == CProgram::methodCall)
 			{
 				MACHINE_UNIT &name = *(CProgram::m_pyyUnits->end() - 2);
 				name.udt = UNIT_DATA_TYPE(name.udt | UDT_OBJ);
-				//CProgram::debugger(name.lit);
-			} /**else { CProgram::debugger(CProgram::getFunctionName(CProgram::m_pyyUnits->back().func)); }**/
+			}
 			++CProgram::m_pyyUnits->back().params;
 		}
 |	value MEM var_identifier
-		{ _MACHINE_UNIT(operators::member, 2); }
+		{
+			_MACHINE_UNIT(operators::member, 2);
+		}
 |	function
 |	identifier LARRAY RARRAY tdc
 ;
@@ -603,9 +604,16 @@ for_loop:
 	RPAREN
 ;
 
+_return_reference:
+	RETURN AND identifier
+|	RETURN LPAREN AND identifier RPAREN
+;
+
 return_val:
 	RETURN value
 		{ _MACHINE_UNIT(CProgram::returnVal, 1); }
+|	_return_reference
+		{ _MACHINE_UNIT(CProgram::returnReference, 1); }
 ;
 
 inherit_class:
