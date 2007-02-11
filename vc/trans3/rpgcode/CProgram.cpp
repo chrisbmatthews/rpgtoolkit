@@ -397,6 +397,12 @@ void tagClass::inherit(const tagClass &cls)
 			methods.push_back(*j);
 		}
 	}
+
+	std::deque<STRING>::const_iterator k = cls.inherits.begin();
+	for (; k != cls.inherits.end(); ++k)
+	{
+		inherits.push_back(*k);
+	}
 }
 
 // Get a function's name.
@@ -1016,13 +1022,14 @@ void CProgram::parseFile(FILE *pFile)
 	std::map<STRING, tagClass>::iterator j = m_classes.begin();
 	for (unsigned int k = 0; j != m_classes.end(); ++j, ++k)
 	{
-		std::deque<STRING>::iterator l = j->second.inherits.begin();
-		for (; l != j->second.inherits.end(); ++l)
+		std::deque<STRING> immediate = j->second.inherits;
+		std::deque<STRING>::iterator l = immediate.begin();
+		for (; l != immediate.end(); ++l)
 		{
 			if (!m_classes.count(*l))
 			{
 				debugger(_T("Could not find ") + j->first + _T("'s base class ") + *l + _T("."));
-				if ((l = j->second.inherits.erase(l)) == j->second.inherits.end()) break;
+				if ((l = immediate.erase(l)) == immediate.end()) break;
 				--l;
 			}
 			else
@@ -2289,6 +2296,34 @@ void CProgram::classFactory(CALL_DATA &call)
 	call.ret().num = obj;
 }
 
+void CProgram::verifyType(CALL_DATA &call)
+{
+	const STRING cls = call[1].lit;
+	if (call.prg->m_classes.find(cls) == call.prg->m_classes.end())
+	{
+		throw CError("Could not find class referenced in parameter list: " + cls);
+	}
+
+	STACK_FRAME &frame = *call.prg->getVar(call[0].lit);
+	if (!(frame.udt & UDT_OBJ))
+	{
+		throw CError("The method requires a parameter of type " + cls + ".");
+	}
+	const unsigned int obj = (unsigned int)frame.num;
+	const STRING type = m_objects[obj];
+	if (type == cls) return;
+
+	LPCLASS pClass = &call.prg->m_classes[type];
+
+	std::deque<STRING>::const_iterator j = pClass->inherits.begin();
+	for (; j != pClass->inherits.end(); ++j)
+	{
+		if (*j == cls) return;
+	}
+
+	throw CError("The method requires a parameter of type " + cls + ".");
+}
+
 void CProgram::runtimeInclusion(CALL_DATA &call)
 {
 	extern STRING g_projectPath;
@@ -2392,4 +2427,7 @@ void CProgram::initialize()
 	addFunction(_T("until"), untilLoop);
 	addFunction(_T("for"), forLoop);
 	addFunction(_T(" rtinclude"), runtimeInclusion);
+	addFunction(_T(" verifyType"), verifyType);
+	addFunction(_T(" returnVal"), returnVal);
+	addFunction(_T(" returnReference"), returnReference);
 }

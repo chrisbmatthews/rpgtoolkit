@@ -385,9 +385,43 @@ line_terminator:
 |	LCURL
 		{
 			_END_LINE;
+			MACHINE_UNIT &back = CProgram::m_pyyUnits->back();
+			bool bVerify = false;
+			if ((back.udt & UDT_FUNC) && (back.func == CProgram::skipMethod))
+			{
+				bVerify = true;
+			}
 			MACHINE_UNIT mu;
 			mu.udt = UDT_OPEN;
 			CProgram::m_pyyUnits->push_back(mu);
+			if (bVerify)
+			{
+				std::map<STD_NATURAL_STRING, int> &params = g_methods.back();
+				std::map<STD_NATURAL_STRING, int>::iterator i = params.begin();
+				for (; i != params.end(); ++i)
+				{
+					const STD_NATURAL_STRING &strParam = i->first;
+					unsigned int space = strParam.find(_T(' '));
+					if (space != -1)
+					{
+						const STD_NATURAL_STRING type = strParam.substr(0, space);
+						const STD_NATURAL_STRING name = strParam.substr(space + 1);
+						params.insert(std::pair<STD_NATURAL_STRING, int>(name, i->second));
+
+						// Verify that the parameter is the requested type.
+						MACHINE_UNIT param;
+						param.udt = UDT_ID;
+						param.lit = STD_NATURAL_STRING(_T(" ")) + TCHAR(i->second + 1);
+						CProgram::m_pyyUnits->push_back(param);
+
+						param.udt = UDT_LIT;
+						param.lit = type;
+						CProgram::m_pyyUnits->push_back(param);
+
+						_MACHINE_UNIT(CProgram::verifyType, 2);
+					}
+				}
+			}
 		}
 |	RCURL
 		{
@@ -474,12 +508,18 @@ finale:
 		}
 ;
 
+inner_method_param:
+	IDENTIFIER IDENTIFIER
+		{ $$ = $1.getLit() + _T(' ') + $2.getLit(); }
+|	IDENTIFIER
+;
+
 method_param:
-	IDENTIFIER tdc
+	inner_method_param tdc
 		{ }
-|	AND IDENTIFIER tdc
+|	AND inner_method_param tdc
 		{
-			$$ = '&' + $2.getLit();
+			$$ = _T('&') + $2.getLit();
 		}
 ;
 

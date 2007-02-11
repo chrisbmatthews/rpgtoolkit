@@ -387,6 +387,7 @@ private:
 	static void returnReference(CALL_DATA &);
 	static void classFactory(CALL_DATA &);
 	static void runtimeInclusion(CALL_DATA &);
+	static void verifyType(CALL_DATA &);
 
 	friend void operators::member(CALL_DATA &call);
 	friend void operators::array(CALL_DATA &call);
