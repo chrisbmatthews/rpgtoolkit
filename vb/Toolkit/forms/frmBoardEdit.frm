@@ -1090,6 +1090,7 @@ Attribute VB_Exposed = False
 ' This file copyright (C) 2006  Jonathan D. Hughes & contributors
 '
 ' Contributors:
+'    - Colin James Fitzpatrick
 '    - Shao Xiang
 '========================================================================
 '
@@ -1216,8 +1217,8 @@ Public Sub changeSelectedTile(ByVal file As String, Optional ByVal bChangeTool A
     ' change setting/tool to tile/draw.
     If bChangeTool And m_ed.optSetting <> BS_TILE Then
         m_ed.optSetting = BS_TILE
-        m_ed.optTool = BT_DRAW
         tkMainForm.brdOptSetting(m_ed.optSetting).value = True
+        m_ed.optTool = BT_DRAW
         tkMainForm.brdOptTool(m_ed.optTool).value = True
     End If
     
@@ -2286,22 +2287,17 @@ End Sub
 Private Sub drawStartPosition() ':on error resume next
     If mainMem.initBoard <> m_ed.boardName Then Exit Sub
 
-    Dim p As POINTAPI, rgn As Long, brush As Long
+    Dim p As POINTAPI
     p = modBoard.boardPixelToScreen(mainMem.pStartX, mainMem.pStartY, m_ed.pCEd)
     
-    picBoard.currentX = p.x
+    picBoard.currentX = p.x + 1
     picBoard.currentY = p.y
     picBoard.ForeColor = g_CBoardPreferences.pStartColor
     picBoard.Print "Player start location layer" & str(mainMem.pStartL)
     
-    p.x = p.x - tileWidth(m_ed) / 4
-    p.y = p.y - tileHeight(m_ed) / 4
-    
-    rgn = CreateEllipticRgn(p.x, p.y, p.x + tileWidth(m_ed) / 2 + 1, p.y + tileHeight(m_ed) / 2 + 1)
-    brush = CreateSolidBrush(g_CBoardPreferences.pStartColor)
-    Call FrameRgn(picBoard.hdc, rgn, brush, 1, 1)
-    Call DeleteObject(rgn)
-    Call DeleteObject(brush)
+    picBoard.Line (p.x, p.y - 8)-(p.x, p.y + 8), g_CBoardPreferences.pStartColor, B
+    picBoard.Line (p.x - 8, p.y)-(p.x + 8, p.y), g_CBoardPreferences.pStartColor, B
+
 End Sub
 
 '========================================================================
