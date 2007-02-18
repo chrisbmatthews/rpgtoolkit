@@ -7084,7 +7084,7 @@ void itempath(CALL_DATA &params)
  *		Set cycles = 0 to walk infinitely.<br />
  *		Set boardpath = -1 to clear link to waypoint vector before cycles expires.<br />
  *      The sprite will resume the the path if other movement commands
- *		are given to it, after completion.</li>
+ *		are given to it, after completion.</li></ol>
  *
  * Possible flags for all options:<ul>
  *		<li>tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.</li>
