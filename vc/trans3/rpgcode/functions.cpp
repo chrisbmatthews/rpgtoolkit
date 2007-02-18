@@ -7104,12 +7104,10 @@ void playerpath(CALL_DATA &params)
 
 /* 
  * int boardGetVector()
- * 
- * Returns the number of vectors on the board.
- *
  * void boardGetVector(variant vector, int &type, int &pointCount, int &layer, bool &isClosed, int &attributes)
- *
- * Returns the properties of a given vector.
+ * 
+ * <ol><li>Returns the number of vectors on the board.</li>
+ * <li>Returns the properties of a given vector.</li></ol>
  */
 void boardgetvector(CALL_DATA &params)
 {
@@ -7293,16 +7291,12 @@ void boardsetvectorpoint(CALL_DATA &params)
 	}
 }
 
-/* 
- * int boardGetProgram()
- * 
- * Returns the number of programs on the board.
- */
-
 /*
  * void boardGetProgram(int programIndex, string &program, int &pointCount, int &layer, bool &isClosed, int &attributes, int &distanceRepeat)
+ * int boardGetProgram()
  *
- * Returns the properties of a given program.
+ * <ol><li>Returns the properties of a given program.</li>
+ * <li>Returns the number of programs on the board.</li></ol>
  */
 void boardgetprogram(CALL_DATA &params)
 {
@@ -7483,17 +7477,12 @@ void setambientlevel(CALL_DATA &params)
 	forceRedraw(params);
 }
 
-/* 
- * void playerDirection(variant handle, int dir)
- *
- * Sets the player direction.
- *
- */
-
 /*
  * int playerDirection(variant handle)
+ * void playerDirection(variant handle, int dir)
  *
- * Returns the player direction.
+ * <ol><li>Returns the player direction.</li>
+ * <li>Sets the player direction.</li></ol>
  *
  * Directions are assigned the following constants:<ul>
  * <li>East: tkDIR_E</li>
@@ -7527,17 +7516,12 @@ void playerdirection(CALL_DATA &params)
 	params.ret().num = double(face->dir());
 }
 
-/* 
- * void itemDirection(variant handle, int dir)
- *
- * Sets the item direction.
- *
- */
-
 /*
  * int itemDirection(variant handle)
+ * void itemDirection(variant handle, int dir)
  *
- * Returns the item direction.
+ * <ol><li>Returns the item direction.</li>
+ * <li>Sets the item direction.</li></ol>
  *
  * See playerDirection() for direction indices.
  */
@@ -7592,14 +7576,10 @@ void spritegetpath(const CSprite *spr, CALL_DATA &params)
 
 /* 
  * int playerGetPath(variant handle)
- *
- * Get the number of points in the sprite's path.
- */
-
-/*
  * void playerGetPath(variant handle, int index, int &x, int &y)
  *
- * Get the coordinates of a point in the sprite's path.
+ * <ol><li>Get the number of points in the sprite's path.</li>
+ * <li>Get the coordinates of a point in the sprite's path.</li></ol>
  */
 void playergetpath(CALL_DATA &params)
 {
@@ -7616,14 +7596,10 @@ void playergetpath(CALL_DATA &params)
 
 /* 
  * int itemGetPath(variant handle)
- *
- * Get the number of points in the sprite's path.
- */
-
-/*
  * void itemGetPath(variant handle, int index, int &x, int &y)
  *
- * Get the coordinates of a point in the sprite's path.
+ * <ol><li>Get the number of points in the sprite's path.</li>
+ * <li>Get the coordinates of a point in the sprite's path.</li></ol>
  */
 void itemgetpath(CALL_DATA &params)
 {
