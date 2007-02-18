@@ -1900,9 +1900,9 @@ void pathfind(CALL_DATA &params)
  * Causes the player to take one step in the direction of x, y
  * following a route determined by pathFind.
  *
- * Possible flags
- *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
- *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
+ * Possible flags<ul>
+ *		<li>tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.</li>
+ *		<li>tkMV_CLEAR_QUEUE:	Clear any previously queued movements.</li></ul>
  */
 void playerstep(CALL_DATA &params)
 {
@@ -1939,9 +1939,9 @@ void playerstep(CALL_DATA &params)
  * Causes the item to take one step in the direction of x, y
  * following a route determined by pathFind.
  *
- * Possible flags
- *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
- *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
+ * Possible flags<ul>
+ *		<li>tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.</li>
+ *		<li>tkMV_CLEAR_QUEUE:	Clear any previously queued movements.</li></ul>
  */
 void itemstep(CALL_DATA &params)
 {
@@ -1981,13 +1981,13 @@ void itemstep(CALL_DATA &params)
  * for backward compatibility. These styles are accepted, and can be
  * mixed even within the same directonal string:
  *
- * - N, S, E, W, NE, NW, SE, SW
- * - NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST
- * - 1, 2, 3, 4, 5, 6, 7, 8
+ * <ul><li>N, S, E, W, NE, NW, SE, SW</li>
+ * <li>NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST</li>
+ * <li>1, 2, 3, 4, 5, 6, 7, 8</li></ul>
  *
- * Possible flags
- *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
- *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
+ * Possible flags<ul>
+ *		<li>tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.</li>
+ *		<li>tkMV_CLEAR_QUEUE:	Clear any previously queued movements.</li></ul>
  */
 void push(CALL_DATA &params)
 {
@@ -2019,9 +2019,9 @@ void push(CALL_DATA &params)
  * "target" or "source" direction or the number of an item. The
  * syntax of the directional string is the same as for [[push()]].
  *
- * Possible flags
- *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
- *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
+ * Possible flags<ul>
+ *		<li>tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.</li>
+ *		<li>tkMV_CLEAR_QUEUE:	Clear any previously queued movements.</li></ul>
  */
 void pushItem(CALL_DATA &params)
 {
@@ -2054,11 +2054,11 @@ void pushItem(CALL_DATA &params)
  * will take a step in a random direction, or as restricted by the
  * optional parameter. The allowed values for said parameter are:
  *
- * 0 - only north, south, east, and west on normal boards, only
- *     diagonals on isometric boards (default)
- * 1 - only north, south, east, and west
- * 2 - only diagonals
- * 3 - all directions
+ * <ul><li>0 - only north, south, east, and west on normal boards, only
+ *     diagonals on isometric boards (default)</li>
+ * <li>1 - only north, south, east, and west</li>
+ * <li>2 - only diagonals</li>
+ * <li>3 - all directions</li></ul>
  */
 void wander(CALL_DATA &params)
 {
@@ -2963,7 +2963,6 @@ void mainFile(CALL_DATA &params)
 }
 
 /*
- * str dirSav([str &ret])
  * str dirSav(str title, bool allowNewFile, int textColor, int backColor, str image)
  * 
  * Allow the user to choose a *.sav file from the "Saved"
@@ -3045,7 +3044,7 @@ void load(CALL_DATA &params)
  * Save the tile specified to a buffer identified by
  * pos. There is no particular number to pick for pos;
  * any will do.
- * ** Flag for depreciation **
+ * @deprecated
  */
 void scan(CALL_DATA &params)
 {
@@ -3085,7 +3084,7 @@ void scan(CALL_DATA &params)
  * void mem(int x, int y, int pos)
  * 
  * Lay a scanned tile on the screen at the specified position.
- * ** Flag for depreciation **
+ * @deprecated
  */
 void mem(CALL_DATA &params)
 {
@@ -3120,7 +3119,7 @@ void mem(CALL_DATA &params)
  * void print(string text)
  * 
  * Write the specified string one line down from the last call
- * to [[text()]].
+ * to text().
  */
 void print(CALL_DATA &params)
 {
@@ -3174,13 +3173,13 @@ void charAt(CALL_DATA &params)
  * Equip an item from the inventory (by handle or filename) 
  * to a location on the player's body.
  *
- * 1 - Head
- * 2 - Neck accessory
- * 3 - Right hand
- * 4 - Left hand
- * 5 - Body
- * 6 - Legs
- * 7+ - Custom accessories
+ * <ul><li>1 - Head</li>
+ * <li>2 - Neck accessory</li>
+ * <li>3 - Right hand</li>
+ * <li>4 - Left hand</li>
+ * <li>5 - Body</li>
+ * <li>6 - Legs</li>
+ * <li>7+ - Custom accessories</li></ul>
  */
 void equip(CALL_DATA &params)
 {
@@ -3602,12 +3601,11 @@ void mousemove(CALL_DATA &params)
  * Perform a fade using the current colour. There are several
  * different types of fades.
  *
- * 0 - the screen is blotted out by a growing and shrinking box
- * 1 - blots out with vertical lines
- * 2 - fades from white to black
- * 3 - line sweeps across the screen
- * 4 - black circle swallows the player
- * 5 - image fade to black
+ * <ul><li>0 - the screen is blotted out by a growing and shrinking box</li>
+ * <li>2 - fades from white to black</li>
+ * <li>3 - line sweeps across the screen</li>
+ * <li>4 - black circle swallows the player</li>
+ * <li>5 - image fade to black</li></ul>
  */
 void fade(CALL_DATA &params)
 {
@@ -3843,21 +3841,21 @@ void earthquake(CALL_DATA &params)
 /*
  * wipe(string file, int effect [, int speed])
  * 
- *'Wipe' a graphic to the screen.
- * file: filename of the image to wipe to.
- * effect: numeric value between 1 and 12. The valid types are:
- * 1  - Right
- * 2  - Left
- * 3  - Down
- * 4  - Up
- * 5  - NW to SE
- * 6  - NE to SW
- * 7  - SW to NE
- * 8  - SE to NW
- * 9  - Right 'zelda' style
- * 10 - Left 'zelda' style
- * 11 - Down 'zelda' style
- * 12 - Up 'zelda' style
+ *'Wipe' a graphic to the screen.<br />
+ * file: filename of the image to wipe to.<br />
+ * effect: numeric value between 1 and 12. The valid types are:<ul>
+ * <li>1  - Right</li>
+ * <li>2  - Left</li>
+ * <li>3  - Down</li>
+ * <li>4  - Up</li>
+ * <li>5  - NW to SE</li>
+ * <li>6  - NE to SW</li>
+ * <li>7  - SW to NE</li>
+ * <li>8  - SE to NW</li>
+ * <li>9  - Right 'zelda' style</li>
+ * <li>10 - Left 'zelda' style</li>
+ * <li>11 - Down 'zelda' style</li>
+ * <li>12 - Up 'zelda' style</li></ul>
  * speed: default is 1, set higher to increase wipe speed.
  */
 void wipe(CALL_DATA &params)
@@ -4018,7 +4016,7 @@ void itemcount(CALL_DATA &params)
 /*
  * callplayerswap(...)
  * 
- * Description.
+ * Unimplemented in 3.0.7.
  */
 void callplayerswap(CALL_DATA &params)
 {
@@ -4028,7 +4026,7 @@ void callplayerswap(CALL_DATA &params)
 /*
  * void playAvi(string movie)
  * 
- * Play a movie full screen.
+ * Play a movie full screen.<br />
  * Supported types are *.avi, *.mpg, and *.mov.
  */
 void playavi(CALL_DATA &params)
@@ -4354,11 +4352,11 @@ void getFp(CALL_DATA &params)
 /*
  * void internalMenu(int menu)
  * 
- * Show a menu using the menu plugin.
- * 0 - main menu
- * 1 - item menu
- * 2 - equip menu
- * 4 (sic) - abilities menu
+ * Show a menu using the menu plugin.<ul>
+ * <li>0 - main menu</li>
+ * <li>1 - item menu</li>
+ * <li>2 - equip menu</li>
+ * <li>4 (sic) - abilities menu</li></ul>
  */
 void internalmenu(CALL_DATA &params)
 {
@@ -4758,7 +4756,7 @@ void sqrt(CALL_DATA &params)
 /*
  * double log(double x, [double &ret])
  * 
- * Get the natural log of x.
+ * Returns <b>n</b> such that <b>e</b><sup><b>n</b></sup> = <b>x</b>.
  */
 void log(CALL_DATA &params)
 {
@@ -4777,7 +4775,7 @@ void log(CALL_DATA &params)
 /*
  * void getPixel(int x, int y, int &r, int &g, int &b, [canvas cnv])
  * 
- * Get the colour of the pixel at x, y.
+ * Get the colour of the pixel at (x, y).
  */
 void getPixel(CALL_DATA &params)
 {
@@ -5583,19 +5581,19 @@ void local(CALL_DATA &params)
  * 
  * Allocates a variable on the heap and returns a reference to it.
  *
- * x = 1;
+ * <pre>x = 1;
  * method func()
  * {
  *    local(x) = 2;
  *    mwin(global(x));
  *    mwin(x);
- * }
+ * }</pre>
  *
  * Given the above code, the values of the message windows,
  * should func() be called, would be 1 and 2 respectively
  * because variables off the stack are preferred to ones
  * on the heap. The call to global() explictly requests
- * the variable 'x' from the heap.
+ * the variable <b>x</b> from the heap.
  */
 void global(CALL_DATA &params)
 {
@@ -6144,7 +6142,7 @@ void getitemsellprice(CALL_DATA &params)
  * Replaces substrings within angle brackets by the value of
  * variables with respective names.
  *
- * e.g. "<x>" would be replaced by the value of "x".
+ * e.g. "&lt;x&gt;" would be replaced by the value of "x".
  */
 void splicevariables(CALL_DATA &params)
 {
@@ -6415,8 +6413,8 @@ void resumeNext(CALL_DATA &params)
  * The background is drawn translucently using the MWin() translucency value.
  * Any background image supplied is stretched to the size of the box.
  *
- * style = 0: 'OK' button; function returns 1.
- * style = 1: 'Yes' and 'No' buttons: 'Yes' returns 6 and 'No' returns 7.
+ * <ul><li>style = 0: 'OK' button; function returns 1.</li>
+ * <li>style = 1: 'Yes' and 'No' buttons: 'Yes' returns 6 and 'No' returns 7.</li></ul>
  */
 void msgbox(CALL_DATA &params)
 {
@@ -6627,7 +6625,7 @@ void rendernow(CALL_DATA &params)
  * multirun()
  * 
  * Multirun()'s behaviour depends on the program's context.
- * In a thread: No action.
+ * In a thread: No action.<br />
  * In a program (non-thread): All sprite movements called
  * are queued up and movement begins after the closing brace
  * of the function, thereby allowing simultaneous movement.
@@ -6908,7 +6906,7 @@ void canvasGetScreen(CALL_DATA &params)
 /*
  * void setMwinTranslucency(int percent)
  * 
- * Set the translucency of the message window.
+ * Set the translucency of the message window.<br />
  * 0% is invisible; 100% is opaque.
  */
 void setmwintranslucency(CALL_DATA &params)
@@ -7035,26 +7033,23 @@ void spritepath(CALL_DATA &params, CSprite *p)
  * depending on the flags parameter. 'handle' must be a board index value
  * or 'target' or 'source', not the item's internal handle.
  *
- * 1) Sprite walks the explicit path given by x1, y1 to xn, yn.
- *		Required flag: none.
- *
- * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
- *		Required flag: tkMV_PATHFIND.
- *
- * 3) Sprite walks a board-set waypoint vector. 
- *		Required flag: tkMV_WAYPOINT_PATH.
- *		The points of the vector are added to the sprite's queue.
- *
- * 4) A link is made between sprite and waypoint vector.
- *		Required flag: tkMV_WAYPOINT_LINK.
- *		Set cycles = 0 to walk infinitely.
- *		Set boardpath = -1 to clear link to waypoint vector before cycles expires.
+ * <ol><li>Sprite walks the explicit path given by x1, y1 to xn, yn.<br />
+ *		Required flag: none.</li>
+ * <li>Sprite walks to x1, y1 via the shortest route (by pathfinding).<br />
+ *		Required flag: tkMV_PATHFIND.</li>
+ * <li>Sprite walks a board-set waypoint vector.<br />
+ *		Required flag: tkMV_WAYPOINT_PATH.<br />
+ *		The points of the vector are added to the sprite's queue.</li>
+ * <li>A link is made between sprite and waypoint vector.<br />
+ *		Required flag: tkMV_WAYPOINT_LINK.<br />
+ *		Set cycles = 0 to walk infinitely.<br />
+ *		Set boardpath = -1 to clear link to waypoint vector before cycles expires.<br />
  *      The sprite will resume the the path if other movement commands
- *		are given to it, after completion.
+ *		are given to it, after completion.</li></ol>
  *
- * Possible flags for all options:
- *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
- *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
+ * Possible flags for all options:<ul>
+ *		<li>tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.</li>
+ *		<li>tkMV_CLEAR_QUEUE:	Clear any previously queued movements.</li></ul>
  */
 void itempath(CALL_DATA &params)
 {
@@ -7077,26 +7072,23 @@ void itempath(CALL_DATA &params)
  * Causes the sprite to walk a path between a given set of co-ordinates,
  * depending on the flags parameter.
  *
- * 1) Sprite walks the explicit path given by x1, y1 to xn, yn.
- *		Required flag: none.
- *
- * 2) Sprite walks to x1, y1 via the shortest route (by pathfinding).
- *		Required flag: tkMV_PATHFIND.
- *
- * 3) Sprite walks a board-set waypoint vector. 
- *		Required flag: tkMV_WAYPOINT_PATH.
- *		The points of the vector are added to the sprite's queue.
- *
- * 4) A link is made between sprite and waypoint vector.
- *		Required flag: tkMV_WAYPOINT_LINK.
- *		Set cycles = 0 to walk infinitely.
- *		Set boardpath = -1 to clear link to waypoint vector before cycles expires.
+ * <ol><li>Sprite walks the explicit path given by x1, y1 to xn, yn.<br />
+ *		Required flag: none.</li>
+ * <li>Sprite walks to x1, y1 via the shortest route (by pathfinding).<br />
+ *		Required flag: tkMV_PATHFIND.</li>
+ * <li>Sprite walks a board-set waypoint vector.<br />
+ *		Required flag: tkMV_WAYPOINT_PATH.<br />
+ *		The points of the vector are added to the sprite's queue.</li>
+ * <li>A link is made between sprite and waypoint vector.<br />
+ *		Required flag: tkMV_WAYPOINT_LINK.<br />
+ *		Set cycles = 0 to walk infinitely.<br />
+ *		Set boardpath = -1 to clear link to waypoint vector before cycles expires.<br />
  *      The sprite will resume the the path if other movement commands
- *		are given to it, after completion.
+ *		are given to it, after completion.</li>
  *
- * Possible flags for all options:
- *		tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.
- *		tkMV_CLEAR_QUEUE:	Clear any previously queued movements.
+ * Possible flags for all options:<ul>
+ *		<li>tkMV_PAUSE_THREAD:	Hold thread execution until movement ends.</li>
+ *		<li>tkMV_CLEAR_QUEUE:	Clear any previously queued movements.</li></ul>
  */
 void playerpath(CALL_DATA &params)
 {
@@ -7171,8 +7163,8 @@ void boardgetvector(CALL_DATA &params)
  * Creates a new vector if an existing one is not found - if a numeric variable
  * is supplied, it will be set to the new index (one-past-end).
  *
- * Possible types are:  tkVT_SOLID, tkVT_UNDER, tkVT_STAIRS, tkVT_WAYPOINT.
- * Possible attributes: tkVT_BKGIMAGE, tkVT_ALL_LAYERS_BELOW, tkVT_FRAME_INTERSECT.
+ * <ul><li>Possible types are:  tkVT_SOLID, tkVT_UNDER, tkVT_STAIRS, tkVT_WAYPOINT.</li>
+ * <li>Possible attributes: tkVT_BKGIMAGE, tkVT_ALL_LAYERS_BELOW, tkVT_FRAME_INTERSECT.</li></ul>
  */
 void boardsetvector(CALL_DATA &params)
 {
@@ -7305,7 +7297,9 @@ void boardsetvectorpoint(CALL_DATA &params)
  * int boardGetProgram()
  * 
  * Returns the number of programs on the board.
- *
+ */
+
+/*
  * void boardGetProgram(int programIndex, string &program, int &pointCount, int &layer, bool &isClosed, int &attributes, int &distanceRepeat)
  *
  * Returns the properties of a given program.
@@ -7494,15 +7488,22 @@ void setambientlevel(CALL_DATA &params)
  *
  * Sets the player direction.
  *
+ */
+
+/*
  * int playerDirection(variant handle)
  *
  * Returns the player direction.
  *
- * Directions are assigned the following constants:
- * East			tkDIR_E			West		tkDIR_W
- * Southeast	tkDIR_SE		Northwest	tkDIR_NW
- * South		tkDIR_S			North		tkDIR_N
- * Southwest	tkDIR_SW		Northeast	tkDIR_NE
+ * Directions are assigned the following constants:<ul>
+ * <li>East: tkDIR_E</li>
+ * <li>Southeast: tkDIR_SE</li>
+ * <li>South: tkDIR_S</li>
+ * <li>Southwest: tkDIR_SW</li>
+ * <li>West: tkDIR_W</li>
+ * <li>Northwest: tkDIR_NW</li>
+ * <li>North: tkDIR_N</li>
+ * <li>Northeast: tkDIR_NE</li></ul>
  */
 void playerdirection(CALL_DATA &params)
 {
@@ -7531,6 +7532,9 @@ void playerdirection(CALL_DATA &params)
  *
  * Sets the item direction.
  *
+ */
+
+/*
  * int itemDirection(variant handle)
  *
  * Returns the item direction.
@@ -7590,7 +7594,9 @@ void spritegetpath(const CSprite *spr, CALL_DATA &params)
  * int playerGetPath(variant handle)
  *
  * Get the number of points in the sprite's path.
- *
+ */
+
+/*
  * void playerGetPath(variant handle, int index, int &x, int &y)
  *
  * Get the coordinates of a point in the sprite's path.
@@ -7612,7 +7618,9 @@ void playergetpath(CALL_DATA &params)
  * int itemGetPath(variant handle)
  *
  * Get the number of points in the sprite's path.
- *
+ */
+
+/*
  * void itemGetPath(variant handle, int index, int &x, int &y)
  *
  * Get the coordinates of a point in the sprite's path.
