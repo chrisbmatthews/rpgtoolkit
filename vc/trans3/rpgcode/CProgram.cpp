@@ -1660,7 +1660,7 @@ STACK_FRAME CProgram::run()
 
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
-		m_i->show();
+		// m_i->show();
 		m_i->execute(this);
 		processEvent();
 	}
