@@ -1713,7 +1713,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 				}
 			}
 		}
- 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end());
+ 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
 	}
 	else if (udt & UDT_CLOSE)
 	{
