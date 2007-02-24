@@ -649,7 +649,7 @@ void CProgram::methodCall(CALL_DATA &call)
 
 	// Pop the parameters of this method off the current stack, as
 	// they will not be popped off by tagMachineUnit::execute().
-	call.prg->m_pStack->erase(call.prg->m_pStack->end() - call.params, call.prg->m_pStack->end());
+	call.prg->m_pStack->erase(call.prg->m_pStack->end() - call.params - 1, call.prg->m_pStack->end());
 
 	if (bNoRet)
 	{
@@ -1713,7 +1713,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 				}
 			}
 		}
- 		prg->m_pStack->erase(prg->m_pStack->end() - params, prg->m_pStack->end());
+ 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end());
 	}
 	else if (udt & UDT_CLOSE)
 	{
