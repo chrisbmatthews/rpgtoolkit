@@ -507,7 +507,8 @@ void CProgram::methodCall(CALL_DATA &call)
 	int j = -1;
 
 	// Look at the num member as though it were two longs.
-	long *const pLong = (long *)&fra.num;
+	const double metadata = fra.num;
+	long *const pLong = (long *)&metadata;
 
 	bool bObjectCall = false;
 
@@ -1659,7 +1660,7 @@ STACK_FRAME CProgram::run()
 
 	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
 	{
-		//m_i->show();
+		m_i->show();
 		m_i->execute(this);
 		processEvent();
 	}
