@@ -630,7 +630,7 @@ void CProgram::methodCall(CALL_DATA &call)
 	}
 
 	// Make sure this method has actually been resolved.
-	if (fra.num == -1)
+	if (metadata == -1)
 	{
 		throw CError(_T("Could not find method ") + fra.lit + _T("."));
 	}
