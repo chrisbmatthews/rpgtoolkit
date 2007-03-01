@@ -397,6 +397,7 @@ private:
 	friend int yyerror(const char *);
 	friend void addInclusion(const STRING file);
 	friend tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg);
+	friend bool checkOverloadedOperator(const STRING opr, CALL_DATA &call);
 	friend CProgramChild;
 	friend COptimiser;
 

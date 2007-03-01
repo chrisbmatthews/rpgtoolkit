@@ -1866,8 +1866,52 @@ tagStackFrame tagStackFrame::getValue() const
 	return sf;
 }
 
+// opr - the overloaded operator to check for
+// call[0] must be an object.
+inline bool checkOverloadedOperator(const STRING opr, CALL_DATA &call)
+{
+	const unsigned int obj = (unsigned int)objp->getNum();
+
+	const STRING type = CProgram::m_objects[obj];
+	std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
+	if (k == call.prg->m_classes.end())
+	{
+		throw CError(_T("Could not find class ") + type + _T("."));
+	}
+
+	const STRING method = _T("operator") + opr;
+	const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
+	if (!k->second.locate(method, call.params - 1, cv)) return false;
+
+	STACK_FRAME &fra = call.ret();
+	fra.udt = UDT_OBJ;
+	fra.lit = method;
+	prg->m_pStack->push_back(call.prg);
+	call.p = &call.prg->m_pStack->back() - (++call.params);
+	CProgram::methodCall(call);
+	return true;
+}
+
+// The point of this macro is to avoid a massive slowdown because I don't trust
+// VC++ to inline this the way I want it to.
+#define CHECK_OVERLOADED_OPERATOR(opr, fail) \
+	if (call[0].getType() & UDT_OBJ) \
+	{ \
+		try \
+		{ \
+			if (!checkOverloadedOperator(_T(#opr), call)) \
+				throw CError(_T("No overloaded operator ") _T(#opr) _T(" found!")); \
+			return; \
+		} \
+		catch (CError err) \
+		{ \
+			if (fail) throw err; \
+		} \
+	}
+
 void operators::add(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(+, true);
 	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
 	{
 		call.ret().udt = UDT_NUM;
@@ -1882,48 +1926,56 @@ void operators::add(CALL_DATA &call)
 
 void operators::sub(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(-, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() - call[1].getNum();
 }
 
 void operators::mul(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(*, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() * call[1].getNum();
 }
 
 void operators::bor(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(|, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) | int(call[1].getNum());
 }
 
 void operators::bxor(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(`, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) ^ int(call[1].getNum());
 }
 
 void operators::band(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(&, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) & int(call[1].getNum());
 }
 
 void operators::lor(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(||, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() || call[1].getNum();
 }
 
 void operators::land(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(&&, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() && call[1].getNum();
 }
 
 void operators::ieq(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(~=, true);
 	call.ret().udt = UDT_NUM;
 	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
 	{
@@ -1937,6 +1989,7 @@ void operators::ieq(CALL_DATA &call)
 
 void operators::eq(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(==, true);
 	call.ret().udt = UDT_NUM;
 	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
 	{
@@ -1950,60 +2003,70 @@ void operators::eq(CALL_DATA &call)
 
 void operators::gte(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(>=, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() >= call[1].getNum();
 }
 
 void operators::lte(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(<=, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() <= call[1].getNum();
 }
 
 void operators::gt(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(>, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() > call[1].getNum();
 }
 
 void operators::lt(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(<, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() < call[1].getNum();
 }
 
 void operators::rs(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(>>, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) >> int(call[1].getNum());
 }
 
 void operators::ls(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(<<, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) << int(call[1].getNum());
 }
 
 void operators::mod(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(%, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) % int(call[1].getNum());
 }
 
 void operators::div(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(/, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() / call[1].getNum();
 }
 
 void operators::pow(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(^, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = ::pow(call[0].getNum(), call[1].getNum());
 }
 
 void operators::assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(=, false);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	*call.prg->getVar(call.ret().lit) = call[1].getValue();
@@ -2011,6 +2074,7 @@ void operators::assign(CALL_DATA &call)
 
 void operators::xor_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(`=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2020,6 +2084,7 @@ void operators::xor_assign(CALL_DATA &call)
 
 void operators::or_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(|=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2029,6 +2094,7 @@ void operators::or_assign(CALL_DATA &call)
 
 void operators::and_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(&=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2038,6 +2104,7 @@ void operators::and_assign(CALL_DATA &call)
 
 void operators::rs_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(>>=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2047,6 +2114,7 @@ void operators::rs_assign(CALL_DATA &call)
 
 void operators::ls_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(<<=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2056,6 +2124,7 @@ void operators::ls_assign(CALL_DATA &call)
 
 void operators::sub_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(-=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2065,6 +2134,7 @@ void operators::sub_assign(CALL_DATA &call)
 
 void operators::add_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(+=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2082,6 +2152,7 @@ void operators::add_assign(CALL_DATA &call)
 
 void operators::mod_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(%=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2091,6 +2162,7 @@ void operators::mod_assign(CALL_DATA &call)
 
 void operators::div_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(/=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2100,6 +2172,7 @@ void operators::div_assign(CALL_DATA &call)
 
 void operators::mul_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(*=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2109,6 +2182,7 @@ void operators::mul_assign(CALL_DATA &call)
 
 void operators::pow_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(^=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2118,6 +2192,7 @@ void operators::pow_assign(CALL_DATA &call)
 
 void operators::lor_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(||=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2127,6 +2202,7 @@ void operators::lor_assign(CALL_DATA &call)
 
 void operators::land_assign(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(&&=, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2136,6 +2212,7 @@ void operators::land_assign(CALL_DATA &call)
 
 void operators::prefixIncrement(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(++, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2145,6 +2222,7 @@ void operators::prefixIncrement(CALL_DATA &call)
 
 void operators::postfixIncrement(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(++, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum();
 
@@ -2155,6 +2233,7 @@ void operators::postfixIncrement(CALL_DATA &call)
 
 void operators::prefixDecrement(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(--, true);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
@@ -2164,6 +2243,7 @@ void operators::prefixDecrement(CALL_DATA &call)
 
 void operators::postfixDecrement(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(--, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum();
 
@@ -2174,12 +2254,14 @@ void operators::postfixDecrement(CALL_DATA &call)
 
 void operators::unaryNegation(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(-, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = -call[0].getNum();
 }
 
 void operators::lnot(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR(!, true);
 	call.ret().udt = UDT_NUM;
 	call.ret().num = !call[0].getNum();
 }
@@ -2219,6 +2301,8 @@ void operators::member(CALL_DATA &call)
 
 void operators::array(CALL_DATA &call)
 {
+	CHECK_OVERLOADED_OPERATOR([], false);
+
 	call.ret().udt = UDT_ID;
 	// TBD: This should be done at compile-time.
 	const std::pair<bool, STRING> res = call.prg->getInstanceVar(call[0].lit);
