@@ -263,42 +263,47 @@ function:
 		}
 ;
 
+/**
+ * This rule is only only for operator overloading. For storing
+ * the method name, the character of each operator is required;
+ * in the interest of speed, they are duplicated only here.
+ */
 operator:
-	XOR_ASSIGN
-|	OR_ASSIGN
-|	AND_ASSIGN
-|	RS_ASSIGN
-|	LS_ASSIGN
-|	SUB_ASSIGN
-|	ADD_ASSIGN
-|	MOD_ASSIGN
-|	DIV_ASSIGN
-|	MUL_ASSIGN
-|	POW_ASSIGN
-|	ASSIGN
-|	LOR
-|	LAND
-|	OR
-|	XOR
-|	AND
-|	IEQ
-|	EQ
-|	GTE
-|	LTE
-|	GT
-|	LT
-|	RS
-|	LS
-|	SUB
-|	ADD
-|	MOD
-|	DIV
-|	MUL
-|	POW
-|	NOT
-|	NEG
-|	INC
-|	DEC
+	XOR_ASSIGN { $$ = _T("`="); }
+|	OR_ASSIGN { $$ = _T("|="); }
+|	AND_ASSIGN { $$ = _T("&="); }
+|	RS_ASSIGN { $$ = _T(">>="); }
+|	LS_ASSIGN { $$ = _T("<<="); }
+|	SUB_ASSIGN { $$ = _T("-="); }
+|	ADD_ASSIGN { $$ = _T("+="); }
+|	MOD_ASSIGN { $$ = _T("%="); }
+|	DIV_ASSIGN { $$ = _T("/="); }
+|	MUL_ASSIGN { $$ = _T("*="); }
+|	POW_ASSIGN { $$ = _T("^="); }
+|	ASSIGN { $$ = _T("="); }
+|	LOR { $$ = _T("||"); }
+|	LAND { $$ = _T("&&"); }
+|	OR { $$ = _T("|"); }
+|	XOR { $$ = _T("`"); }
+|	AND { $$ = _T("&"); }
+|	IEQ { $$ = _T("~="); }
+|	EQ { $$ = _T("=="); }
+|	GTE { $$ = _T(">="); }
+|	LTE { $$ = _T("<="); }
+|	GT { $$ = _T(">"); }
+|	LT { $$ = _T("<"); }
+|	RS { $$ = _T(">>"); }
+|	LS { $$ = _T("<<"); }
+|	SUB { $$ = _T("-"); }
+|	ADD { $$ = _T("+"); }
+|	MOD { $$ = _T("%"); }
+|	DIV { $$ = _T("/"); }
+|	MUL { $$ = _T("*"); }
+|	POW { $$ = _T("^"); }
+|	NOT { $$ = _T("!"); }
+|	BNOT { $$ = _T("~"); }
+|	INC { $$ = _T("++"); }
+|	DEC { $$ = _T("--"); }
 ;
 
 operators:
@@ -548,6 +553,9 @@ method_name:
 |	IDENTIFIER COLON COLON method_name
 		{ $$ = $1.getLit() + _T("::") + $4.getLit(); }
 |	method_name operator
+		{
+			$$ = $1.getLit() + $2.getLit();
+		}
 ;
 
 method_declarator:
