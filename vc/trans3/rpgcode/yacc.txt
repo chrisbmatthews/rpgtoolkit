@@ -304,6 +304,7 @@ operator:
 |	BNOT { $$ = _T("~"); }
 |	INC { $$ = _T("++"); }
 |	DEC { $$ = _T("--"); }
+|	LARRAY RARRAY { $$ = _T("[]"); }
 ;
 
 operators:

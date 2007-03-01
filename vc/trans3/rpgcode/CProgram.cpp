@@ -1713,6 +1713,11 @@ void tagMachineUnit::execute(CProgram *prg) const
 					CProgram::debugger(STRING(_T("Near line ")) + str + _T(": ") + exp.getMessage());
 				}
 			}
+			catch (...)
+			{
+					TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
+					CProgram::debugger(STRING(_T("Near line ")) + str + _T(": Unexpected error."));
+			}
 		}
  		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
 	}
@@ -1870,7 +1875,7 @@ tagStackFrame tagStackFrame::getValue() const
 // call[0] must be an object.
 inline bool checkOverloadedOperator(const STRING opr, CALL_DATA &call)
 {
-	const unsigned int obj = (unsigned int)objp->getNum();
+	const unsigned int obj = (unsigned int)call[0].getNum();
 
 	const STRING type = CProgram::m_objects[obj];
 	std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
@@ -1886,7 +1891,7 @@ inline bool checkOverloadedOperator(const STRING opr, CALL_DATA &call)
 	STACK_FRAME &fra = call.ret();
 	fra.udt = UDT_OBJ;
 	fra.lit = method;
-	prg->m_pStack->push_back(call.prg);
+	call.prg->m_pStack->push_back(call.prg);
 	call.p = &call.prg->m_pStack->back() - (++call.params);
 	CProgram::methodCall(call);
 	return true;
