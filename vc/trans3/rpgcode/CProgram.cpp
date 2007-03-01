@@ -1715,8 +1715,8 @@ void tagMachineUnit::execute(CProgram *prg) const
 			}
 			catch (...)
 			{
-					TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
-					CProgram::debugger(STRING(_T("Near line ")) + str + _T(": Unexpected error."));
+				TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
+				CProgram::debugger(STRING(_T("Near line ")) + str + _T(": Unexpected error."));
 			}
 		}
  		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
