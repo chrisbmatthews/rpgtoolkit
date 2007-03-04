@@ -49,6 +49,14 @@ Begin VB.Form frmBoardPreferences
          TabIndex        =   12
          Top             =   0
          Width           =   2895
+         Begin VB.CheckBox chkHideStartLocation 
+            Caption         =   "Show player start location on initial board only"
+            Height          =   495
+            Left            =   120
+            TabIndex        =   25
+            Top             =   1920
+            Width           =   2535
+         End
          Begin VB.CheckBox chkNewBoardDialog 
             Caption         =   "Show New Board dialog window"
             Height          =   375
@@ -278,6 +286,7 @@ Private Sub cmdDefault_Click() ': On Error Resume Next
         .bUseRecursiveFlooding = chkRecursiveFlooding.value
         .bRevertToDraw = chkRevertToDraw.value
         .bShowVectorIndices = chkVectorIndices.value
+        .bHideStartLocation = chkHideStartLocation.value
         
         .vectorColor(TT_SOLID) = picColors(0).backColor
         .vectorColor(TT_UNDER) = picColors(1).backColor
@@ -299,6 +308,7 @@ Private Sub Form_Load() ': On Error Resume Next
         chkRecursiveFlooding.value = Abs(.bUseRecursiveFlooding)
         chkRevertToDraw.value = Abs(.bRevertToDraw)
         chkVectorIndices.value = Abs(.bShowVectorIndices)
+        chkHideStartLocation.value = Abs(.bHideStartLocation)
         
         picColors(0).backColor = .vectorColor(TT_SOLID)
         picColors(1).backColor = .vectorColor(TT_UNDER)

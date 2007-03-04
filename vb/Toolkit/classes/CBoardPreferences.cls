@@ -28,11 +28,11 @@ Attribute VB_Exposed = False
 '
 '========================================================================
 
-Public bShowBackColor As Boolean             'tbd:show background colour in editor
 Public bRevertToDraw As Boolean              'After flooding revert to draw tool
 Public bShowVectorIndices As Boolean
 Public bUseRecursiveFlooding As Boolean
 Public bShowNewBoardDialog As Boolean
+Public bHideStartLocation As Boolean
 
 Private vectorColors(TT_WAYPOINT) As Long
 Public programColor As Long
@@ -58,15 +58,13 @@ Private Sub Class_Initialize(): On Error Resume Next
     bShowVectorIndices = (GetSetting("RPGToolkit3", "BRD Editor", "ShowVectorIndices", "True") = "True")
     bUseRecursiveFlooding = (GetSetting("RPGToolkit3", "BRD Editor", "UseRecursiveFlooding", "False") = "True")
     bShowNewBoardDialog = (GetSetting("RPGToolkit3", "BRD Editor", "ShowNewBoardDialog", "True") = "True")
+    bHideStartLocation = (GetSetting("RPGToolkit3", "BRD Editor", "HideStartLocation", "True") = "True")
 
     vectorColors(TT_SOLID) = val(GetSetting("RPGToolkit3", "BRD Editor", "Color vector-solid", "-1"))
     If vectorColors(TT_SOLID) = -1 Then vectorColors(TT_SOLID) = RGB(255, 255, 255)
     
     vectorColors(TT_UNDER) = val(GetSetting("RPGToolkit3", "BRD Editor", "Color vector-under", "-1"))
     If vectorColors(TT_UNDER) = -1 Then vectorColors(TT_UNDER) = RGB(0, 255, 0)
-    
-'    vectorColors(TT_UNIDIRECTIONAL) = val(GetSetting("RPGToolkit3", "BRD Editor", "Color vector-unidir", "-1"))
-'    If vectorColors(TT_UNIDIRECTIONAL) = -1 Then vectorColors(TT_UNIDIRECTIONAL) = RGB(255, 128, 0)
     
     vectorColors(TT_STAIRS) = val(GetSetting("RPGToolkit3", "BRD Editor", "Color vector-unidir", "-1"))
     If vectorColors(TT_STAIRS) = -1 Then vectorColors(TT_STAIRS) = RGB(0, 255, 255)
@@ -94,10 +92,10 @@ Private Sub Class_Terminate(): On Error Resume Next
     Call SaveSetting("RPGToolkit3", "BRD Editor", "ShowVectorIndices", CStr(bShowVectorIndices))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "UseRecursiveFlooding", CStr(bUseRecursiveFlooding))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "ShowNewBoardDialog", CStr(bShowNewBoardDialog))
+    Call SaveSetting("RPGToolkit3", "BRD Editor", "HideStartLocation", CStr(bHideStartLocation))
     
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-solid", CStr(vectorColors(TT_SOLID)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-under", CStr(vectorColors(TT_UNDER)))
-'    Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-unidir", CStr(vectorColors(TT_UNIDIRECTIONAL)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-stairs", CStr(vectorColors(TT_STAIRS)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color vector-waypoint", CStr(vectorColors(TT_WAYPOINT)))
     Call SaveSetting("RPGToolkit3", "BRD Editor", "Color program", CStr(programColor))

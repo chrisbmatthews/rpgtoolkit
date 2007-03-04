@@ -549,6 +549,9 @@ Public Sub saveBoard(ByVal filename As String, ByRef board As TKBoard)
             Call BinWriteInt(num, .ambientEffect.r)
             Call BinWriteInt(num, .ambientEffect.g)
             Call BinWriteInt(num, .ambientEffect.b)
+            Call BinWriteInt(num, .startX)
+            Call BinWriteInt(num, .startY)
+            Call BinWriteInt(num, .startL)
         
         Close num
     
@@ -911,7 +914,10 @@ exitForB:
             .ambientEffect.r = BinReadInt(num)
             .ambientEffect.g = BinReadInt(num)
             .ambientEffect.b = BinReadInt(num)
-            
+            .startX = BinReadInt(num)
+            .startY = BinReadInt(num)
+            .startL = BinReadInt(num)
+
         Close num
         Exit Function
 
@@ -931,10 +937,10 @@ pvVersion:
             'since they are not required outside of this function.
             ReDim ambientRgb(.sizex, .sizey, .sizeL) As TKTileShade
             
-            'tbd: Player start location data has been moved to the main file.
-            x = BinReadInt(num)
-            y = BinReadInt(num)
-            z = BinReadInt(num)
+            'Player start location - convert to pixel coordinates after reading isometric bit.
+            .startX = BinReadInt(num)
+            .startY = BinReadInt(num)
+            .startL = BinReadInt(num)
             
             .bDisableSaving = CBool(BinReadInt(num))
             
@@ -1194,7 +1200,12 @@ exitForC:
                 Next x
             Next y
         Next z
-                    
+        
+        '3.0.7 - convert player start location to pixel coordinates.
+        pt = modBoard.tileToBoardPixel(.startX, .startY, .coordType, True, .sizex)
+        .startX = pt.x
+        .startY = pt.y
+
     End With
 
 End Function

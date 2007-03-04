@@ -33,9 +33,6 @@
  * Constructor.
  */
 tagMainFile::tagMainFile(): 
-	startX(0), 
-	startY(0), 
-	startL(0), 
 	drawVectors(NULL), 
 	movementControls(MF_USE_KEYS | MF_ALLOW_DIAGONALS) 
 {
@@ -296,9 +293,6 @@ bool tagMainFile::open(const STRING fileName)
 	pfHeuristic = PF_DIAGONAL;			// Pre-vector tile pathfinding.
 	if (minorVer >= 9)
 	{
-		file >> startX;
-		file >> startY;
-		file >> startL;
 		file >> pfHeuristic;
 		file >> drawVectors;
 		file >> pathColor;

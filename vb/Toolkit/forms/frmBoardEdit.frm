@@ -970,7 +970,6 @@ Begin VB.Form frmBoardEdit
       End
       Begin VB.Menu mnuBoard 
          Caption         =   "Set Player Start Location"
-         Enabled         =   0   'False
          Index           =   1
       End
       Begin VB.Menu mnuBoard 
@@ -1087,7 +1086,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '========================================================================
 ' The RPG Toolkit, Version 3
-' This file copyright (C) 2006  Jonathan D. Hughes & contributors
+' This file copyright (C) 2007  Jonathan D. Hughes & contributors
 '
 ' Contributors:
 '    - Colin James Fitzpatrick
@@ -1256,7 +1255,7 @@ Private Sub Form_Activate() ':on error resume next
     'Show tools.
     hideAllTools
     tkMainForm.popButton(PB_TOOLBAR).visible = True              'Board toolbar
-    tkMainForm.boardTools.visible = True                'Lefthand tools
+    tkMainForm.boardTools.visible = True                         'Lefthand tools
     tkMainForm.boardTools.Top = tkMainForm.toolTop
     
     tkMainForm.brdOptSetting(m_ed.optSetting).value = True
@@ -1268,8 +1267,7 @@ Private Sub Form_Activate() ':on error resume next
     
     mnuUndo.Enabled = m_ed.bUndoData(nextUndo)
     mnuRedo.Enabled = m_ed.bUndoData(nextRedo)
-    'Player start location.
-    mnuBoard(1).Enabled = (mainMem.initBoard = m_ed.boardName)
+    
     'Co-ordinate conversions.
     mnuCoords(0).Enabled = (m_ed.board(m_ed.undoIndex).coordType And ISO_STACKED)
     mnuCoords(1).Enabled = (m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) = False
@@ -2137,11 +2135,12 @@ Private Sub picBoard_MouseUp(Button As Integer, Shift As Integer, x As Single, y
             
         Case BT_SET_PSTART
             If ((m_ed.board(m_ed.undoIndex).coordType And PX_ABSOLUTE) <> 0) = (Shift <> 0) Then pxCoord = snapToGrid(pxCoord, True)
-            mainMem.pStartX = pxCoord.x
-            mainMem.pStartY = pxCoord.y
-            mainMem.pStartL = m_ed.currentLayer
-            Call saveMain(gamPath & CommonMainFile.mainFile, mainMem)
+            m_ed.board(m_ed.undoIndex).startX = pxCoord.x
+            m_ed.board(m_ed.undoIndex).startY = pxCoord.y
+            m_ed.board(m_ed.undoIndex).startL = m_ed.currentLayer
             Call mdiOptTool(BT_DRAW)
+            
+            If drawStartPosition = False Then MsgBox "Use the board preferences to display the start location " & vbCrLf & "when the board is not the start (initial) board", vbInformation
             Call drawAll
     End Select
          
@@ -2284,21 +2283,27 @@ Private Sub drawBoard(Optional ByVal bRefresh As Boolean = True) ': On Error Res
     End If
 End Sub
 
-Private Sub drawStartPosition() ':on error resume next
-    If mainMem.initBoard <> m_ed.boardName Then Exit Sub
+Private Function drawStartPosition() As Boolean ':on error resume next
+    
+    'Do not show if undefined.
+    If m_ed.board(m_ed.undoIndex).startX = 0 And m_ed.board(m_ed.undoIndex).startY = 0 Then Exit Function
+    'Show if is initial board or 'hide start location if not initial board' option disabled.
+    If g_CBoardPreferences.bHideStartLocation And mainMem.initBoard <> m_ed.boardName And m_ed.boardName <> vbNullString Then Exit Function
 
     Dim p As POINTAPI
-    p = modBoard.boardPixelToScreen(mainMem.pStartX, mainMem.pStartY, m_ed.pCEd)
+    p = modBoard.boardPixelToScreen(m_ed.board(m_ed.undoIndex).startX, m_ed.board(m_ed.undoIndex).startY, m_ed.pCEd)
     
     picBoard.currentX = p.x + 1
     picBoard.currentY = p.y
     picBoard.ForeColor = g_CBoardPreferences.pStartColor
-    picBoard.Print "Player start location layer" & str(mainMem.pStartL)
+    picBoard.Print "Player start location layer " & CStr(m_ed.board(m_ed.undoIndex).startL)
     
     picBoard.Line (p.x, p.y - 8)-(p.x, p.y + 8), g_CBoardPreferences.pStartColor, B
     picBoard.Line (p.x - 8, p.y)-(p.x + 8, p.y), g_CBoardPreferences.pStartColor, B
 
-End Sub
+    drawStartPosition = True
+
+End Function
 
 '========================================================================
 ' Redraw all tiles at a single position

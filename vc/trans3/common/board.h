@@ -224,6 +224,9 @@ typedef struct tagBoard
 	bool bAllowBattles;								// Random fighting allowed?
 	bool bDisableSaving;							// Is saving disabled on board?
 	RGB_SHORT ambientEffect;						// Ambient effect applied to the board.
+	short startX;									// Player start location.
+	short startY;
+	short startL;
 
 	std::vector<CVector *> paths;					// Board-defined paths that can be
 													// assigned to sprites.
@@ -276,7 +279,7 @@ typedef struct tagBoard
 	void renderBackground(CCanvas *const cnv, const RECT bounds);
 	void renderAnimatedTiles(SCROLL_CACHE &scrollCache);
 
-	tagBoard(): coordType(TILE_NORMAL), bkgImage(NULL) { }
+	tagBoard(): coordType(TILE_NORMAL), bkgImage(NULL), startX(0), startY(0), startL(1) { }
 	~tagBoard() { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); freePaths(); freeShading(); }
 
 private:

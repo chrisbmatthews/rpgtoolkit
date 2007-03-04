@@ -538,6 +538,10 @@ layerEnd:
 		file >> var; if (ambientEffect.g != var) bUpdate = true; ambientEffect.g = var; 
 		file >> var; if (ambientEffect.b != var) bUpdate = true; ambientEffect.b = var; 
 
+		file >> startX; if (startX <= 0) startX = 64;
+		file >> startY; if (startY <= 0) startY = 64;
+		file >> startL; if (startL <= 0) startL = 1;
+
 		if (this == g_pBoard) 
 		{
 			// Required only for the active board.
@@ -578,12 +582,10 @@ pvVersion:
         VECTOR_SHORT3D red, green, blue;
 		red = green = blue = board;
 
-		// Start position moved to main file; hold
-		// onto until after isometric byte is read.
-		int pStartX, pStartY, pStartL;
-		file >> var; pStartX = int(var);
-		file >> var; pStartY = int(var);
-		file >> var; pStartL = int(var);
+		// Player start location - convert to pixel after reading isometric bit.
+		file >> startX;
+		file >> startY;
+		file >> startL;
 
 		file >> var; bDisableSaving = bool(var);
     
@@ -924,12 +926,13 @@ lutEndB:
 				}
 			}
 
-			// Convert to pixel co-ordinates.
-			coords::tileToPixel(pStartX, pStartY, coordType, true, sizeX);
-			extern MAIN_FILE g_mainFile;
-			if (!g_mainFile.startX) g_mainFile.startX = short(pStartX);
-			if (!g_mainFile.startY) g_mainFile.startY = short(pStartY);
-			if (!g_mainFile.startL) g_mainFile.startL = short(pStartL);
+			// Convert start location to pixel co-ordinates.
+			x = int(startX);
+			y = int(startY);
+			coords::tileToPixel(x, y, coordType, true, sizeX);
+			startX = startX > 0 ? x : 64;
+			startY = startY > 0 ? y : 64;
+			startL = startL > 0 ? startL : 1;
 
 			// Create program bases.
 			std::vector<LPBRD_PROGRAM>::iterator p = programs.begin();

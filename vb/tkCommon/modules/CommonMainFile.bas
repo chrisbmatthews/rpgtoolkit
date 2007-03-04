@@ -134,9 +134,6 @@ Public Type TKMain
     bFpsInTitleBar As Byte            'show FPS in the title bar?
     
     '3.0.7
-    pStartX As Integer                'Pixel start position of the player.
-    pStartY As Integer
-    pStartL As Integer
     pfHeuristic As Integer            'Default pathfinding heuristic.
     drawVectors As Long               'Draw vectors? See eCVDrawVectors.
     pathColor As Long                 'Path and destination colour for selected player.
@@ -470,9 +467,6 @@ Public Sub openMain(ByVal file As String, ByRef theMain As TKMain)
             
             
             If (minorVer >= 9) Then
-                mainMem.pStartX = BinReadInt(num)
-                mainMem.pStartY = BinReadInt(num)
-                mainMem.pStartL = BinReadInt(num)
                 mainMem.pfHeuristic = BinReadInt(num)
                 mainMem.drawVectors = BinReadLong(num)
                 mainMem.pathColor = BinReadLong(num)
@@ -715,9 +709,6 @@ Public Sub saveMain(ByVal file As String, ByRef theMain As TKMain)
 
         Call BinWriteByte(num, theMain.bFpsInTitleBar)
         
-        Call BinWriteInt(num, theMain.pStartX)
-        Call BinWriteInt(num, theMain.pStartY)
-        Call BinWriteInt(num, theMain.pStartL)
         Call BinWriteInt(num, theMain.pfHeuristic)
         Call BinWriteLong(num, theMain.drawVectors)
         Call BinWriteLong(num, theMain.pathColor)
@@ -786,9 +777,6 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .hotSpotY = 0
         .transpcolor = RGB(255, 0, 0)
         .bFpsInTitleBar = 0
-        .pStartL = 0
-        .pStartX = 0
-        .pStartY = 0
         
         '3.0.7
         .pfHeuristic = PF_AXIAL

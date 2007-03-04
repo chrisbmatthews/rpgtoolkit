@@ -160,7 +160,6 @@ void registerFonts(bool bRegister)
  */
 void setUpGame()
 {
-	std::cerr << "setUpGame()\n";
 	extern int g_selectedPlayer;
 	extern STRING g_projectPath;
 	extern RECT g_screen;
@@ -224,8 +223,6 @@ void setUpGame()
 		}
 	}
 
-	std::cerr << "- done plugins\n";
-
 	CSprite::m_bPxMovement = g_mainFile.pixelMovement;
 	CSprite::setLoopOffset(g_mainFile.getGameSpeed());
 	g_selectedPlayer = 0;
@@ -280,6 +277,8 @@ void setUpGame()
 	{
 		g_players.push_back(new CPlayer(g_projectPath + TEM_PATH + g_mainFile.initChar, true, true));
 		g_pSelectedPlayer = g_players.front();
+
+		// If .initChar is empty a player must be loaded via AddPlayer() in the start program.
 	}
 
 	// Initialise virtual variables.
@@ -291,21 +290,18 @@ void setUpGame()
 		CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg).run();
 	}
 
-	std::cerr << "- done player load\n";
+	// Cannot proceed without a player.
+	if (!g_pSelectedPlayer) throw STRING(_T("Error: an initial character must be defined in the main file or loaded in the start program: cannot proceed."));
 
 	if (!g_mainFile.initBoard.empty())
 	{
 		g_pBoard->open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
 
 		// Set player position before rendering in order to align board.
-		g_pSelectedPlayer->setPosition(
-			g_mainFile.startX ? g_mainFile.startX : 2,
-			g_mainFile.startY ? g_mainFile.startY : 2,
-			g_mainFile.startL ? g_mainFile.startL : 1,
-			g_mainFile.startX ? PX_ABSOLUTE : COORD_TYPE(g_pBoard->coordType & ~PX_ABSOLUTE)
-		);
+		g_pSelectedPlayer->setPosition(g_pBoard->startX, g_pBoard->startY, g_pBoard->startL, PX_ABSOLUTE);
 
 		g_pSelectedPlayer->alignBoard(g_screen, true);
+
 		g_scrollCache.render(true);
 
 		// z-order the sprites on board loading.
@@ -613,8 +609,6 @@ GAME_STATE gameLogic()
  */
 int mainEventLoop()
 {
-	std::cerr << "MainEventLoop()\n";
-
 	// Calculate how long one frame should take, in milliseconds
 	const DWORD dwOneFrame = DWORD(MILLISECONDS / FPS_CAP);
 
@@ -713,16 +707,20 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 
 	if (!g_mainFile.open(fileName)) return EXIT_SUCCESS;
 
-//	try
+	try
 	{
 		openSystems();
 		const int toRet = mainEventLoop();
 		closeSystems();
 		return toRet;
 	}
-//	catch (...)
+	catch (STRING str)
 	{
-//		terminate();
+		messageBox(str);
+	}
+	catch (...)
+	{
+		terminate();
 	}
 
 	return EXIT_SUCCESS;
