@@ -628,7 +628,7 @@ void end(CALL_DATA &params)
 /*
  * void font(string font)
  * 
- * Load a font, either true type or TK2.
+ * Load a true type font. TK2 fonts are not supported. 
  */
 void font(CALL_DATA &params)
 {
@@ -2133,6 +2133,7 @@ void addPlayer(CALL_DATA &params)
 {
 	extern std::vector<CPlayer *> g_players;
 	extern STRING g_projectPath;
+	extern CPlayer *g_pSelectedPlayer;
 
 	if (params.params != 1)
 	{
@@ -2145,6 +2146,9 @@ void addPlayer(CALL_DATA &params)
 	{
 		CPlayer *p = new CPlayer(file, false, true);
 		g_players.push_back(p);
+
+		// Allow the initial character to be loaded via the start progam.
+		if (!g_pSelectedPlayer) g_pSelectedPlayer = p;
 	}
 }
 
