@@ -1693,13 +1693,13 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			*pRet = pItem ? (pItem->getBoardSprite()->activationType & SPR_KEYPRESS) : 0;
 			break;
 		case BRD_PLAYERX:
-			*pRet = g_mainFile.startX;
+			*pRet = g_pBoard->startX;
 			break;
 		case BRD_PLAYERY:
-			*pRet = g_mainFile.startY;
+			*pRet = g_pBoard->startY;
 			break;
 		case BRD_PLAYERLAYER:
-			*pRet = g_mainFile.startL;
+			*pRet = g_pBoard->startL;
 			break;
 		case BRD_SAVING_DISABLED:
 			*pRet = g_pBoard->bDisableSaving ? 1 : 0;
