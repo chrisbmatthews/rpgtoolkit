@@ -331,6 +331,7 @@ Private Sub apply() ': On Error Resume Next
     Set prg = activeBoard.toolbarGetCurrent(BS_PROGRAM)
     If Not prg Is Nothing Then
         With prg
+            txtFilename.Text = replace(replace(txtFilename.Text, vbLf, ""), vbCr, " ")
             .filename = txtFilename.Text
             .layer = Abs(val(txtLayer.Text))
             
