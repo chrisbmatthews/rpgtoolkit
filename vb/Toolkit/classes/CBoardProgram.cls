@@ -32,7 +32,7 @@ Option Explicit
 
 Public filename As String                    'Board program filename.
 Public layer As Long                         'Layer.
-Public graphic As String                     'Associated graphic tbd: depreciate?
+Public graphic As String                     'Associated graphic.
 Public activate As Long                      'PRG_ACTIVE - always active.
                                              'PRG_CONDITIONAL - conditional activation.
 Public initialVar As String                  'Activation variable.

@@ -37,12 +37,12 @@ Public Sub Main()
     Call createFileAssociations
     Call StartTracing("tktrace.txt")
     Call Randomize(timer)
-    'wip:'Call BoardInit(boardList(activeBoardIndex).theData)
     Set g_CBoardPreferences = New CBoardPreferences
+    Call setupAutoTiler
     Call TileAnmClear(tileAnmList(activeTileAnmIndex).theData)
     Call initCanvasEngine
     Call initDirectories
-    Call initBoardAndTileEditor
+    Call initTileEditor
     Call initPlayers
     Call initLocalization
     Call initTimer
@@ -108,32 +108,10 @@ Private Sub initTimer()
 End Sub
 
 '=======================================================================
-' Initiate the enemy editor
+' Initiate the tile editor
 '=======================================================================
-Private Sub initEnemyEditor()
+Private Sub initTileEditor()
     On Error Resume Next
-    enemylist(activeEnemyIndex).theData.eneSizeX = 1
-    enemylist(activeEnemyIndex).theData.eneSizeY = 1
-End Sub
-
-'=======================================================================
-' Initiate the board and tile editors
-'=======================================================================
-Private Sub initBoardAndTileEditor()
-    On Error Resume Next
-    Dim x As Long, y As Long
-    boardList(activeBoardIndex).spotLightRadius = 2
-    boardList(activeBoardIndex).percentFade = 100
-    detail = 1
-    For x = 1 To 19
-        For y = 1 To 11
-            boardList(activeBoardIndex).BoardTile(x, y) = -1
-        Next y
-    Next x
-    boardList(activeBoardIndex).theData.brdColor = vbQBColor(15)
-    boardList(activeBoardIndex).theData.bSizeX = 19
-    boardList(activeBoardIndex).theData.bSizeY = 11
-    Call setupAutoTiler ' initialize autotiler tilemorphs
     
     ' Initiate a first tile editor doc (for tilemem use elsewhere - bug fix).
     tileedit.indice = newTileEditIndice()

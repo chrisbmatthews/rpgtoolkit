@@ -462,10 +462,6 @@ Public Sub renderAnimationFrame(ByVal cnv As Long, ByRef file As String, ByVal f
     If (LenB(frameFile) <> 0) Then
         ' We can draw the frame!
 
-        ' Get the ambient level here. Must be done before opening the DC,
-        ' otherwise trans3 *will* crash on Win9x
-        Call getAmbientLevel(addOnR, addOnB, addOnG)
-
         ' Resize the canvas if needed.
         If (w <> anm.animSizeX Or h <> anm.animSizeY) Then
             Call setCanvasSize(cnv, anm.animSizeX, anm.animSizeY)

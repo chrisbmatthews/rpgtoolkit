@@ -142,47 +142,6 @@ Public openTileEditorDocs() As tileDoc
 '=========================================================================
 ' Editor vector procedures
 '=========================================================================
-'tbd: Remove
-Public Sub VectBoardKillSlot(ByVal idx As Long)
-    On Error Resume Next
-    'free up memory in the board list vector
-    boardListOccupied(idx) = False
-End Sub
-
-Public Function VectBoardNewSlot() As Long
-    On Error GoTo vecterr
-       
-    'test size of array
-    Dim test As Long, t As Long
-    test = UBound(boardList)
-    
-    'find a new slot in the list of boards and return an index we can use
-    For t = 0 To UBound(boardList)
-        If boardListOccupied(t) = False Then
-            boardListOccupied(t) = True
-            VectBoardNewSlot = t
-            Exit Function
-        End If
-    Next t
-    
-    'must resize the vector...
-    Dim oldSize As Long, newSize As Long
-    oldSize = UBound(boardList)
-    newSize = UBound(boardList) * 2
-    ReDim Preserve boardList(newSize)
-    ReDim Preserve boardListOccupied(newSize)
-    
-    boardListOccupied(oldSize + 1) = True
-    VectBoardNewSlot = oldSize + 1
-    
-    Exit Function
-
-vecterr:
-    ReDim boardList(1)
-    ReDim boardListOccupied(1)
-    Resume Next
-    
-End Function
 
 Public Sub VectEnemyKillSlot(ByVal idx As Long)
     On Error Resume Next

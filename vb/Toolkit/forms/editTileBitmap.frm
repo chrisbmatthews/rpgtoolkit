@@ -432,7 +432,7 @@ Public Sub tilebmpSelectTile(): On Error Resume Next
         tileBmpList(activeTileBmpIndex).selectedTile = file
         Call openWinTile(file)
         If detail = 2 Or detail = 4 Or detail = 6 Then Call increaseDetail
-        'MsgBox boardList(activeBoardIndex).ambient
+        
         detail = openTileEditorDocs(activeTile.indice).oldDetail
         For dx = 1 To 32
             For dy = 1 To 32

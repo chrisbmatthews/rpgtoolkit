@@ -32,12 +32,6 @@ Begin VB.MDIForm tkMainForm
          Left            =   960
          Top             =   2520
       End
-      Begin VB.Timer animTileTimer 
-         Enabled         =   0   'False
-         Interval        =   5
-         Left            =   1560
-         Top             =   1920
-      End
       Begin VB.Timer projectListSize 
          Interval        =   1
          Left            =   360
@@ -2299,13 +2293,13 @@ Begin VB.MDIForm tkMainForm
             Style           =   6
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "19/01/2007"
+            TextSave        =   "18/03/2007"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "15:37"
+            TextSave        =   "21:45"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             AutoSize        =   1
@@ -2670,10 +2664,6 @@ End Sub
 '============================================================================
 Public Sub refreshTabs()
     Call m_tabs.ForceRefresh
-End Sub
-
-Private Sub animTileTimer_Timer()
-    'wip:'Call activeBoard.animateTile
 End Sub
 
 '============================================================================
@@ -4093,26 +4083,6 @@ Private Sub brdPicCurrentTile_Click(): On Error Resume Next
     End If
     Call activeBoard.changeSelectedTile(file)
 End Sub
-Private Sub Command22_Click(): On Error Resume Next
-    'wip: play button for TANs on board.
-    'Call activeBoard.playAnimatedTile
-End Sub
-Private Sub Command20_Click()
-    'wip: stop button for TANs on board.
-    animTileTimer.Enabled = False
-End Sub
-Private Sub Picture1_Click(): On Error Resume Next
-    'wip: tile shading colour
-    'Call activeBoard.selectAmbientColor
-End Sub
-Private Sub ambientlight_Change(): On Error Resume Next
-    'wip: tile shading lightness
-    'Call activeBoard.changeAmbientLight
-End Sub
-Private Sub ambientnumber_Change(): On Error Resume Next
-    'wip: tile shading "value"
-    'Call activeBoard.changeAmbientNumber
-End Sub
 
 '=========================================================================================
 ' END BOARD EDITOR RELATED EVENTS
@@ -4224,13 +4194,6 @@ End Sub
 'Animation wizard
 Private Sub anmCmdWizard_Click(): On Error Resume Next
     frmAnmWizard.Show vbModal
-End Sub
-
-Private Sub animTile_Timer(): On Error Resume Next
-    'wip:'Call activeBoard.animateTile
-End Sub
-Private Sub Command4_Click(): On Error Resume Next
-    'Call activeAnimation.Command7_Click
 End Sub
 
 '=========================================================================================
