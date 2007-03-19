@@ -318,7 +318,7 @@ Public Sub populate(ByVal Index As Long, ByRef vector As CVector)  ':on error re
     Call enableAll
     
     If cmbVector.ListIndex <> Index Then cmbVector.ListIndex = Index
-    cmbVector.List(Index) = CStr(Index) & ": " & IIf(LenB(vector.handle), vector.handle, "<vector handle>")
+    cmbVector.List(Index) = CStr(Index) & ": " & IIf(LenB(vector.handle), vector.handle, BRD_VECTOR_HANDLE)
     
     'Option buttons have been assigned TT_ values as indices.
     If vector.tiletype <> TT_NULL Then optType(vector.tiletype).value = True

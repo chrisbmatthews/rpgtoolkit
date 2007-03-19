@@ -967,10 +967,12 @@ Begin VB.Form frmBoardEdit
       Begin VB.Menu mnuBoard 
          Caption         =   "Preferences..."
          Index           =   0
+         Shortcut        =   ^F
       End
       Begin VB.Menu mnuBoard 
          Caption         =   "Set Player Start Location"
          Index           =   1
+         Shortcut        =   ^D
       End
       Begin VB.Menu mnuBoard 
          Caption         =   "Convert Co-ordinates"
@@ -1104,8 +1106,6 @@ Attribute VB_Exposed = False
 ' GNU General Public License for more details.
 '
 '========================================================================
-'Note to self: wip = temporary additions to old code.
-
 
 Option Explicit
 
@@ -2267,7 +2267,7 @@ Private Sub drawBoard(Optional ByVal bRefresh As Boolean = True) ': On Error Res
         CLng(picBoard.ScaleHeight), _
         m_ed.pCEd.zoom _
     )
-    
+
     If bRefresh Then
         'Update the background image dimensions here because the
         'image's bounds are assigned only when it is drawn.
@@ -3205,7 +3205,8 @@ Public Sub vectorSetHandle(ByVal handle As String) ':on error resume next
     
     pos = InStrRev(handle, ":")
     If pos > 0 Then handle = Trim$(Mid$(handle, pos + 1))
-    
+    If handle = BRD_VECTOR_HANDLE Then Exit Sub
+        
     If i >= 0 Then
         For j = 0 To UBound(m_ed.board(m_ed.undoIndex).vectors)
             If j <> i Then
@@ -3442,11 +3443,13 @@ Public Sub spriteUpdateImageData(ByRef spr As CBoardSprite, ByVal filename As St
         'actkrt3 creates a blank canvas to render onto, which is a member of CBoard.m_images
         If LCase$(extention(img.filename)) = "tst" Then
             Call drawTileCnv(img.pCnv, projectPath & tilePath & img.filename, 1, 1, 0, 0, 0, False)
+            img.transpcolor = RGB(255, 0, 255) 'TRANSP_COLOR
         ElseIf LCase$(extention(img.filename)) = "tbm" Then
             Dim tbm As TKTileBitmap
             Call OpenTileBitmap(projectPath & bmpPath & img.filename, tbm)
             Call CNVResize(img.pCnv, picBoard.hdc, tbm.sizex * 32, tbm.sizey * 32)
             Call DrawTileBitmapCNV(img.pCnv, -1, 0, 0, tbm)
+            img.transpcolor = RGB(255, 0, 255) 'TRANSP_COLOR
         End If
     End If
     spr.filename = filename
@@ -3743,7 +3746,7 @@ Public Sub toolbarPopulateVectors() ':on error resume next
     With m_ed.board(m_ed.undoIndex)
         For i = 0 To UBound(.vectors)
             If Not .vectors(i) Is Nothing Then
-                combo.AddItem CStr(j) & ": " & IIf(LenB(.vectors(i).handle), .vectors(i).handle, "<vector handle>")
+                combo.AddItem CStr(j) & ": " & IIf(LenB(.vectors(i).handle), .vectors(i).handle, BRD_VECTOR_HANDLE)
                 j = j + 1
             End If
         Next i

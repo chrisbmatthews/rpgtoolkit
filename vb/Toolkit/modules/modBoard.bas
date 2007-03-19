@@ -193,6 +193,16 @@ Public Type TKBoard
 End Type
 
 '=========================================================================
+' An animated tile (trans3 only)
+'=========================================================================
+'Private Type TKBoardAnimTile
+'    theTile As TKTileAnm
+'    x As Long
+'    y As Long
+'    layer As Long
+'End Type
+
+'=========================================================================
 'Editing option buttons on the lefthand toolbar.
 '=========================================================================
 Public Enum eBrdSetting
@@ -314,6 +324,8 @@ Public Const PX_ABSOLUTE = 4              ' Absolute co-ordinates (iso and 2D).
 Public g_tabMap(BS_LIGHTING) As Long            'Map eBrdSettings to eBoardTabs
 Public g_boardClipboard As TKBoardClipboard     'One clip for all boards.
 Public g_CBoardPreferences As CBoardPreferences
+
+Public Const BRD_VECTOR_HANDLE = "<vector handle>"
 
 '=========================================================================
 ' Absolute board pixel dimensions
@@ -578,7 +590,7 @@ Public Sub spriteGetDisplayImage(ByVal filename As String, ByRef image As String
     If UCase$(commonRoutines.extention(filename)) = "ITM" Then
         Call itemGetDisplayImage(filename, image, transpcolor)
     Else
-        'tbd
+        'Player support...
     End If
 End Sub
 Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String, ByRef transpcolor As Long) ':on error resume next
