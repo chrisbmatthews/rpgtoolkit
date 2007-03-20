@@ -240,7 +240,10 @@ function_identifier:
 
 function:
 	function_identifier
-		{ CProgram::m_params.push_back(0); }
+		{
+			CProgram::m_params.push_back(0);
+			g_bVarFlag = false;
+		}
 	LPAREN params RPAREN
 		{
 			MACHINE_FUNC pFunc = NULL;
