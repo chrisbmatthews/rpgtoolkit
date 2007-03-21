@@ -317,6 +317,7 @@ public:
 	static void addFunction(const STRING name, const MACHINE_FUNC func);
 	static void addConstant(const STRING name, const STACK_FRAME value) { m_constants[lcase(name)] = value; }
 	static STRING getFunctionName(const MACHINE_FUNC func);
+	static int getRunningProgramCount() { return m_runningPrograms; }
 
 	// Redirections.
 	static void addRedirect(const STRING oldFunc, const STRING newFunc) { m_redirects[oldFunc] = newFunc; }

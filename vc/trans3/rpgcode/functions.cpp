@@ -122,9 +122,14 @@ typedef enum tkPRG_CONSTANTS
 void programInit()
 {
 	extern CDirectDraw *g_pDirectDraw;
+	extern bool g_bShowMessageWindow;
+
+	// Don't reset the message the window if we're here
+	// from another program (e.g. by run() or rpgcode()).
+	if (CProgram::getRunningProgramCount() > 1) return;
+
 	g_pDirectDraw->CopyScreenToCanvas(g_cnvRpgCode);
 	g_mwinY = 0;
-	extern bool g_bShowMessageWindow;
 	g_bShowMessageWindow = false;
 }
 
@@ -134,6 +139,8 @@ void programInit()
 void programFinish()
 {
 	extern bool g_bShowMessageWindow;
+	// Refer to programInit().
+	if (CProgram::getRunningProgramCount() > 1) return;
 	g_bShowMessageWindow = false;
 }
 
