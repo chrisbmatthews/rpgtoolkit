@@ -161,6 +161,7 @@ namespace operators
 	void postfixDecrement(CALL_DATA &call);
 	void unaryNegation(CALL_DATA &call);
 	void lnot(CALL_DATA &call);
+	void bnot(CALL_DATA &call);
 	void tertiary(CALL_DATA &call);
 	void member(CALL_DATA &call);
 	void array(CALL_DATA &call);

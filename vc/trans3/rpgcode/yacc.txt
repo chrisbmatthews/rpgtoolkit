@@ -321,6 +321,8 @@ operators:
 		{ _MACHINE_UNIT(operators::postfixDecrement, 1); }
 |	SUB value %prec NEG
 		{ _MACHINE_UNIT(operators::unaryNegation, 1); }
+|	BNOT value
+		{ _MACHINE_UNIT(operators::bnot, 1); }
 |	NOT value
 		{ _MACHINE_UNIT(operators::lnot, 1); }
 |	identifier XOR_ASSIGN value

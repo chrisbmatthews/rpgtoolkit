@@ -2271,6 +2271,13 @@ void operators::lnot(CALL_DATA &call)
 	call.ret().num = !call[0].getNum();
 }
 
+void operators::bnot(CALL_DATA &call)
+{
+	CHECK_OVERLOADED_OPERATOR(~, true);
+	call.ret().udt = UDT_NUM;
+	call.ret().num = ~(int)call[0].getNum();
+}
+
 void operators::tertiary(CALL_DATA &call)
 {
 	call.ret() = call[0].getNum() ? call[1].getValue() : call[2].getValue();
