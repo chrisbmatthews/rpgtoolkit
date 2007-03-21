@@ -1407,7 +1407,7 @@ void CProgram::serialiseState(CFile &stream) const
 	// Local variables.
 	{
 		stream << int(m_locals.size());
-		std::vector<std::map<STRING, STACK_FRAME> >::const_iterator i = m_locals.begin();
+		std::list<std::map<STRING, STACK_FRAME> >::const_iterator i = m_locals.begin();
 		for (; i != m_locals.end(); ++i)
 		{
 			stream << int(i->size());

@@ -25,6 +25,7 @@
 // Inclusions.
 #include <map>
 #include <set>
+#include <list>
 #include <deque>
 #include <string>
 #include <vector>
@@ -343,7 +344,7 @@ public:
 	CProgram &operator=(const CProgram &rhs);
 
 private:
-	std::vector<std::map<STRING, STACK_FRAME> > m_locals;
+	std::list<std::map<STRING, STACK_FRAME> > m_locals;
 	std::deque<std::deque<STACK_FRAME> > m_stack;
 	std::deque<STACK_FRAME> *m_pStack;
 	std::vector<CALL_FRAME> m_calls;
@@ -406,7 +407,7 @@ private:
 	void include(const CProgram prg);
 	void prime();
 	static bool resolvePluginCall(LPMACHINE_UNIT pUnit);
-	virtual std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_locals; }
+	virtual std::list<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_locals; }
 	std::pair<bool, STRING> getInstanceVar(const STRING var) const;
 	void returnFromMethod(STACK_FRAME value);
 
@@ -438,7 +439,7 @@ public:
 
 private:
 	CProgram &m_prg;
-	std::vector<std::map<STRING, STACK_FRAME> > *getLocals() { return m_prg.getLocals(); }
+	std::list<std::map<STRING, STACK_FRAME> > *getLocals() { return m_prg.getLocals(); }
 };
 
 // An RPGCode thread.
