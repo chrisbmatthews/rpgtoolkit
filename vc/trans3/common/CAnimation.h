@@ -98,7 +98,11 @@ public:
 	static void free(CSharedAnimation *p)
 	{
 		std::set<CSharedAnimation *>::iterator i = m_anms.find(p);
-		if (i != m_anms.end()) delete p;
+		if (i != m_anms.end()) 
+		{
+			delete p;
+			m_anms.erase(p);
+		}
 	}
 
 	// Free all shared animations.

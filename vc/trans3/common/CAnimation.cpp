@@ -301,10 +301,8 @@ CSharedAnimation::~CSharedAnimation()
 		{
 			SHARED_ANIMATIONS::iterator j = m_shared.find(m_pAnm->filename());
 			delete m_pAnm;
-			m_shared.erase(j);
+			if (j != m_shared.end()) m_shared.erase(j);
 		}
-		// Remove the pointer from the users list.
-		m_anms.erase(this); 
 	}
 }
 	
@@ -332,10 +330,10 @@ CSharedAnimation *CSharedAnimation::insert(const STRING file)
  */
 void CSharedAnimation::freeAll(void)
 {
-	// Theoretically these should be empty by the time it's called.
+	// These may not be empty in an unexpected shutdown.
 
 	std::set<CSharedAnimation *>::iterator j = m_anms.begin();
-	for (; j != m_anms.end(); ++j) delete *j; 
+	for (; j != m_anms.end(); ++j) delete *j;
 
 	SHARED_ANIMATIONS::iterator i = m_shared.begin();
 	for (; i != m_shared.end(); ++i) delete i->second; 
