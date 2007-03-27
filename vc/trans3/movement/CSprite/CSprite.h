@@ -110,7 +110,7 @@ public:
 		const bool bRunningProgram);
 	void deactivatePrograms(void);			// Override repeat values for programs the player is standing on.
 	void playerDoneMove(void);				// Complete the selected player's move.
-	bool programTest(void);					// Test for program activations (by programs, items, players).
+	bool programTest(const bool keypressOnly);// Test for program activations (by programs, items, players).
 	void send(void);						// Unconditionally send the sprite to the active board.
 	TILE_TYPE spriteCollisions(void);		// Evaluate sprites (players and items).
 
@@ -190,10 +190,11 @@ private:
 
 	// Evaluate board vectors.
 	TILE_TYPE boardCollisions(LPBOARD board, const bool recursing = false);
+	// Take the angle of movement and return a MV_ENUM direction.
+	static MV_ENUM getDirection(const DB_POINT &unitVector);
 	
 	TILE_TYPE boardEdges(const bool bSend);	// Tests for movement at the board edges.
 	void checkIdling(void);					// Update idle and custom animations.
-	MV_ENUM getDirection(void) const;		// Take the angle of movement and return a MV_ENUM direction.
 	DB_POINT getTarget(void) const;			// Get the next position co-ordinates.
 	bool push(const bool bScroll);			// Complete a single frame's movement of the sprite.
 	void setPathTarget(void);				// Insert target co-ordinates from the path.

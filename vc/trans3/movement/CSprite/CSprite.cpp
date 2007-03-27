@@ -94,7 +94,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 
 			// Set the player to face the direction of movement (direction
 			// may change if we slide).
-			m_facing.assign(getDirection());
+			m_facing.assign(getDirection(m_v));
 
 			// Get the tiletype at the target (or the next point for paths).
 			m_tileType = boardCollisions(g_pBoard);
@@ -138,6 +138,9 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			// Test every pixel.
 			if (!((m_pos.loopFrame * PX_FACTOR) % m_pos.loopSpeed)) 
 			{
+				// Reassign the direction in case of alteration.
+				m_facing.assign(getDirection(m_v));
+
 				m_tileType = TILE_TYPE(m_tileType | boardEdges(isUser));
 
 				// Check stairs.
@@ -373,7 +376,7 @@ bool CSprite::findDiversion(void)
 /*
  * Take the angle of movement and return a MV_ENUM direction.
  */
-MV_ENUM CSprite::getDirection(void) const
+MV_ENUM CSprite::getDirection(const DB_POINT &unitVector)
 {
 	extern LPBOARD g_pBoard;
 
@@ -383,15 +386,15 @@ MV_ENUM CSprite::getDirection(void) const
 	// that corresponds to the implied direction, and that can 
 	// be used along with non-iso boards.
 	// arctan returns -pi/2 to +pi/2 radians (-90 to +90 degrees).
-	if (m_v.x) angle = RADIAN * (g_pBoard->isIsometric() ?
-								atan(2 * m_v.y / m_v.x) : 
-								atan(m_v.y / m_v.x));
+	if (unitVector.x) angle = RADIAN * (g_pBoard->isIsometric() ?
+							  atan(2 * unitVector.y / unitVector.x) : 
+							  atan(unitVector.y / unitVector.x));
 
-	if (angle == 0 && m_v.x < 0) angle = 180.0;
+	if (angle == 0.0 && unitVector.x < 0.0) angle = 180.0;
 	// Correct for negatives.
-	if (angle < 0) angle += 180.0;
+	if (angle < 0.0) angle += 180.0;
 	// Correct for inversion.
-	if (m_v.y < 0) angle += 180.0;
+	if (unitVector.y < 0.0) angle += 180.0;
 
 	return MV_ENUM((round(angle / 45.0) % 8) + 1);
 }
@@ -661,7 +664,7 @@ void CSprite::playerDoneMove(void)
 	g_pxStepsTaken += step;
 
 	// Movement in a program should not trigger other programs.
-	programTest();
+	programTest(false);
 	fightTest(step);
 }
 
@@ -1191,7 +1194,7 @@ void CSprite::send(void)
  * the area the player must be in to trigger the program.
  * Players take precedence over items, over programs (could be altered).
  */
-bool CSprite::programTest(void)
+bool CSprite::programTest(const bool keypressOnly)
 {
 	extern std::vector<CPlayer *> g_players;
 	extern MAIN_FILE g_mainFile;
@@ -1230,10 +1233,10 @@ bool CSprite::programTest(void)
 
 		// Some item entries may be NULL since users
 		// can insert items at any slot number.
-		if (!pItm || this == pItm || m_pos.l != pItm->m_pos.l) continue;
+		if (!pItm || this == pItm || !pItm->isActive() || m_pos.l != pItm->m_pos.l) continue;
 		if (pItm->m_brdData.prgActivate.empty()) continue;
 
-		DB_POINT pt = {pItm->m_pos.x, pItm->m_pos.y};
+		const DB_POINT pt = {pItm->m_pos.x, pItm->m_pos.y};
 
 		CVector tarActivate = pItm->m_attr.vActivate + pt;
 
@@ -1267,6 +1270,7 @@ bool CSprite::programTest(void)
 				const short state = GetAsyncKeyState(MapVirtualKeyEx(g_mainFile.key, 1, hkl));
 				if (state >= 0) continue;
 			}
+			else if (keypressOnly) continue;
 
 			// Check activation conditions.
 			if (pItm->m_brdData.activate == SPR_CONDITIONAL)
@@ -1285,8 +1289,13 @@ bool CSprite::programTest(void)
 
 	if (itm)
 	{
+		// Stop the player's movement - assume interaction with an
+		// item should always stop movement (else introduce SPR_STOPS_MOVEMENT flag).
+		clearQueue();
+
 		// Make the item look at this sprite.
-		(itm->m_facing = m_facing) += 4;
+		const DB_POINT pt = {m_pos.x - itm->m_pos.x, m_pos.y - itm->m_pos.y};
+		itm->m_facing.assign(getDirection(pt));
 		renderNow(NULL, false);
 
 		// If we go to a new board in this program, we kill
@@ -1401,6 +1410,7 @@ bool CSprite::programTest(void)
 				const short state = GetAsyncKeyState(MapVirtualKeyEx(g_mainFile.key, 1, hkl));
 				if (state >= 0) continue;
 			}
+			else if (keypressOnly) continue;
 
 			// Check activation conditions.
 			if (bp.activate == PRG_CONDITIONAL)
