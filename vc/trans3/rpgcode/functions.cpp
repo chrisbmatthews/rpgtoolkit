@@ -2510,6 +2510,7 @@ void putitem(CALL_DATA &params)
  * void eraseitem(variant handle)
  *
  * Erase an item from the screen, but keep it in memory.
+ * Warning: erasing an item in it's own multitasking thread will pause the thread.
  */
 void eraseitem(CALL_DATA &params)
 {
@@ -2534,7 +2535,8 @@ void eraseitem(CALL_DATA &params)
 /*
  * void destroyitem(variant handle)
  * 
- * Remove an item from memory.
+ * Remove an item from memory. 
+ * Warning: do not destroy an item through it's own multitasking thread.
  */
 void destroyitem(CALL_DATA &params)
 {
@@ -2646,8 +2648,7 @@ void characterSpeed(CALL_DATA &params)
 /*
  * void itemlocation(variant handle, int &x, int &y, int &layer)
  * 
- * Get the location of an item. Take board slot numbers only;
- * use SourceLocation() and TargetLocation() otherwise.
+ * Get the location of an item.
  */
 void itemlocation(CALL_DATA &params)
 {
