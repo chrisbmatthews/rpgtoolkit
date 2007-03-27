@@ -224,7 +224,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub Command1_Click(): On Error Resume Next
+Private Sub cmdOK_Click(): On Error Resume Next
     Unload Me
 End Sub
 
