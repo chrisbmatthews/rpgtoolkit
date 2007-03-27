@@ -110,7 +110,7 @@ bool tagAnimation::open(const STRING fileName)
 	}
 
 	frameCount = frameFiles.size();
-	filename = removePath(fileName);
+	filename = removePath(fileName, MISC_PATH);
 	return true;
 }
 
