@@ -41,10 +41,7 @@ Begin VB.Form editBackground
       Top             =   120
       Width           =   6375
       Begin VB.PictureBox picHolder 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
          BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
          Height          =   3975
          Left            =   120
          ScaleHeight     =   3975
