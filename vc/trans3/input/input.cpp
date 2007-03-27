@@ -210,7 +210,7 @@ void scanKeys()
 	// General activation key.
 	if (SCAN_KEY_DOWN(g_mainFile.key))
 	{
-		if (g_pSelectedPlayer->programTest()) return;
+		if (g_pSelectedPlayer->programTest(true)) return;
 	}
 
 	// Menu key.
