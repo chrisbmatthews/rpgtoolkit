@@ -1,179 +1,218 @@
-*****************************************
-*System.prg                             *
-*RPG Toolkit Development System, 2.0    *
-*System Library.                        *
-*Copyright 1999 By Christopher B.       *
-*Matthews                               *
-*****************************************
-* This library gives access to extended *
-*RPGCode commands.                      *
-*****************************************
+//----------------------------------------------------------------------
+//
+// RPG Toolkit Version 3.1.0 System Library.
+//
+//----------------------------------------------------------------------
+//
+// The author of this file hereby forfeits any claim of copyright
+// (economic, moral, or other) to this file and places it into the
+// public domain. Among other things, it may be used, modified, and
+// redistributed without any attribution or restriction. You may
+// remove this notice, but it is recommended that you maintain it.
+//
+//----------------------------------------------------------------------
+//
+// To use the methods in this file from your programs, you can either
+// use the include preprocessor at the start of the file like this:
+//
+//     #include "system.prg"
+//     pause(); // Waits for a key.
+//
+// Or you can use "implict includes" by naming the library and the
+// method separated by a dot, like this:
+//
+//     // Waits for a key, even without including system.prg.
+//     system.pause();
+//
+//----------------------------------------------------------------------
 
-
-*****************************
-* #Pause()                  *
-*****************************
-* Waits for a key press.    *
-*Ignores arrow keys.        *
-*****************************
-#Method Pause()
-{
-    #pause_done!=0
-    #While(pause_done!==0)
-    {
-        #Wait(pause_wait$)
-        #If(pause_wait$~="UP")
-        {
-            #If(pause_wait$~="DOWN")
-            {
-                #If(pause_wait$~="LEFT")
-                {
-                    #If(pause_wait$~="RIGHT")
-                    {
-                        #pause_done!=1
-                    }
-                }
-            }
-        }
-    }
-    #Kill(pause_done!)
-    #Kill(pause_wait$)
+//----------------------------------------------------------------------
+//
+// Ignores key strokes until a key other than a direction
+// is pressed. The key that ends the waiting is returned.
+//
+// This is probably the most commonly used method in the
+// system library.
+//
+//----------------------------------------------------------------------
+method pause() {
+	local(key) = "LEFT";
+	until (key ~= "LEFT"  && _
+			key ~= "RIGHT" && _
+			key ~= "UP"    && _
+			key ~= "DOWN") {
+		key = wait();
+	}
+	return key;
 }
 
-
-**********************************
-* Causes a graphic to move from
-* x1,y1 to x2,y2
-* mgFilename$ is the filename of the graphic.
-* mgspeed! is the speed (1 is fast, 0.5 is slower)
-**********************************
-#method moveGraphic(mgFilename$, mgx1!, mgy1!, mgx2!, mgy2!, mgspeed!)
+//----------------------------------------------------------------------
+//
+// This class allows you to construct a single object that holds
+// an array. The point of this class is so that you can make a
+// a method that accepts an array as a parameter or that returns
+// an array.
+//
+// For example, you might declare a method that adds up a set of
+// numbers and returns the result like this:
+//
+//     method sum(CArray numbers) {
+//         local(bound) = numbers->getBound();
+//         local(sum) = 0;
+//         for (local(i) = 0; i <= bound; ++i) {
+//             sum += numbers[i];
+//         }
+//         return sum;
+//     }
+//
+// The method can be called like this:
+//
+//     arr = CArray();
+//     arr[0] = 4;
+//     arr[1] = 2;
+//     arr[2] = 3;
+//     mwin(sum(arr)); // Shows 9.
+//     arr->release();
+//
+//----------------------------------------------------------------------
+class CArray
 {
-	*calculate delta y and delta x...
-	#mgDX! = mgx2! - mgx1!
-	#mgDY! = mgy2! - mgy1!
-	*calculate slope...
-    #mgm! = mgDY! / mgDX!
-	*calculate b...
-	#mgb! = mgm! * mgx1!
-	#mgb! = mgy1! - mgb!
-    *#mwin("<mgx1!>,<mgy1!>  <mgx2!>,<mgy2!>")
-	*
-	*now we have y = mx + b
-    #if(mgx1!<=mgx2!)
-    {
-        #for (mgc! = mgx1!; mgc! <= mgx2!; mgc! = mgc!+mgspeed!)
-        {
-            #mgxx! = mgc!
-            #mgyy! = mgm! * mgxx! + mgb!
-            #scan(mgxx!,mgyy!,0)
-            #put(mgxx!, mgyy!, mgFilename$)
-            *#delay(0.1)
-            #mem(mgxx!, mgyy!, 0)
-        }
-    }
-    #if(mgx1!>mgx2!)
-    {
-        #for (mgc! = mgx1!; mgc! > mgx2!; mgc! = mgc!-mgspeed!)
-        {
-            #mgxx! = mgc!
-            #mgyy! = mgm! * mgxx! + mgb!
-            #scan(mgxx!,mgyy!,0)
-            #put(mgxx!, mgyy!, mgFilename$)
-            *#delay(0.1)
-            #mem(mgxx!, mgyy!, 0)
-        }
-    }
-	#kill(mgDX!)
-	#kill(mgDY!)
-	#kill(mgm!)
-	#kill(mgb!)
-	#kill(mgc!)
-	#kill(mgxx!)
-	#kill(mgyy!)
-	#kill(mgFilename$)
-	#kill(mgx1!)
-	#kill(mgy1!)
-	#kill(mgx2!)
-	#kill(mgy2!)
-    #kill(mgspeed!)
+
+public:
+
+	//
+	// Default constructor.
+	//
+	method CArray() {
+		// Create dynamic array
+		m_bound = -1;
+		m_isDynamic = true;
+	}
+
+	//
+	// Construct an array that has a limited size.
+	//
+	method CArray(upperBound) {
+		if (upperBound >= 0) {
+			// Bound is okay
+			m_bound = upperBound
+		} else {
+			// Bound is no good
+			debugger("Invalid upper bound: " + CastLit(upperBound))
+		}
+	}
+
+	//
+	// This method allows you to make a copy of the array.
+	//
+	method clone(CArray rhs) {
+		local(bound) = rhs->getBound();
+		if (m_isDynamic = rhs->isDynamic()) {
+			local(ret) = CArray();
+		} else {
+			local(ret) = CArray(bound);
+		}
+		for (local(i) = 0; i <= bound; ++i) {
+			ret[i] = rhs[i];
+		}
+	}
+
+	//
+	// This method allows to set the array to another array.
+	//
+	method operator=(CArray rhs) {
+		clean();
+		local(bound) = rhs->getBound();
+		m_bound = bound;
+		m_isDynamic = rhs->isDynamic();
+		for (local(i) = 0; i <= bound; i++) {
+			this[i] = rhs[i];
+		}
+	}
+
+	//
+	// This method allows you to use the array as though it
+	// were a normal array.
+	//
+	method operator[](idx) {
+		if (m_isDynamic) {
+			// Change bound if required
+			if (idx > m_bound) {
+				// It needs to be changed
+				m_bound = idx;
+			}
+
+			// Return the element
+			return &m_data[idx];
+		}
+
+		// Check bounds
+		if (idx <= m_bound && idx >= 0) {
+			// Within bounds
+			return &m_data[idx];
+		}
+
+		// Out of bounds
+		debugger("Out of array bounds: " + idx);
+		global(g_null) = 0;
+		return &g_null;
+	}
+
+	//
+	// Return the highest index that has been set in the array.
+	//
+	method getBound() {
+		return m_bound;
+	}
+
+	//
+	// Resize the array.
+	//
+	method resize(newSize) {
+		if (newSize >= 0) {
+			// Bound is okay
+			m_bound = newSize;
+		}
+	}
+
+	//
+	// Determine whether the array is dyamic
+	//
+	method isDynamic() {
+		return m_isDynamic;
+	}
+
+	//
+	// Change dynamic state (true or false)
+	//
+	method setDynamicState(bState) {
+		m_isDynamic = bState;
+	}
+
+	//
+	// Deconstruct the array.
+	//
+	method ~CArray() {
+		// Clean out the array
+		clean();
+	}
+
+private:
+
+	//
+	// Clean out this array.
+	//
+	method clean() {
+		for (local(idx) = 0; idx <= m_bound; idx++) {
+			// Kill this member.
+			kill(m_data[idx]);
+		}
+		kill(m_bound, m_isDynamic);
+	}
+
+	var m_data[];		// Main data
+	var m_bound;		// Upper bound of the array
+	var m_isDynamic;	// Is a dynamic array?
+
 }
-
-
-*************************************************
-* #NumSetElement(name$, elementnum!, value!)    *
-*************************************************
-* Sets a specific element in a numerical array. *
-*************************************************
-#Method NumSetElement(sE_Name$, sE_Element!, sE_Value!)
-{
-    #castLit(sE_Element!, sE_LitEle$)
-    #castLit(sE_Value!, sE_LitVal$)
-    #sE_Name$=se_Name$+"["+sE_LitEle$+"]!"
-    #sE_com$= "#" +se_Name$+ "="+ se_LitVal$
-    #RPGCode(se_com$)
-    #Kill(sE_Name$)
-    #Kill(sE_Element!)
-    #Kill(sE_Value!)
-    #Kill(sE_com$)
-    #Kill(sE_LitEle$)
-    #Kill(sE_LitVal$)
-}
-
-*************************************************
-* #LitSetElement(name$, elementnum!, value$)    *
-*************************************************
-* Sets a specific element in a literal array.   *
-*************************************************
-#method LitSetElement(sE_Name$, sE_Element!, sE_Value$)
-{
-    #castLit(sE_Element!, sE_LitEle$)
-    #sE_Name$=se_Name$+"["+sE_LitEle$+"]$"
-    #sE_com$= "#" +se_Name$+ "="+ sE_Value$
-    #RPGCode(sE_com$)
-    #Kill(sE_Name$)
-    #Kill(sE_Element!)
-    #Kill(sE_Value$)
-    #Kill(sE_com$)
-    #Kill(sE_LitEle$)
-}
-
-*************************************************
-* #NumGetElement(name$, elementnum!, dest!)     *
-*************************************************
-* Get a specific element in a numerical array.  *
-*************************************************
-#method NumGetElement(gE_Name$,gE_Element!,gE_dest!)
-{
-    #castLit(gE_Element!, gE_LitEle$)
-    #gE_Name$=ge_Name$+"["+gE_LitEle$+"]!"
-    #gE_com$= "#gE_dest!" + "="+ gE_Name$
-    #RPGCode(gE_com$)
-	#ReturnMethod(gE_dest!)
-    #Kill(gE_Name$)
-    #Kill(gE_Element!)
-    #Kill(gE_dest!)
-    #Kill(gE_com$)
-    #Kill(gE_LitEle$)
-}
-
-*************************************************
-* #LitGetElement(name$, elementnum!, dest$)     *
-*************************************************
-* Get a specific element in a literal   array.  *
-*************************************************
-#Method LitGetElement(gE_Name$, gE_Element!, gE_dest$)
-{
-    #castLit(gE_Element!, gE_LitEle$)
-    #gE_Name$=ge_Name$+"["+gE_LitEle$+"]$"
-    #gE_com$= "#gE_dest$" + "="+ gE_Name$
-    #RPGCode(gE_com$)
-    #ReturnMethod(gE_dest$)
-    #Kill(gE_Name$)
-    #Kill(gE_Element!)
-    #Kill(gE_dest$)
-    #Kill(gE_com$)
-    #Kill(gE_LitEle$)
-}
-
 
