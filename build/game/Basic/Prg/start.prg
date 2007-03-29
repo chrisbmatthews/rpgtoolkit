@@ -51,7 +51,8 @@ while (true)
 	killCursorMap(cMap);
 	
 	// Act on the user's choice.
-	switch (res) {
+	switch (res)
+	{
 		case (0)
 		{
 			// New game: run the intro method.
