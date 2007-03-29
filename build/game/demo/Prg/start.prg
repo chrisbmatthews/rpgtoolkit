@@ -1,98 +1,113 @@
-#AutoCommand()
+//-----------------------------------------------------------
+//  RPGToolkit 3.1.0 Basic Startup Program.
+//-----------------------------------------------------------
 
-*******************************************************
-**
-**  Basic Startup Program.
-**  ----------------------
-**
-**  Look for all lines commented as TBD (to be done)
-**  to see what you should change.
-**
-*******************************************************
+// Preprocessors.
+#autolocal
+#include "system.prg"
 
-*******************************************************
-* Some initial settings.  Maybe you want to change these...
-fontsize(18)
-bold("on")
-*******************************************************
-menugraphic("layout.gif")
-fightmenugraphic("mwin.jpg")
+// Some initial settings.
+font("Comic Sans MS");
+fontSize(18);
+bold("on");
+clear();
 
-*******************************************************
-* TBD: Play a title screen file here...
-* MidiPlay("mysong.mid")
-*******************************************************
+// Default menu and battle systems.
+menuGraphic("layout.png");
+fightMenuGraphic("mwin.jpg");
+winGraphic("mwin.jpg");
 
-Clear
-WinGraphic("mwin.jpg") *Message window graphic
+// Play a music file.
+mediaPlay("vip - title2.mid");
 
-*******************************************************
-* Create a cursor map to allow the user to select an option...
 
-done! = 0
-while ( done! == 0 )
+// Create a cursor map to allow the user to select an option.
+// Enter a while loop to allow the cursor map to be rerun if
+// the user cancels loading a saved game. If "New Game" or 
+// "Quit" is chosen, the loop only runs once.
+
+while (true)
 {
-	*draw title screen...
-	drawtitle()
+	// Call a custom method to draw the title.
+	drawTitle();
+	
+	// Place the menu options on the screen.
+	text(17, 10.5, "New Game");
+	text(17, 12, "Load Game");
+	text(17, 13.5, "Quit");
+	
+	// Create a cursor map.
+	cMap = createCursorMap();
 
-	text( 17, 10.5, "New Game" )
-	text( 17, 12, "Load Game" )
-	text( 17, 13.5, "Quit" )
+	// Create cursor map points next to the menu options.
+	cursorMapAdd(295, 180, cMap);
+	cursorMapAdd(295, 210, cMap);
+	cursorMapAdd(295, 230, cMap);
 
-	cMap! = CreateCursorMap()
-	CursorMapAdd( 295, 180, cMap! )
-	CursorMapAdd( 295, 210, cMap! )
-	CursorMapAdd( 295, 230, cMap! )
-	res! = CursorMapRun( cMap! )
-	KillCursorMap( cMap! )
+	// Run the cursor map and obtain the user's choice.
+	res = cursorMapRun(cMap);
 
-	if ( res! == 0 )
+	// Destroy the cursor map after use.
+	killCursorMap(cMap);
+	
+	// Act on the user's choice.
+	switch (res)
 	{
-		* new game
-		history()
-		done! = 1
-		end
-	}
-	if ( res! == 1 )
-	{
-		* load game
-	        dirsav(dest$)
-	        if(dest$~="CANCEL")
-	        {
-	            load(dest$)
-	            done!=1
-	            end
-	        }
-	}
-	if ( res! == 2 )
-	{
-		* end game
-		dos()
-		done! = 1
-		end
+		case(0)
+		{
+			// New game: run the intro custom method.
+			intro();
+			end();
+		}
+		case(1)
+		{
+			// Load game. Show load screen and obtain chosen file.
+			file = dirSav("Select a saved file to load");
+
+			if(file ~= "CANCEL")
+			{
+				// "CANCEL" returned if the user cancelled.
+				load(dest);
+				end();
+			}
+		}
+		case(2)
+		{
+			// Exit to windows.
+			windows();
+		}
 	}
 }
-end
 
 
-*******************************************************
-* This method draws the title screen...
-*******************************************************
-method drawtitle()
+//-----------------------------------------------------------
+// Draw the title sequence
+//-----------------------------------------------------------
+method drawTitle()
 {
-    Clear
-    * TBD: Set some graphic for your title screen graphic.
-    text( 1, 1, "Test Game" )
-    *Bitmap("title.gif")
+	// Clear any previous images and set up a title screen.
+	clear();
+	text( 3, 3, "Test Game");
+	// bitmap("title.gif");
 }
 
-* TBD: Put a stroy here...
-method history()
+//-----------------------------------------------------------
+// Run the game's introduction
+//-----------------------------------------------------------
+method intro()
 {
-	*Main story
-        MWin("Your story goes here...")
-	Wait(a$)
+	// Show the story and wait until the user presses
+	// a key before finishing.
+	mwin("Your story goes here...");
+	wait();
 }
+
+
+
+
+
+
+
 
 
 

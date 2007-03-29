@@ -1,4 +1,8 @@
-mwin("Welcome to the RPGToolkit 3.0.6 release!")
-mwin("Press ENTER to open the menu")
-mwin("Go outside to fight")
-wait()
+//
+// Program that runs when intercepting the item.
+//
+
+mwin("Arr, prepare to fight!");
+wait();
+mwincls();
+fightEnemy("pirate.ene", "bkg.bkg");	
