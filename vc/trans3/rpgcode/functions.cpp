@@ -3164,6 +3164,8 @@ void rpgCode(CALL_DATA &params)
  * string charAt(string str, int pos, [string &ret])
  * 
  * Get a character from a string. The first character is one.
+ * The value of the <b>pos</b> parameter must be in the closed
+ * interval [1, length].
  */
 void charAt(CALL_DATA &params)
 {
