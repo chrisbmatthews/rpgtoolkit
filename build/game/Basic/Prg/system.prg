@@ -115,6 +115,7 @@ public:
 		for (local(i) = 0; i <= bound; ++i) {
 			ret[i] = rhs[i];
 		}
+		return ret;
 	}
 
 	//
