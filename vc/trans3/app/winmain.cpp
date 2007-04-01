@@ -63,6 +63,8 @@ CAudioSegment *g_bkgMusic = NULL;		// Playing background music.
 
 GAME_TIME g_gameTime;					// Length of game info.
 unsigned long g_pxStepsTaken = 0;		// Number of PIXELs the player has moved.
+double g_fpms = 0.0;					// Frames per millisecond (renderCount / renderTime).
+bool g_loadFromStartPrg = false;		// Was a game loaded from the start prg? (See Load()).
 
 std::vector<CPlayer *> g_players;		// Loaded players.
 ZO_VECTOR g_sprites;					// z-ordered players and items.
@@ -71,7 +73,6 @@ int g_selectedPlayer = 0;				// Index of current player.
 
 HINSTANCE g_hInstance = NULL;			// Handle to application.
 IPlugin *g_pMenuPlugin = NULL;			// The menu plugin.
-double g_fpms = 0.0;					// Frames per millisecond (renderCount / renderTime).
 
 /*
  * Locals.
@@ -293,7 +294,7 @@ void setUpGame()
 	// Cannot proceed without a player.
 	if (!g_pSelectedPlayer) throw STRING(_T("Error: an initial character must be defined in the main file or loaded in the start program: cannot proceed."));
 
-	if (!g_mainFile.initBoard.empty())
+	if (!g_mainFile.initBoard.empty() && !g_loadFromStartPrg)
 	{
 		g_pBoard->open(g_projectPath + BRD_PATH + g_mainFile.initBoard);
 
@@ -707,14 +708,14 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 
 	if (!g_mainFile.open(fileName)) return EXIT_SUCCESS;
 
-	try
+//	try
 	{
 		openSystems();
 		const int toRet = mainEventLoop();
 		closeSystems();
 		return toRet;
 	}
-	catch (STRING str)
+/*	catch (STRING str)
 	{
 		messageBox(str);
 	}
@@ -722,7 +723,7 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	{
 		terminate();
 	}
-
+*/
 	return EXIT_SUCCESS;
 }
 
