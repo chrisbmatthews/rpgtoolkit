@@ -1,1 +1,0 @@
-itemPath("source", tkMV_WAYPOINT_LINK,  "wp_oldman", 0);
