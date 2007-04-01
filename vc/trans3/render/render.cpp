@@ -49,19 +49,15 @@ HWND g_hHostWnd = NULL;						// Handle to the host window.
 int g_resX = 0, g_resY = 0;					// Size of screen.
 
 CCanvas *g_cnvRpgCode = NULL;				// RPGCode canvas.
-CCanvas *g_cnvMessageWindow = NULL;			// RPGCode message window.
 CCanvas *g_cnvCursor = NULL;				// Cursor used on maps &c.
 RENDER_OVERLAY g_renderNow;					// The user's overlay canvas.
 std::vector<CCanvas *> g_cnvRpgScreens;		// SaveScreen() array.
 std::vector<CCanvas *> g_cnvRpgScans;		// Scan() array...
 
-bool g_bShowMessageWindow = false;			// Show the message window?
-double g_messageWindowTranslucency = 0.5;	// Message window translucency.
-double g_translucentOpacity = 0.4;			// Opacity to draw translucent sprites at.
-
 RECT g_screen = {0, 0, 0, 0};				// = {g_topX, g_topY, g_resX + g_topX, g_resY + g_topY}
 SCROLL_CACHE g_scrollCache;					// The scroll cache.
 AMBIENT_LEVEL g_ambientLevel;
+MESSAGE_WINDOW g_mwin;
 
 /*
  * Render the RPGCode screen.
@@ -69,19 +65,47 @@ AMBIENT_LEVEL g_ambientLevel;
 void renderRpgCodeScreen()
 {
 	g_pDirectDraw->DrawCanvas(g_cnvRpgCode, 0, 0);
-	if (g_bShowMessageWindow)
+	if (g_mwin.visible)
 	{
-		extern COLORREF g_color;
-		if (g_messageWindowTranslucency != 1.0)
+		const int x = (g_resX - g_mwin.width) >> 1;
+		if (g_mwin.translucency != 1.0)
 		{
-			g_pDirectDraw->DrawCanvasTranslucent(g_cnvMessageWindow, (g_resX - 600.0) * 0.5, 0, g_messageWindowTranslucency, g_color, -1);
+			g_pDirectDraw->DrawCanvasTranslucent(g_mwin.cnvBkg, x, 0, g_mwin.translucency, -1, -1);
 		}
 		else
 		{
-			g_pDirectDraw->DrawCanvas(g_cnvMessageWindow, (g_resX - 600.0) * 0.5, 0);
+			g_pDirectDraw->DrawCanvas(g_mwin.cnvBkg, x, 0);
 		}
+		g_pDirectDraw->DrawCanvasTransparent(g_mwin.cnvText, x, 0, g_mwin.color);
 	}
 	g_pDirectDraw->Refresh();
+}
+
+/*
+ * Render the message window background.
+ */
+void tagMessageWindow::render(void)
+{
+	if (!bkg.empty())
+	{
+		drawImage(bkg, cnvBkg, 0, 0, width, height);
+	}
+	else
+	{
+		cnvBkg->ClearScreen(color);
+	}
+}
+
+/*
+ * Create message window canvases.
+ */
+void tagMessageWindow::createCanvases(void)
+{
+	cnvBkg = new CCanvas();
+	cnvBkg->CreateBlank(NULL, width, height, TRUE);
+
+	cnvText = new CCanvas();
+	cnvText->CreateBlank(NULL, width, height, TRUE);
 }
 
 /*
@@ -99,8 +123,7 @@ void createCanvases()
 	g_renderNow.cnv->CreateBlank(NULL, g_resX, g_resY, TRUE);
 	g_renderNow.cnv->ClearScreen(g_renderNow.transp);
 
-	g_cnvMessageWindow = new CCanvas();
-	g_cnvMessageWindow->CreateBlank(NULL, 600, 100, TRUE);
+	g_mwin.createCanvases();
 
 	g_scrollCache.createCanvas(g_resX * 2, g_resY * 2);
 
@@ -125,10 +148,10 @@ void createCanvases()
  */
 void destroyCanvases()
 {
-	delete g_cnvRpgCode;
-	delete g_cnvMessageWindow;
-	delete g_cnvCursor;
 	// Do not delete g_renderNow.cnv since it is allocated in g_canvases.
+	delete g_cnvRpgCode;
+	delete g_cnvCursor;
+	g_mwin.destroyCanvases();
 
 	std::vector<CCanvas *>::iterator i = g_cnvRpgScreens.begin();
 	for (; i != g_cnvRpgScreens.end(); ++i)

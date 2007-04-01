@@ -1856,13 +1856,13 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 {
 	extern LPBOARD g_pBoard;
 	extern RECT g_screen;
-	extern double g_translucentOpacity;
+	extern double g_spriteTranslucency;
 
 	if (!m_pos.l) return false;
 
 	// If we're rendering the top layer, draw the translucent sprite.
 	if (layer != m_pos.l && 
-		(layer != g_pBoard->sizeL || !g_translucentOpacity)
+		(layer != g_pBoard->sizeL || !g_spriteTranslucency)
 		) return false;
 
 	// Render the frame here (but not when rendering translucently).
@@ -1944,7 +1944,7 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 		screen.top - board.top,
 		screen.right - screen.left,		// width / height
 		screen.bottom - screen.top,
-		g_translucentOpacity,
+		g_spriteTranslucency,
 		-1,
 		TRANSP_COLOR
 	);

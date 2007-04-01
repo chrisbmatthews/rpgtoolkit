@@ -176,16 +176,16 @@ STDMETHODIMP CCallbacks::CBGetMwinDC(int *pRet)
 
 STDMETHODIMP CCallbacks::CBPopupMwin(int *pRet)
 {
-	extern bool g_bShowMessageWindow;
-	g_bShowMessageWindow = true;
+	extern MESSAGE_WINDOW g_mwin;
+	g_mwin.visible = true;
 	*pRet = TRUE;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBHideMwin(int *pRet)
 {
-	extern bool g_bShowMessageWindow;
-	g_bShowMessageWindow = false;
+	extern MESSAGE_WINDOW g_mwin;
+	g_mwin.visible = false;
 	*pRet = TRUE;
 	return S_OK;
 }
@@ -752,8 +752,8 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			bstr = getString(g_fightMenuGraphic);
 			break;
 		case GEN_MWIN_PIC_FILE:
-			extern STRING g_mwinBkg;
-			bstr = getString(g_mwinBkg);
+			extern MESSAGE_WINDOW g_mwin;
+			bstr = getString(g_mwin.bkg);
 			break;
 		case GEN_FONTFILE:
 			extern STRING g_fontFace;
@@ -983,8 +983,8 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 			g_fightMenuGraphic = getString(newVal);
 			break;
 		case GEN_MWIN_PIC_FILE:
-			extern STRING g_mwinBkg;
-			g_mwinBkg = getString(newVal);
+			extern MESSAGE_WINDOW g_mwin;
+			g_mwin.render(getString(newVal), 0);
 			break;
 		case GEN_FONTFILE:
 			extern STRING g_fontFace;

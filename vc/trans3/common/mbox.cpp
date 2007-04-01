@@ -23,6 +23,8 @@
 #include "../../tkCommon/tkDirectX/platform.h"
 #include <set>
 
+const double mboxTranslucency = 0.5;
+
 /*
  * Show a message box.
  */
@@ -68,7 +70,7 @@ void messageBox(const STRING str)
 	DrawText(hdc, str.c_str(), str.length(), &r, DT_WORDBREAK);
 	box.CloseDC(hdc);
 
-	g_pDirectDraw->DrawCanvasTranslucent(&box, (g_resX - r.right) / 2, (g_resY - r.bottom) / 2 - 10, 0.45, RGB(255, 255, 255), -1);
+	g_pDirectDraw->DrawCanvasTranslucent(&box, (g_resX - r.right) / 2, (g_resY - r.bottom) / 2 - 10, mboxTranslucency, RGB(255, 255, 255), -1);
 	g_pDirectDraw->Refresh();
 
 	while (true)
@@ -134,7 +136,7 @@ STRING prompt(const STRING str)
 	r2.left = x + 14;
 	r2.top = y + r.bottom + 16;
 
-	g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, 0.45, RGB(255, 255, 255), -1);
+	g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, mboxTranslucency, RGB(255, 255, 255), -1);
 
 	CCanvas *pBuffer = g_pDirectDraw->getBackBuffer();
 
@@ -193,7 +195,6 @@ int rpgcodeMsgBox(STRING text, int buttons, const long textColor, const long bac
 	extern int g_resX, g_resY;
 	extern CDirectDraw *g_pDirectDraw;
 	extern STRING g_projectPath;
-	extern double g_messageWindowTranslucency;
 
 	if (!g_pDirectDraw)
 	{
@@ -296,7 +297,7 @@ int rpgcodeMsgBox(STRING text, int buttons, const long textColor, const long bac
 	box.CloseDC(hdc);
 
 	// Draw translucently with the text drawn solidly.
-	g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, g_messageWindowTranslucency, textColor, TRANSP_COLOR);
+	g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, mboxTranslucency, textColor, TRANSP_COLOR);
 	g_pDirectDraw->Refresh();
 
 	// Return 1 for OK, 6 for Yes, 7 for No (vbMsgBoxResult constants).
@@ -320,7 +321,6 @@ STRING fileDialog(
 	extern int g_resX, g_resY;
 	extern STRING g_projectPath;
 	extern CDirectDraw *g_pDirectDraw;
-	extern double g_messageWindowTranslucency;
 
 	// Get the save directory contents.
 	WIN32_FIND_DATA wfd;
@@ -431,7 +431,7 @@ STRING fileDialog(
 
 		// Draw translucently with the text drawn solidly.
 		g_pDirectDraw->DrawCanvasPartial(&backup, x, y, x, y, box.GetWidth(), box.GetHeight(), SRCCOPY);
-		g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, g_messageWindowTranslucency, textColor, TRANSP_COLOR);
+		g_pDirectDraw->DrawCanvasTranslucent(&box, x, y, mboxTranslucency, textColor, TRANSP_COLOR);
 		g_pDirectDraw->Refresh();
 
 		const STRING key = waitForKey(true);

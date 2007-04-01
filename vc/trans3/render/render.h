@@ -71,7 +71,45 @@ typedef struct tagRenderOverlay
 	LONG transp;
 	bool draw;
 	tagRenderOverlay(): cnv(NULL), transp(0), draw(false) {};
+
 } RENDER_OVERLAY;
+
+typedef struct tagMessageWindow
+{
+	CCanvas *cnvBkg;			// Background image.
+	CCanvas *cnvText;			// Text to separate canvas to preserve antialiasing.
+	int nextLine;				// Pixel y-position of next line.
+	int width, height;			// Message window dimensions.
+	bool visible;				// Show the message window?
+	LONG color;					// Background color in image absence.
+	double translucency;
+	STRING bkg;					// Background image.
+	tagMessageWindow():
+		cnvBkg(NULL), cnvText(NULL), nextLine(0), visible(true), 
+		color(0), translucency(0.5), width(600), height(100) {};
+
+	void createCanvases(void);
+	void destroyCanvases(void)
+	{
+		delete cnvBkg;
+		delete cnvText;
+	}
+
+	void render(void);
+	void render(const STRING img, const LONG col)
+	{
+		bkg = img;
+		color = col;
+		render();
+	}
+
+	void hide(void)
+	{
+		visible = false;
+		nextLine = 0;
+	}
+
+} MESSAGE_WINDOW;
 
 /*
  * Initialize the graphics engine.
