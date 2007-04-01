@@ -54,6 +54,24 @@ EXCEPTION_TYPE CProgram::m_debugLevel = E_WARNING;	// Show all error messages by
 static std::map<STRING, CProgram> g_cache; // Program cache.
 typedef std::map<STRING, CProgram>::iterator CACHE_ITR;
 
+// Protected constructor.
+CThread::CThread(const STRING str):
+CProgram(),
+m_bSleeping(false), 
+m_fileName(str) 
+{
+	extern STRING g_projectPath;
+	if (CFile::fileExists(g_projectPath + PRG_PATH + str))
+	{
+		m_fileName = g_projectPath + PRG_PATH + str;
+		open(m_fileName);
+	}
+	else
+	{
+		loadFromString(str);
+	}
+}
+
 // Create a thread.
 CThread *CThread::create(const STRING str)
 {

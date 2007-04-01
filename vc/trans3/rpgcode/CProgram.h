@@ -473,7 +473,7 @@ private:
 protected:
 	static void *operator new(size_t size) { return malloc(size); }
 	static void operator delete(void *p) { free(p); }
-	CThread(const STRING str): CProgram(str), m_bSleeping(false), m_fileName(str) { }
+	CThread(const STRING str);
 	static std::set<CThread *> m_threads;
 };
 
