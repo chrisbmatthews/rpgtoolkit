@@ -70,9 +70,6 @@ COLORREF g_color = RGB(255, 255, 255);		// Current colour.
 BOOL g_bold = FALSE;						// Bold enabled?
 BOOL g_italic = FALSE;						// Italics enabled?
 BOOL g_underline = FALSE;					// Underline enabled?
-unsigned long g_mwinY = 0;					// MWin() y position.
-STRING g_mwinBkg;							// MWin() background image.
-COLORREF g_mwinColor = 0;					// Mwin() background colour.
 CAllocationHeap<CCanvas> g_canvases;		// Allocated canvases.
 CAllocationHeap<CCursorMap> g_cursorMaps;	// Cursor maps.
 ENTITY g_target, g_source;					// Target and source.
@@ -82,9 +79,9 @@ std::map<STRING, CFile> g_files;			// Files opened using RPGCode.
 double g_textX = 0.0, g_textY = 0.0;		// Last position text() was used at.
 typedef std::pair<STRING, RECT> RPG_BUTTON;	// Rpgcode button <image, position>
 std::map<int, RPG_BUTTON> g_buttons;		// setButton(), checkButton().
-int g_mwinSize = 0;							// Width of message window.
 const int MISC_DELAY = 5;					// Miscellaneous delay (millisecond).
 bool g_multirunning = false;				// Are we in multirun()'s scope (non-thread only). 
+double g_spriteTranslucency = 0.5;			// Sprite translucency.
 
 // CLSID for Microsoft's regular expression class.
 const CLSID CLSID_REGEXP = {0x3F4DACA4, 0x160D, 0x11D2, {0xA8, 0xE9, 0x00, 0x10, 0x4B, 0x36, 0x5C, 0x9F}};
@@ -122,15 +119,14 @@ typedef enum tkPRG_CONSTANTS
 void programInit()
 {
 	extern CDirectDraw *g_pDirectDraw;
-	extern bool g_bShowMessageWindow;
+	extern MESSAGE_WINDOW g_mwin;
 
 	// Don't reset the message the window if we're here
 	// from another program (e.g. by run() or rpgcode()).
 	if (CProgram::getRunningProgramCount() > 1) return;
 
 	g_pDirectDraw->CopyScreenToCanvas(g_cnvRpgCode);
-	g_mwinY = 0;
-	g_bShowMessageWindow = false;
+	g_mwin.hide();
 }
 
 /*
@@ -138,10 +134,10 @@ void programInit()
  */
 void programFinish()
 {
-	extern bool g_bShowMessageWindow;
+	extern MESSAGE_WINDOW g_mwin;
 	// Refer to programInit().
 	if (CProgram::getRunningProgramCount() > 1) return;
-	g_bShowMessageWindow = false;
+	g_mwin.visible = false;
 }
 
 /*
@@ -374,28 +370,22 @@ STRING spliceVariables(CProgram *prg, STRING str)
  */
 void mwin(CALL_DATA &params)
 {
+	extern MESSAGE_WINDOW g_mwin;
+
 	if (params.params != 1)
 	{
 		throw CError(_T("MWin() requires one parameter."));
 	}
-	extern CCanvas *g_cnvMessageWindow;
-	// If this is the first line, draw the background.
-	if (g_mwinY == 0)
+
+	if (g_mwin.nextLine == 0) 
 	{
-		if (!g_mwinBkg.empty())
-		{
-			drawImage(g_mwinBkg, g_cnvMessageWindow, 0, 0, 600, 100);
-		}
-		else
-		{
-			g_cnvMessageWindow->ClearScreen(g_mwinColor);
-		}
-		extern bool g_bShowMessageWindow;
-		g_bShowMessageWindow = true;
+		g_mwin.cnvText->ClearScreen(g_mwin.color);
+		g_mwin.visible = true;
 	}
+
 	// Write the text.
-	g_cnvMessageWindow->DrawText(0, g_mwinY, spliceVariables(params.prg, params[0].getLit()), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
-	g_mwinY += g_fontSize;
+	g_mwin.cnvText->DrawText(0, g_mwin.nextLine, spliceVariables(params.prg, params[0].getLit()), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+	g_mwin.nextLine += g_fontSize;
 
 	CONST_POS i = params.prg->getPos() + 1;
 	for (; i != params.prg->getEnd(); ++i)
@@ -438,9 +428,8 @@ void wait(CALL_DATA &params)
  */
 void mwinCls(CALL_DATA &params)
 {
-	extern bool g_bShowMessageWindow;
-	g_bShowMessageWindow = false;
-	g_mwinY = 0;
+	extern MESSAGE_WINDOW g_mwin;
+	g_mwin.hide();
 	renderRpgCodeScreen();
 }
 
@@ -835,13 +824,15 @@ void underline(CALL_DATA &params)
  */
 void winGraphic(CALL_DATA &params)
 {
+	extern MESSAGE_WINDOW g_mwin;
+	extern STRING g_projectPath;
+
 	if (params.params != 1)
 	{
 		throw CError(_T("WinGraphic() requires one parameter."));
 	}
-	extern STRING g_projectPath;
-	g_mwinBkg = g_projectPath + BMP_PATH + params[0].getLit();
-	g_mwinColor = 0;
+
+	g_mwin.render(g_projectPath + BMP_PATH + params[0].getLit(), 0);
 }
 
 /*
@@ -851,15 +842,19 @@ void winGraphic(CALL_DATA &params)
  */
 void winColor(CALL_DATA &params)
 {
+	extern MESSAGE_WINDOW g_mwin;
+
 	if (params.params != 1)
 	{
 		throw CError(_T("WinColor() requires one parameter."));
 	}
-	g_mwinBkg = _T("");
+
 	int color = int(params[0].getNum());
 	if (color < 0) color = 0;
 	else if (color > 255) color = 255;
-	g_mwinColor = CTile::getDOSColor(color);
+	color = CTile::getDOSColor(color);
+
+	g_mwin.render(_T(""), color);
 }
 
 /*
@@ -869,12 +864,14 @@ void winColor(CALL_DATA &params)
  */
 void winColorRgb(CALL_DATA &params)
 {
+	extern MESSAGE_WINDOW g_mwin;
+
 	if (params.params != 3)
 	{
 		throw CError(_T("WinColorRGB() requires three parameters."));
 	}
-	g_mwinBkg = _T("");
-	g_mwinColor = RGB(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()));
+
+	g_mwin.render(_T(""), RGB(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum())));
 }
 
 /*
@@ -3043,11 +3040,13 @@ void save(CALL_DATA &params)
 void load(CALL_DATA &params)
 {
 	extern STRING g_savePath;
+	extern bool g_loadFromStartPrg;
 	if (params.params != 1)
 	{
 		throw CError(_T("Load() requires one parameter."));
 	}
 	loadSaveState(g_savePath + addExtension(params[0].getLit(), _T("sav")));
+	g_loadFromStartPrg = true;
 }
 
 /*
@@ -5422,13 +5421,7 @@ void thread(CALL_DATA &params)
 	{
 		throw CError(_T("Thread() requires two or three parameters."));
 	}
-	extern STRING g_projectPath;
-	const STRING file = g_projectPath + PRG_PATH + params[0].getLit();
-	if (!CFile::fileExists(file))
-	{
-		throw CError(_T("Could not find ") + params[0].getLit() + _T(" for Thread()."));
-	}
-	CThread *p = CThread::create(file);
+	CThread *p = CThread::create(params[0].getLit());
 	if (!params[1].getBool())
 	{
 		extern LPBOARD g_pBoard;
@@ -6925,13 +6918,13 @@ void canvasGetScreen(CALL_DATA &params)
  */
 void setmwintranslucency(CALL_DATA &params)
 {
-	extern double g_messageWindowTranslucency;
+	extern MESSAGE_WINDOW g_mwin;
 
 	if (params.params != 1)
 	{
 		throw CError(_T("SetMwinTranslucency() requires one parameter."));
 	}
-	g_messageWindowTranslucency = params[0].getNum() / 100.0;
+	g_mwin.translucency = params[0].getNum() / 100.0;
 }
 
 /*
