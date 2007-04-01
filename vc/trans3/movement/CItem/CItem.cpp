@@ -91,12 +91,7 @@ short CItem::open(const STRING file, const bool thread) throw(CInvalidItem)
 	// Create thread
 	if (thread && !m_brdData.prgMultitask.empty())
 	{
-		extern STRING g_projectPath;
-		const STRING file = g_projectPath + PRG_PATH + m_brdData.prgMultitask;
-		if (CFile::fileExists(file))
-		{
-			m_pThread = CItemThread::create(file, this);
-		}
+		m_pThread = CItemThread::create(m_brdData.prgMultitask, this);
 	}
 
 	return minorVer;
