@@ -39,8 +39,6 @@ extern STRING g_projectPath;
 extern int g_selectedPlayer;
 extern CPlayer *g_pSelectedPlayer;
 extern unsigned long g_gp;
-extern COLORREF g_mwinColor;
-extern STRING g_mwinBkg;
 extern STRING g_fontFace;
 extern int g_fontSize;
 extern COLORREF g_color;
@@ -51,8 +49,8 @@ extern unsigned long g_pxStepsTaken;
 extern MAIN_FILE g_mainFile;
 extern LPBOARD g_pBoard;
 extern STRING g_menuGraphic, g_fightMenuGraphic;
-extern int g_mwinSize;
 extern GAME_TIME g_gameTime;
+extern MESSAGE_WINDOW g_mwin;
 
 #include "mbox.h"
 
@@ -223,11 +221,11 @@ void loadSaveState(const STRING str)
 	file >> gp;
 	g_gp = gp; // Performs an upcast.
 
-	int colour;
-	file >> colour;
-	g_mwinColor = abs(colour);
-
-	file >> g_mwinBkg;
+	int mwinCol;
+	STRING mwinBkg;
+	file >> mwinCol;
+	file >> mwinBkg;
+	g_mwin.render(mwinBkg, mwinCol);
 
 	int debug;			// Show the debugger?
 	file >> debug;
@@ -307,7 +305,9 @@ void loadSaveState(const STRING str)
 	}
 
 	file >> g_menuGraphic >> g_fightMenuGraphic;
-	file >> g_mwinSize;
+
+	// Mwin width (int).
+	file >> unused;
 
 	// Change the player's graphics to any previous NewPlayer() character.
 	STRING newPlayerName;
@@ -371,6 +371,7 @@ void loadSaveState(const STRING str)
 	{
 		STRING fileName;
 		file >> fileName;
+		fileName = removePath(fileName, PRG_PATH);
 
 		BOOL bPersist;
 		file >> bPersist;
@@ -643,8 +644,8 @@ void saveSaveState(const STRING fileName)
 	// Miscellaneous variables.
 	file << g_selectedPlayer;
 	file << int(g_gp);
-	file << int(g_mwinColor);
-	file << g_mwinBkg;
+	file << int(g_mwin.color);
+	file << g_mwin.bkg;
 
 	const EXCEPTION_TYPE et = CProgram::getDebugLevel();
 	file << int(et == E_DISABLED ? 0 : 1);
@@ -698,7 +699,7 @@ void saveSaveState(const STRING fileName)
 	// Miscellaneous variables.
 	file << g_menuGraphic;
 	file << g_fightMenuGraphic;
-	file << g_mwinSize;
+	file << int(0);		// Mwin width (unused).
 
 	// Player filename given in the last NewPlayer() call.	
 	file << g_pSelectedPlayer->swapGraphics();
