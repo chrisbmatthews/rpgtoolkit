@@ -473,16 +473,12 @@ layerEnd:
 			file >> thread;
 			if (startThreads && (this == g_pBoard))
 			{
-				thread = g_projectPath + PRG_PATH + thread;
-				if (CFile::fileExists(thread))
-				{
-					CThread *p = CThread::create(thread);
-					char str[255]; itoa(i, str, 10);
-					LPSTACK_FRAME var = CProgram::getGlobal(STRING(_T("threads[")) + str + _T("]"));
-					var->udt = UDT_NUM;
-					var->num = double(int(p));
-					threads.push_back(p);
-				}
+				CThread *p = CThread::create(thread);
+				char str[255]; itoa(i, str, 10);
+				LPSTACK_FRAME var = CProgram::getGlobal(STRING(_T("threads[")) + str + _T("]"));
+				var->udt = UDT_NUM;
+				var->num = double(int(p));
+				threads.push_back(p);
 			}
 		}
 
@@ -869,16 +865,12 @@ lutEndB:
 				file >> thread;
 				if (startThreads && (this == g_pBoard))
 				{
-					thread = g_projectPath + PRG_PATH + thread;
-					if (CFile::fileExists(thread))
-					{
-						CThread *p = CThread::create(thread);
-						char str[255]; itoa(i, str, 10);
-						LPSTACK_FRAME var = CProgram::getGlobal(STRING(_T("threads[")) + str + _T("]"));
-						var->udt = UDT_NUM;
-						var->num = double(int(p));
-						threads.push_back(p);
-					}
+					CThread *p = CThread::create(thread);
+					char str[255]; itoa(i, str, 10);
+					LPSTACK_FRAME var = CProgram::getGlobal(STRING(_T("threads[")) + str + _T("]"));
+					var->udt = UDT_NUM;
+					var->num = double(int(p));
+					threads.push_back(p);
 				}
 			}
 		}
