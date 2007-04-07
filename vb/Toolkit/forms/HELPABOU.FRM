@@ -58,7 +58,7 @@ Begin VB.Form helpAbout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "You may not remove any notices from this screen."
+      Caption         =   "You may not remove any notices from this screen, unless they no longer apply."
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -80,7 +80,7 @@ Begin VB.Form helpAbout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Release 3.0.6 (March 2005)"
+      Caption         =   "Release 3.1.0 (2007)"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   9.75
@@ -125,7 +125,7 @@ Begin VB.Form helpAbout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "All Rights Reserved.  Registered in the US and Canada, bound by international treaties"
+      Caption         =   "All Rights Reserved."
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -147,7 +147,7 @@ Begin VB.Form helpAbout
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Copyright 2004, 2005 By Christopher Matthews and the TK3 Dev Team"
+      Caption         =   "Copyright 2004, 2005, 2006, 2007 by the TK3 Dev Team"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -216,33 +216,15 @@ Private Sub Form_Load()
     On Error GoTo ErrorHandler
 
     Dim theText As String
-    theText = theText & "Open source contributions by: Colin James Fitzpatrick (Colin), Peter Fenner (Asimir), Phil Carty (Xavier), John@aljo, Jonathan Hughes (Delano), Chris Hutchinson (Euix), Geoff, Sander Knape, Samuel Bedwell (Occasionally_Correct)" & vbCrLf & vbCrLf
+    theText = theText & "The TK3 Dev Team: Christopher B. Matthews, Colin James Fitzpatrick (Colin), Peter Fenner (Asimir), Phil Carty (Xavier), John@aljo, Jonathan Hughes (Delano), Chris Hutchinson (Euix), Geoff, Sander Knape, Samuel Bedwell (Occasionally_Correct)" & vbCrLf & vbCrLf
+	theText = theText & "The RPG Toolkit, including the editor (toolkit3.exe), the engine (trans3.exe), the default menu (tk3menu.dll) and battle (tk3fight.dll) systems, is free software licensed under the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version." & vbCrLf & vbCrLf
+	theText = theText & "This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details." & vbCrLf & vbCrLf
     theText = theText & "Spanish translations provided by Ignacio Chitinsky and Jaime Peña.  French translation provided by Alexandre Thomas.  German translation provided by Martin Holtz.  Italian translation provided by Andrea Piras." & vbCrLf & vbCrLf
     theText = theText & "RPGToolkit Fo' Sho' Music Pak v2.18 composed by Chris and Craig Reeves, Copyright 2000.  Used with permission.  http://www.vipcouncil.com" & vbCrLf & vbCrLf
     theText = theText & "Menu System graphic and layout based on designs provided by |3lue.  Used with permission." & vbCrLf & vbCrLf
     theText = theText & "This program uses FreeImage, an open source image library supporting all common bitmap formats. Get your free copy now from http://www.6ixsoft.com." & vbCrLf & vbCrLf
     theText = theText & "Compression provided by zlib v1.1.3, copyright 1995-1998 Jean-loup Gailly and Mark Adler.  Used under license.  http://www.freesoftware.com/pub/infozip/zlib/" & vbCrLf & vbCrLf
     theText = theText & "This product includes images from Corel Clipart which are protected by the copyright laws of the U.S., Canada and elsewhere. Used under license.  They are for viewing purposes only." & vbCrLf & vbCrLf
-
-    'RSA credits...
-    theText = theText & "Credits for RSA md5 algorithm implementation:" & vbCrLf
-    theText = theText & "Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All" & vbCrLf
-    theText = theText & "rights reserved." & vbCrLf & vbCrLf
-    theText = theText & "License to copy and use this software is granted provided that it" & vbCrLf
-    theText = theText & "is identified as the 'RSA Data Security, Inc. MD5 Message-Digest" & vbCrLf
-    theText = theText & "Algorithm ' in all material mentioning or referencing this software" & vbCrLf
-    theText = theText & "or this function." & vbCrLf & vbCrLf
-    theText = theText & "License is also granted to make and use derivative works provided" & vbCrLf
-    theText = theText & "that such works are identified as 'derived from the RSA Data" & vbCrLf
-    theText = theText & "Security, Inc. MD5 Message-Digest Algorithm' in all material" & vbCrLf
-    theText = theText & "mentioning or referencing the derived work." & vbCrLf & vbCrLf
-    theText = theText & "RSA Data Security, Inc. makes no representations concerning either" & vbCrLf
-    theText = theText & "the merchantability of this software or the suitability of this" & vbCrLf
-    theText = theText & "software for any particular purpose. It is provided 'as is'" & vbCrLf
-    theText = theText & "without express or implied warranty of any kind." & vbCrLf & vbCrLf
-
-    theText = theText & "These notices must be retained in any copies of any part of this" & vbCrLf
-    theText = theText & "documentation and/or software." & vbCrLf & vbCrLf
 
     theText = theText & "This product includes software developed by vbAccelerator (http://vbaccelerator.com/)." & vbCrLf & vbCrLf
 
