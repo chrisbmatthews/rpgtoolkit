@@ -39,7 +39,8 @@ const int PX_FACTOR		= 4;			// Movement scaler factor.
 // m_pos.loopFrame idle states. Only condition: must be negative.
 enum
 {
-	LOOP_STANCE = -5,					// Running a custom stance.
+	LOOP_FREEZE = -6,					// Freezing sprite movement for a given period.
+	LOOP_STANCE,						// Running a custom stance.
 	LOOP_STANCE_END,					// Holding the last frame of a stance until movement.
 	LOOP_IDLE,							// Running idle animations.
 	LOOP_WAIT,							// Waiting to begin idle animations.

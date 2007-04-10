@@ -203,27 +203,31 @@ typedef struct tagSpriteBoardPath
 	int nextNode;						// Node currently travelling to.
 
 	tagSpriteBoardPath(): pVector(NULL), attributes(0), cycles(0), nextNode(0) {}
-	DB_POINT getNextNode()
+	DB_POINT getNextNode(void)
 	{
-		DB_POINT pt = {0, 0};
+		DB_POINT pt = {0.0};
 		if (pVector)
 		{
 			pt = (*pVector)[nextNode];
-			if (++nextNode >= pVector->size())
-			{
-				nextNode = 0;
-				// Check if we need to finish.
-				if (!--cycles) 
-				{
-					// Done. Null the pointer but do not delete the
-					// path (since it belongs to the board).
-					pVector = NULL;
-				}
-			}
 		}
 		return pt;
 	}
+	void advance(void)
+	{
+		if (pVector && ++nextNode >= pVector->size())
+		{
+			nextNode = 0;
+			// Check if we need to finish.
+			if (!--cycles) 
+			{
+				// Done. Null the pointer but do not delete the
+				// path (since it belongs to the board).
+				pVector = NULL;
+			}
+		}
+	}
 	bool operator() (void) { return pVector; }
+	int size(void) { if (pVector) return pVector->size(); }
 
 } SPR_BRDPATH, *LPSPR_BRDPATH;
 

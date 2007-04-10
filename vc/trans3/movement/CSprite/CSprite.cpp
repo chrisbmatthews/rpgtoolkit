@@ -75,6 +75,15 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 	// Is this the selected player?
 	const bool isUser = (this == selectedPlayer);
 
+	// Freeze the sprite for m_pos.idle.time.
+	if (m_pos.loopFrame == LOOP_FREEZE)
+	{
+		if (GetTickCount() - m_pos.idle.frameTime < m_pos.idle.time) return false;
+
+		m_pos.loopFrame = LOOP_WAIT;
+		m_pos.idle.time = m_pos.idle.frameTime = 0;
+	}
+
 	// Negative value indicates idle status.
 	if (m_pos.loopFrame < LOOP_MOVE)
 	{
@@ -83,27 +92,58 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 		{
 			// Determine the number of frames for required speed.
 			m_pos.loopSpeed = calcLoops();
-
-			// Increment the animation frame if movement did not 
-			// finish the previous loop (pixel movement only).
-			// Bitshift in place of multiply by two (<< 1 equivalent to * 2)
-			if (m_bPxMovement && m_pos.loopFrame != LOOP_DONE) m_pos.frame += (m_pos.loopSpeed << 1) - 1;
+			m_tileType = TT_NORMAL;
 
 			// Insert target co-ordinates.
 			setPathTarget();
 
-			// Set the player to face the direction of movement (direction
-			// may change if we slide).
-			m_facing.assign(getDirection(m_v));
+			if (m_pos.bIsPath)
+			{
+				// Pathfinding removes the need to call boardCollisions() for paths.
 
-			// Get the tiletype at the target (or the next point for paths).
-			m_tileType = boardCollisions(g_pBoard);
-			
-			// Do not check for sprites at the target for paths.
-			if (!m_bPxMovement || !m_pos.bIsPath) m_tileType = TILE_TYPE(m_tileType | spriteCollisions());
+				// Check we can initialise the movement.
+				if (spriteCollisions() & TT_SOLID)
+				{
+					// Try to find a diversion that allows the sprite to
+					// resume the path.
+
+					// Return true if diversion found to insert the new path.
+					if (findDiversion()) return true;
+					
+					// Else, movement cannot start.
+					m_tileType = TILE_TYPE(m_tileType | TT_SOLID);
+
+					// Freeze the sprite for a short time because, if a waypoint 
+					// link exists, the sprite will continue to try to
+					// move to the next point until it can (i.e., findDiversion()
+					// will run every loop) - this is processor intensive.
+					m_pos.loopFrame = LOOP_FREEZE;
+					m_pos.idle.time = 256; // Milliseconds.
+					m_pos.idle.frameTime = GetTickCount();
+				}
+				else
+				{
+					m_facing.assign(getDirection(m_v));
+				}
+			}
+			else
+			{
+				// Keyboard movement.
+
+				// Increment the animation frame if movement did not 
+				// finish the previous loop (pixel movement only).
+				// Bitshift in place of multiply by two (<< 1 equivalent to * 2)
+				if (m_bPxMovement && m_pos.loopFrame != LOOP_DONE) m_pos.frame += (m_pos.loopSpeed << 1) - 1;
+
+				// Set the player to face the direction of movement (direction
+				// may change if we slide).
+				m_facing.assign(getDirection(m_v));
+
+				m_tileType = TILE_TYPE(boardCollisions(g_pBoard) | spriteCollisions());
+			}
 
 			// Start the render frame counter.
-			if (!(m_tileType & TT_SOLID) || isUser) m_pos.loopFrame = LOOP_MOVE;
+			if (isUser || (~m_tileType & TT_SOLID)) m_pos.loopFrame = LOOP_MOVE;
 
 			// Do this after the above if, to prevent walking on the target board.
 			m_tileType = TILE_TYPE(m_tileType | boardEdges(isUser));
@@ -150,7 +190,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 				int dest = m_pos.l;
 				for (std::vector<BRD_VECTOR>::const_iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
 				{
-					if ((i->layer == m_pos.l) && (i->type & TT_STAIRS) && i->pV->contains(sprBase, pt))
+					if ((i->type & TT_STAIRS) && (i->layer == m_pos.l) && i->pV->contains(sprBase, pt))
 					{
 						dest = i->attributes;
 					}
@@ -163,31 +203,57 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 					// resume the path.
 
 					// Return true if diversion found to insert the new path.
-					// Else, continue to finish movement.
+					// Else, continue to end movement (no diversion found).
 					if (findDiversion()) return true;
+
+					m_tileType = TILE_TYPE(m_tileType | TT_SOLID);
 				} 
 
 			} // if (testing collisions)
 		} // if (path)
 
-		// Push the sprite only when the tiletype is passable.
-		// Items will not have entered this block if their target is solid.
-		if (!(m_tileType & TT_SOLID)) push(isUser);
 
-		++m_pos.loopFrame;				// Count of this movement's renders.
-		++m_pos.frame;					// Total frame count (for animation frames).
+		if (m_tileType & TT_SOLID)
+		{
+			if(isUser)
+			{
+				// Increment the user's frame always to indicate user input.
+				++m_pos.loopFrame;				// Count of this movement's renders.
+				++m_pos.frame;					// Total frame count (for animation frames).
+			}
+		}
+		else
+		{
+			// Push the sprite only when the tiletype is passable.
+			push(isUser);
+			++m_pos.loopFrame;
+			++m_pos.frame;
+		}
 
-		if (sgn(m_pos.target.x - m_pos.x) != sgn(m_v.x) ||
-			sgn(m_pos.target.y - m_pos.y) != sgn(m_v.y) ||
-			(m_tileType & TT_SOLID))
+		if ((m_tileType & TT_SOLID) ||
+			sgn(m_pos.target.x - m_pos.x) != sgn(m_v.x) ||
+			sgn(m_pos.target.y - m_pos.y) != sgn(m_v.y))
 		{
 			// If we've moved past one of the targets or we're
 			// walking against a wall, stop.
 
 			// Do not pop until the movement has finished.
-			if (!m_pos.path.empty()) m_pos.path.pop_front();
+			if (!m_pos.path.empty())
+			{
+				m_pos.path.pop_front();
+			}
+			else
+			{
+				// Only advance to the next point on the waypoint path
+				// if the previous point has been reached (the tiletype
+				// check satisfies this).
+				if (~m_tileType & TT_SOLID)
+				{
+					m_brdData.boardPath.advance();
+				}
+			}
 
-			if (!(m_tileType & TT_SOLID))
+			if (~m_tileType & TT_SOLID)
 			{
 				m_pos.x = m_pos.target.x;
 				m_pos.y = m_pos.target.y;
@@ -308,28 +374,38 @@ bool CSprite::findDiversion(void)
 	{
 		// m_path is empty for board paths.
 
+		// Create a local copy to preserve the current one.
+		SPR_BRDPATH path = m_brdData.boardPath;
 		DB_POINT pt = m_pos.target;
 		PF_PATH p;
-		do
+
+		// Note to self: are m_pos.target and path.getNextNode() different?
+
+		// Do [size + 1] iterations to include the initial target.
+		for (int i = 0; i <= path.size(); ++i, path.advance())
 		{
-			const int flags = (m_brdData.boardPath() ? PF_AVOID_SPRITE : PF_AVOID_SPRITE | PF_QUIT_BLOCKED);
+			// Pass PF_QUIT_BLOCKED for the last point.
+			const int flags = (path() ? PF_AVOID_SPRITE : PF_AVOID_SPRITE | PF_QUIT_BLOCKED);
 			p = pathFind(pt.x, pt.y, PF_PREVIOUS, flags);
 
 			if (!p.empty()) break;
 			else p.clear();
 
-			// boardPath() becomes false when the vector is finished.
-			pt = m_brdData.boardPath.getNextNode();
-			if (!m_brdData.boardPath()) break;
-
-		} while (pt != m_pos.target);
+			// Advance before obtaining node to preserve nextNode if path is found.
+			if (!path()) break;
+			pt = path.getNextNode();
+		}
 
 		if (p.empty())
 		{
-			m_tileType = TILE_TYPE(m_tileType | TT_SOLID);
+			// m_brdData.boardPath has not changed, hence the sprite
+			// can continue the path if it becomes free to move again.
 		}
 		else
 		{
+			// Update m_brdData.boardPath because a diversion was found.
+			m_brdData.boardPath = path;	
+
 			// Set the diversion.
 			setQueuedPath(p, false);
 			return true;
@@ -356,7 +432,6 @@ bool CSprite::findDiversion(void)
 		{
 			// Cannot resume.
 			clearQueue();
-			m_tileType = TILE_TYPE(m_tileType | TT_SOLID);
 		}
 		else
 		{
@@ -458,7 +533,6 @@ void CSprite::setPathTarget(void)
 	{
 		// Do not queue up the point - an empty queue signifies a board path.
 		m_pos.target = m_brdData.boardPath.getNextNode();
-//		m_pos.bIsPath = true;
 	}
 	else return;
 
@@ -484,7 +558,6 @@ void CSprite::parseQueuedMovements(const STRING str, const bool bClearQueue)
 
 	// Break out of the current movement.
 	if (bClearQueue) clearQueue();
-//	m_pos.bIsPath = true;
 
 	// Should step = 8 for pixel push?
 	const int step = (g_mainFile.pixelMovement == MF_PUSH_PIXEL ? moveSize() : 32);
@@ -533,7 +606,6 @@ void CSprite::clearQueue(void)
 	m_pos.target.x = m_pos.x;
 	m_pos.target.y = m_pos.y;
 	m_pos.path.clear();
-//	m_pos.bIsPath = false;
 }
 
 /*
@@ -621,7 +693,6 @@ void CSprite::setQueuedPath(PF_PATH &path, const bool bClearQueue)
 	{
 		m_pos.path.push_back(*i);
 	}
-//	m_pos.bIsPath = true;
 }
 
 /*
@@ -685,8 +756,6 @@ void CSprite::setPosition(int x, int y, const int l, const COORD_TYPE coord)
 	// Take this command to mean movement has halted.
 	m_pos.path.clear();
 	m_pos.loopFrame = LOOP_DONE;
-//	m_pos.bIsPath = false;
-
 }
 
 /*
@@ -766,12 +835,6 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 	// should have avoided collisions and negotiating any minor collisions
 	// on a path is tedious.
 
-	// #tbd: have a reduced interface for paths?
-	// #Need at the very least a containsPoint() on m_pos.target to 
-	// #prevent rpgcode paths wandering through walls.
-	if (m_pos.bIsPath) return TT_NORMAL;
-
-	// #m_pos.target even for paths - only testing the destination.
 	DB_POINT p = m_pos.target;
 	CVector sprBase = m_attr.vBase + p;
 	int layer = m_pos.l;				// Destination layer.
@@ -779,14 +842,13 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 	// Loop over the board CVectors and check for intersections.
 	for (std::vector<BRD_VECTOR>::iterator i = board->vectors.begin(); i != board->vectors.end(); ++i)
 	{
-		if (i->layer != m_pos.l) continue;
+		if (i->type == TT_UNDER || i->layer != m_pos.l) continue;
 
 		TILE_TYPE tt = TT_NORMAL;
 
 		// Check that the board vector contains the player,
 		// *not* the other way round!
-		// Disregard Under type, it has no effect in collisions.
-		if (i->type != TT_UNDER && i->pV->contains(sprBase, p))
+		if (i->pV->contains(sprBase, p))
 		{
 			tt = i->type;
 		}
@@ -834,12 +896,6 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 			 * is sliding.
 			 * Do not slide for tile movement though!
 			 */
-
-			// Could just miss all this angle stuff (also then p)? Since the potential targets
-			// are tested, the incident angle is largely irrelevant, unless we want
-			// movement to specifically occur for > 45 degrees (otherwise sliding in
-			// all circumstances.
-			// Depends upon resultant action in true pixel movement.
 
 			// Using the scalar (dot) product: a.b = |a||b|cos(c).
 			// |a| is the magnitude of a.
