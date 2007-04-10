@@ -1,15 +1,12 @@
-////////////////////////////////////////////////////////////////
-//
-// RPG Toolkit Development System, Version 3
-// Menu System
-// Developed by Christopher B. Matthews (Copyright 2003)
-//
-// This file is released under the AC Open License Derivative v 1.0
-// See "AC Open License Derivative.txt"
-//
-////////////////////////////////////////////////////////////////
-/////////////////////////////////////
-// Menu System
+/*
+ ********************************************************************
+ * The RPG Toolkit Version 3 Menu System
+ * This file copyright (C) 2003-2007  Christopher B. Matthews
+ ********************************************************************
+ *
+ * This file is released under the AC Open License Derivative v 1.0
+ * See "AC Open License Derivative.txt" for details
+ */
 
 #include "stdafx.h"
 #include "menu.h"

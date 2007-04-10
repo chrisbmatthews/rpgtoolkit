@@ -6,13 +6,15 @@
 --------------------Configuration: tkplugin - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2525.tmp" with contents
+Creating temporary file "C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP68.tmp" with contents
 [
 /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /FR"Release/" /Fp"Release/tkplugin.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\Program Files\GNU\WinCvs 2.0\tk3\vc\tk3menu\menu.cpp"
+"C:\CVS\Tk3 Source\vc\tk3menu\menu.cpp"
+"C:\CVS\Tk3 Source\vc\tk3menu\tkplugin.cpp"
+"C:\CVS\Tk3 Source\vc\tk3menu\tkpluginMenu.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2525.tmp" 
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2526.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP68.tmp" 
+Creating temporary file "C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP69.tmp" with contents
 [
 /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/tk3menu.pdb" /machine:I386 /def:".\tkplugin.def" /out:"Release/tk3menu.dll" /implib:"Release/tk3menu.lib" 
 ".\Release\menu.obj"
@@ -26,13 +28,16 @@ Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2526.tmp" with conte
 ".\Release\tkpluglocalfns.obj"
 ".\Release\tkplugin.res"
 ]
-Creating command line "link.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP2526.tmp"
+Creating command line "link.exe @C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP69.tmp"
 <h3>Output Window</h3>
 Compiling...
 menu.cpp
+tkplugin.cpp
+tkpluginMenu.cpp
+Generating Code...
 Linking...
    Creating library Release/tk3menu.lib and object Release/tk3menu.exp
-Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP252A.tmp" with contents
+Creating temporary file "C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP6F.tmp" with contents
 [
 /nologo /o"Release/tkplugin.bsc" 
 ".\Release\StdAfx.sbr"
@@ -44,7 +49,7 @@ Creating temporary file "C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP252A.tmp" with conte
 ".\Release\tkplugcallbacks.sbr"
 ".\Release\tkpluginbase.sbr"
 ".\Release\tkpluglocalfns.sbr"]
-Creating command line "bscmake.exe @C:\DOCUME~1\Colin\LOCALS~1\Temp\RSP252A.tmp"
+Creating command line "bscmake.exe @C:\DOCUME~1\JONATH~1\LOCALS~1\Temp\RSP6F.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 

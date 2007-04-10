@@ -1,26 +1,16 @@
-////////////////////////////////////////////////////////////////
-//
-// If you want your plugin to work, DO NOT MODIFY THIS FILE!
-//
-////////////////////////////////////////////////////////////////
-//
-// RPG Toolkit Development System, Version 3
-// Plugin Libraries
-// Developed by Christopher B. Matthews (Copyright 2003)
-//
-// This file is released under the AC Open License v 1.0
-// See "AC Open License.txt"
-//
-////////////////////////////////////////////////////////////////
-//
-// File:					tkpluglocalfns.h
-// Includes:			
-// Description:		Local Functions-- these functions are 
-//								provided as helper functions for your
-//								plugin.  Some are *required* by the
-//								plugin manager to be here.
-//
-////////////////////////////////////////////////////////////////
+/*
+ ********************************************************************
+ * The RPG Toolkit Version 3 Plugin Libraries
+ * This file copyright (C) 2003-2007  Christopher B. Matthews
+ ********************************************************************
+ *
+ * This file is released under the AC Open License v 1.0
+ * See "AC Open License.txt" for details
+ */
+
+/*
+ * To ensure the plugin works, do not modify this file.
+ */
 
 #include <string>
 

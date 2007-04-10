@@ -1,28 +1,12 @@
-////////////////////////////////////////////////////////////////
-//
-// YOU SHOULD MODIFY THIS FILE!!!!
-//
-////////////////////////////////////////////////////////////////
-//
-// RPG Toolkit Development System, Version 3
-// Plugin Libraries
-// Developed by Christopher B. Matthews (Copyright 2003)
-//
-// This file is released under the AC Open License v 1.0
-// See "AC Open License.txt"
-//
-////////////////////////////////////////////////////////////////
-//
-// File:					tkpluginMenu.cpp
-// Includes:			tkplugin.h
-//								stdafx.h
-// Description:		This file defines a few required exported 
-//								functions if the plugin will define a new Menu.
-//								You should edit these functions
-//								to cause your plugin to actually do something
-//								useful.
-//
-////////////////////////////////////////////////////////////////
+/*
+ ********************************************************************
+ * The RPG Toolkit Version 3 Plugin Libraries
+ * This file copyright (C) 2003-2007  Christopher B. Matthews
+ ********************************************************************
+ *
+ * This file is released under the AC Open License v 1.0
+ * See "AC Open License.txt" for details
+ */
 
 /*
  * Includes
