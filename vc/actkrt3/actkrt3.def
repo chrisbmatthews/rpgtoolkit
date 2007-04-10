@@ -142,11 +142,6 @@ EXPORTS
 	;DXDrawCanvasTranslucent	@132
 	;DXCopyScreenToCanvas	@133
 
-	;tkMD5...
-	MD5String			@150
-	MD5File				@151
-
-
 	;tkPLUG
 	PLUGInitSystem		@160
 	PLUGShutdownSystem	@161

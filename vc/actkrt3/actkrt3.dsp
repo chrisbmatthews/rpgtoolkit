@@ -280,42 +280,6 @@ SOURCE=..\tkCommon\tkCanvas\tkCanvas.cpp
 # End Source File
 # End Group
 # End Group
-# Begin Group "md5"
-
-# PROP Default_Filter ""
-# Begin Group "md5 - Source"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=".\md5-c\md5c.c"
-# End Source File
-# Begin Source File
-
-SOURCE=".\md5-c\mddriver.c"
-# End Source File
-# Begin Source File
-
-SOURCE=".\md5-c\tkmd5.cpp"
-# End Source File
-# End Group
-# Begin Group "md5 - Headers"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=".\md5-c\global.h"
-# End Source File
-# Begin Source File
-
-SOURCE=".\md5-c\md5.h"
-# End Source File
-# Begin Source File
-
-SOURCE=".\md5-c\tkmd5.h"
-# End Source File
-# End Group
-# End Group
 # Begin Group "tkPlug"
 
 # PROP Default_Filter ""
