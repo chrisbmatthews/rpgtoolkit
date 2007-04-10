@@ -1,6 +1,6 @@
 VERSION 5.00
-Object = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0"; "shdocvw.dll"
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0"; "SHDOCVW.dll"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmBrowser 
    Caption         =   "RPG Toolkit Browser"
    ClientHeight    =   5730
@@ -188,7 +188,7 @@ Begin VB.Form frmBrowser
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   "http:///"
+      Location        =   ""
    End
 End
 Attribute VB_Name = "frmBrowser"
@@ -196,9 +196,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, Christopher Matthews
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher B. Matthews
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Public StartingAddress As String
 Dim mbDontNavigateNow As Boolean
@@ -208,14 +221,14 @@ Public flip As Boolean  'flipper for title bar
 Private Sub brwWebBrowser_ProgressChange(ByVal Progress As Long, ByVal ProgressMax As Long)
     On Error Resume Next
     perc = Progress / ProgressMax
-    dw = Int(status.Width * perc)
-    Call vbPicFillRect(status, 0, 0, 1000, 1000, RGB(255, 255, 255))
-    Call vbPicFillRect(status, 0, 0, dw, 1000, RGB(0, 0, 255))
+    dw = Int(Status.Width * perc)
+    Call vbPicFillRect(Status, 0, 0, 1000, 1000, RGB(255, 255, 255))
+    Call vbPicFillRect(Status, 0, 0, dw, 1000, RGB(0, 0, 255))
 End Sub
 
 
 Private Sub brwWebBrowser_StatusTextChange(ByVal Text As String)
-    statustext.Caption = Text
+    StatusText.Caption = Text
 End Sub
 
 
@@ -319,19 +332,19 @@ Private Sub Form_Resize()
     cboAddress.Width = Me.ScaleWidth - 900
     brwWebBrowser.Width = Me.ScaleWidth - 100
     
-    statusbar.Top = Me.ScaleHeight - statusbar.Height - 50
-    statusbar.Width = brwWebBrowser.Width
-    statusbar.Left = brwWebBrowser.Left
-    statusbar.Left = 50
-    status.Left = statusbar.Width - status.Width - 70
-    statustext.Width = statusbar.Width - 300
+    StatusBar.Top = Me.ScaleHeight - StatusBar.Height - 50
+    StatusBar.Width = brwWebBrowser.Width
+    StatusBar.Left = brwWebBrowser.Left
+    StatusBar.Left = 50
+    Status.Left = StatusBar.Width - Status.Width - 70
+    StatusText.Width = StatusBar.Width - 300
     
     If Frame1.Visible = True Then
         brwWebBrowser.Top = Frame1.Top + Frame1.Height
-        brwWebBrowser.Height = Me.ScaleHeight - Frame1.Height - 800 - statusbar.Height
+        brwWebBrowser.Height = Me.ScaleHeight - Frame1.Height - 800 - StatusBar.Height
     Else
         brwWebBrowser.Top = 100
-        brwWebBrowser.Height = Me.ScaleHeight - 800 - statusbar.Height
+        brwWebBrowser.Height = Me.ScaleHeight - 800 - StatusBar.Height
     End If
 End Sub
 
@@ -345,7 +358,7 @@ Private Sub timTimer_Timer()
         timTimer.Enabled = False
         Me.Caption = "RPG Toolkit Browser [" + brwWebBrowser.LocationName + "]"
     Else
-        Me.Caption = "RPG Toolkit Browser [" + statustext.Caption + "]"
+        Me.Caption = "RPG Toolkit Browser [" + StatusText.Caption + "]"
     End If
 End Sub
 

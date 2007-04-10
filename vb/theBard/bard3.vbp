@@ -1,9 +1,8 @@
 Type=Exe
-Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\WINDOWS\System32\stdole2.tlb#OLE Automation
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\windows\System32\STDOLE2.TLB#OLE Automation
 Form=forms\mp3.frm
 Module=CommonPaths; ..\tkCommon\modules\CommonPaths.bas
 Module=CommonMedia; ..\tkCommon\modules\CommonMedia.bas
-Module=Module1; modules\errorhandler.bas
 Module=CommonDialogs; ..\tkCommon\modules\CommonDialogs.bas
 Module=CommonVB6Compat; ..\tkCommon\modules\CommonVB6Compat.bas
 Module=CommonTKAudiere; ..\tkCommon\modules\CommonTKAudiere.bas
