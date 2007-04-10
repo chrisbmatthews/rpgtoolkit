@@ -39,7 +39,7 @@ Public Const ITEM_WALK_SW = 6
 Public Const ITEM_WALK_SE = 7
 Public Const ITEM_REST = 8
 
-Private Const ITM_MINOR = 7         'Minor version, 3.0.7 (vectors)
+Private Const ITM_MINOR = 7         'Minor version, 3.1.0 (vectors)
 
 '=========================================================================
 ' An item
@@ -84,7 +84,7 @@ Public Type TKItem
     
     loopSpeed As Long               '.speed converted to loops (3.0.5)
     
-    vBase As CVector                'Interaction vectors - 3.0.7
+    vBase As CVector                'Interaction vectors - 3.1.0
     vActivate As CVector
     
 #If isToolkit = 0 Then

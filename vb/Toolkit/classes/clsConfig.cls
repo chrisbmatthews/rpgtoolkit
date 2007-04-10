@@ -126,7 +126,7 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
             lastTileset = BinReadString(num)
             grabTips = BinReadInt(num)
             advTilesetTips = BinReadInt(num)
-            a = BinReadInt(num)  'removed: board toolbar preference [3.0.7]
+            a = BinReadInt(num)  'removed: board toolbar preference [3.1.0]
             If EOF(num) Then
                 tutCurrentLesson = 0
             Else
@@ -167,7 +167,7 @@ Private Sub openConfig(Optional ByVal file As String = CONFIG_FILE)
     ' Config related, but not actually in the config file.
     If (GetSetting("RPGToolkit3", "Installation", "Previous", "0") = "1") Then
         ' The above setting will be set by the installer when it detects the
-        ' previous installation of a pre-3.0.7 version.
+        ' previous installation of a pre-3.1.0 version.
         Call frmRpgCodeUpdate.Show(vbModal)
     End If
 
@@ -209,7 +209,7 @@ Public Sub saveConfig(Optional ByVal file As String = CONFIG_FILE)
         Call BinWriteString(num, lastTileset)
         Call BinWriteInt(num, grabTips)
         Call BinWriteInt(num, advTilesetTips)
-        Call BinWriteInt(num, 0) 'removed: board toolbar preference [3.0.7]
+        Call BinWriteInt(num, 0) 'removed: board toolbar preference [3.1.0]
         Call BinWriteInt(num, 1)
     Close num
 

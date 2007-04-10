@@ -331,7 +331,7 @@ Private Sub apply(): On Error Resume Next
     Set light = activeBoard.toolbarGetCurrent(BS_LIGHTING)
     If Not light Is Nothing Then
     
-        '3.0.7: place all lights on the single tile shade layer.
+        '3.1.0: place all lights on the single tile shade layer.
         light.layer = Abs(val(txtLayer.Text))
         light.eType = cmbLightType.ListIndex
         Call populate(cmbLights.ListIndex, light)

@@ -133,7 +133,7 @@ Public Type TKMain
     resY As Long                      'custom y resolution
     bFpsInTitleBar As Byte            'show FPS in the title bar?
     
-    '3.0.7
+    '3.1.0
     pfHeuristic As Integer            'Default pathfinding heuristic.
     drawVectors As Long               'Draw vectors? See eCVDrawVectors.
     pathColor As Long                 'Path and destination colour for selected player.
@@ -149,7 +149,7 @@ Public Const COLOR16 As Byte = 0      '16-bit color
 Public Const COLOR24 As Byte = 1      '24-bit color
 Public Const COLOR32 As Byte = 2      '32-bit color
 
-Private Const MF_MINOR = 9         '3.0.7
+Private Const MF_MINOR = 9         '3.1.0
 
 '=========================================================================
 ' Store a gamespeed value between -127 and +127 in the mainMem byte.
@@ -778,7 +778,7 @@ Public Sub MainClear(ByRef theMain As TKMain)
         .transpcolor = RGB(255, 0, 0)
         .bFpsInTitleBar = 0
         
-        '3.0.7
+        '3.1.0
         .pfHeuristic = PF_AXIAL
         .drawVectors = 0
         .pathColor = RGB(255, 255, 255)

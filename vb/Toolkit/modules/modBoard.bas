@@ -147,7 +147,7 @@ End Type
 '=========================================================================
 Public Type TKBoard
 
-    ' 3.0.7 Following block ordered for actkrt (see CBoard.h)
+    ' 3.1.0 Following block ordered for actkrt (see CBoard.h)
     sizex As Integer                      'board size x
     sizey As Integer                      'board size y
     sizeL As Integer                      'board size layer
@@ -245,7 +245,7 @@ End Enum
 ' A board editor document
 '=========================================================================
 Public Type TKBoardEditorData
-    '3.0.7
+    '3.1.0
     ' Following block ordered for actkrt
     pCBoard As Long                       'pointer to associated CBoard in actkrt
     optSetting As eBrdSetting

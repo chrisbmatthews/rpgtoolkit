@@ -1,7 +1,7 @@
 VERSION 5.00
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "tabctl32.ocx"
 Begin VB.Form frmBoardEdit 
-   Caption         =   "frmBoardEdit"
+   Caption         =   "Board Editor"
    ClientHeight    =   6405
    ClientLeft      =   60
    ClientTop       =   750
@@ -3449,7 +3449,7 @@ Public Sub spriteUpdateImageData(ByRef spr As CBoardSprite, ByVal filename As St
             Call OpenTileBitmap(projectPath & bmpPath & img.filename, tbm)
             Call CNVResize(img.pCnv, picBoard.hdc, tbm.sizex * 32, tbm.sizey * 32)
             Call DrawTileBitmapCNV(img.pCnv, -1, 0, 0, tbm)
-            img.transpcolor = RGB(255, 0, 255) 'TRANSP_COLOR
+            img.transpcolor = 0
         End If
     End If
     spr.filename = filename
@@ -3843,7 +3843,7 @@ Private Sub toolbarPopulateLighting() ':on error resume next
 
     'BTAB_LIGHTING holds two lists: .tileShading and .lights, so there is an issue
     'with which list m_ed.currentObject(BTAB_LIGHTING) refers to.
-    'However .tileShading only holds a single element as of 3.0.7, so m_ed.currentObject will
+    'However .tileShading only holds a single element as of 3.1.0, so m_ed.currentObject will
     'hold the *selected lighting object*.
                 
     'Populate lighting objects.

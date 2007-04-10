@@ -2293,13 +2293,13 @@ Begin VB.MDIForm tkMainForm
             Style           =   6
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "18/03/2007"
+            TextSave        =   "10/04/2007"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "21:45"
+            TextSave        =   "16:09"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             AutoSize        =   1
@@ -3227,7 +3227,7 @@ Private Sub MDIForm_Load(): On Error Resume Next
         Call traceString("Done opening project..." + gamPath$ & configfile.lastProject$)
         mainFile$ = configfile.lastProject$
         loadedMainFile = mainFile
-        tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" + configfile.lastProject$ + ")"
+        tkMainForm.Caption = "RPG Toolkit Development System, Version 3 (" + configfile.lastProject$ + ")"
         Call tvReset
     Else
         loadedMainFile = configfile.lastProject
@@ -3318,7 +3318,7 @@ Public Sub mnuOpenProject_Click(): On Error Resume Next
     editmainfile.Show
     
     configfile.lastProject = antiPath
-    tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" & antiPath & ")"
+    tkMainForm.Caption = "RPG Toolkit Development System, Version 3 (" & antiPath & ")"
     
     Call tvReset                      'Reset file tree.
     
@@ -3374,7 +3374,7 @@ End Sub
 
 Public Sub newprojectmnu_Click(): On Error Resume Next
     Call newGame.Show(1)
-    tkMainForm.Caption = "RPG Toolkit Development System, Version 3.0 (" & mainFile & ")"
+    tkMainForm.Caption = "RPG Toolkit Development System, Version 3 (" & mainFile & ")"
     Call editmainfile.Show
     Call tvReset                'Reset file tree.
 End Sub

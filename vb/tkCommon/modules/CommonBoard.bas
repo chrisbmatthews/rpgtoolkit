@@ -33,7 +33,7 @@ Private Declare Function BRDIsometricTransform Lib "actkrt3.dll" (ByRef x As Dou
 '=========================================================================
 Private Const FILE_HEADER = "RPGTLKIT BOARD"
 
-Private Const BRD_MINOR = 4               'Current minor version (3.0.7)
+Private Const BRD_MINOR = 4               'Current minor version (3.1.0)
 Private Const MAX_INTEGER = &H7FFF
 
 '=========================================================================
@@ -484,7 +484,7 @@ Public Function openBoard(ByVal fileOpen As String, ByRef ed As TKBoardEditorDat
             End Select
 
 vVersion:
-            '3.0.7 - vector collision implementation.
+            '3.1.0 - vector collision implementation.
         
             .sizex = BinReadInt(num)
             .sizey = BinReadInt(num)
@@ -940,7 +940,7 @@ exitForC:
                 .layerTitles(i) = BinReadString(num)  'Layer titles
             Next i
             
-            '3.0.7 - load programs into CBoardProgram structures.
+            '3.1.0 - load programs into CBoardProgram structures.
             Dim numPrg As Long, ubPrgs As Long
             numPrg = BinReadInt(num)    'ubound on number of programs written to file.
             
@@ -972,7 +972,7 @@ exitForC:
             .enterPrg = BinReadString(num)      'program to run on entrance
             strUnused = BinReadString(num)      'background program (depreciated)
             
-            '3.0.7 - load into TKBoardSprite structures.
+            '3.1.0 - load into TKBoardSprite structures.
             Dim numItm As Long, ubSprs As Long
             numItm = BinReadInt(num)            'The number of written item slots.
             
@@ -1029,7 +1029,7 @@ exitForC:
 
         Close num
         
-        '3.0.7 - generate program bases after coordinate type is read.
+        '3.1.0 - generate program bases after coordinate type is read.
         For i = 0 To UBound(.prgs)
             If Not .prgs(i) Is Nothing Then
                 If .prgs(i).filename <> vbNullString Then
@@ -1040,7 +1040,7 @@ exitForC:
             End If
         Next i
         
-        '3.0.7 - update item locations to pixel values.
+        '3.1.0 - update item locations to pixel values.
         For i = 0 To UBound(.sprites)
             If Not .sprites(i) Is Nothing Then
                 Dim pt As POINTAPI
@@ -1051,10 +1051,10 @@ exitForC:
             End If
         Next i
         
-        '3.0.7 - vectorise the tiletypes.
+        '3.1.0 - vectorise the tiletypes.
         Call vectorize(ed)
          
-        '3.0.7 - upgrade tile lighting.
+        '3.1.0 - upgrade tile lighting.
         For z = 1 To .sizeL
             For y = 1 To .sizey
                 For x = 1 To .sizex
@@ -1070,7 +1070,7 @@ exitForC:
             Next y
         Next z
         
-        '3.0.7 - convert player start location to pixel coordinates.
+        '3.1.0 - convert player start location to pixel coordinates.
         pt = modBoard.tileToBoardPixel(.startX, .startY, .coordType, True, .sizex)
         .startX = pt.x
         .startY = pt.y
@@ -1093,7 +1093,7 @@ End Function
 Public Sub boardInitialise(ByRef board As TKBoard): On Error Resume Next
     
     With board
-        '3.0.7
+        '3.1.0
         ReDim .vectors(0)
         ReDim .prgs(0)
         ReDim .spriteImages(0)
@@ -1112,7 +1112,7 @@ Public Sub boardInitialise(ByRef board As TKBoard): On Error Resume Next
         ReDim .lights(0)                    'Lighting objects.
         Set .lights(0) = Nothing
 
-        'Pre 3.0.7
+        'Pre 3.1.0
         ReDim .tileIndex(0)
         ReDim .board(1, 1, 1)
         ReDim .directionalLinks(3)

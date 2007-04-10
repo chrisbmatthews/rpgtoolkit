@@ -29,55 +29,33 @@ Begin VB.Form frmMain
    Tag             =   "1092"
    Begin VB.Timer Timer1 
       Interval        =   1800
-      Left            =   1080
-      Top             =   2160
+      Left            =   5040
+      Top             =   1560
    End
    Begin VB.Label Label3 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Release 3.0.6 (March 2005)"
+      Caption         =   "Release 3.1.0 (2007)"
       ForeColor       =   &H00000000&
       Height          =   255
-      Left            =   120
-      TabIndex        =   2
-      Top             =   2880
-      Width           =   2775
-   End
-   Begin VB.Label Label2 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "Professional Edition [Registered]"
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
-      Height          =   495
-      Left            =   120
+      Left            =   3960
       TabIndex        =   1
-      Tag             =   "1093"
-      Top             =   3120
-      Width           =   2415
+      Top             =   3240
+      Width           =   1815
    End
    Begin VB.Label Label1 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "Copyright 2005 By Christopher Matthews and the TK3 Dev Team"
+      Caption         =   "Copyright (C) 2004, 2005, 2006, 2007 By the TK3 Dev Team and contributors"
       ForeColor       =   &H00000000&
-      Height          =   375
-      Left            =   240
+      Height          =   615
+      Left            =   120
       TabIndex        =   0
       Tag             =   "1094"
-      Top             =   960
-      Width           =   5535
+      Top             =   3000
+      Width           =   2535
    End
 End
 Attribute VB_Name = "frmMain"

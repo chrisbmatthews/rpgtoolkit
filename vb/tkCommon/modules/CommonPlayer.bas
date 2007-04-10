@@ -96,7 +96,7 @@ Public Type TKPlayer
     
     loopSpeed As Long               '.speed converted to loops
     
-    vBase As CVector                'Interaction vectors - 3.0.7
+    vBase As CVector                'Interaction vectors - 3.1.0
     vActivate As CVector
 
 #If (isToolkit = 0) Then            '--Trans3 only
@@ -120,7 +120,7 @@ Public Type playerDoc
 #End If
 End Type
 
-Private Const CHR_MINOR = 8         'Character format minor version (3.0.7)
+Private Const CHR_MINOR = 8         'Character format minor version (3.1.0)
 
 '=========================================================================
 ' Add a custom graphic to a player
