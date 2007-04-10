@@ -1,7 +1,20 @@
 Attribute VB_Name = "modPaths"
-'All contents copyright 2003, Christopher Matthews
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher B. Matthews
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
 
 Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
 Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
@@ -23,7 +36,7 @@ Private Type STARTUPINFO
    dwXCountChars As Long
    dwYCountChars As Long
    dwFillAttribute As Long
-   dwflags As Long
+   dwFlags As Long
    wShowWindow As Integer
    cbReserved2 As Integer
    lpReserved2 As Long
@@ -118,7 +131,7 @@ Private Declare Function SHGetSpecialFolderLocation Lib "Shell32.dll" _
 Private Declare Function SHGetSpecialFolderLocationD Lib "Shell32.dll" Alias _
         "SHGetSpecialFolderLocation" (ByVal hwndOwner As Long, ByVal nFolder As Long, _
         ByRef ppidl As Long) As Long
-Private Declare Function SHAddToRecentDocs Lib "Shell32.dll" (ByVal dwflags As Long, _
+Private Declare Function SHAddToRecentDocs Lib "Shell32.dll" (ByVal dwFlags As Long, _
         ByVal dwdata As String) As Long
 Private Declare Function SHFileOperation Lib "Shell32.dll" Alias "SHFileOperationA" _
         (lpFileOp As SHFILEOPSTRUCT) As Long
