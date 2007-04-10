@@ -52,7 +52,7 @@ bool tagTileAnim::open(const STRING fileName)
 	file >> frameDelay;
 
 	// Convert the file's "frame pause" into a millisecond delay.
-	// (The editor (as of 3.0.7 and before) stores the value of
+	// (The editor (as of 3.1.0 and before) stores the value of
 	// a scrollbar whose maximum value of 200 corresponds to an intended
 	// delay of 5ms, and minimum of 1, corresponding to 1000ms.)
 	frameDelay = MILLISECONDS / double(frameDelay);

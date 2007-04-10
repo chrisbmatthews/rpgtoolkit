@@ -270,7 +270,7 @@ void loadSaveState(const STRING str)
 		if (minorVer >= 4)
 		{
 			file >> active;
-			ct = PX_ABSOLUTE;			// Pre-3.0.7, location stored in tiles.
+			ct = PX_ABSOLUTE;			// Pre-3.1.0, location stored in tiles.
 		}
 		if (i < g_players.size() && g_players[i])
 		{
@@ -315,7 +315,7 @@ void loadSaveState(const STRING str)
 	g_pSelectedPlayer->swapGraphics(newPlayerName);
 
 	// Item restoration - restore all board items from the save state
-	// rather than from the board data. (3.0.7)
+	// rather than from the board data. (3.1.0)
 	if (minorVer >= 4)
 	{
 		g_pBoard->freeItems();
@@ -380,7 +380,7 @@ void loadSaveState(const STRING str)
 
 		if (minorVer < 4)
 		{
-			// In 3.0.7, the position is not saved here. It is saved
+			// In 3.1.0, the position is not saved here. It is saved
 			// as part of the state data (see below).
 			int pos;
 			file >> pos;
@@ -427,7 +427,7 @@ void loadSaveState(const STRING str)
 
 		if (minorVer >= 4)
 		{
-			// If this save file is from 3.0.7 or later, we can
+			// If this save file is from 3.1.0 or later, we can
 			// reconstruct the program's state. Otherwise, we do
 			// not have enough information to reconstruct, so we
 			// won't attempt it.
@@ -529,7 +529,7 @@ void saveSaveState(const STRING fileName)
 	// Header
 	file << _T("RPGTLKIT SAVE");
 	file << short(3);				// Major version
-	file << short(4);				// Minor version - 4 as of 3.0.7
+	file << short(4);				// Minor version - 4 as of 3.1.0
 
 	unsigned int i = 0;
 

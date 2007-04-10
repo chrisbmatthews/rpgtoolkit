@@ -20,7 +20,7 @@
  */
 
 //-------------------------------------------------------------------------
-// Status as of 3.0.7 (8/2006)
+// Status as of 3.1.0 (8/2006)
 // This file contains the remnants of Tk2's graphics engine
 // shared between trans3 and toolkit3.
 // Some elements are obselete and have been superseded by CTile.

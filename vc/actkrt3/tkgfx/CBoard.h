@@ -128,8 +128,8 @@ typedef struct tagVBBoard
 
 	LPSAFEARRAY tileType;				// Tiletypes (3.0.6- boards only)
 
-	LPSAFEARRAY tileShading;			// Tile shading (3.0.7+)
-	LPSAFEARRAY lights;					// Lighting (3.0.7+)
+	LPSAFEARRAY tileShading;			// Tile shading (3.1.0+)
+	LPSAFEARRAY lights;					// Lighting (3.1.0+)
 
 	LPSAFEARRAY images;					// Array of tagVBBoardImages.
 	LPSAFEARRAY spriteImages;			// tagVBBoardImages for sprites.

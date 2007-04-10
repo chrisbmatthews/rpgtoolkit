@@ -2381,7 +2381,7 @@ void createitem(CALL_DATA &params)
 	 * broke code that was passing in a variable to be set.
 	 *
 	 * Thus, to preserve backwards compatibility with both systems,
-	 * and provide predictable behaviour, 3.0.7 must support both
+	 * and provide predictable behaviour, 3.1.0 must support both
 	 * methods in a way that does not break any code. The solution
 	 * is to check whether a var has been passed for the second
 	 * parameter, if a second parameter has been given. If the
@@ -2741,7 +2741,7 @@ void sourcelocation(CALL_DATA &params)
 		getFighterIndices(pFighter, party, idx);
 		if (!g_pFightPlugin->getFighterLocation(party, idx, dx, dy))
 		{
-			// This call is only supported in the 3.0.7 version of the default
+			// This call is only supported in the 3.1.0 version of the default
 			// battle system. The readme will explain how to copy in the new
 			// dll from the "basic" folder. If for some reason the call does
 			// not succeed, we return -1 for both coords.
@@ -2791,7 +2791,7 @@ void targetlocation(CALL_DATA &params)
 		getFighterIndices(pFighter, party, idx);
 		if (!g_pFightPlugin->getFighterLocation(party, idx, dx, dy))
 		{
-			// This call is only supported in the 3.0.7 version of the default
+			// This call is only supported in the 3.1.0 version of the default
 			// battle system. The readme will explain how to copy in the new
 			// dll from the "basic" folder. If for some reason the call does
 			// not succeed, we return -1 for both coords.
@@ -4029,7 +4029,7 @@ void itemcount(CALL_DATA &params)
 /*
  * callplayerswap(...)
  * 
- * Unimplemented in 3.0.7.
+ * Unimplemented in 3.1.0.
  */
 void callplayerswap(CALL_DATA &params)
 {
@@ -6682,7 +6682,7 @@ void multiRunEnd(CProgram *prg)
 /*
  * shopcolors(int index, int r, int g, int b)
  * 
- * Set the colors used in CallShop(). This function is obselete from 3.0.7.
+ * Set the colors used in CallShop(). This function is obselete from 3.1.0.
  */
 void shopcolors(CALL_DATA &params)
 {

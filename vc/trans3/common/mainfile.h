@@ -93,7 +93,7 @@ typedef struct tagMainFile
     int resY;							// Custom y resolution.
     char bFpsInTitleBar;				// Show FPS in the title bar?
 
-	// 3.0.7:
+	// 3.1.0:
 	short pfHeuristic;					// Default heuristic for pathfinding.
 	int drawVectors;					// Draw board vectors? See CV_DRAW_VECTORS.
 	int pathColor;						// Selected player path and destination colour.

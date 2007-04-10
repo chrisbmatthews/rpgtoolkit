@@ -95,7 +95,7 @@ STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 	const unsigned int last = var.length() - 1;
 	if (var[last] == '$')
 	{
-		// Expensive, but no cost to 3.0.7 coders.
+		// Expensive, but no cost to 3.1.0 coders.
 		var = var.substr(0, last);
 	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
@@ -111,7 +111,7 @@ STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 	const unsigned int last = var.length() - 1;
 	if (var[last] == '!')
 	{
-		// Expensive, but no cost to 3.0.7 coders.
+		// Expensive, but no cost to 3.1.0 coders.
 		var = var.substr(0, last);
 	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
@@ -125,7 +125,7 @@ STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 	const unsigned int last = var.length() - 1;
 	if (var[last] == '$')
 	{
-		// Expensive, but no cost to 3.0.7 coders.
+		// Expensive, but no cost to 3.1.0 coders.
 		var = var.substr(0, last);
 	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
@@ -140,7 +140,7 @@ STDMETHODIMP CCallbacks::CBSetNumerical(BSTR varname, double newValue)
 	const unsigned int last = var.length() - 1;
 	if (var[last] == '!')
 	{
-		// Expensive, but no cost to 3.0.7 coders.
+		// Expensive, but no cost to 3.1.0 coders.
 		var = var.substr(0, last);
 	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
@@ -2980,7 +2980,7 @@ STDMETHODIMP CCallbacks::CBAnimationCurrentFrame(int idx, int *pRet)
 
 STDMETHODIMP CCallbacks::CBAnimationMaxFrames(int idx, int *pRet)
 {
-	// Pre-3.0.7, frameCount stored the UBound, rather than the count, hence (frameCount - 1).
+	// Pre-3.1.0, frameCount stored the UBound, rather than the count, hence (frameCount - 1).
 	CSharedAnimation *p = CSharedAnimation::cast(idx);
 	*pRet = (p ? p->m_pAnm->data()->frameCount - 1 : -1);
 	return S_OK;

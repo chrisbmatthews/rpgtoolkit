@@ -100,7 +100,7 @@ bool tagBoard::open(const STRING fileName, const bool startThreads)
 
 vVersion:
 	{
-		// 3.0.7 vector implementation.
+		// 3.1.0 vector implementation.
 
 		short var;
 		file >> var; sizeX = int(var);

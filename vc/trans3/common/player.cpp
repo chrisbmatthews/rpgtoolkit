@@ -257,7 +257,7 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 				short count = 0, pts = 0;
 				int x = 0, y = 0, i = 0;
 
-				// Number of vectors (= 2 for 3.0.7; provision for further.)
+				// Number of vectors (= 2 for 3.1.0; provision for further.)
 				file >> count;
 
 				spriteAttr.vBase = spriteAttr.vActivate = CVector();
