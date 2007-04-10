@@ -484,6 +484,7 @@ End Sub
 '==========================================================================
 Public Sub saveFile(): On Error Resume Next
     Call Show
+    Call Form_Activate
     Call SavePrgMnu_Click
 End Sub
 
