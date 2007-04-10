@@ -1,12 +1,29 @@
 Attribute VB_Name = "MODULE11"
-'All contents copyright 2003, Christopher Matthews
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher B. Matthews
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
+
+'========================================================================
+' Game publisher helper program (non-pak/exe)
+'========================================================================
 
 'Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
 
 'for supporting libraries...
-Public CurrentVersion As String
+Public currentVersion As String
 Public gGameState As Long
 Public gPrevGameState As Long
 Public m_LangFile As String
@@ -291,7 +308,7 @@ End Sub
 Sub copyProgramFiles()
     'required program files...
     On Error Resume Next
-    ChDir (App.Path)
+    ChDir (App.path)
     'ChDir (destdir$)
     src$ = destdir$
 
@@ -358,7 +375,7 @@ End Sub
 Sub copyRunTime()
     'Installs run time files into temp
 On Error Resume Next
-    ChDir (App.Path)
+    ChDir (App.path)
     
     If fileExists(destdir$ + "ctl3d32.dll") Then
         res = InstallFile(destdir$ + "ctl3d32.dll", temppath$ + "ctl3d32.dll")
@@ -454,22 +471,22 @@ aa$ = temppath$
 MkDir Mid$(aa$, 1, Len(aa$) - 1)
 
 'copy the zip.exe program to temp...
-FileCopy App.Path + "\" + "zip.zip", temppath$ + "zip.zip"
+FileCopy App.path + "\" + "zip.zip", temppath$ + "zip.zip"
 'FileCopy destdir$ + "\" + "zip.exe", temppath$ + "zip.exe"
 
 'delete zip.exe from the app path...
-Kill App.Path + "\" + "zip.zip"
+Kill App.path + "\" + "zip.zip"
 'Kill destdir$ + "\" + "zip.exe"
 
 'copy the setup program into temp...
-FileCopy App.Path + "\setup.exe", temppath$ + "setup.exe"
+FileCopy App.path + "\setup.exe", temppath$ + "setup.exe"
 'FileCopy destdir$ + "\setup.exe", temppath$ + "setup.exe"
 'copy the setup program into temp...
-FileCopy App.Path + "\phase2.exe", temppath$ + "phase2.exe"
+FileCopy App.path + "\phase2.exe", temppath$ + "phase2.exe"
 'FileCopy destdir$ + "\phase2.exe", temppath$ + "phase2.exe"
 
 'copy the zip dll into temp...
-FileCopy App.Path + "\tkzip.dll", temppath$ + "tkzip.dll"
+FileCopy App.path + "\tkzip.dll", temppath$ + "tkzip.dll"
 
 'copy the sidebar image into temp...
 FileCopy sideBarImage, temppath$ + RemovePath(sideBarImage)
@@ -477,7 +494,7 @@ FileCopy sideBarImage, temppath$ + RemovePath(sideBarImage)
 Call createInfoFile
 
 'copy eula.txt...
-FileCopy App.Path + "\eula.txt", temppath$ + "eula.txt"
+FileCopy App.path + "\eula.txt", temppath$ + "eula.txt"
 'FileCopy destdir$ + "\eula.txt", temppath$ + "eula.txt"
 
 'now copy system files into temp:
@@ -814,4 +831,3 @@ Function unresolve(dfile$)
     If part$ = "\" Then d$ = Mid$(d$, 1, Length - 1)
     unresolve = d$
 End Function
-

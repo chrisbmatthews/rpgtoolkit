@@ -263,37 +263,54 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'All contents copyright 2003, Christopher Matthews
-'All rights reserved.  YOU MAY NOT REMOVE THIS NOTICE.
-'Read LICENSE.txt for licensing info
+'========================================================================
+' The RPG Toolkit, Version 3
+' This file copyright (C) 2007 Christopher B. Matthews
+'========================================================================
+'
+' This program is free software; you can redistribute it and/or
+' modify it under the terms of the GNU General Public License
+' as published by the Free Software Foundation; either version 2
+' of the License, or (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+'========================================================================
+
+'========================================================================
+' Game publisher helper program (non-pak/exe)
+'========================================================================
 
 Private Sub Command1_Click()
 On Error GoTo insterr
     destfile$ = getDest()
     If destfile$ = "" Then Exit Sub
     winsys$ = SystemDir
-    destdir$ = toolkitbox.text
-    defaultdir$ = defaultdirbox.text
-    mainfile$ = titlebox.text
+    destdir$ = toolkitbox.Text
+    defaultdir$ = defaultdirbox.Text
+    mainFile$ = titlebox.Text
 
-    If mainfile$ = "Click Here" Or mainfile$ = "" Then
+    If mainFile$ = "Click Here" Or mainFile$ = "" Then
         MsgBox "Please Select The Main File"
         Exit Sub
     End If
     
-    ex$ = GetExt(mainfile$)
+    ex$ = GetExt(mainFile$)
     If UCase$(ex$) = "GAM" Then
         Call openMain(fileChosen$, mainMem)
     End If
     
     If destdir$ = "" Then
         MsgBox "Please Fill In The Toolkit Directory!!!"
-        toolkitbox.text = LCase$(App.Path)
+        toolkitbox.Text = LCase$(App.path)
         Exit Sub
     End If
     If defaultdir$ = "" Then
         MsgBox "Please Fill In The Default Directory!!!"
-        defaultdirbox.text = "C:\Program Files\MyGame\"
+        defaultdirbox.Text = "C:\Program Files\MyGame\"
         Exit Sub
     End If
     winsys$ = resolve(winsys$)
@@ -324,20 +341,20 @@ Private Sub Command3_Click()
     dlg.strDefaultExt = "gam"
     dlg.strFileTypes = "Supported Types|*.gam;*.tpk;*.exe|Main file (*.gam)|*.gam|RPG Toolkit PakFile (*.tpk)|*.tpk|RPG Toolkit EXE (*.exe)|*.exe|All files(*.*)|*.*"
     If OpenFileDialog(dlg) Then
-        Filename$ = dlg.strSelectedFile
+        filename$ = dlg.strSelectedFile
         antipath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
     End If
     ChDir (currentdir$)
     
-    If Filename$ = "" Then Exit Sub
-    ex$ = GetExt(Filename$)
+    If filename$ = "" Then Exit Sub
+    ex$ = GetExt(filename$)
     If UCase$(ex$) = "GAM" Then
-        Call openMain(Filename$, mainMem)
+        Call openMain(filename$, mainMem)
     End If
-    fileChosen$ = Filename$
-    titlebox.text = Filename$
+    fileChosen$ = filename$
+    titlebox.Text = filename$
 End Sub
 
 Private Sub Command4_Click()
@@ -351,22 +368,22 @@ Private Sub Command4_Click()
     dlg.strDefaultExt = "jpg"
     dlg.strFileTypes = "Supported Types|*.jpg;*.jpeg;*.gif;*.bmp|JPEG Image (*.jpg)|*.jpg;*;jpeg|GIF Image (*.gif)|*.gif|Window Bitmap (*.bmp)|*.bmp|All files(*.*)|*.*"
     If OpenFileDialog(dlg) Then
-        Filename$ = dlg.strSelectedFile
+        filename$ = dlg.strSelectedFile
         antipath$ = dlg.strSelectedFileNoPath
     Else
         Exit Sub
     End If
     ChDir (currentdir$)
     
-    If Filename$ = "" Then Exit Sub
-    sideBarImage = Filename$
-    Text1.text = Filename$
+    If filename$ = "" Then Exit Sub
+    sideBarImage = filename$
+    Text1.Text = filename$
 End Sub
 
 Private Sub Form_Load()
 zippath$ = "Zip\"
 currentdir$ = CurDir$
-toolkitbox.text = LCase$(CurDir$)
+toolkitbox.Text = LCase$(CurDir$)
 registered = 1
 'windowssystembox.Text = SystemDir()
 Call testZIPdll
@@ -377,10 +394,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub Text1_Change()
-    sideBarImage = Text1.text
+    sideBarImage = Text1.Text
 End Sub
 
 Private Sub titlebox_Change()
-    fileChosen$ = titlebox.text
+    fileChosen$ = titlebox.Text
 End Sub
 
