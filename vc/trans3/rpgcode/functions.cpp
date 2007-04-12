@@ -1509,8 +1509,9 @@ void random(CALL_DATA &params)
 	{
 		throw CError(_T("Random() requires one or two parameters."));
 	}
+	const int max = int(params[0].getNum());
 	params.ret().udt = UDT_NUM;
-	params.ret().num = (rand() % int(params[0].getNum())) + 1;
+	params.ret().num = (max ? (rand() % max) + 1 : 1);
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -7621,6 +7622,23 @@ void itemgetpath(CALL_DATA &params)
 	spritegetpath(p, params);
 }
 
+/* 
+ * void spriteTranslucency(int percent)
+ * int spriteTranslucency(void)
+ *
+ * Set the degree to which sprites drawn underneath other objects are visible.
+ * Specify a value between 0 (invisible) and 100 (opaque).
+ */
+void spriteTranslucency(CALL_DATA &params)
+{
+	if (params.params == 1)
+	{
+		g_spriteTranslucency = params[0].getNum() / 100.0;
+	}
+	params.ret().udt = UDT_NUM;
+	params.ret().num = g_spriteTranslucency * 100.0;
+}
+
 // Get a numerical stack frame.
 inline STACK_FRAME makeNumStackFrame(const double num)
 {
@@ -7901,6 +7919,7 @@ void initRpgCode()
 	CProgram::addFunction(_T("canvasdrawpart"), canvasDrawPart);
 	CProgram::addFunction(_T("canvasgetscreen"), canvasGetScreen);
 	CProgram::addFunction(_T("setambientlevel"), setambientlevel);
+	CProgram::addFunction(_T("spritetranslucency"), spriteTranslucency);
 
 	// Vector movement functions.
 	CProgram::addFunction(_T("itempath"), itempath);
