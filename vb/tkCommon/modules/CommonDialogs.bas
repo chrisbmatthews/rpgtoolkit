@@ -334,6 +334,51 @@ Public Function browseFileDialog( _
 End Function
 
 '=========================================================================
+' As above, accepting multiple default directories
+'=========================================================================
+Public Function browseFileDialogArray( _
+    ByVal hwndParent As Long, _
+    ByVal windowTitle As String, _
+    ByRef defaultPath() As String, _
+    ByRef defaultExt() As String, _
+    ByVal fileTypes As String, _
+    ByRef returnPath As String) As Boolean ': on error resume next
+
+    If UBound(defaultPath) <> UBound(defaultExt) Then Exit Function
+
+    Dim dlg As FileDialogInfo, i As Long, ext As String
+    With dlg
+        .strDefaultFolder = projectPath
+        .strTitle = windowTitle
+        .strDefaultExt = vbNullString
+        .strFileTypes = fileTypes
+    End With
+    ChDir (currentDir)
+    If Not OpenFileDialog(dlg, hwndParent) Then Exit Function
+    
+    'If no filename entered, exit.
+    If LenB(dlg.strSelectedFile) = 0 Then Exit Function
+
+    ext = LCase$(GetExt(dlg.strSelectedFile))
+    For i = 0 To UBound(defaultExt)
+        If InStr(1, defaultExt(i), ext) Then Exit For
+    Next i
+    If i > UBound(defaultExt) Then Exit Function
+
+    'Preserve the path if a sub-folder is chosen.
+    If Not getValidPath(dlg.strSelectedFile, defaultPath(i), returnPath, True) Then Exit Function
+    
+    'Copy folders outside the default directory into the default directory.
+    If Not fileExists(defaultPath(i) & returnPath) And fileExists(dlg.strSelectedFile) Then
+        FileCopy dlg.strSelectedFile, defaultPath(i) & returnPath
+    End If
+
+    'A file was selected
+    browseFileDialogArray = True
+
+End Function
+
+'=========================================================================
 ' Show an open file dialog allowing multiple file selection.
 '=========================================================================
 Public Function MultiselectFileDialog(ByRef dlgInfo As FileDialogInfo, Optional ByVal hwndParent As Long = 0) As String(): On Error Resume Next
