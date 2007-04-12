@@ -878,39 +878,17 @@ Private Sub resizeToImage(ByRef anm As TKAnimation): On Error Resume Next
 End Sub
 
 Public Sub BrowseFile(): On Error Resume Next
-    'Both image files (from the \Bitmap folder) and tiles can be selected here,
-    'so a check for valid subfolders is more tricky than browseFileDialog().
     
-    Dim dlg As FileDialogInfo
+    Dim defaultPaths(1) As String, defaultExts(1) As String, file As String
+    defaultPaths(0) = projectPath & tilePath: defaultExts(0) = "tst"
+    defaultPaths(1) = projectPath & bmpPath: defaultExts(1) = "*.tbm;*.bmp;*.ico;*.jpg;*.jpeg;*.gif;*.koa;*.koala;*.lbm;*.mng;*.jng;*.png;*.pcd;*.pcx;*.ppm;*.pgm;*.pbm;*.ras;*.tga;*.tif;*.tiff;*.wbmp;*.wap;*.wmf"
     
-    dlg.strDefaultFolder = projectPath & bmpPath
-    dlg.strTitle = "Select Image"
-    dlg.strDefaultExt = "bmp"
-    dlg.strFileTypes = strFileDialogFilterWithTiles
-    
-    ChDir (currentDir)
-    If Not OpenFileDialog(dlg, Me.hwnd) Then Exit Sub
-    If LenB(dlg.strSelectedFileNoPath) = 0 Then Exit Sub
-        
-    'Needs to be updated
-    animationList(activeAnimationIndex).animNeedUpdate = True
-        
-    'Extension of filename
-    Dim ex As String, file As String, defaultPath As String
-    ex = UCase$(GetExt(dlg.strSelectedFile))
-    
-    defaultPath = projectPath & IIf(ex = "TST", tilePath, bmpPath)
-    
-    'Preserve the path if a sub-folder is chosen.
-    If Not getValidPath(dlg.strSelectedFile, defaultPath, file, True) Then Exit Sub
-    
-    'Copy folders outside the default directory into the default directory.
-    If Not fileExists(defaultPath & file) Then
-        FileCopy dlg.strSelectedFile, defaultPath & file
+    If Not browseFileDialogArray(Me.hwnd, "Select image", defaultPaths, defaultExts, strFileDialogFilterWithTiles, file) Then
+        Exit Sub
     End If
     
     With animationList(activeAnimationIndex).theData
-        If ex = "TST" Then
+        If LCase$(GetExt(file)) = "tst" Then
             'Set a few badly-named globals for the tileset browser.
             tstnum = 0
             tstFile = file
