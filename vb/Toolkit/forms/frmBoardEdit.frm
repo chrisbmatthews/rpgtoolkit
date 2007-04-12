@@ -69,16 +69,26 @@ Begin VB.Form frmBoardEdit
             End
             Begin VB.PictureBox picHolder 
                BorderStyle     =   0  'None
-               Height          =   975
+               Height          =   1095
                Index           =   5
                Left            =   3120
-               ScaleHeight     =   975
+               ScaleHeight     =   1095
                ScaleWidth      =   975
                TabIndex        =   78
                Top             =   360
                Width           =   975
+               Begin VB.CommandButton cmdOpen 
+                  Caption         =   "Open"
+                  Height          =   375
+                  Index           =   4
+                  Left            =   0
+                  TabIndex        =   86
+                  ToolTipText     =   "Open file"
+                  Top             =   720
+                  Width           =   975
+               End
                Begin VB.CommandButton cmdThreadsAdd 
-                  Caption         =   "Add"
+                  Caption         =   "Add..."
                   Height          =   375
                   Left            =   0
                   TabIndex        =   15
@@ -90,7 +100,7 @@ Begin VB.Form frmBoardEdit
                   Height          =   375
                   Left            =   0
                   TabIndex        =   16
-                  Top             =   480
+                  Top             =   360
                   Width           =   975
                End
             End
@@ -328,10 +338,19 @@ Begin VB.Form frmBoardEdit
                Index           =   6
                Left            =   2880
                ScaleHeight     =   375
-               ScaleWidth      =   495
+               ScaleWidth      =   975
                TabIndex        =   64
                Top             =   1080
-               Width           =   495
+               Width           =   975
+               Begin VB.CommandButton cmdOpen 
+                  Height          =   255
+                  Index           =   8
+                  Left            =   480
+                  TabIndex        =   88
+                  ToolTipText     =   "Open file"
+                  Top             =   0
+                  Width           =   495
+               End
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
@@ -400,12 +419,21 @@ Begin VB.Form frmBoardEdit
                BorderStyle     =   0  'None
                Height          =   375
                Index           =   9
-               Left            =   4320
+               Left            =   3840
                ScaleHeight     =   375
-               ScaleWidth      =   495
+               ScaleWidth      =   975
                TabIndex        =   60
                Top             =   720
-               Width           =   495
+               Width           =   975
+               Begin VB.CommandButton cmdOpen 
+                  Height          =   255
+                  Index           =   7
+                  Left            =   480
+                  TabIndex        =   87
+                  ToolTipText     =   "Open file"
+                  Top             =   0
+                  Width           =   495
+               End
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
@@ -418,11 +446,11 @@ Begin VB.Form frmBoardEdit
             End
             Begin VB.TextBox txtBattleBackground 
                Height          =   285
-               Left            =   1560
+               Left            =   1200
                TabIndex        =   29
                Text            =   "Text4"
                Top             =   720
-               Width           =   2655
+               Width           =   2535
             End
             Begin VB.TextBox txtBoardSkill 
                Height          =   285
@@ -473,10 +501,19 @@ Begin VB.Form frmBoardEdit
                Index           =   3
                Left            =   3600
                ScaleHeight     =   330
-               ScaleWidth      =   495
+               ScaleWidth      =   1215
                TabIndex        =   53
                Top             =   1680
-               Width           =   495
+               Width           =   1215
+               Begin VB.CommandButton cmdOpen 
+                  Height          =   255
+                  Index           =   3
+                  Left            =   480
+                  TabIndex        =   85
+                  ToolTipText     =   "Open file"
+                  Top             =   0
+                  Width           =   495
+               End
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
@@ -502,10 +539,19 @@ Begin VB.Form frmBoardEdit
                Index           =   2
                Left            =   3600
                ScaleHeight     =   375
-               ScaleWidth      =   495
+               ScaleWidth      =   1215
                TabIndex        =   52
                Top             =   1320
-               Width           =   495
+               Width           =   1215
+               Begin VB.CommandButton cmdOpen 
+                  Height          =   255
+                  Index           =   2
+                  Left            =   480
+                  TabIndex        =   84
+                  ToolTipText     =   "Open file"
+                  Top             =   0
+                  Width           =   495
+               End
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
@@ -531,10 +577,19 @@ Begin VB.Form frmBoardEdit
                Index           =   1
                Left            =   3600
                ScaleHeight     =   375
-               ScaleWidth      =   495
+               ScaleWidth      =   1095
                TabIndex        =   51
                Top             =   960
-               Width           =   495
+               Width           =   1095
+               Begin VB.CommandButton cmdOpen 
+                  Height          =   255
+                  Index           =   1
+                  Left            =   480
+                  TabIndex        =   83
+                  ToolTipText     =   "Open file"
+                  Top             =   0
+                  Width           =   495
+               End
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
@@ -560,10 +615,19 @@ Begin VB.Form frmBoardEdit
                Index           =   0
                Left            =   3600
                ScaleHeight     =   375
-               ScaleWidth      =   495
+               ScaleWidth      =   1215
                TabIndex        =   50
                Top             =   600
-               Width           =   495
+               Width           =   1215
+               Begin VB.CommandButton cmdOpen 
+                  Height          =   255
+                  Index           =   0
+                  Left            =   480
+                  TabIndex        =   82
+                  ToolTipText     =   "Open file"
+                  Top             =   0
+                  Width           =   495
+               End
                Begin VB.CommandButton cmdBrowse 
                   Caption         =   "..."
                   Height          =   255
@@ -1221,16 +1285,22 @@ Public Sub changeSelectedTile(ByVal file As String, Optional ByVal bChangeTool A
         tkMainForm.brdOptTool(m_ed.optTool).value = True
     End If
     
-    'Check for TANs here.
-    If UCase$(GetExt(file)) = "TAN" Then
+    'Check for TANs and TBMs here.
+    Dim ext As String
+    ext = UCase$(GetExt(file))
+    If ext = "TAN" Then
         Dim tan As TKTileAnm
         Call openTileAnm(projectPath & tilePath & file, tan)
         file = tan.animTileFrame(1)
+    ElseIf ext = "TBM" Then
+        Dim tbm As TKTileBitmap
+        Call OpenTileBitmap(projectPath & bmpPath & file, tbm)
+        file = tbm.tiles(0, 0)
     End If
     
     Call BRDRenderTile( _
         projectPath & tilePath & file, _
-        isIsometric, _
+        isIsometric(), _
         tkMainForm.brdPicCurrentTile.hdc, _
         IIf(isIsometric, 0, 16), 0, _
         GetSysColor(tkMainForm.brdPicCurrentTile.backColor And &HFFFFFF) _
@@ -2308,7 +2378,7 @@ End Function
 '========================================================================
 ' Redraw all tiles at a single position
 '========================================================================
-Private Sub drawStack(ByVal x As Long, ByVal y As Long, ByVal z As Long) ':on error resume next
+Private Sub drawStack(ByVal x As Long, ByVal y As Long, ByVal z As Long, Optional ByVal bRefresh As Boolean = True)  ':on error resume next
 
     'Get board pixel _drawing_ coordinate from tile.
     Dim brdPt As POINTAPI, scrPt As POINTAPI
@@ -2334,7 +2404,7 @@ Private Sub drawStack(ByVal x As Long, ByVal y As Long, ByVal z As Long) ':on er
         tileHeight(m_ed), _
         m_ed.pCEd.zoom _
     )
-    picBoard.Refresh
+    If bRefresh Then picBoard.Refresh
             
 End Sub
 
@@ -2566,7 +2636,7 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
         Call placeTile(tst, tileX, tileY)
     Else
         'Valid autotileset! set down tile 51 (arbitrary) to link to surrounding autotiles
-        Call placeTile(currentTileset & CStr(51), tileX, tileY)
+        Call placeTile(currentTileset & CStr(51), tileX, tileY, False)
     End If
     
     brdWidth = m_ed.effectiveBoardX
@@ -2618,7 +2688,7 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
                     If (ix < brdWidth) And (autoTileset(tilesetFilename(boardGetTile(ix + 1, iy, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_N) = TD_N) Then morphTileIndex = morphTileIndex Or TD_NE
                 
                     'Draw and set the new tile
-                    Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy)
+                    Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy, False)
                 End If
             Next ix
         Next iy
@@ -2657,7 +2727,7 @@ Private Sub autoTilerPutTile(ByVal tst As String, ByVal tileX As Long, ByVal til
                     If (ix < brdWidth) And (iy < brdHeight) And (autoTileset(tilesetFilename(boardGetTile(ix + 1, iy + 1, m_ed.currentLayer, m_ed.board(m_ed.undoIndex)))) = thisAutoTileset) And ((morphTileIndex And TD_E) = TD_E) And ((morphTileIndex And TD_S) = TD_S) Then morphTileIndex = morphTileIndex Or TD_SE
                     
                     'Draw and set the new tile
-                    Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy)
+                    Call placeTile(autoTilerSets(thisAutoTileset) & CStr(tileMorphs(morphTileIndex)), ix, iy, False)
                 End If
             Next ix
         Next iy
@@ -2671,7 +2741,7 @@ End Sub
 '========================================================================
 ' Add a tile to the board. x, y as tile coords.
 '========================================================================
-Private Sub placeTile(file As String, x As Long, y As Long) ': On Error Resume Next
+Private Sub placeTile(file As String, x As Long, y As Long, Optional ByVal bRefresh As Boolean = True) ': On Error Resume Next
 
     'Get board pixel _drawing_ coordinate from tile.
     Dim brdPt As POINTAPI, scrPt As POINTAPI
@@ -2688,7 +2758,7 @@ Private Sub placeTile(file As String, x As Long, y As Long) ': On Error Resume N
         file, _
         m_ed.board(m_ed.undoIndex) _
     )
-    Call drawStack(x, y, m_ed.currentLayer)
+    Call drawStack(x, y, m_ed.currentLayer, bRefresh)
 End Sub
 
 '========================================================================
@@ -2704,6 +2774,9 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
     'Allow right-click in draw mode to erase tile.
     tool = IIf(m_ed.optTool = BT_DRAW And Button = vbRightButton, BT_ERASE, m_ed.optTool)
     
+    Dim tiletype As String
+    tiletype = LCase$(GetExt(m_ed.selectedTile))
+    
     Select Case tool
         Case BT_DRAW
             If LenB(m_ed.selectedTile) = 0 Then Exit Sub
@@ -2711,7 +2784,7 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
             m_ed.bLayerOccupied(0) = True
             m_ed.bLayerOccupied(m_ed.currentLayer) = True
                 
-            If (commonRoutines.extention(tilePath & m_ed.selectedTile) <> "TBM") Then
+            If tiletype <> "tbm" Then
                 
                 Dim eo As Long
                 eo = 0 'TBD: isometric even-odd
@@ -2727,31 +2800,31 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
                 End If
             Else
                 'Tile bitmap.
-                'TBD: test this; do isometrics. Possible overdraw at edges of picBoard.
                 Dim i As Long, j As Long, width As Long, Height As Long, tbm As TKTileBitmap
-                Call OpenTileBitmap(tilePath & m_ed.selectedTile, tbm)
-                width = UBound(tbm.tiles, 1)
-                Height = UBound(tbm.tiles, 2)
+                Call OpenTileBitmap(projectPath & bmpPath & m_ed.selectedTile, tbm)
+                width = UBound(tbm.tiles, 1) - 1
+                Height = UBound(tbm.tiles, 2) - 1
                 
                 'Lose any tiles that go off the board.
-                If (m_ed.board(m_ed.undoIndex).sizex - 1) < width Then width = (m_ed.board(m_ed.undoIndex).sizex - 1)
-                If (m_ed.board(m_ed.undoIndex).sizey - 1) < Height Then Height = (m_ed.board(m_ed.undoIndex).sizey - 1)
+                If tileCoord.x + width > m_ed.board(m_ed.undoIndex).sizex Then width = m_ed.board(m_ed.undoIndex).sizex - tileCoord.x
+                If tileCoord.y + Height > m_ed.board(m_ed.undoIndex).sizey Then Height = m_ed.board(m_ed.undoIndex).sizey - tileCoord.y
                                    
                 For i = 0 To width
                     For j = 0 To Height
-                        Call placeTile(tbm.tiles(i, j), tileCoord.x + i, tileCoord.y + j)
+                        Call placeTile(tbm.tiles(i, j), tileCoord.x + i, tileCoord.y + j, False)
                     Next j
                 Next i
-            End If ' .selectedTile <> "TBM"
+                picBoard.Refresh
+            End If ' .selectedTile <> "tbm"
             
         Case BT_SELECT
             ' Code is common to settings.
     
         Case BT_FLOOD
             If LenB(m_ed.selectedTile) = 0 Then Exit Sub
-            If m_ed.bAutotiler Then
+            If m_ed.bAutotiler Or tiletype = "tbm" Then
                 'fill disabled in autotiler mode (unless someone wants to code it)
-                MsgBox "The Fill tool is disabled in AutoTiler mode!"
+                MsgBox "The Fill tool is disabled in AutoTiler and tile bitmap modes", vbInformation
             Else
                 m_ed.bLayerOccupied(0) = True
                 m_ed.bLayerOccupied(m_ed.currentLayer) = True
@@ -2783,8 +2856,8 @@ Private Sub tileSettingMouseDown(Button As Integer, Shift As Integer, x As Singl
             
         Case BT_RECT
             If LenB(m_ed.selectedTile) = 0 Then Exit Sub
-            If m_ed.bAutotiler Then
-                MsgBox "The rectangle tool is disabled in AutoTiler mode!"
+            If m_ed.bAutotiler Or tiletype = "tbm" Then
+                MsgBox "The rectangle tool is disabled in AutoTiler or tile bitmap modes", vbInformation
                 Exit Sub
             End If
             
@@ -4235,6 +4308,8 @@ Private Sub chkEnableBattles_Click() ': on error resume next
     txtBoardSkill.Enabled = chkEnableBattles.value
     lblProperties(18).Enabled = chkEnableBattles.value
     lblProperties(19).Enabled = chkEnableBattles.value
+    cmdBrowse(7).Enabled = chkEnableBattles.value
+    cmdOpen(7).Enabled = chkEnableBattles.value
 End Sub
 Private Sub cmbConstants_Click() ': on error resume next
     With cmbConstants
@@ -4259,10 +4334,15 @@ Private Sub cmdBrowse_Click(Index As Integer) ': On Error Resume Next
     Dim file As String, fileTypes As String, i As Long
     Select Case Index
          Case 0, 1, 2, 3:
+            Dim defaultPaths(1) As String, defaultExts(1) As String
+            defaultPaths(0) = projectPath & brdPath: defaultExts(0) = "brd"
+            defaultPaths(1) = projectPath & prgPath: defaultExts(1) = "prg"
             fileTypes = "Supported Files|*.brd;*.prg|RPG Toolkit Board (*.brd)|*.brd|RPGCode Program (*.prg)|*.prg|All files(*.*)|*.*"
-            If browseFileDialog(Me.hwnd, projectPath & brdPath, "Linking board or program", "brd", fileTypes, file) Then
+            
+            If browseFileDialogArray(Me.hwnd, "Linking board or program", defaultPaths, defaultExts, fileTypes, file) Then
                 txtLinks(Index).Text = file
             End If
+        
         Case 4:
             If browseFileDialog(Me.hwnd, projectPath & bmpPath, "Background image", "jpg", strFileDialogFilterGfx, file) Then
                 txtBackgroundImage.Text = file
@@ -4288,6 +4368,23 @@ Private Sub cmdBrowse_Click(Index As Integer) ': On Error Resume Next
                 txtPrgEnterBoard.Text = file
             End If
     End Select
+End Sub
+Private Sub cmdOpen_Click(Index As Integer) ': On Error Resume Next
+    Dim file As String, fileType As String
+    Select Case Index
+        Case 0, 1, 2, 3:
+            fileType = LCase$(GetExt(txtLinks(Index).Text))
+            file = IIf(fileType = "prg", prgPath, brdPath) & txtLinks(Index).Text
+        Case 4:
+            If lbThreads.ListIndex = -1 Then Exit Sub
+            file = prgPath & lbThreads.List(lbThreads.ListIndex)
+        Case 7:
+            file = bkgPath & txtBattleBackground.Text
+        Case 8:
+            file = prgPath & txtPrgEnterBoard.Text
+    End Select
+    file = projectPath & file
+    If fileExists(file) Then Call tkMainForm.openFile(file)
 End Sub
 Private Sub cmdThreadsAdd_Click() ': On Error Resume Next
     Dim file As String, fileTypes As String, ub As Long
@@ -4482,4 +4579,3 @@ Private Sub mnuWindow_Click(Index As Integer): On Error Resume Next
         Case 2: Call tkMainForm.showtoolsmnu_Click
     End Select
 End Sub
-
