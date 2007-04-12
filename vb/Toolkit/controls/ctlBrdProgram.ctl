@@ -128,13 +128,21 @@ Begin VB.UserControl ctlBrdProgram
          Appearance      =   0  'Flat
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
-         Height          =   375
+         Height          =   615
          Left            =   2760
-         ScaleHeight     =   375
+         ScaleHeight     =   615
          ScaleWidth      =   495
          TabIndex        =   22
          Top             =   480
          Width           =   495
+         Begin VB.CommandButton cmdOpen 
+            Height          =   255
+            Left            =   0
+            TabIndex        =   29
+            ToolTipText     =   "Open file"
+            Top             =   240
+            Width           =   495
+         End
          Begin VB.CommandButton cmdBrowse 
             Caption         =   "..."
             Height          =   255
@@ -463,7 +471,11 @@ Private Sub cmdDefault_Click(): On Error Resume Next
     Call apply
     Call activeBoard.drawAll
 End Sub
-
+Private Sub cmdOpen_Click(): On Error Resume Next
+    Dim file As String
+    file = projectPath & prgPath & txtFilename.Text
+    If fileExists(file) Then Call tkMainForm.openFile(file)
+End Sub
 Private Sub lvPoints_LostFocus(): On Error Resume Next
     Call cmdDefault_Click
 End Sub

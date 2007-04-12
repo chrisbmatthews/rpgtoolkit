@@ -101,7 +101,7 @@ Begin VB.UserControl ctlBrdSprite
          TabIndex        =   12
          ToolTipText     =   "Specify the program that controls the item during gameplay (run as a thread)"
          Top             =   2760
-         Width           =   2055
+         Width           =   1935
       End
       Begin VB.PictureBox picBrowse 
          Appearance      =   0  'Flat
@@ -109,12 +109,21 @@ Begin VB.UserControl ctlBrdSprite
          ForeColor       =   &H80000008&
          Height          =   375
          Index           =   2
-         Left            =   2400
+         Left            =   2280
          ScaleHeight     =   375
-         ScaleWidth      =   495
+         ScaleWidth      =   975
          TabIndex        =   28
          Top             =   2760
-         Width           =   495
+         Width           =   975
+         Begin VB.CommandButton cmdOpen 
+            Height          =   255
+            Index           =   2
+            Left            =   480
+            TabIndex        =   41
+            ToolTipText     =   "Open file"
+            Top             =   0
+            Width           =   495
+         End
          Begin VB.CommandButton cmdBrowse 
             Caption         =   "..."
             Height          =   255
@@ -132,12 +141,21 @@ Begin VB.UserControl ctlBrdSprite
          ForeColor       =   &H80000008&
          Height          =   375
          Index           =   1
-         Left            =   2400
+         Left            =   2280
          ScaleHeight     =   375
-         ScaleWidth      =   495
+         ScaleWidth      =   1065
          TabIndex        =   27
          Top             =   2160
-         Width           =   495
+         Width           =   1065
+         Begin VB.CommandButton cmdOpen 
+            Height          =   255
+            Index           =   1
+            Left            =   480
+            TabIndex        =   39
+            ToolTipText     =   "Open file"
+            Top             =   0
+            Width           =   495
+         End
          Begin VB.CommandButton cmdBrowse 
             Caption         =   "..."
             Height          =   255
@@ -155,7 +173,7 @@ Begin VB.UserControl ctlBrdSprite
          TabIndex        =   10
          ToolTipText     =   "Specify the program to run when the user interacts with the item"
          Top             =   2160
-         Width           =   2055
+         Width           =   1935
       End
       Begin VB.PictureBox picActivationType 
          Appearance      =   0  'Flat
@@ -218,7 +236,7 @@ Begin VB.UserControl ctlBrdSprite
          Left            =   120
          TabIndex        =   4
          Top             =   480
-         Width           =   2535
+         Width           =   2055
       End
       Begin VB.PictureBox picBrowse 
          Appearance      =   0  'Flat
@@ -226,12 +244,21 @@ Begin VB.UserControl ctlBrdSprite
          ForeColor       =   &H80000008&
          Height          =   375
          Index           =   0
-         Left            =   2760
+         Left            =   2280
          ScaleHeight     =   375
-         ScaleWidth      =   495
+         ScaleWidth      =   975
          TabIndex        =   22
          Top             =   480
-         Width           =   495
+         Width           =   975
+         Begin VB.CommandButton cmdOpen 
+            Height          =   255
+            Index           =   0
+            Left            =   480
+            TabIndex        =   40
+            ToolTipText     =   "Open file"
+            Top             =   0
+            Width           =   495
+         End
          Begin VB.CommandButton cmdBrowse 
             Caption         =   "..."
             Height          =   255
@@ -533,6 +560,19 @@ Private Sub cmdDelete_Click(): On Error Resume Next
     Call activeBoard.setUndo
     Call activeBoard.spriteDeleteCurrent(cmbSprite.ListIndex)
     Call activeBoard.drawAll
+End Sub
+Private Sub cmdOpen_Click(Index As Integer): On Error Resume Next
+    Dim file As String
+    
+    Select Case Index
+        Case 0: file = itmPath & txtFilename.Text
+        Case 1: file = prgPath & txtActivate.Text
+        Case 2: file = prgPath & txtMultitask.Text
+    End Select
+    
+    file = projectPath & file
+    If fileExists(file) Then Call tkMainForm.openFile(file)
+
 End Sub
 Private Sub hsbSlot_Change(): On Error Resume Next
     If hsbSlot.value <> 1 Then
