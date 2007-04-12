@@ -2293,13 +2293,13 @@ Begin VB.MDIForm tkMainForm
             Style           =   6
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "10/04/2007"
+            TextSave        =   "12/04/2007"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "16:09"
+            TextSave        =   "11:33"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             AutoSize        =   1
@@ -4066,11 +4066,17 @@ Private Sub brdCmdUndo_Click(): On Error Resume Next
     Call activeBoard.mdiCmdUndo
 End Sub
 Private Sub brdPicCurrentTile_Click(): On Error Resume Next
-    Dim file As String, fileTypes As String, ext As String
-    fileTypes = "Supported Files|*.tst;*.iso;*.tan|RPG Toolkit TileSet (*.tst)|*.tst|RPGToolkit Isometric TileSet (*.iso)|*.iso|RPGToolkit Animated Tile (*.tan)|*.tan|All files(*.*)|*.*"
-    If Not browseFileDialog(Me.hwnd, projectPath & tilePath, "Select tile", "tst", fileTypes, file) Then
+    
+    Dim file As String, fileTypes As String, ext As String, defaultPaths(1) As String, defaultExts(1) As String
+    
+    defaultPaths(0) = projectPath & tilePath: defaultExts(0) = "*.tst;*.iso;*.tan"
+    defaultPaths(1) = projectPath & bmpPath: defaultExts(1) = "tbm"
+    fileTypes = "Supported Files|*.tst;*.iso;*.tan;*.tbm|RPG Toolkit TileSet (*.tst)|*.tst|RPGToolkit Isometric TileSet (*.iso)|*.iso|RPGToolkit Animated Tile (*.tan)|*.tan|RPGToolkit Tile Bitmap (*.tbm)|*.tbm|All files(*.*)|*.*"
+    
+    If Not browseFileDialogArray(Me.hwnd, "Select tile", defaultPaths, defaultExts, fileTypes, file) Then
         Exit Sub
     End If
+        
     ext = UCase$(extention(file))
     
     'Set some badly-named globals.
