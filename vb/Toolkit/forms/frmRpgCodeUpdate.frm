@@ -24,7 +24,7 @@ Begin VB.Form frmRpgCodeUpdate
       Top             =   720
       Width           =   4935
       Begin VB.Label Label10 
-         Caption         =   "We hope you enjoy using 3.0.7's improved RPGCode."
+         Caption         =   "We hope you enjoy using 3.1.0's improved RPGCode."
          Height          =   975
          Left            =   240
          TabIndex        =   22
