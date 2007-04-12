@@ -22,7 +22,7 @@
 #include "coords.h"
 
 /*
- * Pre-3.0.7 defines - for board conversion.
+ * Pre-3.1.0 defines - for board conversion.
  */
 #define NORMAL 0
 #define SOLID 1
@@ -38,7 +38,7 @@
 #define STAIRS7 17
 #define STAIRS8 18
 
-// Post 3.0.7 tiletypes.
+// Post 3.1.0 tiletypes.
 typedef enum tagTileType
 {
 	TT_NORMAL = 0,
