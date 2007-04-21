@@ -17,6 +17,8 @@
 
 %{
 unsigned int g_lines = 0;
+extern unsigned int g_depth;
+extern std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass;
 
 #define _END_FILE_LINE ++g_lines; CProgram::m_pLines->push_back(CProgram::m_pyyUnits->size() - 1)/**; std::cerr << "line " << g_lines << "\n"**/
 %}
@@ -84,7 +86,16 @@ unsigned int g_lines = 0;
 [sS][tT][rR][uU][cC][tT]			{ return STRUCT; }
 [pP][uU][bB][lL][iI][cC]			{ return PUBLIC; }
 [pP][rR][iI][vV][aA][tT][eE]		{ return PRIVATE; }
-[vV][aA][rR]						{ return VAR; }
+[vV][aA][rR]						{
+										if (g_pClass && (g_depth == 1))
+										{
+											// Only recognise this as a member declaration
+											// if we are in a class and not in a method.
+											return VAR;
+										}
+										yylval = "var";
+										return IDENTIFIER;
+									}
 [tT][rR][uU][eE]					{ yylval = 1; return NUMBER; }
 [fF][aA][lL][sS][eE]				{ yylval = 0; return NUMBER; }
 [iI][nN][cC][lL][uU][dD][eE]		{ return INCLUDE; }

@@ -989,6 +989,8 @@ void CProgram::parseFile(FILE *pFile)
 	// Step 1:
 	//   - Run the file though the YACC generated parser,
 	//     producing machine units. See yacc.txt.
+	extern void resetState();
+	resetState();
 	m_inclusions.clear();
 	m_units.clear();
 	m_methods.clear();

@@ -396,6 +396,7 @@ line_terminator:
 |	LCURL
 		{
 			_END_LINE;
+			++g_depth;
 			MACHINE_UNIT &back = CProgram::m_pyyUnits->back();
 			bool bVerify = false;
 			if ((back.udt & UDT_FUNC) && (back.func == CProgram::skipMethod))
@@ -437,6 +438,7 @@ line_terminator:
 |	RCURL
 		{
 			_END_LINE;
+			--g_depth;
 			MACHINE_UNIT mu;
 			mu.udt = UDT_CLOSE;
 			/* Find the corresponding opening brace. */
@@ -908,6 +910,20 @@ CLASS_VISIBILITY g_vis = CV_PRIVATE;
 bool g_bInline = false, g_bVarFlag = false;
 std::deque<bool> g_switchFirst;
 unsigned int g_switch = 0;
+unsigned int g_depth = 0;
+
+void resetState()
+{
+	g_yyOldUnits = NULL;
+	g_methods.clear();
+	g_pClass = NULL;
+	g_vis = CV_PRIVATE;
+	g_bInline = false;
+	g_bVarFlag = false;
+	g_switchFirst.clear();
+	g_switch = 0;
+	g_depth = 0;
+}
 
 void switchFunc(CALL_DATA &)
 {
