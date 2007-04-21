@@ -810,7 +810,7 @@ void italics(CALL_DATA &params)
  */
 void underline(CALL_DATA &params)
 {
-	if (params.params == 1)
+	if (params.params != 1)
 	{
 		throw CError(_T("Underline() requires one parameter."));
 	}
