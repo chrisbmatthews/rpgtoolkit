@@ -135,6 +135,31 @@ extern std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass;
 ([0-9]+(\.[0-9]+)?|([0-9]+)?(\.[0-9]+))	{ yylval = atof(yytext); return NUMBER; }
 \"[^\"]*\"				{ yylval = yytext; return STRING; }
 
+"/*"	{
+			// This C comment code is copied from an example in the flex manual.
+			int c;
+
+            while (true)
+			{
+				while ((c = yyinput()) != '*' && c != EOF)
+                    ;    /* eat up text of comment */
+
+				if (c == '*')
+				{
+					while ((c = yyinput()) == '*')
+							;
+					if (c == '/')
+						break;    /* found the end */
+				}
+
+				if (c == EOF)
+				{
+					yyerror("malformed comment");
+					break;
+				}
+			}
+		}
+
 _[ \t]*(("//".*)|"")[\r\n]+	{ }
 "//".*$					{ return SEMICOLON; }
 \*\*.*$					{ return SEMICOLON; }

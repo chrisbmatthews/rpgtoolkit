@@ -820,6 +820,21 @@ bool CProgram::open(const STRING fileName)
 
 	FILE *file = fopen(resolve(fileName).c_str(), _T("rb"));
 	if (!file) return false;
+
+	// Get the length of the file.
+	fseek(file, 0, SEEK_END);
+	const long length = ftell(file);
+	if (length == 0)
+	{
+		// It is unlikely that the file is completely blank,
+		// but this avoids a crash in case it is.
+		fclose(file);
+		prime();
+		g_cache[fileName] = *this;
+		return true;
+	}
+	fseek(file, 0, SEEK_SET);
+
 	TCHAR c = _T('\0');
 	if (fread(&c, sizeof(TCHAR), 1, file) == 0)
 	{
@@ -911,14 +926,11 @@ bool CProgram::open(const STRING fileName)
 	{
 		const STRING parsing = m_parsing;
 		m_parsing = fileName;
+		fseek(file, 0, SEEK_SET);
 
 		// Programs starting with include, redirect and possibly
 		// other things crash. As a quick solution, we add "1",
 		// a line that does nothing, to the start of each file.
-
-		fseek(file, 0, SEEK_END);
-		const long length = ftell(file);
-		fseek(file, 0, SEEK_SET);
 
 		char *const str = (char *const)malloc(sizeof(char) * (length + 3));
 		fread(str + 2, sizeof(char), length, file);
