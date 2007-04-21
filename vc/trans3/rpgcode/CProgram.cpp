@@ -255,7 +255,7 @@ unsigned int CProgram::getLine(CONST_POS pos) const
 	return m_lines.size() - 1;
 }
 
-// Get the name of an instance variable in the help.
+// Get the name of an instance variable in the heap.
 inline std::pair<bool, STRING> CProgram::getInstanceVar(const STRING name) const
 {
 	if (!m_calls.size())
@@ -986,7 +986,7 @@ bool CProgram::loadFromString(const STRING str)
 // Parse a file.
 void CProgram::parseFile(FILE *pFile)
 {
-	// Pass I:
+	// Step 1:
 	//   - Run the file though the YACC generated parser,
 	//     producing machine units. See yacc.txt.
 	m_inclusions.clear();
@@ -1009,7 +1009,7 @@ void CProgram::parseFile(FILE *pFile)
 	m_methods = NAMED_METHOD::m_methods;
 	m_yyFors.clear();
 
-	// Pass II:
+	// Step 2:
 	//   - Include requested files.
 	{
 		std::vector<STRING> inclusions = m_inclusions;
@@ -1030,14 +1030,11 @@ void CProgram::parseFile(FILE *pFile)
 		}
 	}
 
-	// Pass III:
-	//   - Handle member references within class methods.
+	// Step 3:
+	//   - TBD: Handle member references within class methods.
 	//   - Record class members.
 	//   - Detect class factory references.
 	//   - Backward compatibility: "end" => "end()"
-	//	 - Transform switch...case structures to if...elseif...else.
-
-	tagClass **classes = (tagClass **)_alloca(sizeof(tagClass *) * m_classes.size());
 	std::map<STRING, tagClass>::iterator j = m_classes.begin();
 	for (unsigned int k = 0; j != m_classes.end(); ++j, ++k)
 	{
@@ -1056,14 +1053,13 @@ void CProgram::parseFile(FILE *pFile)
 				j->second.inherit(m_classes[*l]);
 			}
 		}
-		classes[k] = &j->second;
 	}
 
 	LPCLASS pClass = NULL;
 
 	CLASS_VISIBILITY vis = CV_PRIVATE;
 
-	unsigned int depth = 0, nestled = 0, cls = 0;
+	unsigned int depth = 0, nestled = 0;
 
 	POS i = m_units.begin();
 	for (; i != m_units.end(); ++i)
@@ -1077,9 +1073,12 @@ void CProgram::parseFile(FILE *pFile)
 			}
 			else if (((i - 1)->udt & UDT_FUNC) && ((i - 1)->func == skipClass))
 			{
+				MACHINE_UNIT &mu = *(i - 1);
 				depth = 1;
-				pClass = classes[cls++];
-				vis = CLASS_VISIBILITY(int((i - 1)->num));
+				STRING &str = mu.lit;
+				pClass = &m_classes[str];
+				str.erase(str.begin(), str.end());
+				vis = CLASS_VISIBILITY(int(mu.num));
 			}
 		}
 		else if (i->udt & UDT_CLOSE)

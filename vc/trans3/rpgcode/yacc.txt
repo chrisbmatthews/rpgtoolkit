@@ -707,9 +707,12 @@ class_declarator:
 class:
 	class_declarator IDENTIFIER
 		{
-			g_pClass = &*CProgram::m_pClasses->insert(std::map<STD_NATURAL_STRING, tagClass>::value_type($2.getLit(), tagClass())).first;
+			const STD_NATURAL_STRING clsName = $2.getLit();
+			g_pClass = &*CProgram::m_pClasses->insert(std::map<STD_NATURAL_STRING, tagClass>::value_type(clsName, tagClass())).first;
 			_MACHINE_UNIT(CProgram::skipClass, 0);
-			CProgram::m_pyyUnits->back().num = g_vis;
+			MACHINE_UNIT &mu = CProgram::m_pyyUnits->back();
+			mu.num = g_vis;
+			mu.lit = clsName;
 		}
 	inherits
 ;
