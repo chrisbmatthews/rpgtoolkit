@@ -466,7 +466,7 @@ line_terminator:
 						else if ((i - 1)->func == CProgram::skipClass)
 						{
 							MACHINE_UNIT &mu = *(CProgram::m_pyyUnits->end() - 1);
-							if ((mu.udt & UDT_FUNC) && (mu.func == CProgram::skipMethod) && !(CProgram::m_pyyUnits->back().udt & UDT_OPEN))
+							if ((mu.udt & UDT_FUNC) && (mu.func == CProgram::skipMethod) && g_methods.size())
 							{
 								g_pClass->second.methods.back().first.i = NAMED_METHOD::m_methods.back().i = 0xffffff;
 								g_methods.pop_back();
