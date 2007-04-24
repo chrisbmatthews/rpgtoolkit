@@ -119,7 +119,7 @@ bool COptimiser::inlineExpand()
 				TCHAR pos = p->params - (k - params.begin());
 				STRING var = STRING(_T(" ")) + pos;
 
-				if ((k->first != k->second) || (k->first->udt & UDT_FUNC))
+				if ((k->first != k->second) || (~(k->first->udt) & UDT_ID))
 				{
 					MACHINE_UNIT lhs;
 					lhs.udt = UDT_ID;
