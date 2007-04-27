@@ -79,6 +79,7 @@ extern std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass;
 
 	/* Some reserved keywords. */
 [fF][oO][rR]						{ return FOR; }
+[fF][uU][nN][cC][tT][iI][oO][nN]	{ return METHOD; }
 [mM][eE][tT][hH][oO][dD]			{ return METHOD; }
 [rR][eE][tT][uU][rR][nN]			{ return RETURN; }
 [rR][eE][tT][uU][rR][nN][mM][eE][tT][hH][oO][dD]	{ return RETURN; }
