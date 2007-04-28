@@ -274,7 +274,7 @@ inline std::pair<bool, STRING> CProgram::getInstanceVar(const STRING name) const
 	{
 		TCHAR str[255];
 		_itot(obj, str, 10);
-		return std::pair<bool, STRING>(true, STRING(str) + _T("::") + name);
+		return std::pair<bool, STRING>(true, _T(":") + STRING(str) + _T("::") + name);
 	}
 
 	return std::pair<bool, STRING>(false, STRING());
