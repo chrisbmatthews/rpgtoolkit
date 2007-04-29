@@ -191,11 +191,11 @@ CGarbageCollector::CGarbageCollector()
  */
 CGarbageCollector::~CGarbageCollector()
 {
-	EnterCriticalSection(&m_mutex);
-	LeaveCriticalSection(&m_mutex);
-
 	// End the garbage collector's thread.
 	m_bRunning = false;
+
+	EnterCriticalSection(&m_mutex);
+	LeaveCriticalSection(&m_mutex);
 
 	DWORD code;
 	do
