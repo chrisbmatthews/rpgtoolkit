@@ -6,94 +6,22 @@
 --------------------Configuration: trans3 - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP7231.bat" with contents
-[
-@echo off
-.\rpgcode\flex -Cfe -o".\rpgcode\lex.yy.c" .\rpgcode\lex.txt
-]
-Creating command line "C:\Users\Colin\AppData\Local\Temp\RSP7231.bat"
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP7242.bat" with contents
-[
-@echo off
-.\rpgcode\byacc -o ".\rpgcode\y.tab.c" .\rpgcode\yacc.txt
-]
-Creating command line "C:\Users\Colin\AppData\Local\Temp\RSP7242.bat"
-Creating command line "midl.exe /tlb ".\trans3.tlb" /h "trans3.h" /iid "trans3_i.c" /Oicf "C:\cvs\vc\trans3\trans3.idl""
-Compiling...
-Compiling...
-.\rpgcode\byacc: 6 shift/reduce conflicts, 42 reduce/reduce conflicts.
-Creating command line "rc.exe /l 0x1009 /fo"Debug/trans3.res" /d "_DEBUG" "C:\cvs\vc\trans3\trans3.rc"" 
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP848D.tmp" with contents
-[
-/nologo /MTd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /Fp"Debug/trans3.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\cvs\vc\trans3\StdAfx.cpp"
-]
-Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSP848D.tmp" 
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP848E.tmp" with contents
-[
-/nologo /MTd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /Fp"Debug/trans3.pch" /YX"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\cvs\vc\trans3\trans3.cpp"
-"C:\cvs\vc\trans3\rpgcode\COptimiser.cpp"
-"C:\cvs\vc\trans3\rpgcode\CProgram.cpp"
-"C:\cvs\vc\trans3\rpgcode\functions.cpp"
-"C:\cvs\vc\trans3\rpgcode\parser\parser.cpp"
-"C:\cvs\vc\trans3\rpgcode\virtualvar.cpp"
-"C:\cvs\vc\tkCommon\board\conversion.cpp"
-"C:\cvs\vc\tkCommon\board\lighting.cpp"
-"C:\cvs\vc\trans3\common\mbox.cpp"
-"C:\cvs\vc\trans3\common\spcmove.cpp"
-"C:\cvs\vc\trans3\common\state.cpp"
-"C:\cvs\vc\tkCommon\board\coords.cpp"
-"C:\cvs\vc\trans3\plugins\Callbacks.cpp"
-"C:\cvs\vc\trans3\video\CVideo.cpp"
-"C:\cvs\vc\tkzip\tkzip.cpp"
-]
-Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSP848E.tmp" 
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP848F.tmp" with contents
+Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSPC1C1.tmp" with contents
 [
 /nologo /MTd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "C:\cvs\vc\trans3\app\winmain.cpp"
-"C:\cvs\vc\trans3\rpgcode\CCursorMap.cpp"
-"C:\cvs\vc\trans3\common\animation.cpp"
-"C:\cvs\vc\trans3\common\background.cpp"
-"C:\cvs\vc\trans3\common\CAnimation.cpp"
-"C:\cvs\vc\trans3\common\CFile.cpp"
-"C:\cvs\vc\trans3\common\enemy.cpp"
-"C:\cvs\vc\trans3\common\item.cpp"
-"C:\cvs\vc\trans3\common\mainfile.cpp"
-"C:\cvs\vc\trans3\common\paths.cpp"
-"C:\cvs\vc\trans3\common\player.cpp"
-"C:\cvs\vc\trans3\common\sprite.cpp"
-"C:\cvs\vc\trans3\common\status.cpp"
-"C:\cvs\vc\trans3\common\tileanim.cpp"
-"C:\cvs\vc\trans3\common\tilebitmap.cpp"
-"C:\cvs\vc\trans3\input\input.cpp"
-"C:\cvs\vc\trans3\movement\CItem\CItem.cpp"
-"C:\cvs\vc\trans3\movement\CPlayer\CPlayer.cpp"
-"C:\cvs\vc\trans3\render\render.cpp"
-"C:\cvs\vc\trans3\misc\misc.cpp"
-"C:\cvs\vc\tkCommon\tkDirectX\platform.cpp"
-"C:\cvs\vc\tkCommon\tkCanvas\CCanvasPool.cpp"
-"C:\cvs\vc\tkCommon\tkCanvas\GDICanvas.cpp"
-"C:\cvs\vc\tkCommon\tkGfx\CTile.cpp"
-"C:\cvs\vc\tkCommon\tkGfx\CUtil.cpp"
-"C:\cvs\vc\trans3\plugins\plugins.cpp"
-"C:\cvs\vc\trans3\audio\CAudioSegment.cpp"
-"C:\cvs\vc\trans3\fight\fight.cpp"
 ]
-Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSP848F.tmp" 
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP8490.tmp" with contents
+Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSPC1C1.tmp" 
+Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSPC1D2.tmp" with contents
 [
-/nologo /MTd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\cvs\vc\trans3\common\board.cpp"
-"C:\cvs\vc\trans3\movement\CPathFind\CPathFind.cpp"
-"C:\cvs\vc\trans3\movement\CSprite\CSprite.cpp"
-"C:\cvs\vc\trans3\movement\CVector\CVector.cpp"
+/nologo /MTd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /Fp"Debug/trans3.pch" /YX"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\cvs\vc\trans3\rpgcode\CProgram.cpp"
+"C:\cvs\vc\trans3\rpgcode\CGarbageCollector.cpp"
 ]
-Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSP8490.tmp" 
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP8491.tmp" with contents
+Creating command line "cl.exe @C:\Users\Colin\AppData\Local\Temp\RSPC1D2.tmp" 
+Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSPC1D3.tmp" with contents
 [
-ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/trans3.pdb" /debug /machine:I386 /nodefaultlib:"LIBC" /nodefaultlib:"LIBCMT" /out:"Debug/trans3.exe" /pdbtype:sept /libpath:".\audio\\" 
+ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/trans3.pdb" /debug /machine:I386 /nodefaultlib:"LIBC" /nodefaultlib:"LIBCMT" /out:"Debug/trans3.exe" /libpath:".\audio\\" 
 .\Debug\StdAfx.obj
 .\Debug\trans3.obj
 .\Debug\winmain.obj
@@ -109,6 +37,7 @@ ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib 
 .\Debug\CAnimation.obj
 .\Debug\CFile.obj
 .\Debug\conversion.obj
+.\Debug\CShop.obj
 .\Debug\enemy.obj
 .\Debug\item.obj
 .\Debug\lighting.obj
@@ -146,97 +75,22 @@ ddraw.lib dxguid.lib msimg32.lib kernel32.lib user32.lib gdi32.lib winspool.lib 
 .\audio\audiere.lib
 ..\tkCommon\images\FreeImage.lib
 ..\tkzip\zlib.lib
+.\Debug\CGarbageCollector.obj
 ]
-Creating command line "link.exe @C:\Users\Colin\AppData\Local\Temp\RSP8491.tmp"
-Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSP84A2.bat" with contents
+Creating command line "link.exe @C:\Users\Colin\AppData\Local\Temp\RSPC1D3.tmp"
+Creating temporary file "C:\Users\Colin\AppData\Local\Temp\RSPC1D4.bat" with contents
 [
 @echo off
 ".\Debug\trans3.exe" /RegServer
 echo regsvr32 exec. time > ".\Debug\regsvr32.trg"
 echo Server registration done!
 ]
-Creating command line "C:\Users\Colin\AppData\Local\Temp\RSP84A2.bat"
-Creating Type Library...
-Microsoft (R) MIDL Compiler Version 5.01.0164  
-Copyright (c) Microsoft Corp 1991-1997. All rights reserved.
-Processing C:\cvs\vc\trans3\trans3.idl
-trans3.idl
-Processing C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\oaidl.idl
-oaidl.idl
-Processing C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\objidl.idl
-objidl.idl
-Processing C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\unknwn.idl
-unknwn.idl
-Processing C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\wtypes.idl
-wtypes.idl
-Processing C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ocidl.idl
-ocidl.idl
-Processing C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\oleidl.idl
-oleidl.idl
-Processing C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\servprov.idl
-servprov.idl
-Processing C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\urlmon.idl
-urlmon.idl
-Processing C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\msxml.idl
-msxml.idl
-C:\cvs\vc\trans3\trans3.idl(18) : warning MIDL2362 : too many methods in the interface, requires Windows NT 4.0 SP3 or greater : [ Interface 'ICallbacks'  ]
-Compiling resources...
-Compiling...
-StdAfx.cpp
-Compiling...
-trans3.cpp
-COptimiser.cpp
-CProgram.cpp
-functions.cpp
-parser.cpp
-virtualvar.cpp
-conversion.cpp
-lighting.cpp
-mbox.cpp
-spcmove.cpp
-state.cpp
-coords.cpp
-Callbacks.cpp
-CVideo.cpp
-tkzip.cpp
+Creating command line "C:\Users\Colin\AppData\Local\Temp\RSPC1D4.bat"
 Compiling...
 winmain.cpp
-CCursorMap.cpp
-animation.cpp
-background.cpp
-CAnimation.cpp
-CFile.cpp
-enemy.cpp
-item.cpp
-mainfile.cpp
-paths.cpp
-player.cpp
-sprite.cpp
-status.cpp
-tileanim.cpp
-tilebitmap.cpp
-input.cpp
-CItem.cpp
-CPlayer.cpp
-render.cpp
-misc.cpp
-Generating Code...
 Compiling...
-platform.cpp
-CCanvasPool.cpp
-GDICanvas.cpp
-CTile.cpp
-CUtil.cpp
-plugins.cpp
-CAudioSegment.cpp
-fight.cpp
-Generating Code...
-Compiling...
-board.cpp
-CPathFind.cpp
-CSprite.cpp
-CVector.cpp
-Generating Code...
+CProgram.cpp
+CGarbageCollector.cpp
 Linking...
 LINK : warning LNK4098: defaultlib "MSVCRT.LIB" conflicts with use of other libs; use /NODEFAULTLIB:library
 <h3>Output Window</h3>
@@ -246,7 +100,7 @@ Server registration done!
 
 
 <h3>Results</h3>
-trans3.exe - 0 error(s), 2 warning(s)
+trans3.exe - 0 error(s), 1 warning(s)
 </pre>
 </body>
 </html>

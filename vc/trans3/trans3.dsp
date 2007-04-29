@@ -420,6 +420,10 @@ SOURCE=.\rpgcode\CCursorMap.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\rpgcode\CGarbageCollector.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\rpgcode\COptimiser.cpp
 # End Source File
 # Begin Source File
@@ -615,6 +619,10 @@ InputPath=.\rpgcode\yacc.txt
 # Begin Source File
 
 SOURCE=.\rpgcode\CCursorMap.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\rpgcode\CGarbageCollector.h
 # End Source File
 # Begin Source File
 
@@ -1743,20 +1751,20 @@ SOURCE=.\video\CVideo.h
 SOURCE=..\tkzip\tkzip.cpp
 # End Source File
 # End Group
-# Begin Group "zip - headers"
-
-# PROP Default_Filter "h"
-# Begin Source File
-
-SOURCE=..\tkzip\tkzip.h
-# End Source File
-# End Group
 # Begin Group "zip - libraries"
 
 # PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\tkzip\zlib.lib
+# End Source File
+# End Group
+# Begin Group "zip - headers"
+
+# PROP Default_Filter "h"
+# Begin Source File
+
+SOURCE=..\tkzip\tkzip.h
 # End Source File
 # End Group
 # End Group

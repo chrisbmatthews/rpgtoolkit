@@ -20,6 +20,7 @@
  */
 #include "../../tkCommon/strings.h"
 #include "../rpgcode/CProgram.h"
+#include "../rpgcode/CGarbageCollector.h"
 #include "../rpgcode/virtualvar.h"
 #include "../plugins/plugins.h"
 #include "../common/paths.h"
@@ -370,7 +371,7 @@ void openSystems()
 {
 	extern void initRpgCode();
 	extern GAME_TIME g_gameTime;
-	registerFonts(true);
+	//registerFonts(true);
 	initPluginSystem();
 	FreeImage_Initialise();
 	srand(GetTickCount());
@@ -417,6 +418,7 @@ void closeSystems()
 {
 	// Free plugins first so that they have access to
 	// everything we're about to kill.
+	CGarbageCollector::getInstance().deinitialise();
 	CProgram::freePlugins();
 	CThread::destroyAll();
 	extern IPlugin *g_pMenuPlugin, *g_pFightPlugin;
@@ -463,7 +465,7 @@ void closeSystems()
 	uninitialisePakFile();
 
 	// Unregister fonts.
-	registerFonts(false);
+	//registerFonts(false);
 }
 
 /*
@@ -551,16 +553,6 @@ GAME_STATE gameLogic()
 			g_fpms = (m_renderCount / m_renderTime);
 			const unsigned long fps = g_fpms * MILLISECONDS;
 
-			// I explicited said not to do this.
-			// It is doubtless a massive waste of execution time to check for
-			// the fps display in every iteration of the inner loop!
-			// I tried to discuss this, but you seemed to miss the point.
-			// Let me give a practical suggest: the exe we include with
-			// the release never shows the fps; but it is possible to
-			// build an exe (via a #define) that always displays the fps.
-			// This might be inconvenient to users, but it certainly makes
-			// more sense and I think this waste is significant.
-			//    - Colin
 			if (g_mainFile.bFpsInTitleBar)
 			{
 				extern HWND g_hHostWnd;
@@ -686,8 +678,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
 	path = dev;
 
 	set_terminate(termFunc);

@@ -5,7 +5,7 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Sat Dec 02 15:08:03 2006
+/* at Fri Feb 23 21:43:23 2007
  */
 /* Compiler settings for C:\cvs\vc\trans3\trans3.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext

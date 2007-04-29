@@ -266,12 +266,13 @@ typedef enum tagVariableScope
 } VAR_SCOPE;
 
 // Forward declarations.
-class CThread;			// A thread.
-class IPlugin;			// A plugin.
-class CFile;			// A file stream.
-class CProgramChild;	// A child program;
-class COptimiser;		// An optimisation engine.
-struct tagBoardProgram;	// A board program;
+class CThread;				// A thread.
+class IPlugin;				// A plugin.
+class CFile;				// A file stream.
+class CProgramChild;		// A child program;
+class COptimiser;			// An optimisation engine.
+class CGarbageCollector;	// A memory manager.
+struct tagBoardProgram;		// A board program;
 
 // Some types of enumerations.
 typedef CEnumeration<std::map<STRING, CPtrData<STACK_FRAME> > > HEAP_ENUM;
@@ -282,11 +283,9 @@ typedef CEnumeration<std::set<CThread *> > THREAD_ENUM;
 class CProgram
 {
 public:
-	CProgram(tagBoardProgram *pBrdProgram = NULL):
-		m_pBoardPrg(pBrdProgram) { }
-	CProgram(const STRING file, tagBoardProgram *pBrdProgram = NULL):
-		m_pBoardPrg(pBrdProgram) { open(file); }
-	virtual ~CProgram() { }
+	CProgram(tagBoardProgram *pBrdProgram = NULL);
+	CProgram(const STRING file, tagBoardProgram *pBrdProgram = NULL);
+	virtual ~CProgram();
 
 	bool open(const STRING fileName);
 	bool loadFromString(const STRING str);
@@ -342,7 +341,7 @@ public:
 	static void freePlugins();
 
 	// Copy constructor and assignment operator.
-	CProgram(const CProgram &rhs) { *this = rhs; }
+	CProgram(const CProgram &rhs);
 	CProgram &operator=(const CProgram &rhs);
 
 private:
@@ -403,6 +402,7 @@ private:
 	friend bool checkOverloadedOperator(const STRING opr, CALL_DATA &call);
 	friend CProgramChild;
 	friend COptimiser;
+	friend CGarbageCollector;
 
 	void parseFile(FILE *pFile);
 	unsigned int matchBrace(POS i);
@@ -463,7 +463,6 @@ public:
 	STRING getFileName() const { return m_fileName; }
 
 	virtual bool execute(const unsigned int units);
-	virtual ~CThread() { }
 
 private:
 	mutable bool m_bSleeping;

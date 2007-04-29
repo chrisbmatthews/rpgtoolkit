@@ -39,7 +39,7 @@
 #include <windows.h>
 #include <vector>
 
-#define CLASS_NAME _T("TK Window")
+#define CLASS_NAME _T("TK WindowX")
 
 /*
  * Globals.

@@ -1,7 +1,7 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Colin James Fitzpatrick
+ * This file copyright (C) 2006, 2007  Colin James Fitzpatrick
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@
 #include "CProgram.h"
 #include "COptimiser.h"
 #include "CVariant.h"
+#include "CGarbageCollector.h"
 #include "../plugins/plugins.h"
 #include "../plugins/constants.h"
 #include "../common/mbox.h"
@@ -51,8 +52,43 @@ STRING CProgram::m_parsing;
 unsigned long CProgram::m_runningPrograms = 0;
 EXCEPTION_TYPE CProgram::m_debugLevel = E_WARNING;	// Show all error messages by default.
 
+// Critical section for garbage collection.
+LPCRITICAL_SECTION g_mutex = NULL;
+
 static std::map<STRING, CProgram> g_cache; // Program cache.
 typedef std::map<STRING, CProgram>::iterator CACHE_ITR;
+
+// Copy constructor for CProgram.
+CProgram::CProgram(const CProgram &rhs)
+{
+	CGarbageCollector::getInstance().addProgram(this);
+	*this = rhs;
+}
+
+CProgram::CProgram(tagBoardProgram *pBrdProgram):
+		m_pBoardPrg(pBrdProgram)
+{
+	CGarbageCollector::getInstance().addProgram(this);
+}
+
+CProgram::CProgram(const STRING file, tagBoardProgram *pBrdProgram):
+		m_pBoardPrg(pBrdProgram)
+{
+	CGarbageCollector::getInstance().addProgram(this);
+	open(file);
+}
+
+CProgram::~CProgram()
+{
+	try
+	{
+		CGarbageCollector::getInstance().removeProgram(this);
+	}
+	catch (...)
+	{
+		// The above will fail if we are exiting.
+	}
+}
 
 // Protected constructor.
 CThread::CThread(const STRING str):
@@ -61,9 +97,10 @@ m_bSleeping(false),
 m_fileName(str) 
 {
 	extern STRING g_projectPath;
-	if (CFile::fileExists(g_projectPath + PRG_PATH + str))
+	const STRING fileName = g_projectPath + PRG_PATH + str;
+	if (CFile::fileExists(fileName))
 	{
-		m_fileName = g_projectPath + PRG_PATH + str;
+		m_fileName = fileName;
 		open(m_fileName);
 	}
 	else
@@ -152,7 +189,6 @@ bool CThread::execute(const unsigned int units)
 	{
 		m_i->execute(this);
 		++m_i;
-		//return true;
 	}
 	return true;
 }
@@ -1726,6 +1762,7 @@ void CProgram::jump(const STRING label)
 // Execute an instruction unit.
 void tagMachineUnit::execute(CProgram *prg) const
 {
+	EnterCriticalSection(g_mutex);
 	if (udt & UDT_FUNC)
 	{
 		prg->m_pStack->push_back(prg);
@@ -1776,7 +1813,11 @@ void tagMachineUnit::execute(CProgram *prg) const
 				prg->m_stack.pop_back();
 				prg->m_pStack = &prg->m_stack.back();
 				prg->getLocals()->pop_back();
-				if (bReturn) return;
+				if (bReturn)
+				{
+					LeaveCriticalSection(g_mutex);
+					return;
+				}
 			}
 			else if (((func == CProgram::conditional) || (func == CProgram::elseIf)) && (prg->m_i != prg->m_units.end()))
 			{
@@ -1812,6 +1853,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 	{
 		prg->m_pStack->clear();
 	}
+	LeaveCriticalSection(g_mutex);
 }
 
 // Get the numerical value from a stack frame.
@@ -2558,4 +2600,9 @@ void CProgram::initialize()
 	addFunction(_T(" verifyType"), verifyType);
 	addFunction(_T(" returnVal"), returnVal);
 	addFunction(_T(" returnReference"), returnReference);
+
+	// Initialise the garbage collector.
+	CGarbageCollector &inst = CGarbageCollector::getInstance();
+	inst.initialise();
+	g_mutex = inst.getMutex();
 }
