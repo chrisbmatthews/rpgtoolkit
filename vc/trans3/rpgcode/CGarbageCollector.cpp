@@ -192,7 +192,7 @@ CGarbageCollector::CGarbageCollector()
 CGarbageCollector::~CGarbageCollector()
 {
 	// End the garbage collector's thread.
-	m_bRunning = false;
+	/**m_bRunning = false;
 
 	EnterCriticalSection(&m_mutex);
 	LeaveCriticalSection(&m_mutex);
@@ -201,7 +201,10 @@ CGarbageCollector::~CGarbageCollector()
 	do
 	{
 		if (!GetExitCodeThread(m_garbageThread, &code)) break;
-	} while (code == STILL_ACTIVE);
+	} while (code == STILL_ACTIVE);**/
+
+	// No way to use TryExitCriticalSection in 9x, so we'll just do this.
+	TerminateThread(m_garbageThread, EXIT_SUCCESS);
 
 	CloseHandle(m_garbageThread);
 	DeleteCriticalSection(&m_mutex);
