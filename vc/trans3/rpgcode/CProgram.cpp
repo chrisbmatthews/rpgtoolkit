@@ -554,6 +554,9 @@ void CProgram::methodCall(CALL_DATA &call)
 	CALL_FRAME fr;
 	fr.obj = 0;
 
+	// Will be > 0 because the first line is at least a skipMethod.
+	fr.errorReturn = 0;
+
 	STACK_FRAME &fra = call[call.params - 1];
 
 	bool bNoRet = false;
@@ -1746,17 +1749,92 @@ STACK_FRAME CProgram::run()
 }
 
 // Jump to a label.
-void CProgram::jump(const STRING label)
+bool CProgram::jump(const STRING label)
 {
 	CONST_POS i = m_units.begin();
 	for (; i != m_units.end(); ++i)
 	{
-		if ((i->udt & UDT_LABEL) && (_tcsicmp(i->lit.c_str(), label.c_str()) == 0))
+		if ((i->udt & UDT_LINE) && (i->udt & UDT_LABEL) && (_tcsicmp(i->lit.c_str(), label.c_str()) == 0))
 		{
 			m_i = i;
+			return true;
+		}
+	}
+	return false;
+}
+
+// Return from an error handler to the next statement
+// after the one where the error occurred.
+void CProgram::resumeFromErrorHandler()
+{
+	if (!m_calls.size())
+	{
+		throw CError("Invalid outside functions.");
+	}
+	unsigned int &err = m_calls.back().errorReturn;
+	if (err == 0)
+	{
+		throw CError("An error handler has not been invoked.");
+	}
+	m_i = m_units.begin() + err;
+	err = 0;
+}
+
+// Handle an error occurring at the current line.
+void CProgram::handleError(CException *p)
+{
+	if (m_calls.size())
+	{
+		CALL_FRAME &frame = *&m_calls.back();
+		STRING &handler = frame.errorHandler;
+		if (!handler.empty())
+		{
+			// Note: a single space is a hard-coded convention
+			//		 indicating "on error resume next".
+			if (handler == " ")
+			{
+				// Hide the error.
+				return;
+			}
+
+			// Find the beginning of the next statement.
+			for (CONST_POS i = m_i; i != m_units.end(); ++i)
+			{
+				if (i->udt & UDT_LINE) break;
+			}
+			frame.errorReturn = i - m_units.begin();
+
+			// Try to jump to the label specified.
+			if (!jump(handler))
+			{
+				CError exp = _T("An error occurred, but the handler could not be invoked because label \"") + handler + _T("\" was not found.");
+				handler = _T("");
+				handleError(&exp);
+				// Swallow the original error deliberately to avoid confusion.
+			}
+
 			return;
 		}
 	}
+
+	if (p && (CProgram::m_debugLevel < p->getType())) return;
+
+	STRINGSTREAM ss;
+	ss	<< _T("Near line ")
+		<< getLine(m_i)
+		<< _T(": ")
+		<< (p ? p->getMessage() : _T("Unexcepted error."));
+	CProgram::debugger(ss.str());
+}
+
+// Set the label to jump to in case of error.
+void CProgram::setErrorHandler(const STRING handler)
+{
+	if (m_calls.size() == 0)
+	{
+		throw CError("An error handler cannot be set outside of a function.");
+	}
+	m_calls.back().errorHandler = handler;
 }
 
 // Execute an instruction unit.
@@ -1775,27 +1853,24 @@ void tagMachineUnit::execute(CProgram *prg) const
 			}
 			catch (CException exp)
 			{
-				if (CProgram::m_debugLevel >= exp.getType())
-				{
-					TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
-					CProgram::debugger(STRING(_T("Near line ")) + str + _T(": ") + exp.getMessage());
-				}
+				prg->handleError(&exp);
 			}
 			catch (...)
 			{
-				TCHAR str[255]; _itot(prg->getLine(prg->m_i), str, 10);
-				CProgram::debugger(STRING(_T("Near line ")) + str + _T(": Unexpected error."));
+				prg->handleError(NULL);
 			}
 		}
  		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
 	}
 	else if (udt & UDT_CLOSE)
 	{
-		// Hacky code here. The num member is actually storing
-		// two longs in the double. The first long is the unit
-		// which holds the opening brace, and the second long
-		// is the unit which holds the beginning of the first
-		// statement before the opening brace.
+		/**
+		 * Hacky code here. The num member is actually storing
+		 * two longs in the double. The first long is the unit
+		 * which holds the opening brace, and the second long
+		 * is the unit which holds the beginning of the first
+		 * statement before the opening brace.
+		 */
 		const unsigned long *const pLines = (unsigned long *)&num;
 		CONST_POS open = prg->m_units.begin() + pLines[0];
 		if ((open != prg->m_units.end()) && ((open - 1)->udt & UDT_FUNC))

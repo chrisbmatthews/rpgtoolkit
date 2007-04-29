@@ -101,6 +101,8 @@ typedef struct tagCallFrame
 	bool bReturn;									// Whether we should return a value.
 	unsigned int obj;								// This pointer.
 	std::map<unsigned int, LPSTACK_FRAME> refs;		// Parameters that have been passed ByRef.
+	STRING errorHandler;							// Label to jump to in case of error.
+	unsigned int errorReturn;						// Unit to return to after an error.
 } CALL_FRAME;
 
 // A callable function.
@@ -272,6 +274,7 @@ class CFile;				// A file stream.
 class CProgramChild;		// A child program;
 class COptimiser;			// An optimisation engine.
 class CGarbageCollector;	// A memory manager.
+class CException;			// An exception.
 struct tagBoardProgram;		// A board program;
 
 // Some types of enumerations.
@@ -295,7 +298,9 @@ public:
 	void freeObject(unsigned int obj);
 	void freeVar(const STRING var);
 	void end() { m_i = m_units.end() - 1; }
-	void jump(const STRING label);
+	bool jump(const STRING label);
+	void setErrorHandler(const STRING handler);
+	void resumeFromErrorHandler();
 	void setDefaultScope(const VAR_SCOPE s)
 		{ m_pResolveFunc = ((s == VS_GLOBAL) ? resolveVarGlobal : resolveVarLocal); }
 
@@ -412,6 +417,7 @@ private:
 	virtual std::list<std::map<STRING, STACK_FRAME> > *getLocals() { return &m_locals; }
 	std::pair<bool, STRING> getInstanceVar(const STRING var) const;
 	void returnFromMethod(STACK_FRAME value);
+	void handleError(CException *);
 
 	// Update curly brace pairs and method locations. Should be called
 	// after new code is injected into the program to prevent errors.

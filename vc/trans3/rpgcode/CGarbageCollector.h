@@ -22,7 +22,7 @@
  * runs in its own thread. At regular intervals, it suspends the main
  * program thread (there is assumed to be only one) and checks if there
  * are any objects that are not referenced by any variable. If there are,
- * they are freed. There deconstructors are not called, though, since
+ * they are freed. Their deconstructors are not called, though, since
  * there is no easy way to tell where that code even is. So, if a class's
  * deconstructor actually needs to be run, it should be run manually.
  */

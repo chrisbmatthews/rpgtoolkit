@@ -18,6 +18,7 @@
 %{
 unsigned int g_lines = 0;
 extern unsigned int g_depth;
+extern bool g_bErrorHandler;
 extern std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass;
 
 #define _END_FILE_LINE ++g_lines; CProgram::m_pLines->push_back(CProgram::m_pyyUnits->size() - 1)/**; std::cerr << "line " << g_lines << "\n"**/
@@ -110,6 +111,16 @@ extern std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass;
 [rR][eE][dD][iI][rR][eE][cC][tT]									{ return REDIRECT; }
 [kK][iI][lL][lL][rR][eE][dD][iI][rR][eE][cC][tT]					{ return KILL_REDIRECT; }
 [kK][iI][lL][lL][aA][lL][lL][rR][eE][dD][iI][rR][eE][cC][tT][sS]	{ return KILL_ALL_REDIRECTS; }
+
+	/* Error handling */
+[oO][nN][ ]+[eE][rR][rR][oO][rR]	{ return ON_ERROR; }
+[rR][eE][sS][uU][mM][eE][ ]+[nN][eE][xX][tT]	{ return RESUME_NEXT; }
+[gG][oO][tT][oO]		{
+							if (g_bErrorHandler)
+								return GOTO;
+							yylval = "goto";
+							return IDENTIFIER;
+						}
 
 	/* An identifier */
 ~?[A-Za-z_][A-Za-z0-9_]*	{

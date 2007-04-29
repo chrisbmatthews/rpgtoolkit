@@ -533,7 +533,43 @@ void branch(CALL_DATA &params)
 	{
 		throw CError(_T("Branch() requires one parameter."));
 	}
-	params.prg->jump((params[0].udt & UDT_LABEL) ? params[0].lit : params[0].getLit());
+	const STRING label = (params[0].udt & UDT_LABEL) ? params[0].lit : params[0].getLit();
+	if (!params.prg->jump(label))
+	{
+		throw CError(_T("Branch(): could not find label \"") + label + _T("\"."));
+	}
+}
+
+/*
+ * void setErrorHandler(label lbl)
+ *
+ * Set an error handler for the current function. This <i>does
+ * not</i> propagate up the call stack! Refer to the language features
+ * section of the manual for more information.
+ */
+void setErrorHandler(CALL_DATA &params)
+{
+	if (params.params != 1)
+	{
+		throw CError(_T("SetErrorHandler() requires one parameter."));
+	}
+	const STRING label = (params[0].udt & UDT_LABEL) ? params[0].lit : params[0].getLit();
+	params.prg->setErrorHandler(label);
+}
+
+/*
+ * void setResumeNextHandler()
+ *
+ * Cause errors in the current function to be silently ignored.
+ * This <i>does not</i> propagate up the call stack!
+ */
+void setResumeNextHandler(CALL_DATA &params)
+{
+	if (params.params != 0)
+	{
+		throw CError("SetResumeNextHandler() requires zero parameters.");
+	}
+	params.prg->setErrorHandler(" "); // Refer to CProgram::handleError().
 }
 
 /*
@@ -5809,7 +5845,12 @@ void openFileInput(CALL_DATA &params)
 	{
 		throw CError(_T("OpenFileInput() requires two parameters."));
 	}
-	g_files[parser::uppercase(params[0].getLit())].open(g_projectPath + params[1].getLit() + _T('\\') + params[0].getLit(), OF_READ);
+	CFile &file = g_files[parser::uppercase(params[0].getLit())];
+	file.open(g_projectPath + params[1].getLit() + _T('\\') + params[0].getLit(), OF_READ);
+	if (!file.isOpen())
+	{
+		throw CError(_T("OpenFileInput(): file does not exist."));
+	}
 }
 
 /*
@@ -6394,23 +6435,18 @@ void debugger(CALL_DATA &params)
 }
 
 /*
- * onError(label lbl)
+ * void resumeNext()
  * 
- * Obsolete.
- */
-void onError(CALL_DATA &params)
-{
-	throw CError(_T("OnError() is obsolete."));
-}
-
-/*
- * ResumeNext()
- * 
- * Obsolete.
+ * Return to the statement after the statement where an error occurred.
  */
 void resumeNext(CALL_DATA &params)
 {
-	throw CError(_T("ResumeNext() is obsolete."));
+	if (params.params != 0)
+	{
+		throw CError(_T("ResumeNext() requires zero parameters."));
+	}
+
+	params.prg->resumeFromErrorHandler();
 }
 
 /*
@@ -7884,8 +7920,6 @@ void initRpgCode()
 	CProgram::addFunction(_T("left"), left);
 	CProgram::addFunction(_T("cursormaphand"), cursormaphand);
 	CProgram::addFunction(_T("debugger"), debugger);
-	CProgram::addFunction(_T("onerror"), onError);
-	CProgram::addFunction(_T("resumenext"), resumeNext);
 	CProgram::addFunction(_T("msgbox"), msgbox);
 	CProgram::addFunction(_T("setconstants"), setconstants);
 	CProgram::addFunction(_T("log"), log);
@@ -7970,4 +8004,9 @@ void initRpgCode()
 	CProgram::addConstant(_T("tkDIR_NW"), makeNumStackFrame(MV_NW));
 	CProgram::addConstant(_T("tkDIR_N"),  makeNumStackFrame(MV_N));
 	CProgram::addConstant(_T("tkDIR_NE"), makeNumStackFrame(MV_NE));
+
+	// Error handling.
+	CProgram::addFunction(_T("resumeNext"), resumeNext);
+	CProgram::addFunction(_T("setErrorHandler"), setErrorHandler);
+	CProgram::addFunction(_T("setResumeNextHandler"), setResumeNextHandler);
 }

@@ -40,6 +40,7 @@
 %token	QUESTION COLON METHOD RETURN HIGHEST SWITCH CASE
 %token	CLASS STRUCT PUBLIC PRIVATE VAR DOT INCLUDE
 %token	REDIRECT KILL_REDIRECT KILL_ALL_REDIRECTS INLINE
+%token	ON_ERROR RESUME_NEXT GOTO
 
 %right	XOR_ASSIGN
 %right	OR_ASSIGN
@@ -171,6 +172,16 @@ value:
 |	identifier
 ;
 
+label:
+	COLON IDENTIFIER
+		{
+			MACHINE_UNIT mu;
+			mu.udt = UDT_LABEL;
+			mu.lit = _T(":") + $2.getLit();
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+;
+
 _value:
 	LPAREN _value RPAREN
 |	operators
@@ -188,13 +199,7 @@ _value:
 			mu.udt = UDT_LIT;
 			CProgram::m_pyyUnits->push_back(mu);
 		}
-|	COLON IDENTIFIER
-		{
-			MACHINE_UNIT mu;
-			mu.udt = UDT_LABEL;
-			mu.lit = _T(":") + $2.getLit();
-			CProgram::m_pyyUnits->push_back(mu);
-		}
+|	label
 ;
 
 params:
@@ -858,6 +863,25 @@ switch_case:
 		}
 ;
 
+_error_handler:
+|	RESUME_NEXT
+		{
+			_MACHINE_UNIT(setResumeNextHandler, 0);
+		}
+|	GOTO label
+		{
+			_MACHINE_UNIT(setErrorHandler, 1);
+		}
+;
+
+error_handler:
+	ON_ERROR { g_bErrorHandler = true; } _error_handler { g_bErrorHandler = false; }
+|	RESUME_NEXT
+		{
+			_MACHINE_UNIT(resumeNext, 0);
+		}
+;
+
 statement:
 	return_val
 |	method
@@ -884,6 +908,7 @@ statement:
 |	for_loop
 |	switch_construct
 |	switch_case
+|	error_handler
 |	value
 ;
 
@@ -902,6 +927,11 @@ begin:
 
 #include "lex.yy.c"
 #include "../../tkCommon/strings.h"
+
+extern void setErrorHandler(CALL_DATA &params);
+extern void setResumeNextHandler(CALL_DATA &params);
+extern void resumeNext(CALL_DATA &params);
+
 LPMACHINE_UNITS g_yyOldUnits = NULL;
 std::deque<std::map<STD_NATURAL_STRING, int> > g_methods;
 unsigned int g_byref;
@@ -911,6 +941,7 @@ bool g_bInline = false, g_bVarFlag = false;
 std::deque<bool> g_switchFirst;
 unsigned int g_switch = 0;
 unsigned int g_depth = 0;
+bool g_bErrorHandler = false;
 
 void resetState()
 {
