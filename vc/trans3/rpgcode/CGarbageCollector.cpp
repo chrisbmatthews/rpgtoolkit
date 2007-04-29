@@ -175,7 +175,7 @@ void CGarbageCollector::initialise()
 	m_bRunning = true;
 	InitializeCriticalSection(&m_mutex);
 	DWORD id;
-	if ((m_garbageThread = (unsigned long)CreateThread(NULL, 0, threadStub, this, 0, &id)) == -1)
+	if (!(m_garbageThread = CreateThread(NULL, 0, threadStub, this, 0, &id)))
 	{
 		MessageBox(NULL, _T("Could not create a thread for the garbage collector."), NULL, 0);
 	}
@@ -195,9 +195,9 @@ void CGarbageCollector::deinitialise()
 	DWORD code;
 	do
 	{
-		if (!GetExitCodeThread((HANDLE)m_garbageThread, &code)) break;
+		if (!GetExitCodeThread(m_garbageThread, &code)) break;
 	} while (code == STILL_ACTIVE);
 
-	CloseHandle((HANDLE)m_garbageThread);
+	CloseHandle(m_garbageThread);
 	DeleteCriticalSection(&m_mutex);
 }

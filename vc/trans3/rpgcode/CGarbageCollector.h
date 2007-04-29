@@ -106,7 +106,7 @@ private:
 	/**
 	 * The handle of the thread the garbage collector is running in.
 	 */
-	unsigned long m_garbageThread;
+	HANDLE m_garbageThread;
 
 	/**
 	 * The critical section for garbage collection.
