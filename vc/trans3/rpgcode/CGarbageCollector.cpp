@@ -77,6 +77,11 @@ DWORD WINAPI threadStub(void *p)
  */
 void CGarbageCollector::collectGarbage()
 {
+	if (CProgram::m_objects.size() == 0)
+	{
+		// No objects exist!
+		return;
+	}
 	const unsigned int count = (--CProgram::m_objects.end())->first;
 	std::vector<bool> objects;
 
@@ -170,7 +175,7 @@ void CGarbageCollector::collectGarbage()
 /**
  * Initialise the garbage collector.
  */
-void CGarbageCollector::initialise()
+CGarbageCollector::CGarbageCollector()
 {
 	m_bRunning = true;
 	InitializeCriticalSection(&m_mutex);
@@ -184,7 +189,7 @@ void CGarbageCollector::initialise()
 /**
  * Shut down the garbage collector.
  */
-void CGarbageCollector::deinitialise()
+CGarbageCollector::~CGarbageCollector()
 {
 	EnterCriticalSection(&m_mutex);
 	LeaveCriticalSection(&m_mutex);

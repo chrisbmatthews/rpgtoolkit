@@ -2601,8 +2601,6 @@ void CProgram::initialize()
 	addFunction(_T(" returnVal"), returnVal);
 	addFunction(_T(" returnReference"), returnReference);
 
-	// Initialise the garbage collector.
-	CGarbageCollector &inst = CGarbageCollector::getInstance();
-	inst.initialise();
-	g_mutex = inst.getMutex();
+	// Get the mutex for program execution.
+	g_mutex = CGarbageCollector::getInstance().getMutex();
 }

@@ -418,7 +418,6 @@ void closeSystems()
 {
 	// Free plugins first so that they have access to
 	// everything we're about to kill.
-	CGarbageCollector::getInstance().deinitialise();
 	CProgram::freePlugins();
 	CThread::destroyAll();
 	extern IPlugin *g_pMenuPlugin, *g_pFightPlugin;

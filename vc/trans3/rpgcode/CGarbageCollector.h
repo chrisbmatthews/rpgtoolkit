@@ -55,6 +55,16 @@ class CGarbageCollector
 public:
 
 	/**
+	 * Initialise the garbage collector.
+	 */
+	CGarbageCollector();
+
+	/**
+	 * Shut down the garbage collector.
+	 */
+	~CGarbageCollector();
+
+	/**
 	 * Return the unique instance of the garbage collector.
 	 */
 	static CGarbageCollector &getInstance() { return m_instance; }
@@ -63,18 +73,6 @@ public:
 	 * Cause garbage to be collected right now.
 	 */
 	void collectGarbage();
-
-	/**
-	 * Initialise the garbage collector.
-	 */
-	void initialise();
-
-	/**
-	 * Shut down the garbage collector. This must be called to effect
-	 * a smooth shut down of trans3. If it is not called, there *will*
-	 * be an illegal operation dialogue.
-	 */
-	void deinitialise();
 
 	/**
 	 * Add a program to the set.

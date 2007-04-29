@@ -99,6 +99,7 @@ extern std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass;
 									}
 [tT][rR][uU][eE]					{ yylval = 1; return NUMBER; }
 [fF][aA][lL][sS][eE]				{ yylval = 0; return NUMBER; }
+[nN][uU][lL][lL]					{ yylval = 0; return NUMBER; }
 [iI][nN][cC][lL][uU][dD][eE]		{ return INCLUDE; }
 [iI][nN][lL][iI][nN][eE]			{ return INLINE; }
 [sS][wW][iI][tT][cC][hH]			{ return SWITCH; }
