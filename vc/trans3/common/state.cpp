@@ -476,38 +476,19 @@ void loadSaveState(const STRING str)
 	file >> movementSize;
 	CSprite::m_bPxMovement = (movementSize != 1.0);
 
-	// Partially obsolete OOP information.
-	if ((minorVer >= 1) && (minorVer < 4)) // ignore for now
+	// OOP information. This is *not* backward compatible.
+	// But that's okay.
+	if (minorVer >= 1)
 	{
+		int count;
 		file >> count;
-		for (i = 0; i <= count; ++i)
+		for (int i = 0; i < count; ++i)
 		{
-			int hClass; STRING className;
-			file >> hClass;
-			file >> className;
-			// hClass is obsolete, but the className has potential use.
-			// tbd - recreate the object
-		}
-
-		// Obsolete hClass usage.
-		file >> count;
-		for (i = 0; i <= count; ++i)
-		{
-			char c;
-			file >> c;
-		}
-	}
-
-	// Currently obsolete garbage collection information. But
-	// garbage collection will have to be reintroduced sooner
-	// or later and it might become useful then.
-	if ((minorVer >= 3) && (minorVer < 4)) // ignore for now
-	{
-		file >> count;
-		for (i = 0; i <= count; ++i)
-		{
-			int data;
-			file >> data;
+			unsigned int idx;
+			STRING cls;
+			file >> idx;
+			file >> cls;
+			CProgram::setObject(idx, cls);
 		}
 	}
 
@@ -797,28 +778,15 @@ void saveSaveState(const STRING fileName)
 	// Movement size (pixel movement setting).
 	file << double (CSprite::m_bPxMovement ? 0.0 : 1.0);
   
-/**
-	// OOP information.
-        Call BinWriteLong(num, UBound(g_objects))
-        For t = 0 To UBound(g_objects)
-            Call BinWriteLong(num, g_objects(t).hClass)
-            Call BinWriteString(num, g_objects(t).strInstancedFrom)
-        Next t
-        Call BinWriteLong(num, UBound(g_objHandleUsed))
-        For t = 0 To UBound(g_objHandleUsed)
-            If (g_objHandleUsed(t)) Then
-                Call BinWriteByte(num, 1)
-            Else
-                Call BinWriteByte(num, 0)
-            End If
-        Next t
-        Dim lngFreeableObjects As Long
-        lngFreeableObjects = countFreeableObjects(g_garbageHeap)
-        Call BinWriteLong(num, lngFreeableObjects)
-        For t = 0 To lngFreeableObjects
-            Call BinWriteLong(num, getFreeableObjectHandle(g_garbageHeap, t))
-        Next t
-**/
+	{
+		OBJECT_ENUM objects = CProgram::enumerateObjects();
+		file << int(objects.size());
+		for (OBJECT_ENUM::ITR i = objects.begin(); i != objects.end(); ++i)
+		{
+			file << i->first;
+			file << i->second;
+		}
+	}
 
 	// Loop offset (game speed modifier).
 	file << CSprite::getLoopOffset();

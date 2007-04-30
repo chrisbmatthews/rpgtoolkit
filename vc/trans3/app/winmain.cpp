@@ -678,8 +678,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
 //	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
-	path = dev;
+//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+//	path = dev;
 
 	set_terminate(termFunc);
 

@@ -286,6 +286,7 @@ struct tagBoardProgram;		// A board program;
 typedef CEnumeration<std::map<STRING, CPtrData<STACK_FRAME> > > HEAP_ENUM;
 typedef CEnumeration<std::map<STRING, STRING> > REDIRECT_ENUM;
 typedef CEnumeration<std::set<CThread *> > THREAD_ENUM;
+typedef CEnumeration<std::map<unsigned int, STRING> > OBJECT_ENUM;
 
 // A program.
 class CProgram
@@ -345,6 +346,8 @@ public:
 	static void freeGlobal(const STRING var) { m_heap.erase(lcase(var)); }
 	static void freeGlobals() { m_heap.clear(); m_objects.clear(); }
 	static HEAP_ENUM enumerateGlobals() { return m_heap; }
+	static OBJECT_ENUM enumerateObjects() { return m_objects; }
+	static void setObject(unsigned int num, const STRING cls) { m_objects[num] = lcase(cls); }
 
 	// Plugins
 	static void addPlugin(IPlugin *const p) { m_plugins.push_back(p); }

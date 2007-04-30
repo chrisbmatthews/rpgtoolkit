@@ -333,17 +333,6 @@ LPSTACK_FRAME CProgram::getVar(const STRING name, unsigned int *pFrame, STRING *
 		if (j != r.end())
 		{
 			return j->second.first;
-			/**REFERENCE &ref = j->second;
-			if (pFrame) *pFrame = ref.second.first;
-
-			const unsigned int frame = ref.second.first;
-			if (frame == 0)
-			{
-				return m_heap[ref.second.second];
-			}
-			std::list<std::map<STRING, STACK_FRAME> >::iterator itr = getLocals()->begin();
-			for (int i = 0; i < frame - 1; ++i) ++itr;
-			return &itr->find(ref.second.second)->second;**/
 		}
 	}
 	// TBD: This should be done at compile-time!
