@@ -37,12 +37,12 @@
 /**
  * Number of milliseconds between each garbage collection cycle.
  * This is really quite fast (30-100 milliseconds), so I've got it
- * at thirty seconds for now. If this drops the FPS, post about it
+ * at ten minutes for now. If this drops the FPS, post about it
  * and we will change it (maybe tied to FPS). It is important, though
  * that is run even when programs are not running, or else programs
  * might all be short enough to fit between cycles.
  */
-#define GARBAGE_CYCLE	30000
+#define GARBAGE_CYCLE	600000
 
 class CProgram;
 
