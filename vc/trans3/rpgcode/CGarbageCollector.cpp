@@ -41,15 +41,7 @@ DWORD WINAPI threadStub(void *p)
 	while (true)
 	{
 		// Sleep between each collection of garbage.
-		DWORD t = GetTickCount();
-		while ((GetTickCount() - t) < GARBAGE_CYCLE)
-		{
-			if (!pCollector->m_bRunning)
-			{
-				ExitThread(0);
-				return 0;
-			}
-		}
+		Sleep(GARBAGE_CYCLE);
 
 		EnterCriticalSection(mutex);
 
