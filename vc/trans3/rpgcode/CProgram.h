@@ -92,17 +92,22 @@ typedef struct tagCallData
 	STACK_FRAME &ret() { return *(p + params); }
 } CALL_DATA, *LPCALL_DATA;
 
+// A map of references.
+typedef std::pair<unsigned int, STRING> REFERENCE_DESC;
+typedef std::pair<LPSTACK_FRAME, REFERENCE_DESC> REFERENCE;
+typedef std::map<unsigned int, REFERENCE> REFERENCE_MAP;
+
 // A call.
 typedef struct tagCallFrame
 {
-	unsigned int i;									// Unit to which to return.
-	unsigned int j;									// Closing brace of the method.
-	STACK_FRAME *p;									// Return value.
-	bool bReturn;									// Whether we should return a value.
-	unsigned int obj;								// This pointer.
-	std::map<unsigned int, LPSTACK_FRAME> refs;		// Parameters that have been passed ByRef.
-	STRING errorHandler;							// Label to jump to in case of error.
-	unsigned int errorReturn;						// Unit to return to after an error.
+	unsigned int i;				// Unit to which to return.
+	unsigned int j;				// Closing brace of the method.
+	STACK_FRAME *p;				// Return value.
+	bool bReturn;				// Whether we should return a value.
+	unsigned int obj;			// This pointer.
+	REFERENCE_MAP refs;			// Parameters that have been passed ByRef.
+	STRING errorHandler;		// Label to jump to in case of error.
+	unsigned int errorReturn;	// Unit to return to after an error.
 } CALL_FRAME;
 
 // A callable function.
@@ -309,7 +314,7 @@ public:
 	LPSTACK_FRAME getLocal(const STRING var) { return &m_locals.back()[var]; }
 	tagBoardProgram *getBoardLocation() const { return m_pBoardPrg; }
 
-	virtual LPSTACK_FRAME getVar(const STRING name);
+	virtual LPSTACK_FRAME getVar(const STRING name, unsigned int *pFrame = NULL, STRING *pName = NULL);
 	virtual bool isThread() const { return false; }
 
 	// Serialisation. This feature allows for the program's state
@@ -429,12 +434,12 @@ private:
 	void resolveFunctions();
 
 protected:
-	LPSTACK_FRAME resolveVarGlobal(const STRING name);
-	LPSTACK_FRAME resolveVarLocal(const STRING name);
+	LPSTACK_FRAME resolveVarGlobal(const STRING name, unsigned int *);
+	LPSTACK_FRAME resolveVarLocal(const STRING name, unsigned int *);
 
 	MACHINE_UNITS m_units;
 	CONST_POS m_i;
-	LPSTACK_FRAME (CProgram::*m_pResolveFunc) (const STRING name);
+	LPSTACK_FRAME (CProgram::*m_pResolveFunc) (const STRING name, unsigned int *);
 };
 
 // A child of a program. Used for parsing lines at runtime.

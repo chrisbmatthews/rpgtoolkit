@@ -310,60 +310,77 @@ inline std::pair<bool, STRING> CProgram::getInstanceVar(const STRING name) const
 	{
 		TCHAR str[255];
 		_itot(obj, str, 10);
-		return std::pair<bool, STRING>(true, _T(":") + STRING(str) + _T("::") + name);
+		return std::pair<bool, STRING>(true, STRING(str) + _T("::") + name);
 	}
 
 	return std::pair<bool, STRING>(false, STRING());
 }
 
 // Get a variable.
-LPSTACK_FRAME CProgram::getVar(const STRING name)
+LPSTACK_FRAME CProgram::getVar(const STRING name, unsigned int *pFrame, STRING *pName)
 {
 	if (name[0] == _T(':'))
 	{
-		return m_heap[name.substr(1)];
+		STRING var = name.substr(1);
+		if (pName) *pName = var;
+		return m_heap[var];
 	}
 	if (name[0] == _T(' '))
 	{
-		// Temporary:	This will _not_ work after a thread has been
-		//				saved and restored.
 		const unsigned int i = (unsigned int)name[1];
-		std::map<unsigned int, LPSTACK_FRAME> &r = m_calls.back().refs;
-		std::map<unsigned int, LPSTACK_FRAME>::iterator j = r.find(i);
+		REFERENCE_MAP &r = m_calls.back().refs;
+		REFERENCE_MAP::iterator j = r.find(i);
 		if (j != r.end())
 		{
-			return j->second;
+			return j->second.first;
+			/**REFERENCE &ref = j->second;
+			if (pFrame) *pFrame = ref.second.first;
+
+			const unsigned int frame = ref.second.first;
+			if (frame == 0)
+			{
+				return m_heap[ref.second.second];
+			}
+			std::list<std::map<STRING, STACK_FRAME> >::iterator itr = getLocals()->begin();
+			for (int i = 0; i < frame - 1; ++i) ++itr;
+			return &itr->find(ref.second.second)->second;**/
 		}
 	}
 	// TBD: This should be done at compile-time!
 	const std::pair<bool, STRING> res = getInstanceVar(name);
 	if (res.first)
 	{
-		return m_heap[res.second];
+		const STRING &qualified = res.second;
+		if (pName) *pName = qualified;
+		return m_heap[qualified];
 	}
-	return (this->*m_pResolveFunc)(name);
+	return (this->*m_pResolveFunc)(name, pFrame);
 }
 
 // Prefer the global scope when resolving a variable.
-LPSTACK_FRAME CProgram::resolveVarGlobal(const STRING name)
+LPSTACK_FRAME CProgram::resolveVarGlobal(const STRING name, unsigned int *pFrame)
 {
-	std::map<STRING, STACK_FRAME> *pLocals = &getLocals()->back();
+	std::list<std::map<STRING, STACK_FRAME> > *pLocalList = getLocals();
+	std::map<STRING, STACK_FRAME> *pLocals = &pLocalList->back();
 	if (pLocals->count(name))
 	{
+		if (pFrame) *pFrame = pLocalList->size();
 		return &pLocals->find(name)->second;
 	}
 	return m_heap[name];
 }
 
 // Prefer the local scope when resolving a variable.
-LPSTACK_FRAME CProgram::resolveVarLocal(const STRING name)
+LPSTACK_FRAME CProgram::resolveVarLocal(const STRING name, unsigned int *pFrame)
 {
 	std::map<STRING, CPtrData<STACK_FRAME> >::iterator i = m_heap.find(name);
 	if (i != m_heap.end())
 	{
 		return i->second;
 	}
-	return &getLocals()->back()[name];
+	std::list<std::map<STRING, STACK_FRAME> > *pLocals = getLocals();
+	if (pFrame) *pFrame = pLocals->size();
+	return &pLocals->back()[name];
 }
 
 // Remove a redirect from the list.
@@ -678,7 +695,20 @@ void CProgram::methodCall(CALL_DATA &call)
 
 		if (pLong[1] & (1 << (pos - 1)))
 		{
-			fr.refs[pos] = fra.prg->getVar(call[i].lit);
+			STRING var = call[i].lit;
+			if (var[0] == ' ')
+			{
+				REFERENCE_MAP &res = call.prg->m_calls.back().refs;
+				REFERENCE_MAP::iterator j = res.find((unsigned int)var[1]);
+				if (j != res.end())
+				{
+					fr.refs.insert(*j);
+					continue;
+				}
+			}
+			unsigned int frame = 0;
+			LPSTACK_FRAME pStackFrame = fra.prg->getVar(var, &frame, &var);
+			fr.refs[pos] = REFERENCE(pStackFrame, REFERENCE_DESC(frame, var));
 		}
 		else
 		{
@@ -820,7 +850,7 @@ void CProgram::returnReference(CALL_DATA &call)
 	const std::pair<bool, STRING> res = call.prg->getInstanceVar(call[0].lit);
 	if (res.first)
 	{
-		call[0].lit = res.second;
+		call[0].lit = _T(':') + res.second;
 	}
 	call.prg->returnFromMethod(call[0]);
 }
@@ -1499,6 +1529,14 @@ void CProgram::serialiseState(CFile &stream) const
 		{
 			stream << int(i->bReturn ? 1 : 0);
 			stream << i->i << i->j << i->obj;
+			stream << int(i->refs.size());
+			REFERENCE_MAP::const_iterator j = i->refs.begin();
+			for (; j != i->refs.end(); ++j)
+			{
+				stream << j->first;
+				const REFERENCE_DESC &r = j->second.second;
+				stream << r.first << r.second;
+			}
 		}
 	}
 
@@ -1598,6 +1636,38 @@ void CProgram::reconstructState(CFile &stream)
 			stream >> cf.j;
 			stream >> cf.obj;
 			cf.p = &(m_stack.end() - j)->back();
+			int count;
+			stream >> count;
+			{
+				for (int j = 0; j < count; ++j)
+				{
+					unsigned int idx;
+					stream >> idx;
+					REFERENCE_DESC desc;
+					stream >> desc.first;
+					stream >> desc.second;
+					cf.refs[idx] = REFERENCE(NULL, desc);
+				}
+			}
+
+			{
+				REFERENCE_MAP::iterator j = cf.refs.begin();
+				for (; j != cf.refs.end(); ++j)
+				{
+					REFERENCE &ref = j->second;
+
+					const unsigned int frame = ref.second.first;
+					if (frame == 0)
+					{
+						ref.first = m_heap[ref.second.second];
+						continue;
+					}
+					std::list<std::map<STRING, STACK_FRAME> >::iterator itr = getLocals()->begin();
+					for (int i = 0; i < frame - 1; ++i) ++itr;
+					ref.first = &itr->find(ref.second.second)->second;
+				}
+			}
+
 			m_calls.push_back(cf);
 		}
 	}
@@ -2466,7 +2536,7 @@ void operators::array(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	// TBD: This should be done at compile-time.
 	const std::pair<bool, STRING> res = call.prg->getInstanceVar(call[0].lit);
-	const STRING prefix = (res.first ? res.second : call[0].lit);
+	const STRING prefix = (res.first ? (_T(':') + res.second) : call[0].lit);
 	call.ret().lit = prefix + _T('[') + call[1].getLit() + _T(']');
 }
 
