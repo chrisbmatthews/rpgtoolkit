@@ -2187,7 +2187,7 @@ void operators::land(CALL_DATA &call)
 
 void operators::ieq(CALL_DATA &call)
 {
-	CHECK_OVERLOADED_OPERATOR(~=, true);
+	CHECK_OVERLOADED_OPERATOR(~=, false);
 	call.ret().udt = UDT_NUM;
 	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
 	{
@@ -2201,7 +2201,7 @@ void operators::ieq(CALL_DATA &call)
 
 void operators::eq(CALL_DATA &call)
 {
-	CHECK_OVERLOADED_OPERATOR(==, true);
+	CHECK_OVERLOADED_OPERATOR(==, false);
 	call.ret().udt = UDT_NUM;
 	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
 	{
