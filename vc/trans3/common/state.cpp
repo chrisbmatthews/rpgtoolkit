@@ -568,7 +568,7 @@ void saveSaveState(const STRING fileName)
 
 		// Write object globals.
 		file << int(objs.size());
-		for (j = nums.begin(); j != nums.end(); ++j)
+		for (j = objs.begin(); j != objs.end(); ++j)
 		{
 			file << (*j)->first << (*j)->second->num;
 		}
