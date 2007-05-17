@@ -103,6 +103,23 @@ void loadSaveState(const STRING str)
 		}
 	}
 
+	// Read object global variables.
+	file >> count;
+	for (i = 0; i < count; ++i)
+	{
+		file >> varName >> varValue;
+		if (!varName.empty())
+		{
+			// Remove type definition character.
+			replace(varName, _T("!"), _T(""));
+			// Remove quotes from maps.
+			replace(varName, _T("\""), _T(""));
+			LPSTACK_FRAME pVar = CProgram::getGlobal(varName);
+			pVar->udt = UDT_OBJ;
+			pVar->num = varValue;
+		}
+	}
+
 	// Read literal global variables.
 	file >> count;
 	for (i = 0; i < count; ++i)
@@ -522,16 +539,35 @@ void saveSaveState(const STRING fileName)
 		// We are going to sort the globals into numerical and literal.
 		// This will keep the file format the same size, even though
 		// it takes a little bit of effort when saving, so it's worth it.
-		std::vector<HEAP_ENUM::ITR> lits, nums;
+		std::vector<HEAP_ENUM::ITR> lits, nums, objs;
 		std::vector<HEAP_ENUM::ITR>::const_iterator j;
 
 		for (; itr != heap.end(); ++itr)
 		{
-			((itr->second->udt & UDT_LIT) ? lits : nums).push_back(itr);
+			UNIT_DATA_TYPE udt = itr->second->udt;
+			if (udt & UDT_LIT)
+			{
+				lits.push_back(itr);
+			}
+			else if (udt & UDT_OBJ)
+			{
+				objs.push_back(itr);
+			}
+			else
+			{
+				nums.push_back(itr);
+			}
 		}
 
 		// Write numerical globals.
 		file << int(nums.size());
+		for (j = nums.begin(); j != nums.end(); ++j)
+		{
+			file << (*j)->first << (*j)->second->num;
+		}
+
+		// Write object globals.
+		file << int(objs.size());
 		for (j = nums.begin(); j != nums.end(); ++j)
 		{
 			file << (*j)->first << (*j)->second->num;
