@@ -385,10 +385,6 @@ void tagScrollCache::render(const bool bForceRedraw)
 				//cnv.DrawRect(r.left, r.top, r.right, r.bottom, RGB(255, 255, 255));
 			}
 
-			// Draw pathfinding obstructions (grown vectors) for the selected player only.
-			// (Debug).
-			// g_pSelectedPlayer->drawPfObjects(r.left, r.top, &cnv);
-
 			cnv.Unlock();
 		}
 #endif

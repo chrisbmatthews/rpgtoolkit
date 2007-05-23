@@ -48,7 +48,7 @@ CSprite::CSprite(const bool show):
 m_facing(this),
 m_attr(),
 m_bActive(show),
-m_pathFind(),
+m_pPathFind(NULL),
 m_pCanvas(NULL),
 m_pos(),
 m_thread(NULL),
@@ -538,7 +538,7 @@ void CSprite::setPathTarget(void)
 
 	const double dx = m_pos.target.x - m_pos.x,
 				 dy = m_pos.target.y - m_pos.y;
-	const double dmax = dAbs(dx) > dAbs(dy) ? dAbs(dx) : dAbs(dy);
+	const double dmax = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
 
 	// Scale the vector.
 	if (dmax)
@@ -705,11 +705,11 @@ PF_PATH CSprite::pathFind(const int x, const int y, const int type, const int fl
 	{
 		const DB_POINT start = {m_pos.x, m_pos.y}, goal = {x, y};
 
-		return m_pathFind.pathFind(
+		return CPathFind::pathFind(
+			&m_pPathFind,
 			start, 
 			goal, 
-			m_pos.l, 
-			m_attr.vBase.getBounds(), 
+			m_pos.l,
 			type,
 			this,
 			flags
@@ -1225,7 +1225,7 @@ void CSprite::send(void)
 
 	extern ZO_VECTOR g_sprites;
 	g_sprites.zOrder();
-	g_sprites.freePaths();
+	CPathFind::freeAllData();
 
 	// Ensure that programs the player is standing on don't run immediately.
 	deactivatePrograms();

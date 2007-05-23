@@ -109,11 +109,10 @@ vVersion:
 		file >> var; coordType = COORD_TYPE(var);
 
 		// Effective matrix dimensions.
-		const int effectiveWidth = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeX); 
-		const int effectiveHeight = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeY);
+		const int wEffective = effectiveWidth(), hEffective = effectiveHeight();
 
 		// Dimension the board matrices.
-		setSize(effectiveWidth, effectiveHeight, sizeL, false);
+		setSize(wEffective, hEffective, sizeL, false);
 
 		// Build the tile look-up-table.
 		short lutSize;
@@ -144,9 +143,9 @@ vVersion:
 		int x, y, z;
 		for (z = 1; z <= sizeL; ++z)
 		{
-			for (y = 1; y <= effectiveHeight; ++y)
+			for (y = 1; y <= hEffective; ++y)
 			{
-				for (x = 1; x <= effectiveWidth; ++x)
+				for (x = 1; x <= wEffective; ++x)
 				{
 					short index = 0, count = 0;
 					file >> index;
@@ -178,10 +177,10 @@ vVersion:
 								}
 							}
 
-							if (++x > effectiveWidth)
+							if (++x > wEffective)
 							{
 								x = 1;
-								if (++y > effectiveHeight)
+								if (++y > hEffective)
 								{
 									y = 1;
 									if (++z > sizeL)
@@ -224,13 +223,13 @@ lutEndA:
 		file >> ub;
 		for (z = 0; z <= ub; ++z)
 		{
-			LPLAYER_SHADE pLs = new LAYER_SHADE(effectiveWidth, effectiveHeight);
+			LPLAYER_SHADE pLs = new LAYER_SHADE(wEffective, hEffective);
 			LPRGB_MATRIX pMat = &pLs->shades;
 			file >> pLs->layer;
 
-			for (y = 1; y <= effectiveHeight; ++y)
+			for (y = 1; y <= hEffective; ++y)
 			{
-				for (x = 1; x <= effectiveWidth; ++x)
+				for (x = 1; x <= wEffective; ++x)
 				{
 					short count = 0;
 					RGB_SHORT rgb = {0, 0, 0};
@@ -245,10 +244,10 @@ lutEndA:
 						{
 							(*pMat)[x][y] = rgb;
 
-							if (++x > effectiveWidth)
+							if (++x > wEffective)
 							{
 								x = 1;
-								if (++y > effectiveHeight)
+								if (++y > hEffective)
 								{
 									goto layerEnd;
 								}
@@ -1263,8 +1262,7 @@ void tagBoard::render(
 		nHeight = (height + topY > pxHeight() ? pxHeight() - topY : height) / tileHeight();
 
 	// Effective matrix dimensions.
-	const int effectiveWidth = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeX); 
-	const int effectiveHeight = (coordType & ISO_ROTATED ? sizeX + sizeY : sizeY);
+	const int wEffective = effectiveWidth(), hEffective = effectiveHeight();
 
 	// Tile start co-ordinates.
 	int x = topX, y = topY;
@@ -1278,7 +1276,7 @@ void tagBoard::render(
 	}
 	else if (coordType & ISO_ROTATED)
 	{
-		y = y - nWidth;
+		y = y - nWidth; // - 1: Note: top right tile not drawn?
 		nWidth = nHeight = (nWidth + nHeight);
 	}
 
@@ -1292,12 +1290,12 @@ void tagBoard::render(
 			// For the x axis
 			for (unsigned int j = x; j <= x + nWidth; ++j)
 			{
-				if (j > effectiveWidth) continue;
+				if (j > wEffective) continue;
 
 				// For the y axis
 				for (unsigned int k = y; k <= y + nHeight; ++k)
 				{
-					if (k > effectiveHeight) continue;
+					if (k > hEffective) continue;
 
 					if (board[i][k][j])
 					{

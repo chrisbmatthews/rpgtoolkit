@@ -142,12 +142,4 @@ inline int sgn(const double num)
 	return (num > 0 ? 1 : -1);
 }
 
-/*
- * Absolute value of a double.
- */
-inline double dAbs(const double x)
-{
-	return (x < 0 ? -x : x);
-}
-
 #endif

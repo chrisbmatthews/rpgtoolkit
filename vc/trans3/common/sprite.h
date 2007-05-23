@@ -36,6 +36,7 @@
  */
 
 // Ordered specifically for rotation permutations (when sliding).
+// Pathfinding also has a strong dependence on these numerical values and order.
 typedef enum tagMovementCodes
 {
 	MV_IDLE,

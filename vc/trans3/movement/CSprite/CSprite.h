@@ -58,7 +58,7 @@ public:
 	void doMovement(						// Initiate rpgcode movements.
 		const CProgram *prg, 
 		const bool bPauseThread);
-	void freePath(void) { m_pathFind.freeVectors(); }
+	void freePath(void) { if (m_pPathFind) m_pPathFind->freeData(); }
 	void parseQueuedMovements(				// Parse a Push() string and pass to setQueuedMovement().
 		const STRING str, 
 		const bool bClearQueue);	
@@ -92,9 +92,6 @@ public:
 		const LONG color);		
 	void drawVector(CCanvas *const cnv);	// Draw the sprite's base vector.
 
-	// Draw the sprite's collision boundaries (debug).
-//	void drawPfObjects(int x, int y, CCanvas *cnv) { m_pathFind.drawObstructions(x, y , cnv); }
-	
 	bool render( 							// Render frame to canvas.
 		CCanvas *const cnv,
 		const int layer,
@@ -180,7 +177,7 @@ protected:
 	SPRITE_POSITION m_pos;					// Current location and frame details.
 	TILE_TYPE m_tileType;					// The tiletypes at the sprite's location (NOT the "tiletype" of the sprite).
 	DB_POINT m_v;							// Position vector in movement direction
-	CPathFind m_pathFind;					// Sprite-specific pathfinding information.
+	CPathFind *m_pPathFind;					// Sprite-specific pathfinding information.
 	CFacing m_facing;						// Facing direction.
 	CThread *m_thread;						// Sleeping thread id if moving in a thread.
 
@@ -221,13 +218,6 @@ typedef struct tagZOrderedSprites
 
 	// Form v into a z-ordered vector from g_players and g_items.
 	void zOrder();
-
-	// Free pathfinding vectors CPathFind::m_obstructions.
-	void freePaths()
-	{
-		for (std::vector<CSprite *>::iterator i = v.begin(); i != v.end(); ++i)
-			(*i)->freePath();
-	};
 
 	// Remove a pointer from the vector.
 	void remove(CSprite *p)

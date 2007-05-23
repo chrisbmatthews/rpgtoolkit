@@ -1,7 +1,7 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Jonathan D. Hughes
+ * This file copyright (C) 2006 - 2007  Jonathan D. Hughes
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
@@ -20,9 +20,9 @@
  */
 
 /*
- * TBD:
- *		CENTRE SPRITE BASES IN 2D MODE.
- *		Goals in multiple vectors.
+ * Known issues:
+ *	Goals contained in multiple vectors not considered.
+ *  Artibrary tile grid size requires adjustments to coords namespace.
  */
 
 #include "CPathFind.h"
@@ -30,31 +30,20 @@
 #include "../../common/board.h"
 #include "../../../tkCommon/board/coords.h"
 #include "../../common/mainfile.h"
+#include <math.h>
 
 /*
  * Defines
  */
 const int PF_MAX_STEPS = 1000;		// Maximum number of steps in a path.
 const int PF_GRID_SIZE = 32;		// Grid size for non-vector movement (= 32 for tile movement).
-const DB_POINT SEPARATOR = {-1, -1};// Invalid point to separate board and sprites in m_points.
+									// NOTE: if this is changed, coords namespace needs updating
+									// to accept an arbitrary grid size.
 
-
-/*
- * Default constructor.
- */
-CPathFind::CPathFind():
-m_heuristic(PF_AXIAL),
-m_goal(),
-m_layer(0),
-m_start(),
-m_steps(0)
-{
-	// Insufficient information is available when CSprite is constructed
-	// to be able to do anything here.
-	extern MAIN_FILE g_mainFile;
-	m_heuristic = PF_HEURISTIC(g_mainFile.pfHeuristic);
-	m_u.v = NULL;
-}
+int CPathFind::m_isIso = 0;			// g_pBoard->isIsometric().
+CTilePathFind::PF_TILE_MAP CTilePathFind::m_boardPoints;
+CTilePathFind::PF_SWEEP_MAP CTilePathFind::m_sweeps;
+CVectorPathFind::PF_VECTOR_MAP CVectorPathFind::m_boardVectors;
 
 /*
  * Find the node with the lowest f-value.
@@ -70,46 +59,7 @@ NODE *CPathFind::bestOpenNode(void)
 }
 
 /*
- * Make the path by tracing parents through m_closedNodes.
- */
-PF_PATH CPathFind::constructPath(NODE node, const RECT &r)
-{
-	extern LPBOARD g_pBoard;
-
-	int dx = 0, dy = 0;
-	PF_PATH path;
-
-	// Modify the points for any offsets.
-	if (!g_pBoard->isIsometric())
-	{
-		// Shift points down the board by half
-		// the base height or to the tile edge.
-		// Bitshift in place of divide by two (>> 1 equivalent to / 2)
-//		dx = (m_heuristic == PF_VECTOR ? (r.right - r.left) >> 1 : 0);
-		dy = (m_heuristic == PF_VECTOR ? (r.bottom - r.top) >> 1 : 0);
-	}
-
-	if (m_heuristic == PF_VECTOR)
-	{
-		// Pushback the goal without modification.
-		path.push_back(node.pos);
-		node = *(m_closedNodes.begin() + node.parent);
-	}
-
-	// tbd: merge points on a straight line for non-vector movement.
-
-	while(node.pos != m_start.pos)
-	{
-		node.pos.x += dx;
-		node.pos.y += dy;
-		path.push_back(node.pos);
-		node = *(m_closedNodes.begin() + node.parent);
-	}
-	return path;
-}
-
-/*
- * Construct an equivalent directional path.
+ * Construct an equivalent directional (MV_ENUM) path.
  */
 std::vector<MV_ENUM> CPathFind::directionalPath(void)
 {
@@ -128,214 +78,86 @@ std::vector<MV_ENUM> CPathFind::directionalPath(void)
 }
 
 /*
- * Estimate the straight-line distance between nodes, depending
- * on the movement style and adding any modifiers.
+ * Free static members of derived classes.
+ * This should be the only function to call freeStatics(), because
+ * freePath() *must* be called on all sprites before it can be
+ * called - otherwise sprite pathfinds will have dangling pointers.
  */
-int CPathFind::distance(NODE &a, NODE &b)
+void CPathFind::freeAllData(void)
 {
-	const int dx = abs(a.pos.x - b.pos.x), dy = abs(a.pos.y - b.pos.y);
-	int di = 0;
-
-	switch(m_heuristic)
+	extern ZO_VECTOR g_sprites;
+	for (std::vector<CSprite *>::iterator i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
 	{
-		case PF_AXIAL:
-			return (dx + dy);
-		case PF_DIAGONAL:
-			// Diagonals cost sqrt(2):
-			di = (dx < dy ? dx : dy);
-			return (1.41 * di + (dx + dy - 2 * di));
-		case PF_VECTOR:
-			return sqrt(dx * dx + dy * dy);
+		(*i)->freePath();
 	}
-	return 0;
+	CTilePathFind::freeStatics();
+	CVectorPathFind::freeStatics();
+	// And any other derived classes with static members.
 }
 
 /*
- * Get the next potential child of a node.
+ * Entry point - static function.
  */
-bool CPathFind::getChild(DB_POINT &child, DB_POINT parent)
-{
-	extern const double g_directions[2][9][2];
-	extern LPBOARD g_pBoard;
-
-	if (m_heuristic == PF_VECTOR)
-	{
-		if (m_u.v == m_points.end())
-		{
-			m_u.v = m_points.begin();
-			return false;
-		}
-		if (*m_u.v == SEPARATOR)
-		{
-			if (++m_u.v == m_points.end())
-			{
-				m_u.v = m_points.begin();
-				return false;
-			}
-		}
-		child = *m_u.v;
-		++m_u.v;
-	}
-	else
-	{
-		const int isIso = int(g_pBoard->isIsometric());
-		if (m_u.i > MV_NE)
-		{
-			m_u.i = (m_heuristic == PF_AXIAL && isIso ? MV_SE : MV_E);
-			return false;
-		}
-		if (parent == m_start.pos)
-		{
-			// Cater for non-aligned starts.
-			coords::roundToTile(parent.x, parent.y, isIso, true);
-		}
-		child.x = g_directions[isIso][m_u.i][0] * PF_GRID_SIZE + parent.x;
-		child.y = g_directions[isIso][m_u.i][1] * PF_GRID_SIZE + parent.y;
-
-		// Limit neighbours depending on allowed directions.
-		m_u.i += (m_heuristic == PF_AXIAL ? 2 : 1);
-	}
-	return true;
-}
-
-/*
- * Re-initialise the search.
- */
-void CPathFind::initialize(const int layer, const RECT &r, const PF_HEURISTIC type)
-{
-	extern LPBOARD g_pBoard;
-
-	m_layer = layer;
-	m_heuristic = type;
-
-	m_points.clear();
-	freeVectors();					// m_obstructions.
-
-	if (m_heuristic != PF_VECTOR)
-	{
-		// Pushback a NULL to create a single entry that prevents
-		// initialisation each run in tile mode, but is otherwise unused.
-		m_obstructions.push_back(NULL);
-		// Nothing else to do for tile pathfinding.
-		return;
-	}
-
-	const DB_POINT limits = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
-
-	// Grow by longest diagonal.
-	const int x = abs(r.left) > abs(r.right) ? r.left : r.right,
-			  y = abs(r.top) > abs(r.bottom) ? r.top : r.bottom;
-	const int size = x > y ? x : y; //sqrt(x * x + y * y);
-
-	// Pushback two empty points to act as the first goal and start. Do this first!
-	m_points.push_back(DB_POINT());
-	m_points.push_back(DB_POINT());
-
-	// Add collidable nodes from the board.
-	for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
-	{
-		if (i->layer != m_layer || i->type & ~TT_SOLID) continue;
-
-		// The board vectors have to be "grown" to make sure the sprites
-		// can move around them without colliding.
-		CPfVector *vector = new CPfVector(*(i->pV));
-		vector->grow(size);
-
-		m_obstructions.push_back(vector);
-		vector->createNodes(m_points, limits);					
-	}
-	// Pushback a NULL pointer to separate the board vectors from sprite vectors.
-	m_obstructions.push_back(NULL);
-	// Pushback an invalid point to separate board and sprite in m_points.
-	m_points.push_back(SEPARATOR);
-}
-
-/*
- * Determine if a node can be directly reached from another node
- * i.e. is there an unobstructed line between the two?
- */
-bool CPathFind::isChild(
-	const NODE &child, 
-	const NODE &parent, 
-	const CSprite *pSprite, 
-	const CPfVector &base,
+PF_PATH CPathFind::pathFind(
+	CPathFind **ppPf,
+	const DB_POINT start, 
+	const DB_POINT goal,
+	const int layer, 
+	const int mode,				// Pathfinding mode.
+	const CSprite *pSprite,		// Pointer to the calling sprite.
 	const int flags)
 {
-	extern LPBOARD g_pBoard;
-	extern ZO_VECTOR g_sprites;
+	PF_HEURISTIC heuristic = PF_HEURISTIC(mode);
+	CPathFind *p = *ppPf;
 
-	if (child.pos == parent.pos) return false;
-
-	if (m_heuristic == PF_VECTOR)
+	if (!p && heuristic == PF_PREVIOUS)
 	{
-		CPfVector v(parent.pos);
-		v.push_back(child.pos);
-		v.close(false);
-
-		// Check for board collisions along the path.
-		for (std::vector<CPfVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
-		{
-			if ((*i) && (*i)->contains(v)) return false;		
-		}
+		// No previous algorithm to use - use default.
+		extern MAIN_FILE g_mainFile;
+		heuristic = PF_HEURISTIC(g_mainFile.pfHeuristic);
 	}
-	else
+
+	// Use the current derivative if already exists.
+	if (!p || (heuristic != p->m_heuristic && heuristic != PF_PREVIOUS))
 	{
-		const DB_POINT max = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
-		if (child.pos.x <= 0 || child.pos.y <= 0 || child.pos.x >= max.x || child.pos.y >= max.y) 
-			return false;
-
-		// Check for collisions with both the swept vector and the target.
-		CPfVector sweep = CPfVector(base + parent.pos).sweep(parent.pos, child.pos);
-		// Move the origin to the target.
-		CPfVector v = base + child.pos;
-		
-		// Tile pathfinding operates directly on board/sprite vectors.
-		DB_POINT unused = {0, 0};
-		for (std::vector<BRD_VECTOR>::iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
+		// Load a new derivative.
+		delete p;
+		switch (heuristic)
 		{
-			if (i->layer != m_layer || i->type != TT_SOLID) continue;
-			if ((flags & PF_SWEEP) && i->pV->contains(sweep, unused)) return false;
-			if (i->pV->contains(v, unused)) return false;
+			case PF_DIAGONAL:
+			case PF_AXIAL:
+			{
+				p = new CTilePathFind();
+				break;
+			}
+			case PF_VECTOR:
+			{
+				p = new CVectorPathFind();
+				break;
+			}
 		}
-
-		// If the goal is occupied by a sprite and do not want to bypass
-		// it (i.e., we want to meet it) then return.
-		if ((child.pos == m_goal.pos) && (~flags & PF_AVOID_SPRITE)) return true;
-
-		for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
-		{
-			if ((*j)->getPosition().l != m_layer || *j == pSprite) continue;
-			CVector base = (*j)->getVectorBase(true);
-			if ((flags & PF_SWEEP) && base.contains(sweep, unused)) return false;
-			if (base.contains(v, unused)) return false;
-		}
+		p->m_heuristic = heuristic;
 	}
-	return true;
+	*ppPf = p;
+	if (!p->reset(start, goal, layer, pSprite, flags)) return PF_PATH();
+	return p->pathFind(pSprite);
 }
 
 /*
  * Main function - apply the algorithm to the input points.
  */
-PF_PATH CPathFind::pathFind(
-	const DB_POINT start, 
-	const DB_POINT goal,
-	const int layer, 
-	const RECT &r, 
-	const int type, 
-	const CSprite *pSprite,
-	const int flags)
+PF_PATH CPathFind::pathFind(const CSprite *pSprite)
 {
-	// Recreate m_obstructions if running on a new board or changing layers.
-	PF_HEURISTIC heur = PF_HEURISTIC(type);
-	if (heur == PF_PREVIOUS) heur = m_heuristic;
-
-	if (layer != m_layer || m_obstructions.empty() || heur != m_heuristic)
-		initialize(layer, r, heur);
-
 	// Quit if the reset fails or the goal is the start point.
-	CPfVector base;
-	if (!reset(start, goal, r, pSprite, base, flags)) return PF_PATH();
 	if (m_start.pos == m_goal.pos) return PF_PATH();
+
+	// Distance estimate for start node.
+	m_start.dist = distance(m_start, m_goal);
+	m_steps = 0;
+
+	m_openNodes.clear();
+	m_closedNodes.clear();
+	m_openNodes.push_back(m_start);
 
 	while (!m_openNodes.empty())
 	{
@@ -352,15 +174,13 @@ PF_PATH CPathFind::pathFind(
 		if (parent->pos == m_goal.pos || m_steps > PF_MAX_STEPS) break;
 
 		// Find child nodes.
-		DB_POINT p = {0, 0};
-		while (getChild(p, parent->pos))
+		NODE child;
+		while (getChild(child, *parent))
 		{
 			// Check if this node has been encountered as a child of another
-			// node, and if so whether it this new cost (route) is more
-			// efficient.
+			// node, and if so whether it this new route is more efficient.
 
-			NODE child(p);
-			if (!isChild(child, *parent, pSprite, base, flags | PF_SWEEP)) continue;
+			if (!isChild(child, *parent)) continue;
 
 			// Assign total cost of moving from the start to this node
 			// *via this parent*, and the straight-line estimate to the goal (heuristic).
@@ -369,11 +189,6 @@ PF_PATH CPathFind::pathFind(
 
 			// m_closedNodes and parent are both constant in this while().
 			child.parent = parent - &*m_closedNodes.begin();
-			if (m_heuristic != PF_VECTOR) 
-			{
-				// m_u.i will have incremented - the previous value is needed.
-				child.direction = MV_ENUM(m_u.i - (m_heuristic == PF_AXIAL ? 2 : 1));
-			}
 
 			// Check if the node has been closed via a different route,
 			// and if so, whether this is a more efficient route.
@@ -418,180 +233,696 @@ PF_PATH CPathFind::pathFind(
 	if (m_closedNodes.back().pos == m_goal.pos)
 	{
 		// Construct the path.
-		return constructPath(m_closedNodes.back(), r);
+		return constructPath(m_closedNodes.back(), pSprite);
 	}
 	return PF_PATH();
 		
 }
 
 /*
+ ********************************************************************
+ * CTilePathFind
+ ********************************************************************
+ */
+
+/*
+ * Add a vector to the collision matrix.
+ */
+void CTilePathFind::addVector(CVector &vector, PF_SWEEPS &sweeps, PF_MATRIX &points)
+{
+	extern LPBOARD g_pBoard;
+
+	// Tile pathfinding works in cartesian and rotated coordinate systems.
+	// The actual tile coordinate system is irrelevant.
+	COORD_TYPE coord = m_isIso ? ISO_ROTATED : TILE_NORMAL;
+
+	// Convert bounds to grid point coordinates and determine if
+	// each grid point is in the vector.
+	RECT b = vector.getBounds();
+
+	// Expand the area that is checked.
+	const POINT size = {
+		long(g_directions[m_isIso][MV_E][0]) * PF_GRID_SIZE, 
+		long(g_directions[m_isIso][MV_S][1]) * PF_GRID_SIZE
+	};
+	b.left -= size.x; b.right += size.x;
+	b.top -= size.y; b.bottom += size.y;
+
+	// Round to sprite positions (pixel points corresponding
+	// to matrix elements).
+	coords::roundToTile(b.left, b.top, m_isIso, true);
+	coords::roundToTile(b.right, b.bottom, m_isIso, true);
+
+	// Allow negative points - since b.left/top will never be < 0,
+	// the expanded area will always be within the matrix range (i.e. 0, 0)
+	// If the size of the expansion ('size') changes, this may need reconsidering.
+	// if (b.left < 0) b.left = 0;
+	// if (b.top < 0) b.top = 0;
+	if (b.right > g_pBoard->pxWidth()) b.right = g_pBoard->pxWidth();
+	if (b.bottom > g_pBoard->pxHeight()) b.bottom = g_pBoard->pxHeight();
+
+	DB_POINT unused = {0.0};
+	int dy = 0;
+	for (int x = b.left; x <= b.right; x += 32)
+	{
+		for (int y = b.top + dy; y <= b.bottom; y += 32)
+		{
+			// Determine if the neighbouring points can be reached from this point
+			// for this sprite.
+			const DB_POINT pt = {double(x), double(y)};
+
+			int i = x, j = y;
+			coords::pixelToTile(i, j, coord, false, g_pBoard->sizeX);
+
+			for (MV_ENUM k = MV_E; k != MV_W; ++k)
+			{
+				CPfVector &v = sweeps[k].first;
+				v += pt;
+									
+				if (vector.contains(v, unused))
+				{
+					// Block the movement from ij in the k direction.
+					// The kth bit of points[i][j] corresponds to 
+					// movement(0) or block(1) in that direction.
+					points[i][j] |= 1 << (k - 1);
+
+					// Block movement in the opposite direction.
+					// Obtain the tile coordinate of the target tile.
+					const DB_POINT target = sweeps[k].second;
+					int m = pt.x + target.x, n = pt.y + target.y;
+					coords::pixelToTile(m, n, coord, false, g_pBoard->sizeX);
+
+					if (m >= 0 && m < points.size() && n >= 0 && n < points[0].size())
+					{
+						points[m][n] |= 1 << (k - 1 + 4);
+					}
+				}
+				v -= pt;
+
+			} // for (MV_ENUM)
+		} // for (y)
+		// Ensure isometric columns are vertically offset correctly.
+		if (m_isIso) dy = abs(dy - 16);
+	} // for (x)
+}
+
+/*
+ * Make the path by tracing parents through m_closedNodes.
+ */
+PF_PATH CTilePathFind::constructPath(NODE node, const CSprite *) const
+{
+	// tbd: merge points on a straight line.
+	PF_PATH path;
+
+	while(node.pos != m_start.pos)
+	{
+		path.push_back(node.pos);
+		node = *(m_closedNodes.begin() + node.parent);
+	}
+	return path;
+}
+
+/*
+ * Estimate the straight-line distance between nodes, depending
+ * on the movement style and adding any modifiers.
+ */
+int CTilePathFind::distance(const NODE &a, const NODE &b) const
+{
+	const int dx = abs(a.pos.x - b.pos.x), dy = abs(a.pos.y - b.pos.y);
+	int di = 0;
+
+	switch(m_heuristic)
+	{
+		case PF_AXIAL:
+			return (dx + dy);
+		case PF_DIAGONAL:
+			// Diagonals cost sqrt(2):
+			di = (dx < dy ? dx : dy);
+			return (1.41 * di + (dx + dy - 2 * di));
+	}
+	return 0;
+}
+
+/*
+ * Get the next potential child of a node.
+ */
+bool CTilePathFind::getChild(NODE &child, NODE &parent)
+{
+	extern const double g_directions[2][9][2];
+
+	if (m_nextDir > MV_NE)
+	{
+		m_nextDir = (m_heuristic == PF_AXIAL && m_isIso ? MV_SE : MV_E);
+		return false;
+	}
+	DB_POINT pt = parent.pos;
+	if (pt == m_start.pos)
+	{
+		// Cater for non-aligned starts.
+		coords::roundToTile(pt.x, pt.y, m_isIso, true);
+	}
+	child.pos.x = g_directions[m_isIso][m_nextDir][0] * PF_GRID_SIZE + pt.x;
+	child.pos.y = g_directions[m_isIso][m_nextDir][1] * PF_GRID_SIZE + pt.y;
+	child.direction = MV_ENUM(m_nextDir);
+
+	// Limit neighbours depending on allowed directions.
+	m_nextDir += (m_heuristic == PF_AXIAL ? 2 : 1);
+
+	return true;
+}
+
+/*
+ * Tile pathfinding: re-initialise the search.
+ * Tile pf: create a matrix of valid nodes by generating grown
+ * collision vectors and testing each point (does not include sprites).
+ * Remember the nodes are matrix coordinates, not collision vector points.
+ */
+void CTilePathFind::initialize(const CSprite *pSprite)
+{
+	extern LPBOARD g_pBoard;
+
+	CVector cvBase = pSprite->getVectorBase(false);
+	CPfVector cpfvBase = CPfVector(cvBase, m_layer);
+
+	// Check to see if a board matrix has already been defined for this
+	// particular sprite vector base shape *on this particular layer*
+	// - the PF_MATRIX in m_boardPoints is layer-specific, so the key
+	// (the CPfVector) must be also.
+	PF_TILE_MAP::iterator i = m_boardPoints.find(cpfvBase);
+	if (i != m_boardPoints.end())
+	{
+		// Tracking users will prove too complicated and isn't important
+		// if the static data are cleared when the board changes.
+		m_pBoardPoints = &i->second;
+
+		// m_sweeps does not need to be indexed by layer since it only
+		// contains templates, hence is mapped to a CVector.
+		// If m_boardPoints[cpfv] exists, then m_sweeps[cv] will also
+		// exist, since they are both created below.
+		m_pSweeps = &m_sweeps[cvBase];
+		return;
+	}
+
+	// Create a set of 4 swept vectors that cover the 8 directions
+	// of movement for this sprite's base. Store a swept vector and
+	// the sweep target in a pair.
+	PF_SWEEPS sweeps;
+
+	const DB_POINT zero = {0.0};
+	for (MV_ENUM j = MV_E; j != MV_W; ++j)
+	{
+		// g_directions[isIsometric()][MV_CODE][x OR y].
+		const DB_POINT pt = {
+			g_directions[m_isIso][j][0] * PF_GRID_SIZE, 
+			g_directions[m_isIso][j][1] * PF_GRID_SIZE
+		};
+
+		sweeps[j].first = cpfvBase;
+		sweeps[j].first.merge(cpfvBase.sweep(zero, pt));
+		// Also include base at target location.
+		sweeps[j].first.merge(cpfvBase + pt);
+		sweeps[j].second = pt;
+	}
+
+	// Insert the sweeps into the static map for this unique sprite base.
+	// Remember that the sweep key is a CVector.
+	m_sweeps[cvBase] = sweeps;
+	m_pSweeps = &m_sweeps[cvBase];
+
+	// Set up the coordinate matrix (match true (effective) size of tile array).
+	PF_MATRIX points;
+	sizeMatrix(points);
+
+	for (std::vector<BRD_VECTOR>::iterator k = g_pBoard->vectors.begin(); k != g_pBoard->vectors.end(); ++k)
+	{
+		if (k->layer != m_layer || k->type & ~TT_SOLID) continue;
+		addVector(*(k->pV), sweeps, points);
+	}
+
+	// Insert the matrix into the static map to allow other identical
+	// sprites to use it. Tracking users will prove too complicated and
+	// isn't important if the static data are cleared when the board changes.
+	m_boardPoints[cpfvBase] = points;
+	m_pBoardPoints = &m_boardPoints[cpfvBase];
+}
+
+/*
+ * Determine if a node can be directly reached from another node
+ */
+bool CTilePathFind::isChild(const NODE &child, const NODE &parent) const
+{
+	extern LPBOARD g_pBoard;
+
+	if (child.pos == parent.pos) return false;
+
+	if (child.pos.x < 0 || child.pos.x > g_pBoard->pxWidth() || child.pos.y < 0 || child.pos.y > g_pBoard->pxHeight()) return false;
+
+	int i = int(parent.pos.x), j = int(parent.pos.y);
+	coords::pixelToTile(i, j, m_isIso ? ISO_ROTATED : TILE_NORMAL, false, g_pBoard->sizeX);
+
+	PF_MATRIX &pts = *m_pBoardPoints;
+	if (i < pts.size() && j < pts[0].size())
+	{
+		const PF_MATRIX_ELEMENT dir = 1 << (child.direction - 1);
+		if ((pts[i][j] & dir) || (m_spritePoints[i][j] & dir)) return false;
+	}
+	return true;
+}
+
+/*
  * Reset the points at the start of a search.
  */
-bool CPathFind::reset(
+bool CTilePathFind::reset(
 	DB_POINT start, 
 	DB_POINT goal, 
-	const RECT &r, 
+	const int layer,
 	const CSprite *pSprite,
-	CPfVector &base,
 	const int flags)
 {
 	extern LPBOARD g_pBoard;
 	extern ZO_VECTOR g_sprites;
 
-	if (m_heuristic == PF_VECTOR)
+	// Recreate collision data if changing layers / absent.
+	if (layer != m_layer || !m_pBoardPoints) 
 	{
-		// Remove old sprite bases up to board separator.
-		while (m_obstructions.back())
-		{
-			delete m_obstructions.back();
-			m_obstructions.pop_back();
-		}
-
-		// Remove old sprite base nodes up to board separator.
-		while (m_points.back() != SEPARATOR)
-		{
-			m_points.pop_back();
-		}
-
-		const DB_POINT limits = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
-		// Grow by longest diagonal.
-		const int x = abs(r.left) > abs(r.right) ? r.left : r.right,
-				  y = abs(r.top) > abs(r.bottom) ? r.top : r.bottom;
-		const int size = x > y ? x : y; //sqrt(x * x + y * y);
-
-		// Re-add the sprite bases each time.
-		for (std::vector<CSprite *>::iterator i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
-		{
-			if ((*i)->getPosition().l != m_layer || *i == pSprite) continue;
-
-			// tbd: speed up by saving old pfvectors (associate each with its base vector).
-			CPfVector *vector = new CPfVector((*i)->getVectorBase(true));
-
-			// Extra clearance for sprites.
-			vector->grow(size + 1);
-
-			// If a sprite is at the goal and we do not want to bypass it
-			// (i.e., we want to meet it), then do not add it's vector
-			// and the path will reach the requested goal.
-			if ((~flags & PF_AVOID_SPRITE) && vector->containsPoint(goal)) 				
-			{
-				if (vector->containsPoint(start)) start = vector->nearestPoint(start);
-				delete vector;
-			}
-			else
-			{
-				m_obstructions.push_back(vector);
-				vector->createNodes(m_points, limits);					
-			}
-		}
-
-		// Check if the goal is contained in a solid area.
-		// If so, set the goal to be the closest edge point.
-		int spFlags = PF_AVOID_SPRITE;
-		for (std::vector<CPfVector *>::iterator j = m_obstructions.begin(); j != m_obstructions.end(); ++j)
-		{
-			if (!*j)
-			{
-				// Board vector / sprite separator.
-				spFlags = flags;
-				continue;
-			}
-			// If the goal is allowed in a sprite base skip because 
-			// we have already checked this in the previous loop.
-			if ((spFlags & PF_AVOID_SPRITE) && (*j)->containsPoint(goal))
-			{
-				// If the goal is blocked and a nearby point is not allowed, quit.
-				if (spFlags & PF_QUIT_BLOCKED) return false;
-
-				goal = (*j)->nearestPoint(goal);
-				/* Consider goals contained in multiple vectors! */
-			}
-			if ((*j)->containsPoint(start))
-			{
-				start = (*j)->nearestPoint(start);
-				/* Consider starts contained in multiple vectors! */
-			}
-		}
-
-		// Change the previous goal and start.
-		*m_points.begin() = start;
-		*(m_points.begin() + 1) = goal;
-		m_u.v = m_points.begin();
+		m_isIso = int(g_pBoard->isIsometric());
+		m_layer = layer;
+		initialize(pSprite);
 	}
-	else
-	{
-		// Tile pathfinding.
-		const bool isIso = g_pBoard->isIsometric();
 
-		// Get the vector base once.
-		if (pSprite)
-			base = pSprite->getVectorBase(false);
+	const CVector base = pSprite->getVectorBase(false);
+	CVector cvGoal = base + goal, cvStart = base + start;
+	DB_POINT unused = {0.0};
+
+	// Add sprite base collision data.
+	sizeMatrix(m_spritePoints);
+	bool moved = false;
+	for (std::vector<CSprite *>::iterator i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
+	{
+		if (*i == pSprite || (*i)->getPosition().l != m_layer) continue;
+
+		CPfVector spriteVector = CPfVector((*i)->getVectorBase(true));
+
+		// If a sprite is at the goal and we do not want to bypass it
+		// (i.e., we want to intercept it), then do not add it's vector
+		// and the path will reach the requested goal.
+		if (cvGoal.contains(spriteVector, unused))
+		{
+			if (flags & PF_AVOID_SPRITE)
+			{
+				goal = spriteVector.nearestPoint(goal);
+				addVector(spriteVector, *m_pSweeps, m_spritePoints);
+				moved = true;
+			}
+		}
 		else
 		{
-			DB_POINT pts[4];
-			tagSpriteAttr::defaultVector(pts, g_pBoard->isIsometric(), CSprite::m_bPxMovement, false);
-			base.push_back(pts, 4);
-			base.close(true);
+			// Ignore sprite bases at the start (only a problem for
+			// PathFind(), since this rpgcode function is not linked
+			// to a sprite base).
+			if (!cvStart.contains(spriteVector, unused))
+			{
+				addVector(spriteVector, *m_pSweeps, m_spritePoints);
+			}
 		}
+	} // for (sprite vectors).
 
-		coords::roundToTile(goal.x, goal.y, isIso, true);
+	// Check goal obstruction.
+	coords::roundToTile(goal.x, goal.y, m_isIso, true);
+	cvGoal = base + goal;
 
-		// Check for goal contained in tiles. This does a quick check
-		// on the goal and surrounding 9 tiles, but looks no further.
+	// Check for goal contained in tiles. Select the nearest edge point
+	// and determine the closest reachable grid point.
+	for (std::vector<BRD_VECTOR>::iterator j = g_pBoard->vectors.begin(); j != g_pBoard->vectors.end(); ++j)
+	{
+		if (j->layer != m_layer || j->type & ~TT_SOLID) continue;
+
+		if (j->pV->contains(cvGoal, unused))
+		{
+			// If the goal is blocked and a nearby point is not allowed, quit.
+			if (flags & PF_QUIT_BLOCKED) return false;
+
+			const CPfVector pfv = CPfVector(*(j->pV));
+			goal = pfv.nearestPoint(goal);
+			moved = true;
+			// Consider goals contained in multiple vectors!
+		}
+		/* Need to consider if moving the start will prevent the
+		   sprite starting, and whether not moving the start will do
+		   the same (in the case that the start is not the sprite's position).
+		if (j->pV->contains(cvStart, unused))
+		{
+			const CPfVector pfv = CPfVector(*(j->pV));
+			start = pfv.nearestPoint(start);
+			// Consider starts contained in multiple vectors!
+		}
+		*/
+	}
+
+	if (moved)
+	{
+		// Find the first reachable grid point to the goal.
+		coords::roundToTile(goal.x, goal.y, m_isIso, true);
 
 		// Switch the heuristic to check all children of the goal.
 		const PF_HEURISTIC heur = m_heuristic;
 		m_heuristic = PF_DIAGONAL;
-		m_u.i = MV_E;
+		m_nextDir = MV_E;
 
 		// Temporarily set m_goal, but overwrite if first is blocked.
 		m_goal = NODE(goal);
-		NODE child(goal), unused;
+		NODE target(goal);
+
+		PF_MATRIX &pts = *m_pBoardPoints;
+		const PF_MATRIX_ELEMENT blocked = 255;
+		
 		while (true)
 		{
-			// Determine if the sprite can exist at the target - if
-			// so the target is clear.
-			if (isChild(child, unused, pSprite, base, flags))
+			if (target.pos.x >= 0 && target.pos.x <= g_pBoard->pxWidth() || target.pos.y >= 0 && target.pos.y <= g_pBoard->pxHeight())
 			{
-				goal = child.pos;
-				break;
+				int x = int(target.pos.x), y = int(target.pos.y);
+				coords::pixelToTile(x, y, m_isIso ? ISO_ROTATED : TILE_NORMAL, false, g_pBoard->sizeX);
+
+				if (x < pts.size() && y < pts[0].size())
+				{
+					if (pts[x][y] != blocked && m_spritePoints[x][y] != blocked) 
+					{
+						goal = target.pos;
+						break;
+					}
+				}
 			}
 
 			if (flags & PF_QUIT_BLOCKED) return false;
 
 			// If the target isn't clear try the children of the goal
 			// until all surrounding tiles are checked.
-			if (!getChild(child.pos, goal))
+			if (!getChild(target, m_goal))
 			{
 				// Signal to quit the alogrithm since we can't reach the goal.
 				return false;
 			}
 		}
-
-		// Limit neighbours depending on allowed directions.
 		m_heuristic = heur;
-		m_u.i = (m_heuristic == PF_AXIAL && isIso ? MV_SE : MV_E);
-	}
+	} // if (goal was moved)
+
+	// Limit neighbours depending on allowed directions.
+	m_nextDir = (m_heuristic == PF_AXIAL && m_isIso ? MV_SE : MV_E);
 
 	m_goal = NODE(goal);
 	m_start = NODE(start);
 
-	// Distance estimate for start node (heuristic).
-	m_start.dist = distance(m_start, m_goal);
-	m_steps = 0;
+	return true;
+}
 
-	m_openNodes.clear();
-	m_closedNodes.clear();
-	m_openNodes.push_back(m_start);
+/*
+ * Set the size of a tile matrix (sprite or board).
+ */
+void CTilePathFind::sizeMatrix(PF_MATRIX &points)
+{
+	extern LPBOARD g_pBoard;
+	points.clear();
+	const int width = g_pBoard->effectiveWidth() * 32 / PF_GRID_SIZE, height = g_pBoard->effectiveHeight() * 32 / PF_GRID_SIZE;
+	for (int i = 0; i <= width; ++i)
+	{
+		points.push_back(std::vector<PF_MATRIX_ELEMENT>(height + 1, 0));
+	}
+}
+
+/*
+ ********************************************************************
+ * CVectorPathFind
+ ********************************************************************
+ */
+
+/*
+ * Make the path by tracing parents through m_closedNodes.
+ */
+PF_PATH CVectorPathFind::constructPath(NODE node, const CSprite *pSprite) const
+{
+	int dx = 0, dy = 0;
+	PF_PATH path;
+
+	// Modify the points for any offsets.
+	if (!m_isIso)
+	{
+		// Shift points down the board by half
+		// the base height or to the tile edge.
+		const RECT r = pSprite->getVectorBase(false).getBounds();
+
+		// dx = (r.right - r.left) >> 1;
+		dy = (r.bottom - r.top) >> 1;
+	}
+
+	// Pushback the goal without modification.
+	path.push_back(node.pos);
+	node = *(m_closedNodes.begin() + node.parent);
+
+	while(node.pos != m_start.pos)
+	{
+		node.pos.x += dx;
+		node.pos.y += dy;
+		path.push_back(node.pos);
+		node = *(m_closedNodes.begin() + node.parent);
+	}
+	return path;
+}
+
+/*
+ * Estimate the straight-line distance between nodes, depending
+ * on the movement style and adding any modifiers.
+ */
+int CVectorPathFind::distance(const NODE &a, const NODE &b) const
+{
+	const int dx = abs(a.pos.x - b.pos.x), dy = abs(a.pos.y - b.pos.y);
+	return sqrt(dx * dx + dy * dy);
+}
+
+/*
+ * Release allocated memory.
+ */
+void CVectorPathFind::freeData(void) 
+{ 
+	m_pBoardVectors = NULL; 
+	for (PF_VECTOR_OBS::iterator i = m_spriteVectors.begin(); i != m_spriteVectors.end(); ++i)
+	{
+		delete *i;
+	}
+	m_spriteVectors.clear();
+}
+void CVectorPathFind::freeStatics(void)
+{
+	for (PF_VECTOR_MAP::iterator i = m_boardVectors.begin(); i != m_boardVectors.end(); ++i)
+	{
+		for (PF_VECTOR_OBS::iterator j = i->second.begin(); j != i->second.end(); ++j)
+		{
+			delete *j;
+		}
+	}
+	m_boardVectors.clear();
+}
+
+/*
+ * Get the next potential child of a node.
+ */
+bool CVectorPathFind::getChild(NODE &child, NODE &parent)
+{
+	if (m_nextPoint == m_points.end())
+	{
+		m_nextPoint = m_points.begin();
+		return false;
+	}
+	child.pos = *m_nextPoint;
+	++m_nextPoint;
+	return true;
+}
+
+/*
+ * Re-initialise the search.
+ */
+void CVectorPathFind::initialize(const CSprite *pSprite)
+{
+	extern LPBOARD g_pBoard;
+
+	CVector cvBase = pSprite->getVectorBase(false);
+	CPfVector cpfvBase = CPfVector(cvBase, m_layer);
+
+	// Check to see if a group of grown board collision vectors 
+	// has already been defined for this particular sprite vector base 
+	// shape *on this particular layer* - as the vectors are 
+	// layer-specific, so the key (the CPfVector) must be also.
+	PF_VECTOR_MAP::iterator i = m_boardVectors.find(cpfvBase);
+	if (i != m_boardVectors.end())
+	{
+		// Tracking users will prove too complicated and isn't important
+		// if the static data are cleared when the board changes.
+		m_pBoardVectors = &i->second;
+		return;
+	}
+
+	// Grow collision vectors by longest diagonal of sprite base.
+	const RECT r = cvBase.getBounds();
+	const int x = abs(r.left) > abs(r.right) ? r.left : r.right;
+	const int y = abs(r.top) > abs(r.bottom) ? r.top : r.bottom;
+	m_growSize = x > y ? x : y; //sqrt(x * x + y * y);
+
+	// Construct a group of grown collision vectors.
+	PF_VECTOR_OBS obs;
+	obs.reserve(g_pBoard->vectors.size());
+
+	for (std::vector<BRD_VECTOR>::iterator j = g_pBoard->vectors.begin(); j != g_pBoard->vectors.end(); ++j)
+	{
+		if (j->layer != m_layer || j->type & ~TT_SOLID) continue;
+
+		// The board vectors have to be "grown" to make sure the sprites
+		// can move around them without colliding.
+		CPfVector *pVector = new CPfVector(*(j->pV));
+		pVector->grow(m_growSize);
+		obs.push_back(pVector);
+	}
+
+	// Insert the vector into the static map to allow other identical
+	// sprites to use it. Tracking users will prove too complicated and
+	// isn't important if the static data are cleared when the board changes.
+	m_boardVectors[cpfvBase] = obs;
+	m_pBoardVectors = &m_boardVectors[cpfvBase];	
+}
+
+/*
+ * Determine if a node can be directly reached from another node
+ * i.e. is there an unobstructed line between the two?
+ */
+bool CVectorPathFind::isChild(const NODE &child, const NODE &parent) const
+{
+	if (child.pos == parent.pos) return false;
+
+	CPfVector v(parent.pos);
+	v.push_back(child.pos);
+	v.close(false);
+
+	// Check for board collisions along the path.
+	for (PF_VECTOR_OBS::const_iterator i = m_pBoardVectors->begin(); i != m_pBoardVectors->end(); ++i)
+	{
+		if ((*i) && (*i)->contains(v)) return false;		
+	}
+	// Check for sprite collisions.
+	for (i = m_spriteVectors.begin(); i != m_spriteVectors.end(); ++i)
+	{
+		if ((*i) && (*i)->contains(v)) return false;		
+	}	
 
 	return true;
 }
 
-void CPathFind::drawObstructions(int x, int y, CCanvas *cnv)
+/*
+ * Reset the points at the start of a search.
+ */
+bool CVectorPathFind::reset(
+	DB_POINT start, 
+	DB_POINT goal, 
+	const int layer,
+	const CSprite *pSprite,
+	const int flags)
 {
-	for (std::vector<CPfVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
+	extern LPBOARD g_pBoard;
+	extern ZO_VECTOR g_sprites;
+
+	// Recreate collision data if changing layers / absent.
+	if (layer != m_layer || !m_pBoardVectors) 
 	{
-		if (!*i) break;
-		(*i)->draw(RGB(255,0,128), false, x, y, cnv);
+		m_isIso = int(g_pBoard->isIsometric());
+		m_layer = layer;
+		initialize(pSprite);
 	}
+
+	// Generate sprite bases each time, since sprites will have moved.
+	for (PF_VECTOR_OBS::iterator i = m_spriteVectors.begin(); i != m_spriteVectors.end(); ++i)
+	{
+		delete *i;
+	}
+	m_spriteVectors.clear();
+
+	const DB_POINT limits = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
+
+	for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
+	{
+		if (*j == pSprite || (*j)->getPosition().l != m_layer) continue;
+
+		// tbd: speed up by saving old pfvectors (associate each with its base vector).
+		CPfVector *spriteVector = new CPfVector((*j)->getVectorBase(true));
+
+		// Extra clearance for sprites.
+		spriteVector->grow(m_growSize + 1);
+
+		// If a sprite is at the goal and we do not want to bypass it
+		// (i.e., we want to meet it), then do not add it's vector
+		// and the path will reach the requested goal.
+		// Only requires a containsPoint(), not a full contains(),
+		// because the vectors have been grown.
+		if ((~flags & PF_AVOID_SPRITE) && spriteVector->containsPoint(goal)) 				
+		{
+			if (spriteVector->containsPoint(start)) 
+			{
+				start = spriteVector->nearestPoint(start);
+			}
+			delete spriteVector;
+		}
+		else
+		{
+			m_spriteVectors.push_back(spriteVector);
+		}
+	}
+
+	// Pushback two empty points to act as the first goal and start. Do this first!
+	m_points.clear();
+	m_points.push_back(DB_POINT());
+	m_points.push_back(DB_POINT());
+	
+	// Check if the goal is contained in a solid area.
+	// If so, set the goal to be the closest edge point.
+
+	PF_VECTOR_OBS obs = *m_pBoardVectors;
+	obs.push_back(NULL);				// Board vector / sprite separator.
+	obs.insert(obs.end(), m_spriteVectors.begin(), m_spriteVectors.end());
+	
+	int spFlags = PF_AVOID_SPRITE;
+	for (i = obs.begin(); i != obs.end(); ++i)
+	{
+		if (!*i)
+		{
+			// Board vector / sprite separator.
+			spFlags = flags;
+			continue;
+		}
+
+		// Take this opportunity to construct m_points.
+		(*i)->createNodes(m_points, limits);					
+		
+		// If the goal is allowed in a sprite base skip because 
+		// we have already checked this in the previous loop.
+		if ((spFlags & PF_AVOID_SPRITE) && (*i)->containsPoint(goal))
+		{
+			// If the goal is blocked and a nearby point is not allowed, quit.
+			if (spFlags & PF_QUIT_BLOCKED) return false;
+
+			goal = (*i)->nearestPoint(goal);
+			// Consider goals contained in multiple vectors!
+		}
+		if ((*i)->containsPoint(start))
+		{
+			start = (*i)->nearestPoint(start);
+			// Consider starts contained in multiple vectors!
+		}
+	}
+
+	// Insert the start and goal at the front of the vector (two spaces
+	// reserved above).
+	*m_points.begin() = start;
+	*(m_points.begin() + 1) = goal;
+	m_nextPoint = m_points.begin();
+
+	m_goal = NODE(goal);
+	m_start = NODE(start);
+
+	return true;
 }

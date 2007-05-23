@@ -113,11 +113,17 @@ public:
 	// Addition assignment operator (moves entire vector).
 	CVector &operator+= (const DB_POINT p);
 
+	// Subtraction assignment operator (moves entire vector).
+	CVector &operator-= (DB_POINT p) { p.x = -p.x; p.y = -p.y; return (*this += p); }
+
 	// Comparison of the points of two vectors.
 	bool operator== (const CVector &rhs) const;
 
 	// Get a vector point.
 	DB_POINT operator[](const unsigned int i) const { return ((m_p.size() > i) ? m_p[i] : m_p.back()); }
+
+	// Compare sums.
+	virtual bool operator< (const CVector &rhs) const;
 
 	// Push a point onto the back of the vector.
 	void push_back(DB_POINT p);
@@ -154,6 +160,9 @@ public:
 
 	// Determine if a vector intersects another vector.
 	bool intersect(const CVector &rhs, DB_POINT &ref) const;
+
+	// Merge the points of two vectors.
+	void merge(const CVector &rhs);
 
 	// Move a vector (x,y = new location of first point).
 	void move(const int x, const int y)
@@ -197,6 +206,9 @@ protected:
 	// Determine if a point lies on a sub-vector.
 	bool pointOnLine(const DB_CITR &i, const DB_POINT &p) const;
 
+	// Create a unique value that represents this vector.
+	int sum(void) const;
+
 	std::vector<DB_POINT> m_p;	// Vector of points.
 	RECT m_bounds;				// Bounding box.
 	bool m_closed;				// Closed to form a polygon.
@@ -209,13 +221,17 @@ class CPfVector: public CVector
 public:
 
 	// Void constructor.
-	CPfVector(void): CVector() {};
+	CPfVector(void): CVector(), m_layer(0) {}
 
 	// Default constructor.
-	CPfVector(const CVector &rhs): CVector(rhs) {};
+	CPfVector(const CVector &rhs): CVector(rhs), m_layer(0) {}
+	CPfVector(const CVector &rhs, const int l): CVector(rhs), m_layer(l) {}
 	
 	// Point CVector constructor.
-	CPfVector(const DB_POINT p): CVector(p) {};
+	CPfVector(const DB_POINT p): CVector(p), m_layer(0) {}
+
+	// Compare sums.
+	bool CPfVector::operator< (const CPfVector &rhs) const;
 
 	// Path-find ::contains() equivalent.
 	bool contains(const CPfVector &rhs) const;
@@ -233,9 +249,13 @@ public:
 	CPfVector sweep(const DB_POINT &origin, const DB_POINT &target);
 
 private:
+
 	// Extend a point 'a' at the end of a (position) vector 'd' by 'offset' pixels.
 	void extendPoint(DB_POINT &a, const DB_POINT &d, const int offset) const;
-	
+
+	// In order that a CPfVector is associated with a single set of
+	// collision data in a map, the data's layer must be stored.
+	int m_layer;
 };
 
 #endif

@@ -1154,6 +1154,23 @@ SOURCE=.\movement\CItem\CItem.cpp
 # Begin Source File
 
 SOURCE=..\tkCommon\board\coords.cpp
+
+!IF  "$(CFG)" == "trans3 - Win32 Debug"
+
+# ADD CPP /FR
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Debug"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Release MinDependency"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinSize"
+
+!ELSEIF  "$(CFG)" == "trans3 - Win32 Unicode Release MinDependency"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 

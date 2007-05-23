@@ -598,7 +598,8 @@ void change(CALL_DATA &params)
 /*
  * void clear([canvas cnv])
  * 
- * Clear a surface.
+ * Clear a surface. clear() blanks the screen.
+ * clear(cnv) blanks the canvas whose handle is 'cnv'.
  */
 void clear(CALL_DATA &params)
 {
@@ -1902,13 +1903,16 @@ void pathfind(CALL_DATA &params)
 
 	// Parameters. r is unneeded for tile pathfinding.
 	const DB_POINT start = {x1, y1}, goal = {x2, y2};
-	const RECT r = {0, 0, 0, 0};
 	STRING s;
 
 	// Pre C++, PathFind() was implemented axially only.
-	CPathFind path;
-	path.pathFind(start, goal, layer, r, PF_AXIAL, NULL, PF_QUIT_BLOCKED); 
-	std::vector<MV_ENUM> p = path.directionalPath();
+	CPathFind *path = NULL;
+
+	// Create a dummy sprite to hold the default vectors (not ideal...).
+	CSprite sprite(false);
+	sprite.createVectors();
+	CPathFind::pathFind(&path, start, goal, layer, PF_AXIAL, &sprite, PF_QUIT_BLOCKED); 
+	std::vector<MV_ENUM> p = path->directionalPath();
 
 	for (std::vector<MV_ENUM>::reverse_iterator i = p.rbegin(); i != p.rend(); ++i)
 	{
@@ -5320,7 +5324,7 @@ void playerstance(CALL_DATA &params)
  * posture(int id [, handle player])
  * 
  * Show a custom player animation named "Custom" + str(id) (e.g. "Custom1")
- * This command is obselete - use playerStance() instead.
+ * This command is obsolete - use playerStance() instead.
  */
 void posture(CALL_DATA &params)
 {
@@ -5343,11 +5347,11 @@ void posture(CALL_DATA &params)
  * stance(int id [, handle player])
  * 
  * Show a player stance.
- * This command is obselete - use playerStance() instead.
+ * This command is obsolete - use playerStance() instead.
  */
 void stance(CALL_DATA &params)
 {
-	throw CWarning(_T("Stance() is obselete - use playerStance() instead."));
+	throw CWarning(_T("Stance() is obsolete - use playerStance() instead."));
 }
 
 /*
@@ -5391,7 +5395,7 @@ void getRes(CALL_DATA &params)
 /*
  * void staticText()
  * 
- * Toggle antialiasing.
+ * obsolete.
  */
 void staticText(CALL_DATA &params)
 {
@@ -5401,7 +5405,7 @@ void staticText(CALL_DATA &params)
 /*
  * parallax(int setting)
  * 
- * Obselete.
+ * obsolete.
  */
 void parallax(CALL_DATA &params)
 {
@@ -6719,11 +6723,11 @@ void multiRunEnd(CProgram *prg)
 /*
  * shopcolors(int index, int r, int g, int b)
  * 
- * Set the colors used in CallShop(). This function is obselete from 3.1.0.
+ * Set the colors used in CallShop(). This function is obsolete from 3.1.0.
  */
 void shopcolors(CALL_DATA &params)
 {
-	throw CWarning(_T("ShopColors() is obselete."));
+	throw CWarning(_T("ShopColors() is obsolete."));
 }
 
 /*
@@ -7256,7 +7260,7 @@ void boardsetvector(CALL_DATA &params)
 		}
 
 		// Reset pathfinding as the collision landscape has changed.
-		g_sprites.freePaths();
+		CPathFind::freeAllData();
 
 		/* Unneeded: useful for debugging only.
 #ifdef DEBUG_VECTORS
@@ -7323,7 +7327,7 @@ void boardsetvectorpoint(CALL_DATA &params)
 			if (brd->type & TT_UNDER) brd->createCanvas(*g_pBoard);
 
 			// Reset pathfinding as the collision landscape has changed.
-			g_sprites.freePaths();
+			CPathFind::freeAllData();
 
 			/* Unneeded: useful for debugging only.
 #ifdef DEBUG_VECTORS

@@ -355,7 +355,7 @@ bool CVector::pointOnLine(const DB_CITR &i, const DB_POINT &p) const
 		}
 		else
 		{
-			if (dAbs(p.y - (gradient(i) * (p.x - i->x) + i->y)) < CV_PRECISION) return true;
+			if (fabs(p.y - (gradient(i) * (p.x - i->x) + i->y)) < CV_PRECISION) return true;
 		}
 	}
 	return false;
@@ -596,7 +596,7 @@ bool CVector::intersect(DB_CITR &i, const CVector &rhs, DB_POINT &ref) const
 		const double m2 = rhs.gradient(j), c2 = j->y - (m2 * j->x);
 
 		// Skip this subvector if lines are parallel.
-		if (dAbs(m1 - m2) < CV_PRECISION) continue;
+		if (fabs(m1 - m2) < CV_PRECISION) continue;
 
 		// Deal with vertical lines.
 		if (isVertical(i)) 
@@ -628,7 +628,41 @@ bool CVector::intersect(DB_CITR &i, const CVector &rhs, DB_POINT &ref) const
 	return false;
 }
 
-/* CPfVector: Pathfinding functions */
+/*
+ * Simple concatenation.
+ */
+void CVector::merge(const CVector &rhs)
+{
+	m_p.insert(m_p.end(), rhs.m_p.begin(), rhs.m_p.end());
+	boundingBox(m_bounds);
+}
+	
+/*
+ * Compare sums (for std::map<CVector,...>).
+ */
+bool CVector::operator< (const CVector &rhs) const
+{
+	return sum() > rhs.sum();
+}	
+
+/*
+ * Create a single (hopefully) unique value to represent the vector.
+ */
+int CVector::sum(void) const
+{
+	int s = 0, width = m_bounds.right - m_bounds.left;
+	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
+	{
+		s += (i->x - m_bounds.left) + (i->y - m_bounds.top) * width;
+	}
+	return s;
+}
+
+/*
+ ********************************************************************
+ * CPfVector - pathfinding vector/collision object
+ ********************************************************************
+ */
 
 /*
  * Path-find ::contains() equivalent.
@@ -702,8 +736,8 @@ bool CPfVector::contains(const CPfVector &rhs) const
 			DB_POINT a = &*first ? *first : *i, b = {-1, -1};
 			b = &*last ? *last : (&*first ? b : *(i + 1));
 
-			if ((dAbs(p.x - a.x) > CV_PRECISION || dAbs(p.y - a.y) > CV_PRECISION) &&
-				(dAbs(p.x - b.x) > CV_PRECISION || dAbs(p.y - b.y) > CV_PRECISION))
+			if ((fabs(p.x - a.x) > CV_PRECISION || fabs(p.y - a.y) > CV_PRECISION) &&
+				(fabs(p.x - b.x) > CV_PRECISION || fabs(p.y - b.y) > CV_PRECISION))
 				return true;
 		}
 	} // for (i)
@@ -932,14 +966,14 @@ DB_POINT CPfVector::nearestPoint(const DB_POINT start) const
 		{
 			// If the perpendicular point is not on the line, 
 			// take the nearest node.
-			const double j = dAbs(start.x - i->x) + dAbs(start.y - i->y),
-					     k = dAbs(start.x - (i + 1)->x) + dAbs(start.y - (i + 1)->y);
+			const double j = fabs(start.x - i->x) + fabs(start.y - i->y),
+					     k = fabs(start.x - (i + 1)->x) + fabs(start.y - (i + 1)->y);
 			p = (j < k) ? *i : *(i + 1);
 		}
 
 		// Keep nearest point.
-		const double j = dAbs(start.x - p.x) + dAbs(start.y - p.y),
-					 k = dAbs(start.x - best.x) + dAbs(start.y - best.y);
+		const double j = fabs(start.x - p.x) + fabs(start.y - p.y),
+					 k = fabs(start.x - best.x) + fabs(start.y - best.y);
 
 		if (j < k) best = p;
 
@@ -957,9 +991,9 @@ DB_POINT CPfVector::nearestPoint(const DB_POINT start) const
  */
 void CPfVector::extendPoint(DB_POINT &a, const DB_POINT &d, const int offset) const
 {
-	const double grad = (!d.x ? GRAD_INF : dAbs(d.y / d.x));
+	const double grad = (!d.x ? GRAD_INF : fabs(d.y / d.x));
 
-	if (dAbs(grad) < 1)
+	if (fabs(grad) < 1)
 	{
 		a.x += sgn(d.x) * offset; 
 		a.y += sgn(d.y) * offset * grad;
@@ -1013,8 +1047,17 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 	CPfVector v(*min);
 	v.push_back(*min + d);
 	v.push_back(*max + d);
-	v.push_back(*max + d);
+	v.push_back(*max);
 	v.close(true);
 
 	return v;
+}
+
+/*
+ * Compare sums (for std::map<CVector,...>).
+ */
+bool CPfVector::operator< (const CPfVector &rhs) const
+{
+	if (m_layer && rhs.m_layer) return m_layer < rhs.m_layer;
+	return sum() > rhs.sum();
 }

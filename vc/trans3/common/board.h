@@ -258,6 +258,8 @@ typedef struct tagBoard
 	bool hasProgram(LPBRD_PROGRAM p) const;
 	int pxWidth() const;
 	int pxHeight() const;
+	int effectiveWidth() const { return (coordType & ISO_ROTATED ? sizeX + sizeY : sizeX); } 
+	int effectiveHeight() const { return (coordType & ISO_ROTATED ? sizeX + sizeY : sizeY); }
 	bool insertTile(const STRING tile, const int x, const int y, const int z);
 	bool isIsometric() const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	void createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const;

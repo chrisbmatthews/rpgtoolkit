@@ -24,7 +24,7 @@
 
 // Base-point of a square tile, with 0,0 at the top-left corner.
 const int BASE_POINT_X = 16;
-const int BASE_POINT_Y = 32;
+const int BASE_POINT_Y = 31;
 
 // Iso tile, 0,0 at centre.
 const int BASE_POINT_ISO_X = 0;
@@ -65,6 +65,12 @@ namespace coords
 	void roundToTile(
 		double &x, 
 		double &y, 
+		const bool bIso,
+		const bool bAddBasePoint
+	);
+	void roundToTile(
+		long &x, 
+		long &y, 
 		const bool bIso,
 		const bool bAddBasePoint
 	);

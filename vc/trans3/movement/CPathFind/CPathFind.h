@@ -27,9 +27,6 @@
 #include "../CVector/CVector.h"
 #include "../../common/sprite.h"
 #include <vector>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>				// RECT only.
-#include <math.h>
 
 /*
  * Defines
@@ -76,42 +73,30 @@ class CSprite;
 class CPathFind
 {
 public:
-
-	// Constructor.
-	CPathFind();
-
-	// Destructor.
-	virtual ~CPathFind()
-	{
-		freeVectors();
-	}
+	virtual ~CPathFind() { freeData(); }
 
 	// Construct an equvialent directional path.
 	std::vector<MV_ENUM> directionalPath(void);
 
-	void freeVectors(void)
-	{
-		for (std::vector<CPfVector *>::iterator i = m_obstructions.begin(); i != m_obstructions.end(); ++i)
-		{
-			delete *i;
-		}
-		m_obstructions.clear();
-	};
+	// Release allocated memory.
+	virtual void freeData(void) {}
 
-	// Main function - apply the algorithm to the input points.
-	PF_PATH pathFind(
+	// Public constructor / executor.
+	static PF_PATH CPathFind::pathFind(
+		CPathFind **ppPf,
 		const DB_POINT start, 
 		const DB_POINT goal,
 		const int layer, 
-		const RECT &r, 
-		const int type, 
-		const CSprite *pSprite,
+		const int mode,				// Pathfinding mode.
+		const CSprite *pSprite,		// Pointer to the calling sprite - may be NULL.
 		const int flags
 	);
 
-	void drawObstructions(int x, int y, CCanvas *cnv);
+	// Release members of derived classes.
+	static void freeAllData(void);
 
-private:
+protected:
+	CPathFind(): m_heuristic(PF_AXIAL), m_goal(), m_layer(0), m_start(), m_steps(0) {}
 	CPathFind (CPathFind &rhs);
 	CPathFind &operator= (CPathFind &rhs);
 
@@ -119,58 +104,130 @@ private:
 	NODE *bestOpenNode (void);
 
 	// Make the path by tracing parents through m_closedNodes.
-	PF_PATH constructPath(NODE node, const RECT &r);
+	virtual PF_PATH constructPath(NODE node, const CSprite *pSprite) const { return PF_PATH(); }
 
 	// Construct nodes from a CVector and add to the nodes vector.
 	void createNodes (CVector *vector);
 
 	// Estimate the straight-line distance between nodes.
-	int distance (NODE &a, NODE &b);
+	virtual int distance(const NODE &a, const NODE &b) const { return 0; }
 
 	// Get the next potential child of a node.
-	bool getChild(DB_POINT &child, DB_POINT parent);
-
-	// Re-initialise the search.
-	void initialize(const int layer, const RECT &r, const PF_HEURISTIC type);
+	virtual bool getChild(NODE &child, NODE &parent) { return false; }
 
 	// Determine if a node can be directly reached from another node.
-	bool CPathFind::isChild(
-		const NODE &child, 
-		const NODE &parent, 
-		const CSprite *pSprite, 
-		const CPfVector &base,
-		const int flags
-	);
+	virtual bool isChild(const NODE &child, const NODE &parent) const { return false; }
+
+	// Main function - apply the algorithm to the input points.
+	PF_PATH pathFind(const CSprite *pSprite);
 
 	// Reset the points at the start of a search.
-	bool reset(
+	virtual bool reset(
 		DB_POINT start, 
 		DB_POINT goal, 
-		const RECT &r, 
+		const int layer,
 		const CSprite *pSprite,
-		CPfVector &base,
 		const int flags
-	);
+	) { return false; }
 
-	std::vector<DB_POINT> m_points;				// All node coords.
 	std::vector<NODE> m_openNodes;
 	std::vector<NODE> m_closedNodes;
-	std::vector<CPfVector *> m_obstructions;	// Obstructions on the layer.
-
-	PF_HEURISTIC m_heuristic;					// Estimate method.
-	int m_layer;
-	int m_steps;								// Number of steps taken.
 	NODE m_start;
 	NODE m_goal;
 
-	/* Colin:	This can't be a union because DB_ITR has a copy constructor.
-	 *			It also can't be nameless because nameless classes can't have
-	 *			compiler-generated constructors. */
-	struct tagU									// Get child loop trackers. 
-	{
-		DB_ITR v;								// Vector - m_points.
-		int i;									// Tile - MV_ENUM.
-	} m_u;
+	PF_HEURISTIC m_heuristic;			// Algorithm method.
+	int m_layer;
+	int m_steps;						// Number of steps (between nodes) taken.
+
+	static int m_isIso;					// g_pBoard->isIsometric().		
 };
+
+
+class CTilePathFind: public CPathFind
+{
+public:
+	CTilePathFind(): m_nextDir(MV_E), m_pBoardPoints(NULL), m_pSweeps(NULL) {}
+	void freeData(void) { m_pBoardPoints = NULL; m_pSweeps = NULL; }
+	static void freeStatics(void) { m_boardPoints.clear(); m_sweeps.clear(); }
+
+	typedef unsigned char PF_MATRIX_ELEMENT;
+	typedef std::vector<std::vector<PF_MATRIX_ELEMENT> > PF_MATRIX;
+	typedef PF_MATRIX *LPPF_MATRIX;
+	typedef std::map<CPfVector, PF_MATRIX> PF_TILE_MAP;
+	typedef std::map<MV_ENUM, std::pair<CPfVector, DB_POINT> > PF_SWEEPS;
+	typedef PF_SWEEPS *LPPF_SWEEPS;
+	typedef std::map<CVector, PF_SWEEPS> PF_SWEEP_MAP;
+
+private:
+	PF_PATH constructPath(NODE node, const CSprite *) const;
+	int distance(const NODE &a, const NODE &b) const;
+	void initialize(const CSprite *pSprite);
+	bool isChild(const NODE &child, const NODE &parent) const;
+	bool getChild(NODE &child, NODE &parent);
+	bool reset(DB_POINT start, DB_POINT goal, const int layer, const CSprite *pSprite,	const int flags);	
+
+	// Unique.
+	void addVector(CVector &vector, PF_SWEEPS &sweeps, PF_MATRIX &points);
+	void sizeMatrix(PF_MATRIX &points);
+
+	static PF_TILE_MAP m_boardPoints;	// Board collision vector matrices for unique sprite bases.
+	static PF_SWEEP_MAP m_sweeps;		// Sweep set associated with the unique sprite bases.
+	PF_MATRIX m_spritePoints;			// Position of sprite collision bases at time of execution.
+	LPPF_MATRIX m_pBoardPoints;			// Pointer into m_boardPoints.
+	LPPF_SWEEPS m_pSweeps;				// Pointer into m_sweeps;
+	int m_nextDir;						// Next neighbour (one of MV_ENUM).
+};
+
+class CVectorPathFind: public CPathFind
+{
+public:
+	CVectorPathFind(): m_nextPoint(NULL), m_growSize(0), m_pBoardVectors(NULL) {}
+	void freeData(void);
+	static void freeStatics(void);
+
+	typedef std::vector<CPfVector *> PF_VECTOR_OBS;
+	typedef PF_VECTOR_OBS *LPPF_VECTOR_OBS;
+	typedef std::map<CPfVector, PF_VECTOR_OBS> PF_VECTOR_MAP;
+
+private:
+	PF_PATH constructPath(NODE node, const CSprite *pSprite) const;
+	int distance(const NODE &a, const NODE &b) const;
+	void initialize(const CSprite *pSprite);
+	bool isChild(const NODE &child, const NODE &parent) const;
+	bool getChild(NODE &child, NODE &parent);
+	bool reset(DB_POINT start, DB_POINT goal, const int layer, const CSprite *pSprite,	const int flags);	
+
+	std::vector<DB_POINT> m_points;				// All node coordinates (grown board and sprite points).
+	PF_VECTOR_OBS m_spriteVectors;
+
+	static PF_VECTOR_MAP m_boardVectors;
+	LPPF_VECTOR_OBS m_pBoardVectors;
+
+	DB_ITR m_nextPoint;							// Currently selected point in "points".
+	int m_growSize;								// Pixel value to expand collision vectors by.
+};
+
+/*
+class CVectorPathFind: public CPathFind
+{
+public:
+	CVectorPathFind(): m_nextPoint(NULL), m_growSize(0) {}
+	void freeData(void);
+
+private:
+	PF_PATH constructPath(NODE node, const CSprite *pSprite) const;
+	int distance(const NODE &a, const NODE &b) const;
+	void initialize(const CSprite *pSprite);
+	bool isChild(const NODE &child, const NODE &parent) const;
+	bool getChild(NODE &child, NODE &parent);
+	bool reset(DB_POINT start, DB_POINT goal, const int layer, const CSprite *pSprite,	const int flags);	
+
+	std::vector<DB_POINT> m_points;				// All node coordinates (grown board and sprite points).
+	std::vector<CPfVector *> m_obstructions;	// Obstructions (grown board and sprite vectors) on the layer.
+
+	DB_ITR m_nextPoint;							// Currently selected point in "points".
+	int m_growSize;								// Pixel value to expand collision vectors by.
+};
+*/
 
 #endif

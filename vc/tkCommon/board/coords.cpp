@@ -19,6 +19,7 @@
  * Inclusions.
  */
 #include "coords.h"
+#include "math.h"
 
 /*
  * Convert a tile co-ordinate to a pixel co-ordinate. brdSizeX in tiles.
@@ -72,8 +73,8 @@ void coords::pixelToTile(int &x, int &y, const COORD_TYPE coord, const bool bRem
 	{
 		case TILE_NORMAL:
 		{
-			x = x / 32 + 1;
-			y = y / 32 + 1;
+			x = floor(x / 32.0) + 1;
+			y = floor(y / 32.0) + 1;
 		} break;
 		case ISO_STACKED:
 		{
@@ -133,14 +134,22 @@ void coords::roundToTile(double &x, double &y, const bool bIso, const bool bAddB
 	else
 	{
 		// Round to the 32x32 grid.
-		x = int((x - 1) / 32.0) * 32.0;
-		y = int((y - 1) / 32.0) * 32.0;
+		x = int(x / 32.0) * 32.0;
+		y = int(y / 32.0) * 32.0;
 		if (bAddBasePoint)
 		{
 			x += BASE_POINT_X;
 			y += BASE_POINT_Y;
 		}
 	}
+}
+
+void coords::roundToTile(long &x, long &y, const bool bIso, const bool bAddBasePoint)
+{
+	double a = double(x), b = double(y);
+	roundToTile(a, b, bIso, bAddBasePoint);
+	x = long(a); 
+	y = long(b);
 }
 
 /*

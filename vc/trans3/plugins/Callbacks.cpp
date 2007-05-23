@@ -1647,7 +1647,7 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			*pRet = g_pBoard->bkgColor;
 			break;
 		case BRD_BORDERCOLOR:
-			// Obselete.
+			// Obsolete.
 			break;
 		case BRD_SKILL:
 			*pRet = g_pBoard->battleSkill;
@@ -1682,7 +1682,7 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_ITM_X:
 		case BRD_ITM_Y:
 		case BRD_ITM_LAYER:
-			// Obselete.
+			// Obsolete.
 			// These are of little use so are not stored after loading - Delano.
 			*pRet = 0;
 			break;
@@ -1747,7 +1747,7 @@ STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int array
 			if (g_pBoard->bkgImage) str = g_pBoard->bkgImage->file;
 			break;
 		case BRD_BORDER_IMAGE:
-			// Obselete.
+			// Obsolete.
 			break;
 		case BRD_DIR_LINK:
 			// (arrayPos - 1) to maintain compatibility.
@@ -1838,7 +1838,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 	{
 		case BRD_SIZEX:
 		case BRD_SIZEY:
-			// Obselete: do not change the board size.
+			// Obsolete: do not change the board size.
 			break;
 		case BRD_AMBIENTRED:
 			try
@@ -1879,7 +1879,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			g_pBoard->bkgColor = nValue;
 			break;
 		case BRD_BORDERCOLOR:
-			// Obselete
+			// Obsolete
 			break;
 		case BRD_SKILL:
 			g_pBoard->battleSkill = short(nValue);
@@ -1910,7 +1910,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_ITM_X:
 		case BRD_ITM_Y:
 		case BRD_ITM_LAYER:
-			// Obselete, board item locations unused after loading.
+			// Obsolete, board item locations unused after loading.
 			break;
 		case BRD_ITM_ACTIVATION:
 			if (pItem) pItem->getBoardSprite()->activate = short(nValue);
@@ -1921,7 +1921,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		case BRD_PLAYERX:
 		case BRD_PLAYERY:
 		case BRD_PLAYERLAYER:
-			// Obselete: board starting position unused after loading and
+			// Obsolete: board starting position unused after loading and
 			// cannot be changed before loading.
 			break;
 		case BRD_SAVING_DISABLED:
@@ -1971,7 +1971,7 @@ STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int array
 			g_pBoard->bkgImage->createCanvas(*g_pBoard);
 			break;
 		case BRD_BORDER_IMAGE:
-			// Obselete.
+			// Obsolete.
 			break;
 		case BRD_DIR_LINK:
 			g_pBoard->links[bounds(arrayPos1 - 1, 0, int(g_pBoard->links.size() - 1))] = getString(newVal);
