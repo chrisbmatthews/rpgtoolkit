@@ -177,7 +177,7 @@ bool CThread::isSleeping() const
 // Check how much sleep is remaining.
 unsigned long CThread::sleepRemaining() const
 {
-	if (!isSleeping()) return 0;
+	if (!isSleeping() || !m_sleepDuration) return 0;
 	return (m_sleepDuration - (GetTickCount() - m_sleepBegin));
 }
 
