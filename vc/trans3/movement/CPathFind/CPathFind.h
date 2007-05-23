@@ -1,7 +1,7 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Jonathan D. Hughes
+ * This file copyright (C) 2006 - 2007 Jonathan D. Hughes
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
@@ -206,28 +206,5 @@ private:
 	DB_ITR m_nextPoint;							// Currently selected point in "points".
 	int m_growSize;								// Pixel value to expand collision vectors by.
 };
-
-/*
-class CVectorPathFind: public CPathFind
-{
-public:
-	CVectorPathFind(): m_nextPoint(NULL), m_growSize(0) {}
-	void freeData(void);
-
-private:
-	PF_PATH constructPath(NODE node, const CSprite *pSprite) const;
-	int distance(const NODE &a, const NODE &b) const;
-	void initialize(const CSprite *pSprite);
-	bool isChild(const NODE &child, const NODE &parent) const;
-	bool getChild(NODE &child, NODE &parent);
-	bool reset(DB_POINT start, DB_POINT goal, const int layer, const CSprite *pSprite,	const int flags);	
-
-	std::vector<DB_POINT> m_points;				// All node coordinates (grown board and sprite points).
-	std::vector<CPfVector *> m_obstructions;	// Obstructions (grown board and sprite vectors) on the layer.
-
-	DB_ITR m_nextPoint;							// Currently selected point in "points".
-	int m_growSize;								// Pixel value to expand collision vectors by.
-};
-*/
 
 #endif
