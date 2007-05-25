@@ -1914,6 +1914,9 @@ void pathfind(CALL_DATA &params)
 	CPathFind::pathFind(&path, start, goal, layer, PF_AXIAL, &sprite, PF_QUIT_BLOCKED); 
 	std::vector<MV_ENUM> p = path->directionalPath();
 
+	// path is allocated in CPathFind::pathFind().
+	delete path;
+
 	for (std::vector<MV_ENUM>::reverse_iterator i = p.rbegin(); i != p.rend(); ++i)
 	{
 		switch (*i)
