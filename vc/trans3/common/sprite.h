@@ -248,6 +248,9 @@ typedef struct tagBoardSprite
 										// SPR_KEYPRESS - hit general activation key inside vector.
 										// SPR_REPEAT - Whether player must leave vector before
 										//				program can retrigger or not.
+	double distance;					// Distance the player has moved within the item's
+										// activation vector since entering it - to prevent
+										// SPR_STEP triggering multiply.
 	STRING prgActivate;					// Program to run when sprite is activated.
 	STRING prgMultitask;				// Multitask program for sprite.
 
