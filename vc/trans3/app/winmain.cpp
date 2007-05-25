@@ -579,7 +579,10 @@ GAME_STATE gameLogic()
 
 			// Run programs outside of the above loop for the cases
 			// when sprites may be removed from the vector.
-			g_pSelectedPlayer->playerDoneMove();
+			if (!g_pSelectedPlayer->boardEdges())
+			{
+				g_pSelectedPlayer->playerDoneMove();
+			}
 
 			// Render.
 			renderNow();
@@ -677,9 +680,9 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
+	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
 //	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
-//	path = dev;
+	path = dev;
 
 	set_terminate(termFunc);
 
