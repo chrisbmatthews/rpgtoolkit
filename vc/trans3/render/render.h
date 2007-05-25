@@ -85,7 +85,7 @@ typedef struct tagMessageWindow
 	double translucency;
 	STRING bkg;					// Background image.
 	tagMessageWindow():
-		cnvBkg(NULL), cnvText(NULL), nextLine(0), visible(true), 
+		cnvBkg(NULL), cnvText(NULL), nextLine(0), visible(false), 
 		color(0), translucency(0.5), width(600), height(100) {};
 
 	void createCanvases(void);
