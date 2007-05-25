@@ -1094,10 +1094,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
  */
 TILE_TYPE CSprite::boardEdges(const bool bSend)
 {
-	extern STRING g_projectPath;
 	extern LPBOARD g_pBoard;
-	extern GAME_STATE g_gameState;
-	extern CAllocationHeap<BOARD> g_boards;
 
 	// Return normal for npcs and assume the user knows what
 	// they are doing. Wandering sprites are constrained
@@ -1117,18 +1114,49 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 	// Not off an edge.
 	if (link == LK_NONE) return TT_NORMAL;
 
+	// No board exists.
+	if (g_pBoard->links[link].empty()) return TT_SOLID; 
+
+	// Board exists - send after exit from g_sprites movement for().
+	return TT_NORMAL;
+}
+
+/*
+ * Send selected player if off board edges. Perform this
+ * outside of the g_sprites movement loop. Return true
+ * on send (or program trigger), false otherwise.
+ */
+bool CSprite::boardEdges(void)
+{
+	extern STRING g_projectPath;
+	extern LPBOARD g_pBoard;
+	extern GAME_STATE g_gameState;
+	extern CAllocationHeap<BOARD> g_boards;
+
+	LK_ENUM link = LK_NONE;
+	const RECT r = m_attr.vBase.getBounds();
+	const DB_POINT p = getTarget();
+
+	// Check if any part of the vector base is off an edge.
+	if (r.top + p.y < 0) link = LK_N;
+	else if (r.bottom + p.y > g_pBoard->pxHeight()) link = LK_S;
+	else if (r.right + p.x > g_pBoard->pxWidth()) link = LK_E;
+	else if (r.left + p.x < 0) link = LK_W;
+
+	// Not off an edge.
+	if (link == LK_NONE) return false;
+
 	// This corresponds to the order links are stored in the board format.
 	const STRING &fileName = g_pBoard->links[link];
 
 	// No board exists.
-	if (fileName.empty()) return TT_SOLID; 
+	if (fileName.empty()) return false; 
 
 	if (_stricmp(getExtension(fileName).c_str(), _T("prg")) == 0)
 	{
 		// This is a program.
 		CProgram(g_projectPath + PRG_PATH + fileName).run();
-		// Block movement.
-		return TT_SOLID;
+		return true;
 	}
 
 	LPBOARD pBoard = g_boards.allocate();
@@ -1191,7 +1219,7 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 		// Restore.
 		setPosition(pos.x, pos.y, m_pos.l, PX_ABSOLUTE);
 		g_boards.free(pBoard);
-		return TT_SOLID;
+		return false;
 	}
 
 	// Prevent the player from moving on the next board.
@@ -1204,8 +1232,7 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
 	// Accept user input.
 	g_gameState = GS_IDLE;
 
-	// The target wasn't blocked and the send succeeded.
-	return TT_NORMAL;
+	return true;
 }
 
 /*
@@ -1293,14 +1320,30 @@ bool CSprite::programTest(const bool keypressOnly)
 		if (pItm->m_brdData.prgActivate.empty()) continue;
 
 		const DB_POINT pt = {pItm->m_pos.x, pItm->m_pos.y};
-
 		CVector tarActivate = pItm->m_attr.vActivate + pt;
+		double &distance = pItm->m_brdData.distance;
 
-		if (tarActivate.contains(sprBase, p))
+		if (!tarActivate.contains(sprBase, p))
+		{
+			// Reset the distance moved within the activation base,
+			// to prevent multiple triggers of step-on items.
+			distance = 0;
+		}
+		else
 		{
 			// Standing in an item's area.
 			// Are we facing this item?
 			// Are there any other items that are closer?
+
+			// Check if the player has just activated this item by
+			// step-on and is still within the item's vector - if so,
+			// skip, because the player should have to leave the item's
+			// vector in order to reactivate it.
+			if (!(pItm->m_brdData.activationType & SPR_KEYPRESS))
+			{
+				distance += moveSize();
+				if (distance != moveSize()) continue;
+			}
 
 			// The separation of the two sprites (should use centre-points of m_bounds).
 			const DB_POINT s = {pItm->m_pos.x - m_pos.x, pItm->m_pos.y - m_pos.y};
@@ -1415,7 +1458,7 @@ bool CSprite::programTest(const bool keypressOnly)
 
 		// Local copy of the program to avoid derefencing.
 		const BRD_PROGRAM bp = **k;
-		double *const distance = &(*k)->distance;
+		double &distance = (*k)->distance;
 
 		if (bp.layer != m_pos.l) continue;
 
@@ -1428,11 +1471,11 @@ bool CSprite::programTest(const bool keypressOnly)
 			// value to trigger program when we re-enter.
 			if (bp.activationType & PRG_REPEAT) 
 			{
-				*distance = bp.distanceRepeat;
+				distance = bp.distanceRepeat;
 			}
 			else
 			{
-				*distance = 0;
+				distance = 0;
 			}
 		}
 		else
@@ -1440,14 +1483,14 @@ bool CSprite::programTest(const bool keypressOnly)
 			// Standing in a program activation area.
 
 			// Increase distance travelled within the vector.
-			*distance += moveSize();
+			distance += moveSize();
 
 			// Check activation conditions.
 			if (bp.activationType & PRG_REPEAT)
 			{
 				// Repeat triggers - check player has moved
 				// the required distance.
-				if (*distance < bp.distanceRepeat) continue;
+				if (distance < bp.distanceRepeat) continue;
 			}
 			else
 			{
@@ -1456,7 +1499,7 @@ bool CSprite::programTest(const bool keypressOnly)
 				// without the PRG_REPEAT can always trigger).
 				if (!(bp.activationType & PRG_KEYPRESS))
 				{
-					if (*distance != moveSize()) continue;
+					if (distance != moveSize()) continue;
 				}
 			}
 

@@ -107,6 +107,7 @@ public:
 		const bool bRunningProgram);
 	void deactivatePrograms(void);			// Override repeat values for programs the player is standing on.
 	void playerDoneMove(void);				// Complete the selected player's move.
+	bool boardEdges(void);					// Send player outside movement loop.
 	bool programTest(const bool keypressOnly);// Test for program activations (by programs, items, players).
 	void send(void);						// Unconditionally send the sprite to the active board.
 	TILE_TYPE spriteCollisions(void);		// Evaluate sprites (players and items).
