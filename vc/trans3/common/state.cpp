@@ -281,6 +281,7 @@ void loadSaveState(const STRING str)
 		double x, y;
 		int z, active = 0;
 		COORD_TYPE ct = g_pBoard->coordType;
+		SPR_BRDPATH path;
 
 		file >> x >> y >> z;
 
@@ -288,11 +289,26 @@ void loadSaveState(const STRING str)
 		{
 			file >> active;
 			ct = PX_ABSOLUTE;			// Pre-3.1.0, location stored in tiles.
+
+			// boardpath.pVector is stored as the index into g_pBoard->vectors,
+			// rather than the value of the pointer. 
+			// g_pBoard has already been loaded.
+			int iVar = 0;
+			file >> iVar;
+			file >> path.cycles;
+			file >> path.nextNode;
+			file >> path.attributes;
+			if (iVar >= 0 && g_pBoard->vectors.size() > iVar)
+			{
+				path.pVector = g_pBoard->vectors[iVar].pV;
+			}
 		}
 		if (i < g_players.size() && g_players[i])
 		{
 			g_players[i]->setPosition(int(x), int(y), z, ct);
 			g_players[i]->setActive(active != 0);
+			BRD_SPRITE &bp = *g_players[i]->getBoardSprite();
+			bp.boardPath = path;
 		}
 	}
 
@@ -358,6 +374,22 @@ void loadSaveState(const STRING str)
 				file >> z;
 				file >> active;
 
+				// boardpath.pVector is stored as the index into g_pBoard->vectors,
+				// rather than the value of the pointer. 
+				// g_pBoard has already been loaded.
+				if (minorVer >= 4)
+				{
+					int iVar = 0;
+					file >> iVar;
+					file >> spr.boardPath.cycles;
+					file >> spr.boardPath.nextNode;
+					file >> spr.boardPath.attributes;
+					if (iVar >= 0 && g_pBoard->vectors.size() > iVar)
+					{
+						spr.boardPath.pVector = g_pBoard->vectors[iVar].pV;
+					}
+				}
+
 				short version = 0;
 				try
 				{
@@ -367,6 +399,7 @@ void loadSaveState(const STRING str)
 						// Create standard vectors for old items.
 						pItem->createVectors();
 					} 
+
 					// Set the position. Sprite location is always stored in pixels.
 					pItem->setPosition(x, y, z, PX_ABSOLUTE);
 					pItem->setActive(active != 0);
@@ -416,6 +449,9 @@ void loadSaveState(const STRING str)
 		file >> bSleep;
 		double duration;
 		file >> duration;
+
+		// Indefinitly sleeping threads will never execute:
+		if (!duration) bSleep = FALSE;
 
 		CThread *pThread = NULL;
 
@@ -691,6 +727,23 @@ void saveSaveState(const STRING fileName)
 		// Store pixel values always.
 		file << p.x << p.y << p.l; 
 		file << int(active);
+
+		// Store waypoint movements. pVector must be stored as the 
+		// index into g_pBoard->vectors, rather than the actual pointer.
+		SPR_BRDPATH &path = g_players.at(i)->getBoardSprite()->boardPath;
+		int index = -1;
+		for (std::vector<BRD_VECTOR>::iterator itr = g_pBoard->vectors.begin(); itr != g_pBoard->vectors.end(); ++itr)
+		{
+			if (path.pVector == itr->pV)
+			{
+				index = itr - g_pBoard->vectors.begin();
+				break;
+			}
+		}
+		file << index;
+		file << path.cycles;
+		file << path.nextNode;
+		file << path.attributes;
 	}
 
 	// Player levels.
@@ -747,6 +800,23 @@ void saveSaveState(const STRING fileName)
 			file << pos.y;						// Double
 			file << pos.l;						// Int
 			file << int((*j)->isActive());		// Int
+
+			// Store waypoint movements. pVector must be stored as the 
+			// index into g_pBoard->vectors, rather than the actual pointer.
+			SPR_BRDPATH &path = (*j)->getBoardSprite()->boardPath;
+			int index = -1;
+			for (std::vector<BRD_VECTOR>::iterator itr = g_pBoard->vectors.begin(); itr != g_pBoard->vectors.end(); ++itr)
+			{
+				if (path.pVector == itr->pV)
+				{
+					index = itr - g_pBoard->vectors.begin();
+					break;
+				}
+			}
+			file << index;
+			file << path.cycles;
+			file << path.nextNode;
+			file << path.attributes;
 		}
 		else 
 		{
@@ -807,7 +877,7 @@ void saveSaveState(const STRING fileName)
 			file << double((*itr)->sleepRemaining());
 
 			// Serialise the program state so that it can be reconstucted later.
-			(*itr)->serialiseState(file);
+			if (!(*itr)->getFileName().empty()) (*itr)->serialiseState(file);
 		}
 	}
         
