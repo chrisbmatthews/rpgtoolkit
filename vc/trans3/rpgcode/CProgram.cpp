@@ -1414,10 +1414,10 @@ void CProgram::include(const CProgram prg)
 		if (NAMED_METHOD::locate(i->name, i->params, false, *this))
 		{
 			// Duplicate method.
-			if (m_debugLevel >= E_ERROR)
+			/**if (m_debugLevel >= E_ERROR)
 			{
 				debugger(_T("Included file contains method that is already defined: ") + i->name + _T("()"));
-			}
+			}**/
 			continue;
 		}
 
