@@ -145,7 +145,7 @@ extern std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass;
 								return IDENTIFIER;
 							}
 
-([0-9]+(\.[0-9]+)?|([0-9]+)?(\.[0-9]+))	{ yylval = atof(yytext); return NUMBER; }
+([0-9]+(\.[0-9]+)?|([0-9]+)?(\.[0-9]+))(e[+-][0-9]+)?	{ yylval = atof(yytext); return NUMBER; }
 \"[^\"]*\"				{ yylval = yytext; return STRING; }
 
 "/*"	{
