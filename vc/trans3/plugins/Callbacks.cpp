@@ -81,6 +81,14 @@ inline T advance(T i, unsigned int j)
 	return i;
 }
 
+// I hope VC++ actually inlines this function or else
+// things will be rather slow!
+inline CCanvas *getBackBuffer()
+{
+	extern CCanvas *g_cnvRpgCode;
+	return g_prg ? g_cnvRpgCode : g_pDirectDraw->getBackBuffer();
+}
+
 STDMETHODIMP CCallbacks::CBRpgCode(BSTR rpgcodeCommand)
 {
 	CProgram prg;
@@ -95,8 +103,7 @@ STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 	const unsigned int last = var.length() - 1;
 	if (var[last] == '$')
 	{
-		// Expensive, but no cost to 3.1.0 coders.
-		var = var.substr(0, last);
+		var.erase(last);
 	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	BSTR bstr = getString(pVar->getLit());
@@ -111,8 +118,7 @@ STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 	const unsigned int last = var.length() - 1;
 	if (var[last] == '!')
 	{
-		// Expensive, but no cost to 3.1.0 coders.
-		var = var.substr(0, last);
+		var.erase(last);
 	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	*pRet = pVar->getNum();
@@ -125,8 +131,7 @@ STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 	const unsigned int last = var.length() - 1;
 	if (var[last] == '$')
 	{
-		// Expensive, but no cost to 3.1.0 coders.
-		var = var.substr(0, last);
+		var.erase(last);
 	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	pVar->udt = UDT_LIT;
@@ -140,8 +145,7 @@ STDMETHODIMP CCallbacks::CBSetNumerical(BSTR varname, double newValue)
 	const unsigned int last = var.length() - 1;
 	if (var[last] == '!')
 	{
-		// Expensive, but no cost to 3.1.0 coders.
-		var = var.substr(0, last);
+		var.erase(last);
 	}
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
 	pVar->udt = UDT_NUM;
@@ -2061,7 +2065,14 @@ STDMETHODIMP CCallbacks::CBGetHwnd(int *pRet)
 
 STDMETHODIMP CCallbacks::CBRefreshScreen(int *pRet)
 {
-	*pRet = g_pDirectDraw->Refresh();
+	if (g_prg)
+	{
+		renderRpgCodeScreen();
+	}
+	else
+	{
+		*pRet = g_pDirectDraw->Refresh();
+	}
 	return S_OK;
 }
 
@@ -2084,7 +2095,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvas(int canvasID, int x, int y, int *pRet)
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		*pRet = g_pDirectDraw->DrawCanvas(p, x, y, SRCCOPY);
+		*pRet = p->Blt(getBackBuffer(), x, y);
 	}
 	else
 	{
@@ -2098,7 +2109,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvasPartial(int canvasID, int xDest, int yDest,
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		*pRet = g_pDirectDraw->DrawCanvasPartial(p, xDest, yDest, xsrc, ysrc, width, height, SRCCOPY);
+		*pRet = p->BltPart(getBackBuffer(), xDest, yDest, xsrc, ysrc, width, height, SRCCOPY);
 	}
 	else
 	{
@@ -2112,7 +2123,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvasTransparent(int canvasID, int x, int y, int
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		*pRet = g_pDirectDraw->DrawCanvasTransparent(p, x, y, crTransparentColor);
+		*pRet = p->BltTransparent(getBackBuffer(), x, y, crTransparentColor);
 	}
 	else
 	{
@@ -2126,7 +2137,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvasTransparentPartial(int canvasID, int xDest,
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		*pRet = g_pDirectDraw->DrawCanvasTransparentPartial(p, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor);
+		*pRet = p->BltTransparentPart(getBackBuffer(), xDest, yDest, xsrc, ysrc, width, height, crTransparentColor);
 	}
 	else
 	{
@@ -2140,7 +2151,7 @@ STDMETHODIMP CCallbacks::CBDrawCanvasTranslucent(int canvasID, int x, int y, dou
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		*pRet = g_pDirectDraw->DrawCanvasTranslucent(p, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
+		*pRet = p->BltTranslucent(getBackBuffer(), x, y, dIntensity, crUnaffectedColor, crTransparentColor);
 	}
 	else
 	{
@@ -2492,7 +2503,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawHand(int canvasID, int pointx, int pointy, 
 STDMETHODIMP CCallbacks::CBDrawHand(int pointx, int pointy, int *pRet)
 {
 	extern CCanvas *g_cnvCursor;
-	*pRet = g_pDirectDraw->DrawCanvasTransparent(g_cnvCursor, pointx - 42, pointy - 10, RGB(255, 0, 0));
+	*pRet = g_cnvCursor->BltTransparent(getBackBuffer(), pointx - 42, pointy - 10, RGB(255, 0, 0));
 	return S_OK;
 }
 
@@ -3169,7 +3180,7 @@ STDMETHODIMP CCallbacks::CBFightTick()
 
 STDMETHODIMP CCallbacks::CBDrawTextAbsolute(BSTR text, BSTR font, int size, int x, int y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int isOutlined, int *pRet)
 {
-	*pRet = g_pDirectDraw->DrawText(x, y, getString(text), getString(font), size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined);
+	*pRet = getBackBuffer()->DrawText(x, y, getString(text), getString(font), size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined);
 	return S_OK;
 }
 
