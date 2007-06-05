@@ -496,11 +496,18 @@ STRING getMainFileName(const STRING cmdLine)
 		{
 			m_testingProgram = true;
 			g_mainFile.open(main);
-			g_mainFile.startupPrg = _T("");
+			g_mainFile.startupPrg = parts[2];
 			g_mainFile.initBoard = _T("");
-			openSystems();
-			extern STRING g_projectPath;
-			CProgram(g_projectPath + PRG_PATH + parts[2]).run();
+			try
+			{
+				openSystems();
+			}
+			catch (STRING str)
+			{
+				// This will be thrown if no initial character is set
+				// but it does not actually matter, so we just ignore
+				// the error.
+			}
 			closeSystems();
 			return _T("");
 		}
@@ -681,8 +688,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
 //	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
-	path = dev;
+//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
+//	path = dev;
 
 	set_terminate(termFunc);
 

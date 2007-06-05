@@ -49,7 +49,7 @@ RSC=rc.exe
 # ADD BASE CPP /nologo /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
 # ADD CPP /nologo /MTd /w /W0 /Gm /GR /GX /ZI /Od /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "FREEIMAGE_LIB" /YX"stdafx.h" /FD /GZ /c
 # ADD BASE RSC /l 0x1009 /d "_DEBUG"
-# ADD RSC /l 0x1009 /d "_DEBUG"
+# ADD RSC /l 0x1009 /i "rpgcode\\" /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -635,6 +635,10 @@ SOURCE=.\rpgcode\CProgram.h
 # Begin Source File
 
 SOURCE=.\rpgcode\parser\parser.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\rpgcode\unistd.h
 # End Source File
 # Begin Source File
 
@@ -1785,5 +1789,9 @@ SOURCE=..\tkzip\tkzip.h
 # End Source File
 # End Group
 # End Group
+# Begin Source File
+
+SOURCE=.\resources\RPGV3.ICO
+# End Source File
 # End Target
 # End Project

@@ -2,9 +2,9 @@
 
 
 /* File created by MIDL compiler version 5.01.0164 */
-/* at Fri Feb 23 21:43:23 2007
+/* at Tue Jun 04 20:35:39 2002
  */
-/* Compiler settings for C:\cvs\vc\trans3\trans3.idl:
+/* Compiler settings for C:\Program Files\GNU\WinCvs 1.3\tk3\vc\trans3\trans3.idl:
     Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
     error checks: allocation ref bounds_check enum stub_data 
 */
