@@ -2126,69 +2126,68 @@ void operators::add(CALL_DATA &call)
 	CHECK_OVERLOADED_OPERATOR(+, true);
 	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
 	{
-		call.ret().udt = UDT_NUM;
 		call.ret().num = call[0].getNum() + call[1].getNum();
+		call.ret().udt = UDT_NUM;
 	}
 	else
 	{
-		call.ret().udt = UDT_LIT;
 		call.ret().lit = call[0].getLit() + call[1].getLit();
+		call.ret().udt = UDT_LIT;
 	}
 }
 
 void operators::sub(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(-, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() - call[1].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::mul(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(*, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() * call[1].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::bor(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(|, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) | int(call[1].getNum());
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::bxor(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(`, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) ^ int(call[1].getNum());
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::band(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(&, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) & int(call[1].getNum());
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::lor(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(||, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() || call[1].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::land(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(&&, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() && call[1].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::ieq(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(~=, false);
-	call.ret().udt = UDT_NUM;
 	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
 	{
 		call.ret().num = (call[0].getNum() != call[1].getNum());
@@ -2197,12 +2196,12 @@ void operators::ieq(CALL_DATA &call)
 	{
 		call.ret().num = (call[0].getLit() != call[1].getLit());
 	}
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::eq(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(==, false);
-	call.ret().udt = UDT_NUM;
 	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
 	{
 		call.ret().num = (call[0].getNum() == call[1].getNum());
@@ -2211,69 +2210,70 @@ void operators::eq(CALL_DATA &call)
 	{
 		call.ret().num = (call[0].getLit() == call[1].getLit());
 	}
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::gte(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(>=, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() >= call[1].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::lte(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(<=, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() <= call[1].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::gt(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(>, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() > call[1].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::lt(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(<, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() < call[1].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::rs(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(>>, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) >> int(call[1].getNum());
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::ls(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(<<, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) << int(call[1].getNum());
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::mod(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(%, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = int(call[0].getNum()) % int(call[1].getNum());
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::div(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(/, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = call[0].getNum() / call[1].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::pow(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(^, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = ::pow(call[0].getNum(), call[1].getNum());
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::assign(CALL_DATA &call)
@@ -2290,8 +2290,8 @@ void operators::xor_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = int(call[0].getNum()) ^ int(call[1].getNum());
+	var.udt = UDT_NUM;
 }
 
 void operators::or_assign(CALL_DATA &call)
@@ -2300,8 +2300,8 @@ void operators::or_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = int(call[0].getNum()) | int(call[1].getNum());
+	var.udt = UDT_NUM;
 }
 
 void operators::and_assign(CALL_DATA &call)
@@ -2310,8 +2310,8 @@ void operators::and_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = int(call[0].getNum()) & int(call[1].getNum());
+	var.udt = UDT_NUM;
 }
 
 void operators::rs_assign(CALL_DATA &call)
@@ -2320,8 +2320,8 @@ void operators::rs_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = int(call[0].getNum()) >> int(call[1].getNum());
+	var.udt = UDT_NUM;
 }
 
 void operators::ls_assign(CALL_DATA &call)
@@ -2330,8 +2330,8 @@ void operators::ls_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = int(call[0].getNum()) << int(call[1].getNum());
+	var.udt = UDT_NUM;
 }
 
 void operators::sub_assign(CALL_DATA &call)
@@ -2340,8 +2340,8 @@ void operators::sub_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = call[0].getNum() - call[1].getNum();
+	var.udt = UDT_NUM;
 }
 
 void operators::add_assign(CALL_DATA &call)
@@ -2352,13 +2352,13 @@ void operators::add_assign(CALL_DATA &call)
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
 	if ((call[0].getType() & UDT_NUM) && (call[1].getType() & UDT_NUM))
 	{
-		var.udt = UDT_NUM;
 		var.num = call[0].getNum() + call[1].getNum();
+		var.udt = UDT_NUM;
 	}
 	else
 	{
-		var.udt = UDT_LIT;
 		var.lit = call[0].getLit() + call[1].getLit();
+		var.udt = UDT_LIT;
 	}
 }
 
@@ -2368,8 +2368,8 @@ void operators::mod_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = int(call[0].getNum()) % int(call[1].getNum());
+	var.udt = UDT_NUM;
 }
 
 void operators::div_assign(CALL_DATA &call)
@@ -2378,8 +2378,8 @@ void operators::div_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = call[0].getNum() / call[1].getNum();
+	var.udt = UDT_NUM;
 }
 
 void operators::mul_assign(CALL_DATA &call)
@@ -2388,8 +2388,8 @@ void operators::mul_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = call[0].getNum() * call[1].getNum();
+	var.udt = UDT_NUM;
 }
 
 void operators::pow_assign(CALL_DATA &call)
@@ -2398,8 +2398,8 @@ void operators::pow_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = ::pow(call[0].getNum(), call[1].getNum());
+	var.udt = UDT_NUM;
 }
 
 void operators::lor_assign(CALL_DATA &call)
@@ -2408,8 +2408,8 @@ void operators::lor_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = call[0].getNum() || call[1].getNum();
+	var.udt = UDT_NUM;
 }
 
 void operators::land_assign(CALL_DATA &call)
@@ -2418,8 +2418,8 @@ void operators::land_assign(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = call[0].getNum() && call[1].getNum();
+	var.udt = UDT_NUM;
 }
 
 void operators::prefixIncrement(CALL_DATA &call)
@@ -2428,8 +2428,8 @@ void operators::prefixIncrement(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
-	var.udt = UDT_NUM;
 	var.num = call[0].getNum() + 1;
+	var.udt = UDT_NUM;
 }
 
 void operators::postfixIncrement(CALL_DATA &call)
@@ -2439,8 +2439,8 @@ void operators::postfixIncrement(CALL_DATA &call)
 	call.ret().num = call[0].getNum();
 
 	STACK_FRAME &var = *call.prg->getVar(call[0].lit);
+	var.num = var.getNum() + 1;
 	var.udt = UDT_NUM;
-	var.num = call[0].getNum() + 1;
 }
 
 void operators::prefixDecrement(CALL_DATA &call)
@@ -2449,8 +2449,8 @@ void operators::prefixDecrement(CALL_DATA &call)
 	call.ret().udt = UDT_ID;
 	call.ret().lit = call[0].lit;
 	STACK_FRAME &var = *call.prg->getVar(call.ret().lit);
+	var.num = var.getNum() - 1;
 	var.udt = UDT_NUM;
-	var.num = call[0].getNum() - 1;
 }
 
 void operators::postfixDecrement(CALL_DATA &call)
@@ -2460,29 +2460,29 @@ void operators::postfixDecrement(CALL_DATA &call)
 	call.ret().num = call[0].getNum();
 
 	STACK_FRAME &var = *call.prg->getVar(call[0].lit);
+	var.num = var.getNum() - 1;
 	var.udt = UDT_NUM;
-	var.num = call[0].getNum() - 1;
 }
 
 void operators::unaryNegation(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(-, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = -call[0].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::lnot(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(!, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = !call[0].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::bnot(CALL_DATA &call)
 {
 	CHECK_OVERLOADED_OPERATOR(~, true);
-	call.ret().udt = UDT_NUM;
 	call.ret().num = ~(int)call[0].getNum();
+	call.ret().udt = UDT_NUM;
 }
 
 void operators::tertiary(CALL_DATA &call)
