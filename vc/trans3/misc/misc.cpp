@@ -36,10 +36,11 @@
 void split(const STRING str, const STRING delim, std::vector<STRING> &parts)
 {
 	STRING::size_type pos = STRING::npos, begin = 0;
+	const STRING::size_type length = delim.length();
 	while ((pos = str.find(delim, pos + 1)) != STRING::npos)
 	{
 		parts.push_back(str.substr(begin, pos - begin));
-		begin = pos + 1;
+		begin = pos + length;
 	}
 	parts.push_back(str.substr(begin, pos - begin));
 }
