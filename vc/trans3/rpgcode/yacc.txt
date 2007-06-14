@@ -43,48 +43,62 @@
 %token	ON_ERROR RESUME_NEXT GOTO
 
 %right	XOR_ASSIGN
-%right	OR_ASSIGN
-%right	AND_ASSIGN
-%right	RS_ASSIGN
-%right	LS_ASSIGN
-%right	SUB_ASSIGN
-%right	ADD_ASSIGN
-%right	MOD_ASSIGN
-%right	DIV_ASSIGN
-%right	MUL_ASSIGN
-%right	POW_ASSIGN
-%right	ASSIGN
+		OR_ASSIGN
+		AND_ASSIGN
+		RS_ASSIGN
+		LS_ASSIGN
+		SUB_ASSIGN
+		ADD_ASSIGN
+		MOD_ASSIGN
+		DIV_ASSIGN
+		MUL_ASSIGN
+		POW_ASSIGN
+		ASSIGN
+
 %right	CONDITIONAL QUESTION COLON
+
 %left	LOR
+
 %left	LAND
+
 %left	OR
+
 %left	XOR
+
 %left	AND
+
 %left	IEQ
-%left	EQ
+		EQ
+
 %left	GTE
-%left	LTE
-%left	GT
-%left	LT
+		LTE
+		GT
+		LT
+
 %left	RS
-%left	LS
+		LS
+
 %left	SUB
-%left	ADD
+		ADD
+
 %left	MOD
-%left	DIV
-%left	MUL
+		DIV
+		MUL
+
 %left	POW
-%left	MEM
-%left	NOT
-%left	NEG
-%left	PREF_DEC
-%left	PREF_INC
+
+%right	NOT
+		BNOT
+		NEG
+		PREF_DEC
+		PREF_INC
+
 %left	POST_DEC
-%left	POST_INC
-%left	MEMBER
-%left	LPAREN RPAREN
-%left	LARRAY RARRAY
-%left	HIGHEST
+		POST_INC
+		MEM
+		LPAREN RPAREN
+		LARRAY RARRAY
+		HIGHEST
 
 %{
 
