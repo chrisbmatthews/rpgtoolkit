@@ -123,7 +123,7 @@ extern std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass;
 						}
 
 	/* An identifier */
-~?[A-Za-z_][A-Za-z0-9_]*	{
+~?[0-9]*[A-Za-z_][A-Za-z0-9_]*	{
 								char *str = _strlwr(_strdup(yytext));
 								const STD_NATURAL_STRING s = str;
 								free(str);
