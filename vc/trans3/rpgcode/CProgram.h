@@ -440,6 +440,7 @@ protected:
 	LPSTACK_FRAME resolveVarGlobal(const STRING name, unsigned int *);
 	LPSTACK_FRAME resolveVarLocal(const STRING name, unsigned int *);
 
+	STRING m_fileName;
 	MACHINE_UNITS m_units;
 	CONST_POS m_i;
 	LPSTACK_FRAME (CProgram::*m_pResolveFunc) (const STRING name, unsigned int *);
@@ -481,7 +482,6 @@ public:
 private:
 	mutable bool m_bSleeping;
 	unsigned long m_sleepBegin, m_sleepDuration;
-	STRING m_fileName;
 
 protected:
 	static void *operator new(size_t size) { return malloc(size); }

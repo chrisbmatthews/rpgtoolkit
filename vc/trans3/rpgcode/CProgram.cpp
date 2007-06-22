@@ -93,18 +93,17 @@ CProgram::~CProgram()
 // Protected constructor.
 CThread::CThread(const STRING str):
 CProgram(),
-m_bSleeping(false), 
-m_fileName(str) 
+m_bSleeping(false) 
 {
 	extern STRING g_projectPath;
 	const STRING fileName = g_projectPath + PRG_PATH + str;
 	if (CFile::fileExists(fileName))
 	{
-		m_fileName = fileName;
 		open(m_fileName);
 	}
 	else
 	{
+		m_fileName = str;
 		loadFromString(str);
 	}
 }
@@ -207,6 +206,7 @@ CProgram &CProgram::operator=(const CProgram &rhs)
 	m_i = rhs.m_i;
 	m_methods = rhs.m_methods;
 	m_inclusions = rhs.m_inclusions;
+	m_fileName = rhs.m_fileName;
 
 	// Update the stack pointer.
 	if (!rhs.m_pStack)
@@ -879,6 +879,8 @@ bool CProgram::open(const STRING fileName)
 	FILE *file = fopen(resolve(fileName).c_str(), _T("rb"));
 	if (!file) return false;
 
+	m_fileName = fileName;
+
 	// Get the length of the file.
 	fseek(file, 0, SEEK_END);
 	const long length = ftell(file);
@@ -1255,7 +1257,7 @@ void CProgram::parseFile(FILE *pFile)
 		{
 			TCHAR str[255];
 			_itot(getLine(m_units.begin() + matchBrace(m_units.insert(m_units.end(), mu))) + 1, str, 10);
-			debugger(STRING(_T("Near line ")) + str + _T(": Unmatched curly brace."));
+			debugger(m_fileName + STRING(_T("\nNear line ")) + str + _T(": Unmatched curly brace."));
 		}
 	}
 
@@ -1876,14 +1878,15 @@ void CProgram::handleError(CException *p)
 		}
 	}
 
-	if (p && (CProgram::m_debugLevel < p->getType())) return;
+	if (p && (m_debugLevel < p->getType())) return;
 
 	STRINGSTREAM ss;
-	ss	<< _T("Near line ")
+	ss	<< m_fileName
+		<< _T("\nNear line ")
 		<< getLine(m_i)
 		<< _T(": ")
-		<< (p ? p->getMessage() : _T("Unexcepted error."));
-	CProgram::debugger(ss.str());
+		<< (p ? p->getMessage() : _T("Unexpected error."));
+	debugger(ss.str());
 }
 
 // Set the label to jump to in case of error.

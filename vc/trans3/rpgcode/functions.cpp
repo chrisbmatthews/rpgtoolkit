@@ -5365,9 +5365,17 @@ void stance(CALL_DATA &params)
 void forceRedraw(CALL_DATA &params)
 {
 	extern SCROLL_CACHE g_scrollCache;
-	setAmbientLevel();
-	g_scrollCache.render(true);
-	renderNow(g_cnvRpgCode, true);
+	extern LPBOARD g_pBoard;
+	if (g_pBoard)
+	{
+		setAmbientLevel();
+		g_scrollCache.render(true);
+		renderNow(g_cnvRpgCode, true);
+	}
+	else
+	{
+		g_cnvRpgCode->ClearScreen(0);
+	}
 	renderRpgCodeScreen();
 }
 
