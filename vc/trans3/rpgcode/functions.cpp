@@ -5366,7 +5366,7 @@ void forceRedraw(CALL_DATA &params)
 {
 	extern SCROLL_CACHE g_scrollCache;
 	extern LPBOARD g_pBoard;
-	if (g_pBoard)
+	if (g_pBoard->bLayerOccupied.size())
 	{
 		setAmbientLevel();
 		g_scrollCache.render(true);
