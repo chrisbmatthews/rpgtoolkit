@@ -456,4 +456,11 @@ Private Sub Form_Load()
         j.Checked = True
     Next j
     Set files.SelectedItem = files.nodes.Item(ROOT_NODE)
+    
+    'Close any open RPGCode editors.
+    Dim frm As Form
+    For Each frm In Forms
+        If (TypeOf frm Is rpgcodeedit) Then Unload frm
+    Next frm
+
 End Sub
