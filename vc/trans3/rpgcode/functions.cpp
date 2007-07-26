@@ -292,8 +292,7 @@ CItem *getItemPointer(STACK_FRAME &param)
 
 
 /*
- * Splice arrays, e.g. "<array[i]>".
- * This does not work for non-variable/numeric entries (e.g. array["str"]).
+ * Splice arrays, e.g. "<array[i!]>" or "<array[str$]>" or <"array[map]">.
  */
 STRING spliceArrays(CProgram *prg, STRING str)
 {
@@ -313,12 +312,15 @@ STRING spliceArrays(CProgram *prg, STRING str)
 			{
 				// Deal with nested arrays.
 				last = i;
-				const STRING var = STRING(first, last);
+				STRING var = STRING(first, last);
 				
-				// Skip numeric indices.
-				if (var.find_first_not_of(_T("0123456789")) != STRING::npos)
+				if (var.find_first_of(_T("!$")) != STRING::npos)
 				{
-					const STRING val = prg->getVar(spliceArrays(prg, var))->getLit();
+					var = spliceArrays(prg, var);
+					replace(var, _T("!"), _T(""));
+					replace(var, _T("$"), _T(""));
+
+					const STRING val = prg->getVar(var)->getLit();
 					str.replace(first, last, val);
 
 					// first will be invalid if replace() caused reallocation.
@@ -346,15 +348,19 @@ STRING spliceVariables(CProgram *prg, STRING str)
 		if (r == STRING::npos) break;
 
 		STRING var = str.substr(pos + 1, r - pos - 1);
-		replace(var, _T("!"), _T(""));
-		replace(var, _T("$"), _T(""));
 
 		// Convert to lower case.
 		char *const lower = _tcslwr(_tcsdup(var.c_str()));
 		var = lower;
 		free(lower);
 
-		const STRING val = prg->getVar(spliceArrays(prg, var))->getLit();
+		// Splice arrays before removing old identifiers.
+		var = spliceArrays(prg, var);
+
+		replace(var, _T("!"), _T(""));
+		replace(var, _T("$"), _T(""));
+
+		const STRING val = prg->getVar(var)->getLit();
 		str.erase(pos, r - pos + 1);
 		str.insert(pos, val);
 
@@ -1515,7 +1521,7 @@ void mp3pause(CALL_DATA &params)
 {
 	if (params.params != 1)
 	{
-		throw CError(_T("Wav() requires one parameter."));
+		throw CError(_T("Mp3Pause() requires one parameter."));
 	}
 	// Do not pass \Media path.
 	CAudioSegment::playSoundEffect(params[0].getLit(), true);
@@ -5039,13 +5045,14 @@ void layerput(CALL_DATA &params)
 	
 	// Instead of drawing onto the scrollcache (which seems quite
 	// useless), enter the tile into the tile lookup table.
-	if (!g_pBoard->insertTile(params[3].getLit(), int(params[0].getNum()), int(params[1].getNum()),	int(params[2].getNum())))
+	const int x = int(params[0].getNum()), y = int(params[1].getNum()), z = int(params[2].getNum());
+	if (!g_pBoard->insertTile(params[3].getLit(), x, y,	z))
 	{
 		throw CError(_T("LayerPut(): tile co-ordinates out of bounds."));
 	}
 
-	// Redraw the scrollcache.
-	g_scrollCache.render(true);
+	// Redraw the board at this location.
+	g_pBoard->renderStack(g_scrollCache, x, y, 1, g_pBoard->sizeL);
     renderNow(g_cnvRpgCode, true);
     renderRpgCodeScreen();
 }
@@ -5848,20 +5855,27 @@ void drawCanvas(CALL_DATA &params)
 }
 
 /*
+ * 3.0.6 made exception for "Saved" directory outside of g_projectPath.
+ */
+STRING getFolderPath(STRING folder)
+{
+	extern STRING g_projectPath;
+	return (_ftcsicmp(folder.c_str(), _T("Saved")) == 0 ? folder : g_projectPath + folder);
+}
+
+/*
  * void openFileInput(string file, string folder)
  * 
  * Open a file in input mode.
  */
 void openFileInput(CALL_DATA &params)
 {
-	extern STRING g_projectPath;
-
 	if (params.params != 2)
 	{
 		throw CError(_T("OpenFileInput() requires two parameters."));
 	}
 	CFile &file = g_files[parser::uppercase(params[0].getLit())];
-	file.open(g_projectPath + params[1].getLit() + _T('\\') + params[0].getLit(), OF_READ);
+	file.open(getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit(), OF_READ);
 	if (!file.isOpen())
 	{
 		throw CError(_T("OpenFileInput(): file does not exist."));
@@ -5875,13 +5889,11 @@ void openFileInput(CALL_DATA &params)
  */
 void openFileOutput(CALL_DATA &params)
 {
-	extern STRING g_projectPath;
-
 	if (params.params != 2)
 	{
 		throw CError(_T("OpenFileOutput() requires two parameters."));
 	}
-	g_files[parser::uppercase(params[0].getLit())].open(g_projectPath + params[1].getLit() + _T('\\') + params[0].getLit(), OF_CREATE | OF_WRITE);
+	g_files[parser::uppercase(params[0].getLit())].open(getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit(), OF_CREATE | OF_WRITE);
 }
 
 /*
@@ -5891,14 +5903,12 @@ void openFileOutput(CALL_DATA &params)
  */
 void openFileAppend(CALL_DATA &params)
 {
-	extern STRING g_projectPath;
-
 	if (params.params != 2)
 	{
 		throw CError(_T("OpenFileOutput() requires two parameters."));
 	}
 	CFile &file = g_files[parser::uppercase(params[0].getLit())];
-	CONST STRING filename = g_projectPath + params[1].getLit() + _T('\\') + params[0].getLit();
+	CONST STRING filename = getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit();
 	
 	// Create the file if it doesn't exist.
 	file.open(filename, OF_WRITE);
