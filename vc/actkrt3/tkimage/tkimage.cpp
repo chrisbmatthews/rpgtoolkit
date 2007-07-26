@@ -238,4 +238,17 @@ INT APIENTRY IMGExport(CONST HBITMAP hbmp, CONST CHAR* filename)
 	return (dib24bit != 0);
 }
 
-
+//----------------------------------------------------------------
+// Obtain the transparent colour of a fbmp, if it has one.
+//----------------------------------------------------------------
+INT APIENTRY IMGGetTransparentColor(FIBITMAP *nFreeImagePtr)
+{
+	INT color = 0;
+	if (FreeImage_IsTransparent(nFreeImagePtr) && FreeImage_HasBackgroundColor(nFreeImagePtr))
+	{
+		RGBQUAD bkg = {0};
+		FreeImage_GetBackgroundColor(nFreeImagePtr, &bkg); 
+		color = RGB(bkg.rgbRed, bkg.rgbGreen, bkg.rgbBlue);
+	}
+	return color;
+}
