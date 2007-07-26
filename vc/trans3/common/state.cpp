@@ -450,7 +450,7 @@ void loadSaveState(const STRING str)
 		double duration;
 		file >> duration;
 
-		// Indefinitly sleeping threads will never execute:
+		// Indefinitely sleeping threads will never execute:
 		if (!duration) bSleep = FALSE;
 
 		CThread *pThread = NULL;
