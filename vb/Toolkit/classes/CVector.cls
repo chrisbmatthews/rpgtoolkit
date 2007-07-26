@@ -314,7 +314,7 @@ End Sub
 '=========================================================================
 ' Move points a selection
 '=========================================================================
-Public Sub moveSelectionBy(ByVal dx As Long, ByVal dy As Long, Optional ByVal allPoints As Boolean) ':on error resume next
+Public Sub moveSelectionBy(ByVal dx As Long, ByVal dy As Long, Optional ByVal allPoints As Boolean, Optional ByVal allowNegatives As Boolean = True) ':on error resume next
     Dim i As Long
     If m_tiletype = TT_NULL Then Exit Sub
     
@@ -323,6 +323,10 @@ Public Sub moveSelectionBy(ByVal dx As Long, ByVal dy As Long, Optional ByVal al
             ' Don't do a CBoardSelection.containsPoint() test because this may pick up new points on the move.
             m_pts(i).x = m_pts(i).x + dx
             m_pts(i).y = m_pts(i).y + dy
+            If Not allowNegatives Then
+                If m_pts(i).x < 0 Then m_pts(i).x = 0
+                If m_pts(i).y < 0 Then m_pts(i).y = 0
+            End If
         End If
     Next i
 End Sub
@@ -469,8 +473,8 @@ Public Sub defaultSpriteVector(ByVal bCollisionVector As Boolean, ByVal bIsometr
             m_tiletype = TT_SOLID
             setPoint 0, 0, 0, True
             setPoint 1, 30, 0, True
-            setPoint 2, 30, 14, True
-            setPoint 3, 0, 14, True
+            setPoint 2, 30, 15, True
+            setPoint 3, 0, 15, True
             moveSelectionBy -15, -15
         End If
     Else
