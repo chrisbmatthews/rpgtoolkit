@@ -586,7 +586,7 @@ GAME_STATE gameLogic()
 
 			// Run programs outside of the above loop for the cases
 			// when sprites may be removed from the vector.
-			if (!g_pSelectedPlayer->boardEdges())
+			if (!g_pSelectedPlayer->doBoardEdges())
 			{
 				g_pSelectedPlayer->playerDoneMove();
 			}
