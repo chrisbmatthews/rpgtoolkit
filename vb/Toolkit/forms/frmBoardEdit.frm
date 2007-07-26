@@ -1039,8 +1039,13 @@ Begin VB.Form frmBoardEdit
          Shortcut        =   ^D
       End
       Begin VB.Menu mnuBoard 
-         Caption         =   "Convert Co-ordinates"
+         Caption         =   "Set As Initial Board"
          Index           =   2
+         Shortcut        =   ^G
+      End
+      Begin VB.Menu mnuBoard 
+         Caption         =   "Convert Co-ordinates"
+         Index           =   3
          Begin VB.Menu mnuCoords 
             Caption         =   "to isometric rotated"
             Index           =   0
@@ -1054,7 +1059,7 @@ Begin VB.Form frmBoardEdit
       End
       Begin VB.Menu mnuBoard 
          Caption         =   "Export Image"
-         Index           =   3
+         Index           =   4
          Begin VB.Menu mnuExport 
             Caption         =   "Current Screen"
             Index           =   0
@@ -1641,7 +1646,7 @@ Private Function ISubclass_WindowProc(ByVal hwnd As Long, ByVal iMsg As Long, By
     End If
 End Function
 
-Private Sub mnuBoard_Click(Index As Integer): On Error Resume Next
+Private Sub mnuBoard_Click(Index As Integer) ': On Error Resume Next
     Select Case Index
         Case 0:
             frmBoardPreferences.Show vbModal
@@ -1649,6 +1654,16 @@ Private Sub mnuBoard_Click(Index As Integer): On Error Resume Next
             'Player start location.
             tkMainForm.brdOptSetting(BS_SCROLL).value = True
             m_ed.optTool = BT_SET_PSTART
+        Case 2:
+            'Set as initial board.
+            If LenB(m_ed.boardName) Then
+                mainMem.initBoard = m_ed.boardName
+                Dim frm As Form
+                For Each frm In Forms
+                    If TypeOf frm Is editmainfile Then frm.initboardbox.Text = m_ed.boardName
+                Next frm
+                Call saveMain(mainFile, mainMem)
+            End If
     End Select
 End Sub
 Private Sub mnuCoords_Click(Index As Integer): On Error Resume Next
@@ -1959,7 +1974,7 @@ Private Sub picBoard_MouseDown(Button As Integer, Shift As Integer, x As Single,
                         Select Case m_ed.optSetting
                             Case BS_VECTOR, BS_PROGRAM, BS_LIGHTING
                                 If Not curVector Is Nothing Then
-                                    Call curVector.moveSelectionBy(dx, dy)
+                                    Call curVector.moveSelectionBy(dx, dy, False, False)
                                     Call drawBoard
                                 End If
                         End Select
