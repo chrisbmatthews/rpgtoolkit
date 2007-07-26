@@ -22,6 +22,9 @@ Private Declare Function BRDPixelToTile Lib "actkrt3.dll" (ByRef x As Long, ByRe
 Private Declare Function BRDTileToPixel Lib "actkrt3.dll" (ByRef x As Long, ByRef y As Long, ByVal coordType As Integer, ByVal bAddBasePoint As Boolean, ByVal brdSizeX As Integer) As Long
 Private Declare Function BRDVectorize Lib "actkrt3.dll" (ByVal pCBoard As Long, ByVal pData As Long, ByRef vectors() As TKConvertedVector) As Long
 Private Declare Function BRDTileToVector Lib "actkrt3.dll" (ByVal pVector As Long, ByVal x As Long, ByVal y As Long, ByVal coordType As Integer) As Long
+Private Declare Function IMGFree Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
+Private Declare Function IMGGetTransparentColor Lib "actkrt3.dll" (ByVal nFreeImagePtr As Long) As Long
+Private Declare Function IMGLoad Lib "actkrt3.dll" (ByVal filename As String) As Long
 
 '=========================================================================
 ' A globally unique identifier
@@ -594,7 +597,7 @@ Public Sub spriteGetDisplayImage(ByVal filename As String, ByRef image As String
     End If
 End Sub
 Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String, ByRef transpcolor As Long) ':on error resume next
-    Dim anm As TKAnimation, Item As TKItem, i As Long, str As String
+    Dim anm As TKAnimation, Item As TKItem, i As Long, str As String, pfbmp As Long
     
     'Check standing and walking graphics.
     Item = CommonItem.openItem(projectPath & itmPath & filename)
@@ -624,9 +627,13 @@ Private Sub itemGetDisplayImage(ByVal filename As String, ByRef image As String,
         Next i
     Else
         'gif animation, etc.
+        transpcolor = 0
         image = str
-        'TBD: write a function to extract the transparent colour (see trans3/animation.cpp).
-        transpcolor = RGB(0, 0, 0)
+        pfbmp = IMGLoad(projectPath & miscPath & str)
+        If pfbmp Then
+            transpcolor = IMGGetTransparentColor(pfbmp)
+            Call IMGFree(pfbmp)
+        End If
     End If
 End Sub
 
