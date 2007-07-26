@@ -96,8 +96,8 @@ CProgram(),
 m_bSleeping(false) 
 {
 	extern STRING g_projectPath;
-	const STRING fileName = g_projectPath + PRG_PATH + str;
-	if (CFile::fileExists(fileName))
+	m_fileName = g_projectPath + PRG_PATH + str;
+	if (CFile::fileExists(m_fileName))
 	{
 		open(m_fileName);
 	}
@@ -144,10 +144,7 @@ void CThread::multitask(const unsigned int units)
 	std::set<CThread *>::iterator i = m_threads.begin();
 	for (; i != m_threads.end(); ++i)
 	{
-		if (!(*i)->isSleeping())
-		{
-			(*i)->execute(units);
-		}
+		(*i)->execute(units);
 	}
 }
 
@@ -180,14 +177,14 @@ unsigned long CThread::sleepRemaining() const
 	return (m_sleepDuration - (GetTickCount() - m_sleepBegin));
 }
 
-// Execute one unit from a program.
+// Execute n units from a program.
 bool CThread::execute(const unsigned int units)
 {
 	unsigned int i = 0;
-	while ((m_i != m_units.end()) && (i++ < units))
+	while ((m_i != m_units.end()) && (i++ < units) && !isSleeping())
 	{
 		m_i->execute(this);
-		++m_i;
+		++m_i; 
 	}
 	return true;
 }
