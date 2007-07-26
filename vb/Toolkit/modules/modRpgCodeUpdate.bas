@@ -89,20 +89,46 @@ End Function
 Private Function updateFunction(ByVal funcName As String, ByRef str As String, ByVal strict As Boolean) As String
 
     ' Just skip "for"! Hopefully nobody used = for comparison in a "for"...
-    If (funcName = "for") Then
-        updateFunction = replace(str, ",", ";")
-        Exit Function
-    End If
-
+    Select Case funcName
+        Case "for"
+            updateFunction = replace(str, ",", ";")
+            Exit Function
+        Case "case"
+            If (LCase$(Trim$(str)) = "else") Then
+                updateFunction = str
+                Exit Function
+            End If
+    End Select
+    
     'Recurse into nested functions.
-    Dim params() As String
     updateFunction = updateLine(str, strict, True)
-    params = Split(updateFunction, ",")
-
-    'Quote unquoted parameters.
-    Dim i As Long, start As Long
+    
+    If (Trim$(updateFunction) = vbNullString) Then Exit Function
+    
+    'Split the line into parameters by commas, but ignore quoted commas.
+    Dim i As Long, start As Long, params() As String, bQuotes As Boolean, char As String
+    ReDim params(0)
     start = 1
-    For i = 0 To UBound(params)
+    For i = 1 To Len(updateFunction)
+        char = Mid$(updateFunction, i, 1)
+        If (char = """") Then
+            bQuotes = Not bQuotes
+        ElseIf (char = ",") Then
+            If Not bQuotes Then
+                ReDim Preserve params(UBound(params) + 1)
+                params(UBound(params)) = Mid$(updateFunction, start, i - start)
+                start = i + 1
+            End If
+        End If
+    Next i
+
+    'Add last parameter.
+    ReDim Preserve params(UBound(params) + 1)
+    params(UBound(params)) = Mid$(updateFunction, start)
+    
+    'Quote unquoted parameters. Note params(0) is empty.
+    start = 1
+    For i = 1 To UBound(params)
         Dim part As String
         part = Trim$(params(i))
         
@@ -124,8 +150,8 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
     updateLine = str
 
     Dim updatedFunction As Boolean, begin As Long, Length As Long, bQuotes As Boolean
-
-    Dim i As Long
+    Dim i As Long, j As Long, depth As Long, funcName As String, func As String, insideChar As String
+    
     For i = 1 To Len(updateLine)
         Dim char As String
         char = Mid$(updateLine, i, 1)
@@ -135,7 +161,6 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
         ElseIf (Not bQuotes) Then
             If (char = "(") Then
                 updatedFunction = True
-                Dim j As Long, depth As Long, funcName As String
                 
                 ' Find the function's name!
                 funcName = vbNullString
@@ -151,8 +176,8 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
                 End If
                 funcName = LCase$(Trim$(replace(funcName, vbTab, vbNullString)))
                 
+                depth = 0
                 For j = i To Len(updateLine)
-                    Dim insideChar As String
                     insideChar = Mid$(updateLine, j, 1)
                     If (insideChar = "(") Then
                         depth = depth + 1
@@ -160,18 +185,40 @@ Private Function updateLine(ByRef str As String, ByVal strict As Boolean, ByVal 
                         depth = depth - 1
                         If (depth = 0) Then
                             ' Found the matching closing brace. Extract the contents of the brackets.
-                            Dim func As String
                             begin = i + 1
                             Length = j - i - 1
                             func = Mid$(updateLine, begin, Length)
     
                             ' Quote the function's parameters.
                             updateLine = exchange(updateLine, begin, Length, updateFunction(funcName, func, strict))
-    
                             Exit For
                         End If
                     End If
                 Next j
+                
+            ElseIf (char = "[") Then
+                'Quote text map keys.
+                
+                depth = 0
+                For j = i To Len(updateLine)
+                    insideChar = Mid$(updateLine, j, 1)
+                    If (insideChar = "[") Then
+                        depth = depth + 1
+                    ElseIf (insideChar = "]") Then
+                        depth = depth - 1
+                        If (depth = 0) Then
+                            ' Found the matching closing brace. Extract the contents of the brackets.
+                            begin = i + 1
+                            Length = j - i - 1
+                            func = Mid$(updateLine, begin, Length)
+    
+                            ' Quote the map's key.
+                            updateLine = exchange(updateLine, begin, Length, updateFunction(funcName, func, strict))
+                            Exit For
+                        End If
+                    End If
+                Next j
+                
             ElseIf Not (updatedFunction) Then
                 Dim nextChar As String, prevChar As String
                 If (i <> Len(updateLine)) Then
