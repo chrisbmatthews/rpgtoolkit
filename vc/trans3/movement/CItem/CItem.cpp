@@ -132,12 +132,11 @@ bool CItemThread::execute(const unsigned int units)
 	g_target.type = g_source.type = ET_ITEM;
 
 	unsigned int i = 0;
-	do
+	while ((i++ < units) && (m_i != m_units.end()) && m_pItem->isActive() && !isSleeping())
 	{
 		m_i->execute(this);
 		++m_i;
-	} while ((++i < units) && (m_i != m_units.end()) && m_pItem->isActive());
-
+	} 
 	g_target = t; g_source = s;
 
 	return true;
