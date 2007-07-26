@@ -14,6 +14,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 /*
  * CVector.cpp - Vector collision implementation.
  */
@@ -32,7 +33,7 @@ m_closed(false),
 m_curl(CURL_NDEF)
 {
 	// Create an void vector of no points.
-	RECT bounds = {0, 0, 0, 0}; 
+	RECT bounds = {0}; 
 	m_bounds = bounds;
 	m_p.clear();
 }
@@ -244,7 +245,7 @@ bool CVector::contains(const CVector &rhs, DB_POINT &ref) const
 
 	// Check for boundary collisions first.
 
-	DB_POINT unused = {0.0, 0.0};
+	DB_POINT unused = {0.0};
 	// Loop over the subvectors in this vector (to size() - 1).
 	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
@@ -298,7 +299,7 @@ ZO_ENUM CVector::contains(const CVector &rhs/*, DB_POINT &ref*/) const
 
 	ZO_ENUM zo = ZO_NONE;
 
-	DB_POINT unused = {0, 0};
+	DB_POINT unused = {0.0};
 	if (intersect(rhs, unused)) zo = ZO_COLLIDE;
 
 	// We may be completely inside the vector.
@@ -552,7 +553,7 @@ bool CVector::intersect(const CVector &rhs, DB_POINT &ref) const
 	// Check the rhs vector.
 	if (&rhs == this) return false;
 
-	DB_POINT unused = {0, 0};
+	DB_POINT unused = {0.0};
 
 	// Loop over the subvectors in this vector (to size() - 1).
 	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
@@ -713,8 +714,8 @@ bool CPfVector::contains(const CPfVector &rhs) const
 
 				// See if the midpoint of the path is in the vector.
 				// Whilst this is not enough on its own, it's half.
-				const DB_POINT d = {(start.x + end.x) / 2,
-									(start.y + end.y) / 2};
+				const DB_POINT d = {(start.x + end.x) / 2.0,
+									(start.y + end.y) / 2.0};
 				if (containsPoint(d)) return true;
 
 				// See if the path crosses the vector anywhere -
@@ -728,12 +729,12 @@ bool CPfVector::contains(const CPfVector &rhs) const
 	// Repeat, knowing if a node is on this vector.
 	for (i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
-		DB_POINT p = {0, 0};
+		DB_POINT p = {0.0};
 		// Do the two lines cross?
 		if (intersect(i, rhs, p))
 		{
 			// Check if the intersect point is on the vector.
-			DB_POINT a = &*first ? *first : *i, b = {-1, -1};
+			DB_POINT a = &*first ? *first : *i, b = {-1.0, -1.0};
 			b = &*last ? *last : (&*first ? b : *(i + 1));
 
 			if ((fabs(p.x - a.x) > CV_PRECISION || fabs(p.y - a.y) > CV_PRECISION) &&
@@ -917,12 +918,12 @@ DB_POINT CPfVector::nearestPoint(const DB_POINT start) const
 	// Take a perpendicular line to each vector and intersect()
 	// to give point, or find nearest point.
 
-	const int PX_OFFSET = 1;
-	DB_POINT best = {0, 0};
+	const double PX_OFFSET = 1.0;
+	DB_POINT best = {0.0};
 
 	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)
 	{
-		DB_POINT p = {0, 0};
+		DB_POINT p = {0.0};
 
 		if (pointOnLine(i, start))
 		{
@@ -987,9 +988,9 @@ DB_POINT CPfVector::nearestPoint(const DB_POINT start) const
 }
 
 /*
- * Extend a point 'a' at the end of a (position) vector 'd' by 'offset' pixels.
+ * Extend a point 'a' in direction 'd' by 'offset' pixels.
  */
-void CPfVector::extendPoint(DB_POINT &a, const DB_POINT &d, const int offset) const
+void CPfVector::extendPoint(DB_POINT &a, const DB_POINT &d, const double offset) const
 {
 	const double grad = (!d.x ? GRAD_INF : fabs(d.y / d.x));
 
@@ -1054,10 +1055,44 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 }
 
 /*
- * Compare sums (for std::map<CVector,...>).
+ * Compare sums (for std::map<CPfVector,...>).
  */
 bool CPfVector::operator< (const CPfVector &rhs) const
 {
-	if (m_layer && rhs.m_layer) return m_layer < rhs.m_layer;
+	if (*this == rhs) return m_layer < rhs.m_layer;
 	return sum() > rhs.sum();
+}
+
+/*
+ * Find the surface point on a projection from the origin through a point.
+ */
+DB_POINT CPfVector::projectedPoint(const DB_POINT origin, const DB_POINT point) const
+{
+	const double width = m_bounds.right - m_bounds.left, height = m_bounds.bottom - m_bounds.top;
+
+	// Create a line of gradient projection through origin.
+	DB_POINT proj = point - origin;
+
+	// Scale projection.
+	const double dmax = fabs(proj.x) > fabs(proj.y) ? fabs(proj.x) : fabs(proj.y);
+	const double offset = (width + height) / dmax;
+	proj.x = proj.x * offset + origin.x;
+	proj.y = proj.y * offset + origin.y;
+
+	CVector projection;
+	projection.push_back(origin);
+	projection.push_back(proj);
+	projection.close(false);
+
+	// Return the initial point if intersection not found.
+	DB_POINT intersection = point;
+	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)
+	{
+		if (intersect(i, projection, intersection))
+		{
+			extendPoint(intersection, proj - origin, 1.0);
+			break;
+		}
+	}
+	return intersection;
 }

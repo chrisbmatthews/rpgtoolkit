@@ -39,6 +39,8 @@ const int PF_MAX_STEPS = 1000;		// Maximum number of steps in a path.
 const int PF_GRID_SIZE = 32;		// Grid size for non-vector movement (= 32 for tile movement).
 									// NOTE: if this is changed, coords namespace needs updating
 									// to accept an arbitrary grid size.
+const int PF_HALF_SIZE = PF_GRID_SIZE / 2;
+const double PF_TILE_RATIO = 32.0 / PF_GRID_SIZE;
 
 int CPathFind::m_isIso = 0;			// g_pBoard->isIsometric().
 CTilePathFind::PF_TILE_MAP CTilePathFind::m_boardPoints;
@@ -331,13 +333,24 @@ void CTilePathFind::addVector(CVector &vector, PF_SWEEPS &sweeps, PF_MATRIX &poi
  */
 PF_PATH CTilePathFind::constructPath(NODE node, const CSprite *) const
 {
-	// tbd: merge points on a straight line.
 	PF_PATH path;
 
 	while(node.pos != m_start.pos)
 	{
 		path.push_back(node.pos);
-		node = *(m_closedNodes.begin() + node.parent);
+
+		NODE nextNode(node);
+		do
+		{
+			nextNode = *(m_closedNodes.begin() + nextNode.parent);
+		} 
+		while (nextNode.direction == node.direction);
+		
+		node = nextNode;
+	}
+	if (m_movedStart)
+	{
+		path.push_back(m_start.pos);
 	}
 	return path;
 }
@@ -514,57 +527,153 @@ bool CTilePathFind::reset(
 	CVector cvGoal = base + goal, cvStart = base + start;
 	DB_POINT unused = {0.0};
 
+	// Start must be aligned to grid.
+	DB_POINT newStart = start;
+	coords::roundToTile(newStart.x, newStart.y, m_isIso, true);
+	m_movedStart = false;
+	bool movedGoal = false;
+
+	std::vector<PF_SWEEP_PAIR> ss;
+	std::vector<bool> ssIndex;
+
+	if (newStart != start)
+	{
+		m_movedStart = true;
+
+		// Sweep a set to the four nearest grid points. Begin by
+		// finding the nearest point in the direction of the goal.
+		DB_POINT d = goal - start, grid = start;
+		MV_ENUM mv;
+		if (m_isIso)
+		{
+			if (fabs(d.x) > fabs(d.y))
+			{
+				grid.x += sgn(d.x) * PF_GRID_SIZE;
+				mv = d.x > 0 ? MV_NW : MV_NE;
+			}
+			else
+			{
+				grid.y += sgn(d.y) * PF_HALF_SIZE;
+				mv = d.y > 0 ? MV_NE : MV_SE;
+			}
+		}
+		else
+		{
+			if (d.y > 0)
+			{
+				grid.x += sgn(d.x) * PF_HALF_SIZE;
+				mv = MV_N;
+			}
+			else
+			{
+				grid.x += sgn(d.x) * PF_HALF_SIZE;
+				grid.y -= PF_GRID_SIZE;
+				mv = MV_S;
+			}
+		}
+		coords::roundToTile(grid.x, grid.y, m_isIso, true);
+		
+		CPfVector cpfvStart = CPfVector(cvStart);
+		for (int i = 0; i != 4; ++i, mv += 2)
+		{
+			ss.push_back(PF_SWEEP_PAIR(cpfvStart.sweep(start, grid), grid));
+			const DB_POINT next = {
+				g_directions[m_isIso][mv][0] * PF_GRID_SIZE, 
+				g_directions[m_isIso][mv][1] * PF_GRID_SIZE
+			};
+			grid = grid + next;
+		}
+		ssIndex.assign(ss.size(), true);
+	}		
+
 	// Add sprite base collision data.
 	sizeMatrix(m_spritePoints);
-	bool moved = false;
-	for (std::vector<CSprite *>::iterator i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
+	for (ZO_ITR i = g_sprites.v.begin(); i != g_sprites.v.end(); ++i)
 	{
-		if (*i == pSprite || (*i)->getPosition().l != m_layer) continue;
+		const SPRITE_POSITION pos = (*i)->getPosition();
+		if (*i == pSprite || pos.l != m_layer) continue;
 
-		CPfVector spriteVector = CPfVector((*i)->getVectorBase(true));
+		const DB_POINT pt = {pos.x, pos.y};
+		CVector spriteVector = (*i)->getVectorBase(false) + pt;
+
+		if (m_movedStart)
+		{
+			// Need to move start to grid point, but need gridpoint that
+			// is reachable.
+			for (std::vector<PF_SWEEP_PAIR>::iterator j = ss.begin(); j != ss.end(); ++j)
+			{
+				if (spriteVector.contains(j->first, unused))
+				{
+					// Cannot use this direction.
+					ssIndex[j - ss.begin()] = false;
+				}
+			}
+		}
 
 		// If a sprite is at the goal and we do not want to bypass it
 		// (i.e., we want to intercept it), then do not add it's vector
 		// and the path will reach the requested goal.
-		if (cvGoal.contains(spriteVector, unused))
+		if (spriteVector.contains(cvGoal, unused))
 		{
-			if (flags & PF_AVOID_SPRITE)
+			if (flags & PF_QUIT_BLOCKED)
 			{
-				goal = spriteVector.nearestPoint(goal);
-				addVector(spriteVector, *m_pSweeps, m_spritePoints);
-				moved = true;
+				return false;
 			}
+			else if (flags & PF_AVOID_SPRITE)
+			{
+				goal = CPfVector(spriteVector).nearestPoint(goal);
+				addVector(spriteVector, *m_pSweeps, m_spritePoints);
+				movedGoal = true;
+			}
+			// else, ignore and this will walk into (intercept) the sprite.
 		}
 		else
 		{
 			// Ignore sprite bases at the start (only a problem for
 			// PathFind(), since this rpgcode function is not linked
 			// to a sprite base).
-			if (!cvStart.contains(spriteVector, unused))
+			if (!spriteVector.contains(cvStart, unused))
 			{
 				addVector(spriteVector, *m_pSweeps, m_spritePoints);
 			}
 		}
 	} // for (sprite vectors).
 
-	// Check goal obstruction.
+	// Process the results of the moved start.
+	if (m_movedStart)
+	{
+		// Find the first non-false entry in ssIndex - use corresponding ss entry.
+		for (std::vector<bool>::iterator j = ssIndex.begin(); j != ssIndex.end(); ++j)
+		{
+			if (*j) break;
+		}
+		
+		// Unable to move to nearby grid point - quit.
+		if (j == ssIndex.end()) return false;
+
+		start = ss[j - ssIndex.begin()].second;
+	}
+
+	// Round (potentially new) goal to tile and check for board vectors.
 	coords::roundToTile(goal.x, goal.y, m_isIso, true);
 	cvGoal = base + goal;
 
-	// Check for goal contained in tiles. Select the nearest edge point
-	// and determine the closest reachable grid point.
+	// Check for goal contained in board vectors. Select the nearest 
+	// edge point. Determine the closest reachable grid point 
+	// separately (see below).
 	for (std::vector<BRD_VECTOR>::iterator j = g_pBoard->vectors.begin(); j != g_pBoard->vectors.end(); ++j)
 	{
 		if (j->layer != m_layer || j->type & ~TT_SOLID) continue;
 
-		if (j->pV->contains(cvGoal, unused))
+		CVector &boardVector = *(j->pV);
+		if (boardVector.contains(cvGoal, unused))
 		{
 			// If the goal is blocked and a nearby point is not allowed, quit.
 			if (flags & PF_QUIT_BLOCKED) return false;
 
-			const CPfVector pfv = CPfVector(*(j->pV));
+			const CPfVector pfv = CPfVector(boardVector);
 			goal = pfv.nearestPoint(goal);
-			moved = true;
+			movedGoal = true;
 			// Consider goals contained in multiple vectors!
 		}
 		/* Need to consider if moving the start will prevent the
@@ -579,7 +688,7 @@ bool CTilePathFind::reset(
 		*/
 	}
 
-	if (moved)
+	if (movedGoal)
 	{
 		// Find the first reachable grid point to the goal.
 		coords::roundToTile(goal.x, goal.y, m_isIso, true);
@@ -642,7 +751,7 @@ void CTilePathFind::sizeMatrix(PF_MATRIX &points)
 {
 	extern LPBOARD g_pBoard;
 	points.clear();
-	const int width = g_pBoard->effectiveWidth() * 32 / PF_GRID_SIZE, height = g_pBoard->effectiveHeight() * 32 / PF_GRID_SIZE;
+	const int width = g_pBoard->effectiveWidth() * PF_TILE_RATIO, height = g_pBoard->effectiveHeight() * PF_TILE_RATIO;
 	for (int i = 0; i <= width; ++i)
 	{
 		points.push_back(std::vector<PF_MATRIX_ELEMENT>(height + 1, 0));
@@ -660,30 +769,16 @@ void CTilePathFind::sizeMatrix(PF_MATRIX &points)
  */
 PF_PATH CVectorPathFind::constructPath(NODE node, const CSprite *pSprite) const
 {
-	int dx = 0, dy = 0;
 	PF_PATH path;
-
-	// Modify the points for any offsets.
-	if (!m_isIso)
-	{
-		// Shift points down the board by half
-		// the base height or to the tile edge.
-		const RECT r = pSprite->getVectorBase(false).getBounds();
-
-		// dx = (r.right - r.left) >> 1;
-		dy = (r.bottom - r.top) >> 1;
-	}
-
-	// Pushback the goal without modification.
-	path.push_back(node.pos);
-	node = *(m_closedNodes.begin() + node.parent);
 
 	while(node.pos != m_start.pos)
 	{
-		node.pos.x += dx;
-		node.pos.y += dy;
 		path.push_back(node.pos);
 		node = *(m_closedNodes.begin() + node.parent);
+	}
+	if (m_movedStart)
+	{
+		path.push_back(m_start.pos);
 	}
 	return path;
 }
@@ -747,6 +842,12 @@ void CVectorPathFind::initialize(const CSprite *pSprite)
 	CVector cvBase = pSprite->getVectorBase(false);
 	CPfVector cpfvBase = CPfVector(cvBase, m_layer);
 
+	// Grow collision vectors by longest diagonal of sprite base.
+	const RECT r = cvBase.getBounds();
+	const int x = abs(r.left) > abs(r.right) ? r.left : r.right;
+	const int y = abs(r.top) > abs(r.bottom) ? r.top : r.bottom;
+	m_growSize = x > y ? x : y; //sqrt(x * x + y * y);
+
 	// Check to see if a group of grown board collision vectors 
 	// has already been defined for this particular sprite vector base 
 	// shape *on this particular layer* - as the vectors are 
@@ -759,12 +860,6 @@ void CVectorPathFind::initialize(const CSprite *pSprite)
 		m_pBoardVectors = &i->second;
 		return;
 	}
-
-	// Grow collision vectors by longest diagonal of sprite base.
-	const RECT r = cvBase.getBounds();
-	const int x = abs(r.left) > abs(r.right) ? r.left : r.right;
-	const int y = abs(r.top) > abs(r.bottom) ? r.top : r.bottom;
-	m_growSize = x > y ? x : y; //sqrt(x * x + y * y);
 
 	// Construct a group of grown collision vectors.
 	PF_VECTOR_OBS obs;
@@ -835,84 +930,100 @@ bool CVectorPathFind::reset(
 		initialize(pSprite);
 	}
 
+	const DB_POINT limits = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
+
+	// Pushback two empty points to act as the first goal and start. Do this first!
+	m_points.clear();
+	m_points.push_back(DB_POINT());
+	m_points.push_back(DB_POINT());
+	m_movedStart = false;
+	
+	// Check if the goal is contained in a solid area.
+	// If so, set the goal to be the closest edge point.
+	for (PF_VECTOR_OBS::iterator i = m_pBoardVectors->begin(); i != m_pBoardVectors->end(); ++i)
+	{
+		CPfVector &boardVector = **i;
+		boardVector.createNodes(m_points, limits);					
+		
+		// If the goal is allowed in a sprite base skip because 
+		// we have already checked this in the previous loop.
+		if (boardVector.containsPoint(goal))
+		{
+			// If the goal is blocked and a nearby point is not allowed, quit.
+			if (flags & PF_QUIT_BLOCKED) return false;
+
+			goal = boardVector.nearestPoint(goal);
+			// Consider goals contained in multiple vectors!
+		}
+		if (boardVector.containsPoint(start))
+		{
+			const DB_POINT result = boardVector.nearestPoint(start);
+			if (result != start)
+			{
+				start = result;
+				m_movedStart = true;
+			}
+			// Consider starts contained in multiple vectors!
+		}
+	}
+
 	// Generate sprite bases each time, since sprites will have moved.
-	for (PF_VECTOR_OBS::iterator i = m_spriteVectors.begin(); i != m_spriteVectors.end(); ++i)
+	for (i = m_spriteVectors.begin(); i != m_spriteVectors.end(); ++i)
 	{
 		delete *i;
 	}
 	m_spriteVectors.clear();
 
-	const DB_POINT limits = {g_pBoard->pxWidth(), g_pBoard->pxHeight()};
-
 	for (std::vector<CSprite *>::iterator j = g_sprites.v.begin(); j != g_sprites.v.end(); ++j)
 	{
-		if (*j == pSprite || (*j)->getPosition().l != m_layer) continue;
+		const SPRITE_POSITION pos = (*j)->getPosition();
+		if (*j == pSprite || pos.l != m_layer) continue;
 
 		// tbd: speed up by saving old pfvectors (associate each with its base vector).
-		CPfVector *spriteVector = new CPfVector((*j)->getVectorBase(true));
+		const DB_POINT pt = {pos.x, pos.y};
+		CPfVector *spriteVector = new CPfVector((*j)->getVectorBase(false) + pt);
 
 		// Extra clearance for sprites.
-		spriteVector->grow(m_growSize + 1);
+		spriteVector->grow(m_growSize + 4);
 
 		// If a sprite is at the goal and we do not want to bypass it
 		// (i.e., we want to meet it), then do not add it's vector
 		// and the path will reach the requested goal.
 		// Only requires a containsPoint(), not a full contains(),
 		// because the vectors have been grown.
-		if ((~flags & PF_AVOID_SPRITE) && spriteVector->containsPoint(goal)) 				
+		if (spriteVector->containsPoint(start))
 		{
-			if (spriteVector->containsPoint(start)) 
+			// Use projectedPoint() for sprite vectors because
+			// nearestPoint() may return an unreachable point.
+			const DB_POINT result = spriteVector->projectedPoint(pt, start);
+			if (result != start)
 			{
-				start = spriteVector->nearestPoint(start);
+				start = result;
+				m_movedStart = true;
 			}
-			delete spriteVector;
-		}
-		else
-		{
-			m_spriteVectors.push_back(spriteVector);
-		}
-	}
-
-	// Pushback two empty points to act as the first goal and start. Do this first!
-	m_points.clear();
-	m_points.push_back(DB_POINT());
-	m_points.push_back(DB_POINT());
-	
-	// Check if the goal is contained in a solid area.
-	// If so, set the goal to be the closest edge point.
-
-	PF_VECTOR_OBS obs = *m_pBoardVectors;
-	obs.push_back(NULL);				// Board vector / sprite separator.
-	obs.insert(obs.end(), m_spriteVectors.begin(), m_spriteVectors.end());
-	
-	int spFlags = PF_AVOID_SPRITE;
-	for (i = obs.begin(); i != obs.end(); ++i)
-	{
-		if (!*i)
-		{
-			// Board vector / sprite separator.
-			spFlags = flags;
-			continue;
 		}
 
-		// Take this opportunity to construct m_points.
-		(*i)->createNodes(m_points, limits);					
-		
-		// If the goal is allowed in a sprite base skip because 
-		// we have already checked this in the previous loop.
-		if ((spFlags & PF_AVOID_SPRITE) && (*i)->containsPoint(goal))
+		if (spriteVector->containsPoint(goal))
 		{
-			// If the goal is blocked and a nearby point is not allowed, quit.
-			if (spFlags & PF_QUIT_BLOCKED) return false;
-
-			goal = (*i)->nearestPoint(goal);
-			// Consider goals contained in multiple vectors!
+			if (flags & PF_QUIT_BLOCKED)
+			{
+				delete spriteVector;
+				return false;
+			}
+			else if (flags & PF_AVOID_SPRITE)
+			{
+				// Move the goal because an interception is not wanted.
+				goal = spriteVector->nearestPoint(goal);
+			}
+			else
+			{
+				// Delete so that this walks into (intercepts) the sprite.
+				delete spriteVector;
+				continue;
+			}
 		}
-		if ((*i)->containsPoint(start))
-		{
-			start = (*i)->nearestPoint(start);
-			// Consider starts contained in multiple vectors!
-		}
+		spriteVector->createNodes(m_points, limits);					
+		m_spriteVectors.push_back(spriteVector);
 	}
 
 	// Insert the start and goal at the front of the vector (two spaces

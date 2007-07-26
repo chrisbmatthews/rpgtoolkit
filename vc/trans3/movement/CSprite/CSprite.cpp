@@ -71,6 +71,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 {
 	extern LPBOARD g_pBoard;
 	extern GAME_STATE g_gameState;
+	extern ZO_VECTOR g_sprites;
 
 	// Is this the selected player?
 	const bool isUser = (this == selectedPlayer);
@@ -78,7 +79,8 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 	// Freeze the sprite for m_pos.idle.time.
 	if (m_pos.loopFrame == LOOP_FREEZE)
 	{
-		if (GetTickCount() - m_pos.idle.frameTime < m_pos.idle.time) return false;
+		// Return true because sprite will resume movement.
+		if (GetTickCount() - m_pos.idle.frameTime < m_pos.idle.time) return true;
 
 		m_pos.loopFrame = LOOP_WAIT;
 		m_pos.idle.time = m_pos.idle.frameTime = 0;
@@ -102,24 +104,15 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 				// Pathfinding removes the need to call boardCollisions() for paths.
 
 				// Check we can initialise the movement.
-				if (spriteCollisions() & TT_SOLID)
+				CSprite *pSprite = NULL;
+				if (spriteCollisions(pSprite) & TT_SOLID)
 				{
-					// Try to find a diversion that allows the sprite to
-					// resume the path.
+					if (handleCollision(*pSprite)) return true;
 
-					// Return true if diversion found to insert the new path.
-					if (findDiversion()) return true;
-					
-					// Else, movement cannot start.
+					// if (false), findDiversion() failed and movement
+					// must stop. If this sprite is waiting for pSprite
+					// to move, handleCollision() returned true.
 					m_tileType = TILE_TYPE(m_tileType | TT_SOLID);
-
-					// Freeze the sprite for a short time because, if a waypoint 
-					// link exists, the sprite will continue to try to
-					// move to the next point until it can (i.e., findDiversion()
-					// will run every loop) - this is processor intensive.
-					m_pos.loopFrame = LOOP_FREEZE;
-					m_pos.idle.time = 256; // Milliseconds.
-					m_pos.idle.frameTime = GetTickCount();
 				}
 				else
 				{
@@ -139,14 +132,15 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 				// may change if we slide).
 				m_facing.assign(getDirection(m_v));
 
-				m_tileType = TILE_TYPE(boardCollisions(g_pBoard) | spriteCollisions());
+				CSprite *pUnused = NULL;
+				m_tileType = TILE_TYPE(boardCollisions(g_pBoard) | spriteCollisions(pUnused));
 			}
 
 			// Start the render frame counter.
 			if (isUser || (~m_tileType & TT_SOLID)) m_pos.loopFrame = LOOP_MOVE;
 
 			// Do this after the above if, to prevent walking on the target board.
-			m_tileType = TILE_TYPE(m_tileType | boardEdges(isUser));
+			if (isUser) m_tileType = TILE_TYPE(m_tileType | checkBoardEdges());
 		}
 		else
 		{
@@ -158,7 +152,14 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			
 			// Clear any pathfinding status.
 			m_pos.bIsPath = true;
-
+			
+			// Wake up any thread that this sprite has control over
+			// if the path is empty (i.e. a thread-set movement has just finished).
+			if (m_thread)
+			{
+				m_thread->wakeUp();
+				m_thread = NULL;
+			}
 		} // if (!m_pos.path.empty())
 	} // if (.loopFrame < LOOP_MOVE)
 
@@ -175,13 +176,14 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			// Do sprite collisions before push(), otherwise the two
 			// will operate on different target locations.
 			
-			// Test every pixel.
-			if (!((m_pos.loopFrame * PX_FACTOR) % m_pos.loopSpeed)) 
+			// Test every pixel. 
+			const int fpp = m_pos.loopSpeed / PX_FACTOR;	// frames per pixel, rounded down.
+			if (!(m_pos.loopFrame % (!fpp ? 1 : fpp)))
 			{
 				// Reassign the direction in case of alteration.
 				m_facing.assign(getDirection(m_v));
 
-				m_tileType = TILE_TYPE(m_tileType | boardEdges(isUser));
+				if (isUser) m_tileType = TILE_TYPE(m_tileType | checkBoardEdges());
 
 				// Check stairs.
 				DB_POINT pt = m_pos.target;
@@ -197,18 +199,16 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 				}
 				m_pos.l = dest;
 			
-				if (spriteCollisions() & TT_SOLID)
+				CSprite *pSprite = NULL;
+				if (spriteCollisions(pSprite) & TT_SOLID)
 				{
-					// Try to find a diversion that allows the sprite to
-					// resume the path.
+					if (handleCollision(*pSprite)) return true;
 
-					// Return true if diversion found to insert the new path.
-					// Else, continue to end movement (no diversion found).
-					if (findDiversion()) return true;
-
+					// if (false), findDiversion() failed and movement
+					// must stop. If this sprite is waiting for pSprite
+					// to move, handleCollision() returned true.
 					m_tileType = TILE_TYPE(m_tileType | TT_SOLID);
-				} 
-
+				}
 			} // if (testing collisions)
 		} // if (path)
 
@@ -316,7 +316,7 @@ bool CSprite::push(const bool bScroll)
 	extern LPBOARD g_pBoard;
 
 	// Pixels per frame (tile or pixel movement - not moveSize()).
-	const double stepSize = double(PX_FACTOR) / m_pos.loopSpeed;
+	const double stepSize = PX_FACTOR / m_pos.loopSpeed;
 	// Integer values to scroll.
 	int scx = -round(m_pos.x), scy = -round(m_pos.y);
 
@@ -449,6 +449,79 @@ bool CSprite::findDiversion(void)
 }
 
 /*
+ * Make a semi-intelligent response to colliding with sprite.
+ * Return true to find a diversion, return false to stop.
+ */
+bool CSprite::handleCollision(CSprite &sprite)
+{
+	extern CPlayer *g_pSelectedPlayer;
+	extern ZO_VECTOR g_sprites;
+
+	bool superior = false;
+	const unsigned int freeze = 2000; // Milliseconds for LOOP_FREEZE.
+
+	// Determine whether the sprite this has collided with
+	// has a higher precedence and is moving - if so,
+	// pause until the other sprite has moved.
+	if (sprite.m_pos.path.empty() && !sprite.m_brdData.boardPath())
+	{
+		// sprite does not have movements.
+		superior = true;
+	}
+	else
+	{
+		// User takes precedence.
+		if (this == g_pSelectedPlayer)
+		{
+			superior = true;
+		}
+		else if (&sprite != g_pSelectedPlayer)
+		{
+			// Consider speed difference between sprites.
+			const int dls = sprite.m_pos.loopSpeed - m_pos.loopSpeed;
+			if (dls > 0) 
+			{
+				// this is faster than sprite.
+				superior = true;
+			}
+			else if	(dls == 0)
+			{
+				// Consider vertical position on board.
+				if (g_sprites.find(&sprite) > g_sprites.find(this)) 
+				{
+					superior = true;
+				}
+			}
+		}
+	}
+
+	if (superior)
+	{
+		// This is superior - if a diversion exists, make it.
+		const bool result = findDiversion();
+		if (result == true)
+		{
+			sprite.m_pos.loopFrame = LOOP_FREEZE;
+			sprite.m_pos.idle.time = freeze;
+			sprite.m_pos.idle.frameTime = GetTickCount();
+		}
+		return result;
+	}
+
+	// sprite is superior - pause to allow sprite to move.
+	const bool result = sprite.findDiversion();
+	if (result == true)
+	{
+		m_pos.loopFrame = LOOP_FREEZE;
+		m_pos.idle.time = freeze;
+		m_pos.idle.frameTime = GetTickCount();
+	}
+
+	// Return true because sprite will resume movement.
+	return true;
+}
+
+/*
  * Take the angle of movement and return a MV_ENUM direction.
  */
 MV_ENUM CSprite::getDirection(const DB_POINT &unitVector)
@@ -538,13 +611,20 @@ void CSprite::setPathTarget(void)
 
 	const double dx = m_pos.target.x - m_pos.x,
 				 dy = m_pos.target.y - m_pos.y;
-	const double dmax = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
+	const double dmax = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy),
+				 dinv = 1 / dmax;
 
 	// Scale the vector.
 	if (dmax)
 	{
-		m_v.x = dx / dmax;
-		m_v.y = dy / dmax;
+		m_v.x = dx * dinv;
+		m_v.y = dy * dinv;
+	}
+	else
+	{
+		// target = pos: set non-zero m_v to prevent eternal loop.
+		m_v.x = 0;
+		m_v.y = 1;
 	}
 }
 
@@ -560,7 +640,7 @@ void CSprite::parseQueuedMovements(const STRING str, const bool bClearQueue)
 	if (bClearQueue) clearQueue();
 
 	// Should step = 8 for pixel push?
-	const int step = (g_mainFile.pixelMovement == MF_PUSH_PIXEL ? moveSize() : 32);
+	const int step = (g_mainFile.pixelMovement == MF_PUSH_PIXEL ? 8 : 32);
 
 	// Include str.end() in the loop to catch the last movement.
 	for (STRING::const_iterator i = str.begin(); i <= str.end(); ++i)
@@ -979,7 +1059,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
  * returns TT_SOLID or TT_NORMAL, as all sprites default to solid.
  * Also, z-order sprites.
  */
-TILE_TYPE CSprite::spriteCollisions(void)
+TILE_TYPE CSprite::spriteCollisions(CSprite *&pSprite)
 {
 	extern ZO_VECTOR g_sprites;
 	extern LPBOARD g_pBoard;
@@ -999,13 +1079,8 @@ TILE_TYPE CSprite::spriteCollisions(void)
 	 * we find that is below this sprite.
 	 */
 
-	std::vector<CSprite *>::iterator i = g_sprites.v.begin(), pos = NULL;
-
 	// Find this sprite's iterator in the z-ordered vector.
-	for (; i != g_sprites.v.end(); ++i)
-	{
-		if (this == *i) break;
-	}
+	ZO_ITR i = g_sprites.find(this), pos = NULL;
 
 	// Remove the pointer from the vector if it was found.
 	if (i != g_sprites.v.end()) g_sprites.v.erase(i);
@@ -1068,6 +1143,7 @@ TILE_TYPE CSprite::spriteCollisions(void)
 			// Record result and continue, to determine z-ordering
 			// against all sprites.
 			result = TT_SOLID;
+			pSprite = *i;
 
 			// If we already have an insertion point, no need to continue.
 			if (&*pos) break;
@@ -1085,21 +1161,17 @@ TILE_TYPE CSprite::spriteCollisions(void)
 }
 
 /*
- * Tests for movement at the board edges, return evaluated tile type.
- * TT_SOLID if: movement was blocked, either by a solid target tile on next board,
- *				or there was no link, or the link file was a program,
- *				or bSend was true (and a link was possible).
- * TT_NORMAL if:movement was allowed, either if the player was not at an edge, or
- *				if the player moved to a new board.
+ * Called for the selected player only: check whether a board edge has been
+ * encountered and if so, whether an event should be triggered or not.
+ * NPCs are not constrained to the board edges except when under
+ * pathfinding control (e.g., a user may push an NPC off the board).
+ * Evaluating the result is performed separately by doBoardEdges()
+ * outside the g_sprites for() loop, to prevent invalidation caused by 
+ * programs adding or removing sprites from the vector.
  */
-TILE_TYPE CSprite::boardEdges(const bool bSend)
+TILE_TYPE CSprite::checkBoardEdges(void)
 {
 	extern LPBOARD g_pBoard;
-
-	// Return normal for npcs and assume the user knows what
-	// they are doing. Wandering sprites are constrained
-	// in Wander(), so this isn't a problem for them.
-	if (!bSend) return TT_NORMAL;
 
 	LK_ENUM link = LK_NONE;
 	const RECT r = m_attr.vBase.getBounds();
@@ -1126,7 +1198,7 @@ TILE_TYPE CSprite::boardEdges(const bool bSend)
  * outside of the g_sprites movement loop. Return true
  * on send (or program trigger), false otherwise.
  */
-bool CSprite::boardEdges(void)
+bool CSprite::doBoardEdges(void)
 {
 	extern STRING g_projectPath;
 	extern LPBOARD g_pBoard;
@@ -1727,16 +1799,17 @@ void tagZOrderedSprites::zOrder(void)
 
 	// Run spriteCollisions for every player and item, inserting them
 	// into v.
+	CSprite *pUnused = NULL;
 	for (std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
-		if ((*i)->isActive()) (*i)->spriteCollisions();
+		if ((*i)->isActive()) (*i)->spriteCollisions(pUnused);
 	}
 
 	for (std::vector<CItem *>::iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j)
 	{
 		// Some item entries may be NULL since users
 		// can insert items at any slot number.
-		if (*j && (*j)->isActive()) (*j)->spriteCollisions();
+		if (*j && (*j)->isActive()) (*j)->spriteCollisions(pUnused);
 	}
 }
 
@@ -1964,6 +2037,35 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 		(layer != g_pBoard->sizeL || !g_spriteTranslucency)
 		) return false;
 
+	// Screen location on board.
+	// Referencing with m_pos at the bottom-centre of the tile for
+	// 2D, in the centre of the tile for isometric. 
+	// Vertically offset iso sprites by 8 pixels, 2D sprites by 1 pixel.
+	// Latter is correction for BASE_POINT_Y not equal to 32.
+	const int centreX = round(m_pos.x),
+			  centreY = round(m_pos.y) + (g_pBoard->isIsometric() ? 8 : 1);
+
+	// Sprite location on screen and board.
+	RECT screen = {0}, board = {0};
+	bool bCheckIntersection = false;
+	if (m_pCanvas)
+	{
+		// Frame has been loaded - can determine whether this sprite
+		// is on the board or not.
+		board.left = centreX - (m_pCanvas->GetWidth() >> 1);
+		board.top = centreY - m_pCanvas->GetHeight();
+		board.right = centreX - (board.left - centreX);
+		board.bottom = centreY;
+
+		// Off the screen!
+		if (!IntersectRect(&screen, &board, &g_screen)) return false;
+	}
+	else
+	{
+		// Make sure the above check is performed when a canvas is acquired.
+		bCheckIntersection = true;
+	}
+
 	// Render the frame here (but not when rendering translucently).
 	if (m_pos.l == layer)
 	{
@@ -1990,23 +2092,14 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 	}
 	else if (!m_pCanvas) return false;
 
-	// Screen location on board.
-	// Referencing with m_pos at the bottom-centre of the tile for
-	// 2D, in the centre of the tile for isometric. 
-	// Vertically offset iso sprites.
-
-	const int centreX = round(m_pos.x),
-			  centreY = round(m_pos.y) + (g_pBoard->isIsometric() ? 8 : 0);
-	/** centreY = round(m_pos.y) + m_attr.vBase.getBounds().bottom; **/
-  
-	// Sprite location on screen and board.
-	// Bitshift in place of divide by two (>> 1 equivalent to / 2)
-	RECT screen = {0, 0, 0, 0},
-		 board = { centreX - (m_pCanvas->GetWidth() >> 1), centreY - m_pCanvas->GetHeight(),
-				   centreX + (m_pCanvas->GetWidth() >> 1), centreY };
-
-	// Off the screen!
-	if (!IntersectRect(&screen, &board, &g_screen)) return false;
+	if (bCheckIntersection)
+	{
+		board.left = centreX - (m_pCanvas->GetWidth() >> 1);
+		board.top = centreY - m_pCanvas->GetHeight();
+		board.right = centreX - (board.left - centreX);
+		board.bottom = centreY;
+		if (!IntersectRect(&screen, &board, &g_screen)) return false;
+	}
 
 	// screen holds the portion of the frame we need to draw.
 	// Put the board co-ordinates into rect.

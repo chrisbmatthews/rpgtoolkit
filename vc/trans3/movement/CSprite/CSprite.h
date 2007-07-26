@@ -107,10 +107,10 @@ public:
 		const bool bRunningProgram);
 	void deactivatePrograms(void);			// Override repeat values for programs the player is standing on.
 	void playerDoneMove(void);				// Complete the selected player's move.
-	bool boardEdges(void);					// Send player outside movement loop.
+	bool doBoardEdges(void);				// Send player outside movement loop.
 	bool programTest(const bool keypressOnly);// Test for program activations (by programs, items, players).
 	void send(void);						// Unconditionally send the sprite to the active board.
-	TILE_TYPE spriteCollisions(void);		// Evaluate sprites (players and items).
+	TILE_TYPE spriteCollisions(CSprite *&pSprite);		// Evaluate sprites (players and items).
 
 	void alignBoard( 						// Align a RECT to the sprite's location.
 		RECT &rect,
@@ -191,13 +191,14 @@ private:
 	// Take the angle of movement and return a MV_ENUM direction.
 	static MV_ENUM getDirection(const DB_POINT &unitVector);
 	
-	TILE_TYPE boardEdges(const bool bSend);	// Tests for movement at the board edges.
+	TILE_TYPE checkBoardEdges(void);		// Tests for movement at the board edges.
 	void checkIdling(void);					// Update idle and custom animations.
 	DB_POINT getTarget(void) const;			// Get the next position co-ordinates.
 	bool push(const bool bScroll);			// Complete a single frame's movement of the sprite.
 	void setPathTarget(void);				// Insert target co-ordinates from the path.
 	void setTarget(MV_ENUM direction);		// Increment target co-ordinates based on a direction.
 	bool findDiversion(void);
+	bool handleCollision(CSprite &sprite);
 
 	// Calculate the loopSpeed - the number of renders that equate to
 	// the sprite's movement speed (and any offsets).
@@ -213,6 +214,8 @@ private:
 /*
  * A z-ordered vector of players and items.
  */
+typedef std::vector<CSprite *>::iterator ZO_ITR;
+
 typedef struct tagZOrderedSprites
 {
 	std::vector<CSprite *> v;
@@ -223,7 +226,7 @@ typedef struct tagZOrderedSprites
 	// Remove a pointer from the vector.
 	void remove(CSprite *p)
 	{
-		for (std::vector<CSprite *>::iterator i = v.begin(); i != v.end(); ++i)
+		for (ZO_ITR i = v.begin(); i != v.end(); ++i)
 		{
 			if (*i == p) 
 			{
@@ -232,6 +235,15 @@ typedef struct tagZOrderedSprites
 			}
 		}
 	};
+
+	ZO_ITR find(const CSprite *pSprite)
+	{
+		for (ZO_ITR i = v.begin(); i != v.end(); ++i)
+		{
+			if (*i == pSprite) break;
+		}
+		return i;
+	}
 
 } ZO_VECTOR;
 

@@ -248,13 +248,16 @@ public:
 	// Sweep out the vector from current location to target.
 	CPfVector sweep(const DB_POINT &origin, const DB_POINT &target);
 
+	// Find the surface point on a projection from the origin through a point.
+	DB_POINT projectedPoint(const DB_POINT origin, const DB_POINT point) const;
+
 private:
 
-	// Extend a point 'a' at the end of a (position) vector 'd' by 'offset' pixels.
-	void extendPoint(DB_POINT &a, const DB_POINT &d, const int offset) const;
+	// Extend a point 'a' in direction 'd' by 'offset' pixels.
+	void extendPoint(DB_POINT &a, const DB_POINT &d, const double offset) const;
 
-	// In order that a CPfVector is associated with a single set of
-	// collision data in a map, the data's layer must be stored.
+	// In order that a CPfVector is associated with a single layer of
+	// collision data in a map, the datas' layer must be stored.
 	int m_layer;
 };
 

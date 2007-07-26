@@ -96,7 +96,7 @@ public:
 	static void freeAllData(void);
 
 protected:
-	CPathFind(): m_heuristic(PF_AXIAL), m_goal(), m_layer(0), m_start(), m_steps(0) {}
+	CPathFind(): m_heuristic(PF_AXIAL), m_goal(), m_layer(0), m_start(), m_steps(0), m_movedStart(false) {}
 	CPathFind (CPathFind &rhs);
 	CPathFind &operator= (CPathFind &rhs);
 
@@ -134,6 +134,7 @@ protected:
 	std::vector<NODE> m_closedNodes;
 	NODE m_start;
 	NODE m_goal;
+	bool m_movedStart;
 
 	PF_HEURISTIC m_heuristic;			// Algorithm method.
 	int m_layer;
@@ -154,7 +155,8 @@ public:
 	typedef std::vector<std::vector<PF_MATRIX_ELEMENT> > PF_MATRIX;
 	typedef PF_MATRIX *LPPF_MATRIX;
 	typedef std::map<CPfVector, PF_MATRIX> PF_TILE_MAP;
-	typedef std::map<MV_ENUM, std::pair<CPfVector, DB_POINT> > PF_SWEEPS;
+	typedef std::pair<CPfVector, DB_POINT> PF_SWEEP_PAIR;
+	typedef std::map<MV_ENUM, PF_SWEEP_PAIR > PF_SWEEPS;
 	typedef PF_SWEEPS *LPPF_SWEEPS;
 	typedef std::map<CVector, PF_SWEEPS> PF_SWEEP_MAP;
 
