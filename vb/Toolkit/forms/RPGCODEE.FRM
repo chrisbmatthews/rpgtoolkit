@@ -100,6 +100,7 @@ Begin VB.Form rpgcodeedit
       _ExtentY        =   4683
       _Version        =   393217
       BorderStyle     =   0
+      Enabled         =   -1  'True
       HideSelection   =   0   'False
       ScrollBars      =   3
       DisableNoScroll =   -1  'True
@@ -265,18 +266,18 @@ Begin VB.Form rpgcodeedit
    Begin VB.Menu mnuTools 
       Caption         =   "Tools"
       Begin VB.Menu mnuIndentWizard 
-         Caption         =   "Indent Wizard"
+         Caption         =   "Indent Wizard..."
          Shortcut        =   ^I
       End
       Begin VB.Menu mnuAutoCommandWizard 
-         Caption         =   "AutoCommand Wizard"
+         Caption         =   "AutoCommand Wizard..."
          Visible         =   0   'False
       End
       Begin VB.Menu mnuUpdateRpgCode 
-         Caption         =   "Update RPGCode"
+         Caption         =   "Update RPGCode..."
       End
       Begin VB.Menu mnuColorCoding 
-         Caption         =   "Options"
+         Caption         =   "Options..."
       End
    End
    Begin VB.Menu rmnu 
@@ -294,7 +295,7 @@ Begin VB.Form rpgcodeedit
          Tag             =   "1625"
       End
       Begin VB.Menu tpref 
-         Caption         =   "Test Preferences"
+         Caption         =   "Test Preferences..."
          Tag             =   "1626"
       End
    End
@@ -1100,40 +1101,40 @@ End Sub
 '==========================================================================
 Private Sub rprg_Click()
 
-    On Error Resume Next
+    'On Error Resume Next
     
-    Dim TestPRG As String ' We no longer need to assign this to = "", as it goes out of scope on sub end
+    Dim testPRG As String, i As Long
     
-    If rpgcodeList(activeRPGCodeIndex).Ifont$ <> "" Then
-        TestPRG = TestPRG + "Font(" + rpgcodeList(activeRPGCodeIndex).Ifont$ + ")" + chr$(13) + chr$(10)
+    If LenB(rpgcodeList(activeRPGCodeIndex).Ifont) Then
+        testPRG = testPRG + "Font(" + """" + rpgcodeList(activeRPGCodeIndex).Ifont + """" + ");" + vbCrLf
     End If
-    'If rpgcodeList(activeRPGCodeIndex).IfontSize < 8 Then rpgcodeList(activeRPGCodeIndex).IfontSize = 8
-    '    TestPRG = TestPRG + "#fontsize(" + str$(rpgcodeList(activeRPGCodeIndex).IfontSize) + ")" + chr$(13) + chr$(10)
-    If rpgcodeList(activeRPGCodeIndex).Imwin$ <> "" Then
-        TestPRG = TestPRG + "WinGraphic(" + rpgcodeList(activeRPGCodeIndex).Imwin$ + ")" + chr$(13) + chr$(10)
+    
+    If rpgcodeList(activeRPGCodeIndex).IfontSize >= 8 Then
+        testPRG = testPRG + "FontSize(" + CStr(rpgcodeList(activeRPGCodeIndex).IfontSize) + ");" + vbCrLf
     End If
-    Dim t As Long
-    For t = 0 To 4
-        If rpgcodeList(activeRPGCodeIndex).Ichar$(t) <> "" Then
-            TestPRG = TestPRG + "AddPlayer(" + rpgcodeList(activeRPGCodeIndex).Ichar$(t) + ")" + chr$(13) + chr$(10)
+    
+    If LenB(rpgcodeList(activeRPGCodeIndex).Imwin) Then
+        testPRG = testPRG + "WinGraphic(" + """" + rpgcodeList(activeRPGCodeIndex).Imwin + """" + ");" + vbCrLf
+    End If
+    
+    For i = 0 To 4
+        If LenB(rpgcodeList(activeRPGCodeIndex).Ichar(i)) Then
+            testPRG = testPRG + "AddPlayer(" + """" + rpgcodeList(activeRPGCodeIndex).Ichar(i) + """" + ");" + vbCrLf
         End If
-    Next t
-    If rpgcodeList(activeRPGCodeIndex).Iboard$ <> "" Then
-        TestPRG = TestPRG + "Send(" + rpgcodeList(activeRPGCodeIndex).Iboard$ + ",9,5)" + chr$(13) + chr$(10)
+    Next i
+    
+    If LenB(rpgcodeList(activeRPGCodeIndex).Iboard) Then
+        testPRG = testPRG + "Send(" + """" + rpgcodeList(activeRPGCodeIndex).Iboard + """" + ", 9, 5, 1);" + vbCrLf
     End If
     
-    ' Complete TestPRG String
-    TestPRG = TestPRG & codeForm.Text
+    testPRG = testPRG & vbCrLf & codeForm.Text
 
-    Dim num As Long
-    num = FreeFile()
-    Open projectPath & prgPath & "sys_test.prg" For Output As num
-        Print #num, TestPRG
-    Close num
+    i = FreeFile()
+    Open projectPath & prgPath & "sys_test.prg" For Output As i
+        Print #i, testPRG
+    Close i
     
-    ' Exexcute Trans3 with the program
-    
-    'Run trans3 through the Shell. Fix: Added second argument, to give trans3 the focus.
+    'Run trans3 through the Shell.
     Call Shell("trans3 " & loadedMainFile & " sys_test.prg", vbNormalFocus)
 
 End Sub
