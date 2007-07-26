@@ -280,6 +280,13 @@ typedef struct tagBoard
 	);
 	void renderBackground(CCanvas *const cnv, const RECT bounds);
 	void renderAnimatedTiles(SCROLL_CACHE &scrollCache);
+	void tagBoard::renderStack(
+		SCROLL_CACHE &scrollCache,
+		const int x,
+		const int y,
+		const int lLower,
+		const int lUpper
+	);
 
 	tagBoard(): coordType(TILE_NORMAL), bkgImage(NULL), startX(0), startY(0), startL(1) { }
 	~tagBoard() { freeVectors(); freePrograms(); freeItems(); freeImages(); freeThreads(); freePaths(); freeShading(); }

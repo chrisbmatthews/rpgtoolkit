@@ -161,7 +161,7 @@ vVersion:
 						// [0] indicates if the whole board contains tiles.
 						if (index) bLayerOccupied[z] = bLayerOccupied[0] = LO_TILES;
 
-						for (short i = 1; i <= count; ++i)
+						for (int i = 1; i <= count; ++i)
 						{
 							board[z][y][x] = index;
 
@@ -240,7 +240,7 @@ lutEndA:
 
 					if (count > 1)
 					{
-						for (short i = 1; i <= count; ++i)
+						for (int i = 1; i <= count; ++i)
 						{
 							(*pMat)[x][y] = rgb;
 
@@ -849,6 +849,8 @@ lutEndB:
 
 			}
 		}
+
+		freeImages();	// In case previous board had images.
 
 		if (this == g_pBoard) 
 		{
@@ -1762,39 +1764,53 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
 	std::vector<BOARD_TILEANIM>::iterator i = animatedTiles.begin();
 	for (; i != animatedTiles.end(); ++i)
 	{
-		TILEANIM *tan = &i->tile;
+		TILEANIM &tan = i->tile;
 		const int x = i->x, y = i->y, z = i->z;
 
-		if (GetTickCount() - tan->frameTime > tan->frameDelay)
+		if (GetTickCount() - tan.frameTime > tan.frameDelay)
 		{
-			(++tan->currentFrame) %= tan->frames.size();
-			tan->frameTime = GetTickCount();
+			(++tan.currentFrame) %= tan.frames.size();
+			tan.frameTime = GetTickCount();
 
 			// Change the LUT index to point to a TST.
-			board[z][y][x] = i->lutIndices[tan->currentFrame];
+			board[z][y][x] = i->lutIndices[tan.currentFrame];
 
-			// Pixel bounds of tile stack.
-			int px = x, py = y;
-			coords::tileToPixel(px, py, COORD_TYPE(coordType & ~PX_ABSOLUTE), false, sizeX);
-			if (isIsometric())
-			{
-				// Render location.
-				px -= 32;
-				py -= 16;
-			}
-			const RECT bounds = {px, py, px + tileWidth(), py + tileHeight()};
-			
-			// Draw the whole tile stack onto the scrollcache.
-			renderStack(
-				&scrollCache.cnv,
-				bounds.left - scrollCache.r.left,
-				bounds.top - scrollCache.r.top,
-				1, sizeL,
-				x, y,
-				bounds
-			);
+			renderStack(scrollCache, x, y, 1, sizeL);
+
 		} // if (advanced frame)
 	} // for (i)
+}
+
+/*
+ * Render tiles on all layers at a single co-o,rdinate.
+ */
+void tagBoard::renderStack(
+	SCROLL_CACHE &scrollCache,
+	const int x,				// tile location.
+	const int y,
+	const int lLower,			// layer bounds.
+	const int lUpper)
+{
+	// Pixel bounds of tile stack.
+	int px = x, py = y;
+	coords::tileToPixel(px, py, COORD_TYPE(coordType & ~PX_ABSOLUTE), false, sizeX);
+	if (isIsometric())
+	{
+		// Render location.
+		px -= 32;
+		py -= 16;
+	}
+	const RECT bounds = {px, py, px + tileWidth(), py + tileHeight()};
+	
+	// Draw the whole tile stack onto the scrollcache.
+	renderStack(
+		&scrollCache.cnv,
+		bounds.left - scrollCache.r.left,
+		bounds.top - scrollCache.r.top,
+		lLower, lUpper,
+		x, y,
+		bounds
+	);
 }
 
 /*
