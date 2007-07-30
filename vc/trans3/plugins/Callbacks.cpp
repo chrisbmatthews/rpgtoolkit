@@ -105,7 +105,7 @@ STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 	{
 		var.erase(last);
 	}
-	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
+	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(lcase(var)) : CProgram::getGlobal(var);
 	BSTR bstr = getString(pVar->getLit());
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
@@ -120,7 +120,7 @@ STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 	{
 		var.erase(last);
 	}
-	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
+	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(lcase(var)) : CProgram::getGlobal(var);
 	*pRet = pVar->getNum();
 	return S_OK;
 }
@@ -133,7 +133,7 @@ STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 	{
 		var.erase(last);
 	}
-	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
+	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(lcase(var)) : CProgram::getGlobal(var);
 	pVar->udt = UDT_LIT;
 	pVar->lit = getString(newValue);
 	return S_OK;
@@ -147,7 +147,7 @@ STDMETHODIMP CCallbacks::CBSetNumerical(BSTR varname, double newValue)
 	{
 		var.erase(last);
 	}
-	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(var) : CProgram::getGlobal(var);
+	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(lcase(var)) : CProgram::getGlobal(var);
 	pVar->udt = UDT_NUM;
 	pVar->num = newValue;
 	return S_OK;
