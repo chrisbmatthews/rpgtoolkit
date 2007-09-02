@@ -2293,13 +2293,13 @@ Begin VB.MDIForm tkMainForm
             Style           =   6
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "12/04/2007"
+            TextSave        =   "02/09/2007"
          EndProperty
          BeginProperty Panel2 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             Style           =   5
             AutoSize        =   1
             Object.Width           =   2884
-            TextSave        =   "11:33"
+            TextSave        =   "20:25"
          EndProperty
          BeginProperty Panel3 {8E3867AB-8586-11D1-B16A-00C0F0283628} 
             AutoSize        =   1
@@ -3564,11 +3564,14 @@ ErrorHandler:
 End Sub
 
 Public Sub saveallmnu_Click(): On Error Resume Next
-    Dim frm As Form
+    Dim frm As Form, active As Form
+    Set active = activeForm
     For Each frm In Forms
         'Any forms without the saveFile() sub will error.
         Call frm.saveFile
     Next frm
+    Set activeForm = active
+    If Not activeForm Is Nothing Then Call activeForm.Show
 End Sub
 
 Public Sub saveAsMnu_Click(): On Error Resume Next

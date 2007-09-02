@@ -126,6 +126,18 @@ If foundit = 0 Then
         Next p
     End If
     If foundit = 0 Then
+        'This whole function needs a clean, but not by me! - Delano
+        For p = 1 To Length
+            part = Mid$(splice, p, 2)
+            If part = "//" Or part = "/*" Then
+                GetCommandName = part
+                Exit Function
+            ElseIf Right(part, 1) <> " " And Right(part, 1) <> chr$(9) Then
+                Exit For
+            End If
+        Next p
+    End If
+    If foundit = 0 Then
         'Maybe a label
         For p = 1 To Length
             part$ = Mid$(splice$, p, 1)
