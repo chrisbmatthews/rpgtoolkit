@@ -332,7 +332,9 @@ STRING spliceArrays(CProgram *prg, STRING str)
 	return str;
 }
 
-// Splice variables.
+/*
+ * Splice variables.
+ */
 STRING spliceVariables(CProgram *prg, STRING str)
 {
 	STRING::size_type pos = STRING::npos;
@@ -368,6 +370,16 @@ STRING spliceVariables(CProgram *prg, STRING str)
 	}
 	return str;
 }
+
+/*
+ * @fpbegin: Marker for functionparse.php - do not alter this line.
+ * Note about functionparse.php: the function reference is generated
+ * from the function comments contained in this file. This is done to
+ * ensure the reference is always up to date. The parser looks for
+ * comments that contain the declaration on the first line. The
+ * declarations should always consist of a return type, a function
+ * name and a set of parentheses.
+ */
 
 /*
  * void mwin(string str)
@@ -7710,7 +7722,7 @@ inline STACK_FRAME makeNumStackFrame(const double num)
 }
 
 /*
- * Initialize RPGCode.
+ * Initialize RPGCode functions.
  */
 void initRpgCode()
 {
