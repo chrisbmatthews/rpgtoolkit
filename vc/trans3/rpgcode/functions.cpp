@@ -3034,7 +3034,7 @@ void mainFile(CALL_DATA &params)
 }
 
 /*
- * str dirSav(str title, bool allowNewFile, int textColor, int backColor, str image)
+ * string dirSav(string title, bool allowNewFile, int textColor, int backColor, string image)
  * 
  * Allow the user to choose a *.sav file from the "Saved"
  * directory. For historical reasons, returns "CANCEL" if
@@ -5482,7 +5482,7 @@ void smartStep(CALL_DATA &params)
 }
 
 /*
- * thread thread(string file, bool presist, [thread &ret])
+ * thread thread(string file, bool persist, [thread &ret])
  * 
  * Start a thread.
  */
@@ -6487,7 +6487,7 @@ void resumeNext(CALL_DATA &params)
 }
 
 /*
- * int msgBox(str text [,str title [, int style [, int textColor [, int backColor [, str bitmap]]]]])
+ * int msgBox(string text [,string title [, int style [, int textColor [, int backColor [, string bitmap]]]]])
  * 
  * Display a message box containing one or two buttons, handled using
  * a cursor map (keyboard input only). 
@@ -6853,7 +6853,7 @@ void gettextheight(CALL_DATA &params)
 /*
  * iif(condition, true, false)
  * 
- * Obsolete.
+ * Obsolete. Use the tertiary operator result = (expression ? true part : false part)
  */
 void iif(CALL_DATA &params)
 {
