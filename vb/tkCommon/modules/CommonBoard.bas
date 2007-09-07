@@ -1140,6 +1140,7 @@ Public Sub boardSetSize( _
     If x < 1 Then x = 1
     If y < 1 Then y = 1
     If z < 1 Then z = 1
+    If ed.currentLayer > z Then ed.currentLayer = z
     
     With board
         oldSizeX = .sizex               'For ISO_ROTATED

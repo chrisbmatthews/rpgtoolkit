@@ -1334,7 +1334,7 @@ Private Sub Form_Activate() ':on error resume next
     tkMainForm.boardTools.Top = tkMainForm.toolTop
     
     tkMainForm.brdOptSetting(m_ed.optSetting).value = True
-    tkMainForm.brdOptTool(m_ed.optTool).value = True
+    If m_ed.optTool < tkMainForm.brdOptTool.count Then tkMainForm.brdOptTool(m_ed.optTool).value = True
     tkMainForm.brdChkGrid.value = Abs(m_ed.bGrid)
     tkMainForm.brdChkAutotile.value = Abs(m_ed.bAutotiler)
     Call changeSelectedTile(m_ed.selectedTile)
@@ -1377,6 +1377,7 @@ Public Sub Form_Deactivate() ':on error resume next
     
     tkMainForm.popButton(PB_TOOLBAR).visible = False
     tkMainForm.pTools.visible = False
+    
 End Sub
 Private Sub Form_KeyDown(keyCode As Integer, Shift As Integer) ':on error resume next
     Call picBoard_KeyDown(keyCode, Shift)
