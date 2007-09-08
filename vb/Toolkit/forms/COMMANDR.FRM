@@ -130,7 +130,7 @@ Private Sub cmdInsert_Click(): On Error Resume Next
 '=========================================================================
     If commands.ListIndex <> 0 Then
         'First line is just the description!
-        activeRPGCode.codeForm.SelText = commands.List(commands.ListIndex) & vbCrLf
+        activeRPGCode.CodeForm.SelText = commands.List(commands.ListIndex) & vbCrLf
     End If
 End Sub
 
@@ -142,7 +142,7 @@ Private Sub commands_Click(): On Error Resume Next
 '=========================================================================
 'Selecting a command in the window.
 '=========================================================================
-    description.Text = commandData(commands.ListIndex + 1, 0) & vbCrLf & commandData(commands.ListIndex + 1, 1)
+    description.Text = commandData(0, commands.ListIndex + 1) & vbCrLf & commandData(1, commands.ListIndex + 1)
     lblCommands.Caption = CStr(commands.ListIndex) & " of " & CStr(commands.ListCount - 1)
 End Sub
 
@@ -174,7 +174,7 @@ Private Sub Form_Load(): On Error Resume Next
                 If line = ":COUNT" Then
                     'Redim the data array to hold the commands.
                     'This If will be called before any commands are read!
-                    ReDim commandData(CLng(fread(num)), 1)
+                    ReDim commandData(1, CLng(fread(num)))
                     
                 ElseIf line = ":COMMAND" Then
                 
@@ -182,12 +182,12 @@ Private Sub Form_Load(): On Error Resume Next
                     commands.AddItem fread(num)
                     
                     If UCase$(fread(num)) = ":DESCR" Then
-                        If commands.ListCount > UBound(commandData) Then
-                            ReDim Preserve commandData(commands.ListCount, 1)
+                        If commands.ListCount > UBound(commandData, 2) Then
+                            ReDim Preserve commandData(1, commands.ListCount)
                         End If
                         'The next two lines are the descriptions.
-                        commandData(commands.ListCount, 0) = fread(num)
-                        commandData(commands.ListCount, 1) = fread(num)
+                        commandData(0, commands.ListCount) = fread(num)
+                        commandData(1, commands.ListCount) = fread(num)
                     End If
                 End If
             Loop
