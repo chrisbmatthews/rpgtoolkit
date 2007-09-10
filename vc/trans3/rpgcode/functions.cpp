@@ -1512,7 +1512,6 @@ void takeItem(CALL_DATA &params)
 }
 
 /*
- * tbd: not listed in rpgcode reference -- change name to include sound effect ref.
  * void wav(string file)
  * 
  * Play a wave file (e.g. a sound effect).
@@ -1528,7 +1527,6 @@ void wav(CALL_DATA &params)
 }
 
 /*
- * tbd: not listed in rpgcode reference -- change name to include sound effect ref.
  * void wavstop()
  * 
  * Stop the current sound effect.
@@ -1539,7 +1537,6 @@ void wavstop(CALL_DATA &params)
 }
 
 /*
- * tbd: not listed in rpgcode reference -- change name to include sound effect ref.
  * void mp3pause()
  * 
  * Play a sound effect and pause the engine until it finishes.
@@ -2301,6 +2298,7 @@ void destroyplayer(CALL_DATA &params)
 {
 	extern std::vector<CPlayer *> g_players;
 	extern ZO_VECTOR g_sprites;
+	extern CPlayer *g_pSelectedPlayer;
 
 	if (params.params != 1)
 	{
@@ -2309,6 +2307,8 @@ void destroyplayer(CALL_DATA &params)
 
 	CPlayer *p = getPlayerPointer(params[0]);
 	if (!p) throw CError(_T("DestroyPlayer(): player not found"));
+
+	if (p == g_pSelectedPlayer) throw CError(_T("DestroyPlayer(): cannot destroy the active player"));
 
 	// Remove the player from the z-ordered vector.
 	g_sprites.remove(p);
@@ -2361,7 +2361,7 @@ void removePlayer(CALL_DATA &params)
 }
 
 /*
- * void restorePlayer(string handle)
+ * void restorePlayer(string filename)
  * 
  * Restore a player who was previously on the team.
  */
@@ -7727,6 +7727,34 @@ void spriteTranslucency(CALL_DATA &params)
 	params.ret().num = g_spriteTranslucency * 100.0;
 }
 
+/* 
+ * void activePlayer(variant handle)
+ * handle activePlayer(void)
+ *
+ * Set or get the active player, by handle.
+ */
+void activePlayer(CALL_DATA &params)
+{
+	extern int g_selectedPlayer;
+	extern CPlayer *g_pSelectedPlayer;
+	extern std::vector<CPlayer *> g_players;
+
+	if (params.params == 1)
+	{
+		CPlayer *p = getPlayerPointer(params[0]);
+		if (!p) throw CError(_T("activePlayer(): player not found."));
+
+		g_pSelectedPlayer = p;
+		for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
+		{
+			if (*i == p) g_selectedPlayer = int(i - g_players.begin());
+		}
+	}
+
+	params.ret().udt = UDT_LIT;
+	params.ret().lit = g_pSelectedPlayer->name();
+}
+
 // Get a numerical stack frame.
 inline STACK_FRAME makeNumStackFrame(const double num)
 {
@@ -8006,6 +8034,7 @@ void initRpgCode()
 	CProgram::addFunction(_T("canvasgetscreen"), canvasGetScreen);
 	CProgram::addFunction(_T("setambientlevel"), setambientlevel);
 	CProgram::addFunction(_T("spritetranslucency"), spriteTranslucency);
+	CProgram::addFunction(_T("activeplayer"), activePlayer);
 
 	// Vector movement functions.
 	CProgram::addFunction(_T("itempath"), itempath);
