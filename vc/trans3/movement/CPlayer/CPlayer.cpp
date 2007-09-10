@@ -560,6 +560,7 @@ void CPlayer::swapGraphics(const STRING file)
 		m_attr.mapCustomGfx.swap(p.m_attr.mapCustomGfx);
 		// Update the current pointer.
 		setAnm(m_facing.dir());
+		m_pCanvas = NULL;
 		// tbd: Vector bases also?
 	}
 }
