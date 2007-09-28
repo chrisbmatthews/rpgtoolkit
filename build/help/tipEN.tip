@@ -1,11 +1,11 @@
-There is a warm community of fellow users always ready to help you if you ever need it at toolkitzone.com.
-The RPGCode() command allows you to run any other command.
-The toolkit fully supports isometrics.
-Tk3 is an open-source project.
-You can choose to have your character move pixel-by-pixel rather than by tile in the main file editor.
+The toolkit engine has been rewritten in C++ for version 3.1.0.
+The player can now be controlled using the mouse.
+A complete vector collision and path-finding system has been implemented.
+A number of important changes have been made to RPGCode in version 3.1.0 - see the changelog.
+The board editor has been completely rewritten for version 3.1.0.
+There is a warm community of fellow users always ready to help you at toolkitzone.com.
+Tk3 is an open-source project, licensed under the GNU General Public License (GPL).
 The toolkit can compile your whole game to a stand-alone EXE file.
-The toolkit features excellent help files-- give them a read!
+The toolkit is accompanied by extensive help files - read them before asking questions on toolkitzone.com.
 The toolkit is made by users for users, if you have any suggestions, make them at toolkitzone.com.
 If you find a bug, be sure to report it at toolkitzone.com.
-The order of operations is obeyed in rpgcode maths.
-You can create your own 'commands' using Method().

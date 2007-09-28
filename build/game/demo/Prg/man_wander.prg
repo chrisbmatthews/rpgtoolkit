@@ -46,5 +46,5 @@ while(true)
 	}
 
 	// Pause the thread to slow the item down.
-	threadSleep(getThreadId(), 0.2);
+	threadSleep(getThreadId(), 0.5);
 }

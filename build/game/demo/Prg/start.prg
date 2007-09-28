@@ -2,12 +2,7 @@
 //  RPGToolkit 3.1.0 Basic Startup Program.
 //-----------------------------------------------------------
 
-// Include the system library.
-#include "system.prg"
-autolocal(true);
-
 // Some initial settings.
-font("Comic Sans MS");
 fontSize(18);
 bold(true);
 clear();
@@ -16,6 +11,7 @@ clear();
 menuGraphic("layout.png");
 fightMenuGraphic("mwin.jpg");
 winGraphic("mwin.jpg");
+spriteTranslucency(25);
 
 // Play a music file.
 mediaPlay("vip - title2.mid");
@@ -28,7 +24,7 @@ mediaPlay("vip - title2.mid");
 
 while (true)
 {
-	// Call a method to draw the title.
+	// Call a custom method to draw the title.
 	drawTitle();
 	
 	// Place the menu options on the screen.
@@ -53,25 +49,25 @@ while (true)
 	// Act on the user's choice.
 	switch (res)
 	{
-		case (0)
+		case(0)
 		{
-			// New game: run the intro method.
+			// New game: run the intro custom method.
 			intro();
 			end();
 		}
-		case (1)
+		case(1)
 		{
 			// Load game. Show load screen and obtain chosen file.
 			file = dirSav("Select a saved file to load");
 
-			if (file ~= "CANCEL")
+			if(file ~= "CANCEL")
 			{
 				// "CANCEL" returned if the user cancelled.
 				load(file);
 				end();
 			}
 		}
-		case (2)
+		case(2)
 		{
 			// Exit to windows.
 			windows();
@@ -87,7 +83,7 @@ method drawTitle()
 {
 	// Clear any previous images and set up a title screen.
 	clear();
-	text(3, 3, "Test Game");
+	text( 3, 3, "Test Game");
 	// bitmap("title.gif");
 }
 
@@ -99,5 +95,23 @@ method intro()
 	// Show the story and wait until the user presses
 	// a key before finishing.
 	mwin("Your story goes here...");
-	pause();	// The pause() method is in the system library.
+	wait();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
