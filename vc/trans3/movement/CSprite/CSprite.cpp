@@ -91,14 +91,14 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 	// Is this the selected player?
 	const bool isUser = (this == selectedPlayer);
 
-	// Freeze the sprite for m_pos.idle.time.
+	// Freeze the sprite for m_pos.timer.idleTime.
 	if (m_pos.loopFrame == LOOP_FREEZE)
 	{
 		// Return true because sprite will resume movement.
-		if (GetTickCount() - m_pos.idle.frameTime < m_pos.idle.time) return true;
+		if (GetTickCount() - m_pos.timer.frameTime < m_pos.timer.idleTime) return true;
 
 		m_pos.loopFrame = LOOP_WAIT;
-		m_pos.idle.time = m_pos.idle.frameTime = 0;
+		m_pos.timer.idleTime = m_pos.timer.frameTime = 0;
 	}
 
 	// Negative value indicates idle status.
@@ -140,8 +140,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 
 				// Increment the animation frame if movement did not 
 				// finish the previous loop (pixel movement only).
-				// Bitshift in place of multiply by two (<< 1 equivalent to * 2)
-				if (m_bPxMovement && m_pos.loopFrame != LOOP_DONE) m_pos.frame += (m_pos.loopSpeed << 1) - 1;
+				// if (m_bPxMovement && m_pos.loopFrame != LOOP_DONE) ++m_pos.frame;
 
 				// Set the player to face the direction of movement (direction
 				// may change if we slide).
@@ -234,7 +233,12 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			{
 				// Increment the user's frame always to indicate user input.
 				++m_pos.loopFrame;				// Count of this movement's renders.
-				++m_pos.frame;					// Total frame count (for animation frames).
+			
+				if (GetTickCount() - m_pos.timer.frameTime >= m_pos.timer.frameDelay)
+				{
+					++m_pos.frame;				// Animation frames.
+					m_pos.timer.frameTime = GetTickCount();			
+				}
 			}
 		}
 		else
@@ -242,7 +246,11 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			// Push the sprite only when the tiletype is passable.
 			push(isUser);
 			++m_pos.loopFrame;
-			++m_pos.frame;
+			if (GetTickCount() - m_pos.timer.frameTime >= m_pos.timer.frameDelay)
+			{
+				++m_pos.frame;
+				m_pos.timer.frameTime = GetTickCount();			
+			}
 		}
 
 		if ((m_tileType & TT_SOLID) ||
@@ -275,7 +283,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			}
 
 			// Start the idle timer.
-			m_pos.idle.time = GetTickCount();
+			m_pos.timer.idleTime = GetTickCount();
 
 			// Set the state to LOOP_DONE so as to immediately
 			// increment the frame when movement starts again
@@ -517,8 +525,8 @@ bool CSprite::handleCollision(CSprite &sprite)
 		if (result == true)
 		{
 			sprite.m_pos.loopFrame = LOOP_FREEZE;
-			sprite.m_pos.idle.time = freeze;
-			sprite.m_pos.idle.frameTime = GetTickCount();
+			sprite.m_pos.timer.idleTime = freeze;
+			sprite.m_pos.timer.frameTime = GetTickCount();
 		}
 		return result;
 	}
@@ -528,8 +536,8 @@ bool CSprite::handleCollision(CSprite &sprite)
 	if (result == true)
 	{
 		m_pos.loopFrame = LOOP_FREEZE;
-		m_pos.idle.time = freeze;
-		m_pos.idle.frameTime = GetTickCount();
+		m_pos.timer.idleTime = freeze;
+		m_pos.timer.frameTime = GetTickCount();
 	}
 
 	// Return true because sprite will resume movement.
@@ -960,7 +968,7 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 			layer = i->attributes;
 		}			
 
-		// Problem: corners on UNIDIRECTIONALs - more distant vector is
+		/** Problem: corners on UNIDIRECTIONALs - more distant vector is
 		// sometimes detected, and if the corner angle is <= 90, the wrong
 		// result will be given.
 
@@ -977,13 +985,13 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 			{
 				tt = TT_NORMAL;
 			}
-		}
+		}**/
 
 		if ((tt & TT_SOLID) && !recursing && m_bPxMovement)
 		{
 			/*
 			 * Compute the angle between the movement vector and
-			 * the subvector to determine if we should _T("slide").
+			 * the subvector to determine if we should slide.
 			 * If the angle is greater than 45 (or chosen other),
 			 * try rotating the movement direction and evalutate
 			 * the board vectors again at the new target.
@@ -1911,11 +1919,11 @@ void CSprite::customStance(const STRING stance, const CProgram *prg, const bool 
 	if (i == m_attr.mapCustomGfx.end()) return;
 
 	m_pos.pAnm = i->second.pAnm->m_pAnm;
-	m_pos.idle.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
+	m_pos.timer.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
 	
-	// Set idle.time to hold the *number of frames this will run for*.
-	m_pos.idle.time = m_pos.pAnm->data()->frameCount;
-	m_pos.idle.frameTime = GetTickCount();
+	// Set .idleTime to hold the *number of frames this will run for*.
+	m_pos.timer.idleTime = m_pos.pAnm->data()->frameCount;
+	m_pos.timer.frameTime = GetTickCount();
 
 	m_pos.loopFrame = LOOP_STANCE;
 	m_pos.frame = 0;				// Ensure that custom animations start at the first frame.
@@ -1962,6 +1970,7 @@ void CSprite::setAnm(MV_ENUM dir)
 			if (m_attr.mapGfx[GFX_MOVE][dir].pAnm)
 			{
 				m_pos.pAnm = m_attr.mapGfx[GFX_MOVE][dir].pAnm->m_pAnm;
+				m_pos.timer.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
 			}
 	}
 }
@@ -1973,7 +1982,7 @@ void CSprite::checkIdling(void)
 {
 	if (m_pos.loopFrame < LOOP_MOVE)
 	{
-		if ((m_pos.loopFrame == LOOP_WAIT) && m_pos.path.empty() && (GetTickCount() - m_pos.idle.time >= m_attr.idleTime))
+		if ((m_pos.loopFrame == LOOP_WAIT) && m_pos.path.empty() && (GetTickCount() - m_pos.timer.idleTime >= m_attr.idleTime))
 		{
 			// Push into idle graphics if not already.
 
@@ -1991,10 +2000,10 @@ void CSprite::checkIdling(void)
 				m_pos.frame = 0;
 
 				// Set the timer for idleness.
-				m_pos.idle.frameTime = GetTickCount();
+				m_pos.timer.frameTime = GetTickCount();
 
 				// Frame delay for the idle animation.
-				m_pos.idle.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
+				m_pos.timer.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
 			}
 		} // if (time player has been idle > idle time)
 
@@ -2002,20 +2011,20 @@ void CSprite::checkIdling(void)
 		// the idle object.
 		if (m_pos.loopFrame == LOOP_IDLE || m_pos.loopFrame == LOOP_STANCE)
 		{
-			if (GetTickCount() - m_pos.idle.frameTime >= m_pos.idle.frameDelay)
+			if (GetTickCount() - m_pos.timer.frameTime >= m_pos.timer.frameDelay)
 			{
 				// Start the timer for this frame.
-				m_pos.idle.frameTime = GetTickCount();
+				m_pos.timer.frameTime = GetTickCount();
 
 				// End custom stances. idle.time stores the number of frames
 				// to run for, rather than time in stance instances!
-				if (m_pos.loopFrame == LOOP_STANCE && --m_pos.idle.time == 0)
+				if (m_pos.loopFrame == LOOP_STANCE && --m_pos.timer.idleTime == 0)
 				{
 					// Animation has finished. Continue to render the
 					// last frame of the stance until it is interrupted
 					// by movement or another stance command.
 					m_pos.loopFrame = LOOP_STANCE_END;
-					m_pos.idle.time = GetTickCount();
+					m_pos.timer.idleTime = GetTickCount();
 
 					// Free any thread that is waiting for the custom
 					// animation to finish.
@@ -2086,17 +2095,12 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 	{
 		// Update idle and custom animations.
 		checkIdling();
-
-		// Get a pointer to the current animation.
-		// Bitshift in place of multiply by two (<< 1 equivalent to * 2)
-		// *Remove div 2 to double the movement frame rate*.
-		const int frame = (m_pos.loopFrame <= LOOP_IDLE) ?	m_pos.frame : int(m_pos.frame / (m_pos.loopSpeed << 1));
-		
+	
 		// Get the canvas for the current frame.
 		if (m_pos.pAnm)
 		{
-			CCanvas *p = m_pos.pAnm->getFrame(frame);
-			if (p != m_pCanvas) m_pos.pAnm->playFrameSound(frame);
+			CCanvas *p = m_pos.pAnm->getFrame(m_pos.frame);
+			if (p != m_pCanvas) m_pos.pAnm->playFrameSound(m_pos.frame);
 			m_pCanvas = p;
 		}
 		else 

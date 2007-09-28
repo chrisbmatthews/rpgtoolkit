@@ -87,18 +87,18 @@ enum GAME_STATE
 /*
  * Idle information for sprites.
  */
-typedef struct tagIdleInfo
+typedef struct tagFrameTimer
 {
-    unsigned int frameTime;		// Millisecond time this frame of the idle animation has played for.
-    unsigned int frameDelay;	// Millisecond frame delay of the frames of the idle animation.
-    unsigned int time;			// Millisecond time this sprite has been idle for.
+    unsigned int frameTime;		// Millisecond time this frame of the animation has played for.
+    unsigned int frameDelay;	// Millisecond delay of the frame of the animation.
+    unsigned int idleTime;		// Millisecond time this sprite has been idle for.
 
-	tagIdleInfo(void): 
+	tagFrameTimer(void): 
 		frameTime(0), 
 		frameDelay(0), 
-		time(GetTickCount()) {};
+		idleTime(GetTickCount()) {};
 
-} IDLE_INFO;
+} FRAME_TIMER;
 
 typedef std::deque<DB_POINT> MV_PATH;
 typedef std::deque<DB_POINT>::iterator MV_PATH_ITR;
@@ -119,7 +119,7 @@ typedef struct tagSpritePosition
 							//		= LOOP_IDLE - started idle animations.
 							//		= LOOP_STANCE - running a custom stance through the mainloop.
 	int loopSpeed;			// speed converted to loops.
-    IDLE_INFO idle;
+    FRAME_TIMER timer;
 
 	DB_POINT target;		// Target co-ordinates.
 	bool bIsPath;			// Is the current movement part of a path?
@@ -132,7 +132,7 @@ typedef struct tagSpritePosition
 		loopFrame(LOOP_WAIT),
 		bIsPath(true),
 		loopSpeed(1),
-		idle(),
+		timer(),
 		path() { target.x = target.y = 0.0; };
 
 } SPRITE_POSITION;
