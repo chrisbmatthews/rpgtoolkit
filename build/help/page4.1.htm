@@ -1,0 +1,1145 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
+
+<div class="topLinks">
+
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor</a></span>
+|&nbsp;
+
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing</a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm">rpgcode</a></span>
+|&nbsp;
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about</a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
+</div>
+
+</div>
+<div id="content">
+<h2><a href="page2.htm">editor guide</a> &mdash; board editor</h2>
+
+<p style="text-transform: lowercase;">
+<a href="page4.htm">Board Basics</a>
+<br />
+Around The Editor 
+[ <a href="#newboard">New Board Window</a> | <a href="#lefttoolbar">Left-hand Toolbar</a> | <a 
+
+href="#righttoolbar">Right-hand Toolbar</a> | <a href="#properties">Properties</a> | <a 
+
+href="#menus">Menus</a> ]
+<br />
+<a href="page4.2.htm">Vector tutorial</a>
+</p>
+
+<!-- Board Editor rewrite - 18 September 2006 by Delano -->
+
+<img src="images/image47" alt="Board editor" />
+<p>
+The board editor may be broken down into a number of sections: the New Board screen, the Board 
+
+and Properties tabs, the left-hand toolbar, the right-hand toolbar and the menus.
+</p>
+<a name="newboard"></a><h3>New Board screen</h3>
+<p>
+After opening the board editor (see <a href="pageed_environment.htm">Editor Environment</a> for 
+
+ways to do this), you will be presented with the 'New Board' options window, which allows you to 
+
+specify the properties of the new board. 
+</p>
+<img src="images/image86" alt="New board window" />
+<ul>
+	<li>The option buttons allow you to either choose a new set of parameters or to load a 
+
+pre-existing board - for instance, you could create a template board with a number of common 
+
+properties and specify it here.
+	</li>
+	<li>The coordinate system choices specify the grid and perspective of the board; see the 
+
+<a href="page4.htm">Board Basics page</a> for a description of the choices. Once the coordinate system is 
+
+set you cannot alter it, except to upgrade from isometric stacked to rotated, or from tile to 
+
+pixel (see Menu below).
+	</li>
+	<li>The X and Y dimensions are always specified in tile values, even if the 'Use pixel 
+
+coordinates' option is ticked. The resulting pixel dimensions of the board are specified below 
+
+the tile dimensions.
+	</li>
+	<li>The Background Image may be any type of non-tile image file, and is drawn below the 
+
+first layer of tiles.
+	</li>
+	<li>This window remembers all its settings, so if you tick the 'Do not show this form on 
+
+startup' box, a new board will be automatically created with the last set of parameters. To 
+
+reshow the form, choose the relevant option in the Board > Preferences... menu.
+	</li>
+</ul>
+
+<h3>Board Tab</h3>
+<p>
+After selecting 'OK' on the New Board window, a black area will appear in the middle of the 
+
+screen (unless a background image or pre-existing board was selected!); this is the board showing 
+
+its default background colour.
+</p>
+<a name="lefttoolbar"></a><h3>Left-hand Toolbar</h3>
+<p>
+The toolbar on the left-hand side contains the tools used to draw and edit the various objects 
+
+placed on the board. Each button has a keyboard shortcut key, denoted in brackets.
+</p><p>
+The first is a set of general tools:
+</p>
+<table>
+	<tr>
+		<td><img src="images/image0" alt="Grid icon" /></td>
+		<td>
+			Grid On/Off (G) - Toggles drawing of the tile grid.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image87" alt="Undo icon" /></td>
+		<td>
+			Undo (Ctrl+Z) - Undoes the last user operation. Only the most relevant 
+
+operations are undoable; a multiple-undo stack is maintained, so multiple operations up to a 
+
+particular number can be undone.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image8" alt="Autotiler icon" /></td>
+		<td>
+			Toggle Auto-Tiler (H) - Auto-Tiling is an option found in some RPG makers 
+
+that uses specially drawn and arranged tilesets to make the task of creating bounded tile areas 
+
+simpler. To use this feature you must have an auto-tile tileset open. This option turns 
+
+auto-tiling on or off - turned off, you can place auto-tiles normally, when turned on any tiles 
+
+placed form enclosed areas dependent on their neighbouring tiles. Auto-tilesets must either be 
+
+downloaded or created using the "Auto-Tiler" tool - follow <a 
+
+href="http://toolkitzone.com/fileman.php?id=3&amp;file=865" rel="external">this link</a> for more 
+
+information.
+		</td>
+	</tr>
+</table>
+<p>
+The second group of tools are associated with creating and editing each particular object type. 
+
+The buttons are interlinked so that only one can be selected at any one time. The specific action 
+
+on each object is then determined by the selected button in the third group. When one of the last 
+
+six buttons is selected (vector to lighting), the currently selected object of that type is 
+
+highlighted on the board, indicated either by a thick line for vectors or a bounding box for 
+
+sprites and images.
+</p>
+<table>
+	<tr>
+		<td valign="top"><img src="images/image88" alt="Scroll icon" /></td>
+		<td>
+			Scroll board (Q) - Allows the board to be scrolled using the mouse 
+
+buttons. Left-click and hold (LMB) on the board and drag the mouse to scroll the board.
+<br /> 
+Tip: Scrolling can also be achieved at any time by using the mouse wheel. Scrolling the wheel 
+
+causes either horizontal or vertical scrolling; clicking the middle mouse button/wheel (MMB) 
+
+switches between horizontal or vertical scrolling. The Scroll board tool need not be selected to 
+
+do this.
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><img src="images/image89" alt="Zoom icon" /></td>
+		<td>
+			Zoom (W) - Allows the board to be zoomed in or out. LMB zooms in, 
+
+right-click (RMB) zooms out. A finite number of zoom levels are provided.
+<br />
+Tip: Zooming can also be achieved by scrolling the mouse wheel whilst holding the Ctrl key down. 
+
+The Zoom tool need not be selected to do this.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image90" alt="Tile icon" /></td>
+		<td>
+			Tile tools (T) - Selects tile editing. Note the current tileset can be 
+
+opened in a pop-up browser by pressing the 'L' key.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image91" alt="Vector icon" /></td>
+		<td>
+			Vector tools (V) - Selects vector editing (including collision and 
+
+waypoint, excluding program).
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image92" alt="Program vector icon" /></td>
+		<td>
+			Program tools (P) - Selects program vector editing (excluding threads).
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image93" alt="Sprite icon" /></td>
+		<td>
+			Sprite tools (S) - Selects sprite (item) editing.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image94" alt="Image icon" /></td>
+		<td>
+			Image tools (I) - Selects image editing (excluding background image).
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image95" alt="Shading icon" /></td>
+		<td>
+			Shading tools (Y) - Selects tile shading editing (excluding ambient 
+
+levels and lighting).
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image96" alt="Lighting icon" /></td>
+		<td>
+			Lighting tools (U) - Selects light editing (excluding ambient levels).
+		</td>
+	</tr>
+</table>
+<p>
+The third is a group of generic tools whose function and action depend on the selected button of 
+
+the second group. Note: when the selected button in the second group is changed, the selected 
+
+tool in the third group defaults to Draw. Not all tools are applicable to all objects, those that 
+
+are not are disabled when the object's button is selected.
+</p>
+<table>
+	<tr>
+		<td><img src="images/image97" alt="Draw icon" /></td>
+		<td>
+			Draw (D)
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+<ul>
+<li>Tile: 
+	<ul>
+	<li>LMB - Places the currently selected tile on the selected layer at the location 
+
+clicked. If a tile bitmap (.tbm) is selected, the tiles of the tbm are placed onto the board, 
+
+with the top-left tile placed at the location clicked. The tile bitmap itself is not associated 
+
+with the board in any way.</li>
+	</ul>
+</li>
+<li>Vector, Program: 
+	<ul>
+	<li>LMB - Creates a new vector and sets the first point by entering 'drawing mode'. A 
+
+dashed line extends to the mouse pointer, and subsequent LMB clicks draw new points on the 
+
+vector. If the coordinate system is not in pixels, vector points are placed at gridpoints.</li>
+	<li>RMB - If in 'drawing mode', a RMB <i>closes</i> the vector by joining the first and 
+
+last points and exits drawing mode (a subsequent LMB will start a new vector). A LMB near the 
+
+first point does not have the same effect.</li>
+	<li>RMB+Ctrl - If in 'drawing mode', exits drawing mode without closing the vector.</li>
+	<li>LMB+Ctrl - If in a pixel coordinate system, causes vector points to snap to 
+
+gridpoints; if in tile coordinate system, prevents snap-to-gridpoints.</li>
+	<li>LMB+Shift - If in drawing mode, aligns the next point to the nearest axis or 
+
+diagonal.</li>
+	<li>LMB+Alt - When not in drawing mode, edits the selected vector in the following ways:
+		<ul>
+		<li>If click is near a point, the point is deleted (where 'near' means within ~16 
+
+pixels).</li>
+		<li>If click is near a line and far from a point, the line is subdivided and a 
+
+new point is created.</li>
+		<li>If click is far from a line, drawing mode is entered and a new point added to 
+
+the end of the vector and the vector is unclosed.</li>
+		</ul>
+	</li>
+	</ul>
+</li>
+<li>Sprite, Image, Light:
+	<ul>
+	<li>LMB - Creates a new sprite, image or light, respectively. The new object is blank or 
+
+is given the default parameters for its type. Blank sprites and images are represented by 32x32 
+
+pixel black or white squares. If tile coordinates are selected, a sprite is aligned to the grid. 
+
+Lights are represented by vectors as well as by the shades they cast.</li>
+	</ul>
+</li>
+<li>Shading:
+	<ul>
+	<li>LMB - Places the currently selected shade on the shading layer at the location 
+
+clicked. If any tiles are on layers below the shading layer at the same location, the shade is 
+
+applied to them.</li>
+	</ul>
+</li>
+</ul>
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image98" alt="Select icon" /></td>
+		<td>
+			Select (A)
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+<ul>
+<li>Tile:
+	<ul>
+	<li>LMB+drag
+		<ul>
+		<li>Creates a selection box that resizes to align with the grid.</li>
+		<li>Performed on a selection box, causes the selected tiles to be moved to the 
+
+new location (equivalent to a Cut-Paste operation).</li>
+		<li>LMB+Ctrl+drag on a selection causes the original tiles to be preserved 
+
+(equivalent to a Copy-Paste operation).</li>
+		</ul>
+	</li>
+	<li>RMB - Erases the selection box.</li>
+	</ul>
+</li>
+<li>Vector, program:
+	<ul>
+	<li>LMB - Highlights (selects) the nearest vector (by the nearest point, rather than 
+
+line).</li>
+	<li>LMB+drag - Draws a selection box. If any points of the selected vector fall inside 
+
+the box, a number of operations can be performed on these selected points.
+		<ul>
+		<li>LMB+drag - Moves/drags selected points.</li>
+		<li>(Del, Backspace) - Deletes selected points.</li>
+		<li>(Z) - Subdivides selected lines. If two or more consecutive points are 
+
+selected, new points are created at the midpoints of selected lines.</li>
+		<li>(X) - Extends selected point. If the vector is not closed and the start or 
+
+end point is selected, drawing mode is entered beginning from the selected point.</li>
+		</ul>
+	</li>
+	<li>RMB - Erases the selection box.</li>
+	</ul>
+</li>
+<li>Sprite, Image:
+	<ul>
+	<li>LMB - Highlights (selects) the targeted object.</li>
+	<li>LMB+drag - If originating within the selected object's bounds, drags/moves the 
+
+selected object. If in tile coordinates, sprites are forced to align to the grid.</li>
+	</ul>
+</li>
+<li>Shading: Controls are identical to the tile controls listed above.
+</li>
+<li>Lighting: Light vectors can be edited in the same way as other vectors with the exception 
+
+that points cannot be added or deleted.
+</li>
+</ul>
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image99" alt="Flood icon" /></td>
+		<td>
+			Flood (F)
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+<ul>
+<li>Tile, Shading:
+	<ul>
+	<li>LMB - Floods the selected bounded area with the current tile or shade.</li>
+	</ul>
+</li>
+</ul>
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image100" alt="Erase icon" /></td>
+		<td>
+			Erase (E)
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+<ul>
+<li>Tile, Shading:
+	<ul>
+	<li>LMB - Erases the selected tile or shade.</li>
+	</ul>
+</li>
+</ul>
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image101" alt="Rectangle icon" /></td>
+		<td>
+			Rectangle (R)
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+<ul>
+<li>Tile, Shading:
+	<ul>
+	<li>LMB - Draws a hollow rectangle with the selected tile or shade.</li>
+	<li>LMB+Ctrl - Draws a filled rectangle.</li>
+	</ul>
+	Note: Unavailable in Stacked Isometric mode.
+</li>
+<li>Vector, Program:
+	<ul>
+	<li>LMB - Creates a new, rectangular closed vector (rotated to align with axes in 
+
+isometric mode).</li>
+	</ul>
+</li>
+</ul>
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image15" alt="Dropper icon" /></td>
+		<td>
+			Dropper (O)
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+<ul>
+<li>Tile, Shading:
+	<ul>
+	<li>LMB - Sets the selected tile or shade.</li>
+	</ul>
+</li>
+</ul>
+		</td>
+	</tr>
+</table>
+<p>
+The fourth group of tools control the visibility of the board.
+</p>
+<table>
+	<tr>
+		<td><img src="images/image102" alt="Current layer icon" /></td>
+		<td>
+			Current layer - Selects the current layer, onto which tiles, vectors, 
+
+programs, sprites, items and images are drawn.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image103" alt="Toggle layers icon" /></td>
+		<td>
+			Toggle visible layers - A list of layers and their visibility status. An 
+
+asterisk next to a layer number indicates the layer as visible. Click a layer on the list to 
+
+toggle its visibility. The current layer cannot be hidden. 'B' denotes the background image.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image104" alt="Hide icon" /></td>
+		<td>
+			Hide all layers except current (J) - Overrides the visible layers list.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image105" alt="Show icon" /></td>
+		<td>
+			Show all layers (K) - Overrides the visible layers list.
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/image106" alt="Selected tile" /></td>
+		<td>
+			Selected tile - Click on the box to change the selected tile. Possible 
+
+types that can be placed are *.tst, *.iso, *.tan (animated tile) and *.tbm (tile bitmap).
+		</td>
+	</tr>
+</table>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="righttoolbar"></a><h3>Right-hand Toolbar</h3>
+
+<p>
+The right-hand toolbar contains three permanent buttons that are described on the <a 
+
+href="pageed_environment.htm">Editor Environment page</a>. When the board editor is open, a fourth 
+
+button appears - this is the <i>Board Toolbar</i>, and displays the properties of all the objects 
+
+on the board.
+<br /> 
+The toolbar has five tabs, one for each object group: vectors, programs, sprites, images and 
+
+lighting. Selecting one of these tools from the left-hand toolbar causes the matching tab to be 
+
+shown on the Board Toolbar. The first four tabs contain a drop-down box listing all the current 
+
+objects of that type on the board. The properties of the selected object are then displayed in 
+
+the panel below. Each of the first four tabs also contains a checkbox to toggle whether the 
+
+objects of that type are displayed in the board editor, and a 'Delete' button to erase the 
+
+currently selected object. The currently selected object is highlighted if the object type's 
+
+button is selected in the left-hand toolbar. If no objects of the type exist, all controls on the 
+
+tab are disabled.
+</p><p>
+Tip: The Board Toolbar can be hidden or shown using the Ctrl+B shortcut. The tileset toolbar can 
+
+be hidden or shown using Ctrl+L. A pop-up tileset browser can also be displayed by pressing L 
+
+when the board has the focus.
+</p>
+<h4>Vectors (Alt+V)</h4>
+<table>
+	<tr>
+		<td valign="top"><img src="images/image107" alt="Vector tab" /></td>
+		<td valign="top">
+<ul>
+<li>The vectors tab displays information for all vector types except programs.</li>
+<li>The drop-down list displays the <i>index</i> and <i>handle</i> of the each vector. Both index 
+
+and handle can be used to access a vector in RPGCode. Click the text area of the drop-down list 
+
+to begin entering a new handle for the current vector (do not enter the index or colon first, 
+
+these are automatically added). Two vectors cannot share the same index or handle.</li>
+<li>Solid, under, stairs and waypoint: valid vector types; see <a href="page4.2.htm">link</a> for a full a 
+
+description of each.</li>
+<li>Closed vector: Determines whether the vector forms a closed loop or not.</li>
+<li>Include background: A sprite standing on an under-vector on any layer will appear 'behind' 
+
+the background image, if one exists.</li>
+<li>Include all layers below: A sprite will appear behind any tiles or images on any layers below 
+
+an under-vector, in addition to those on the current layer.</li>
+<li>Trigger on frame intersect: The sprite will appear behind an under-vector area when its 
+
+<i>image frame</i> intersects the vector, rather than its collision vector. See <a href="page4.2.htm">this 
+
+link</a> for an example of its usage.</li>
+<li>Layer: layer the vector is located upon; sprites will only interact with a vector if it is on 
+
+the same layer as the sprite.</li>
+<li>Stairs to layer: Layer to move sprites to when they intersect a stair-vector.</li>
+<li>Slot index: The numeric index of the vector on the board, as shown in the drop-down list. Use 
+
+the buttons to move the current vector up or down in the list.</li>
+<li>Points list: a list of the vector's points in pixel coordinates. In order to change a point's 
+
+coordinates:
+	<ul>
+	<li>click the value to be changed;</li>
+	<li>press the Delete or Backspace key;</li>
+	<li>enter the new coordinate;</li>
+	<li>press the Enter key.</li>
+	</ul>
+To delete a point, click the point's index in the first column and press the Delete or Backspace 
+
+key. Vector points are always stored in pixel coordinates regardless of the board's coordinate 
+
+system.</li>
+</ul>
+		</td>
+	</tr>
+</table>
+<h4>Programs (Alt+P)</h4>
+<table>
+	<tr>
+		<td valign="top"><img src="images/image108" alt="Program tab" /></td>
+		<td valign="top">
+<ul>
+<li>Once a program's vector has been drawn, it becomes listed in the program tab's drop-down 
+
+list.</li> 
+<li>The drop-down box lists the program index and filename/inline RPGCode of each program. It 
+
+cannot be edited via the drop-down box. If no filename/code is given '&lt;program&gt;' is 
+
+displayed, and the program will not be loaded in the engine.</li> 
+<li>Program filename/inline RPGCode: Specify a program's filename or a line of RPGCode to run 
+
+when the program is activated. Use the '...' button to the right to browse for programs, and the 
+
+blank button below to open the program, if the file exists. When specifying a program, it must 
+
+exist within the game's 'Prg\' folder or subfolders within it. If the program is in a subfolder 
+
+then subfolder's name must also appear in the textbox (e.g., for the file 'Prg\system\pause.prg', 
+
+the text 'system\pause.prg' should be written). When specifying subfolders, only the '\' slash is 
+
+valid; the '/' is not. These principles apply when choosing any files in subfolders throughout 
+
+the Toolkit.</li> 
+<li>Layer: layer the program is located upon; players will only interact with a program if it is 
+
+on the same layer as the player.</li> 
+<li>Activation by step-on: The program will run as soon as a player walks onto (intersects with) 
+
+the program's vector.</li> 
+<li>Activation by key-press: The program will run only when the player is standing on or in the 
+
+program's vector and the user presses the activation key (see <a href="page3.htm">Main File 
+
+Editor</a>).</li> 
+<li>Trigger every x pixels: Causes the program to run after a player has walked a given number of 
+
+pixels in or on a program vector. When the user leaves the vector, the count is reset.</li> 
+<li>Activation stops movement: Running the program causes the player to stop moving (for 
+
+instance, when using mouse movement).</li> 
+<li>Run once: Causes the program to be run only once for the entire duration of the game.</li> 
+<li>Run program if variable 'x' = 'y': Causes the program to be run only if the RPGCode variable 
+
+specified in the first box has the value specified in the second box. Cannot be used in 
+
+conjunction with the 'Run Once' checkbox.</li>
+<li>After program finishes, set variable 'x' = 'z': Optional - when the program ends, the RPGCode 
+
+variable named in the first box is given the value in the second.</li>
+<li>Points list: see the vector points list, above.</li> 
+</ul>
+		</td>
+	</tr>
+</table>
+<h4>Sprites (Alt+S)</h4>
+<table>
+	<tr>
+		<td valign="top"><img src="images/image109" alt="Sprite tab" /></td>
+		<td valign="top">
+<ul>
+<li>The drop-down box lists the item index and filename of each sprite, the text field cannot be 
+
+edited. If no filename is specified, '&lt;sprite&gt;' is displayed.</li>
+<li>Sprite filename: Filename of the item (players cannot currently be specified). Click the 
+
+'...' button to browse for an item, and the blank button to open the file, if it exists.</li>
+<li>Location: The x, y and layer coordinates of the sprite. Given in tile coordinates unless 
+
+using pixel coordinates. If using tile coordinates, sprites are 'snapped' to the grid. When using 
+
+pixel coordinates, the x, y values refer to the bottom-centre of the sprite's frame. For 
+
+historical reasons, in isometric mode, the y-value is offset down by 8 pixels.</li>
+<li>Slot index: The numeric index of the sprite on the board, as shown in the drop-down list. Use 
+
+the buttons to move the current sprite up or down in the list.</li>
+<li>Override program to run on activation: Specify a program or a line of RPGCode to run when the 
+
+user interacts with the sprite, instead of any program specified in the item's Board Options (see 
+
+<a href="page8.htm">Item Editor</a>).</li>
+<li>Override multitasking program: Specify a program or a line of RPGCode to run whilst the 
+
+sprite is on the board, instead of any program specified in the item's Board Options.</li>
+<li>Activation by step-on: The sprite's activation program will run as soon as a player walks 
+
+into (intersects with) the sprite's activation vector (see <a href="page8.htm">Item 
+
+Editor</a>).</li>
+<li>Activation by key-press: The sprite's activation program will run only when the player is 
+
+standing on or in the sprite's activation vector and the user presses the activation key (see <a 
+
+href="page3.htm">Main File Editor</a>).</li>
+<li>Show sprite when board loads if variable 'x' = 'y': Causes the sprite to be visible only if 
+
+the RPGCode variable specified in the first box has the value specified in the second box. The 
+
+sprite's data is still loaded and the sprite can be shown at any time using PutItem().</li>
+<li>Run program if variable 'x' = 'y': Causes the sprite's activation program to be run only if 
+
+the RPGCode variable specified in the first box has the value specified in the second box.</li>
+<li>After program finishes, set variable 'x' = 'z': Optional - when the sprite's activation 
+
+program ends, the RPGCode variable named in the first box is given the value in the second.</li>
+</ul>
+		</td>
+	</tr>
+</table>
+<h4>Images (Alt+I)</h4>
+<table>
+	<tr>
+		<td valign="top"><img src="images/image110" alt="Image tab" /></td>
+		<td valign="top">
+<ul>
+<li>The drop-down box lists the image index and filename of each image, the text field cannot be 
+
+edited. If no filename is specified, '&lt;image&gt;' is displayed. The background image is not 
+
+listed here, see the Properties Tab below.</li>
+<li>Image filename: Filename of the image, see the relevant comments about the Program filename 
+
+field for subfolder information.</li>
+<li>Location: x, y and layer coordinates of the image. The x and y values refer to the top-left 
+
+corner of the image and are always given in pixel coordinates.</li>
+<li>Transparent colour: The transparent colour on the image. To set the transparent colour, click 
+
+'Select' and then click on the area of the image on the board that you wish to be transparent. 
+
+When using some image formats (such as jpg), you may find that only parts of the transparent area 
+
+become transparent; this is due to image compression altering the values of the other areas. You 
+
+will need to resave your image at a higher quality or in a different format to rectify this 
+
+issue.</li>
+</ul>
+		</td>
+	</tr>
+</table>
+<h4>Lighting (Alt+L)</h4>
+<table>
+	<tr>
+		<td valign="top"><img src="images/image111" alt="Lighting tab" /></td>
+		<td valign="top">
+The lighting tab contains information for both tile shading and lighting.
+<ul>
+<li>Cast onto tiles on layer x and below: specifies the layer above which the tile shading layer 
+
+and any lights are positioned. This style of lighting and shading cannot be applied to images and 
+
+cannot be applied at a sub-tile level.</li>
+<li>Lighting: the first drop-down box lists the current lights on the board by their index and 
+
+light type. The selected light is displayed here, and if the lighting button is selected on the 
+
+left-hand toolbar, the selected light's vector is highlighted on the board.</li>
+<li>The smaller drop-down box lists the possible light types of the current light. These are:
+	<ul>
+	<li>Elliptic spotlight: Creates a circular or elliptic spotlight defined by three points 
+
+and two colours. Its vector consists of two lines defining the semi-major and semi-minor axes 
+
+(whichever is longer and shorter, respectively). The angle of the semi-minor axis with respect to 
+
+the semi-major is immaterial, only its length is used. One colour is applied to the centre of the 
+
+ellipse and one to the boundary, and all points in the ellipse are shaded with a gradated mix of 
+
+the two colours.</li>
+	<li>Gradient: A linear gradient that fills the whole screen, defined by two points and 
+
+two colours. The gradient is applied in parallel to the line joining the points, extending 
+
+perpendicularly across the whole board. Beyond either point, the board is shaded with the colour 
+
+of the closer point.</li>
+	<li>Clipped gradient: Similar to Gradient, the Clipped gradient extends perpendicularly 
+
+across the whole board, but is clipped in the parallel direction at either point.</li>
+	</ul>
+</li>
+<li>The next section defines the colours of the current light. 
+	<ul>
+	<li>A colour box displays the shade.</li>
+	<li>'...' button sets the shade for this point to the Current Shade (see below).</li>
+	<li>The accompanying text describes the associated point of the light and its RGB (red, 
+
+green, blue) value.</li>
+	</ul>
+</li>
+<li>Convert: Converts the light to tile shading by rendering the light to the tile shading layer. 
+
+The light is combined additively with any current tile shading and the light object is removed 
+
+from the board. Once the light is removed, its shape cannot be altered.</li>
+<li>Delete: Removes the current light from the board.</li>
+<li>Current Shade: displays the shade used for drawing tile shading and for assigning shades to 
+
+lights.
+	<ul>
+	<li>RGB textboxes: Individual RGB values can be input in the range -255 to +255. Positive 
+
+numbers lighten tiles and negative numbers darken.</li>
+	<li>Slider: Sets the RGB to the same value.</li>
+	<li>Zero RGB: Sets the RGB to [0, 0, 0].</li>
+	</ul>
+</li>
+</ul>
+		</td>
+	</tr>
+</table>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="properties"></a><h3>Properties Tab</h3>
+
+<p>
+The properties tab displays miscellaneous attributes of the board not associated with the objects 
+
+listed above.
+</p>
+<img src="images/image112" alt="Properties tab" />
+<ul>
+<li>Directional links: When the player reaches the edge of a board they may move to a new 
+
+location. One way of doing this is to specify a directional link for that edge of the board; one 
+
+textbox is provided for each edge or direction. A program may instead be run when the player 
+
+reaches the edge. Click the '...' button to browse for a board or program file, and the blank 
+
+button to open the file, if it exists.
+</li>
+<li>Background image: Specify a non-tile image for the background; click the '...' to browse for 
+
+a file (files must be located in the 'Bitmap\' folder or subfolders therein.
+</li>
+<li>Background color: The colour of the board beneath the background image and tiles, defaulting 
+
+to black. Click the '...' to select a colour.
+</li>
+<li>Background music: Specify a music file that plays and loops for the duration the player is on 
+
+the board; click the '...' to browse for a file (files must be located in the 'Media\' folder or 
+
+subfolders therein.
+</li>
+<li>Threads: As mentioned in <a href="page4.htm">Board Basics</a>, threads are programs that are run in 
+
+the background of the game and allow gameplay to continue whilst they execute, in contrast to 
+
+other programs. A set of board threads may be specified here that are launched when the board is 
+
+entered and terminated when the board is left, unless they have already done so. Use the 'Add...' 
+
+and 'Remove' buttons to create or delete board threads, and the 'Open' button to open the 
+
+selected file, if it exists.
+</li>
+<li>Dimensions: Width and Height describe the dimensions of the board in <i>tiles</i> at all 
+
+times. The coordinate system types are displayed but cannot be altered (except through the menu 
+
+option, see below).
+</li>
+<li>Constants: Two arrays of RPGCode constants may be defined on a board. One is a set of generic 
+
+constants that can be used to hold any data, entitled 'constant[x]' where x is a number (see <a 
+
+href="page18.5.htm">RPGCode Reference</a>). The second is a set of strings that may hold the names 
+
+or titles for each layer (but may hold anything else you need), entitled 'boardtitle[x]' where x 
+
+is a number. To create a new constant, select the blank entry from the end of the drop-down list. 
+
+The number of boartitle[] constants is fixed to the number of layers (when changing the number of 
+
+layers, switch back to the Board tab to update this list). The value of the selected constant is 
+
+displayed in the accompanying textbox.
+</li>
+<li>Battle settings:
+	<ul>
+	<li>Enable fighting on this board: Check this box to allow random battles to occur at the 
+
+frequency or probability determined in the <a href="page3.htm">Main File Editor</a>.</li>
+	<li>Board skill: Sets the skill level of enemies encountered during random battles, as 
+
+assigned to enemies in the Main File Editor.</li>
+	<li>Battle background: The .bkg background file to display when running random 
+
+battles.</li>
+	</ul>
+</li>
+<li>Disable progress saving: one can prevent players from saving their game on the current board 
+
+by enabling this option - for instance, if you don't want them to be able to save during a series 
+
+of battles. With this option enabled, the "Save" option in the default menu is inactive. 
+</li>
+<li>Program to run when entering board: set this if you want a program to run as soon as the 
+
+player steps onto the board, before he is allowed to move. Note that any board threads are 
+
+launched before this program is run.
+</li>
+<li>Ambient RGB: A uniform shade that is applied to the board. These values combine additively 
+
+with the global Ambient Level applied through setAmbientLevel(). Individual red, green and blue 
+
+values are specified in the range -255 to +255, where negative numbers darken and positive 
+
+numbers lighten the scene. Useful for creating dark rooms, for instance.
+</li>
+</ul> 
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="menus"></a><h3>Menus</h3>
+
+<h4>Edit</h4>
+<ul>
+<li>Undo (Ctrl+Z): Undoes the last action; a multiple undo stack is provided storing a certain 
+
+number of previous changes. Not all operations are undoable.</li>
+<li>Redo (Ctrl+Y): Redoes an Undo action.</li>
+<li>Copy (Ctrl+C): Copies the selected object to the board clipboard. A selection of the desired 
+
+object(s) must be made using the Selection tool on the left-hand toolbar. The object type 
+
+corresponding to the selected object button on the left-hand toolbar is copied. Groups of tiles 
+
+and shades can be copied, or whole vectors, programs sprites and images. Partial vectors (point 
+
+groups) and lights cannot be copied. In addition, text in textboxes can be copied, cut and pasted 
+
+from outside the editor.</li>
+<li>Cut (Ctrl+X): Cuts the currently selected object.</li>
+<li>Paste (Ctrl+V): Pastes the current object on the clipboard.</li>
+<li>Select All (Ctrl+A): Creates a selection box around the current object, or around the whole 
+
+board (in tile or shading mode).</li>
+</ul>
+<h4>Board</h4>
+<ul>
+<li>Preferences (Ctrl+F): Board editor preferences applied to all boards.
+	<ul>
+	<li>Color options: Lists the colours used to display particular objects in the editor. 
+
+Click the colour itself to choose a new colour.</li>
+	<li>Revert to draw after flooding: After flooding tiles or shades, the current tool 
+
+switches to Draw.</li>
+	<li>Show vector indices: Draw numbers by the points of vectors.</li>
+	<li>Use recursive flooding: If you experience problems with the flood tool, such as tiles 
+
+being erased rather than placed, enable this option. This may happen on earlier versions of 
+
+Windows. Note that with this option enabled, you cannot flood large boards (approximately greater 
+
+than 100x100). This option is linked to the option in the <a href="page5.htm">Tile Editor</a>.</li>
+	<li>Show New Board dialog window: Show the New Board window when opening the board 
+
+editor.</li>
+	<li>Show player start location on initial board only: display the starting location only 
+
+if the board's name matches the initial board specified in the main file editor, otherwise the 
+
+start locations (if defined) are displayed on each board.</li>
+	</ul>
+</li>
+<li>Set Player Start Location (Ctrl+D): Use this to set the location where the player will begin 
+
+at the beginning of the game. Choose this option and then click the required position on the 
+
+board. The location is highlighted by a cross and text detailing the chosen layer. If tile 
+
+coordinates are used, the location will snap to a grid square.</li>
+<li>Set As Initial Board (Ctrl+G): Alters the initial board field in the main file to the current 
+
+board's name.</li>
+<li>Convert Coordinates
+	<ul>
+	<li>to isometric rotated (Ctrl+I): Converts isometric stacked boards to isometric 
+
+rotated.</li>
+	<li>to pixel (Ctrl+P): Converts from tile-based coordinates to pixel.</li>
+	</ul>
+</li>
+<li>Export Image
+	<ul>
+	<li>Current Screen: Saves the currently visible board area in an image file. The image 
+
+appears exactly as the board appears in the editor. Possible filetypes are png, jpg and bmp.</li>
+	<li>Entire Board: Saves the entire board to an image file. The image will not include 
+
+vectors, programs, gridlines, object outlines or scaling for zooming. It will include sprites, 
+
+images and shading unless disabled in the Board Toolbar tabs.</li>
+	</ul>
+</li>
+</ul>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="page4.htm">previous</a>, <a href="page4.2.htm">forward</a>
+</p>
+</div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

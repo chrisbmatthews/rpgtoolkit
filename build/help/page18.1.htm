@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
 	<title>RPGToolkit Help &mdash;&nbsp;</title>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<script type="text/javascript" src="js.js"></script>
 	<link rel="stylesheet" href="styles/css.css" />
 	<!--[if IE]>
@@ -21,19 +21,23 @@
 
 <div id="document">
 
-<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
 
 <div class="topLinks">
 
-<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
 |&nbsp;
 
 <span
 	onmouseover="showMenu('editor');"
 	onmouseout="hideMenu('editor');"
 	id="editor_link"
-><a href="page2.htm">editor<!-- guide--></a></span>
+><a href="page2.htm">editor</a></span>
 |&nbsp;
+
 <div
 	id="editor"
 	class="submenu"
@@ -42,18 +46,18 @@
 >
 	<div><a href="pageed_environment.htm">editor environment</a></div>
 	<div><a href="page3.htm">main file editor</a></div>
-
 	<div><a href="page4.htm">board editor</a></div>
 	<div><a href="page5.htm">tile editor</a></div>
 	<div><a href="page6.htm">program editor</a></div>
 	<div><a href="page7.htm">character editor</a></div>
+
 	<div><a href="page8.htm">item editor</a></div>
 	<div><a href="page9.htm">enemy editor</a></div>
-
 	<div><a href="page10.htm">animation editor</a></div>
 	<div><a href="page11.htm">tile bitmap editor</a></div>
 	<div><a href="page12.htm">special move editor</a></div>
 	<div><a href="page13.htm">status effect editor</a></div>
+
 	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
 </div>
 
@@ -61,7 +65,7 @@
 	onmouseover="showMenu('engine');"
 	onmouseout="hideMenu('engine');"
 	id="engine_link"
-><a href="page14.htm">playing<!-- your game--></a></span>
+><a href="page14.htm">playing</a></span>
 |&nbsp;
 <div
 	id="engine"
@@ -77,9 +81,8 @@
 	onmouseover="showMenu('rpgcode');"
 	onmouseout="hideMenu('rpgcode');"
 	id="rpgcode_link"
-><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+><a href="page17.htm">rpgcode</a></span>
 |&nbsp;
-
 <div
 	id="rpgcode"
 	class="submenu"
@@ -101,7 +104,6 @@
 	id="troubleshooting_link"
 ><a href="page22.htm">troubleshooting</a></span>
 |&nbsp;
-
 <div
 	id="troubleshooting"
 	class="submenu"
@@ -118,7 +120,7 @@
 	onmouseout="hideMenu('about');"
 	style="margin-bottom: 0;"
 	id="about_link"
-><a href="page28.htm">about<!-- the toolkit--></a></span>
+><a href="page28.htm">about</a></span>
 <div
 	id="about"
 	class="submenu"
@@ -126,240 +128,285 @@
 	onmouseout="hideMenu('about')"
 >
 	<div><a href="page29.htm">history</a></div>
-
-	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
 </div>
 
 </div>
-
-<div id="content"><div id="primer">
+<div id="content">
+<div id="primer">
 
 <h2><a href="page17.htm">RPGCode</a> &mdash; <a href="page18.htm">Language Features</a> &mdash; Basics</h2>
-
 <h3 style="margin-bottom: 10px;">Contents</h3>
-
-<a href="#basics">Basics of Programming</a>
 <ul style="margin-bottom: 15px;">
-	<li><a href="#basics.com">Commands</a></li>
-	<li><a href="#basics.var">Variables</a></li>
-	<li><a href="#basics.varmath">Variables and math</a></li>
-	<li><a href="#basics.mwin">The Message Window</a></li>
+	<li><a href="#basics">The basics of functions</a></li>
+	<li><a href="#variables">Variables</a></li>
+	<ul style="margin-bottom: 0px;">
+		<li><a href="#variables.num">Numbers</a></li>
+		<li><a href="#variables.str">Strings</a></li>
+		<li><a href="#variables.array">Arrays and maps</a></li>
+	</ul>
+	<li><a href="#functionsii">Functions revisited</a></li>
+	<ul style="margin-bottom: 0px;">
+		<li><a href="#functionsii.arg">Arguments</a></li>
+		<li><a href="#functionsii.ret">Return values</a></li>
+	</ul>
+	<li><a href="#comments">Comments</a></li>
 </ul>
 
 <hr />
 
 <a name="basics"></a>
-<h3>The Basics of Programming</h3>
+<h3>The Basics of Functions</h3>
 <p>
-In all programming languages (including RPGCode), your computer will do many different tasks just by your typing a command. A program is nothing more than a bunch of commands that tell the computer what to do. The computer is, however, dependent on your success in giving it instructions. If you don't tell the computer when to start, what to do, and when to stop, it won't understand what you want, and certainly won't work. So lets start by learning the most simple instruction you can give the computer through RPGCode: showing text on the screen. This is done with the 'Mwin' command (mwin stands for message window).
+When you run a computer program, your computer will perform different tasks depending on what the program is telling it to do. A program is nothing more than a set of instructions. However, the computer is dependent on you, the programmer, writing those instructions. If you don't tell the program what to do, where to do it, and when to stop, it won't do anything!
+</p>
+
+<p>
+This manual will teach you the syntax of RPGCode&mdash;the scripting language used to write programs that run in the RPGToolkit's engine&mdash;assuming that you have no prior experience in any programming or scripting languages. We will start learning how to give instructions in our programs by using functions, a key part of RPGCode. So let's dig in right away with this simple script:
 </p>
 
 <pre>
-Mwin("This text goes inside of a message window!")
-Mwin("La la la, random messages!")
+mwin("Hello world!");
+wait();
 </pre>
 
 <p>
-If you run that program, you will see that the message window shows up with the text inside of it, and then disappears almost instantly. This is because you need a way to wait for the user to do something before it disappears. This is where we introduce the next command...
+If you run this program, you should see the text "Hello world!" appear. Pressing a key on the keyboard will end the program. So what's happening here? Well, the first thing we did was write <code>mwin</code> (which can be interpreted as <em>M</em>essage <em>Win</em>dow), which is a <em>function</em>. Functions are used to perform specific tasks in the program when the function is called, however many times it is needed (for example, the <code>mwin</code> function's task is to show text in the message window). The <code>wait</code> function is used to pause the program until the user presses a key on their keyboard.
+</p>
+
+<p>
+That's fine and dandy, but what does the other stuff do? When you write a function's name, you will also write a set of parentheses (the <code>(</code> and <code>)</code> characters). In the example above, we passed an <em>argument</em> into the mwin function by writing "Hello world!" between the parentheses. An argument is data that a function uses to work differently or provide different results (for example, the <code>mwin</code> function is given one argument&mdash;the message&mdash;which will be displayed on the screen). There are many different functions in RPGCode and they have different numbers of arguments that they use: Some of them use no arguments at all (as in <code>wait()</code>) and others may use many. In the <em>functions revisited</em> section, I will write more about arguments so you have a clearer understanding of them.
+</p>
+
+<p>
+The semi-colon (<code>;</code>) at the end of the line is not part of the function itself; it is rather just a character placed at the end of a statement. It is optional, but I will be using it all throughout this manual.
+</p>
+
+<hr />
+
+
+
+<a name="variables"></a>
+<h3>Variables</h3>
+
+<p>
+Variables are placeholders for data. The types of data that they can contain are numbers (<em>numeric values</em>) and characters (<em>strings</em> or <em>literal values</em>). What does that mean? Let's say that you have two numbers stored in your memory right now, 4 and 8. Let's also say that we are going to refer to these numbers as number a and number b. If I told you to add the values of number a and number b together, the result will be the number 12 (4 + 8). A <em>variable</em> is like a label that is attached to a value and stored in your computer's memory, so we can consider number a and number b to be variables that store numeric values.
 </p>
 
 
-<a name="basics.com"></a>
-<h4>Commands:</h4>
+
+<a name="variables.num"></a>
+<h4>Numbers:</h4>
 
 <p>
-To make the Message Window stay on the screen, you'll need to use a command called 'Wait' (Wait()). The 'Wait' command makes the computer 'pause' itself until the user presses a button on the keyboard. This is how you make the message window stay on screen using Wait:
+The same example I've just given you (addition with numbers) can be reproduced in code by using variables, and this is how:
 </p>
 
 <pre>
-Mwin("Unlike the first example,")
-Mwin("this text will stay on the screen.")
-Wait(a$)
+a = 4;
+b = 8;
+c = a + b;
 </pre>
 
 <p>
-By the parentheses, you can already tell that it's a command named 'Wait'. But what does that '(a$)' mean, exactly? The parentheses (the '(' and ')') are attached to all of the commands. They hold "arguments" or "parameters" inside of them. The parameters of a command are just places where you put letters, numbers, or variables (more on this later). Some commands, however, don't take parameters (but it's always a good idea to include the parentheses anyway). 'a$' is the parameter that the wait command takes. You can also do the Wait() command another way. The example I've shown is not the prefered way to do the Wait command. This is:
+First, we create the variable <code>a</code> and assign to it the value 4. We then create another variable, <code>b</code>, which is 8. A final variable, <code>c</code>, is assigned the value returned by <code>a + b</code>, which is 12. The same example can be reproduced with <code>c = a + 8</code>, <code>c = 4 + 8</code>, etc. Either way, <code>c</code> will always end up with the value 12. Other mathematical operations such as division and multiplication are also possible:
 </p>
 
 <pre>
-Mwin("This example shows another way to do Wait()")
-Mwin("Isn't that cool?")
-a$ = Wait()
+a = 4;
+b = 8;
+
+c = b - a;
+d = a * b;
+e = a / b;
 </pre>
 
-<p class="boxedText">
-If you have trouble distinguishing commands from variables, look at it this way: A command has opening and closing parentheses (the '(' and ')'), and variables have literal or numeric marks (the '$' or '!')
+<p>
+We have created the same two variables, <code>a</code> and <code>b</code>, but this time we are subtracting, multiplying, and dividing instead of adding. In this example, the variable <code>c</code> has the value 4 (4 subtracted from 8), <code>d</code> has the value 32 (4 multiplied by 8), and <code>e</code> has the value 0.5 (4 divided by 8).
+</p>
+
+<p>
+It is also possible to use scientific notation when dealing with numbers (as in <code>1e+6</code> or <code>1e-2</code>).
 </p>
 
 
-<a name="basics.var"></a>
-<h4>Variables:</h4>
+
+<a name="variables.str"></a>
+<h4>Strings:</h4>
 
 <p>
-You probably already know that computers can store information. In programming, you can store different types of information through the use of 'variables'. A variable is a label. A name you can give to certain pieces of information in a program. You can store numbers (numeric values) and words (literal values) inside of variables. If you need a clearer understanding of what variables are, think of it this way: Let's say that a variable is a cardboard box. Well, you might want to put something in that box. I'll put a big '5' in that box, and slap a label on the front of the box that says "box". The RPGCode representation of that is like this:
+A <em>string</em> is one or more characters that are enclosed in quotes. When assigning a string to a variable or using a string as an argument (as with the "Hello world!" string we used earlier in the mwin example), quotation marks <em>must</em> be used. Assigning a string to a variable is done the same way as assigning a numeric value:
 </p>
 
 <pre>
-box! = 5
+someString = "Hello!";
 </pre>
 
 <p>
-Why is there a '!' after it? What does that do? That's what you call a 'numeric indicator'. What that does is tells the computer that you are storing a number in the variable. So, this is how you'd read it:
-</p><p>
-	'box' Alright. I know that the variable is named 'box'.<br />
-	'!' Now I know that we'll be storing a number in it.
-</p><p>
-Ok, so you understand how to initiate a numeric variable. As you'll probably notice, there's something else attached to the end of the variable. '= 5'. That just means that the variable equals 5.
-</p><p>
-Now you know how to create a variable and assign it a value. But one question remains, why does the 'a$' in the Wait command have a '$' instead of '!'? The answer is simple. As I said, the '!' is a numeric indicator, for variables that store numbers. So '$' is a literal indicator, for variables that store text. This is how you use it:
+The above code will produce the variable <code>someString</code> with the value "<em>Hello!</em>". Addition can also be applied to strings, as is illustrated next:
 </p>
 
 <pre>
-//Let's store the word "Hello" in box$.
-box$ = "Hello"
+x = "Hello";
+y = x + " world!";
 </pre>
 
 <p>
-Hold on -- something's different there! Why is the a line of text that has two slashes ('//') before it? Well, that's called a commented line. A commented line is just text that the programmer can write into the program so others know what's happening. Comments are ignored by the computer, and are generally good to include in your programs. It's a good idea to comment your code because you might forget what some of it does.
-</p><p>
-Now, back to the variables. You already know that 'box$' means that it's a literal variable for storing text. Notice that "Hello" is in quotation marks. All text put into literal variables must have quotation marks around it. And just for reference later on in this help file, a literal variable is also called a "string".
+First, we assign "Hello" to <code>x</code>. Then we assign <code>x + " world!"</code> to <code>y</code>. The variable <code>y</code> is now equal to "Hello world!". That's all there is to it!
 </p>
-
-<p class="boxedText">
-Remember to always use the Kill command to kill your variables, freeing up memory! If you don't, the variables will sit in memory and slow down your programs! You can find out how to use the Kill command in the command reference.
-</p><p>
-It is also good practice to use the 'Local' command when declaring a variable. For information on this, refer to the Advanced "Scope" section of this help file.
-</p>
-
-
-<a name="basics.varmath"></a>
-<h4>Variables and Math:</h4>
 
 <p>
-Some of you may dislike math, but you should still read this section! It teaches you some very useful things about variables.
-</p><p>
-In math, you can use variables to represent a number. The same is true with programming. You can also add, subtract, multiply, and devide. Again, the same is true with programming. Here is an example of multiplying a number by 2 in math (using 'x' as the variable to represent the number 10):
-</p><p>
-	x = 10 * 2
-</p><p>
-The end result, as you probably already know, is 20. The following is also allowed in math:
-</p><p>
-	y = 10<br />
-	x = y + 5
+Variables in RPGCode are not restricted to a certain data type ("duck typing"). At any time, you can assign a string value to a variable that already has a numeric value or vice versa. You can even mix the data types together (for instance, <code>x = "Hello " + 32</code> will produce the string value "Hello 32"). Variable names may contain letters, numbers, and underscores and are case-insensitive.
 </p>
+
+
+
+<a name="variables.array"></a>
+<h4>Arrays and maps:</h4>
+
 <p>
-And the end result would be 15 (10 + 5 = 15). The same thing can be done in programming. In  RPGCode, this is how you'd do the two representations of variables:
+Arrays are groups of data that are referred to by the same <em>identifier</em>, whose values are accessed by using a pair of square brackets and an <em>index</em>. Of course, that's just one way to put it: let's look at an example so we can get a clearer picture of the actual syntax!
 </p>
 
 <pre>
-//Gives x! the value 20
-x! = 10 * 2
-
-//Gives x! the value 15
-y! = 10
-x! = y! + 5
+x[0] = 1;
+x[1] = 2;
+show(x[0]);
+show(x[1]);
+wait();
 </pre>
 
 <p>
-Simple, eh? You can do some of the same things with literal variables that you can with numeric variables. There are limitations however, as you cannot multiply or devide from a literal variable. You can add two literal variables together the same way the add two numbers together. Here's how you do it:
+In this example, we create an array with two elements (<code>x[0]</code> and <code>x[1]</code>), assign them the values 1 and 2, then show them in the message window. Different elements of the array are accessed with the array subscript operator <code>[]</code>, where the value between the brackets is its operand (the element of the array to access). If that sounds confusing at all, then let's look at it this way: Think of a variable identifier (such as <code>x</code> or <code>y</code>) as a box; usually, this box can only hold one thing, like the number 5. If we use an array, we can refer to more than one thing with the box using an ID or <em>index</em>. Simple, right?
+</p>
+
+<p>
+Arrays in RPGCode may also have more than one index at a time, specified by more array subscript operators following the first. These are all valid:
 </p>
 
 <pre>
-box$ = "Jim"
-box2$ = "my"
-box3$ = box$ + box2$
+things[0] = 99;
+things[1][0] = "Hello!";
+things[1][0][0] = 32;
 </pre>
 
 <p>
-That puts the text "Jimmy" together in the variable 'box3'.
-</p><p>
-Now that you know how to add and multiply in RPGCode, let's move on to subtracting and dividing. The way you subtract is exactly like adding, exept you use '-' instead of '+'. Let's take a look at some examples of subtracting and deviding:
+<em>Maps</em> are also allowed in RPGCode. They are basically arrays with string indexes instead of numerical indexes. They look a little something like this:
 </p>
 
 <pre>
-//Let's subtract!
-y! = 3
-x! = 10 - y!
-
-//Now, let's divide
-x! = 10 / 2
+person["name"] = "OC";
+person["level"] = -1;
+person["occupation"] = "Fun!";
 </pre>
 
 <p>
-The above example will put the value 7 into x! because we subtracted 3 from 10 (10 - 3 = 7). The second example will put the value 5 into x! because we devided 10 by 2, making it half the full number (10 / 2 = 5).
-</p><p>
-Congratulations! you 've learned enough about variables and how to manipulate them to last you for a while. Now, I'll show you some ways of actually showing what the values of the variables are...
-</p>
-
-<div class="boxedText">
-
-<p style="margin-top: 0;">
-Important note: Math calculations on variables follows the order of operations by precedence. This means that if you had a calculation like this: a! = 3-1*2, the multiplication will be evaluated before the subtraction. If you do not know the order of operations, you can use parentheses to nullify precedence. This means that the above calculation can work as needed by doing this:
+Also take note that the index of an array or map can actually be any valid RPGCode expression. For example, if you have an array with the index 5, it is valid to access it like this:
 </p>
 
 <pre>
-a! = (3 - 1) * 2
-</pre>
-
-<p>Or a more complicated example:</p>
-
-<pre>
-a! = 10
-b! = 7
-c! = (a! + b!) * (10 / b!)
-</pre>
-
-</div>
-
-<a name="basics.mwin"></a>
-<p class="MinorHeader">The Message Window:</p>
-
-<p>
-You've already learned how to show text in the message window, but you never learned how to display variables with it. Well, in this section you will. First of all, I'll introduce you to a new command. The Show() command. What it does is takes a variable and shows it's value in the message window. Here's an example of how it works:
-</p>
-
-<pre>
-x! = 5
-Mwin("The value of x! is")
-Show(x!)
-Mwin("Cool!")
-Wait()
-Mwincls()
+someArray[5] = 10;
+show(someArray[3 + 2]);
 </pre>
 
 <p>
-First, I create a variable called x! and assign it the value 5. After that, I show the message "The value of x! is 5 Cool!". However, since I'm using the Show() command, the result looks like this:
-</p><p>
-	The value of x! is<br />
-	5<br />
-	Cool!
-</p><p>
-Looks a little messed up! The draw back of using Show() to show a variables value is that it will show up on a line of its own. This is where the Mwin() command comes in handy again. You will also notice that I added in another command, Mwincls(). All that does is clears the message window from the screen.
+Variables, functions, other arrays &mdash; anything that returns a value can be used here.
 </p>
 
-<p>Here's how you would show the whole sentence on one line:</p>
+<hr />
+
+
+
+<a name="functionsii"></a>
+<h3>Functions revisited</h3>
+
+<a name="functionsii.arg"></a>
+<h4>Arguments:</h4>
+
+<p>
+Now that we've taken a look at what variables are, let's back-track to functions for a bit. From the first portion of this page, you learned that a function argument is a piece of data &mdash; a number or string value, like what we discussed with variables &mdash; that is written between the function's parentheses. Anything that results in a number or a string can be used as an argument. Look at this piece of code:
+</p>
 
 <pre>
-x! = 5
-Mwin("The value of x! is &#60;x!&#62;, cool!")
-Wait()
-Mwincls()
+a = 4;
+b = 8;
+
+mwin(a);
+mwin(a + b);
+mwin("Testing addition: " + b);
+wait();
 </pre>
 
 <p>
-Much easier! The way you show the value of a variable with the Mwin() command is to enclose the variables name in left and right angle brackets (the &#60; and &#62;). This saves time and makes it look better.
+Here, we've assigned the values 4 and 8 to the variables a and b (like we did earlier), but this time we've displayed them on the screen with the <code>mwin</code> function. The first time, we display the variable <code>a</code>, which is 4. Then we displayed 12 (<code>a + b</code>; the number returned by the equation was used as the argument). Lastly, we displayed the string "Testing addition: 8" (because <code>b</code> was tacked onto the end).
 </p>
+
+
+
+<a name="functionsii.ret"></a>
+<h4>Return values:</h4>
+
+<p>
+Some functions in RPGCode return certain values. A common example of this is the <code>wait</code> function, which can return the key that the user pressed. Any value that a function returns is just like what was discussed in the section about arguments &mdash; it can be assigned to a variable, operated on, or used directly as an argument (you could even think of expressions like <code>2 + 2</code> as having "return values" because they produce a resulting value). The following two examples will show whatever key the user pressed on the keyboard using two different approaches:
+</p>
+
+<pre>
+key = wait();
+mwin(key);
+
+wait();
+mwinCls();
+</pre>
+
+<pre>
+mwin(wait());
+
+wait();
+mwinCls();
+</pre>
+
+<p>
+The first line of code in the first example, <code>key = wait()</code> pauses the program until the user presses a key on their keyboard, which is then returned by the function and stored in the variable <code>key</code>. It is then output to the screen. The second example eliminates the need for a variable by passing <code>wait</code>'s returned value directly into the <code>mwin</code> function. (<code>mwincls()</code>, by the way, just clears the message window from the screen.)
+</p>
+
+<hr />
+
+
+
+<a name="comments"></a>
+<h3>Comments</h3>
+
+<p>
+You are able to write comments in your programs that are ignored when the program is run. These are useful for offering insight into a particular piece of code, showing an example of how something might be used, and other things. Comments are marked by two forward slashes (<code>//</code>) and can appear almost anywhere in your code. For example:
+</p>
+
+<pre>
+// This is a comment &mdash; it's ignored at run-time!
+// The following line of code won't be run because it's commented:
+//mwin("Hello, world!");
+</pre>
+
+<p>
+As of 3.1.0, C-style comments are also allowed. Any text between <code>/*</code> and <code>*/</code> will be considered comments:
+</p>
+
+<pre>
+/* A single-line C-style comment. It also allows multiline comments! */
+</pre>
+
 
 </div>
 
 <hr />
 <p>
 <a href="page18.htm">previous</a>, <a href="page18.2.htm">forward</a>
-</p></div>
+</p>
+</div>
 
 <div id="links">
 <p>
-All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
 </p>
 </div>
 

@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
 	<title>RPGToolkit Help &mdash;&nbsp;</title>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<script type="text/javascript" src="js.js"></script>
 	<link rel="stylesheet" href="styles/css.css" />
 	<!--[if IE]>
@@ -21,19 +21,23 @@
 
 <div id="document">
 
-<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
 
 <div class="topLinks">
 
-<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
 |&nbsp;
 
 <span
 	onmouseover="showMenu('editor');"
 	onmouseout="hideMenu('editor');"
 	id="editor_link"
-><a href="page2.htm">editor<!-- guide--></a></span>
+><a href="page2.htm">editor</a></span>
 |&nbsp;
+
 <div
 	id="editor"
 	class="submenu"
@@ -42,18 +46,18 @@
 >
 	<div><a href="pageed_environment.htm">editor environment</a></div>
 	<div><a href="page3.htm">main file editor</a></div>
-
 	<div><a href="page4.htm">board editor</a></div>
 	<div><a href="page5.htm">tile editor</a></div>
 	<div><a href="page6.htm">program editor</a></div>
 	<div><a href="page7.htm">character editor</a></div>
+
 	<div><a href="page8.htm">item editor</a></div>
 	<div><a href="page9.htm">enemy editor</a></div>
-
 	<div><a href="page10.htm">animation editor</a></div>
 	<div><a href="page11.htm">tile bitmap editor</a></div>
 	<div><a href="page12.htm">special move editor</a></div>
 	<div><a href="page13.htm">status effect editor</a></div>
+
 	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
 </div>
 
@@ -61,7 +65,7 @@
 	onmouseover="showMenu('engine');"
 	onmouseout="hideMenu('engine');"
 	id="engine_link"
-><a href="page14.htm">playing<!-- your game--></a></span>
+><a href="page14.htm">playing</a></span>
 |&nbsp;
 <div
 	id="engine"
@@ -77,9 +81,8 @@
 	onmouseover="showMenu('rpgcode');"
 	onmouseout="hideMenu('rpgcode');"
 	id="rpgcode_link"
-><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+><a href="page17.htm">rpgcode</a></span>
 |&nbsp;
-
 <div
 	id="rpgcode"
 	class="submenu"
@@ -101,7 +104,6 @@
 	id="troubleshooting_link"
 ><a href="page22.htm">troubleshooting</a></span>
 |&nbsp;
-
 <div
 	id="troubleshooting"
 	class="submenu"
@@ -118,7 +120,7 @@
 	onmouseout="hideMenu('about');"
 	style="margin-bottom: 0;"
 	id="about_link"
-><a href="page28.htm">about<!-- the toolkit--></a></span>
+><a href="page28.htm">about</a></span>
 <div
 	id="about"
 	class="submenu"
@@ -126,13 +128,13 @@
 	onmouseout="hideMenu('about')"
 >
 	<div><a href="page29.htm">history</a></div>
-
-	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
 </div>
 
 </div>
-
-<div id="content"><h2><a href="page22.htm">Troubleshooting</a> &mdash; Frequently Asked Questions</h2>
+<div id="content">
+<h2><a href="page22.htm">Troubleshooting</a> &mdash; Frequently Asked Questions</h2>
 
 <!-- FAQ Last updated 15 Mar 2005 -->
 <p>
@@ -246,8 +248,8 @@ This is a collection of common questions on the Toolkit and game-making. Technic
 
 		<p>This is an absolute value and the Toolkit will endeavour to move the object as this speed on all machines. However, it may be the case that your pc is unable to match this speed, in which case it will run them as close to it as possible. A way to gauge the performance of your pc is through the frames-per-second rate (fps) of the engine. This can be seen in windowed mode by enabling the option in the <a href="page3.htm#graphics">graphics tab</a> of the <a href="page3.htm">Main File Editor</a>. A low fps (&lt; 20) is indicative of the pc running at maximum capacity.</p>
 
-		<p>One other option that you may be tempted to use is GameSpeed(), and its main file option. One cause of slow movement may be the fact this is set to a low value; set it at zero for unaffected gameplay. If your pc is running at capacity, increasing GameSpeed() won't have any affect on movement.</p>
-		
+		<p>One other option that you may be tempted to use is GameSpeed(), and its main file option. One cause of slow movement may be the fact this is set to a low value; set it at zero for unaffected gameplay. If your pc is running at capacity, increasing GameSpeed() won't have any effect on movement.</p>
+
 	<a name="faq_4.3"></a>	
 	<h4>What's GameSpeed() for then, if it should be set at zero?</h4>	
 		<p>The idea of GameSpeed() is that it gives the players a mechanism for altering the speed of your game. For instance, you could create a menu option with a graphic slider, or a run-time program with associated keys to increase or decrease the setting.</p>
@@ -257,22 +259,26 @@ This is a collection of common questions on the Toolkit and game-making. Technic
 <a name="section_5"></a><h3>Open Source and Development</h3>		
 	<a name="faq_5.1"></a>	
 	<h4>Where can I download the source code? </h4>	
-		<p>At the SourceForge page, <a href="http://sourceforge.net/projects/rpgtoolkit" rel="external">sourceforge.net/projects/rpgtoolkit</a>.</p>
-		
+		<p>The SourceForge page, <a href="http://sourceforge.net/projects/rpgtoolkit" rel="external">sourceforge.net/projects/rpgtoolkit</a>, contains the latest official sources. The current development source can be found <a href="http://tk3.toolkitzone.com/source" onmousedown="
+// Open in a new window if viewing help offline.
+if ((new String(document.location)).substring(0, 4) != 'http') this.target = '_blank';
+">here</a>.</p>
+
 	<a name="faq_5.2"></a>	
 	<h4>May I sell my game made with Toolkit 3? </h4>	
-		<p>You are free to sell games you make in the RPG Toolkit (Version 3.0.x), you must however give credit for the use of the RPG Toolkit itself. You must either own all resources used in your game or have full permission from the author of the resources to use them in a commercial product.</p>
+		<p>You are free to sell games you make in the RPG Toolkit (Version 3.0.x). You must, however, give credit for the use of the RPG Toolkit itself. You must either own all resources used in your game or have full permission from the author of the resources to use them in a commercial product.</p>
 
 </div>
 
 <hr />
 <p>
 <a href="page22.htm">previous</a>, <a href="page25.htm">forward</a>
-</p></div>
+</p>
+</div>
 
 <div id="links">
 <p>
-All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
 </p>
 </div>
 

@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
 	<title>RPGToolkit Help &mdash;&nbsp;</title>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<script type="text/javascript" src="js.js"></script>
 	<link rel="stylesheet" href="styles/css.css" />
 	<!--[if IE]>
@@ -21,19 +21,23 @@
 
 <div id="document">
 
-<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
 
 <div class="topLinks">
 
-<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
 |&nbsp;
 
 <span
 	onmouseover="showMenu('editor');"
 	onmouseout="hideMenu('editor');"
 	id="editor_link"
-><a href="page2.htm">editor<!-- guide--></a></span>
+><a href="page2.htm">editor</a></span>
 |&nbsp;
+
 <div
 	id="editor"
 	class="submenu"
@@ -42,18 +46,18 @@
 >
 	<div><a href="pageed_environment.htm">editor environment</a></div>
 	<div><a href="page3.htm">main file editor</a></div>
-
 	<div><a href="page4.htm">board editor</a></div>
 	<div><a href="page5.htm">tile editor</a></div>
 	<div><a href="page6.htm">program editor</a></div>
 	<div><a href="page7.htm">character editor</a></div>
+
 	<div><a href="page8.htm">item editor</a></div>
 	<div><a href="page9.htm">enemy editor</a></div>
-
 	<div><a href="page10.htm">animation editor</a></div>
 	<div><a href="page11.htm">tile bitmap editor</a></div>
 	<div><a href="page12.htm">special move editor</a></div>
 	<div><a href="page13.htm">status effect editor</a></div>
+
 	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
 </div>
 
@@ -61,7 +65,7 @@
 	onmouseover="showMenu('engine');"
 	onmouseout="hideMenu('engine');"
 	id="engine_link"
-><a href="page14.htm">playing<!-- your game--></a></span>
+><a href="page14.htm">playing</a></span>
 |&nbsp;
 <div
 	id="engine"
@@ -77,9 +81,8 @@
 	onmouseover="showMenu('rpgcode');"
 	onmouseout="hideMenu('rpgcode');"
 	id="rpgcode_link"
-><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+><a href="page17.htm">rpgcode</a></span>
 |&nbsp;
-
 <div
 	id="rpgcode"
 	class="submenu"
@@ -101,7 +104,6 @@
 	id="troubleshooting_link"
 ><a href="page22.htm">troubleshooting</a></span>
 |&nbsp;
-
 <div
 	id="troubleshooting"
 	class="submenu"
@@ -118,7 +120,7 @@
 	onmouseout="hideMenu('about');"
 	style="margin-bottom: 0;"
 	id="about_link"
-><a href="page28.htm">about<!-- the toolkit--></a></span>
+><a href="page28.htm">about</a></span>
 <div
 	id="about"
 	class="submenu"
@@ -126,30 +128,83 @@
 	onmouseout="hideMenu('about')"
 >
 	<div><a href="page29.htm">history</a></div>
-
-	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
 </div>
 
 </div>
-
-<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Editor Environment</h2>
+<div id="content">
+<h2><a href="page2.htm">Editor Guide</a> &mdash; Editor Environment</h2>
 
 <p style="text-transform: lowercase;">
 [ <a href="#toolbars">Toolbars</a> | <a href="#menus">Menus</a> ]
 </p>
 
 <!-- MDIForm rewrite - 28 Feb 2005 by Delano -->
+<!-- Updated for 3.1.0 - 22 Dec 2006 by Delano -->
 
 <p>
-When you launch the Toolkit for the first time the Toolkit splash screen appears followed by a Tip of the Day box, which contains a lot of useful information about the editors and the TK. Upon closing this, you are greeted with a large grey screen with a few toolbars around the edges - not particularly attractive (although that can be changed through the config)!
+When you launch the Toolkit for the first time the Toolkit splash screen appears followed by a 
+
+Tip of the Day box, which contains a lot of useful information about the editors and the TK. Upon 
+
+closing this, you are greeted with a large grey screen with a few toolbars around the edges - not 
+
+particularly attractive (although that can be changed through the config)!
 </p>
 <h3>Editor Basics</h3>
 <p>
-The Toolkit editor comprises many editors and other tools for creating all the components of your game. Editors open into the centre of the screen and appear in a tab bar below the main toolbar. In most cases multiple files of the same type can be edited simultaneously with a new editor opening for each file (with the exception of the <a href="page3.htm">Main File Editor</a>, since only one game can be edited at a time). The name of the active editor, the current file and the current game are displayed in the program bar at the top of the screen.
+The Toolkit editor comprises many editors and other tools for creating all the components of your 
+
+game. Editors open into the centre of the screen and appear in a tab bar below the main toolbar. 
+
+In most cases multiple files of the same type can be edited simultaneously with a new editor 
+
+opening for each file (with the exception of the <a href="page3.htm">Main File Editor</a>, since 
+
+only one game can be edited at a time). The name of the active editor, the current file and the 
+
+current game are displayed in the program bar at the top of the screen.
+</p>
+<h4>Files</h4>
+<p>
+Most Toolkit games are made up of a large number of different files, all of which are organised 
+
+into <i>reserved folders</i> within the Toolkit folder, with a new set of folders created for 
+
+each new game. These are located in the Toolkit3\Game\gameName folder, the contents of which is 
+
+displayed in the Toolkit in a file tree located in the right-hand toolbar, from which files can 
+
+be opened. The one exception is the game's Main File; this file contains all the settings and 
+
+start-up information for the game and resides in the Toolkit3\Main folder (not visible in the 
+
+tree). 
 </p><p>
-Most Toolkit games are made up of a large number of different files, all of which are organised into reserved folders within the Toolkit folder, with a new set of folders created for each new game. These are located in the Toolkit3\Game\gameName folder, the contents of which is displayed in the Toolkit in a file tree located in the right-hand toolbar, from which files can be opened. The one exception is the game's Main File; this file contains all the settings and start-up information for the game and resides in the Toolkit3\Main folder (not visible in the tree). 
+As of 3.1.0, files can also be placed in subfolders of the default folders, which enables a 
+
+better organisation of your files. When you link files to one another in an editor (e.g., when 
+
+assigning an animation to a character) the Toolkit knows which reserved folder the file should 
+
+lie in (e.g., board files go in the \gameName\Board folder), and you need only to specify the 
+
+<i>relative path</i> of the file. If your file is in a subfolder, you need to prefix the 
+
+subfolder's name (e.g., for the file "gameName\Board\village\village1.brd", specify 
+
+"village\village1.brd"). <b>Important:</b> When specifying subfolders, only the '\' slash is 
+
+valid; the '/' is not.
 </p><p>
-Most files you make will automatically be placed in the right folder, but sometimes you may want to use files that lie outside this folder system (for instance, music or image files). However, you shouldn't need to do any copying yourself; when you are selecting these files they will be automatically copied to the proper location.
+Most files you make will automatically be placed in the right folder, but sometimes you may want 
+
+to use files that lie outside this folder system (for instance, music or image files). However, 
+
+you shouldn't need to do any copying yourself; when you are selecting these files they will be 
+
+automatically copied to the proper location.
 </p>
 
 <img src="images/image45" alt="Toolkit IDE" />
@@ -163,7 +218,9 @@ Most files you make will automatically be placed in the right folder, but someti
 	<tr>
 		<td><img src="images/image27" alt="New File" /></td>
 		<td>
-			New File - Click the arrow next to this to show a list of new files to create.
+			New File - Click the arrow next to this to show a list of new files to 
+
+create.
 		</td>
 	</tr>
 	<tr>
@@ -193,19 +250,25 @@ Most files you make will automatically be placed in the right folder, but someti
 	<tr>
 		<td><img src="images/image32" alt="Launch Bard" /></td>
 		<td>
-			Launch the Bard - The Bard is a music playback program that can be used to listen to your game music and sound effects.
+			Launch the Bard - The Bard is a music playback program that can be used 
+
+to listen to your game music and sound effects.
 		</td>
 	</tr>
 	<tr>
 		<td><img src="images/image33" alt="Toolkit Online" /></td>
 		<td>
-			Toolkit Online - Opens the Toolkit's <a rel="external" href="http://toolkitzone.com">homepage</a> in the TK's own internet browser.
+			Toolkit Online - Opens the Toolkit's <a rel="external" 
+
+href="http://toolkitzone.com">homepage</a> in the TK's own internet browser.
 		</td>
 	</tr>
 	<tr>
 		<td><img src="images/image44" alt="Edit Config" /></td>
 		<td>
-			Edit Config - Shows the config screen, where you can choose an image to use as the background for the editor.</td>
+			Edit Config - Shows the config screen, where you can choose an image to 
+
+use as the background for the editor.</td>
 	</tr>
 	<tr>
 		<td><img src="images/image34" alt="Edit Tileset" /></td>
@@ -216,33 +279,77 @@ Most files you make will automatically be placed in the right folder, but someti
 	<tr>
 		<td><img src="images/image35" alt="Test Run Game" /></td>
 		<td>
-			Run Game - Launches the currently loaded game. Remember to save any files you're currently working on otherwise your latest changes won't appear when you test run!
+			Run Game - Launches the currently loaded game. Remember to save any files 
+
+you're currently working on otherwise your latest changes won't appear when you test run!
 		</td>
 	</tr>
 </table>
 
 <h5>Left Toolbar</h5>
 <p>
-This toolbar contains the tools associated with the active editor - see each editor page for individual details.
+This toolbar contains the tools associated with the active editor - see each editor page for 
+
+individual details.
 </p>
 <h5>Right Toolbar</h5>
 <table>
 	<tr>
-		<td><img src="images/image36" alt="Project List" /></td>
+		<td valign="top"><img src="images/image36" alt="Project List" /></td>
 		<td>
-			Project List - Shows a file tree that lists all the files and folders in the current project (all the files contained in the Toolkit3\Game\gameName folder). Double-click to open a file; if the file isn't a Toolkit file, it should open in its default editor (for instance, *.txt files will open in Notepad). After opening a file this list will auto-collapse.
+			Project List - Shows a file tree that lists all the files and folders in 
+
+the current project (all the files contained in the Toolkit3\Game\gameName folder). Double-click 
+
+to open a file; if the file isn't a Toolkit file, it should open in its default editor (for 
+
+instance, *.txt files will open in Notepad). After opening a file this list will auto-collapse. 
+
+The width of the project list can be altered by click-dragging the left-hand edge of its 
+
+container.
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+			A number of right-click options are available:
+			<ul>
+				<li>Open, Rename, Delete: Applies to files only.</li>
+				<li>Refresh: Recreates the file tree.</li>
+				<li>Collapse All: Closes all open folders.</li> 
+				<li>Select Into Board Editor: Applies to animated tiles (TANs) 
+
+when the board editor is active. The selected file is loaded into the tile 'brush' and may be 
+
+drawn like other tiles.</li>
+			</ul>
 		</td>
 	</tr>
 	<tr>
 		<td><img src="images/image37" alt="New Editor" /></td>
 		<td>
-			New Editor - Shows a list of buttons with "Edit..." captions, which open new files in each editor. After opening an editor, this list will auto-collapse.
+			New Editor - Shows a list of buttons with "Edit..." captions, which open 
+
+new files in each editor. After opening an editor, this list will auto-collapse.
 		</td>
 	</tr> 
 	<tr>
 		<td><img src="images/image9" alt="Tileset Browser" /></td>
 		<td>
-			Tileset Browser - Displays the last opened tileset. A new tileset can be opened with the "Open File" button above the tileset. This tileset browser can be used for selecting tiles in a range of editors, most usefully in the <a href="page4.htm">Board</a> and <a href="page11.htm">Tile Bitmap</a> editors. If the active editor does not make use of the browser, or there is no editor open, clicking a tile will load that tile into a new <a href="page5.htm">Tile Editor</a>.
+			Tileset Browser - Displays the last opened tileset. A new tileset can be 
+
+opened with the "Open File" button above the tileset. This tileset browser can be used for 
+
+selecting tiles in a range of editors, most usefully in the <a href="page4.htm">Board</a> and <a 
+
+href="page11.htm">Tile Bitmap</a> editors. If the active editor does not make use of the browser, 
+
+or there is no editor open, clicking a tile will load that tile into a new <a href="page5.htm">Tile 
+
+Editor</a>. The width of the browser can be altered by click-dragging the left-hand edge of its 
+
+container.
 		</td>
 	</tr>
 </table>
@@ -251,7 +358,15 @@ This toolbar contains the tools associated with the active editor - see each edi
 <a name="menus"></a><h3>Menus</h3>
 <h4>File</h4>
 <p>
-New Project - Starts a new game. A window is shown that allows you to specify a name for the project, that will appear in the title bar and the *.gam main file and gameName folder (unless otherwise specified). Default files are included with the Toolkit, which are free to use and are placed in the game folders if the option is selected (these files can be found in the demo game folders or in the Game\Basic folders).
+New Project - Starts a new game. A window is shown that allows you to specify a name for the 
+
+project, that will appear in the title bar and the *.gam main file and gameName folder (unless 
+
+otherwise specified). Default files are included with the Toolkit, which are free to use and are 
+
+placed in the game folders if the option is selected (these files can be found in the demo game 
+
+folders or in the Game\Basic folders).
 </p><p>
 New... - Starts a new file of the chosen type.
 </p><p>
@@ -274,7 +389,9 @@ Exit - Quits the Toolkit.
 <p>
 Test Game - Runs the current game (see above).
 </p><p>
-Select Language - Changes the language used throughout the editor. Note currently only English is available.
+Select Language - Changes the language used throughout the editor. Note currently only English is 
+
+available.
 </p><p>
 Show Splash Screen - Enables/disables the screen shown before the Toolkit opens.
 </p><p>
@@ -283,13 +400,25 @@ Show Tips - Enables/disables the Tip of the Day feature.
 <h4>Build</h4>
 <p>
 <a name="menus.pak"></a>
-Create Pak File - Packages the game for release and places the game's files into one file called a PAK file that can't be accessed by users. Note this is a feature of version 2 of the Toolkit that has been superseded by a stand-alone executable (see below). Additional details are available <a href="page16.htm#pak">here</a>.
+Create Pak File - Packages the game for release and places the game's files into one file called 
+
+a PAK file that can't be accessed by users. Note this is a feature of version 2 of the Toolkit 
+
+that has been superseded by a stand-alone executable (see below). Additional details are 
+
+available <a href="page16.htm#pak">here</a>.
 </p><p>
 <a name="menus.exe"></a>
-Make EXE - Packages the game for release into a single executable file (.exe). More information can be found <a href="page16.htm#exe">here</a>.
+Make EXE - Packages the game for release into a single executable file (.exe). More information 
+
+can be found <a href="page16.htm#exe">here</a>.
 </p><p>
 <a name="menus.setup"></a>
-Create Setup - Standard method for game release - packages the game in a ZIP file that contains all the game files in the same folder structure as in the Toolkit3 directory. See <a href="page16.htm#setup">here</a> for more information.
+Create Setup - Standard method for game release - packages the game in a ZIP file that contains 
+
+all the game files in the same folder structure as in the Toolkit3 directory. See <a 
+
+href="page16.htm#setup">here</a> for more information.
 </p>
 <h4>Window</h4>
 <p>
@@ -307,20 +436,25 @@ RPGCode Reference - Shows the list of <a href="page19.htm">RPGCode commands</a>.
 </p><p>
 Tutorial - Shows a 9 step tutorial for getting started with the Toolkit.
 </p><!-- <p>
-History.txt - Shows the <a href="page29.htm">history log</a> for version 3, chronicling the development of the Toolkit from the first Alpha release.
+History.txt - Shows the <a href="page29.htm">history log</a> for version 3, chronicling the 
+
+development of the Toolkit from the first Alpha release.
 </p> --><p>
-About - Screen containing information about the developers, contributors, and components of the RPGToolkit.
+About - Screen containing information about the developers, contributors, and components of the 
+
+RPGToolkit.
 </p>
 
 <p style="text-align: left;">[ <a href="#">top</a> ]</p>
 <hr />
 <p>
 <a href="page2.htm">previous</a>, <a href="page3.htm">forward</a>
-</p></div>
+</p>
+</div>
 
 <div id="links">
 <p>
-All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
 </p>
 </div>
 

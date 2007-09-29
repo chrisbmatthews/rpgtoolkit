@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
+
+<div class="topLinks">
+
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor</a></span>
+|&nbsp;
+
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing</a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm">rpgcode</a></span>
+|&nbsp;
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about</a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
+</div>
+
+</div>
+<div id="content">
+<div id="primer">
+<h2><a href="page17.htm">RPGCode</a> &mdash; <a href="page18.htm">Language Features</a> &mdash; Reserved Variables and Constants</h2>
+
+<h3 style="margin-bottom: 10px;">Contents</h3>
+
+<a href="#vars">Reserved variables</a>
+<ul style="margin-bottom: 0">
+	<li><a href="#vars.players">Players</a></li>
+	<li><a href="#vars.boards">Boards</a></li>
+	<li><a href="#vars.misc">Miscellaneous</a></li>
+</ul>
+<a href="#const">Reserved constants</a>
+<ul style="margin-bottom: 15px">
+	<li><a href="#const.flags">Flags</a></li>
+	<li><a href="#const.handles">Target and source handles</a></li>
+</ul>
+
+
+<hr />
+
+
+
+<a name="vars"></a>
+<h3>Reserved variables</h3>
+
+<p>
+There are a number of variables and constants that the RPGToolkit's engine automatically creates when you start your game which pertain to various things like players and boards. Each are accessible independently, though there are function alternatives to retrieving and setting some of them (the preferred way).
+</p>
+
+
+
+<a name="vars.players"></a>
+<h4>Players:</h4>
+
+<p>
+<code>playerHandle[index]</code> &mdash; returns the handles (names) of any player in your party. <code>index</code> is a value between 0 and 4 (0 is the first player, 1 is the second, et cetera).
+</p>
+
+<p>
+<code>playerX[index]</code> &mdash; returns the <em>x</em> coordinate of any player in your party currently on the board. <code>index</code> is a value between 0 and 4. Alternatively, the <code>playerLocation()</code> function can be used to obtain this value and others.
+</p>
+
+<p>
+<code>playerY[index]</code> &mdash; returns the <em>y</em> coordinate of any player in your party currently on the board. <code>index</code> is a value between 0 and 4. Alternatively, the <code>playerLocation()</code> function can be used to obtain this value and others.
+</p>
+
+<p>
+<code>playerLayer[index]</code> &mdash; returns the layer of the board that the player is currently on. <code>index</code> is a value between 0 and 4. Alternatively, the <code>playerLocation()</code> function can be used to obtain this value and others.
+</p>
+
+
+
+<a name="vars.boards"></a>
+<h4>Boards:</h4>
+
+<p>
+<code>boardBackground</code> &mdash; returns the fight background of the current board.
+</p>
+
+<p>
+<code>boardSkill</code> &mdash; returns the fighting skill of the enemies on the current board.
+</p>
+
+<p>
+<code>boardTitle[index]</code> &mdash; returns the titles assigned to the board layers. <code>index</code> is a value between 0 and the number of layers on the board.
+</p>
+
+<p>
+<code>constant[index]</code> &mdash; returns the board constants. <code>index</code> is a value between 0 and the number of constants set for the board.
+</p>
+
+<p>
+<code>music</code> &mdash; returns the filename of the music that is playing on the current board.
+</p>
+
+<p>
+<code>threads[index]</code> &mdash; returns the handles of the threads on the board. <code>index</code> is a value between 0 and however many threads have been set.
+</p>
+
+
+
+<a name="vars.misc"></a>
+<h4>Miscellaneous:</h4>
+
+<p>
+<code>ambientRed, ambientGreen, ambientBlue</code> &mdash; returns or sets the ambient RGB colors. The values can range from -255 to 255. Alternatively, the <code>setAmbientLevel()</code> function can be used to set these. If it is not used, you must call <code>forceRedraw()</code> before the ambient color changes take affect.
+</p>
+
+<p>
+<code>cnvRenderNow</code> &mdash; returns the handle of a canvas which can be rendered on and off using the <code>renderNow()</code> function.
+</p>
+
+<p>
+<code>gameTime</code> &mdash; returns the total game time in seconds.
+</p>
+
+
+<hr />
+
+
+<a name="const"></a>
+<h3>Reserved constants</h3>
+
+<a name="const.flags"></a>
+<h4>Flags:</h4>
+
+<p>
+<code>tkDIR_N, tkDIR_S, tkDIR_E, tkDIR_W, tkDIR_NW, tkDIR_NE, tkDIR_SW, tkDIR_SE</code> &mdash; Direction constants returned by the <code><a href="page19.htm#playerdirection">playerDirection()</a></code> and <code><a href="page19.htm#itemdirection">itemDirection()</a></code> functions.
+</p>
+
+<p>
+<code>tkMV_CLEAR_QUEUE</code> &mdash; Used for clearing queued movements. See: <code><a href="page19.htm#playerstep">playerStep()</a></code>, <code><a href="page19.htm#itemstep">itemStep()</a></code>, <code><a href="page19.htm#push">push()</a></code>, <code><a href="page19.htm#pushitem">pushItem()</a></code>, <code><a href="page19.htm#playerpath">playerPath()</a></code> or <code><a href="page19.htm#itempath">itemPath()</a></code>.
+</p>
+
+<p>
+<code>tkMV_PAUSE_THREAD</code> &mdash; Used to pause thread execution until movement stops. See: <code><a href="page19.htm#playerstep">playerStep()</a></code>, <code><a href="page19.htm#itemstep">itemStep()</a></code>, <code><a href="page19.htm#push">push()</a></code>, <code><a href="page19.htm#pushitem">pushItem()</a></code>, <code><a href="page19.htm#playerpath">playerPath()</a></code>, <code><a href="page19.htm#itempath">itemPath()</a></code>, <code><a href="page19.htm#playerstance">playerStance()</a></code> or <code><a href="page19.htm#itemstance">itemStance()</a></code>.
+</p>
+
+<p>
+<code>tkMV_PATHFIND</code> &mdash; Used for pathfinding to a location. See: <code><a href="page19.htm#playerpath">playerPath()</a></code> or <code><a href="page19.htm#itempath">itemPath()</a></code>.
+</p>
+
+<p>
+<code>tkMV_WAYPOINT_PATH</code> &mdash; Used to make a sprite walk along a waypoint path. See: <code><a href="page19.htm#playerpath">playerPath()</a></code> or <code><a href="page19.htm#itempath">itemPath()</a></code>.
+</p>
+
+<p>
+<code>tkMV_WAYPOINT_LINK</code> &mdash; Used to link a sprite to a waypoint path. See: <code><a href="page19.htm#playerpath">playerPath()</a></code> or <code><a href="page19.htm#itempath">itemPath()</a></code>.
+</p>
+
+
+
+<a name="const.handles"></a>
+<h4>Target and source handles:</h4>
+
+<p>
+There are two special handles called "target" and "source", which refer to the currently selected player, item, or enemy. For example, in battle you may use the following code to show the HP of the <em>target</em>:
+</p>
+
+<pre>
+hp = getHp("target");
+mwin(hp);
+wait();
+mwincls();
+</pre>
+
+<p>
+If this code was attached to a special move that the player used, "source" would refer to the player using it and "target" would refer to the enemy being hit by it. Many other functions accept "target" and "source" as the given handle.
+</p>
+
+
+
+</div>
+
+<hr />
+<p>
+<a href="page18.5.htm">previous</a>, <a href="page19.htm">forward</a>
+</p>
+</div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
 	<title>RPGToolkit Help &mdash;&nbsp;</title>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<script type="text/javascript" src="js.js"></script>
 	<link rel="stylesheet" href="styles/css.css" />
 	<!--[if IE]>
@@ -21,19 +21,23 @@
 
 <div id="document">
 
-<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
 
 <div class="topLinks">
 
-<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
 |&nbsp;
 
 <span
 	onmouseover="showMenu('editor');"
 	onmouseout="hideMenu('editor');"
 	id="editor_link"
-><a href="page2.htm">editor<!-- guide--></a></span>
+><a href="page2.htm">editor</a></span>
 |&nbsp;
+
 <div
 	id="editor"
 	class="submenu"
@@ -42,18 +46,18 @@
 >
 	<div><a href="pageed_environment.htm">editor environment</a></div>
 	<div><a href="page3.htm">main file editor</a></div>
-
 	<div><a href="page4.htm">board editor</a></div>
 	<div><a href="page5.htm">tile editor</a></div>
 	<div><a href="page6.htm">program editor</a></div>
 	<div><a href="page7.htm">character editor</a></div>
+
 	<div><a href="page8.htm">item editor</a></div>
 	<div><a href="page9.htm">enemy editor</a></div>
-
 	<div><a href="page10.htm">animation editor</a></div>
 	<div><a href="page11.htm">tile bitmap editor</a></div>
 	<div><a href="page12.htm">special move editor</a></div>
 	<div><a href="page13.htm">status effect editor</a></div>
+
 	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
 </div>
 
@@ -61,7 +65,7 @@
 	onmouseover="showMenu('engine');"
 	onmouseout="hideMenu('engine');"
 	id="engine_link"
-><a href="page14.htm">playing<!-- your game--></a></span>
+><a href="page14.htm">playing</a></span>
 |&nbsp;
 <div
 	id="engine"
@@ -77,9 +81,8 @@
 	onmouseover="showMenu('rpgcode');"
 	onmouseout="hideMenu('rpgcode');"
 	id="rpgcode_link"
-><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+><a href="page17.htm">rpgcode</a></span>
 |&nbsp;
-
 <div
 	id="rpgcode"
 	class="submenu"
@@ -101,7 +104,6 @@
 	id="troubleshooting_link"
 ><a href="page22.htm">troubleshooting</a></span>
 |&nbsp;
-
 <div
 	id="troubleshooting"
 	class="submenu"
@@ -118,7 +120,7 @@
 	onmouseout="hideMenu('about');"
 	style="margin-bottom: 0;"
 	id="about_link"
-><a href="page28.htm">about<!-- the toolkit--></a></span>
+><a href="page28.htm">about</a></span>
 <div
 	id="about"
 	class="submenu"
@@ -126,19 +128,20 @@
 	onmouseout="hideMenu('about')"
 >
 	<div><a href="page29.htm">history</a></div>
-
-	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
 </div>
 
 </div>
-
-<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Character Editor</h2>
+<div id="content">
+<h2><a href="page2.htm">Editor Guide</a> &mdash; Character Editor</h2>
 
 <p style="text-transform: lowercase;">
 [ <a href="#editor">Around the Editor</a>  ]
 </p>
 
 <!-- Character editor rewrite - 17 Mar 2005 by Delano -->
+<!-- Updated for 3.1.0 - 22 Dec 2006 by Delano -->
 <p>
 Players are the characters in your game that can be controlled by the user, make up party members and fight battles. The user can only direct one character at a time (by default others don't appear on the boards, but can follow the player with the likes of "caterpillar" programs). In many games, the user starts out with control of the main character, and as they progress they meet others characters that join the main character to form a party that moves and fights battles together. The difference between players (made in this editor) and players made from items is that items cannot be controlled by the user, join their team or fight battles.
 </p>
@@ -147,7 +150,7 @@ Players are the characters in your game that can be controlled by the user, make
 <p>
 The character file contains a lot of information about the player, covering the aspects of the game that are specific to each player; that is, their graphics and walking animations, physical attributes (statistics or stats), fighting abilities and experience progression.
 </p><p>
-The first thing to do when creating a character is to give them walking graphics, so that they can be used to move around in the game. Most character graphics are made using tiles, but tiles cannot be directly selected for player graphics - all the character's graphics are made using <a href="page10.htm">animations</a> (*.amn) - collections of tiles or images that have a wide range of uses. The basic set of player graphics consist of movement animations for North, South, East and West movement; these are required in order for the player to appear! This set can be supplemented with diagonal movements, idle, battle and custom animations. If these aren't created, the TK falls back to the first set. All these settings can be found in the "Graphics" option.
+The first thing to do when creating a character is to give them walking graphics, so that they can be used to move around in the game. Most character graphics are made using tiles, but tiles cannot be directly selected for player graphics - all the character's graphics are made using either <a href="page7.htm">Toolkit Animations</a> (*.amn) - collections of tiles or images that have a wide range of uses - or <i>animated gifs</i> (from version 3.1.0). The basic set of player graphics consist of movement animations for North, South, East and West movement; these are required in order for the player to appear! This set can be supplemented with diagonal movements, idle, battle and custom animations. If these aren't created, the TK falls back to the first set. All these settings can be found in the "Graphics" option.
 </p><p>
 With nothing more than movement graphics, the character can get quite far in a game - he can interact with objects on boards, hold and use items and be manipulated using RPGCode. But if they were to get into a battle in this state, they would die straight away! 
 </p>
@@ -207,29 +210,59 @@ Assigns the <a href="page12.htm">Special Moves</a> that the player can use. The 
 </p><p>
 Most special moves should only become available to the player when they reach a certain level - this is set for each player in the "Special Move Info" window, (rather than in the special move file itself). Here you can set an experience or level value, or specify a variable that controls whether the player can use the move or not (for instance, they might only be able to use it whilst they possess a certain item or have completed a certain task).
 </p>
-<h4>Graphics</h4>
-
-<table>
-<tr>
-<td>
-
+<a name="graphics"></a><h4>Graphics</h4>
+<p>
+In this window animations are assigned to each direction or stance, and the vectors that define how the sprite interacts on the board are created.
+</p>
+<img src="images/image55" alt="Sprite Graphics List" />
+<p>Animation list</p>
 <ul>
 	<li>
-		Walking / Idle Animations - You can assign animations (*.anm) for each direction for movement and idling actions, as for items. First select a direction, then hit the "..." button in the bottom right to bring up a file window or type the name of the animation file in the text box. If the animation exists, it will be shown in the preview window above the textbox. Use the Play button to preview the animation. Idle animations will run continuously if the player is not moving. 
+		The box lists the default directional stances, battle stances (Attack, Defend, Special Move, Die, Rest) and any custom stances that have been defined and the animation(s) associated with each stance. Directional stances may have both walking and idle animations; other stances have only a default animation. Idle directional animations are displayed when a sprite has been motionless for longer than the 'Seconds before the player is considered idle'.
 	</li><li>
-		Custom Animations - Custom actions can also be created - select "New" and enter a handle (name) for the animation (to refer to it in-game with the PlayerStance() command), and then assign an animation as above.
+		Text fields and browse buttons are located to the left of the listbox; press the '...' button to select an animation for the highlighted stance. Toolkit animations (*.anm) and animated gifs (*.gif) are valid formats. <b>Note:</b> Animated gifs used in place of .anm's must reside within the GameName/Misc/ folder or subfolders therein, <i>not</i> in the /GameName/Bitmap/ folder. If the animation exists it will be show in the preview window. To view the idle animations of directional stances, <b>Right-click the listbox</b>.
 	</li><li>
+		Custom stances are any additional animations or actions that the sprite can perform, for instance in battle or during a story sequence, and are shown using the PlayerStance() or ItemStance() commands. Create a new custom stance by pressing the 'New Custom...' button and entering a name (handle) for it. The handle can be changed or the stance deleted using the relevant tools. Default stances cannot be renamed or deleted, but may be left empty.
+	</li>
+</ul>
+<p>Vector drawing window</p>
+<ul>
+	<li>
+		In the same way as collision vectors define solid areas of a board and program vectors define 'trigger' (or 'activation') areas, so collision vectors and activation vectors may be defined for sprites. The collision vector defines the solid area of the sprite's image, whilst the activation vector defines the area in which the player must stand in order to trigger the sprite's activation program. The activation vector should be larger than the collision vector if you want the sprite to be able to interact with the player.
+	</li><li>
+		The Preview window displays the currently highlighted stance animation and the currently selected vector. A crosshair is also displayed, marking the <i>origin</i> of the sprite on the board. By default, this is placed at the bottom-centre of the sprite's image, and cannot be changed. It is this position that is given when the sprite's location is returned via ItemLocation() or the <a href="page18.5.htm">reserved player variables</a>.
+	</li><li>
+		A number of tools are provided for manipulating the vectors. By default, sprites may be given rectangular or diamond-shaped vectors (depending on whether the game's boards are isometric or not). Initially after selecting the animation, a 'Standard' 'Collision' rectangular vector will be assigned - where 'Standard' indicates a non-isometric board. To display the default activation vector, select 'Activation'; a larger rectangle is displayed.
+	</li><li>
+		To assign a default vector, first select the vector type (Collision/Activation) and the coordinate type (Standard/Isometric), and then click 'Default Collision' or 'Default Interaction'. 'Default Collision' assigns a 'small' vector, whilst 'Default Interaction' assigns a large vector, scaled to correspond to a 32 pixel wide sprite.
+	</li><li>
+		To create a custom vector, first select the vector type (Collision/Activation) you want to assign to, and then click the Draw (pencil) tool. Note that the Standard/Isometric setting is irrelevant to custom vectors, except that it causes an offset of the <i>origin</i> vertically by 8 pixels - this is for backwards compatibility.
+	</li><li>
+		After selecting the Draw tool, click in the Preview window to start placing vector points. Right-click anywhere on the Preview window to close the vector.
+	</li><li>
+		Points can be moved using the hand tool. Unlike the board editor, simply click and drag to move the nearest point. Click the white square below the hand tool to change the colour of the vector and the origin crosshair.
+	</li><li>
+		The current vector's points are listed next to the tools. Existing points can be edited manually by clicking the value to be altered, hitting Delete or Backspace on the keyboard and entering a new value. Points can be deleted by clicking on the index of the point (in the first column) and hitting Delete or Backspace.
+	</li><li>
+		Vectors can be imported from other sprites by clicking the Import button and browsing to a pre-existing sprite (item or player). Upon confirmation, the present sprite's vectors are replaced by the imported sprite's vectors.
+	</li><li>
+		Note that only <b>one</b> collision vector and <b>one</b> activation vector can be defined per sprite; separate vectors are <i>not</i> created for each direction or stance.
+	</li>
+</ul>
+<p>Miscellaneous</p>
+<ul>
+	<li>
 		Seconds before the player is considered idle - If the player is not moving for this period of time, the idle animation corresponding to the current direction will begin (if it exists) and loop until movement starts again.
 	</li><li>
 		Seconds between each step - Controls the walking speed of the current player (only!). This is an exact delay rather than a speed, so larger values correspond to slower movement. A value between 0.05s and 0.2s is recommended. For an in-depth discussion of character speeds and solutions to problems, see the <a href="page23.htm">faq page</a>.
 	</li>
 </ul>
-
-</td><td>
-<img src="images/image55" alt="Character Graphics" />
-</td>
-</tr>
-</table>
+<p>Wizard...</p>
+<ul>
+	<li>
+		A wizard tool is provided to allow you to quickly assign directional animations to the sprite, provided that the animations you have created follow a pattern. A template filename is given by the user, such as "start_*.anm", and the wizard substitutes in directions (s, n, e, w, ne, nw, se, sw) for the asterisk, to produce "start_s.anm", for instance.
+	</li>
+</ul>
 
 <h4>Equipment</h4>
 <p>
@@ -269,11 +302,12 @@ As previously stated, levels are a measure of the experience that the player has
 <hr />
 <p>
 <a href="page6.htm">previous</a>, <a href="page8.htm">forward</a>
-</p></div>
+</p>
+</div>
 
 <div id="links">
 <p>
-All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
 </p>
 </div>
 

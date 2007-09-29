@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
 	<title>RPGToolkit Help &mdash;&nbsp;</title>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<script type="text/javascript" src="js.js"></script>
 	<link rel="stylesheet" href="styles/css.css" />
 	<!--[if IE]>
@@ -21,19 +21,23 @@
 
 <div id="document">
 
-<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
 
 <div class="topLinks">
 
-<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
 |&nbsp;
 
 <span
 	onmouseover="showMenu('editor');"
 	onmouseout="hideMenu('editor');"
 	id="editor_link"
-><a href="page2.htm">editor<!-- guide--></a></span>
+><a href="page2.htm">editor</a></span>
 |&nbsp;
+
 <div
 	id="editor"
 	class="submenu"
@@ -42,18 +46,18 @@
 >
 	<div><a href="pageed_environment.htm">editor environment</a></div>
 	<div><a href="page3.htm">main file editor</a></div>
-
 	<div><a href="page4.htm">board editor</a></div>
 	<div><a href="page5.htm">tile editor</a></div>
 	<div><a href="page6.htm">program editor</a></div>
 	<div><a href="page7.htm">character editor</a></div>
+
 	<div><a href="page8.htm">item editor</a></div>
 	<div><a href="page9.htm">enemy editor</a></div>
-
 	<div><a href="page10.htm">animation editor</a></div>
 	<div><a href="page11.htm">tile bitmap editor</a></div>
 	<div><a href="page12.htm">special move editor</a></div>
 	<div><a href="page13.htm">status effect editor</a></div>
+
 	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
 </div>
 
@@ -61,7 +65,7 @@
 	onmouseover="showMenu('engine');"
 	onmouseout="hideMenu('engine');"
 	id="engine_link"
-><a href="page14.htm">playing<!-- your game--></a></span>
+><a href="page14.htm">playing</a></span>
 |&nbsp;
 <div
 	id="engine"
@@ -77,9 +81,8 @@
 	onmouseover="showMenu('rpgcode');"
 	onmouseout="hideMenu('rpgcode');"
 	id="rpgcode_link"
-><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+><a href="page17.htm">rpgcode</a></span>
 |&nbsp;
-
 <div
 	id="rpgcode"
 	class="submenu"
@@ -101,7 +104,6 @@
 	id="troubleshooting_link"
 ><a href="page22.htm">troubleshooting</a></span>
 |&nbsp;
-
 <div
 	id="troubleshooting"
 	class="submenu"
@@ -118,7 +120,7 @@
 	onmouseout="hideMenu('about');"
 	style="margin-bottom: 0;"
 	id="about_link"
-><a href="page28.htm">about<!-- the toolkit--></a></span>
+><a href="page28.htm">about</a></span>
 <div
 	id="about"
 	class="submenu"
@@ -126,101 +128,167 @@
 	onmouseout="hideMenu('about')"
 >
 	<div><a href="page29.htm">history</a></div>
-
-	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
 </div>
 
 </div>
+<div id="content">
+<div id="primer">
 
-<div id="content"><div id="primer">
+<!-- Rewritten for 3.1.0 by Delano 10 February 2007 -->
 
-<h2>Quick Start Guide</h2>
+<h2>Beginner's Tutorial</h2>
 
-<!-- Quick-Start Guide; Copyright 2005, Colin James Fitzpatrick -->
-
+<h3>Overview</h3>
 <p>
-When you first download the RPGToolkit, learning your way around the editor can be an incredibly daunting task. If you have no clue where to begin, that's fine! This section of the guide serves to introduce the new user to most areas of the editor, building a (very, very) small game in the process. When you first open the editor via your start menu, you'll be greeted by a splash screen. After it closes, and you okay the tip of the day, you're thrust into the heart of the toolkit; from here, we begin our guide.
+This tutorial aims to introduce new users to the Toolkit by providing an overview of the structure of a game and a short demonstration of how to put a small game together from the Toolkit's default files.
 </p>
 
+<h3>Starting up</h3>
 <p>
-The <a href="pageed_environment.htm">main toolkit window</a> is a massive, but learnable, world with many, many options. Its title bar will enable you to see the name of the currently loaded project. The first time you open the editor, the demo game will be open. However, you probably don't want to work in the demo game, so let's create a new project. The menu bar, found at the top of the window, houses a suite of commands to navigate the editor. To create a new project, choose File -> New, or just press Ctrl + N.
+When you launch the Toolkit editor program (toolkit3.exe), you will first be presented with a splash screen and a Tip of the Day screen. After closing this, you are left with the Toolkit's <a href="pageed_environment.htm">Editor Environment</a>, comprising various toolbars and a large central area where <i>file editors</i> for each type of game file are loaded (Note: the Editor Environment is generally referred to simply as the "editor"). Each of the different file editors can be opened through File > New..., using the first button in the top toolbar or the second button in the right toolbar.
+</p><p>
+Games in the editor are termed <i>Projects</i>, and only one project can be edited at a time. The name of the currently open project file is displayed in the title bar of the editor; when you first run the Toolkit, this will be 'demo.gam'. You can run the current game by clicking the green arrow in the top toolbar.
+</p>
+<img src="images/image69" alt="Editor toolbars" />
+<p></p>
+<h3>Creating a new project</h3>
+<p>
+The demo game isn't enthralling, but it is an example of what can be made in just a few minutes. To start working on your own game, you first need to create a new Project in which to store all its files. To do this, select File > New Project (Ctrl+N) to show the New Project screen; this is where you specify the game's title. Replace the text in the Game Title field and the Game Folder field updates accordingly; do not change this. For the purposes of this overview, call the game "test".
+</p>
+<img src="images/image70" alt="New project screen" />
+<p>
+The "default files" refer to a set of game components (graphics, music, sprites) used to create the demo game; leave this checked since we don't have any custom files yet. Click "Setup My Game!" to complete the process, and the project's <a href="page3.htm">Main File Editor</a> appears, displaying "test.gam" in the title bar (and also in the editor environment's title bar). This editor handles the game's <i>main file</i> (here, "test.gam"), which contains all the global settings and start-up conditions for the project.
 </p>
 
+<h3>Components of a game</h3>
+<table>
+<tr><td>
+	<img src="images/image71" alt="Project folder organisation" />
+	</td><td>
 <p>
-A screen to create a project now appears. You really only have to enter one thing here: your game's title; don't think too hard about it, as it can always be changed later. For the purposes of this guide, enter "Quick Start". Since we want (and will be using) the default media, leave the resources checkbox checked. Finally, confirm the dialogue by clicking "Setup My Game!" Now you see the <a href="page3.htm">Main File Editor</a>&mdash;essentially your game's control panel; we aren't interested in any of the many options available here just yet, though, so close the window using the "x" near the top-left, but inside the window&mdash;you'll know what this in when actually in the editor.
+Any game contains a large number of files; these range from low-level images and music, to collections of images (animations, 'boards'), sets of data and game event instructions. The main filetypes are listed here: 
+</p><ul>
+<li>Boards - the scenes, environments or maps that construct the game's world, including collisional information and references to programs, music and sprites.</li>
+<li>Tiles - 32x32 pixel images that are used to construct boards and sprites.</li>
+<li>Players - the user-controlled characters in the game, containing personal attributes and references to sprite animations.</li>
+<li>Enemies - the default enemy filetype contains enemy attributes and references to sprite animations.</li>
+<li>Items - objects that can be used as equipment, non-player characters and inventory items.</li>
+<li>Animations - references to a set of images that can be used for characters and enemies.</li>
+<li>Programs - sets of instructions written in the Toolkit's own <i>RPGCode</i> programming language that script events, such as conversations or cutscenes.</li>
+<li>Backgrounds - references to images and music that are used in the default <i>Battle System.</i>
+</ul>
+<p>There are additional types of files used in the Toolkit game, which you may encounter as you further develop your game.
+</p><p>
+Each type of file (or groups of filetypes) in a Toolkit game are located in specific folders in the Toolkit's folder structure. All the test game files reside within the Toolkit3/Game/test folder, except for the game's main file (test.gam), which lives in the Toolkit3/Main folder, and saved games, which are found in the Toolkit3/Saved folder. When creating your own game files or using game files from resource sites, <i>they must be placed in the correct folder corresponding to the filetype</i>.
 </p>
+
+</td></tr>
+<tr><td>
+	<img src="images/image72" alt="Toolkit file tree" />
+</td><td>
+
+To view the game's files and folders, click the first button in the right toolbar. At this point, only the default Toolkit files are present. To open a file, double-click it; right-click it to access other options.
+
+</td></tr>
+</table>
 
 <a name="boards"></a>
+<h3>Boards</h3>
 <p>
-The centre of every game is its environments&mdash;in the toolkit, you construct screens using boards composed of tiles. Since you chose to include the default files, an initial board has already been created for you. You can use it by choosing File -> Open, opening the "Boards" folder, then choosing the sole board&mdash;start.brd. Welcome to the board editor. Boards are constructed using 32x32 graphics ("tiles")&mdash;optionally laid isometric. The solidity of laid tiles is also set (there are many settings, but only three are commonly used&mdash;normal, solid, and under). To change the current solidity ("tile type"), click one of the coloured triangles in the "Tile Type" section at the bottom. The current setting&mdash;normal (not solid), is grey&mdash;solid is blue, and "under" is purple.
+The next thing to do is to create a board for the test game. Since we included the default game files, an initial board has been created (start.brd, as above), but we'll start from scratch. Click the second button on the right toolbar and select Edit Board from the resulting menu. A small window appears entitled "New Board", in which some basic properties of the board can be set. Leave the defaults and click OK; the window is replaced with a black "Untitled board" window, and the left toolbar is populated with icons.
+</p>
+<img src="images/image73" alt="New board" />
+<p>
+Now, the window is black because the board has no image data, so that's the first thing to add. Boards may be constructed in two ways: using small square or isometric tiles, or using pre-rendered background images (e.g. jpg or png images).
+</p>
+<ul><li>
+<p>
+Tiles - Toolkit tiles are stored in files called <i>tilesets</i>, which group tiles together in a single collection. The default files contain a default tileset, containing some simple outdoor graphics that we will use to create a scene. To view this set, click the third button on the right toolbar, click the open button on the tileset browser that appears and open 'default.tst'.
+</p>
+<img src="images/image74" alt="Default tileset" />
+<p>
+Next, click the first tile in the set to select that tile, and note that a number of changes occur on the left toolbar. Firstly, the selected icon changes from the hand tool to the tile tool, directly below it; secondly, the third group of icons become active and the pencil (draw) tool is selected; thirdly the selected tile is displayed at the bottom of the toolbar. Now to start drawing, click and drag on the black area of the editor.
+</p>
+<img src="images/image75" alt="Drawing tiles" />
+<p>
+The tiles snap to an invisible grid; to show the grid toggle the first icon in the first group. Other styles of drawing can be performed with icons in the third group, including flood-fill and rectangle. You can zoom in or out using the magnifying glass tool in the second group, or by holding Ctrl and scrolling the mouse wheel. Scrolling the mouse wheel on its own scrolls the board - click the mouse wheel button to change the direction of the scroll.
+</p>
+</li><li>
+<p>
+Image - to set a pre-rendered image, select the 'Properties' tab above board area to display some of the board's properties. Click the '...' button next to the 'Background image' field to select an image file - the image file must be placed in the 'Bitmap' folder - if you select a file from elsewhere on your computer, you will be notified that the file will be copied to the appropriate location.
+</p>
+</li></ul>
+<p>
+When you've created a scene make sure you save it, using the fourth button in the top toolbar. In creating a board, you'll probably have areas of it that you want to be solid to sprites (that is, that they cannot move over). This is achieved using <i>vectors</i>, which are so versatile that they have a whole tutorial devoted to them - so visit <a href="page4.2.htm">this link</a> for this part. When you've finished you should have something like this:
+</p>
+<img src="images/image76" alt="Drawing vectors" />
+<p>
+Next, let's make a player and a non-player character (NPC) to put on the board. Make sure you save the board again.
 </p>
 
+<h3>Sprites</h3>
+<h4>Player</h4>
 <p>
-Players can move through the normal type, but not the solid. When moving over an under tile, the sprite (graphic) turns translucent to illustrate that the player is underneath an object, or whatnot. There are two modes in which you can lay tiles. The draw lock and type lock buttons, first and second in the third row on the left tools bar (if you can't see it, choose Windows -> Show/Hide Tools), respectively, allow you to change. When in draw lock, clicking on the board sets the current tile (more on this in a moment) with the current type. Type lock, on the contrary, only sets types, enabling you to quickly change the solidity of whole areas without worrying about overriding the graphics there.
+A default player has been included - start.tem in the Chrs folder, but we will create our own. Select 'Edit Character' from the new editor list in the right toolbar to load the Character Editor ('character' and 'player' are used interchangeably in the Toolkit). As previously mentioned, a player's file contains sets of attributes relating to the player's behaviour and performance in battles, and sets of graphics used for moving around boards and fighting in battles. For the purposes of this tutorial we'll ignore the player's battle attributes and just set up some walking graphics. Click the 'Graphics' button in the Character Editor to show the sprite list window. This window lists the animation files that are associated with the player, and also defines the collision and interaction areas of the player's sprite.
 </p>
 
+<h4>Animations</h4>
 <p>
-In the RPGToolkit, tiles are stored in sets. This way, logically related tiles can be grouped together to make finding a specific tile a less convoluted task. To open a tile, click the respective button (tools, left in the second row). The default tiles are packaged in default.tst, so choose that to get a tile choosing window. Now you can pick a tile, and, given you are in draw lock mode, begin laying it down. If you need a grid to make this task simpler, click the top-left button on the tools bar to toggle one. When you want to choose another tile, you could open the set and pick again; but this will become tasking very quickly. Two alternatives exist. Pressing the L key will open the tile chooser for the last opened set, or&mdash;more convenient&mdash;you can click the third button the far right toolbar (a black square) to reveal the current tileset. From here, you can easily select and choose tiles&mdash;even load a new set.
+Each direction that the player can move in is called a <i>stance</i> and is listed in the first box. The graphics for a stance must be contained in a Toolkit Animation file, which must be created separately, so we should do this first. Close the sprite window and load the Animation Editor through the new editor list. The editor appears as a small white box with two associated toolbars on the left and below. The quickest way to create an animation is using the wizard - click the 'Run Wizard...' button in the lower toolbar. Like boards, animations can be made of tiles or images. The Toolkit's default files include some basic character tiles, so we'll make a walking animation with these.
+</p><p>
+Click 'Single or multiple tiles per frame', and the default tileset should appear on the right; use the second button above the tileset to change the set to 'char.tst'. Use the arrow buttons to set 'Frames' to 2 (since the default set only has two tiles per direction), and set the 'Current Frame' to 1. The 4x4 grid represents the current frame; click a tile in the set and then click in the grid to place the tile on the frame (place it in the top-left corner). Scroll the Current Frame to 2 (the tile disappears from the grid) and repeat the process.
+</p>
+<img src="images/image77" alt="Animation wizard" />
+<p>
+When finished, click OK to return to the Animation Editor; the first frame is then displayed in the centre and information about the frame is displayed below. When you go to save the animation, you'll notice a set of files of the form "start_*.anm"; these are the animation files for the default character. Save your animation as something like "man_s.anm", where the "_s" indicates that it is a south-walking animation. Repeat this process for the other directions and then return to the Character Editor's graphics window.
+</p>
+<img src="images/image78" alt="Sprite graphics window" />
+<p>
+To assign the animation files we've just created to the character, select the stance from the list (e.g. 'South (Front View)') and click the '...' next to the 'Selected animation file' field. Select the animation file corresponding to the direction (e.g. man_s.anm), and the file is entered in the animation list in the 'Walking / default' column. The first frame of the animation is shown in the Preview frame below, affixed with a box and a dashed crosshair - these define the collisional aspects of the sprite, which we can leave to the default. Complete the stances for the animations we've just made and close the window. Leave the other properties blank and save the character as something like 'test.tem', and then close the editor.
+
+<h4>Non-player character - item</h4>
+<p>
+NPCs in the game are created using <i>items</i>, which are also used to create equipment objects and inventory possessions. Open the Item Editor through the new editor list, and you will see that items have a range of properties that control these applications. We'll need more walking graphics for our NPC, but we could use those default animations we saw earlier. Click the 'Graphics' button to show an identical sprite list screen, and complete this in the same way as for the player, using the "start_*.anm" animations, then return to the Item Editor.
+</p><p>
+We want some event to occur when the player interacts with the NPC in the game (e.g. the NPC talks to the player, or a fight begins), and in order to achieve this we need to write a <i>program</i> that describes the event using <i>commands</i> or <i>functions</i> written in the Toolkit's scripting language <i>RPGCode</i>.
 </p>
 
+<h3>Events - RPGCode scripting</h3>
 <p>
-After you've laid out a nice scene (remembering to change the tile type logically), you'll probably want to create some linked boards. That is, when you walk off the edge of the board, you'll want to go somewhere&mdash;not just walk into a wall. To do this, open the New Editor toolbar (second button&mdash;a document&mdash;on the far right) and choose Edit Board. Here you can use precisely the same procedure as before to create another scene. Various board settings&mdash;including aforementioned linking&mdash;are available from the Board Information window. To access this, choose Board Settings -> Board Information. On the Directional Links tab, you can choose where the edges of the boards go. You probably want to link the two (or more) boards you've created together, so do this as you see fit.
-</p>
-
-<p>
-Back on your start board; don't forget to set where you would like the player to appear. This can be accomplished by choosing Board Settings -> Set Player Position, then clicking the desired tile. At this point, you may want to test your boards. Make sure everything is saved (File -> Save, or the toolbar&mdash;and you should probably save routinely), and click the green play button, last along the top toolbar. After seeing a generic start sequence&mdash;which we'll attend to later&mdash;you can wander among the two boards you might have created. The session can be ending by closing the window.
-</p>
-
-<p>
-Without battling, however, an RPG just isn't an RPG. In the toolkit, enemies (and all sprites) are constructed out of animations. To create a new animation, again open the new toolbar; this time, choose Edit Animation. You can set its size with the option in the bottom-left hand corner (ultimately, this is setting the size of the enemy, in our case), and place a frame by clicking the canvas in the centre. If you don't have an image to use, just pick the message window (mwin.jpg). More frames can be added, and also set, with the next button the on the tools bar, at left. When you're done, save, and close the animation editor.
-</p>
-
-<p>
-Once more, using the new toolbar; this time, choose Edit Enemy to access to <a href="page9.htm">Enemy Editor</a>. Here, you can set some basic information&mdash;like name and statistics, as well as chance of a critical hit. Click graphics to access the sprite editor. The only stance that's really mandatory is rest (when your enemy is waiting), so assign the animation we just created to this slot; okay the window. Be sure to set how much experience players will gain from defeating this enemy under the rewards section. Like a classical RPG, when players gain experience, they level up. Finally, after saving, click Add Enemy to Game. On this screen, double-click a slot in the Enemy Skill Level list and select the enemy just created. Next, assign it a level (you'll use this to decide where it appears later). One will probably suffice. Enter a number in the "chances of getting in a fight" box (50 does well). Finally, okay the window.
-</p>
-
-<p>
-In order to set how the main (and, in this "game", only) character reacts to experience, we must visit the <a href="page7.htm">Character Editor</a>. Choose File -> Open, pick the "Chrs" folder, and open start.tem. There are many settings here, detailed in another part of the manual, but we're only interested in the experience settings. Click the level button to open a settings window. The only setting you need to set is the max level (99 is typical), indeed do so, but feel free to change any others as you wish.
-</p>
-
-<p>
-Fights take place on a backdrop&mdash;which can be of any type, but is frequently composed of tiles. If we want to take the latter route, we must create a <a href="page11.htm">tile bitmaps</a>. Tile bitmaps are essentially multiple tiles grouped together and can be used anywhere images are used (for <a href="page10.htm">animations</a>, <a href="pageed_background.htm">backgrounds</a>, etc). Choose File -> New -> Tile Bitmap to display the tile bitmap editor. Within, set the size to 19x11 for a normal sized background. The interface is identical to the board editor, save for lack of tile types. Create your bitmap, and save. To make a background that uses this bitmap, choose Edit Background from the new toolbar. Choose your tile bitmap for image, and adjust the other settings, if you like. Save the file and your background is finished.
-</p>
-
-<p>
-Now, to assign your enemy (and all of its skill level) to a board, we must open the one we want. After you're back in the board editor, again open the Board Information window (Board Settings -> Board Information). This time, choose the Battle Options tab. Check "Fighting is permitted on this board", and set the skill level to that of your enemy (one, if you took our suggestion). Next, select the background you just created and finally, okay the dialogue. Feel free to test your work.
-</p>
-
-<p>
-Remember that boring start-up sequence you saw when testing your game? In the RPGToolkit, events&mdash;and all logic&mdash;are handled through a scripting language called <a href="page17.htm">RPGCode</a>. The language has multiple levels of complexity&mdash;it can be very simply used, or more depth can be obtained. At any rate, large portions of this manual are dedicated to RPGCode; refer to them for more information. To modify our start-up program, choose File -> Open, pick the "Prg" folder and choose start.prg. Here, look for the following lines:
-</p>
-
+A large portion of this manual is devoted to scripting in RPGCode, and if you've never programmed before, it may be worth visiting <a href="page17.htm">this link</a> first.
+</p><p>
+To create a simple program that scripts a conversation between the NPC and the player, open the RPGCode Program Editor through the new editor list. The Editor looks a lot like Notepad (although has a few extra features!); here is an example of a short program:
 <pre>
-text(1, 1, "Test Game")
+	MWin("Hello, welcome to the test board!")
+	Wait()
+	name = Prompt("What's your name?")
+	MWin("Hello " + name + "!")
+	Wait()
 </pre>
-
-<p>
-You can replace "Test Game" with the name of your game. Just below that line, you can also set an image to be displayed in the background.
+This program shows the first sentence in a message window using a function called <b>MWin()</b>. It waits for the user to press a key using <b>Wait()</b>, and then shows a <i>user prompt</i> with <b>Prompt()</b>. The words entered at the prompt are assigned to a <i>variable</i> called <b>name</b>, and a second line is added to the message window that combines the variable with text to provide a response. The program then waits again for the user to press a key, at which point the program ends and the message window disappears.
+</p><p>
+You can test this program by clicking the arrow button in the left toolbar. Save the program as "hello.prg" and close the editor.
+</p><p>
+To make this program run when the player interacts with the NPC, return to the Item Editor and tick the 'Board-Run' check-box. Click the corresponding 'Edit' to display a window that lists the programs associated with the item when that item is on a board. Click the 'Browse...' next to 'Program to run when item is picked up' and select "hello.prg", and then click OK, save the item as "npc.itm" and close the editor.
 </p>
 
-<pre>
-mwin("Your story goes here...")
-</pre>
-
+<h3>Putting it all together</h3>
 <p>
-In a real game, sole speaking makes for a boring introduction&mdash;but for now, just alter this line to sound a little less generic, if you desire.
+Now we're ready to put the characters on the board. Open "test.brd" from earlier and select the Sprite Tools using the 6th icon in the second group on the left toolbar. Select the Draw tool from the third group and then click on the board to place a new item; a white box appears at the location. Next, click the fourth button in the right toolbar to show the Board Toolbar, which has tabs for various board objects. The Sprite tab should be selected, displaying the board properties of the selected sprite. These are unimportant except for the filename. Click the '...' beside the field and select "npc.itm"; the white box is replaced by the first frame of the southward walking animation.
+</p><p>
+It's slightly different for the player - go to the Board menu and select 'Set Player Start Location', and then click on the board. A cross appears at the location with 'Player start location layer 1'.
 </p>
-
+<img src="images/image79" alt="NPC and player locations" />
 <p>
-After saving, you may want to test in order to confirm the changes were successful.
+Finally, we need to make this board and our new player appear when we run the game. Save the board and close it, and open the Main File Editor using the second icon in the top toolbar. Select the 'Startup Info' tab and use the browse buttons beside the 'Initial Board File' and 'Initial Character File' to select "test.brd" and "test.tem". Save this file and then run the game with the green arrow in the top toolbar. The game will start with the same screen as the demo game - this is created in a program called "start.prg" that is also included in the default files. Select 'New Game', and the board and sprites you've just made will appear. Walk up to the NPC and the "hello" program will run!
 </p>
-
+<img src="images/image80" alt="Finished game" />
+<p></p>
+<h3>Summary</h3>
 <p>
-In RPGs, wandering villagers are a staple. The RPGToolkit provides means for you to create non-playable, often moving, characters (NPCs). These are stored as items (along with things like potions), so open the item editor. Within, click graphics to setup the sprite for an NPC. Unless you feel like creating a suite of images for this test project, simply assign the start_*.anm files (the default character's graphics) to their respective positions. Okay the dialogue. Since this item will be used on a board, check off "Board-driven", and then its Edit button. Within, set the "Program to Run While Item Is On Board" to wander.prg&mdash;the generic NPC wander program (you can create your own, more complex ones, at a latter time). Back in the board editor, choose RPGCode -> Set Item. After clicking a tile, select your item in the dialogue, and okay. Save, and test if you want.
-</p>
-
-<p>
-Congratulations! You've just put together a basic game! Sure, it isn't much, but it only gets easier from here. If you have questions, don't panic&mdash;that's what the remainder of this manual is for. Thank you for choosing the RPGToolkit, Version 3; good luck creating your game!
+This tutorial has provided the steps to produce a short game comprising a board, player, non-player character, program and animations using the default Toolkit files. A range of other tutorials written by community members are available covering other aspects of game creation, and the manual provides authoritative information on all aspects of the Toolkit.
 </p>
 
 </div>
@@ -228,11 +296,12 @@ Congratulations! You've just put together a basic game! Sure, it isn't much, but
 <hr />
 <p>
 <a href="index.htm">previous</a>, <a href="page2.htm">forward</a>
-</p></div>
+</p>
+</div>
 
 <div id="links">
 <p>
-All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
 </p>
 </div>
 

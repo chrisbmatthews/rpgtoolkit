@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
 	<title>RPGToolkit Help &mdash;&nbsp;</title>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<script type="text/javascript" src="js.js"></script>
 	<link rel="stylesheet" href="styles/css.css" />
 	<!--[if IE]>
@@ -21,19 +21,23 @@
 
 <div id="document">
 
-<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
 
 <div class="topLinks">
 
-<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
 |&nbsp;
 
 <span
 	onmouseover="showMenu('editor');"
 	onmouseout="hideMenu('editor');"
 	id="editor_link"
-><a href="page2.htm">editor<!-- guide--></a></span>
+><a href="page2.htm">editor</a></span>
 |&nbsp;
+
 <div
 	id="editor"
 	class="submenu"
@@ -42,18 +46,18 @@
 >
 	<div><a href="pageed_environment.htm">editor environment</a></div>
 	<div><a href="page3.htm">main file editor</a></div>
-
 	<div><a href="page4.htm">board editor</a></div>
 	<div><a href="page5.htm">tile editor</a></div>
 	<div><a href="page6.htm">program editor</a></div>
 	<div><a href="page7.htm">character editor</a></div>
+
 	<div><a href="page8.htm">item editor</a></div>
 	<div><a href="page9.htm">enemy editor</a></div>
-
 	<div><a href="page10.htm">animation editor</a></div>
 	<div><a href="page11.htm">tile bitmap editor</a></div>
 	<div><a href="page12.htm">special move editor</a></div>
 	<div><a href="page13.htm">status effect editor</a></div>
+
 	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
 </div>
 
@@ -61,7 +65,7 @@
 	onmouseover="showMenu('engine');"
 	onmouseout="hideMenu('engine');"
 	id="engine_link"
-><a href="page14.htm">playing<!-- your game--></a></span>
+><a href="page14.htm">playing</a></span>
 |&nbsp;
 <div
 	id="engine"
@@ -77,9 +81,8 @@
 	onmouseover="showMenu('rpgcode');"
 	onmouseout="hideMenu('rpgcode');"
 	id="rpgcode_link"
-><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+><a href="page17.htm">rpgcode</a></span>
 |&nbsp;
-
 <div
 	id="rpgcode"
 	class="submenu"
@@ -101,7 +104,6 @@
 	id="troubleshooting_link"
 ><a href="page22.htm">troubleshooting</a></span>
 |&nbsp;
-
 <div
 	id="troubleshooting"
 	class="submenu"
@@ -118,7 +120,7 @@
 	onmouseout="hideMenu('about');"
 	style="margin-bottom: 0;"
 	id="about_link"
-><a href="page28.htm">about<!-- the toolkit--></a></span>
+><a href="page28.htm">about</a></span>
 <div
 	id="about"
 	class="submenu"
@@ -126,36 +128,45 @@
 	onmouseout="hideMenu('about')"
 >
 	<div><a href="page29.htm">history</a></div>
-
-	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
 </div>
 
 </div>
-
-<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Animation Editor</h2>
+<div id="content">
+<h2><a href=\"page2\.htm">Editor Guide</a> &mdash; Animation Editor</h2>
 
 <p style="text-transform: lowercase;">
 [ <a href="#toolbars">Toolbars</a> ]
 </p>
 
 <!-- Animation editor rewrite - 27 Feb 2005 by Delano -->
+<!-- Updated for 3.1.0 - 22 Dec 2006 by Delano -->
 
 <h3>Animation Basics</h3>
 <p>
-Animations (*.anm) are simply a sequence of 'still' images that are displayed consecutively to give the impression of motion, just like films or tv. Animations are used for player and item movements, and player and enemy actions in battles, and can be used for animated intro sequences and menu objects.
+Animations (*.anm) are simply a sequence of 'still' images that are displayed consecutively to give the impression of motion, just like films or television. Animations are used for player and item movements, player and enemy actions in battles, and can be used for animated intro sequences and menu objects.
 </p><p>
-Animations can be composed of image files, such as jpg or gif (note there is no animated gif support) or tiles, or <a href="page11.htm">Tile Bitmaps</a> (collections of tiles). The format itself only consists of links to the frame images rather than the images themselves, so you will need to keep the images files you use.
+Animations can be composed of image files, such as jpg or gif or tiles, or <a href="page11.htm">Tile Bitmaps</a> (collections of tiles). The format itself only consists of links to the frame images rather than the images themselves, so the Toolkit keeps the images you include in the game's \Bitmap folder.
+</p><p>
+Note regarding animated gifs: As of 3.1.0, animated gifs are supported wherever Toolkit animations (.anm) are used; when an animation is required, a .gif may be substituted for a .anm, e.g. in the sprite graphics windows. The animated gif file must reside within the \Misc folder (or subfolders), <b>not</b> in the \Bitmap folder like other images. An animated gif cannot be loaded into a Toolkit animation (only the first frame will be used).
 </p>
 
 <img src="images/image58" alt="Animation Editor" />
 
 <h3>Around the Editor</h3>
 <p>
-The current frame is displayed in the centre of the editor. To load or change the frame image, click the frame and a dialog will appear. When starting, the animation has 'zero' frames, as indicated by counter in the lower toolbar, displaying current and total frame numbers. After adding a frame, the frame count is increased to 1/1. To add a second frame, click the "Next Frame" button in the left-hand toolbar and repeat the process.
+The current frame is displayed in the centre of the editor. To load or change the frame image, click the frame and a dialog will appear allowing you to select images or tiles. Tiles must reside in the \Tiles folder and images in the \Bitmap folder (or subfolders); files that do not are copied by the Toolkit.
 </p><p>
-Most animations you will be making will require some portion of them to be transparent, and each frame in the animation has an individual transparent colour associated with it. To set the transparent colour for a frame, hit the "Select" button in the toolbar, and click the transparent colour in the image. As a useful touch, the transparent colour of the previous frame is set when a new frame is added. The speed of the animation; that is, how quickly the frames are cycled through, is set by the slider on the toolbar.
+When starting, the animation has zero frames, as indicated by counter in the lower toolbar, displaying current and total frame numbers. After adding a frame, the frame count is increased to 1 of 1. To add a second frame, click the "Next Frame" button in the left-hand toolbar and repeat the process.
+</p><p>
+Most animations you will be making will require some portion of them to be transparent, and each frame in the animation has an individual transparent colour associated with it. To set the transparent colour for a frame, hit the "Select" button in the toolbar, and click the transparent colour in the image. As a useful touch, the transparent colour of the previous frame is set when a new frame is added.
+</p><p> 
+The frame delay - that is, the speed of the animation - is set by the Frame Delay text box and the slider on the toolbar.
 </p><p>
 Often when creating characters and enemies using tiles the image takes up more than one tile, however you may discover that it is not currently possible to place more than one tile in an animation's frame at a time - so how is it possible to create character animations with more than one tile? The answer is to use Tile Bitmaps - which can be chosen as images for frames like the other image types. See the <a href="page11.htm">Tile Bitmap Editor</a> for more information.
+</p><p>
+All these elements are encapsulated in the Animation Wizard, launched from the toolbar.
 </p>
 <p style="text-align: left;">[ <a href="#">top</a> ]</p>
 
@@ -193,30 +204,58 @@ Often when creating characters and enemies using tiles the image takes up more t
 	</tr>
 </table>
 
-<p>
-Size - Sets the dimensions of the animation. Frames are stretched or compressed to fit the size.
-</p><p>
-Settings -
-</p>
+<h4>Lower Toolbar</h4>
 <ul>
 	<li>
-		Frame delay slider - Sets the length of time each frame of the animation is shown for (same value for all frames).
+		Size - Sets the dimensions of the animation. Width vs height can be manually specified, or the drop-down list used to set pre-defined dimensions or revert to the image's exact dimensions. When an image is loaded, the animation automatically resizes to the image's dimensions. (Different frames of the animation cannot have different sizes; frames are resized to match the animation's dimensions.)
 	</li><li>
-		Sound - A WAV sound effect can be chosen to play with each frame. Click the text box to show an open file dialog, hit the "X" button next to this to delete the sound effect.
+		Frame Delay - Sets the length of time each frame of the animation is shown for, in seconds, using the text field or slider.
 	</li><li>
-		Frame transparent colour - The transparent colour of the current frame (can be different for each frame). Hit the "Select" button and then click the required area on the frame to set the transparent colour. The current frame and total number of frames is displayed below.
+		Frame transparent colour - The transparent colour of the current frame (can be different for each frame). Hit the "Select" button and then click the required area on the frame to set the transparent colour.
+	</li><li>
+		Frame File - Displays the filename of the current frame image; click '...' to browse for another.
+	</li><li>
+		Sound - A sound clip can be chosen to play with each frame, chosen from the \Media folder.
 	</li>
 </ul>
+<a name="wizard"></a><h4>Wizard</h4>
+<p>
+The animation wizard provides an easy way of compiling animations from images or tiles, negating the need to add frames image by image.
+</p>
+<img src="images/image81" alt="Animation Wizard" />
+<p>
+To create an image- or tile bitmap-based animation:
+</p>
+<ul>
+	<li>Select the "Image files or existing bitmaps" radio button.</li>
+	<li>Click "Select Files" to display a <i>multi-select dialog</i>.
+	<li>Hold down Control or Shift whilst clicking files to select multiple files.</li>
+	<li>Click "Open". The selected files are added in alphabetical order.</li>
+	<li>To add more files, select the slot in the list located <i>above</i> the position you want to insert new files at, and repeat the process.</li>
+</ul>
+<p>
+To create a tile-based animation:
+</p>
+<ul>
+	<li>Select the "Single or multiple tiles per frame" radio button. The last opened tileset is displayed (click the open button to select a new tileset).</li>
+	<li>Use the scrollers to set the number of frames in the animation and scroll to the desired current frame.</li>
+	<li>Click a tile in the tileset and then click on the 4x4 grid to the left to add the tile to the current frame. Start in the top-left corner.</li>
+	<li>If a frame contains more than one tile, a tile bitmap file (.tbm) must be generated to store the array of tiles. Use the "Filename template for tile bitmaps" field to specify a template for the tile bitmaps that will be created (the wizard saves these automatically), including any subfolders within the \Bitmap folder. The default template is "tbms\npc1.tbm": this means that the first frame will be saved as "npc1_000.tbm" in the folder "\GameName\Bitmap\tbms", and the second will be "npc1_001.tbm", etc.</li>
+</ul>
+<p>
+Upon exiting, the wizard resizes the animation to the dimensions of the first frame, and sets the transparent colour to the top-left pixel of the first frame.
+</p>
 
 <p style="text-align: left;">[ <a href="#">top</a> ]</p>
 <hr />
 <p>
 <a href="page9.htm">previous</a>, <a href="page11.htm">forward</a>
-</p></div>
+</p>
+</div>
 
 <div id="links">
 <p>
-All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
 </p>
 </div>
 

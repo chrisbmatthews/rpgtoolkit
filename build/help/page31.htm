@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
+
+<div class="topLinks">
+
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor</a></span>
+|&nbsp;
+
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing</a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm">rpgcode</a></span>
+|&nbsp;
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about</a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
+</div>
+
+</div>
+<div id="content">
+<h2>RPGToolkit 3.1.0 Changelog</h2>
+
+<h3>Overview</h3>
+<ul>
+	<li>This document details the changes and new features in RPGToolkit version 3.1.0 from version 3.0.6.</li>
+	<li>Also refer to the updated help files at <a href="http://tk3.toolkitzone.com/help/">http://tk3.toolkitzone.com/help/</a> and the RPGCode function reference <a href="http://tk3.toolkitzone.com/help/page19.htm">http://tk3.toolkitzone.com/help/page19</a></li>
+</ul>
+
+<h3>RPGToolkit Editor: toolkit3.exe</h3>
+
+<h4>IDE changes
+[<a href=.htm"http://tk3.toolkitzone.com/help/pageed_environment.htm">link</a>]</h4>
+<ul>
+	<li><h4>Tileset browser</h4>
+		<ul>
+			<li>The tileset browser on the right-hand toolbar can be horizontally resized by dragging at the right edge of the object.</li>
+			<li>Transparent pixels are rendered in "magic pink" (RGB 255, 0, 255).</li>
+			<li>Isometric tiles are drawn more compactly.</li>
+		</ul>
+	</li><li><h4>File tree</h4>
+		<ul>
+			<li>The project file tree on the right-hand toolbar can be horizontally resized by dragging at the right edge of the object.</li>
+			<li>Improved loading speed.</li>
+			<li>New options added to right-click menu: "Rename" and "Delete" are available for files; "Collapse All" collapses open folders; "Load into board editor" is available for animated tiles (TANs) when the board editor is open.</li>
+		</ul>
+	</li><li><h4>Subfolder selection</h4>
+		<ul>
+			<li>Files can now be saved into and selected from subfolders of the default folders (default folders are those created by the Toolkit, e.g. "Bitmap" and "Chrs"). Each filetype (e.g., board or character) has a specific default folder.</li>
+			<li>If a file is saved or selected from a folder outside of the default folder for that filetype, you will notified that the file will be copied into the default folder.</li>
+			<li>When specifying files in subfolders in editors, include the name of the subfolder in the link, e.g. "village\village1.brd" for "gameName\Boards\village\village1.brd". Only the backslash '\' is valid for separating folders; '/' is not.</li>
+		</ul>
+	</li>
+</ul>
+
+
+<h4>Main file editor
+[<a href="http://tk3.toolkitzone.com/help/page3.htm">link</a>]</h4>
+<ul>
+	<li>"Default pathfinding algorithm" option added to StartUp Info tab. Use this to set the behaviour of mouse-driven movement, ItemPath() and PlayerPath().</li>
+	<li>Vector drawing options added to the Graphics tab. Board and sprite vectors may be drawn in-game for debugging purposes (their colours cannot be changed); the active player's path and destination may be drawn in-game, in the colour specified by the adjacent colour box.</li>
+	<li>Movement style control options added to the Project Settings tab. Mouse- and keyboard-controlled movement can be toggled; diagonal keyboard movement can be deactivated; custom movement keys can be defined for the eight possible directions.</li>
+</ul>
+
+<h4>Character editor
+[<a href="http://tk3.toolkitzone.com/help/page7.htm">link</a>]</h4>
+<ul>
+	<li><h4>New graphics window</h4>
+		<ul>
+			<li>Section in which to allocate collision and interaction vectors for characters.</li>
+			<li>Vectors are drawn in a similar way as in the board editor. Default shapes can be assigned, or imported from other sprite files.</li>
+			<li>Wizard added to complete movement and idle stances.</li>
+		</ul>
+	</li>
+</ul>
+
+<h4>Item editor</h4>
+<ul>
+	<li>New graphics window (see Character editor).</li>
+</ul>
+
+<h4>Animation editor
+[<a href="http://tk3.toolkitzone.com/help/page10.htm">link</a>]</h4>
+<ul>
+	<li><h4>Toolbar</h4>
+		<ul>
+			<li>Rearranged toolbar: frame delay text box added; frame file text box and browse button added; size option buttons replaced by combo box, includes option to resize to image size.</li>
+			<li>Animation resizes to fit image when an image is selected.</li>
+		</ul>
+	</li><li><h4>Animation Wizard</h4>
+		<ul>
+			<li>Create animations from selection of image files or tiles.</li>
+			<li>Auto-creation of tile bitmaps for composite tile frames.</li>
+			<li>Auto-detection of transparent colour.</li>
+		</ul>
+	</li>
+</ul>
+
+<h4>Board editor 
+[<a href="http://tk3.toolkitzone.com/help/page4.htm">link</a>]</h4>
+<ul>
+	<li>The board editor has been completely rewritten for this release.</li>
+	<li><h4>Features</h4>
+		<ul>
+			<li>Define default board parameters at start-up.</li>
+			<li>Vector objects: collision, 'under' (layering), stairs, waypoint types.</li>
+			<li>Image objects: images can be placed directly on to layers.</li>
+			<li>Lighting objects: manipulable spotlights and gradients.</li>
+			<li>Item graphics displayed.</li>
+			<li>Object toolbar.</li>
+			<li>Links to open files in their respective editors.</li>
+			<li>Generic tools: dropper, rectangle, filled rectangle, copy, cut, paste, drag-drop, multi-level undo.</li>
+			<li>All layers displayed, show and hide individual layers.</li>
+			<li>Variable number of layers.</li>
+			<li>Zoom, pan (scroll wheel support).</li>
+			<li>Image export.</li>
+			<li>Tile bitmaps can now be placed as tiles (the constituent tiles are inserted directly into the tile data and no link to the tile bitmap exists).</li>
+		</ul>
+	</li>
+</ul>
+
+<h4>RPGCode editor
+[<a href="http://tk3.toolkitzone.com/help/page6.htm">link</a>]</h4>
+<ul>
+	<li><h4>RPGCode Updater (Tools)</h4>
+		<ul>	
+			<li>Routine to upgrade RPGCode programs to improve compatibility with 3.1.0's RPGCode.</li>
+			<li>The routine corrects syntax that worked in previous versions but does not work in 3.1.0, either because it is incorrect and the old interpreter does not recognise the error, or because the convention is incompatible with the new RPGCode specification.</li>
+			<li>The updater does not guarantee that updated programs will run perfectly, and some user alterations may be required, depending on the quality of the code.</li>
+			<li>A backup copy of each updated program is saved in the /Prg/Backup folder.</li>
+			<li>All programs should be updated before the game is run, however the updater should never be run again on a program that has been updated.</li>
+		</ul>
+	</li>
+</ul>
+
+<h4>Known issues</h4>
+<ul>
+	<li>Conditional activation variables (e.g. initvar = "0") that are uninitialised are set to "".</li>
+	<li>Top row of solid tiles do not always convert to vectors properly</li>
+</ul>
+
+<hr />
+<h3>RPGToolkit Engine: trans3.exe</h3>
+
+<p>With the exception of some low-level graphics routines, the engine has been completely rewritten for this release, which is the justification for the new major version number.</p>
+
+<h4>Gameplay</h4>
+<ul>
+	<li><h4>Coordinate systems
+	[<a href="http://tk3.toolkitzone.com/help/page4.htm">link</a>]</h4>
+		<ul>
+			<li>Two new coordinate systems are provided: 'isometric rotated' and 'pixel absolute'.</li>
+			<li><h4>Isometric rotated</h4>
+				<ul>
+					<li>The Cartesian coordinate system is rotated onto the isometric plane, resulting in a more intuitive coordinate system. The original isometric system is hereby known as 'isometric stacked'.</li>
+					<li>Caveats of the rotated system: the origin (1,1) is necessarily off-screen, and the coordinate values are dependent upon the board width. That is, changing the board width alters the coordinate values (however, tiles and objects are updated accordingly in the board editor).</li>
+				</ul>
+			</li><li><h4>Pixel absolute</h4>
+				<ul>
+					<li>All objects except tiles are referenced in Cartesian pixel coordinates, regardless of the underlying tile coordinate system (i.e. isometric or 2D).</li>
+					<li>Tiles are still referenced in the underlying coordinate system (i.e., for functions accessing tiles).</li>
+					<li>It is strongly recommended to use the pixel absolute coordinate system on both 2D and isometric boards.</li>
+				</ul>
+			</li><li><h4>Converting coordinate systems</h4>
+				<ul>
+					<li>Boards may be upgraded to either new coordinate system in the board editor. Board data locations are unaffected, but all positions are given in the new system.</li>
+					<li>Updating does not extend to RPGCode programs. All coordinates should be upgraded manually if the coordinate system is changed (this functionality cannot be provided by the RPGCode updater).</li>
+				</ul>
+			</li>
+		</ul>
+	</li><li><h4>Movement (see Main File Editor)</h4>
+		<ul>
+			<li>Movement can now be controlled using the mouse. Scrolling the board by moving the mouse to the edge of the screen is not currently supported.</li>
+			<li>Custom movement keys can be assigned instead of the cursor keys.</li>
+			<li>Dual numberpad-cursor key movement is no longer supported.</li>
+		</ul>
+	</li><li><h4>Pathfinding
+		[<a href="http://tk3.toolkitzone.com/help/page4.2.htm">link</a>]</h4>
+		<ul>
+			<li>The engine features a complete pathfinding system based on the new vector system. The system consists of two routines that implement tile and vector pathfinding, respectively.</li>
+			<li>Tile pathfinding encompasses diagonal (8-way) and axial (4-way) movements between fixed grid points. Start and end points may be non-integral but path points will always be fixed. This may limit freedom of movement in comparison to vector pathfinding, especially when using non-tile integral collision vectors.</li>
+			<li>Vector pathfinding allows movement in any direction between any points.</li>
+			<li>Pathfinding is controlled through PlayerPath() and ItemPath(), and used by mouse movement.</li>
+		</ul>
+	</li><li><h4>Miscellaneous</h4>
+		<ul>
+			<li>'Target' and 'source' may be given as literal handles in an item's activation program. 'Source' refers to the activated item; 'target' refers to the player. Most sprite functions should now accept literal targets as well as item indices.</li>
+			<li>Walking animation frames now change at the speed of the animation, not at a rate determined by the walking speed. <b>You may need to update your walking animations.</b></li>
+		</ul>
+	</li>
+</ul>
+
+<h4>RPGCode
+[<a href="http://tk3.toolkitzone.com/help/page19.htm">link</a>]</h4>
+<ul>
+	<li><h4>New interpreter</h4>
+		3.1.0 features a novel RPGCode parser and compiler that generates "machine code" (for the RPGCode virtual machine, not the x86) from a raw text program, which is smaller and runs faster than the raw text. The engine also caches compiled programs so that they load more quickly when run again. The interpreter is based on <a href="http://en.wikipedia.org/wiki/Reverse_Polish_notation">Reverse Polish Notation</a>.
+	</li><li><h4>Syntax alterations</h4>
+		<ul>
+			<li><b>= is not the same as == (the assignment operator is distinct from the equality operator).</b> Use = to assign a value to a variable, use == to compare two values or variables (e.g., in an if statement).
+<pre>x = 12;
+if (x == 10)
+{
+    show(x); // Will not show because x == 12.
+}
+if (x = 10)
+{
+    show(x); // Will show "10" because x = 10 assigns 10 to x and returns x; the if block runs because x ~= 0.
+}</pre></li>
+
+			<li><b>All strings must be quoted.</b>
+<pre>var = "some string"         // Correct.
+var = some string           // Error.</pre></li>
+
+			<li>Lines <i>may</i> be terminated with a semi-colon.
+<pre>x = 12;         // Valid, good practice.
+x = 12          // Valid, but bad practice.</pre></li>
+
+			<li>Variable types have been decprecated: variables are now dynamic and can hold literal or numerical values. The literal/numerical identifers $ and ! are no longer required.</li>
+			<li>Variables can be concatenated without type casting.
+<pre>mwin("pi is " + 3.14)</pre></li>
+
+			<li>C++-style comments added: "//" and "/* comment */"
+<pre>// Single-line comment.
+/* Multi
+line
+comment */</pre></li>
+
+			<li>For-loop qualifiers must be semi-colon separated (not comma separated).
+<pre>for(i = 0; i ~= 10; ++i) // Valid.
+for(i = 0, i ~= 10, ++i) // Invalid.</pre></li>
+
+			<li>'=>' is not the 'greater than or equal to' operator (>=)</li>
+
+		</ul>
+	</li><li><h4>Alterations to existing functions</h4>
+		<ul>
+			<li>ViewBrd(). Added optional parameter to draw to canvas instead of screen.
+			<pre>void viewbrd(string filename [, int x, int y [, canvas cnv]])</pre></li>
+
+			<li>PlayerStep(), ItemStep(). Added optional parameter to receive flags. See help files for information on flag usage and valid flags. Item handle may be 'target' or 'source' or index. Player handle may be index. Superseded by playerPath() and itemPath().
+			<pre>void playerstep(variant handle, int x, int y [, int flags])</pre></li>
+
+			<li>Push(), PushItem(). Added optional parameter to receive flags. Item handle may be 'target' or 'source' or index. Player handle may be index. Superseded by playerPath() and itemPath().
+			<pre>void push(string direction [, variant handle [, int flags]])</pre></li>
+
+			<li>DirSav(). New parameters to control dialog title, colours, background image. Use 'allowNewFile' to differentiate between loading and saving.
+			<pre>str dirSav(str title, bool allowNewFile, int textColor, int backColor, str image)</pre></li>
+
+			<li>ClearButtons(). Optional parameters to clear indexed slots.
+			<pre>clearbuttons([int slot1, int slot2...])</pre></li>
+
+			<li>PlayerStance(), ItemStance(). Added optional parameter for flags. See RPGCode reference for valid flags. Stances may be run from threads, optionally pausing thread execution until the stance ends. When run in a program, the stance persists until the frame is changed, e.g. by movement.
+			<pre>playerstance(handle player, string stance [, int flags])</pre></li>
+
+			<li>EraseItem(), DestroyItem(), ItemLocation(). Can now receive 'target' or 'source' as item identifiers in item-launched and item-multitasking programs.</li>
+
+			<li>PathFind(). Can no longer pathfind between layers. Superseded by playerPath(), itemPath().</li>
+		</ul>
+	</li>
+	<li><h4>New functions: see RPGCode reference for details</h4>
+		<ul>
+			<li>ActivePlayer(). Change the player that the user controls to a different member of the party.</li>
+			<li>PlayerLocation().</li>
+			<li>GetTickCount(). Milliseconds since Windows started.</li>
+			<li>CanvasDrawPart().</li>
+			<li>CanvasGetScreen(). Copy the screen to a canvas.</li>
+
+			<li>PlayerPath(), ItemPath(). Supersede Push(), PushItem(), PlayerStep(), ItemStep(), PathFind(). Enables control of sprite movement by position rather than direction. Pathfinding or explicit paths may be defined. See the Vector Overview tutorial for further information.
+			<pre>void itemPath(variant handle, int flags, int x1, int y1, ..., int xn, int yn)
+void itemPath(variant handle, int flags | tkMV_PATHFIND, int x1, int y1)
+void itemPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
+void itemPath(variant handle, int flags | tkMV_WAYPOINT_LINK, variant boardpath, int cycles)</pre></li>
+
+			<li>PlayerGetPath(), ItemGetPath(). Get the number of points or a specific point in a sprite's path.
+			<pre>int playerGetPath(variant handle)
+void playerGetPath(variant handle, int index, int &x, int &y)</pre></li>
+
+			<li>BoardGetVector(). Get the number of vectors on the board or the properties of a specific vector.
+			<pre>int boardGetVector()
+void boardGetVector(variant vector, int &type, int &pointCount, int &layer, bool &isClosed, int &attributes)</pre></li>
+
+			<li>BoardSetVector().
+			<pre>void boardSetVector(variant vector, int type, int pointCount, int layer, bool isClosed, int attributes)</pre></li>
+
+			<li>BoardGetVectorPoint(). Get a single point of a vector by index.
+			<pre>void boardGetVectorPoint(variant vector, int pointIndex, int &x, int &y)</pre></li>
+
+			<li>BoardSetVectorPoint(). Set a single point of a vector, optionally applying the changes in order to regenerate pathfinding information.
+			<pre>void boardSetVectorPoint(variant vector, int pointIndex, int x, int y, bool apply)</pre></li>
+
+			<li>BoardGetProgram(). As above, for programs.</li>
+			<li>BoardSetProgram().</li>
+			<li>BoardGetProgramPoint().</li>
+			<li>BoardSetProgramPoint().</li>
+
+			<li>SetAmbientLevel(). Supersedes the AmbientRed, AmbientGreen, AmbientBlue reserved variables.
+			<pre>void setAmbientLevel(int red, int green, int blue)</pre></li>
+
+			<li>PlayerDirection(), ItemDirection(). Gets/sets the sprite direction. Possible directions are reserved constants (tkMV_E...), see RPGCode reference.
+			<pre>int playerDirection(variant handle)
+void playerDirection(variant handle, int dir)</pre></li>
+
+			<li>SetErrorHandler(). Supersedes 'On Error' syntax.</li>
+			<li>SetResumeNextHandler().</li>
+			<li>ResumeNext().</li>
+
+			<li>SpriteTranslucency(). Set/get the translucency of sprites moving behind objects.
+			<pre>void spriteTranslucency(int percent)
+int spriteTranslucency(void)</pre></li>
+		</ul>
+	</li>
+	<li><h4>Obselete functions (including previously obsolete functions)</h4>
+		<ul>
+			<li>Sound() - use Wav() or MediaPlay().</li>
+			<li>Win().</li>
+			<li>GoDos().</li>
+			<li>WalkSpeed() - use PlayerSpeed().</li>
+			<li>ItemWalkSpeed() - use ItemSpeed().</li>
+			<li>CharacterSpeed() - use GameSpeed().</li>
+			<li>BorderColor().</li>
+			<li>UnderArrow().</li>
+			<li>FightStyle().</li>
+			<li>BattleSpeed().</li>
+			<li>TextSpeed().</li>
+			<li>MwinSize().</li>
+			<li>Stance() - use PlayerStance() or ItemStance() instead.</li>
+			<li>StaticText().</li>
+			<li>Parallax().</li>
+			<li>AnimatedTiles().</li>
+			<li>SmartStep().</li>
+			<li>Autocommand().</li>
+			<li>SetConstants().</li>
+			<li>ShopColors().</li>
+			<li>IIf() - use the following "tertiary" operator:
+			<pre>result = (expression ? true part : false part)
+result = (5 == 3 ? "five equals three" : "five does not equal three")</pre></li>
+		</ul>
+	</li>
+</ul>
+
+<h4>Graphics</h4>
+<ul>
+	<li>Partially translucency for sprites. When passing under a tile or image on a higher layer or on an under-vector, only the coincident portion of the sprite will be drawn translucently (see SpriteTranslucency() function).</li>
+	<li>Support for animated gifs for sprite animations. [<a href="http://tk3.toolkitzone.com/help/page10.htm">link</a>]</li>
+	<li>Ability to place image files (e.g., PNG) on board layers in a similar way to tiles.</li>
+	<li>The ambient level is now applied to non-tile images used for sprites and background/layered images (see AmbientLevel()). This does not apply to tile shading/lighting.</li>
+</ul>
+
+<h4>Plugins and callbacks</h4>
+<ul>
+	<li>CBGetPlayerNum(PLAYER_DIR_FACING, ...), CBSetPlayerNum(...). The values assigned to each direction have changed to the following values, which correspond to the new RPGCode constants associated with the PlayerDirection() and ItemDirection() functions:
+
+	<table>
+	<tr><td>East</td>		<td>tkDIR_E</td>	<td>1</td></tr>
+	<tr><td>Southeast</td>		<td>tkDIR_SE</td>	<td>2</td></tr>
+	<tr><td>South</td>		<td>tkDIR_S</td>	<td>3</td></tr>
+	<tr><td>Southwest</td>		<td>tkDIR_SW</td>	<td>4</td></tr>
+	<tr><td>West</td>		<td>tkDIR_W</td>	<td>5</td></tr>
+	<tr><td>Northwest</td>		<td>tkDIR_NW</td>	<td>6</td></tr>
+	<tr><td>North</td>		<td>tkDIR_N</td>	<td>7</td></tr>
+	<tr><td>Northeast</td>		<td>tkDIR_NW</td>	<td>8</td></tr>
+	</table>
+	
+	</li>
+	<li>CBGetGeneralString(GEN_PLYROTHERHANDLES, GEN_PLYROTHERFILES), CBSetGeneralString(sim.). No mechanism currently exists to restore removed players, so these variables are not stored.</li>
+</ul>
+
+<h4>Fixes</h4>
+<ul>
+	<li>Note: Since the engine has been almost entirely rewritten, these bugs have been implicitly fixed during the rewrite process.</li>
+	<li>CreateItem() problems with unoccupied slot numbers.</li>
+	<li>ItemLocation() problems in threads.</li>
+	<li>Board backgrounds disappearing when moving to the top of a board.</li>
+	<li>PlayAvi(), PlayAviSmall() compress dimensions.</li>
+</ul>
+
+
+<h4>Known issues</h4>
+<ul>
+	<li>Pathfinding is not infallible. Sprites will get stuck in complex and busy environments. Problems can be avoided by using simple sprite and board collision vectors and waypoint paths.</li>
+	<li>Switching out of a full-screen game (e.g., using Alt-Tab) will cause the game to crash.</li>
+	<li>prompt() does not accept "(".</li>
+	<li>CallPlayerSwap() unimplemented.</li>
+	<li>#global unimplemented.</li>
+</ul>
+
+<h3>Licensing</h3>
+<ul>
+	<li>The RPGToolkit version 3.1.0 is licensed under the GNU General Public License (GPL) v3. This includes the engine trans3.exe, the editor toolkit3.exe, and the graphics library actkrt3.dll.</li>
+</ul>
+
+<h3>Credits</h3>
+<ul>
+	<li>Colin Fitzpatrick: RPGCode subsystem (including threaded RPGCode), most file readers, most RPGCode functions, plugin subsystem, most plugin callbacks, battle system subsystem, RPGCode update wizard, various trivial things</li>
+	<li>Jonathan Hughes (Delano): Board editor, animation wizard, project file tree, sprite graphics window, subfolder file selection. Vector collision, vector movement and pathfinding, coordinate systems, partial sprite translucency, layered images.</li>
+	<li>Samuel Bedwell (Occasionally Correct): RPGCode help pages.</li>
+	<li>Lorie-Jay Gutierrez (Khin): Board editor icons.</li>
+</ul>
+</div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
 	<title>RPGToolkit Help &mdash;&nbsp;</title>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<script type="text/javascript" src="js.js"></script>
 	<link rel="stylesheet" href="styles/css.css" />
 	<!--[if IE]>
@@ -21,19 +21,23 @@
 
 <div id="document">
 
-<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
 
 <div class="topLinks">
 
-<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
 |&nbsp;
 
 <span
 	onmouseover="showMenu('editor');"
 	onmouseout="hideMenu('editor');"
 	id="editor_link"
-><a href="page2.htm">editor<!-- guide--></a></span>
+><a href="page2.htm">editor</a></span>
 |&nbsp;
+
 <div
 	id="editor"
 	class="submenu"
@@ -42,18 +46,18 @@
 >
 	<div><a href="pageed_environment.htm">editor environment</a></div>
 	<div><a href="page3.htm">main file editor</a></div>
-
 	<div><a href="page4.htm">board editor</a></div>
 	<div><a href="page5.htm">tile editor</a></div>
 	<div><a href="page6.htm">program editor</a></div>
 	<div><a href="page7.htm">character editor</a></div>
+
 	<div><a href="page8.htm">item editor</a></div>
 	<div><a href="page9.htm">enemy editor</a></div>
-
 	<div><a href="page10.htm">animation editor</a></div>
 	<div><a href="page11.htm">tile bitmap editor</a></div>
 	<div><a href="page12.htm">special move editor</a></div>
 	<div><a href="page13.htm">status effect editor</a></div>
+
 	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
 </div>
 
@@ -61,7 +65,7 @@
 	onmouseover="showMenu('engine');"
 	onmouseout="hideMenu('engine');"
 	id="engine_link"
-><a href="page14.htm">playing<!-- your game--></a></span>
+><a href="page14.htm">playing</a></span>
 |&nbsp;
 <div
 	id="engine"
@@ -77,9 +81,8 @@
 	onmouseover="showMenu('rpgcode');"
 	onmouseout="hideMenu('rpgcode');"
 	id="rpgcode_link"
-><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+><a href="page17.htm">rpgcode</a></span>
 |&nbsp;
-
 <div
 	id="rpgcode"
 	class="submenu"
@@ -101,7 +104,6 @@
 	id="troubleshooting_link"
 ><a href="page22.htm">troubleshooting</a></span>
 |&nbsp;
-
 <div
 	id="troubleshooting"
 	class="submenu"
@@ -118,7 +120,7 @@
 	onmouseout="hideMenu('about');"
 	style="margin-bottom: 0;"
 	id="about_link"
-><a href="page28.htm">about<!-- the toolkit--></a></span>
+><a href="page28.htm">about</a></span>
 <div
 	id="about"
 	class="submenu"
@@ -126,15 +128,16 @@
 	onmouseout="hideMenu('about')"
 >
 	<div><a href="page29.htm">history</a></div>
-
-	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
 </div>
 
 </div>
-
-<div id="content"><h2><a href="page2.htm">Editor Guide</a> &mdash; Main File Editor</h2>
+<div id="content">
+<h2><a href="page2.htm">editor guide</a> &mdash; main file editor</h2>
 
 <!-- Main File Editor rewrite 22 Feb 2005 by Delano -->
+<!-- Updated for 3.1.0 - 22 Dec 2006 by Delano -->
 
 <p>
 A game's main file (*.gam) contains the all the information and settings to start up your game. A game's main file is located separately from the rest of the game's folders in the \Toolkit3\Main folder, along with any others.
@@ -142,7 +145,7 @@ A game's main file (*.gam) contains the all the information and settings to star
 
 <img src="images/image46" alt="Main File Editor" />
 
-<h3>Project Settings</h3>
+<h3>Project settings</h3>
 <p>
 Project Name &mdash; The name of the game. This name appears in the title bar of the engine during gameplay.
 </p><p>
@@ -151,13 +154,19 @@ Project Path &mdash; The location of the game files within the \Toolkit3 directo
 Enable Joystick &mdash; A joystick can be used to control the player and navigate the menus instead of or as well as the keyboard.
 </p><p>
 Cursor Sounds &mdash; You can assign sounds effects from the \Media folder to the listed cursor (mouse) actions.
+</p><p>
+Use Keyboard &mdash; Toggles use of the keyboard for player movement. Key assignments must be made on the adjacent grid for each direction.
+</p><p>
+Use Mouse &mdash; Toggles use of the mouse for player movement. 
+</p><p>
+Allow Diagonal Movement &mdash; Toggles the feature where diagonal movement can be caused by attempting to move in two 'axial' directions on the keyboard.
 </p>
 
-<h3>Startup Info</h3>
+<h3>Startup info</h3>
 <p>
 Initial Board File &mdash; The first board the player appears on. This board is loaded immediately after the start program finishes running; if you wish to load a board during the start program (using the Send() command) that persists when it ends, you can leave this field empty.
 </p><p>
-Note: Make sure you set a start location for your player on the board, otherwise your player may not appear in the location you wish! (<a href="page4.htm">Board Editor</a> &gt; Board Settings &gt; Set Player Position).
+Note: Make sure you set a start location for your player on the board, otherwise your player may not appear in the location you wish! (<a href="page4.htm">Board Editor</a> &gt; Board Settings &gt; Set Player Position). You can only set the player start position if the board is specified as the Initial Board File.
 </p><p>
 Initial Character File &mdash; The main player in the game; the player that is controlled by the user at the start. This must be set before running the game or the game will not work!
 </p><p>
@@ -168,12 +177,20 @@ This setting is equivalent to the GameSpeed() command, which takes the same argu
 </p><p>
 Note: if movement is slow even with low individual walk delays (or you have a low fps), increasing this value will <i><b>not</b></i> increase the movement speed, since your computer will already be running as fast as it can &mdash; to the contrary it can cause some adverse movement problems. More information can be found <a href="page23.htm#faq_4.2">here</a>.
 </p><p>
-Movement Style &mdash; The minimum step by which players and items move around the board. Tile movement refers to old-style block movement, where a single step takes a player to the next tile. Pixel movement reduces the minimum step &mdash; currently (as of <a href="page29.htm#3.0.6">3.0.6</a>) this is a quarter-tile, and in the future this will be reduced to true single-pixel movement.
+Movement Style &mdash; The minimum step by which players and items move around the board. Tile movement refers to old-style block movement, where a single step takes a player to the next tile. Pixel movement reduces the minimum step to a pixel value determined by the frame rate (down to one pixel per step).
 </p><p>
 If you select pixel movement, an option becomes available to use movement commands in pixel increments &mdash; that is, to move players and items in quarter-tile increments or full tile. This option is controlable through the PixelMovement() command.
 </p><p>
 Mouse Cursor &mdash; The Toolkit gives you the option to create a custom mouse icon
 from an image file or tile. First you must choose the required option from the radio buttons at the bottom of the window &mdash; "Default" (blue arrow), "None" (no cursor) or "Custom" &mdash; other buttons only become live when you select Custom. The text box specifies the file to be used.
+</p><p>
+Default Pathfinding Algorithm &mdash; The advent of vector collision and true pixel based movement facilitate a number of movement styles when pathfinding.
+<ul>
+<li>Axial - Possible paths are confined to the axes of the board (e.g., North-South and East-West) and path points are restricted to tile centres.</li>
+<li>Diagonal - Possible paths are confined to the axes and diagonals and path points are restricted to tile centres.</li>
+<li>Vector - Paths may follow any direction (angle, or orientation) and visit any coordinates.</li>
+</ul>
+The differences between the options are most readily observed when moving the player using the mouse. This setting affects ItemPath(), ItemPath(), but not Pathfind() or Wander(). See the <a href="page4.2.htm">Vectors Overview</a>.
 </p>
 
 <h3>RPGCode</h3>
@@ -212,10 +229,16 @@ Colour Depth &mdash; A higher bit depth corresponds to more a bigger range of co
 Screen Style &mdash; Generally, fullscreen mode is faster than windowed.
 </p><p>
 Resolution / Custom &mdash; Lower screen resolutions are generally faster. Note that custom resolutions may not be supported by all video cards, and may cause problems (especially in fullscreen mode).
-
-
 </p><p>
 Frames-per-second option &mdash; Tick this to display the fps (frames per second) in the title bar (only visible in full-screen mode). This is only a measure of the speed during movement (not during programs or menus). A low fps (&lt; 20) is indicative of slow movement and you may not notice an increase in walking speed above the default setting (nor will GameSpeed() help).
+</p><p>
+Draw board vectors &mdash; Toggles drawing of board vectors (e.g., collision, program...) in-game. The particular colours are unchangable; this feature is intended for debugging purposes only.
+</p><p>
+Draw sprite vectors &mdash; Toggles drawing of sprite collision vectors in-game. The particular colours are unchangable; this feature is intended for debugging purposes only.
+</p><p>
+Draw active player path &mdash; Toggles drawing of the player's pending movement path. The colour may be defined using the adjacent colour box.
+</p><p>
+Draw active player destination &mdash; Toggles drawing of an ellipse at the player's destination. The colour may be defined using the adjacent colour box.
 </p>
 
 <h3>Plugins</h3>
@@ -227,11 +250,12 @@ If you have downloaded (or even written!) a plugin, it must be added here before
 <hr />
 <p>
 <a href="pageed_environment.htm">previous</a>, <a href="page4.htm">forward</a>
-</p></div>
+</p>
+</div>
 
 <div id="links">
 <p>
-All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
 </p>
 </div>
 

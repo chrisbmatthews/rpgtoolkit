@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
+
+<div class="topLinks">
+
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor</a></span>
+|&nbsp;
+
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing</a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm">rpgcode</a></span>
+|&nbsp;
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about</a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
+</div>
+
+</div>
+<div id="content">
+<h2><a href="page2.htm">editor guide</a> &mdash; vector overview</h2>
+
+<p style="text-transform: lowercase;">
+<a href="page4.htm">Board Basics</a>
+<br />
+<a href="page4.1.htm">Around The Editor</a>
+<br />
+Vector overview
+[ <a href="#collision">Collision</a> | <a href="#program">Program</a> | <a href="#graphical">Graphical</a> | <a href="#movement">Movement</a> | <a href="#creating">Creating Vectors</a> ]
+
+</p>
+
+<!-- Board Editor rewrite - 18 September 2006 by Delano -->
+
+<p>
+This document provides an introduction to the Toolkit's vectors, including how they work, how to create them in the board editor, how to edit them in-game and how to optimise their usage.
+</p>
+<h3>Introduction To Vectors</h3>
+<p>
+Vectors have been introduced into the Toolkit in version 3.1.0 principally as an upgrade of the tile collision system. Previously, the smallest solid object that could be defined was a tile, which limited the interaction potential of the player with the game's environment; the same applied to programs. Vectors address this by allowing users to define arbitrary collision and interaction regions. Additionally, vectors lay the foundations for mouse-driven movement and the ability to move sprites along arbitrary paths.
+</p><p>
+So what are vectors? Put simply, a vector is a set of points connected by lines to form an open or closed shape. An open vector is one whose ends are not connected; the ends of a closed vector are connected, thus forming at least one internal area. Using a small amount of maths, <i>intersections</i> between vectors can be detected - between sprites and board objects, or sprites and sprites - and the associated action or event triggered. An intersection is defined as either a crossing of edges or the complete containment of one vector by another.  
+</p>
+<img src="images/image113" alt="Open vs closed vectors" />
+<p><i>Open vs. closed vectors</i></p>
+<img src="images/image114" alt="Intersecting vectors" />
+<p><i>Intersecting vectors</i></p>
+
+<h3>Applications</h3>
+<ol>
+	<li><a href="#collision">Collision</a>: Vectors designated as collidable cannot be crossed or entered by other collision vectors. Sprites are given collision vectors (<i>bases</i>) to allow them to interact in this way.
+	</li><li><a href="#program">Program</a>: An RPGCode Program may be launched from a board when the player moves onto a program vector. The event occurs when the program vector intersects the player's <i>collision base</i>. A Program associated with a sprite is launched when the player's collision base intersects the sprite's <i>activation base</i>, which is distinct from the sprite's collision base.
+	</li><li><a href="#graphical">Graphical</a>: Vectors may also be used to enhance graphical aspects of the game. "Under" vectors cause sprites that move within them to be drawn as if they are vertically under the area of the board the vector covers - this is the same effect as occurs when images or tiles are placed on layers above the layer the player moves on.
+	</li><li><a href="#movement">Movement</a>: An easier way to script sprite movement than by supplying a large set of directions or coordinates is to supply the sprite with a waypoint vector along which to walk. Complex routines can then be created visually in the board editor.
+	</li>
+</ol>
+
+<a name="collision"></a><h3>Collision Vectors</h3>
+<p>
+Sprite movement ends when a sprite's <i>collision base</i> intersects another collision vector, be it a board vector or another sprite's collision base. When the player is controlled using the keyboard, the sprite may be seen to 'slide' along the edges of a board vector in an attempt to circumvent the object, if the angle between the movement direction and the edge is below a quarter turn.
+</p><p>
+<img src="images/image115" alt="Collision vectors" />
+<br />
+<i>Collision vectors</i></p>
+
+<h4>Optimisation</h4>
+<p>
+As mentioned above, the intersection of two vectors can be calculated quite easily, but, depending on the numbers of points in the vectors, it can be quite a time-consuming operation. Whilst the <i>shape</i> of a vector itself has no bearing on the speed of the calculations, the <i>size</i> of the vector is important. The <b>bounding box</b> of the vector is defined to be smallest rectangle that contains the vector, and computational time can be saved by only testing for an intersection when a sprite's collision base is inside a vector's bounding box.
+</p><p>
+<img src="images/image116" alt="Bounding box" />
+<br />
+<i>The bounding box of a vector</i></p>
+<p>
+When the vector is made up of only a few points, there isn't a big difference, but when vectors contain a lot of points and a fair number of sprites are moving on the board, the difference may be appreciable. However, if large vectors are broken up into many small vectors, the engine may slow down because of an excessive number of bounding box checks when intersection checks may be faster. The best advice to give is to keep complex vectors smaller and simple vectors larger.
+</p><p>
+As an example of the issue, consider the following designs for the walls of a room; the first uses one large vector whose bounding box covers the entire floor of the room (please use your imagination to explain why the room has such deformed walls!). Wherever the player moves it will be inside the bounding box, and hence an intersection check against a large number of points is always performed. In the second design, the walls are broken down into four smaller vectors, and their bounding boxes leave the centre of the room uncovered. When the player moves around, an intersection check will either not be required or will be performed on a smaller number of points.
+</p><p>
+Note: the room could not be constructed from one closed vector, because the sprite would not be able to move inside the vector (its collision base would always intersect).
+</p>
+
+<img src="images/image117" alt="Room design - basic" />
+<p><i>Walls of a room made with one open vector (with bounding box)</i></p>
+<img src="images/image118" alt="Room design - optimised" />
+<p><i>Walls of a room made with four open vectors (with bounding boxes)</i></p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="program"></a><h3>Program Vectors</h3>
+<p>
+Board programs are launched when the player's collision base intersects the programs' vectors, <b>not</b> when its activation base intersects (the player's activation base is presently unused). A program vector may be open or closed, and the same principle of complexity versus size when computing intersections applies (however, intersections are only evaluated for the selected player). A sprite's associated program is launched when the player's collision base intersects the sprite's activation base, but only when the player is moving - a sprite that walks up to the player (or another sprite) will not trigger its own program (or the other sprite's).
+</p>
+<table>
+<tr><td>
+	<img src="images/image119" alt="Program vector trigger" />
+</td><td>
+	<img src="images/image120" alt="Sprite activation base trigger" />
+</td></tr>
+<tr><td>
+	<i>Program vector trigger</i>
+</td><td>
+	<i>Sprite activation base trigger</i>
+</td></tr>
+</table>
+<p>
+Board program vectors possess several features that control their interaction, including options to launch a program when the user presses the activation key (see <a href="page3.htm">Main File Editor</a>) whilst intersecting the vector, or to trigger the program repetitively (after a certain number of steps) whilst the player walks across the vector. For a full description of these options, see the <a href="page4.1.htm#righttoolbar">Board Editor</a>.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="graphical"></a><h3>Graphical (Under)</h3>
+<p>
+Vectors can be used graphically to provide the illusion that the player moves underneath them. Any board graphics bounded by an <i>Under vector</i> are drawn translucently over the player as he moves over the vector. Under vectors are, therefore, necessarily closed.
+</p><p>
+Two methods of interaction are available: vector intersection and frame intersection, toggled by the 'frame intersection' option on the right-hand toolbar in the Board Editor. Frame intersection causes the bounded graphics to be drawn translucently whenever the sprite's animation frame intersects the under vector; vector intersection causes the effect whenever the sprite's collision base intersects. The former emulates the function of layered images and tiles on higher layers; the latter enables sprites to move both in front of and behind objects whilst still on the same layer. Consider the following column on the background image. The player should be able to walk in front of the object without appearing beneath it, but should appear beneath it when behind it.
+</p>
+<table>
+<tr><td>
+	<img src="images/image121" alt="In front, vector intersect" />
+	<img src="images/image122" alt="Behind, vector intersect" />
+</td><td>
+	<img src="images/image123" alt="In front, frame intersect" />
+	<img src="images/image122" alt="Behind, frame intersect" />
+</td></tr>
+<tr><td>
+	<i>Behaviour in vector intersect mode</i>
+</td><td>
+	<i>Behaviour in frame intersect mode</i>
+</td></tr>
+</table>
+<p>
+Note that in order to apply the effect to the background image, the 'Include Background Image' option must be enabled in the Board Editor.
+</p>
+<h4>Optimisation</h4>
+<p>
+Optimisation is a little different for under vectors: the number of points on an under vector is irrelevant to its performance - you can make it as detailed as you like, but its size is important. For each vector created an image canvas must be allocated in the computer's memory, as large as the vector's bounding box. If a vector's bounding box contains a lot of unbounded space, more memory than is strictly needed is being used. For instance, the following shape can be better represented using two under vectors:
+</p>
+<table>
+<tr><td>
+	<img src="images/image124" alt="One under vector - inefficient" />
+</td><td>
+	<img src="images/image125" alt="Two under vectors - efficient" />
+</td></tr>
+<tr><td>
+	<i>The bounding box contains large unbounded areas</i>
+</td><td>
+	<i>Unbounded areas within the bounding boxes are reduced</i>
+</td></tr>
+</table>
+<p>
+As before, a balance must be struck between the number of vectors use and their size. An excessive number of tiny vectors will be as inefficient as a couple of large vectors. Note that under vectors that intersect each other do not reduce the translucency of sprites that move over both at once.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="movement"></a><h3>Movement</h3>
+<p>
+Version 3.1.0 takes full advantage of the movement potential of vectors, through both pathfinding and scripting.
+</p>
+<h4>Pathfinding</h4>
+<p>
+Pathfinding routines are used to generate the shortest route between two points given a set of obstacles in between. In the Toolkit these obstacles are collision vectors and sprite collision bases. The most obvious use of pathfinding is for <i>mouse-driven movement</i> - the user clicks a point on the board and the player walks to it, avoiding any obstructions. If the destination cannot be reached, the player may attempt to get as close to the that point as possible.
+</p><p>
+Three different alogrithms are provided for pathfinding, each producing a different style of movement (see <a href="page3.htm">Main File Editor</a>).
+</p>
+<ul>
+	<li>Axial - Possible paths are confined to the axes of the board (e.g., North-South and East-West) and path points are restricted to tile centres.</li>
+	<li>Diagonal - Possible paths are confined to the axes and diagonals and path points are restricted to tile centres.</li>
+	<li>Vector - Paths may follow any direction (angle, or orientation) and visit any coordinates.</li>
+</ul>
+<table>
+<tr><td>
+	<img src="images/image126" alt="Axial pathfinding" />
+</td><td>
+	<img src="images/image127" alt="Diagonal pathfinding" />
+</td><td>
+	<img src="images/image128" alt="Vector pathfinding" />
+</td></tr>
+<tr><td>
+	<i>Axial pathfinding</i>
+</td><td>
+	<i>Diagonal pathfinding</i>
+</td><td>
+	<i>Vector pathfinding</i>
+</td></tr>
+</table>
+<p>
+Note that, presently, axial and diagonal pathfinding round all locations to tile-integral coordinates. This may cause scenes that are navigable in vector mode to be impassable in these modes, since sprite paths must coincide with tile-integral coordinates. The possible 'grid size' of diagonal and axial pathfinding may be changable at a later date, but it will be at the expense of performance.
+</p><p>
+Pathfinding may also be used explicitly through RPGCode; see the examples below.
+</p>
+
+<h4>Scripting</h4>
+<p>
+Up to version 3.0.6, movement could only be achieved by giving sprites directions in which to move, such as "South" or "NorthEast", using the Push() and PushItem() commands. In version 3.1.0, this <i>relative</i> movement system (one that does not involve coordinates) has been depreciated in favour of an <i>absolute</i> movement system, relying on coordinates, in which sprite's movements are effectively stored as vectors (note that Push() and PushItem() are still valid).
+</p><p>
+Two new functions are provided to handle this 'absolute' system:
+</p>
+<pre>
+	<a href="page19.htm#playerpath">playerPath()</a>
+	<a href="page19.htm#itempath">itemPath()</a>
+</pre>
+<p>
+There are three ways in which these may be used: to follow an explicit (coordinate-specified) path; to pathfind to a location; or to move on a waypoint vector. Firstly, the common code between these uses should be mentioned:
+</p>
+<pre>
+	playerPath(variant handle, int flags, ...)
+	itemPath(variant handle, int flags, ...)
+</pre>
+<p>
+If you are unfamiliar with this <i>function definition notation</i>, see the <a href="page18.3.htm">RPGCode reference</a> (this is <b>not</b> code that can be run in the engine). The <i>handle</i> parameter is the same as found in other sprite functions; the <i>flags</i> parameter is something that hasn't been seen in RPGCode before. Flags are a simple way of controlling options without needing to add lots of boolean (true/false) optional parameters to the end of a function. Each option has its own <b>flag</b>, which is a <a href="page18.6.htm">reserved constant</a> with a particular value, assigned in such a way that multiple flags can be passed to a function through one parameter. The user does not need to define flags, they are allocated by the engine. Flags can be combined using the boolean OR operator "|"; the order of combination is unimportant.
+</p>
+<pre>
+	playerPath("default", FLAG_1);
+	playerPath("default", FLAG_2 | FLAG_3);
+	
+	flags = FLAG_1 | FLAG_2 | FLAG_3;
+	playerPath("default", flags);
+	playerPath("default", 0);
+</pre>
+<p>
+If no flags are required, pass a zero. Functions that accept flags will only accept a specific set and combination of flags, the details of which are described in the RPGCode function reference. PlayerPath() and ItemPath() have two basic flags that may be used in any of their three applications:
+</p>
+<pre>
+	tkMV_CLEAR_QUEUE
+	tkMV_PAUSE_THREAD
+
+	playerPath("default", tkMV_CLEAR_QUEUE | tkMV_PAUSE_THREAD);
+</pre>
+<p>
+As mentioned, sprite paths are now stored as vectors, or more specifically, queues. A sprite may have a queue of points that it must visit in turn. When a sprite receives a new set of points to move to, those points are placed at the end of its queue; if it is moving at that time, the current set of movements will be preserved. To clear these current movements, include the tkMV_CLEAR_QUEUE flag.
+</p><p>
+Movement can occur in threads; in 3.0.6 a thread's execution continues immediately after a movement command is called, <b>not</b> when the movement itself finishes. This may cause some undesirable effects. Therefore you can include the tkMV_PAUSE_THREAD flag to make the thread execution halt until the movement is complete. When movement occurs in a non-threaded program, program execution automatically halts until the movement ends, unless <a href="page19.htm#multirun">multiRun()</a> is used.
+</p><p>
+As for the three specific uses:
+</p>
+<ol><li>
+Explicit path: 
+<pre>
+	itemPath(variant handle, int flags, int x1, int y1, ... , int xn, int yn)
+</pre>
+The sprite walks between the points specified by (x1, y1) to (xn, yn). The ellipsis (...) indicates that any number of coordinate pairs may be specified. For instance:
+<pre>
+	itemPath(0, tkMV_CLEAR_QUEUE, 35, 100, 60, 122, 208, 154, 400, 78);
+</pre>
+The sprite will walk in straight lines (i.e., vectorially, not diagonally or axially) between the points; that is, it will <i>not</i> pathfind between them. As a result, the sprite will disregard any board collision vectors and <i>walk straight through them</i> (though not other sprites).
+</li><li>
+Pathfinding:
+<pre>
+	itemPath(variant handle, int flags | tkMV_PATHFIND, int x1, int y1)
+</pre>
+Here, <i>flags | tkMV_PATHFIND</i> indicates that the tkMV_PATHFIND flag must be specified, optionally along with any other compatible flags (i.e., tkMV_CLEAR_QUEUE and/or tkMV_PAUSE_THREAD). The sprite will pathfind to the supplied coordinate (x1, y1), for example:
+<pre>
+	itemPath(0, tkMV_PATHFIND, 400, 78);
+	playerPath("default", tkPAUSE_THREAD | tkMV_PATHFIND, 400, 78);
+</pre>
+</li><li>
+Waypoint path:
+<pre>
+	itemPath(variant handle, int flags | tkMV_WAYPOINT_PATH, variant boardpath, int cycles)
+	itemPath(variant handle, int flags | tkMV_WAYPOINT_LINK, variant boardpath, int cycles)
+</pre>
+Sprites may walk along board vectors denoted as 'waypoints'. To achieve this, include the tkMV_WAYPOINT_PATH or tkMV_WAYPOINT_LINK flags (but not both; these flags are incompatible with the tkMV_PATHFIND flag, but not the basic flags). Refer to the board path (waypoint vector) using either its slot index or vector handle, both found on the <a href="page4.1.htm#righttoolbar">right-hand toolbar</a> in the Board Editor. <i>cycles</i> specifies the number of times to walk around the vector. If the vector is open, movement will end at the last point, if closed it will end at the first point. The sprite will pathfind to the first point of the vector if it is located elsewhere. 
+<br /><br />
+If the tkMV_WAYPOINT_PATH is used The points of the waypoint vector are copied into the sprite's queue and the player is in no way linked to the vector.
+<pre>
+	playerPath("default", tkMV_WAYPOINT_PATH, "wpCircle", 2);
+</pre>
+Here, the sprite walks around the vector with handle "wpCircle" twice. 
+<pre>
+	itemPath(2, tkMV_WAYPOINT_LINK, 1, 2);
+</pre>
+Here, a link is made between the sprite and the vector whose index is 1. The points of the vector are added to the sprite's queue individually as each section is completed. The benefit of this link is threefold: first, the sprite can infinitely walk the vector by specifying zero cycles. Second, any changes to the waypoint vector propagate to the sprite's movements. Third, the sprite will <i>remember</i> that it is walking the path; that is, the user can pass a set of new movement commands to the sprite, which will resume the waypoint path once those movements have been completed. For example, the waypoint path may be set as a sprite's multitasking program with a movement command set in its activation program:
+<pre>
+	// Multitasking program.
+	itemPath("source", tkMV_WAYPOINT_LINK, "wpCircle", 0);
+</pre>
+<pre>
+	// Activation program.	
+	itemPath("source", tkMV_CLEAR_QUEUE | tkMV_PATHFIND, 256, 384);
+</pre>
+Note that the call in the activation program must include the tkMV_CLEAR_QUEUE flag for this to work. The link between vector and sprite is broken when the specified number of cycles is complete. In the case of an infinite path, pass -1 as the waypoint vector handle:
+<pre>
+	itemPath("source", tkWAYPOINT_LINK, -1, 0);
+</pre>
+</li></ol>
+
+<p>
+The coordinates stored in a sprite's queue can be obtained using <a href="page19.htm#playergetpath">playerGetPath()</a> or <a href="page19.htm#itemgetpath">itemGetPath()</a>. For instance,
+</p>
+<pre>	count = playergetpath(0);
+	for (i = 0; i &lt; count; ++i)
+	{
+		playergetpath(0, i, x, y);
+		mwin(x + ", " + y);
+	}
+</pre>
+<p>outputs the player's pending movements to the screen.</p>
+<p>As previously mentioned, itemPath() and playerPath() supersede the previous movement functions push(), pushItem(), playerStep(), itemStep() and pathfind(); however these may still be used. Push(), playerStep() and corresponding item functions may also take the basic movement flags outlined above through an optional parameter with similar effect:
+</p>
+<pre>
+	 // void playerstep(variant handle, int x, int y [, int flags])
+	 // void push(string direction [, variant handle [, int flags]])
+
+	playerStep(0, 120, 233, tkMV_CLEAR_QUEUE);
+	push("S,S,S", "default", tkMV_CLEAR_QUEUE | tkMV_PAUSE_THREAD);
+</pre>
+<p>
+Note that in playerStep(), x and y are interpreted based on the board's Pixel Absolute setting. Pathfind() should no longer be used for pathfinding; use playerPath() with tkMV_PATHFIND instead. Pathfind() only returns a directional string and hence only pathfinds in axial mode.
+</p>
+
+<table>
+<tr><td>
+	<img src="images/image129" alt="Waypoint vector" />
+</td><td>
+	<img src="images/image130" alt="Diversion around a sprite" />
+</td></tr>
+<tr><td colspan="2">
+	<i>A sprite walks a waypoint vector. When it encounters a sprite blocking the path, it pathfinds around the sprite and resumes the waypoint vector path.</i>
+</td></tr>
+</table>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+
+<a name="creating"></a><h3>Creating Vectors</h3>
+<h4>In The Board Editor</h4>
+<p>
+Making vectors in the board editor is a quick and intuitive process, with lots of mouse and keyboard shortcuts to help you out. After laying down some graphics, select the Vector Editing tools option in the left toolbar, and select the Draw tool from the second set of icons (when changing toolsets, the active tool defaults to Select). Then, to start drawing, left-click and release on the board to place the first point. A dashed line now connects the first point to the cursor.
+</p><p>
+<img src="images/image131" alt="First point" />
+<br />
+<i>1. Vector tools, 2. Draw tool, 3. First point.</i>
+</p><p>
+To place the second point, left-click again. To delete the vector, right-click (after the first point only). Once the last point has been placed, right-click to close the vector: the last and first points are connected. To finish an open vector, right-click whilst holding the Ctrl key down.
+</p>
+<table>
+<tr><td>
+	<img src="images/image132" alt="Second point" />
+</td><td>
+	<img src="images/image133" alt="Last point" />
+</td><td>
+	<img src="images/image134" alt="Closed vector" />
+</td><td>
+	<img src="images/image135" alt="Open vector" />
+</td></tr>
+<tr><td>
+	<i>Second point</i>
+</td><td>
+	<i>Last point</i>
+</td><td>
+	<i>Right-click to close</i>
+</td><td>
+	<i>Ctrl + Right-click to leave open</i>
+</td></tr>
+</table>
+<p>
+If the board's <a href="page4.htm#coordinates">coordinate system</a> includes the Pixel Absolute setting, vector points will be created at the exact mouse location; if it is not included, vector points will snap to the closest grid point. In order to invert this feature, hold down the Ctrl key while placing points. In order to draw lines that are aligned to the axes and diagonals, hold down the Shift key whilst placing points. Rectangles can be drawn straight off using the Rectangle tool found below the Draw icon. In isometric mode, these rectangles are rotated accordingly.
+</p>
+<table>
+<tr><td>
+	<img src="images/image136" alt="Align to gridpoints" />
+</td><td>
+	<img src="images/image137" alt="Align to axes" />
+</td><td>
+	<img src="images/image138" alt="Rectangle tool" />
+</td></tr>
+<tr><td>
+	<i>Hold Ctrl to invert snap-to-gridpoints</i>
+</td><td>
+	<i>Hold Shift to align to axes</i>
+</td><td>
+	<i>Rectangle tool in isometrics</i>
+</td></tr>
+</table>
+<p>
+In order to edit vectors, use the Select tool. Left-clicking the board will select the vector with the nearest point (not line). The selected vector is highlighted with a thick outline. Left-clicking and dragging creates a selection box; a number of operations can be performed on the points <i>of the selected vector</i> within the selection box: left-click-drag to move the selected points; press the Delete key to erase the points; press Z to subdivide an edge; press X when the first or last points are selected to resume drawing.
+</p>
+<table>
+<tr><td>
+	<img src="images/image139" alt="Selection box" />
+</td><td>
+	<img src="images/image140" alt="Move points" />
+</td><td>
+	<img src="images/image141" alt="Subdivide edge" />
+</td><td>
+	<img src="images/image142" alt="Resume drawing" />
+</td></tr>
+<tr><td>
+	<i>Selection box</i>
+</td><td>
+	<i>Move points (drag)</i>
+</td><td>
+	<i>Subdivide edge (Z)</i>
+</td><td>
+	<i>Resume drawing (X)</i>
+</td></tr>
+</table>
+<p>
+Similar tasks can be achieved in Draw mode whilst holding the Alt key down and left-clicking.
+</p>
+<ul>
+	<li>Clicking near a point deletes that point.</li>
+	<li>Clicking near a line subdivides that line, adding a point at the mouse location.</li>
+	<li>Click away from a point or line resumes drawing from the last point</li>
+</ul>
+<p>
+In this context, 'near' means 'within 16 pixels'.
+</p><p>
+These principles also apply to program vectors. For further command options, see <a href="page4.1.htm">Around The Editor</a>.
+</p>
+
+<h4>Using RPGCode</h4>
+<p>
+A number of new functions are provided to access board vectors and programs. Due to the nature of RPGCode it is necessary to access a vector's points individually (rather than by array or other method), hence single-point access functions are given.
+</p>
+<pre>
+	<a href="page19.htm#boardgetvector">boardGetVector()</a>
+	<a href="page19.htm#boardsetvector">boardSetVector()</a>
+	<a href="page19.htm#boardgetvectorpoint">boardGetVectorPoint()</a>
+	<a href="page19.htm#boardsetvectorpoint">boardSetVectorPoint()</a>
+
+	<a href="page19.htm#boardgetprogram">boardGetProgram()</a>
+	<a href="page19.htm#boardsetprogram">boardSetProgram()</a>
+	<a href="page19.htm#boardgetprogrampoint">boardGetProgramPoint()</a>
+	<a href="page19.htm#boardsetprogrampoint">boardSetProgramPoint()</a>
+</pre>
+<p>
+To get the properties or points of a vector, pass variables to boardGetVector() or boardGetVectorPoint(), respectively; for instance,
+</p>
+<pre>
+	boardGetVector(0, type, points, layer, closed, attributes);
+	if (points &gt; 3)
+	{
+		boardGetVectorPoint(0, 3, x, y);
+		mwin("The fourth point is (" + x + ", " + y + ")");
+	}
+</pre>
+<p>
+may display <i>The fourth point is (123, 456)</i>. Note that point indexing starts at zero, and that points are always specified in pixels regardless of the Pixel Absolute coordinate setting.
+</p><p>
+To create a vector, first call boardSetVector(), followed by boardSetVectorPoint() for each of the vector's points. Set 'apply' to true for the last point to update pathfinding information.
+</p>
+<pre>
+	// boardSetVector(variant vector, int type, int pointCount, int layer, bool isClosed, int attributes)
+	// boardSetVectorPoint(variant vector, int pointIndex, int x, int y, bool apply)
+
+	boardSetVector("newHandle", tkVT_UNDER, 4, 1, true, tkVT_BKGIMAGE);
+	boardSetVectorPoint("newHandle", 0, 32, 32, false);
+	boardSetVectorPoint("newHandle", 1, 64, 32, false);
+	boardSetVectorPoint("newHandle", 2, 64, 64, false);	
+	boardSetVectorPoint("newHandle", 3, 32, 64, true);
+</pre>
+<p>Possible type and attribute (flags) constants:</p>
+<pre>
+	type = tkVT_SOLID, tkVT_UNDER, tkVT_STAIRS, tkVT_WAYPOINT
+	attributes = tkVT_BKGIMAGE | tkVT_ALL_LAYERS_BELOW | tkVT_FRAME_INTERSECT
+</pre>
+<p>
+The attribute flags apply to under vectors only. For stair vectors, set the attribute parameter as the destination layer.
+</p><p>
+The same principles apply to program vectors. New programs must be created in the one-past-last slot (programs do not currently have handles). The value of the one-past-last slot can be obtained using boardGetProgram():
+</p>
+<pre>
+	 // boardSetProgram(int programIndex, string program, int pointCount, int layer, bool isClosed, int attributes, int distanceRepeat)
+
+	newIndex = boardGetProgram();
+	boardSetProgram(newIndex, "program.prg", 6, 1, false, tkPRG_STEP | tkPRG_REPEAT, 100);
+	boardSetProgramPoint(newIndex, 0, 32, 32);
+	// etc.
+</pre>
+<p>
+initialises a new program in the next board slot. The following flags are valid for attributes:
+</p>
+<pre>
+	attributes = tkPRG_STEP | tkPRG_KEYPRESS | tkPRG_REPEAT | tkPRG_STOPS_MOVEMENT
+</pre>
+<p>
+Either tkPRG_STEP or tkPRG_KEYPRESS should be supplied; other flags are optional. Specify a positive value to distanceRepeat if tkPRG_REPEAT is specified. See the <a href="page4.1.htm#righttoolbar">right-hand toolbar</a> section of the Board Editor for more information.
+</p>
+<hr />
+<p>For further information on vectors, please see the <a href="page4.htm">Board Basics</a> and <a href="page4.1.htm">Around the Editor</a> pages.
+</p>
+<p><i>&mdash; Delano</i></p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="page4.1.htm">previous</a>, <a href="page5.htm">forward</a>
+</p>
+</div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

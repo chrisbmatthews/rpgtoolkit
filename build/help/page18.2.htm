@@ -1,10 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
 	<title>RPGToolkit Help &mdash;&nbsp;</title>
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<script type="text/javascript" src="js.js"></script>
 	<link rel="stylesheet" href="styles/css.css" />
 	<!--[if IE]>
@@ -21,19 +21,23 @@
 
 <div id="document">
 
-<h1>RPGToolkit 3 &mdash; Online Help [ <a href="index.htm">home</a>, <a href="javascript: history.go(-1);">back</a>, <a href="javascript: history.go(1);">forward</a> ]</h1>
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
 
 <div class="topLinks">
 
-<span><a href="page1.htm">quick-start<!-- guide--></a></span>
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
 |&nbsp;
 
 <span
 	onmouseover="showMenu('editor');"
 	onmouseout="hideMenu('editor');"
 	id="editor_link"
-><a href="page2.htm">editor<!-- guide--></a></span>
+><a href="page2.htm">editor</a></span>
 |&nbsp;
+
 <div
 	id="editor"
 	class="submenu"
@@ -42,18 +46,18 @@
 >
 	<div><a href="pageed_environment.htm">editor environment</a></div>
 	<div><a href="page3.htm">main file editor</a></div>
-
 	<div><a href="page4.htm">board editor</a></div>
 	<div><a href="page5.htm">tile editor</a></div>
 	<div><a href="page6.htm">program editor</a></div>
 	<div><a href="page7.htm">character editor</a></div>
+
 	<div><a href="page8.htm">item editor</a></div>
 	<div><a href="page9.htm">enemy editor</a></div>
-
 	<div><a href="page10.htm">animation editor</a></div>
 	<div><a href="page11.htm">tile bitmap editor</a></div>
 	<div><a href="page12.htm">special move editor</a></div>
 	<div><a href="page13.htm">status effect editor</a></div>
+
 	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
 </div>
 
@@ -61,7 +65,7 @@
 	onmouseover="showMenu('engine');"
 	onmouseout="hideMenu('engine');"
 	id="engine_link"
-><a href="page14.htm">playing<!-- your game--></a></span>
+><a href="page14.htm">playing</a></span>
 |&nbsp;
 <div
 	id="engine"
@@ -77,9 +81,8 @@
 	onmouseover="showMenu('rpgcode');"
 	onmouseout="hideMenu('rpgcode');"
 	id="rpgcode_link"
-><a href="page17.htm"><!--scripting in -->rpgcode</a></span>
+><a href="page17.htm">rpgcode</a></span>
 |&nbsp;
-
 <div
 	id="rpgcode"
 	class="submenu"
@@ -101,7 +104,6 @@
 	id="troubleshooting_link"
 ><a href="page22.htm">troubleshooting</a></span>
 |&nbsp;
-
 <div
 	id="troubleshooting"
 	class="submenu"
@@ -118,7 +120,7 @@
 	onmouseout="hideMenu('about');"
 	style="margin-bottom: 0;"
 	id="about_link"
-><a href="page28.htm">about<!-- the toolkit--></a></span>
+><a href="page28.htm">about</a></span>
 <div
 	id="about"
 	class="submenu"
@@ -126,798 +128,794 @@
 	onmouseout="hideMenu('about')"
 >
 	<div><a href="page29.htm">history</a></div>
-
-	<div style="margin-bottom: 0;"><a href="page30.htm">links</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
 </div>
 
 </div>
-
-<div id="content"><div id="primer">
-
+<div id="content">
+<div id="primer">
 <h2><a href="page17.htm">RPGCode</a> &mdash; <a href="page18.htm">Language Features</a> &mdash; Program Flow</h2>
 
 <h3 style="margin-bottom: 10px;">Contents</h3>
 
-<ul style="margin-bottom: 15px;">
-	<li>
-		<a href="#con">Programming Constructs</a>
-		<ul style="margin-bottom: 0;">
-			<li><a href="#con.if">If</a></li>
-			<li><a href="#con.else">Else</a></li>
-			<li><a href="#con.switch">Switch</a></li>
-			<li><a href="#con.operators">Operators</a></li>
-			<li><a href="#con.practical">First Practical Program</a></li>
-			<li><a href="#con.while">While Loops</a></li>
-			<li><a href="#con.for">For Loops</a></li>
-		</ul>
-	</li>
-	<li>
-		<a href="#mul">Multitasking</a>
-		<ul>
-			<li><a href="#mul.threading">Threading</a></li>
-		</ul>
-	</li>
+<a href="#con">Programming constructs</a>
+<ul style="margin-bottom: 0;">
+	<li><a href="#con.if">The if statement</a></li>
+	<li><a href="#con.else">Else and elseif</a></li>
+	<li><a href="#con.practical">First practical program</a></li>
+	<li><a href="#con.while">The while loop</a></li>
+	<li><a href="#con.for">The for loop</a></li>
+	<li><a href="#con.switch">The switch statement</a></li>
+</ul>
+<a href="#operators">Operators</a>
+<ul style="margin-bottom: 0">
+	<li><a href="#operators.arithmetic">Arithmetic</a></li>
+	<li><a href="#operators.comparison">Comparison</a></li>
+	<li><a href="#operators.bitwise">Bitwise</a></li>
+	<li><a href="#operators.other">Other</a></li>
 </ul>
 
+
 <hr />
 
+
+
+
+
+
+
 <a name="con"></a>
+
 <h3>Programming Constructs</h3>
 
-<p>All of the programs that we've made so far have run from top to bottom in perfect order. We've played with variables and shown messages, but right now they don't seem to be very useful. One of the best ways to really take control of how your program operates is program flow. With program flow, we can, instead of having the program run from top to bottom, make things stop, go back up, skip parts, or make things happen more than once.</p>
+
+
+<p>
+
+Up to this point, we've seen how to work with functions and variables, but the example programs haven't been particularly useful (save for the purpose of learning!). In this section, we will take a look at how different decisions can be made in our code to make our programs more useful in situations that we might face in-game. So I'll start you off by getting your feet wet in the world of constructs and program flow before we plunge into our first practical program.
+
+</p>
+
+
+
+
+
+
 
 <a name="con.if"></a>
-<h4>The "If" statement:</h4>
+
+<h4>The If Statement:</h4>
+
+
 
 <p>
-One of the most used and most useful commands in all of programming is the If statement. The If statement is a construct that allows you to do something only if a condition is true (Editor's Note: non-zero). What do I mean by that exactly? Here's an example of using If in a real sentence:
+
+How does a program pop up a menu when you click a button? How does it respond when you provide input? To begin with, many programs that you write will need to do a certain amount of decision making. Decisions are made when conditions are met. Program flow is dependent on these conditional statements and decisions. One such construct is the <em>if control structure</em>, that allows certain code to run if the given expression evaluates to a non-zero value. In RPGCode, an if statement looks like this:
+
 </p>
 
-<p>
-<em>If</em> I were the King of the world, <em>Then</em> I would have a pet monkey.
-</p>
 
-<p>
-Let's look at this closely. First, "If I were the King of the world". Is this statement true or false? If I am the king of the world, then it's true. And I would have a monkey for a pet. However, if I am not the king of the world, then it's false. And I would not have a monkey for a pet.
-As you will notice, everything after "Then" would only happen if everything before "then" was true. This is exactly how the If statement works. Here's the general form of an If statement:
-</p>
 
 <pre>
-if (condition)
+if (<em>expression</em>)
 {
-	command1
-	command2
-	etc...
+	<em>statements</em>
 }
 </pre>
 
+
+
 <p>
-So what does all of that mean? Well, the If statement works very similar to our everyday speech. It tests if some condition is true, and if it is true, then one or more commands get executed. If the condition is false, then the commands don't get executed. It's that easy. So what is this condition that gets tested? The most basic is comparing two values. Seeing if one thing equals another. Here's an example:
+
+As said just before, <em>statements</em> will only be run if <em>expression</em> evaluates to a non-zero value. This can be any valid expression in RPGCode. <em>Statements</em> can be one or more RPGCode statements.
+
 </p>
 
-<pre>
-testvar! = 12
 
-if (testvar! == 12)
+
+<p>
+
+When I say that something is evaluated to a non-zero value, it means that the <em>expression</em> produces a result like 1, 15, -2, etc. As long as it is not 0, the code associated with the if control structure will be executed. To give you an example of what this means, try running the following code:
+
+</p>
+
+
+
+<pre>
+if (0)
 {
-	mwin("Yay! The condition was true!")
-	wait()
-	mwincls()
-	// This block of code will get executed
-	// because testvar! is equal to 12.
+	mwin("This will not run.");
+	wait();
 }
-if (testvar! == 0)
+if (1)
 {
-	mwin("testvar! was equal to 0.")
-	wait()
-	mwincls()
-	// This block of commands will not get executed
-	// because testvar! is NOT equal to 0. So the
-	// commands here will be skipped.
+	mwin("This will run. :)");
+	wait();
 }
 </pre>
 
+
+
 <p>
-In the above example, only the first block of statements is run (a block of statements are a bunch of commands enclosed in { and } brackets). Only the first set is run because "testvar!==12" is true (testvar! is equal to 12). Why the two equal signs? In Languages like C++, '=' is used to assign a value to a variable, whereas '==' is used to compare two values. The same is true in RPGCode.
-Notice that the second block doesn't get run at all. The condition "testvar!==0" is false -- testvar! is not equal to zero, so the block that follows does not get run. Notice also the way I indented my commands inside the blocks. This isn't necessary, but it sure looks cool, doesn't it? It just makes the code more readable.
+
+You should see that the code in the first construct, where the expression is 0 (<code>if (0)</code>) does not run, but the code in the second where the expression is non-zero (<code>if (1)</code>) <em>is</em> run.
+
 </p>
+
+
+
+<p>
+
+But how does this help in a real game situation? Like I said, any valid expression may be given to an if statement &mdash; not just numbers, but variables, comparisons, the return value of a function, etc. In the next example, we will see how to compare two values in an if statement with the <em>equality operator</em>.
+
+</p>
+
+
+<pre>
+x = 5;
+
+if (x == 0)
+{
+	mwin("This will not run.");
+	wait();
+}
+if (x == 5)
+{
+	mwin("This will run. :)");
+	wait();
+}
+</pre>
+
+
+
+<p>
+
+Here, we first set the variable <code>x</code> to 5. Then, we use an if statement to compare <code>x</code> to the value 0. The equality operator can be thought of as a function: If the operand on the left (<code>x</code>) is equal to the operand on the right (0), then it returns 1, otherwise it returns 0. Since <code>x</code> is not equal to 0, the expression <code>x == 0</code> will evaluate to 0 and the code associated with the first if statement will not be run.
+
+</p>
+
+
+
+<p>
+
+However, the second if statement uses the expression <code>x == 5</code>. <code>x</code> <em>is</em> equal to 5, and so this expression will return 1, and the code associated with this if statement will be run. Try it out! A list of <a href="#operators.comparison">comparison operators</a> can be found at the bottom of this page, and I encourage that you play with a few.
+
+</p>
+
+
+
+<p class="boxedText">
+
+Please note that there are times when you should omit the semi-colon at the end of a statement. In the previous examples, there are no semi-colons after the if statement or curly braces. Here's a simple rule: If the next line should be an opening curly brace ({), or the line itself is just an opening or closing curly brace, don't use the semi-colon.
+
+</p>
+
+
+
+
+
+
 
 <a name="con.else"></a>
-<h4>The 'Else' Statement:</h4>
+
+<h4>Else and ElseIf:</h4>
+
+
 
 <p>
-In the last example, you saw how two If statements were used together to check if either one or the other was true. That, however, is not the prefered way to do it. The statement "if (testvar! == 0)" is irrelevant, because if testvar! is something other than 12, then it could be any number. So, how can we fix this? Check every probable number? Well, you could. But that'd take forever, and it would be very slow. Instead, we'll use the 'Else' statement to get the job done. Here's the same program again, but with the Else statement:
+
+Testing the equality of one expression and then another works fine, but sometimes you will have a situation where the control structure needs to encompass more than just two equality comparisons; you may instead want to test for the equality of one variable, and if that evaluates to 0, you want to have something to fall back on regardless of what the variable actually is: So enters the <em>else statement</em>.
 </p>
 
 <pre>
-testvar! = 12
-if (testvar! == 12)
+x = 5;
+
+if (x == 5)
 {
-	mwin("Yay! The condition was true!")
-	wait()
-	mwincls()
-	// This block of code will get executed
-	// because testvar! is equal to 12.
+	mwin("x is equal to 5!");
+	wait();
 }
 else
 {
-	mwin("testvar! wasn't equal to 12.")
-	wait()
-	mwincls()
-	// This block of commands will not get executed
-	// because testvar! IS equal to 12. So the
-	// commands here will be skipped.
+	mwin("x is not equal to 5!");
+	wait();
 }
 </pre>
 
+
+
 <p>
-As you can see, the If and Else commands share similarity. Both contain the opening and closing braces (the { and }), and they work together. The Else command executes the block of code inside it's braces as long as the preceeding If statement is false. So, in the example above, the Else statement isn't run. The If statement, however, is.
+
+If you run this example, the message "x is equal to 5!" will be shown on the screen, because the expression in the if statement returns 1. Try changing the value of <code>x</code>. If it is something other than 5, the first conditional expression will return 0 and the code associated with the if statement will not be run, but the code associated with the else statement will automatically run. An else statement is only ever run if the preceding if statement is not run, otherwise it is skipped.
+
 </p>
 
-<a name="con.switch"></a>
-<h4>The 'Switch' Statement</h4>
+
 
 <p>
-In the last two program flow sections, you learned how to use conditional statements (if/else) to control the flow of certain parts of your program. In this section, you will find out how to use the 'Switch' statement. The basic form of a Switch statement looks like this:
-</p>
 
-<pre>
-switch (variable)
-{
-	case (value)
-	{
-		command1
-		command2
-		etc...
-	}
-}
-</pre>
+But what if you wanted to retain the first two if statements from the first example and still include the else statement? The else statement is <em>only</em> considerate of the preceding if statement. That is to say, if the first if statement's associated code is run and the second if statement's isn't, but the second if statement has an else statement attached, the else statement will still run! A little confusing? Try this code to see what I mean:
 
-<p>
-As you can see, this is a bit different from the if/else commands. In this, we use Switch(variable), where variable can be either a literal or numeric value, and a Case(value) command between the Switch's brackets. Switch Cases are practically ideal for checking if a value is equal to another value. In fact - that's what it's there for.
-</p>
-
-<p>
-Switch() holds the variable that you want to check the value of. Whereas Case() compares the value of the Switch() variable to whatever is presented inside of it's parentheses (hard to understand? It'll be clearer soon!). An example of using Switch Cases might be that you have a cheat prompt in your game somewhere (say, a menu). You could check what the values are by using If statements like so:
 </p>
 
 <pre>
-cheat$ = prompt("Enter a cheat:")
-if (cheat$ == "HEAL")
+x = 5;
+
+if (x == 5)
 {
-	giveHP("Frap", 100)
+	mwin("This will run as intended.");
 }
-elseIf(cheat$ == "I_WANT_GP")
+if (x == 0)
 {
-	giveGP(10000)
-}
-elseIf(cheat$ == "SUPER_COOL_CHARACTER")
-{
-	addPlayer("cool.tem")
+	mwin("This won't run!");
 }
 else
 {
-	mwin("That's not a cheat!")
-	wait()
+	mwin("This will run, but it wasn't intended to!");
 }
+
+wait();
 </pre>
 
+
+
 <p>
-This, however, can get somewhat annoying, always having to type "cheat$ ==" before the actual value. Luckily, using Switch Cases, you can achieve the same affect without having to go through the whole process of using equal signs and the variable. Let's take a look at the same program using Switch Cases instead of if/else statements:
+
+In this example, the first conditional expression, <code>x == 5</code>, is evaluated to 1, and so the following <code>mwin</code> is run; the second conditional expression is evaluated to 0 and so the code after is not run; the else statement will run, though it is not intended to, because the previous expression in the if statement was not evaluated to 1.
+
+</p>
+
+
+
+<p>
+However, this is very easy to fix: The <em>elseif statement</em> can be used to link multiple if statements to a final else statement. Try the code once more, but instead of two if statements, we will be replacing the second with an elseif statement:
 </p>
 
 <pre>
-cheat$ = Prompt("Enter a cheat:")
-switch (cheat$)
+x = 5;
+
+if (x == 5)
 {
-	case ("HEAL")
-	{
-		giveHP("Frap", 100)
-	}
-	case ("I_WANT_GP")
-	{
-		giveGP(10000)
-	}
-	case ("SUPER_COOL_CHARACTER")
-	{
-		addPlayer("cool.tem")
-	}
-	case (else)
-	{
-		mwin("That's not a cheat!")
-		wait()
-	}
+	mwin("x is equal to 5.");
 }
-</pre>
-
-<p>
-There you have it - a Switch statement. Each Case() command checks to see if the variable specified in Switch() is equal to some value. This is much easier to read, and much more organized (because you can now clearly see that each Case() statement belongs to the Switch() statement. With If statements, you could check for random things at any time).
-</p>
-
-<a name="con.operators"></a>
-<h4>Operators:</h4>
-
-<p>
-As mentioned before, the If statement can be used to do more things than just checking if two things are equal to each other. The following section lists the 'operators' you can use.
-</p>
-
-<p>
-Equal To (==):<br />
-Tests if two values are equal to each other.<br />
-Example:
-</p>
-
-<pre>
-if (var$ == "Hello")
+elseif (x == 0)
 {
-	mwin("Hello to you too!")
+	mwin("x is equal to 0.");
 }
-</pre>
-
-<p>
-Not Equal To (~=):<br />
-Tests if two values are NOT equal to each other.<br />
-Example:
-</p>
-
-<pre>
-if (var$ ~= "Hello")
+else
 {
-	mwin("It doesn't say hello!")
-}
-</pre>
-
-<p>
-Addition (+=):<br />
-Adds a value to a variable. This can be used for either numerical or literal variables.<br />
-Example:
-</p>
-
-<pre>
-x! = 1
-y! = 5
-x! += y!
-// Adds 5 to 1 (y to x)
-// This is the old way to do it: x! = x! + y!
-</pre>
-
-<p>
-Subtraction (-=):<br />
-Deducts a value from a variable. This can be used for only numerical variables.<br />
-Example:
-</p>
-
-<pre>
-x! = 1
-y! = 5
-y! -= x!
-// Deducts 1 from 5 (x from y)
-// This is the old way to do it: y! = y! - x!
-</pre>
-
-<p>
-Multiplied by (*=):<br />
-Multiplies a value by another value. This can only be used for numerical variables.<br />
-Example:
-</p>
-
-<pre>
-x! = 2
-
-y! = 5
-x! *= y!
-// Multiplies x! by y!
-// This is the old way to do it: x! = x!*y!
-</pre>
-
-<p>
-Divided by (/=):<br />
-Divides a value by another value. This can only be used for numerical variables.<br />
-Example:
-</p>
-
-<pre>
-x! = 10
-y! = 2
-x! /= y!
-// Devides x! by y!
-// This is the old way to do it: x! = x!/y!
-</pre>
-
-<p>
-Increment (++):<br />
-Adds 1 to a variable. This can only be used for numerical variables.<br />
-Example:
-</p>
-
-<pre>
-x! = 5
-x!++ // Increments x! by 1
-// This is the old way to do it: x! = x! + 1
-</pre>
-
-<p>
-Decrement (--):<br />
-Deducts 1 from a variable. This can only be used for numerical variables.<br />
-Example:
-</p>
-
-<pre>
-x! = 5
-x!-- // Decrements x! by 1
-// This is the old way to do it: x! = x! - 1
-</pre>
-
-<p>
-Exponent (^):<br />
-Raises a value to the power of another value. This can only be used for numerical variables.<br />
-Example:
-</p>
-
-<pre>
-x! = 2
-show(x! ^ 2) // Output: 4
-show(x! ^ 3) // Output: 8
-show(x! ^ 4) // Output: 16
-</pre>
-
-<p>
-Greater Than (&gt;), Less Than (&lt;):<br />
-Tests if a value is greater than another value, or if a value is less than another value.
-</p>
-
-<p class="boxedText">
-<em>Editor's Note</em>: These operators should be thought of as functions; they return 1 if "true"; otherwise, 0. This means that they are not restricted to usages illustrated in this help file (e.g., func(5 &gt; 6)).
-</p>
-
-<p>
-Example:
-</p>
-
-<pre>
-if (var! &lt; 5)
-{
-	show(var!)
-}
-if (var! &gt; 5)
-{
-	mwin("Too high!")
-}
-</pre>
-
-<p>
-Greater Than Or Equal To (&gt;=), Less Than Or Equal To (&lt;=):<br />
-Tests if a value is either greater than or equal to another value, or if a value is either less than or equal to another value.
-</p>
-
-<p class="boxedText">
-<em>Editor's Note</em>: These operators should be thought of as functions; they return 1 if "true"; otherwise, 0. This means that they are not restricted to usages illustrated in this help file (e.g., func(5 &lt;= 6)).
-</p>
-
-<p>
-Example:
-</p>
-
-<pre>
-if (var! &lt;= 4)
-{
-	show(var!)
-}
-if (var! &gt;= 5)
-{
-	mwin("Too high!")
-}
-</pre>
-
-<p>
-Logical Not (!):<br />
-Tests if a value is false (if it is equal to 0), or a non-zero value. This can only be used for numeric variables.
-</p>
-
-<p class="boxedText">
-<em>Editor's Note</em>: The logical NOT operator should be thought of as a function ("command"). It returns 1 if its operand is 0; otherwise, it returns 0.
-</p>
-
-<p>
-Example:
-</p>
-
-<pre>
-done! = 0
-
-if (!done!)
-{
-	// The ! operator before the variable checks
-	// if done! is equal to 1 or not. If done! is
-	// a non-zero value, it evaluates to false.
-
-	// Additionally, if you take out the logical not
-	// operator, and leave only the variable, it checks
-	// if done! is a non-zero value (executing the black
-	// of code if it is).
-
-	mwin("done! is false!")
-	wait()
-}
-</pre>
-
-<p>Logical AND (&amp;&amp;, AND):<br />
-Tests if two conditions are true. When using a Logical And, you can either use the Logical And symbol (&amp;&amp;) or just use the word "and".
-</p>
-
-<p class="boxedText">
-<em>Editor's Note</em>: In actuality, the logical AND operator returns 1 if both its operands are non-zero, or 0 if both its operands are 0. This works for multiple comparisons because the comparison operators return 1 or 0 based on their success.
-</p>
-
-<p>
-Example:
-</p>
-
-<pre>
-// This example uses the 'logical AND' operator, '&amp;&amp;'
-
-if (var! == 5 &amp;&amp; var2! &lt; 10)
-{
-	// This block of code will only be executed
-	// if var! is equal to 5 AND var2! is less than
-	// 10.
-	mwin("Wow, var! is 5 and var2! is less than 10!")
+	mwin("x is not equal to either 5 or 0.");
 }
 
-// This does the same, using the 'AND' keyword.
-if (var! == 5 AND var2! &lt; 10)
-{
-	// This block of code will only be executed
-	// if var! is equal to 5 AND var2! is less than
-	// 10.
-	mwin("Wow, var! is 5 and var2! is less than 10!")
-}
+wait();
 </pre>
 
-<p>
-Logical OR (||, OR):<br />
-Tests if one of two conditions is true. When using a Logical Or, you can either use the Logical Or symbol (||) or just use the word "OR".
-</p>
 
-<p class="boxedText">
-<em>Editor's Note</em>: In actuality, the logical OR operator returns 1 if either of its operands are non-zero, or 0 if both its operands are 0. This works for multiple comparisons because the comparison operators return 1 or 0 based on their success.
-</p>
 
 <p>
-Example:
+
+As you can see, with the use of control structures like if, elseif, and else, you can control the flow of a program so that some parts are only conditionally executed. Experiment with them and with the operators that are discussed later on and see what you can come up with!
+
 </p>
 
-<pre>
-// This example uses the 'logical OR' operator, '||'
-if (var! == 5 || var2! &lt; 10)
-{
-	// This block of code will only get executed
-	// if var! is equal to 5 OR var2! is less than
-	// 10.
-	mwin("Hmm. Either var! equals 5 or var2! is less than 10.")
-	mwin("Either way, we still get to see this pretty block!")
-}
 
-// This does the same, using the 'OR' keyword.
 
-if (var! == 5 OR var2! &lt; 10)
-{
-	// This block of code will only get executed
-	// if var! is equal to 5 OR var2! is less than
-	// 10.
-	mwin("Hmm. Either var! equals 5 or var2! is less than 10.")
-	mwin("Either way, we still get to see this pretty block!")
-}
-</pre>
 
-<div class="boxedText">
-<p style="margin-top: 0;">
-<em>Editor's Note</em>: The following, more complex, operators also exist, but will not be covered in detail:
-</p>
-<table style="margin-bottom: 0;">
-	<tr>
-		<td>&amp; and &amp;=</td>
-		<td>bitwise AND</td>
-	</tr>
-	<tr>
-		<td>| and |=</td>
-		<td>bitwise OR</td>
-	</tr>
-	<tr>
-		<td>` and `=</td>
-		<td>bitwise XOR</td>
-	</tr>
-	<tr>
-		<td>&lt;&lt; and &lt;&lt;=</td>
-		<td>left bit-shift</td>
-	</tr>
-	<tr>
-		<td>&gt;&gt; and &gt;&gt;=</td>
-		<td>right bit-shift</td>
-	</tr>
-	<tr>
-		<td>~</td>
-		<td>bitwise NOT</td>
-	</tr>
-</table>
-</div>
+
+
 
 <a name="con.practical"></a>
-<h4>Your First practical program:</h4>
+
+<h4>First Practical Program:</h4>
+
+
 
 <p>
-Since you know how to use If's and variables, I think it's about time we make a real program. It'll just be a short, simple program to start you on your path to game making. What it will do is simple: Ask the user a question and let them decide what the answer is by pressing either 1 or 2. Let's take a look:
+
+Now we're going to put together all the things we've learned so far (functions, variables, conditional expressions, etc.) and create a program that asks the user for input, and depending on the input that's given, we will decide what to output to the message window.
+
 </p>
 
 <pre>
-// This small program will just ask the user
-// a question and let them select either 1
-// or 2.
-mwin("What do you want to do?")
-mwin("1 - Say something nice")
-mwin("2 - Say something mean")
+mwin("You should try typing something. Here are your options:");
+mwin("Press 1 and I'll tell you a secret.");
+mwin("Press 2 and I'll tell you another secret.");
+input = wait();
+mwinCls();
 
-result$ = wait()  // Get the input
-mwincls()         // Clear the window
-
-
-<a name="con"></a>
-// Now, check to see what the user pressed...
-// If result$ is "1", say something nice
-if (result$ == "1")
+if (input == 1)
 {
-	mwin("Hello! Aren't you looking nice today!")
-	wait()
-	mwincls()
+	mwin("There's still more to learn after this!");
+	wait();
 }
-
-
-// If result$ is "2", say something not so nice.
-elseIf(result$ == "2")
+elseif (input == 2)
 {
-	mwin("You're a dummy!")
-	wait()
-	mwincls()
+	mwin("It's always good to indent code between curly braces with tabs!");
+	wait();
 }
 </pre>
 
+
+
 <p>
-Here's our first semi-practical program. The computer actually does something based upon what the user has done. The comments pretty much explain the program, so I won't say anything about it except for this: What happens if the user doesn't press '1' or '2'? what if they pressed 'm' by mistake? Well, both If statements would be false, and neither program block would get run. What do we do if the user does press something different? That's dealt with next...
+
+Firstly, three lines of text are displayed in the message window, giving the user their options. Then the <code>wait</code> function is used to retrieve what key the user pressed on their keyboard. The returned value is stored in the variable <code>input</code>. Next, the message window is cleared with <code>mwinCls</code>, and we evaluate the expression <code>input == 1</code> in the first if statement. If it is evaluated to 1 (the user pressed the 1 key), then we show a message in the message window. If it is not, then we try to evaluate the next elseif statement's expression.
+
 </p>
+
+
+
+<p>
+
+The program works, but we are presented with a problem: What happens if the user presses a key other than 1 or 2? We only expect those two to be pressed. We could add an else statement, but what if we want to have them try again if they press the wrong key? This is explained next.
+
+</p>
+
+
+
+
+
+
 
 <a name="con.while"></a>
-<h4>While Loops:</h4>
+
+<h4>The While Loop:</h4>
+
+
 
 <p>
-Consider that program for a while. If the user didn't press '1' or '2', we'd want the computer to ask again until they pressed either '1' or '2'. Well, how do we do this? Just retype the same lines of code over and over until we think it's enough? That could go on forever. So instead, we'll use a 'while loop'. Before I explain what a while loop is, here's the program again with a while loop added (it will keep prompting until the user presses '1' or '2'):
+
+The <em>while loop</em> is another control structure which allows you to repeat one or more statements <em>while</em> the conditional expression evaluates to 1. The form of a while control structure is as follows:
+
 </p>
 
+
 <pre>
-// This small program will just ask the user
-// a question and let them select either 1
-// or 2.
-
-// Run the While loop while done! is equal to false (0)...
-done! = false
-while (!done!)
+while (<em>expression</em>)
 {
-	mwin("What do you want to do?")
-	mwin("1 - Say something nice")
-	mwin("2 - Say something mean")
+	<em>statements</em>
+}
+</pre>
 
-	result$ = wait()  // Get user input
-	mwincls()         // Clear the window
 
-	// Now, check to see what the user pressed...
-	// If result$ is "1", say something nice
-	if (result$ == "1")
+
+<p>
+
+As you can see, this is very similar to the if statement, the only difference in its appearance is that it uses the <code>while</code> keyword instead of <code>if</code>. It works in much the same way, but when there are no more statements left to run in the while control structure, the expression is reevaluated, and if it still returns 1, the statements repeat; this happens until the expression returns 0.
+
+</p>
+
+
+<pre>
+count = 0;
+while (count &lt; 5)
+{
+	count++;
+	mwin(count);
+}
+wait();
+</pre>
+
+
+
+<p>
+
+If you run this code, you will see the numbers 1, 2, 3, 4, and 5 shown in the message window. The expression <code>count &lt; 5</code> will evaluate to 1 if the left operand, <code>count</code>, is <em>less than</em> the right operand, 5. <code>count</code> is initially set to 0, so this will evaluate to 1 (it is less than 5). The first statement associated with the while loop, <code>count++</code>, just adds 1 to the variable <code>count</code>. When it is shown in the message window the first time, it will show the number 1. Since there are no more statements, the expression is reevaluated: <code>count</code> is now 1, but it is still less than 5, so the statements will be run again. <code>count</code> is incremented to 2, and 2 is shown in the message window. This goes on until <code>count</code> is equal to 5.
+
+</p>
+
+
+
+<p>
+
+Let's revisit our program that asks for user input, and this time we will use a while loop to repeat the code until the user presses the desired keys: 1 or 2.
+
+</p>
+
+
+<pre>
+mwin("You should try typing something. Here are your options:");
+mwin("Press 1 and I'll tell you a secret.");
+mwin("Press 2 and I'll tell you another secret.");
+input = wait();
+
+bLoop = true;
+while (bLoop)
+{
+	
+	if (input == 1)
 	{
-		mwin("Hello! Aren't you looking nice today!")
-		wait()
-		mwincls()
-
-		// Set done! to true. We do this so the while loop
-		// doesn't repeat after the desired action is performed.
-		done! = true
+		mwinCls();
+		mwin("There's still more to learn after this!");
+		bLoop = false;
 	}
-
-	// If result$ is "2", say something not so nice.
-	elseIf(result$ == "2")
+	elseif (input == 2)
 	{
-		mwin("You're a dummy!")
-		wait()
-		mwincls()
-
-		// Set done! to 1. We do this so the while loop
-		// doesn't repeat after the desired action is performed.
-		done! = true
+		mwinCls();
+		mwin("It's always good to indent code between curly braces with tabs!");
+		bLoop = false;
 	}
+	
+	input = wait();
+	
 }
 </pre>
 
-<p>
-The program is a little longer now, but more efficient. With the while loop added, if the user does not press '1' or '2', it will go back to where the while loop starts and execute the code again, waiting for the keypress. So how does the while loop work? Let's take a look...
-</p>
+
 
 <p>
-A While Loop is just a block of statements that gets run over and over again until a certain condition is false. In the program above, the condition that was used was like saying "While the variable 'done' equals 0, repeat this block of code". Here's the general form of a while loop:
+
+If you press the wrong key when running this program, it will wait for you to press another key. It will keep looping until you press 1 or 2, and once you finally do, the program will end. There are two new things here though: The values <code>true</code> and <code>false</code> are used in the code, assigned to a variable.
+
 </p>
 
-<pre>
-while (condition)
-{
-	command1
-	command2
-	etc...
-}
-</pre>
+
 
 <p>
-Looks like the If statement, right? That's because a While loop is just like an If statement that repeats itself zero or more times. The block of code inside of the brackets (the { and }) will get executed as long as the condition is true. Once the end of the block is reached, it skips back up to the top of the while () command and tests if the condition is still true. If the condition is still true, the block will run again. Then it will skip back up to the while () statement. If the condition is true, the block will run again. The block will continue to be run over and over again as long as the condition is true. Once it is false, the commands in the block won't get run, and the program will continue along leaving the while () loop behind.
+
+These are the boolean true and false values, and in RPGCode they are synonymous with 1 and 0 respectively. When <code>bLoop</code> is assigned <code>true</code>, and then it is given to the while loop as its expression, it is like writing <code>while (1)</code> (and as we learned earlier, the code associated with a control structure like if or while will be run if the conditional expression returns 1).
+
 </p>
+
+
 
 <p>
-So how do you exit a while loop? Well, you have to leave it manually. For instance, let's take a look at this piece of code:
+
+When the user presses 1 or 2 and either the if or elseif code is run, <code>bLoop</code> is set to <code>false</code>. Since <code>false</code> is synonymous with 0, when the while loop reevaluates the expression, 0 is returned and it will not loop.
+
 </p>
 
-<pre>
-done! = false
-while (!done!)
-{
-	mwin("Hi!")
-}
-</pre>
+
 
 <p>
-This loop will run forever (at least until you ctrl + alt + delete out of it. Not a good idea!). You need something to exit the while loop. So how do we do that? Simply set 'done!' to equal something other than false. Here's how you would exit the loop:
+
+While loops, if statements, and the like can all be very powerful ways to control the flow of a program: You can make events happen once, multiple times, or not at all depending on conditional expressions. In almost any programming application, whether it's coding with RPGCode or otherwise, you will find yourself using these constructs a lot.
+
 </p>
 
-<pre>
-done! = false
-while (!done!)
-{
-	mwin("Hi!")
-	done! = true
-}
-</pre>
 
-<p class="boxedText">
-Please note: When you assign 'false' to a variable, it's like assigning 0. When you assign 'true', it's like assigning 1. So, things like, "while (!done!)" just says, "While done! is not true."
-</p>
 
-<p>
-After it prints "Hi!" to the screen, it then exits the while loop by setting done! to equal true instead of false. That example, however, isn't very useful because you don't need that to repeat at all. Here's something you might want to repeat:
-</p>
 
-<pre>
-count! = 1
-while (count! &lt;= 5)
-{
-	show(count!) // Show the value of count! in the message window
-	count!++     // Increment done! by 1
-}
-</pre>
 
-<p>
-This small program prints the value of count! onto the screen using the Show() command. Note that instead of setting count! to an exact number to exit the loop, I increment it by 1. This block runs until count! is less than or equal to 5. So, it prints the numbers 1 through 5 on separate lines. Then it exits the loop, resuming the program. When dealing with loops, remember to always check them and make sure that they will eventually end. If your loop doesn't end, you will have to endtask the program and shut it down. There is also a 'better form' of a While loop, which is called a For loop. That's exactly what we're learning next...
-</p>
+
 
 <a name="con.for"></a>
-<h4>For loops</h4>
+
+<h4>The For Loop:</h4>
+
+
 
 <p>
-In a way, you've already done a For loop. Not the actual command, but a different representation. A for loop is basically a while loop that lets you initialize and increment/decrement. This is the form of a For loop:
+
+In the example we saw where a while loop was used to print the numbers 1 through 5, a few things happened: Firstly, a variable was initialized with the value 0. Secondly, an expression was evaluated to see if the variable was less than 5. Thirdly, the number was shown and the variable was incremented (1 was added).
+
 </p>
 
+
+
+<p>
+
+This same process can be achieved in fewer lines of code with the <em>for loop</em>. A for loop takes on the following form:
+
+</p>
+
+
+
 <pre>
-for (initialization; condition; increment)
+for (<em>initialization</em>; <em>expression</em>; <em>increment</em>)
 {
-	command1
-	command2
-	etc...
+	<em>statements</em>
 }
 </pre>
 
+
+
 <p>
-Let's start with the initialization. Initialization just means that you create a variable to be used in the condition. For example, I could create the the variable i! and give it the value 0. That would be our base variable to use in the condition. The condition is the same as in a While loop and an If statement. All of the conditional operators can be used here. Next, we have increment. All we do here is increment or decrement the base variable. Let's take a look at an example:
+
+The first part of the for loop inside of the parentheses is the <em>initialization</em>: Here you can assign an initial value to a variable. The second part is the <em>expression</em>, which, like the rest of the control structures, can take any valid expression. Lastly is the <em>increment</em> portion: This can also be any valid expression, but generally it is used to increment the variable that was initialized in the first section. <em>statements</em> will be run if the <em>expression</em> is evaluated to 1. Let's see the while loop example again, but this time with a for loop.
+
 </p>
 
 <pre>
-for (count! = 1; count! &lt;= 5; count!++)
+for (count = 0; count &lt; 5; count++)
 {
-	show(count!)
+	mwin(count);
+}
+wait();
+</pre>
+
+
+
+<p>
+
+This code works almost exactly the same way as the while loop example. The only difference that you will notice is that it shows the numbers 0 through 4 instead of 1 through 5!
+
+</p>
+
+
+
+<p>
+
+When you are working with code where there is an initialization variable, an expression, and incrementation (or decrementation), it is safe to say that a for loop should suffice over a while loop to create more tightly knit code.
+
+</p>
+
+
+
+
+
+
+
+<a name="con.switch"></a>
+
+<h4>The Switch Statement:</h4>
+
+
+
+<p>
+
+When you are dealing with multiple cases of equality comparisons with a long chain of <code>if...elseif</code>, you may opt to use the <em>switch</em> control structure instead. It allows you to compare a given expression against other expressions with <em>cases</em>. This is the form that a switch structure takes on: 
+
+</p>
+
+
+<pre>
+switch (<em>expression</em>)
+{
+	case <em>expression2</em>:
+	{
+		<em>statements1</em>
+	}
+	case <em>expression3</em>:
+	{
+		<em>statements2</em>
+	}
+	// <em>etc...</em>
 }
 </pre>
 
-<p>
-If you look at the last example in the While loops section, you may notice that this does the same thing. First, it creates the variable count! and assigns it the value 1. Then, it checks if the condition is true (if count! is less than or equal to 5). If so, it runs through the loop and then increments the number. It repeats step two and step three while the condition is true. Where it takes three lines of code to do this with the While loop, it only takes one line with the For loop.
-</p>
+
 
 <p>
-The above examples output will be:<br />
-1<br />
-2<br />
-3<br />
-4<br />
-5
+
+Where <em>expression</em>N is compared to <em>expression</em>, and <em>statements</em>N is the statements that are run if that case's value matches the value it's compared to. For example, we can check if the variable <code>x</code> is equal to 1 or 2 with this switch...case structure:
+
 </p>
 
-<div class="boxedText" style="margin-bottom: 20px;">
 
-<p style="margin-top: 0;">
-Throughout this section of the document, you've learned how to control program flow with conditional statements and loops. It is worth noting that you don't always need to include the opening and closing braces ({ and }). This works for everything you've seen so far (if, else, switch, while, and for). If your conditional statement or loop is only supposed to run one line of code, you don't need the braces. However, the braces are required if the conditional statement or loop is supposed to run more than one line of code. Example:
+<pre>
+x = 2;
+switch (x)
+{
+	case 1:
+	{
+		mwin("x is equal to 1!");
+	}
+	case 2:
+	{
+		mwin("x is equal to 2!");
+	}
+}
+wait();
+</pre>
+
+
+
+<p>
+We can also emulate an <em>else</em> statement with the <em>default</em> keyword:
 </p>
 
 <pre>
-a! = 1
-if (a! == 1)
-	mwin("a! is 1")
-else
-	mwin("a! is not 1")
+x = 42;
+switch (x)
+{
+	case 1:
+	{
+		mwin("x is equal to 1!");
+	}
+	case 2:
+	{
+		mwin("x is equal to 2!");
+	}
+	default:
+	{
+		mwin("x is equal to " + x + "!");
+	}
+}
+wait();
 </pre>
 
+
 <p>
-Statements that use {}'s are called 'compound statements.'
+In this second example, <code>x</code> is neither 1 or 2, so the first two case statements will fail. Instead, the default case will be run because no others were (and so "x is equal to 42!" will be shown). 
 </p>
 
-<p style="margin-bottom: 0;">
-<em>Editor's Note</em>: We encourage using brackets even where they are not required for long term code readabilitiy.
-</p>
-
-</div>
 
 <hr />
 
-<a name="mul"></a>
-<h3>Multitasking</h3>
+<a name="operators"></a>
+<h3>Operators</h3>
 
 <p>
-Most programs you write will be programs that you set on the board using the Board Editor. However, items that are placed on the board can run multitasking programs -- that is, they can run while other programs are running at the same time. Multitasking programs work basically the same as normal programs, except for a few variations.
+Operators are used to perform operations on data like addition and multiplication. There are operators for arithmetic, logical and relational comparisons, bitwise operations, etc. It should be noted that each operator returns a value (even in the case of assignment operators such as <code>x = (y += 1) + 1</code>), and so each example onward is a valid expression.
 </p>
 
-<p>
-A multitasking program is usually set up as an infinite loop, because it usually just makes the item walk around the screen repeatedly. In TK2, there were issues with multitasking, because you had to use the Branch() command to make the loop, and they were quite slow. You couldn't use 'real' loops like For and While because they would 'lock' up the computer (in other words, the computer would stall).
-</p>
 
-<p>
-If you're a veteran of TK2, you'll notice that TK3 makes things much easier. In the case of multitasking, you can now use For and While loops in your threads for faster, more efficient threaded programs (we'll discuss what 'thread' means in a moment). Here's an example of a simple multitasking program that makes an NPC wander around the board.
-</p>
 
+<a name="operators.arithmetic"></a>
+<h4>Arithmetic Operators:</h4>
+
+<h5>Addition (+)</h5>
+<p>Returns the sum of the left and right operands.</p>
+<pre>a + b</pre>
+
+<h5>Addition Assignment (+=)</h5>
+<p>Adds the right operand's value to the left's.</p>
+<pre>a += b</pre>
+
+<h5>Subtraction (-)</h5>
+<p>Returns the difference between the left and right operands.</p>
+<pre>a - b</pre>
+
+<h5>Subtraction Assignment (-=)</h5>
+<p>Subtracts the right operand's value from the left's.</p>
+<pre>a -= b</pre>
+
+<h5>Multiplication (*)</h5>
+<p>Returns the left operand multiplied by the right.</p>
+<pre>a * b</pre>
+
+<h5>Multiplication Assignment (*=)</h5>
+<p>Multiplies the left operand's value by the right's.</p>
+<pre>a *= b</pre>
+
+<h5>Division (/)</h5>
+<p>Returns the left operand divided by the right.</p>
+<pre>a / b</pre>
+
+<h5>Division Assignment (/=)</h5>
+<p>Divides the left operand's value by the right's.</p>
+<pre>a /= b</pre>
+
+<h5>Power (^)</h5>
+<p>Returns the left operand's value to the power of the right's.</p>
+<pre>a ^ b</pre>
+
+<h5>Power Assignment (^=)</h5>
+<p>Raises the left operand's value to the power of the right.</p>
+<pre>a ^= b</pre>
+
+<h5>Modulo (%)</h5>
+<p>Returns the remainder of the left operand's value divided by the right's.</p>
+<pre>a % b</pre>
+
+<h5>Modulo Assignment (%=)</h5>
+<p>Assigns the remainder of a division between the left and right operands to the left operand.</p>
+<pre>a %= b</pre>
+
+<h5>Prefix Increment (++)</h5>
+<p>Increments its operand's value by 1 and returns the incremented value.</p>
+<pre>++a</pre>
+
+<h5>Postfix Increment (++)</h5>
+<p>Increments its operand's value by 1 and returns the original value.</p>
+<pre>a++</pre>
+
+<h5>Prefix Decrement (--)</h5>
+<p>Decrements its operand's value by 1 and returns the decremented value.</p>
+<pre>--a</pre>
+
+<h5>Postfix Decrement (--)</h5>
+<p>Decrements its operand's value by 1 and returns the original value.</p>
+<pre>a--</pre>
+
+
+
+<a name="operators.comparison"></a>
+<h4>Comparison Operators:</h4>
+
+<h5>Equal To (==)</h5>
+<p>Returns 1 if both the left and right operands are equal, otherwise it returns 0.</p>
+<pre>a == b</pre>
+
+<h5>Not Equal To (~=)</h5>
+<p>Returns 1 if the left and right operands are not equal, otherwise it returns 0.</p>
+<pre>a ~= b</pre>
+
+<h5>Greater Than (&gt;)</h5>
+<p>Returns 1 if the left operand is greater than the right, otherwise it returns 0.</p>
+<pre>a &gt; b</pre>
+
+<h5>Greater Than or Equal To (&gt;=)</h5>
+<p>Returns 1 if the left operand is greater than or equal to the right, otherwise it returns 0.</p>
+<pre>a &gt;= b</pre>
+
+<h5>Less Than (&lt;)</h5>
+<p>Returns 1 if the left operand is less than the right, otherwise it returns 0.</p>
+<pre>a &lt; b</pre>
+
+<h5>Less Than or Equal To (&lt;=)</h5>
+<p>Returns 1 if the left operand is less than or equal to the right, otherwise it returns 0.</p>
+<pre>a &lt;= b</pre>
+
+<h5>Logical AND (&amp;&amp;, AND)</h5>
+<p>Returns 1 if both the left and right operands are non-zero, otherwise it returns 0.</p>
 <pre>
-// Makes an NPC wander around the board infinitely.
-while (true)
-{
-	wander("target", 0)
-}
+a &amp;&amp; b
+a AND b
 </pre>
 
-<a name="mul.threading"></a>
-<h4>Threading:</h4>
-
-<p>
-In TK2, the only way to use multitasking programs was to use them with an item placed on the board. However, TK3 is much more convenient. It allows you to use 'threads'. A 'thread' is a multitasking program that you can run from another program. So instead of going through the trouble of making an item with the multitask program and setting it on the board, you can easily type in the Thread() command to have a multitask program run. This is much more efficient and easier. Let's take a look at how you use the Thread() command:
-</p>
-
+<h5>Logical OR (||, OR)</h5>
+<p>Returns 1 if either the left or right operand is non-zero, otherwise it returns 0.</p>
 <pre>
-id! = Thread("my_program.prg", 0) 
-// Sets the multitask program "my_program.prg".
-// Only runs while player is on the board.
+a || b
+a OR b
 </pre>
 
-<p>
-As the comments explain, that runs a multitasking program called 'my_program.prg'. It only runs while the player is on the board, so it will stop once the player leaves or you stop it using the ThreadSleep() command. The ThreadSleep() command puts your thread to 'sleep'. Basically, it stops your thread from running for a matter of seconds. If you want to 'wake the thread up' again, just use ThreadWake(). For information on how to use the various threading commands, look in the Command Reference.
-</p>
+<h5>Logical NOT (!)</h5>
+<p>Returns 1 if its operand is 0, otherwise it returns 0.</p>
+<pre>!a</pre>
+
+
+
+<a name="operators.bitwise"></a>
+<h4>Bitwise Operators:</h4>
+
+<h5>Bitwise AND (&amp;)</h5>
+<p>Compares each bit in the left operand to each corresponding bit in the right operand, returning 1 if the two corresponding bits are 1; otherwise 0.</p>
+<pre>a &amp; b</pre>
+
+<h5>Bitwise AND Assignment (&amp;=)</h5>
+<p>Compares each bit in the left operand to each corresponding bit in the right operand, returning 1 if the two corresponding bits are 1, 0 otherwise, and assigns the resulting value to the left operand.</p>
+<pre>a &amp;= b</pre>
+
+<h5>Bitwise OR (|)</h5>
+<p>Compares each bit in the left operand to each corresponding bit in the right operand, returning 1 if either of the corresponding bits are 1; otherwise 0.</p>
+<pre>a | b</pre>
+
+<h5>Bitwise OR Assignment (|=)</h5>
+<p>Compares each bit in the left operand to each corresponding bit in the right operand, returning 1 if either of the corresponding bits are 1, 0 otherwise, and assigns the resulting value to the left operand.</p>
+<pre>a |= b</pre>
+
+<h5>Bitwise NOT (~)</h5>
+<p>Performs logical negation of each bit in its operand, changing bits that were 1 to 0 and bits that were 0 to 1.</p>
+<pre>~a</pre>
+
+
+
+<h5>Bitwise XOR (`)</h5>
+
+<p>Compares each bit in the left operand to each corresponding bit in the right operand, returning 1 if the two bits are not the same; otherwise 0.</p>
+<pre>a ` b</pre>
+
+<h5>Bitwise XOR Assignment (`=)</h5>
+<p>Compares each bit in the left operand to each corresponding bit in the right operand, returning 1 if the two bits are not the same, 0 otherwise, and assigns the resulting value to the left operand.</p>
+<pre>a `= b</pre>
+
+
+
+<a name="operators.other"></a>
+<h4>Other Operators:</h4>
+
+
+<h5>Ternary (?:)</h5>
+<p>Returns <em>b</em> if <em>a</em> is non-zero, otherwise it returns <em>c</em>.</p>
+<pre>a ? b : c</pre>
+
+
 
 </div>
 
 <hr />
 <p>
 <a href="page18.1.htm">previous</a>, <a href="page18.3.htm">forward</a>
-</p></div>
+</p>
+</div>
 
 <div id="links">
 <p>
-All contents copyright &copy; 2005, Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell. All rights reserved; you may not remove this notice.
 </p>
 </div>
 
