@@ -147,7 +147,7 @@ STRING prompt(const STRING str)
 	// Destination on screen.
 	const int dx = x + r.left, dy = y + r.bottom + 12;
 
-	RECT r2;
+	RECT r2 = {0};
 	r2.left = x + 14;
 	r2.top = y + r.bottom + 16;
 
@@ -190,6 +190,8 @@ STRING prompt(const STRING str)
 		{
 			response = response.substr(0, response.length() - 1);
 		}
+		r2.right = r2.left + sz.cx;
+		r2.bottom = r2.top + sz.cy;
 
 		DrawText(hdc, response.c_str(), response.length(), &r2, 0);
 		pBuffer->CloseDC(hdc);
