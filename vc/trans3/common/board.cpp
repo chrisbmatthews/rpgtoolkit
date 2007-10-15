@@ -1523,9 +1523,12 @@ void tagBoard::freePrograms()
  */
 void tagBoard::freeItems()
 {
+	extern ZO_VECTOR g_sprites;
+
 	for (std::vector<CItem *>::iterator i = items.begin(); i != items.end(); ++i)
 	{
 		delete *i;
+		g_sprites.remove(*i);
 	}
 	items.clear();
 }

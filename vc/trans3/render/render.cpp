@@ -412,6 +412,8 @@ void tagScrollCache::render(const bool bForceRedraw)
 void setAmbientLevel(void)
 {
 	extern LPBOARD g_pBoard;
+	extern ZO_VECTOR g_sprites;
+
 	const RGB_SHORT bae = g_pBoard->ambientEffect;
 	const RGBSHADE al = 
 	{
@@ -440,6 +442,7 @@ void setAmbientLevel(void)
 	g_ambientLevel.sgn = DOUBLE(sgn(double(al.r)));
 
 	CSharedAnimation::freeAllCanvases();
+	g_sprites.nullCanvases();
 	g_pBoard->createImageCanvases();
 }
 

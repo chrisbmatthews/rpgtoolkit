@@ -116,6 +116,7 @@ public:
 		const STRING stance, 
 		const CProgram *prg, 
 		const bool bPauseThread);
+	void nullCanvas(void) { m_pCanvas = NULL; } // Free the pointer (when dangling).
 
 	bool move(								// Evaluate the current movement state.
 		const CSprite *selectedPlayer,
@@ -258,6 +259,16 @@ typedef struct tagZOrderedSprites
 			if (*i == pSprite) break;
 		}
 		return i;
+	}
+
+	// Null the pointers to animation frame canvases when their
+	// shared animations are destroyed (see setAmbientLevel()).
+	void nullCanvases(void)
+	{
+		for (ZO_ITR i = v.begin(); i != v.end(); ++i)
+		{
+			(*i)->nullCanvas();
+		}
 	}
 
 } ZO_VECTOR;
