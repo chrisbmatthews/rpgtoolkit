@@ -169,7 +169,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			
 			// Wake up any thread that this sprite has control over
 			// if the path is empty (i.e. a thread-set movement has just finished).
-			if (m_thread)
+			if (m_thread && m_pos.loopFrame != LOOP_STANCE)
 			{
 				m_thread->wakeUp();
 				m_thread = NULL;
