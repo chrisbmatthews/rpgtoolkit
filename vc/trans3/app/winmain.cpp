@@ -487,11 +487,13 @@ void closeSystems()
  */
 STRING getMainFileName(const STRING cmdLine)
 {
+	const STRING mainGam = _T("main.gam");
+
 	// First, check for a standalone game.
 	if (isStandaloneGame())
 	{
 		// We're standalone.
-		return _T("main.gam");
+		return mainGam;
 	}
 
 	std::vector<STRING> parts;
@@ -528,6 +530,8 @@ STRING getMainFileName(const STRING cmdLine)
 		}
 	}
 
+	if (CFile::fileExists(mainGam)) return mainGam;
+
 	TCHAR strFileName[MAX_PATH] = _T("");
 
 	OPENFILENAME ofn = {
@@ -549,7 +553,7 @@ STRING getMainFileName(const STRING cmdLine)
 	if (_ftcsicmp(getExtension(fileName).c_str(), _T("TPK")) == 0)
 	{
 		initialisePakFile(fileName);
-		return _T("main.gam");
+		return mainGam;
 	}
 
 	return fileName;
