@@ -666,10 +666,10 @@ VOID FAST_CALL CTile::createShading(
 							yi = 0;
 						}
 					}
-					else
-					{
-						isometricTile[x * 32 + y] = TRANSP_COLOR;
-					}
+// unneeded			else
+//					{
+//						isometricTile[x * 32 + y] = TRANSP_COLOR;
+//					}
 				}
 			} // for(x)
 		}
@@ -694,9 +694,16 @@ VOID FAST_CALL CTile::createShading(
 				}
 				else
 				{
-					fg[i] = isometricTile[x * 32 + y];
-					alpha[i] = 0;
-					mask[i] = RGB(255, 255, 255);
+					// Swap TRANSP_COLOR for black because isometric
+					// tiles need to be drawn using a mask (SRCAND) and SRCPAINT,
+					// because the bitmap corners overlay adjacent tiles.
+					// Black (0) is the transparent colour for SRCPAINT (SRCPAINT
+					// combines with boolean OR). The mask (alpha) needs to be
+					// black (solid) or white (transparent) for SRCAND.
+					int col = isometricTile[x * 32 + y];
+					fg[i] = (col == TRANSP_COLOR ? 0 : col);
+					alpha[i] = (col == TRANSP_COLOR ? RGB(255, 255, 255) : 0);
+					mask[i] = 0;
 				}
 			}
 		}
@@ -752,8 +759,6 @@ VOID FAST_CALL CTile::gdiDraw(CONST HDC hdc, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
-		//m_pCnvForegroundIso->Blt(hdc, x, y, m_nFgIdxIso, SRCCOPY);
-		
 		//blit the alpha channel down...
 		m_pCnvAlphaMaskIso->Blt(hdc, x, y, m_nAlphaIdxIso, SRCAND);
 		//blit the foreground down...
@@ -762,7 +767,7 @@ VOID FAST_CALL CTile::gdiDraw(CONST HDC hdc, CONST INT x, CONST INT y)
 	else
 	{
 		// SRCCOPY with TRANSP_COLOR is sufficient for 32x32.
-		m_pCnvForeground->Blt(hdc, x, y, m_nFgIdx, SRCCOPY );
+		m_pCnvForeground->Blt(hdc, x, y, m_nFgIdx, SRCCOPY);
 
 		//blit the alpha channel down...
 		//m_pCnvAlphaMask->Blt(hdc, x, y, m_nAlphaIdx, SRCAND);
@@ -786,6 +791,8 @@ VOID FAST_CALL CTile::cnvDraw(CCanvas *pCanvas, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
+		// The transparent colour has been changed to black (0) in createShading
+		//so that the tile can be Blt'd to a DC (see gdiDraw).
 		m_pCnvForegroundIso->BltTransparent(pCanvas, x, y, m_nFgIdxIso, 0);
 	}
 	else
