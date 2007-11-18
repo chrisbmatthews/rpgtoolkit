@@ -1055,13 +1055,17 @@ void CProgram::prime()
 // Load the program from a string.
 bool CProgram::loadFromString(const STRING str)
 {
-	FILE *p = tmpfile();
+	// tmpfile() is capped to TMP_MAX calls. tmpnam() is slow.
+	char tempfile[] = _T("_tmpprg");
+
+	FILE *p = fopen(tempfile, _T("wb+"));
 	if (!p) return false;
 
 	fputs(str.c_str(), p);
 	fseek(p, 0, SEEK_SET);
 	parseFile(p);
 	fclose(p);
+	remove(tempfile);
 
 	prime();
 	return true;

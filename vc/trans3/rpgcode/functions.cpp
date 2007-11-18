@@ -3232,7 +3232,10 @@ void rpgCode(CALL_DATA &params)
 		throw CError(_T("RPGCode() requires one parameter."));
 	}
 	CProgramChild prg(*params.prg);
-	prg.loadFromString(params[0].getLit());
+	if (!prg.loadFromString(params[0].getLit()))
+	{
+		throw CError(_T("RPGCode(): CProgram::loadFromString() failed."));
+	}
 	prg.run();
 }
 
@@ -5184,7 +5187,9 @@ void getBoardTileType(CALL_DATA &params)
 /*
  * void setImageAdditive(string file, int x, int y, int width, int height, double percent[, canvas cnv])
  * 
- * Set an image with a tint of the specified percent.
+ * Add a percent of the specified image to the screen or canvas. 
+ * The red, green and blue components of each pixel are summed separately.
+ * e.g. result.R = canvas.R + (file.R * percent)
  */
 void setimageadditive(CALL_DATA &params)
 {
