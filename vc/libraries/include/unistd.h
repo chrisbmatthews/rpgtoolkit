@@ -1,0 +1,1 @@
+int __cdecl isatty(int f) { return 0; }
