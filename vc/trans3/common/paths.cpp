@@ -36,7 +36,7 @@
 #include "paths.h"
 #include "CFile.h"
 #include "mbox.h"
-#include "../../tkzip/tkzip.h"
+#include "../zip/tkzip.h"
 
 /*
  * Globals.

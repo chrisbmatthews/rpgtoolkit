@@ -58,7 +58,7 @@
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
 #include "../movement/CPathFind/CPathFind.h"
-#include "../../tkCommon/images/FreeImage.h"
+#include "FreeImage.h"
 #include "../../tkCommon/board/conversion.h"
 #include "../fight/fight.h"
 #include "../misc/misc.h"
@@ -311,7 +311,7 @@ CItem *getItemPointer(STACK_FRAME &param)
  */
 STRING spliceArrays(CProgram *prg, STRING str)
 {
-	STRING::iterator i = str.begin(), first = NULL, last = NULL;
+	STRING::iterator i = str.begin(), first = str.end(), last = str.end();
 	int depth = 0;
 
 	for (; i < str.end(); ++i)
@@ -414,6 +414,14 @@ void mwin(CALL_DATA &params)
 	{
 		g_mwin.cnvText->ClearScreen(g_mwin.color);
 		g_mwin.visible = true;
+		/*
+		if(params.prg->isThread()){
+			g_mwin.threadVisible = true;
+		}
+		else{
+			g_mwin.visible = true;
+		}
+		*/
 	}
 
 	// Write the text.
@@ -421,6 +429,7 @@ void mwin(CALL_DATA &params)
 	g_mwin.nextLine += g_fontSize;
 
 	CONST_POS i = params.prg->getPos() + 1;
+
 	for (; i != params.prg->getEnd(); ++i)
 	{
 		if (i->udt & UDT_LINE)
@@ -436,7 +445,9 @@ void mwin(CALL_DATA &params)
 	}
 
 	// Draw the window.
-	renderRpgCodeScreen();
+	if(!params.prg->isThread()){
+		renderRpgCodeScreen();
+	}
 }
 
 /*
@@ -3232,10 +3243,7 @@ void rpgCode(CALL_DATA &params)
 		throw CError(_T("RPGCode() requires one parameter."));
 	}
 	CProgramChild prg(*params.prg);
-	if (!prg.loadFromString(params[0].getLit()))
-	{
-		throw CError(_T("RPGCode(): CProgram::loadFromString() failed."));
-	}
+	prg.loadFromString(params[0].getLit());
 	prg.run();
 }
 
@@ -3284,19 +3292,34 @@ void equip(CALL_DATA &params)
 	}
 
 	CPlayer *p = getPlayerPointer(params[0]);
+	
 	if (!p) throw CError(_T("Equip(): player not found."));
 
 	const unsigned int i = abs(params[1].getNum());
-	const STRING str = g_projectPath + ITM_PATH + params[2].getLit();
+	
 
-	// Try to take the item.
-	if (g_inv.take(str))
-	{
-		// Remove any item that may be equipped.
-		p->removeEquipment(i);
-		p->addEquipment(i, str); 
+	if(!CFile::fileExists(g_projectPath + ITM_PATH + params[2].getLit())){
+		const STRING str = g_projectPath + ITM_PATH + g_inv.fileByHandle(params[2].getLit());
+		if (g_inv.take(str))
+		{
+			// Remove any item that may be equipped.
+			p->removeEquipment(i);
+			p->addEquipment(i, str); 
+		}
+		else throw CError(_T("Equip(): item not in inventory."));
 	}
-	else throw CError(_T("Equip(): item not in inventory."));
+	else{
+		const STRING str = g_projectPath + ITM_PATH + params[2].getLit();
+		if (g_inv.take(str))
+		{
+			// Remove any item that may be equipped.
+			p->removeEquipment(i);
+			p->addEquipment(i, str); 
+		}
+		else throw CError(_T("Equip(): item not in inventory."));
+	}
+	// Try to take the item.
+
 }
 
 /*
@@ -3717,7 +3740,8 @@ void fade(CALL_DATA &params)
 			// Box grows from centre to fill screen.
 			const int pxStep = 5;
 
-			for (unsigned int i = 0; i != width / 2; i += pxStep)
+			unsigned int i = 0;
+			for (; i != width / 2; i += pxStep)
 			{
 				int y1 = height / 2 - i, y2 = height / 2 + i;
 
@@ -3758,7 +3782,7 @@ void fade(CALL_DATA &params)
 					renderRpgCodeScreen();
 				}
 				// Fill in gaps.
-				for (i = pxStep; i < width / 2; i += pxStep * 2)
+				for (unsigned int i = pxStep; i < width / 2; i += pxStep * 2)
 				{
 					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
 					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
@@ -3796,7 +3820,7 @@ void fade(CALL_DATA &params)
 				cnv.DrawFilledRect(i, 0, i + pxStep, height, RGB(i,i,i));
 			}
 			// Copy over the gradient, shifting it right.
-			for (i = -128; i != width; i += pxStep)
+			for (int i = -128; i != width; i += pxStep)
 			{
 				// Overflow handled in BltPart().
 				cnv.Blt(g_cnvRpgCode, i, 0, SRCCOPY);
@@ -3814,7 +3838,7 @@ void fade(CALL_DATA &params)
 			// Use the longest diagonal as the radius.
 			const int rX = (width - x > x ? width - x: x),
 					  rY = (height - y > y ? height - y: y);
-			int radius = sqrt(rX * rX + rY * rY);
+			int radius = sqrt(static_cast<DOUBLE>(rX * rX + rY * rY));
 
 			for (; radius > 0; radius -= 1)
 			{
@@ -5187,9 +5211,7 @@ void getBoardTileType(CALL_DATA &params)
 /*
  * void setImageAdditive(string file, int x, int y, int width, int height, double percent[, canvas cnv])
  * 
- * Add a percent of the specified image to the screen or canvas. 
- * The red, green and blue components of each pixel are summed separately.
- * e.g. result.R = canvas.R + (file.R * percent)
+ * Set an image with a tint of the specified percent.
  */
 void setimageadditive(CALL_DATA &params)
 {
@@ -5864,7 +5886,15 @@ void drawCanvas(CALL_DATA &params)
 		CCanvas *p = g_canvases.cast((int)params[0].getNum());
 		if (p)
 		{
-			p->BltStretch(g_cnvRpgCode, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
+		const int width = int(params[3].getNum());
+		const int height = int(params[4].getNum());
+
+			if(width == p->GetWidth() && height == p->GetHeight()){
+				p->Blt(g_cnvRpgCode, params[1].getNum(), params[2].getNum());
+			}
+			else{
+				p->BltStretch(g_cnvRpgCode, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
+			}
 			renderRpgCodeScreen();
 		}
 	}
@@ -5876,7 +5906,14 @@ void drawCanvas(CALL_DATA &params)
 			CCanvas *pDest = g_canvases.cast((int)params[5].getNum());
 			if (pDest)
 			{
-				p->BltStretch(pDest, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
+				const int width = int(params[3].getNum());
+				const int height = int(params[4].getNum());
+				if(width == p->GetWidth() && height == p->GetHeight()){
+					p->Blt(pDest,params[1].getNum(),params[2].getNum());
+				}
+				else{
+					p->BltStretch(pDest, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
+				}
 			}
 		}
 	}
@@ -6907,17 +6944,22 @@ void drawcanvastransparent(CALL_DATA &params)
 	{
 		const int width = int(params[6].getNum());
 		const int height = int(params[7].getNum());
-		CCanvas temp;
-		temp.CreateBlank(NULL, width, height, TRUE);
-		pCanvas->BltStretch(
-			&temp,
-			0, 0,
-			0, 0,
-			pCanvas->GetWidth(), pCanvas->GetHeight(),
-			width, height,
-			SRCCOPY
-		);
-		temp.BltTransparent(pDest, x, y, colour);
+		if(width == pCanvas->GetWidth() && height == pCanvas->GetHeight()){
+			pCanvas->BltTransparent(pDest, x, y, colour);
+		}
+		else{
+			CCanvas temp;
+			temp.CreateBlank(NULL, width, height, TRUE);
+			pCanvas->BltStretch(
+				&temp,
+				0, 0,
+				0, 0,
+				pCanvas->GetWidth(), pCanvas->GetHeight(),
+				width, height,
+				SRCCOPY
+			);
+			temp.BltTransparent(pDest, x, y, colour);
+		}
 	}
 	else
 	{

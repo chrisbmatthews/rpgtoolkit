@@ -65,12 +65,12 @@ CVectorPathFind::PF_VECTOR_MAP CVectorPathFind::m_boardVectors;
 /*
  * Find the node with the lowest f-value.
  */
-NODE *CPathFind::bestOpenNode(void)
+NV_ITR CPathFind::bestOpenNode(void)
 {
-	NODE *best = &*m_openNodes.begin();
+	NV_ITR best = m_openNodes.begin();
 	for (NV_ITR i = m_openNodes.begin(); i != m_openNodes.end(); ++i)
 	{
-		if (i->fValue() < best->fValue()) best = &*i;
+		if (i->fValue() < best->fValue()) best = i;
 	}
 	return best;
 }
@@ -182,10 +182,11 @@ PF_PATH CPathFind::pathFind(const CSprite *pSprite)
 		++m_steps;
 
 		// Remove the best open node and add it to the closed nodes.
-		NODE *parent = bestOpenNode();
-		m_closedNodes.push_back(*parent);
-		m_openNodes.erase(parent);
-		parent = &m_closedNodes.back();
+		NV_ITR parentItr = bestOpenNode();
+		m_closedNodes.push_back(*parentItr);
+		m_openNodes.erase(parentItr);
+		
+		NODE *parent = &m_closedNodes.back();
 
 		// Check if the goal has been reached.
 		if (parent->pos == m_goal.pos || m_steps > PF_MAX_STEPS) break;
@@ -209,7 +210,8 @@ PF_PATH CPathFind::pathFind(const CSprite *pSprite)
 
 			// Check if the node has been closed via a different route,
 			// and if so, whether this is a more efficient route.
-			for (NV_ITR k = m_closedNodes.begin(); k != m_closedNodes.end(); ++k)
+			NV_ITR k = m_closedNodes.begin();
+			for (; k != m_closedNodes.end(); ++k)
 			{
 				if (k->pos == child.pos)
 				{
@@ -658,7 +660,8 @@ bool CTilePathFind::reset(
 	if (m_movedStart)
 	{
 		// Find the first non-false entry in ssIndex - use corresponding ss entry.
-		for (std::vector<bool>::iterator j = ssIndex.begin(); j != ssIndex.end(); ++j)
+		std::vector<bool>::iterator j = ssIndex.begin();
+		for (; j != ssIndex.end(); ++j)
 		{
 			if (*j) break;
 		}
@@ -805,7 +808,7 @@ PF_PATH CVectorPathFind::constructPath(NODE node, const CSprite *pSprite) const
 int CVectorPathFind::distance(const NODE &a, const NODE &b) const
 {
 	const int dx = abs(a.pos.x - b.pos.x), dy = abs(a.pos.y - b.pos.y);
-	return sqrt(dx * dx + dy * dy);
+	return sqrt(static_cast<DOUBLE>(dx * dx + dy * dy));
 }
 
 /*
@@ -916,7 +919,7 @@ bool CVectorPathFind::isChild(const NODE &child, const NODE &parent) const
 		if ((*i) && (*i)->contains(v)) return false;		
 	}
 	// Check for sprite collisions.
-	for (i = m_spriteVectors.begin(); i != m_spriteVectors.end(); ++i)
+	for (PF_VECTOR_OBS::const_iterator i = m_spriteVectors.begin(); i != m_spriteVectors.end(); ++i)
 	{
 		if ((*i) && (*i)->contains(v)) return false;		
 	}	
@@ -983,7 +986,7 @@ bool CVectorPathFind::reset(
 	}
 
 	// Generate sprite bases each time, since sprites will have moved.
-	for (i = m_spriteVectors.begin(); i != m_spriteVectors.end(); ++i)
+	for (PF_VECTOR_OBS::iterator i = m_spriteVectors.begin(); i != m_spriteVectors.end(); ++i)
 	{
 		delete *i;
 	}

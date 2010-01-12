@@ -422,7 +422,7 @@ STRING fileDialog(
 			for (int j = 0; j < firstLine && i != files.end(); ++j) ++i;
 			
 			// Draw each visible entry.
-			for (j = 0; j < lines && i != files.end(); ++i, ++j)
+			for (int j = 0; j < lines && i != files.end(); ++i, ++j)
 			{
 				RECT r = {0, lineHeight * j, width, height};
 				OffsetRect(&r, pad / 2, titleHeight + pad / 2);
@@ -437,7 +437,11 @@ STRING fileDialog(
 			RECT rs = {0, lineHeight * (selectedLine - firstLine), width, height};
 			OffsetRect(&rs, pad / 2, titleHeight + pad / 2);
 			
-			for (i = files.begin(), j = 0; j != selectedLine; ++j) ++i;
+			int j = 0;
+			for (i = files.begin(), j = 0; j != selectedLine; ++j)
+			{	
+				++i;
+			}
 			DrawText(hdc, i->c_str(), i->length(), &rs, DT_END_ELLIPSIS | DT_SINGLELINE);
 		}
 

@@ -165,7 +165,8 @@ bool COptimiser::inlineExpand()
 		MACHINE_UNITS retVal;
 
 		// Fix up return values.
-		for (POS k = paramUnits.begin(); k != paramUnits.end(); ++k)
+		POS k = paramUnits.begin();
+		for (; k != paramUnits.end(); ++k)
 		{
 			if (k->udt & UDT_ID)
 			{

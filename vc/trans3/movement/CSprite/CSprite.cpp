@@ -439,7 +439,8 @@ bool CSprite::findDiversion(void)
 		// Copy path to append later.
 		MV_PATH path = m_pos.path;		
 		PF_PATH p;
-		for (MV_PATH::iterator i = path.begin(); i != path.end(); ++i)
+		MV_PATH::iterator i = path.begin();
+		for (; i != path.end(); ++i)
 		{
 			// Try each point along the path in turn.
 
@@ -1103,12 +1104,13 @@ TILE_TYPE CSprite::spriteCollisions(CSprite *&pSprite)
 	 */
 
 	// Find this sprite's iterator in the z-ordered vector.
-	ZO_ITR i = g_sprites.find(this), pos = NULL;
+	ZO_ITR i = g_sprites.find(this);
 
 	// Remove the pointer from the vector if it was found.
 	if (i != g_sprites.v.end()) g_sprites.v.erase(i);
 
 	TILE_TYPE result = TT_NORMAL;			// To return.
+	ZO_ITR pos = g_sprites.v.end();			// Position iterator.
 
 	// Create this sprite's vector base at the *target* location.
 	CVector sprBase = m_attr.vBase + getTarget();
@@ -1145,7 +1147,7 @@ TILE_TYPE CSprite::spriteCollisions(CSprite *&pSprite)
 
 		const ZO_ENUM zo = tarBase.contains(sprBase);
 
-		if (!zo && !&*pos)
+		if (!zo && pos != g_sprites.v.end() /* !&*pos */)
 		{
 			// No rect intersect - compare on bounding box bottom-left
 			// corner position.
@@ -1153,7 +1155,7 @@ TILE_TYPE CSprite::spriteCollisions(CSprite *&pSprite)
 				(tBounds.bottom * g_pBoard->pxWidth() + tBounds.left))
 				pos = i;
 		}
-		else if (!(zo & ZO_ABOVE) && !&*pos)
+		else if (!(zo & ZO_ABOVE) && pos != g_sprites.v.end() /*!&*pos */)
 		{
 			// If below sprite, we want to insert before i, but only
 			// if we don't have an insertion point already.
@@ -1169,13 +1171,13 @@ TILE_TYPE CSprite::spriteCollisions(CSprite *&pSprite)
 			pSprite = *i;
 
 			// If we already have an insertion point, no need to continue.
-			if (&*pos) break;
+			if (pos == g_sprites.v.end() /* &*pos */) break;
 		}
 
 		// Compare origins? Merge origins and targets? (how?)
 	}
 
-	if (!&*pos)
+	if (pos != g_sprites.v.end() /* !&*pos */)
 		g_sprites.v.push_back(this);
 	else
 		g_sprites.v.insert(pos, this);

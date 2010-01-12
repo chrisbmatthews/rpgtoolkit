@@ -35,7 +35,6 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <dmusici.h>
 #include <set>
 #include "audiere.h"
 #include "../../tkCommon/strings.h"
@@ -63,15 +62,11 @@ protected:
 	void init();
 	bool isPlaying();
 	void setVolume(const int percent);
-	static DWORD WINAPI eventManager(LPVOID lpv);
 
-	static IDirectMusicLoader8 *m_pLoader;
-	static HANDLE m_notify;
-	IDirectMusicPerformance8 *m_pPerformance;
-	IDirectMusicSegment8 *m_pSegment;
 	audiere::AudioDevicePtr m_device;
+	audiere::MIDIDevicePtr m_midiDevice;
+	audiere::MIDIStreamPtr m_midiStream;
 	audiere::OutputStreamPtr m_outputStream;
-	bool m_audiere;
 	STRING m_file;
 };
 

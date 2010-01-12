@@ -42,7 +42,7 @@
 #include "../movement/CItem/CItem.h"
 #include "../rpgcode/CProgram.h"
 #include "../misc/misc.h"
-#include "../../tkCommon/images/FreeImage.h"
+#include "FreeImage.h"
 #include "../../tkCommon/tkgfx/CTile.h"
 
 /*
@@ -117,6 +117,7 @@ vVersion:
 	{
 		// 3.1.0 vector implementation.
 
+
 		short var;
 		file >> var; sizeX = int(var);
 		file >> var; sizeY = int(var);
@@ -137,7 +138,6 @@ vVersion:
 
 		// Temporarily to hold animated tile indices.
 		std::vector<int> tanLutIndices;
-
 		for (int i = 0; i <= lutSize; ++i)
 		{
 			STRING entry;
@@ -286,7 +286,7 @@ layerEnd:
 		if (ub >= 0)
 		{
 			// Negative number indicates no objects.
-			for (i = 0; i <= ub; ++i)
+			for (int i = 0; i <= ub; ++i)
 			{
 				BRD_LIGHT light;
 				short var;
@@ -307,7 +307,7 @@ layerEnd:
 
 				// Colors.
 				file >> pts;
-				for (j = 0; j <= pts; ++j)
+				for (int j = 0; j <= pts; ++j)
 				{
 					RGB_SHORT rgb = {0, 0, 0};
 					file >> rgb.r;
@@ -332,7 +332,7 @@ layerEnd:
 			// Negative number indicates no objects.
 			vectors.reserve(ub);
 
-			for (i = 0; i <= ub; ++i)
+			for (int i = 0; i <= ub; ++i)
 			{
 				BRD_VECTOR vect;
 				short var;
@@ -362,7 +362,7 @@ layerEnd:
 		{
 			programs.reserve(ub);
 
-			for (i = 0; i <= ub; ++i)
+			for (int i = 0; i <= ub; ++i)
 			{
 				LPBRD_PROGRAM prg = new BRD_PROGRAM();
 
@@ -401,7 +401,7 @@ layerEnd:
 		{
 			items.reserve(ub);
 
-			for (i = 0; i <= ub; ++i)
+			for (int i = 0; i <= ub; ++i)
 			{
 				BRD_SPRITE spr;
 				short x, y, z, sReserved;
@@ -451,7 +451,7 @@ layerEnd:
 			bLayerOccupied[0] |= LO_IMAGES; // Images on any layer.
 			int q = bLayerOccupied[0];
 
-			for (i = 0; i <= ub; ++i)
+			for (int i = 0; i <= ub; ++i)
 			{
 				LPBRD_IMAGE img = new BRD_IMAGE();
 
@@ -481,7 +481,7 @@ layerEnd:
 		}
 
 		file >> ub;
-		for (i = 0; i <= ub; ++i)
+		for (int i = 0; i <= ub; ++i)
 		{
 			STRING thread;
 			file >> thread;
@@ -501,7 +501,7 @@ layerEnd:
 		// Constants
 		file >> ub;
 		constants.clear();
-		for (i = 0; i <= ub; ++i)
+		for (int i = 0; i <= ub; ++i)
 		{
 			file >> str;
 			constants.push_back(str);
@@ -509,7 +509,7 @@ layerEnd:
 
 		// Layer titles.
 		layerTitles.clear();
-		for (i = 0; i <= sizeL; ++i)
+		for (int i = 0; i <= sizeL; ++i)
 		{
 			file >> str;
 			layerTitles.push_back(str);
@@ -517,7 +517,8 @@ layerEnd:
 
 		// Directional links.
 		links.clear();
-		for (i = 0; i != 4; ++i)
+		int linkCount = 0;
+		for (; linkCount != 4; ++linkCount)
 		{
 			file >> str;
 			links.push_back(str);
@@ -527,12 +528,12 @@ layerEnd:
 		bkgImage = NULL;
 
 		file >> str;
-		file >> i; 
+		file >> linkCount;
 		if (!str.empty())
 		{
 			bkgImage = new BRD_IMAGE();
 			bkgImage->file = str;
-			bkgImage->type = BI_ENUM(i);
+			bkgImage->type = BI_ENUM(linkCount);
 		}
 		
 		file >> bkgColor;
@@ -716,6 +717,8 @@ pvVersion:
 			} // for (y)
 		} // for (z)
 lutEndB:
+
+		int i = 0;
 
 		delete bkgImage;
 		bkgImage = NULL;
@@ -1481,7 +1484,8 @@ void tagBoard::freeVectors(const int layer)
 		// Delete vectors on the given layer.
 		while (true)
 		{
-			for (std::vector<BRD_VECTOR>::iterator i = vectors.begin(); i != vectors.end(); ++i)
+			std::vector<BRD_VECTOR>::iterator i = vectors.begin();
+			for (; i != vectors.end(); ++i)
 			{
 				if (i->layer == layer) break;
 			}

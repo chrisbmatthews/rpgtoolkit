@@ -45,7 +45,7 @@ public:
 	void give(const STRING file, const int number = 1)
 	{
 		// file contains complete path.
-		LPDATA_PAIR p = &m_data[parser::uppercase(file)];
+		LPDATA_PAIR p = &m_data[parser::uppercase(removePath(file, ITM_PATH))];
 		if (p->first.empty())
 		{
 			ITEM itm;
@@ -60,27 +60,36 @@ public:
 	}
 	unsigned int getQuantity(const STRING file)
 	{
-		LPDATA_PAIR p = &m_data[parser::uppercase(file)];
+		LPDATA_PAIR p = &m_data[parser::uppercase(removePath(file, ITM_PATH))];
 		if (p->first.empty()) return 0;
 		return p->second;
 	}
 	STRING getHandle(const STRING file)
 	{
-		return m_data[parser::uppercase(file)].first;
+		return m_data[parser::uppercase(removePath(file, ITM_PATH))].first;
 	}
 	bool take(const STRING file)
 	{
-		const STRING ucase = parser::uppercase(file);
+		const STRING ucase = parser::uppercase(removePath(file, ITM_PATH));
+		int doneByHandle;
+		doneByHandle = 0;
+
 		LPDATA_PAIR p = &m_data[ucase];
 		if (p->first.empty())
 		{
 			// Could be a handle.
-			p = byHandle(file);
+			p = byHandle(removePath(file, ITM_PATH));
+			doneByHandle = 1;
 			if (!p) return false;
 		}
 		if (--p->second == 0)
 		{
-			m_data.erase(ucase);
+			if(doneByHandle==1){
+				m_data.erase(fileByHandle(removePath(file, ITM_PATH)));
+			}
+			else{
+				m_data.erase(ucase);
+			}
 		}
 		return true;
 	}
@@ -100,7 +109,7 @@ public:
 			std::map<STRING, DATA_PAIR>::iterator j = at(i);	
 			DATA_PAIR p = j->second;
 			m_data.erase(j);
-			m_data[parser::uppercase(value)] = p;
+			m_data[parser::uppercase(removePath(value, ITM_PATH))] = p;
 		}
 	}
 	STRING handleAt(const int i)
@@ -123,6 +132,15 @@ public:
 	{
 		return m_data.size();
 	}
+	STRING fileByHandle(const STRING file)
+	{
+		std::map<STRING, DATA_PAIR>::iterator i = m_data.begin();
+		for(; i != m_data.end(); ++i)
+		{
+			if (file == i->second.first) break;
+		}
+		return (i == m_data.end() ? NULL : i->first);
+	}
 private:
 	std::map<STRING, DATA_PAIR>::iterator at(const int j)
 	{
@@ -139,7 +157,6 @@ private:
 		}
 		return (i == m_data.end() ? NULL : &i->second);
 	}
-
 	std::map<STRING, DATA_PAIR> m_data;
 };
 

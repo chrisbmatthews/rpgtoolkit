@@ -293,7 +293,7 @@ BOOL CShop::itemMenu(CONST CCanvas &backup, CONST SHOP_OPTION type, CONST RECT b
 			for (INT j = 0; j < firstLine && i != size; ++j) ++i;
 			
 			// Draw each visible entry.
-			for (j = 0; j < lines && i != size; ++i, ++j)
+			for (INT j = 0; j < lines && i != size; ++i, ++j)
 			{
 				CONST LPITEM item = m_items[inv->fileAt(i)];
 				STRINGSTREAM ss;

@@ -42,7 +42,7 @@
 #include "CFile.h"
 #include "../rpgcode/parser/parser.h"
 #include "../movement/movement.h"
-#include "../../tkCommon/images/FreeImage.h"
+#include "FreeImage.h"
 #include "mbox.h"
 #include <mmsystem.h>
 

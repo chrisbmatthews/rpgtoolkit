@@ -65,7 +65,7 @@
 #include "../movement/CItem/CItem.h"
 #include "../fight/fight.h"
 #include "../audio/CAudioSegment.h"
-#include "../../tkCommon/images/FreeImage.h"
+#include "FreeImage.h"
 #include "../../tkCommon/board/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
@@ -749,12 +749,20 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 		case GEN_EQUIP_FILES:
 			{
 				LPEQ_SLOT pEq = pPlayer->equipment(arrayPos);
-				bstr = getString(pEq->first);
+				if(pEq) {
+					bstr = getString(pEq->first);
+				} else {
+					bstr = getString(STRING());
+				}
 			} break;
 		case GEN_EQUIP_HANDLES:
 			{
 				LPEQ_SLOT pEq = pPlayer->equipment(arrayPos);
-				bstr = getString(pEq->second);
+				if(pEq)  {
+					bstr = getString(pEq->second);
+				} else {
+					bstr = getString(STRING());
+				}
 			} break;
 		case GEN_MUSICPLAYING:
 			extern CAudioSegment *g_bkgMusic;
@@ -805,7 +813,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 					if (arrayPos < 0) arrayPos = 0;
 					if (pFighter->statuses.size() > arrayPos)
 					{
-						i = advance(i, arrayPos);
+						advance(i, arrayPos);
 						bstr = getString(i->first);
 					}
 				}
@@ -1038,7 +1046,8 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 					if (arrayPos < 0) arrayPos = 0;
 					if (pFighter->statuses.size() > arrayPos)
 					{
-						i = advance(i, arrayPos);
+
+						advance(i, arrayPos);
 
 						// Map key is const, new arrayPos is unlikely to be the same.
 						pFighter->statuses.erase(i);

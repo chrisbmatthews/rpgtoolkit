@@ -105,6 +105,7 @@ typedef struct tagCallData
 
 	STACK_FRAME &operator[](const int i) { return *(p + i); }
 	STACK_FRAME &ret() { return *(p + params); }
+
 } CALL_DATA, *LPCALL_DATA;
 
 // A map of references.
@@ -227,7 +228,7 @@ typedef std::deque<MACHINE_UNIT> MACHINE_UNITS, *LPMACHINE_UNITS;
 typedef MACHINE_UNITS::const_iterator CONST_POS;
 typedef MACHINE_UNITS::iterator POS;
 
-typedef std::deque<std::deque<STACK_FRAME> >::const_iterator STACK_ITR;
+typedef std::vector<std::vector<STACK_FRAME> >::const_iterator STACK_ITR;
 
 // Get a lowercase string.
 inline STRING lcase(const STRING str)
@@ -262,8 +263,8 @@ template <class T>
 class CEnumeration
 {
 public:
-	typedef T::const_iterator ITR;
-	typedef T::value_type ITEM;
+	typedef typename T::const_iterator ITR;
+	typedef typename T::value_type ITEM;
 	CEnumeration(T &enu): m_enum(enu) { }
 	ITR begin() const { return m_enum.begin(); }
 	ITR end() const { return m_enum.end(); }
@@ -323,7 +324,7 @@ public:
 	void setErrorHandler(const STRING handler);
 	void resumeFromErrorHandler();
 	void setDefaultScope(const VAR_SCOPE s)
-		{ m_pResolveFunc = ((s == VS_GLOBAL) ? resolveVarGlobal : resolveVarLocal); }
+	{ m_pResolveFunc = ((s == VS_GLOBAL) ? &CProgram::resolveVarGlobal : &CProgram::resolveVarLocal); }
 
 	CONST_POS getPos() const { return m_i; }
 	CONST_POS getEnd() const { return m_units.end(); }
@@ -373,11 +374,14 @@ public:
 	CProgram &operator=(const CProgram &rhs);
 
 private:
+
+	bool m_loaded;
+
 	std::list<std::map<STRING, STACK_FRAME> > m_locals;
-	std::deque<std::deque<STACK_FRAME> > m_stack;
-	std::deque<STACK_FRAME> *m_pStack;
+	std::vector<std::vector<STACK_FRAME> > m_stack;
+	std::vector<STACK_FRAME> *m_pStack;
 	std::vector<CALL_FRAME> m_calls;
-	std::map<STRING, CLASS> m_classes;
+	std::map<STRING, tagClass> m_classes;
 	std::vector<unsigned int> m_lines;
 	tagBoardProgram *m_pBoardPrg;
 	std::vector<tagNamedMethod> m_methods;

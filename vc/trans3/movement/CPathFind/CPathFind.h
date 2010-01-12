@@ -117,7 +117,7 @@ protected:
 	CPathFind &operator= (CPathFind &rhs);
 
 	// Find the node with the lowest f-value.
-	NODE *bestOpenNode (void);
+	NV_ITR bestOpenNode (void);
 
 	// Make the path by tracing parents through m_closedNodes.
 	virtual PF_PATH constructPath(NODE node, const CSprite *pSprite) const { return PF_PATH(); }
@@ -199,7 +199,7 @@ private:
 class CVectorPathFind: public CPathFind
 {
 public:
-	CVectorPathFind(): m_nextPoint(NULL), m_growSize(0), m_pBoardVectors(NULL) {}
+	CVectorPathFind(): m_nextPoint(m_points.end()), m_growSize(0), m_pBoardVectors(NULL) {}
 	void freeData(void);
 	static void freeStatics(void);
 

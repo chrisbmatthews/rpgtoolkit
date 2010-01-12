@@ -276,7 +276,7 @@ bool CVector::contains(const CVector &rhs, DB_POINT &ref) const
 	if (m_closed)
 	{
 		// Loop over the points of the rhs vector.
-		for (i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
+		for (DB_CITR i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
 		{
 			// Determine if this point is contained in the polygon.
 			if (containsPoint(*i)) return true;
@@ -681,8 +681,12 @@ int CVector::sum(void) const
  */
 
 /*
- * Path-find ::contains() equivalent.
+ * @modified		03/31/2009 08:28:00 EST
+ * @author			Chris Hutchinson (euix)
+ * @description		Modified all iterators to intialize with the end iterator
+ *					instead of NULL, and modified logic where necessary.
  */
+// Path-find ::contains() equivalent.
 bool CPfVector::contains(const CPfVector &rhs) const
 {
 	/*
@@ -706,7 +710,7 @@ bool CPfVector::contains(const CPfVector &rhs) const
 	if (rhs.size() != 2) return false;
 	const DB_POINT start = rhs.m_p.front(), end = rhs.m_p.back();
 
-	DB_CITR first = NULL, last = NULL;
+	DB_CITR first = m_p.end(), last = m_p.end();
 
 	// Loop over the subvectors in this vector (to size() - 1).
 	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
@@ -714,7 +718,7 @@ bool CPfVector::contains(const CPfVector &rhs) const
 		// Check if *both* of the points of the rhs vector are in this vector.
 		if (*i == start || *i == end)
 		{
-			if (!&*first) first = i;
+			if (first == m_p.end()) first = i;
 			else
 			{
 				last = i;
@@ -742,15 +746,15 @@ bool CPfVector::contains(const CPfVector &rhs) const
 	} // for (i)
 
 	// Repeat, knowing if a node is on this vector.
-	for (i = m_p.begin(); i != m_p.end() - 1; ++i)	
+	for (DB_CITR i = m_p.begin(); i != m_p.end() - 1; ++i)	
 	{
 		DB_POINT p = {0.0};
 		// Do the two lines cross?
 		if (intersect(i, rhs, p))
 		{
 			// Check if the intersect point is on the vector.
-			DB_POINT a = &*first ? *first : *i, b = {-1.0, -1.0};
-			b = &*last ? *last : (&*first ? b : *(i + 1));
+			DB_POINT a = first != m_p.end() ? *first : *i, b = {-1.0, -1.0};
+			b = last != m_p.end() ? *last : (first != m_p.end() ? b : *(i + 1));
 
 			if ((fabs(p.x - a.x) > CV_PRECISION || fabs(p.y - a.y) > CV_PRECISION) &&
 				(fabs(p.x - b.x) > CV_PRECISION || fabs(p.y - b.y) > CV_PRECISION))
@@ -759,7 +763,7 @@ bool CPfVector::contains(const CPfVector &rhs) const
 	} // for (i)
 
 	// There are 2 or 0 nodes on the vector and the line does not intersect the vector.
-	if (!&*first || &*last)	return false;
+	if (first == m_p.end() || last != m_p.end())	return false;
 
 	// There is one node on the vector - is the other inside the vector?
 	return (*first == end ? containsPoint(start) : containsPoint(end));
@@ -1022,6 +1026,13 @@ void CPfVector::extendPoint(DB_POINT &a, const DB_POINT &d, const double offset)
 }
 
 /*
+ * @modified		03/31/2009 08:31:00 PM EST
+ * @author			Chris Hutchinson (euix)
+ * @description		Modified all empty iterators to initalize to the end
+ *					iterator instead of NULL, and modified all pointer logic
+ *					accordingly.
+ */
+/*
  * Sweep out the path of a vector and create a new vector from the
  * results.
  */
@@ -1037,7 +1048,7 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 	
 	// Determine the extreme points by extrapolating in the target
 	// to the y-intercept (or x if vertical).
-	DB_ITR max = NULL, min = NULL;
+	DB_ITR max = m_p.end(), min = m_p.end();
 	if (d.x)
 	{
 		const double m = d.y / d.x;
@@ -1045,8 +1056,8 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 		{
 			const double c = i->y - m * i->x;
-			if (!&*min || c < dmin) { dmin = c; min = i; }
-			if (!&*max || c > dmax) { dmax = c; max = i; }
+			if (min == m_p.end() || c < dmin) { dmin = c; min = i; }
+			if (max == m_p.end() || c > dmax) { dmax = c; max = i; }
 		}
 	}
 	else
@@ -1054,8 +1065,8 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 		// Take any x-value.
 		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 		{
-			if (!&*min || i->x < min->x) min = i;
-			if (!&*max || i->x > max->x) max = i;
+			if (min == m_p.end() || i->x < min->x) min = i;
+			if (max == m_p.end() || i->x > max->x) max = i;
 		}
 	}
 

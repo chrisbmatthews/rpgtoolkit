@@ -90,7 +90,7 @@ CProgram::CProgram(const STRING file, tagBoardProgram *pBrdProgram):
 		m_pBoardPrg(pBrdProgram)
 {
 	CGarbageCollector::getInstance().addProgram(this);
-	open(file);
+	m_loaded = open(file);
 }
 
 CProgram::~CProgram()
@@ -605,25 +605,52 @@ void CProgram::methodCall(CALL_DATA &call)
 			}
 		}
 
-		j = objp - call.p;
+		j = objp - call.p; 
 
+		// Get object handle of the object referenced in
+		// the parameter list of this function call.
 		unsigned int obj = (unsigned int)objp->getNum();
+		STRING type = CProgram::m_objects[obj];
 
-		const STRING type = CProgram::m_objects[obj];
 		std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
+		if((objp + call.params - 2)->getType() & UDT_OBJ)
+		{
+			unsigned int obj = static_cast<unsigned int>((objp + call.params - 2)->getNum());
+			if(CProgram::m_objects[obj] == fra.lit)
+			{
+				k = call.prg->m_classes.find(fra.lit);
+			}
+		}
+
+		// Find the class descriptor of the object reference
+		// passed by this call.
+		
 		if (k == call.prg->m_classes.end())
 		{
 			throw CError(_T("Could not find class ") + type + _T("."));
 		}
 
+		// Check for a call to release function. Release
+		// is a global object function that frees
+		// an object from memory.
 		bool bRelease = false;
 		if (fra.lit == _T("release"))
 		{
+
+			// Flag that referenced object
+			// should be released.
 			bRelease = true;
+
+			// Sets unit to point to the
+			// referenced object's deconstructor.
 			fra.lit = _T("~") + k->first;
 		}
 
+		// Obtain the class visibility for the current 
+		// method call. Defaults to public.
 		const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
+		
+		// Find constructor method.
 		LPNAMED_METHOD p = k->second.locate(fra.lit, call.params - 2, cv);
 		if (!p)
 		{
@@ -734,10 +761,13 @@ void CProgram::methodCall(CALL_DATA &call)
 	// this call so that the remainder of tagMachineUnit::execute()
 	// is able to pop off the parameters for this method without
 	// crashing.
+
 	call.prg->m_stack.push_back(call.prg->m_stack.back());
+	call.prg->m_pStack = &call.prg->m_stack.back() - 1;
 
 	// Pop the parameters of this method off the current stack, as
 	// they will not be popped off by tagMachineUnit::execute().
+
 	call.prg->m_pStack->erase(call.prg->m_pStack->end() - call.params - 1, call.prg->m_pStack->end() - 1);
 
 	if (bNoRet)
@@ -1038,34 +1068,45 @@ bool CProgram::open(const STRING fileName)
 	return true;
 }
 
-// Prime the program.
+/**
+ * Prime the program for execution.
+ */
 void CProgram::prime()
 {
+
+	// Clear the execution stack and set the
+	// current stack pointer.
 	m_stack.clear();
-	m_stack.push_back(std::deque<STACK_FRAME>());
+	m_stack.push_back(std::vector<STACK_FRAME>());
 	m_pStack = &m_stack.back();
+
+	// Clear the call stack.
 	m_calls.clear();
+
+	// Clear local variables.
 	m_locals.clear();
 	m_locals.push_back(std::map<STRING, STACK_FRAME>());
+
+	// Set current instruction pointer.
 	m_i = m_units.begin();
-	// Prefer the global scope when resolving a variable by default.
-	m_pResolveFunc = resolveVarGlobal;
+
+	// Prefer the global scope when resolving a variable
+	// by default.
+	m_pResolveFunc = &CProgram::resolveVarGlobal;
 }
 
-// Load the program from a string.
+/**
+ * Loads a program from a string
+ */
 bool CProgram::loadFromString(const STRING str)
 {
-	// tmpfile() is capped to TMP_MAX calls. tmpnam() is slow.
-	char tempfile[] = _T("_tmpprg");
-
-	FILE *p = fopen(tempfile, _T("wb+"));
+	FILE *p = tmpfile();
 	if (!p) return false;
 
 	fputs(str.c_str(), p);
 	fseek(p, 0, SEEK_SET);
 	parseFile(p);
 	fclose(p);
-	remove(tempfile);
 
 	prime();
 	return true;
@@ -1416,17 +1457,12 @@ unsigned int CProgram::matchBrace(POS i)
 }
 
 // Include a file.
-void CProgram::include(const CProgram prg)
+void CProgram::include(CProgram prg)
 {
-	{
-		std::map<STRING, tagClass>::const_iterator i = prg.m_classes.begin();
-		for (; i != prg.m_classes.end(); ++i)
-		{
-			m_classes.insert(*i);
-		}
-	}
 
-	std::vector<NAMED_METHOD>::const_iterator i = prg.m_methods.begin();
+	int size = m_units.size();
+
+	std::vector<NAMED_METHOD>::iterator i = prg.m_methods.begin();
 	for (; i != prg.m_methods.end(); ++i)
 	{
 		if (NAMED_METHOD::locate(i->name, i->params, false, *this))
@@ -1439,7 +1475,10 @@ void CProgram::include(const CProgram prg)
 			continue;
 		}
 
+		// Push the current method to the current
+		// program's method container. 
 		m_methods.push_back(*i);
+
 		int depth = 0;
 		CONST_POS j = prg.m_units.begin() + i->i - 1;
 		do
@@ -1447,7 +1486,28 @@ void CProgram::include(const CProgram prg)
 			m_units.push_back(*j);
 			if (j->udt & UDT_OPEN) ++depth;
 			else if ((j->udt & UDT_CLOSE) && !--depth) break;
-		} while (++j != prg.m_units.end());
+		} 
+		while (++j != prg.m_units.end());
+
+
+	}
+
+	std::map<STRING, tagClass>::iterator j = prg.m_classes.begin();
+	for (; j != prg.m_classes.end(); ++j)
+	{
+
+		std::deque<std::pair<NAMED_METHOD, CLASS_VISIBILITY>>::iterator k = j->second.methods.begin();
+		for(; k != j->second.methods.end(); ++k)
+		{
+			NAMED_METHOD *method = &k->first;
+			if(method)
+			{
+				method->i = size + method->i - 4;
+			}
+		}
+		// Insert class into the parent program's
+		// class descriptor list.
+		m_classes.insert(*j);
 	}
 }
 
@@ -1502,7 +1562,7 @@ void CProgram::serialiseState(CFile &stream) const
 		{
 			stream << int(i->size());	// Number of items in this frame.
 
-			std::deque<STACK_FRAME>::const_iterator j = i->begin();
+			std::vector<STACK_FRAME>::const_iterator j = i->begin();
 			for (; j != i->end(); ++j)
 			{
 				// Write each stack frame item.
@@ -1551,7 +1611,7 @@ void CProgram::serialiseState(CFile &stream) const
 	stream << int(m_i - m_units.begin());
 
 	// Default scope resolution (can be changed by autolocal()).
-	stream << int((m_pResolveFunc == resolveVarGlobal) ? 0 : 1);
+	stream << int((m_pResolveFunc == &CProgram::resolveVarGlobal) ? 0 : 1);
 
 	// List of inclusions.
 	{
@@ -1583,12 +1643,12 @@ void CProgram::reconstructState(CFile &stream)
 		stream >> stackSize;
 		for (unsigned int i = 0; i < stackSize; ++i)
 		{
-			m_stack.push_back(std::deque<STACK_FRAME>());
+			m_stack.push_back(std::vector<STACK_FRAME>());
 
 			int frameSize = 0;
 			stream >> frameSize;
 
-			std::deque<STACK_FRAME> &frame = m_stack.back();
+			std::vector<STACK_FRAME> &frame = m_stack.back();
 
 			for (unsigned int j = 0; j < frameSize; ++j)
 			{
@@ -1690,7 +1750,7 @@ void CProgram::reconstructState(CFile &stream)
 	{
 		int scope = 0;
 		stream >> scope;
-		m_pResolveFunc = scope ? resolveVarLocal : resolveVarGlobal;
+		m_pResolveFunc = scope ? &CProgram::resolveVarLocal : &CProgram::resolveVarGlobal;
 	}
 
 	// List of inclusions.
@@ -1815,8 +1875,10 @@ STACK_FRAME CProgram::run()
 	programFinish();
 	--m_runningPrograms;
 
+	STACK_FRAME ret;
+
 	// Obtain the final return value.
-	const STACK_FRAME ret = m_pStack->size() ? m_pStack->back() : STACK_FRAME();
+	ret = m_pStack->size() ? m_pStack->back() : STACK_FRAME();
 
 	// Clear the stack.
 	m_pStack->clear();
@@ -1875,7 +1937,8 @@ void CProgram::handleError(CException *p)
 			}
 
 			// Find the beginning of the next statement.
-			for (CONST_POS i = m_i; i != m_units.end(); ++i)
+			CONST_POS i = m_i;
+			for (; i != m_units.end(); ++i)
 			{
 				if (i->udt & UDT_LINE) break;
 			}
@@ -1926,8 +1989,12 @@ void tagMachineUnit::execute(CProgram *prg) const
 		{
 			try
 			{
+				// Construct call data.
 				CALL_DATA call = {params, &prg->m_pStack->back() - params, prg};
+
+				// Call function.
 				func(call);
+
 			}
 			catch (CException exp)
 			{
@@ -1938,7 +2005,10 @@ void tagMachineUnit::execute(CProgram *prg) const
 				prg->handleError(NULL);
 			}
 		}
- 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
+		if(prg->m_pStack->size() > 0)
+		{
+ 			prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
+		}
 	}
 	else if (udt & UDT_CLOSE)
 	{
@@ -2014,7 +2084,8 @@ double tagStackFrame::getNum() const
 {
 	if (udt & UDT_ID)
 	{
-		return prg->getVar(lit)->getNum();
+		int val = prg->getVar(lit)->getNum();
+		return val;
 	}
 	else if (udt & UDT_LIT)
 	{
@@ -2605,16 +2676,23 @@ void CProgram::forLoop(CALL_DATA &call)
 	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
 }
 
-// Create an object.
+/* 
+ * Creates an object on the object heap.
+ */
 void CProgram::classFactory(CALL_DATA &call)
 {
 	const STRING cls = call[0].lit;
-	const LPCLASS pClass = &call.prg->m_classes[cls];
 
+	// Retrieve an object handle that is currently
+	// unused.
 	unsigned int obj = m_objects.size() + 1;
 	while (m_objects.count(obj)) ++obj;
+
+	// Insert object handle and the class that
+	// it belongs to into the objects heap.
 	m_objects.insert(std::map<unsigned int, STRING>::value_type(obj, cls));
 
+	// Return object handle in call data.
 	call.ret().udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
 	call.ret().num = obj;
 }

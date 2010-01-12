@@ -54,7 +54,7 @@
 #include "../input/input.h"
 #include "../misc/misc.h"
 #include "../audio/CAudioSegment.h"
-#include "../../tkCommon/images/FreeImage.h"
+#include "FreeImage.h"
 #include "../resource.h"
 #include "winmain.h"
 #define WIN32_LEAN_AND_MEAN
@@ -304,7 +304,11 @@ void setUpGame()
 	// Run startup program.
 	if (!g_mainFile.startupPrg.empty())
 	{
-		CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg).run();
+		CProgram *startup = new CProgram(g_projectPath + PRG_PATH + g_mainFile.startupPrg);
+		if(startup)
+		{
+			startup->run();
+		}
 	}
 
 	// Cannot proceed without a player.
@@ -578,7 +582,20 @@ GAME_STATE gameLogic()
 			g_fpms = (m_renderCount / m_renderTime);
 			const unsigned long fps = g_fpms * MILLISECONDS;
 
-			if (g_mainFile.bFpsInTitleBar)
+			unsigned int units = fps - HALF_FPS_CAP; //HALF_FPS_CAP / fps;
+
+			if(units < 10)
+				units = 10;
+			else
+				units *= 10;
+
+			bool debug = false;
+
+#if _DEBUG
+	debug = true;
+#endif
+
+			if (g_mainFile.bFpsInTitleBar || debug)
 			{
 				extern HWND g_hHostWnd;
 				STRINGSTREAM ss;
@@ -588,19 +605,27 @@ GAME_STATE gameLogic()
 					<< _T(" FPS");
 #if _DEBUG
 				ss << _T(", ") << g_allocated << _T(" bytes");
+				ss << _T(", ") << units << _T(" units");
 #endif
 				SetWindowText(g_hHostWnd, ss.str().c_str());
 			}
 
 			// Multitask.
-			unsigned int units = HALF_FPS_CAP / fps;
-			CThread::multitask((units < 1) ? 1 : ((units > 8) ? 8 : units));
+			// TODO: Implement a thread scheduler that can dynamically
+			// manage the number execution units to execute per given
+			// thread.
+			CThread::multitask(units); //((units > 80) ? 80 : units * 10));
 
 			// Movement.
-			std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
-			for (; i != g_sprites.v.end(); ++i)
+			/* Does not use an iterator because the iterator may become invalid when sprite
+			 * movement occurs. */
+			for(int i = 0; i < g_sprites.v.size(); i++ ) 
 			{
-				(*i)->move(g_pSelectedPlayer, false);
+				CSprite *sprite = g_sprites.v[i];
+				if(sprite) 
+				{
+					sprite->move(g_pSelectedPlayer, false);
+				}
 			}
 
 			// Run programs outside of the above loop for the cases
@@ -612,6 +637,7 @@ GAME_STATE gameLogic()
 
 			// Render.
 			renderNow();
+
 		} break;
 
 		case GS_PAUSE:
@@ -666,7 +692,7 @@ int mainEventLoop()
 			// Count this loop if not in Paused state
 
 			// Sleep for any remaining time
-			while ((GetTickCount() - dwTimeNow) < dwOneFrame);
+			//while ((GetTickCount() - dwTimeNow) < dwOneFrame);
 
 			// Update length rendering took
 			dwTimeNow = GetTickCount() - dwTimeNow;
@@ -700,23 +726,20 @@ int mainEventLoop()
 int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, const LPTSTR lpCmdLine, const int nCmdShow)
 {
 	extern STRING g_savePath;
+	extern STRING g_projectPath;
 
 	setResolve(false);
 
-	TCHAR buffer [_MAX_PATH], *path = buffer;
-	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
-
-//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
-//	path = dev;
+	/* Get current working directory path. */
+	TCHAR buffer[_MAX_PATH], *path = buffer;
+	if(_tgetcwd(path, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
 	set_terminate(termFunc);
 
 	g_hInstance = hInstance;
 
 	_tchdir(path);
-
-//	_tfreopen(_T("log.txt"), _T("w"), stderr); // Destination for std::cerr.
+	//_tfreopen(_T("log.txt"), _T("w"), stderr); // Destination for std::cerr.
 
 	// Make the default save game folder before pak file stuff.
 	_tmkdir(g_savePath.c_str());
@@ -727,6 +750,10 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	if (fileName.empty()) return EXIT_SUCCESS;
 
 	if (!g_mainFile.open(fileName)) return EXIT_SUCCESS;
+
+	#if _DEBUG
+		g_projectPath = STRING("D:\\Development\\Projects\\RPGToolkit\\build\\Debug\\") + g_projectPath;
+	#endif
 
 	try
 	{

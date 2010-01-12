@@ -254,7 +254,8 @@ typedef struct tagZOrderedSprites
 
 	ZO_ITR find(const CSprite *pSprite)
 	{
-		for (ZO_ITR i = v.begin(); i != v.end(); ++i)
+		ZO_ITR i = v.begin();
+		for (; i != v.end(); ++i)
 		{
 			if (*i == pSprite) break;
 		}

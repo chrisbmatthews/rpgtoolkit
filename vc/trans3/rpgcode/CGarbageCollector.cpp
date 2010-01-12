@@ -124,7 +124,7 @@ void CGarbageCollector::collectGarbage()
 				for (; j != (*i)->m_stack.end(); ++j)
 				{
 					// Loop over this frame of the stack.
-					std::deque<STACK_FRAME>::const_iterator k = j->begin();
+					std::vector<STACK_FRAME>::const_iterator k = j->begin();
 					for (; k != j->end(); ++k)
 					{
 						const STACK_FRAME &var = *k;

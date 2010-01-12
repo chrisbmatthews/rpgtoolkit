@@ -35,7 +35,7 @@
  */
 #include "CAnimation.h"
 #include "CFile.h"
-#include "../../tkCommon/images/FreeImage.h"
+#include "FreeImage.h"
 #include "../movement/movement.h"
 #include "../rpgcode/parser/parser.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
@@ -56,7 +56,7 @@ m_users(1)
 {
 	extern STRING g_projectPath;
 
-	renderFrame = renderAnmFrame;
+	renderFrame = &CAnimation::renderAnmFrame;
 
 	if (!file.empty())
 	{
@@ -69,7 +69,7 @@ m_users(1)
 		else if (_ftcsicmp(ext.c_str(), _T("gif")) == 0)
 		{
 			m_data.loadFromGif(resolve(g_projectPath + MISC_PATH + file));
-			renderFrame = renderFileFrame;
+			renderFrame = &CAnimation::renderFileFrame;
 			m_data.filename = file;
 		}
 	}
