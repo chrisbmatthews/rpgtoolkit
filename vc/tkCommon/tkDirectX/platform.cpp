@@ -176,7 +176,7 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 		ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
 		ddsd.dwBackBufferCount = 1;		// Make a *real* backbuffer
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP;
-		m_pRefresh = RefreshFullScreen;
+		m_pRefresh = &CDirectDraw::RefreshFullScreen;
 	}
 	else
 	{
@@ -184,7 +184,7 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 		if (FAILED(m_lpdd->SetCooperativeLevel(hWnd,DDSCL_NORMAL))) return;
 		ddsd.dwFlags = DDSD_CAPS;
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;	// This will be the primary surface
-		m_pRefresh = RefreshWindowed;
+		m_pRefresh = &CDirectDraw::RefreshWindowed;
 	}
 
 	// Create the primary surface

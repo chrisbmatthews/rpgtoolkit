@@ -494,8 +494,16 @@ CTile::CTile(CONST CTile &rhs):
 
 {
 
+	
+	size_t size = 1024 * sizeof(INT);
+	memcpy(m_pnTile, rhs.m_pnTile, size);
+	memcpy(m_pnAlphaChannel, rhs.m_pnAlphaChannel, size);
+	
+
+	
 	// Colin: There has got to be a better way to
 	//	      implement this loop!
+	/*
 	for (INT x = 0; x < 32; x++)
 	{
 		for (INT y = 0; y < 32; y++)
@@ -504,6 +512,8 @@ CTile::CTile(CONST CTile &rhs):
 			m_pnAlphaChannel[x][y] = rhs.m_pnAlphaChannel[x][y];
 		}
 	}
+	*/
+	
 
 }
 
@@ -513,6 +523,13 @@ CTile::CTile(CONST CTile &rhs):
 CTile &FAST_CALL CTile::operator=(CONST CTile &rhs)
 {
 
+	
+	size_t size = 1024 * sizeof(INT);
+	memcpy(m_pnTile, rhs.m_pnTile, size);
+	memcpy(m_pnAlphaChannel, rhs.m_pnAlphaChannel, size);
+	
+
+	/*
 	// Colin: There has got to be a better way to
 	//	      implement this loop!
 	for (INT x = 0; x < 32; x++)
@@ -523,6 +540,8 @@ CTile &FAST_CALL CTile::operator=(CONST CTile &rhs)
 			m_pnAlphaChannel[x][y] = rhs.m_pnAlphaChannel[x][y];
 		}
 	}
+	*/
+	
 
 	// Copy over member values
 	m_nCompatibleDC = rhs.m_nCompatibleDC;
@@ -1711,9 +1730,9 @@ CTile *CTile::getTile(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb
 	if (m_tiles.size() > TILE_CACHE_SIZE) clearTileCache();
 
 	// Check if this tile has already been drawn.
-	CTile **itrTile = findCacheMatch(filename, eMask, rgb, bIsometric);
+	std::vector<CTile *>::iterator itrTile = findCacheMatch(filename, eMask, rgb, bIsometric);
 	
-	if (itrTile) return *itrTile;
+	if (itrTile != m_tiles.end()) return *itrTile;
 
 	// Load the tile.
 	CTile *CONST pTile = new CTile(INT(hdcCompat), filename, rgb, SHADE_UNIFORM, bIsometric);
@@ -1724,10 +1743,14 @@ CTile *CTile::getTile(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb
 	return pTile;
 }
 
-//-------------------------------------------------------------------
+/*
+ / @modified		03/29/2009 12:22:00 AM EST
+ / @author			Chris Hutchinson (euix)
+ / @description		Modified function to return vector<CTile *>::iterator instead of CTile**, and
+ /					forced function to return m_tiles.end() when a match could not be found.
+*/
 // Find a tile match in m_tiles by name.
-//-------------------------------------------------------------------
-CTile **CTile::findCacheMatch(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb, CONST BOOL bIsometric)
+std::vector<CTile *>::iterator CTile::findCacheMatch(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb, CONST BOOL bIsometric)
 {
 	for (std::vector<CTile *>::iterator i = m_tiles.begin(); i != m_tiles.end(); ++i)
 	{
@@ -1739,31 +1762,35 @@ CTile **CTile::findCacheMatch(CONST STRING filename, CONST INT eMask, CONST RGBS
 				// Check isometrics match.
 				if (bIsometric == (*i)->isIsometric())
 				{
-					return &*i;
+					return i;
 				}
 			}
 		}
 	}
-	return NULL;
+	return m_tiles.end();
 }
 
-//-------------------------------------------------------------------
+/*
+ / @modified		03/29/2009 12:28:00 AM EST
+ / @author			Chris Hutchinson (euix)
+ / @description		Modified findCacheMatch function to return vector<CTile*> iterator
+ /					rather than return CTile** pointer. Modified code accordingly.
+*/
 // Erase a single tile from the cache, if found.
-//-------------------------------------------------------------------
 VOID CTile::deleteFromCache(CONST STRING filename)
 {
 	CONST RGBSHADE rgb = {0, 0, 0};
 
 	// Standard tile.
-	CTile **itrTile = findCacheMatch(filename, TM_NONE, rgb, FALSE);
-	if (itrTile)
+	std::vector<CTile *>::iterator itrTile = findCacheMatch(filename, TM_NONE, rgb, FALSE);
+	if (itrTile != m_tiles.end())
 	{
 		m_tiles.erase(itrTile);
 	}
 
 	// Isometric.
 	itrTile = findCacheMatch(filename, TM_NONE, rgb, TRUE);
-	if (itrTile)
+	if (itrTile != m_tiles.end())
 	{
 		m_tiles.erase(itrTile);
 	}

@@ -59,14 +59,14 @@ VOID calculateLighting(RGB_MATRIX &shades, CONST BRD_LIGHT &bl, CONST COORD_TYPE
 
 			// Semi-major and semi-minor axes.
 			CONST DOUBLE axes[] = {
-				sqrt(
+				sqrt(static_cast<DOUBLE>(
 					(bl.nodes[1].x - bl.nodes[0].x) * (bl.nodes[1].x - bl.nodes[0].x) +
-					(bl.nodes[1].y - bl.nodes[0].y) * (bl.nodes[1].y - bl.nodes[0].y)
+					(bl.nodes[1].y - bl.nodes[0].y) * (bl.nodes[1].y - bl.nodes[0].y))
 				),
 				0,	// Padding.
-				sqrt(
+				sqrt(static_cast<DOUBLE>(
 					(bl.nodes[1].x - bl.nodes[2].x) * (bl.nodes[1].x - bl.nodes[2].x) +
-					(bl.nodes[1].y - bl.nodes[2].y) * (bl.nodes[1].y - bl.nodes[2].y)
+					(bl.nodes[1].y - bl.nodes[2].y) * (bl.nodes[1].y - bl.nodes[2].y))
 				)
 			};
 			if (!axes[0] || !axes[2]) return;
@@ -139,9 +139,9 @@ VOID calculateLighting(RGB_MATRIX &shades, CONST BRD_LIGHT &bl, CONST COORD_TYPE
 			if (bl.nodes.size() != 2 || bl.colors.size() < 2) return;
 
 			// Node separation.
-			CONST DOUBLE length = sqrt(
+			CONST DOUBLE length = sqrt(static_cast<DOUBLE>(
 				(bl.nodes[1].x - bl.nodes[0].x) * (bl.nodes[1].x - bl.nodes[0].x) +
-				(bl.nodes[1].y - bl.nodes[0].y) * (bl.nodes[1].y - bl.nodes[0].y)
+				(bl.nodes[1].y - bl.nodes[0].y) * (bl.nodes[1].y - bl.nodes[0].y))
 			);
 			if (!length) return;
 

@@ -316,7 +316,7 @@ class CTile
 			VOID
 		);
 
-		STATIC CTile **findCacheMatch(
+		STATIC std::vector<CTile *>::iterator findCacheMatch(
 			CONST STRING filename, 
 			CONST INT eMask, 
 			CONST RGBSHADE rgb, 
